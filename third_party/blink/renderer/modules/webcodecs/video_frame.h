@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_rect.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
@@ -71,7 +72,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             const VideoFrameBufferInit*,
                             ExceptionState&);
 
-  String format() const;
+  absl::optional<V8VideoPixelFormat> format() const;
 
   // DEPRECATED.
   absl::optional<HeapVector<Member<Plane>>> planes(ExecutionContext*);

@@ -793,10 +793,10 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                           ExecutionContext::From(script_state));
 }
 
-String VideoFrame::format() const {
+absl::optional<V8VideoPixelFormat> VideoFrame::format() const {
   auto local_frame = handle_->frame();
   if (!local_frame || !IsSupportedPlanarFormat(*local_frame))
-    return String();
+    return absl::nullopt;
 
   switch (local_frame->format()) {
     case media::PIXEL_FORMAT_I420:
@@ -819,7 +819,7 @@ String VideoFrame::format() const {
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kBGRX);
     default:
       NOTREACHED();
-      return String();
+      return absl::nullopt;
   }
 }
 
