@@ -226,6 +226,7 @@ void ApplicationContextImpl::StartTearDown() {
     gcm_driver_->Shutdown();
 
   if (local_state_) {
+    SetLastSessionExitedCleanly(local_state_.get(), true);
     local_state_->CommitPendingWrite();
     sessions::SessionIdGenerator::GetInstance()->Shutdown();
   }
