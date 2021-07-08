@@ -823,14 +823,13 @@ void DeviceLocalAccountPolicyProviderTest::SetUp() {
   provider_->AddObserver(&provider_observer_);
 
   // Values implicitly enforced for public accounts.
-  expected_policy_map_.Set(key::kShelfAutoHideBehavior, POLICY_LEVEL_MANDATORY,
-                           POLICY_SCOPE_MACHINE,
-                           POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE,
-                           base::Value("Never"), nullptr);
+  expected_policy_map_.Set(
+      key::kShelfAutoHideBehavior, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+      POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value("Never"), nullptr);
   expected_policy_map_.Set(key::kShowLogoutButtonInTray, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_MACHINE,
-                           POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE,
-                           base::Value(true), nullptr);
+                           POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(true),
+                           nullptr);
 
   // Policy defaults (for policies not set by admin).
   SetEnterpriseUsersDefaults(&expected_policy_map_);
@@ -889,6 +888,23 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, Policy) {
   ASSERT_TRUE(policy_value);
   EXPECT_FALSE(policy_value->GetBool());
 
+  // |ShelfAutoHideBehavior| and |ShowLogoutButtonInTray| should have their
+  // defaults set.
+  auto* policy_entry =
+      provider_->policies()
+          .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+          .Get(key::kShelfAutoHideBehavior);
+  ASSERT_TRUE(policy_entry->value());
+  EXPECT_EQ("Never", policy_entry->value()->GetString());
+  EXPECT_EQ(POLICY_SOURCE_ENTERPRISE_DEFAULT, policy_entry->source);
+
+  policy_entry = provider_->policies()
+                     .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+                     .Get(key::kShowLogoutButtonInTray);
+  ASSERT_TRUE(policy_entry->value());
+  EXPECT_TRUE(policy_entry->value()->GetBool());
+  EXPECT_EQ(POLICY_SOURCE_ENTERPRISE_DEFAULT, policy_entry->source);
+
   // Policy change should be reported.
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
@@ -909,8 +925,8 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, Policy) {
            POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   EXPECT_TRUE(expected_policy_bundle.Equals(provider_->policies()));
 
-  // Any values set for the |ShelfAutoHideBehavior|, |ShowLogoutButtonInTray|
-  // and |ExtensionAllowedTypes| policies should be overridden.
+  // The default value of |ShelfAutoHideBehavior| and |ShowLogoutButtonInTray|
+  // should be overridden if they are set in the cloud.
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
   device_local_account_policy_.payload()
@@ -919,6 +935,15 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, Policy) {
   device_local_account_policy_.payload()
       .mutable_showlogoutbuttonintray()
       ->set_value(false);
+  expected_policy_bundle
+      .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+      .Set(key::kShelfAutoHideBehavior, POLICY_LEVEL_MANDATORY,
+           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value("Always"),
+           nullptr);
+  expected_policy_bundle
+      .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+      .Set(key::kShowLogoutButtonInTray, POLICY_LEVEL_MANDATORY,
+           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   InstallDeviceLocalAccountPolicy(kAccount1);
   broker->core()->store()->Load();
   FlushDeviceSettings();

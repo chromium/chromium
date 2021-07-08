@@ -330,7 +330,7 @@ void CloudExternalDataPolicyObserverTest::LogInAsDeviceLocalAccount(
   device_local_account_policy_provider_ =
       std::make_unique<DeviceLocalAccountPolicyProvider>(
           account_id.GetUserEmail(), device_local_account_policy_service_.get(),
-          std::unique_ptr<PolicyMap>());
+          DeviceLocalAccount::TYPE_PUBLIC_SESSION);
 
   PolicyServiceImpl::Providers providers;
   providers.push_back(device_local_account_policy_provider_.get());

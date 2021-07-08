@@ -1813,7 +1813,7 @@ message Policy {
 
     // A policy is overridden by ChromeOS if it's running in a public session or
     // kiosk mode.
-    SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE = 4;
+    SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED = 4;
 
     // A policy is set by OS built-in tool on desktop.
     SOURCE_PLATFORM = 5;

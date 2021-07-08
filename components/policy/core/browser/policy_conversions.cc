@@ -22,7 +22,7 @@ const webui::LocalizedString kPolicySources[POLICY_SOURCE_COUNT] = {
     {"commandLine", IDS_POLICY_SOURCE_COMMAND_LINE},
     {"cloud", IDS_POLICY_SOURCE_CLOUD},
     {"sourceActiveDirectory", IDS_POLICY_SOURCE_ACTIVE_DIRECTORY},
-    {"sourceDeviceLocalAccountOverride",
+    {"sourceDeviceLocalAccountOverrideDeprecated",
      IDS_POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE},
     {"platform", IDS_POLICY_SOURCE_PLATFORM},
     {"priorityCloud", IDS_POLICY_SOURCE_CLOUD},
