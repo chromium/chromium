@@ -224,14 +224,28 @@ bool Statement::BindString16(int col, base::StringPiece16 value) {
   return BindString(col, base::UTF16ToUTF8(value));
 }
 
-bool Statement::BindBlob(int col, const void* val, int val_len) {
+bool Statement::BindBlob(int col, base::span<const uint8_t> value) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
 
-  return is_valid() && CheckOk(sqlite3_bind_blob(ref_->stmt(), col + 1, val,
-                                                 val_len, SQLITE_TRANSIENT));
+  // span::data() may return null for empty spans. In particular, this may
+  // happen when the span is created out of a std::vector, because
+  // std::vector::data() may (or may not) return null for empty vectors.
+  //
+  // However, sqlite3_bind_blob() always interprets a nullptr data argument as a
+  // NULL value, instead of an empty BLOB value.
+  //
+  // While the difference between NULL and an empty BLOB may not matter in some
+  // cases, it may also cause subtle bugs in other cases. So, we cannot pass
+  // span.data() directly to sqlite3_bind_blob().
+  static constexpr uint8_t kEmptyPlaceholder[] = {0x00};
+  const uint8_t* data = (value.size() > 0) ? value.data() : kEmptyPlaceholder;
+
+  return is_valid() &&
+         CheckOk(sqlite3_bind_blob(ref_->stmt(), col + 1, data, value.size(),
+                                   SQLITE_TRANSIENT));
 }
 
 int Statement::ColumnCount() const {

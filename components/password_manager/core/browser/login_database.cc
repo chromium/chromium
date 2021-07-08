@@ -192,14 +192,18 @@ struct SQLTableBuilders {
   SQLTableBuilder* sync_model_metadata;
 };
 
+base::span<const uint8_t> PickleToSpan(const base::Pickle& pickle) {
+  return base::make_span(reinterpret_cast<const uint8_t*>(pickle.data()),
+                         pickle.size());
+}
+
 void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   s->BindString(COLUMN_ORIGIN_URL, form.url.spec());
   s->BindString(COLUMN_ACTION_URL, form.action.spec());
   s->BindString16(COLUMN_USERNAME_ELEMENT, form.username_element);
   s->BindString16(COLUMN_USERNAME_VALUE, form.username_value);
   s->BindString16(COLUMN_PASSWORD_ELEMENT, form.password_element);
-  s->BindBlob(COLUMN_PASSWORD_VALUE, form.encrypted_password.data(),
-              static_cast<int>(form.encrypted_password.length()));
+  s->BindBlob(COLUMN_PASSWORD_VALUE, form.encrypted_password);
   s->BindString16(COLUMN_SUBMIT_ELEMENT, form.submit_element);
   s->BindString(COLUMN_SIGNON_REALM, form.signon_realm);
   s->BindInt64(COLUMN_DATE_CREATED, form.date_created.ToInternalValue());
@@ -209,8 +213,7 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   s->BindInt(COLUMN_TIMES_USED, form.times_used);
   base::Pickle form_data_pickle;
   autofill::SerializeFormData(form.form_data, &form_data_pickle);
-  s->BindBlob(COLUMN_FORM_DATA, form_data_pickle.data(),
-              form_data_pickle.size());
+  s->BindBlob(COLUMN_FORM_DATA, PickleToSpan(form_data_pickle));
   s->BindInt64(COLUMN_DATE_SYNCED, form.date_synced.ToInternalValue());
   s->BindString16(COLUMN_DISPLAY_NAME, form.display_name);
   s->BindString(COLUMN_ICON_URL, form.icon_url.spec());
@@ -224,14 +227,13 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
              static_cast<int>(form.generation_upload_status));
   base::Pickle usernames_pickle =
       SerializeValueElementPairs(form.all_possible_usernames);
-  s->BindBlob(COLUMN_POSSIBLE_USERNAME_PAIRS, usernames_pickle.data(),
-              usernames_pickle.size());
+  s->BindBlob(COLUMN_POSSIBLE_USERNAME_PAIRS, PickleToSpan(usernames_pickle));
   s->BindInt64(COLUMN_DATE_LAST_USED,
                form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
   base::Pickle moving_blocked_for_pickle =
       SerializeGaiaIdHashVector(form.moving_blocked_for_list);
-  s->BindBlob(COLUMN_MOVING_BLOCKED_FOR, moving_blocked_for_pickle.data(),
-              moving_blocked_for_pickle.size());
+  s->BindBlob(COLUMN_MOVING_BLOCKED_FOR,
+              PickleToSpan(moving_blocked_for_pickle));
 }
 
 // Output parameter is the first one because of binding order.
@@ -1228,8 +1230,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
       db_.GetCachedStatement(SQL_FROM_HERE, update_statement_.c_str()));
   int next_param = 0;
   s.BindString(next_param++, form.action.spec());
-  s.BindBlob(next_param++, encrypted_password.data(),
-             static_cast<int>(encrypted_password.length()));
+  s.BindBlob(next_param++, encrypted_password);
   s.BindString16(next_param++, form.submit_element);
   s.BindInt64(next_param++, form.date_created.ToInternalValue());
   s.BindInt(next_param++, form.blocked_by_user);
@@ -1238,7 +1239,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   s.BindInt(next_param++, form.times_used);
   base::Pickle form_data_pickle;
   autofill::SerializeFormData(form.form_data, &form_data_pickle);
-  s.BindBlob(next_param++, form_data_pickle.data(), form_data_pickle.size());
+  s.BindBlob(next_param++, PickleToSpan(form_data_pickle));
   s.BindInt64(next_param++, form.date_synced.ToInternalValue());
   s.BindString16(next_param++, form.display_name);
   s.BindString(next_param++, form.icon_url.spec());
@@ -1250,13 +1251,12 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   s.BindInt(next_param++, static_cast<int>(form.generation_upload_status));
   base::Pickle username_pickle =
       SerializeValueElementPairs(form.all_possible_usernames);
-  s.BindBlob(next_param++, username_pickle.data(), username_pickle.size());
+  s.BindBlob(next_param++, PickleToSpan(username_pickle));
   s.BindInt64(next_param++,
               form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
   base::Pickle moving_blocked_for_pickle =
       SerializeGaiaIdHashVector(form.moving_blocked_for_list);
-  s.BindBlob(next_param++, moving_blocked_for_pickle.data(),
-             moving_blocked_for_pickle.size());
+  s.BindBlob(next_param++, PickleToSpan(moving_blocked_for_pickle));
   // NOTE: Add new fields here unless the field is a part of the unique key.
   // If so, add new field below.
 

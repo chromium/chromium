@@ -512,8 +512,7 @@ FaviconBitmapID FaviconDatabase::AddFaviconBitmap(
 
   statement.BindInt64(0, icon_id);
   if (icon_data.get() && icon_data->size()) {
-    statement.BindBlob(1, icon_data->front(),
-                       static_cast<int>(icon_data->size()));
+    statement.BindBlob(1, *icon_data);
   } else {
     statement.BindNull(1);
   }
@@ -553,8 +552,7 @@ bool FaviconDatabase::SetFaviconBitmap(
                              "UPDATE favicon_bitmaps SET image_data=?, "
                              "last_updated=?, last_requested=? WHERE id=?"));
   if (bitmap_data.get() && bitmap_data->size()) {
-    statement.BindBlob(0, bitmap_data->front(),
-                       static_cast<int>(bitmap_data->size()));
+    statement.BindBlob(0, *bitmap_data);
   } else {
     statement.BindNull(0);
   }

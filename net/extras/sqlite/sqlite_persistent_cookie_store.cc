@@ -1322,11 +1322,11 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
             }
             add_statement.BindCString(3, "");  // value
             // BindBlob() immediately makes an internal copy of the data.
-            add_statement.BindBlob(12, encrypted_value.data(),
-                                   static_cast<int>(encrypted_value.length()));
+            add_statement.BindBlob(12, encrypted_value);
           } else {
             add_statement.BindString(3, po->cc().Value());
-            add_statement.BindBlob(12, "", 0);  // encrypted_value
+            add_statement.BindBlob(12,
+                                   base::span<uint8_t>());  // encrypted_value
           }
           add_statement.BindString(4, po->cc().Path());
           add_statement.BindTime(5, po->cc().ExpiryDate());

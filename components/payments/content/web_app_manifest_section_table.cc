@@ -140,8 +140,7 @@ bool WebAppManifestSectionTable::AddWebAppManifest(
     s2.BindInt64(index++, section.min_version);
     std::unique_ptr<std::vector<uint8_t>> serialized_fingerprints =
         SerializeFingerPrints(section.fingerprints);
-    s2.BindBlob(index, serialized_fingerprints->data(),
-                serialized_fingerprints->size());
+    s2.BindBlob(index, *serialized_fingerprints);
     if (!s2.Run())
       return false;
     s2.Reset(true);

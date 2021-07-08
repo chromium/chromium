@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -129,7 +130,12 @@ class COMPONENT_EXPORT(SQL) Statement {
   bool BindCString(int col, const char* val);
   bool BindString(int col, const std::string& val);
   bool BindString16(int col, base::StringPiece16 value);
-  bool BindBlob(int col, const void* value, int value_len);
+  bool BindBlob(int col, base::span<const uint8_t> value);
+
+  // Overload that makes it easy to pass in std::string values.
+  bool BindBlob(int col, base::span<const char> value) {
+    return BindBlob(col, base::as_bytes(base::make_span(value)));
+  }
 
   // Conforms with base::Time serialization recommendations.
   //
@@ -185,7 +191,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   bool ColumnBlobAsString(int col, std::string* blob) const;
   bool ColumnBlobAsString16(int col, std::u16string* val) const;
   bool ColumnBlobAsVector(int col, std::vector<char>* val) const;
-  bool ColumnBlobAsVector(int col, std::vector<unsigned char>* val) const;
+  bool ColumnBlobAsVector(int col, std::vector<uint8_t>* val) const;
 
   // Diagnostics --------------------------------------------------------------
 

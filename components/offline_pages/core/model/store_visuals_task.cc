@@ -44,7 +44,7 @@ bool StoreThumbnailSync(sql::Database* db,
       "UPDATE page_thumbnails SET expiration=?,thumbnail=? WHERE offline_id=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
   statement.BindInt64(0, store_utils::ToDatabaseTime(expiration));
-  statement.BindBlob(1, thumbnail.data(), thumbnail.length());
+  statement.BindBlob(1, thumbnail);
   statement.BindInt64(2, offline_id);
   return statement.Run();
 }
@@ -57,7 +57,7 @@ bool StoreFaviconSync(sql::Database* db,
       "UPDATE page_thumbnails SET expiration=?,favicon=? WHERE offline_id=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
   statement.BindInt64(0, store_utils::ToDatabaseTime(expiration));
-  statement.BindBlob(1, favicon.data(), favicon.length());
+  statement.BindBlob(1, favicon);
   statement.BindInt64(2, offline_id);
   return statement.Run();
 }

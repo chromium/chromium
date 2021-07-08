@@ -4,6 +4,8 @@
 
 #include "components/sqlite_proto/key_value_table.h"
 
+#include <stdint.h>
+
 #include "base/strings/stringprintf.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -17,9 +19,9 @@ void BindDataToStatement(const std::string& key,
   statement->BindString(0, key);
 
   size_t size = data.ByteSizeLong();
-  std::vector<char> proto_buffer(size);
+  std::vector<uint8_t> proto_buffer(size);
   data.SerializeToArray(proto_buffer.data(), size);
-  statement->BindBlob(1, proto_buffer.data(), size);
+  statement->BindBlob(1, proto_buffer);
 }
 
 std::string GetSelectAllSql(const std::string& table_name) {

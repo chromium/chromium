@@ -491,7 +491,7 @@ bool InsertVisualsVersion3(sql::Database* db,
       db->GetCachedStatement(SQL_FROM_HERE, kInsertVisualsSql));
   statement.BindInt64(0, visuals.offline_id);
   statement.BindInt64(1, store_utils::ToDatabaseTime(visuals.expiration));
-  statement.BindBlob(2, visuals.thumbnail.data(), visuals.thumbnail.size());
+  statement.BindBlob(2, visuals.thumbnail);
   return statement.Run();
 }
 

@@ -138,8 +138,7 @@ void BindEncryptedCardToColumn(sql::Statement* s,
                                const AutofillTableEncryptor& encryptor) {
   std::string encrypted_data;
   encryptor.EncryptString16(number, &encrypted_data);
-  s->BindBlob(column_index, encrypted_data.data(),
-              static_cast<int>(encrypted_data.length()));
+  s->BindBlob(column_index, encrypted_data);
 }
 
 void BindCreditCardToStatement(const CreditCard& credit_card,
@@ -2040,8 +2039,7 @@ bool AutofillTable::AddCreditCardArtImage(
       "VALUES (?,?,?)"));
   s.BindString(0, credit_card_art_image.id);
   s.BindInt64(1, credit_card_art_image.instrument_id);
-  s.BindBlob(2, credit_card_art_image.card_art_image.data(),
-             credit_card_art_image.card_art_image.size());
+  s.BindBlob(2, credit_card_art_image.card_art_image);
   s.Run();
 
   return transaction.Commit();
@@ -3795,8 +3793,7 @@ void AutofillTable::AddUnmaskedCreditCard(const std::string& id,
 
   std::string encrypted_data;
   autofill_table_encryptor_->EncryptString16(full_number, &encrypted_data);
-  s.BindBlob(1, encrypted_data.data(),
-             static_cast<int>(encrypted_data.length()));
+  s.BindBlob(1, encrypted_data);
   s.BindInt64(2, AutofillClock::Now().ToInternalValue());  // unmask_date
 
   s.Run();

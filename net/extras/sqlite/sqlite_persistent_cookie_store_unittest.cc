@@ -4,6 +4,8 @@
 
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <set>
@@ -11,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
@@ -1172,7 +1175,7 @@ bool AddV9CookiesToDBImpl(sql::Database* db,
     statement.BindString(1, cookies[i].Domain());
     statement.BindString(2, cookies[i].Name());
     statement.BindString(3, cookies[i].Value());
-    statement.BindBlob(4, "", 0);  // encrypted_value
+    statement.BindBlob(4, base::span<uint8_t>());  // encrypted_value
     statement.BindString(5, cookies[i].Path());
     statement.BindInt64(
         6, cookies[i].ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -1639,7 +1642,7 @@ bool AddV10CookiesToDBImpl(sql::Database* db,
     statement.BindString(1, cookies[i].Domain());
     statement.BindString(2, cookies[i].Name());
     statement.BindString(3, cookies[i].Value());
-    statement.BindBlob(4, "", 0);  // encrypted_value
+    statement.BindBlob(4, base::span<uint8_t>());  // encrypted_value
     statement.BindString(5, cookies[i].Path());
     statement.BindInt64(
         6, cookies[i].ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -1854,7 +1857,7 @@ bool AddV11CookiesToDB(sql::Database* db) {
     statement.BindString(1, cookies[i].Domain());
     statement.BindString(2, cookies[i].Name());
     statement.BindString(3, cookies[i].Value());
-    statement.BindBlob(4, "", 0);  // encrypted_value
+    statement.BindBlob(4, base::span<uint8_t>());  // encrypted_value
     statement.BindString(5, cookies[i].Path());
     statement.BindInt64(
         6, cookies[i].ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -1902,7 +1905,7 @@ bool AddV12CookiesToDB(sql::Database* db) {
     statement.BindString(1, cookie.Domain());
     statement.BindString(2, cookie.Name());
     statement.BindString(3, cookie.Value());
-    statement.BindBlob(4, "", 0);  // encrypted_value
+    statement.BindBlob(4, base::span<uint8_t>());  // encrypted_value
     statement.BindString(5, cookie.Path());
     statement.BindInt64(
         6, cookie.ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());

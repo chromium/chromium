@@ -588,7 +588,7 @@ bool DownloadDatabase::UpdateDownload(const DownloadRow& data) {
   statement.BindInt(column++, DownloadDangerTypeToInt(data.danger_type));
   statement.BindInt(column++,
                     DownloadInterruptReasonToInt(data.interrupt_reason));
-  statement.BindBlob(column++, data.hash.data(), data.hash.size());
+  statement.BindBlob(column++, data.hash);
   statement.BindInt64(column++, data.end_time.ToInternalValue());
   statement.BindInt64(column++, data.total_bytes);
   statement.BindInt(column++, (data.opened ? 1 : 0));
@@ -681,7 +681,7 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
                              DownloadDangerTypeToInt(info.danger_type));
     statement_insert.BindInt(
         column++, DownloadInterruptReasonToInt(info.interrupt_reason));
-    statement_insert.BindBlob(column++, info.hash.data(), info.hash.size());
+    statement_insert.BindBlob(column++, info.hash);
     statement_insert.BindInt64(column++, info.end_time.ToInternalValue());
     statement_insert.BindInt(column++, info.opened ? 1 : 0);
     statement_insert.BindInt64(column++,

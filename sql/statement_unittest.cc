@@ -126,5 +126,31 @@ TEST_F(SQLStatementTest, Reset) {
   ASSERT_FALSE(s.Step());
 }
 
+TEST_F(SQLStatementTest, BindBlob) {
+  ASSERT_TRUE(db_.Execute("CREATE TABLE blobs (b BLOB NOT NULL)"));
+
+  const std::vector<std::vector<uint8_t>> values = {
+      {},
+      {0x01},
+      {0x41, 0x42, 0x43, 0x44},
+  };
+
+  Statement insert(db_.GetUniqueStatement("INSERT INTO blobs VALUES(?)"));
+  for (const std::vector<uint8_t>& value : values) {
+    insert.BindBlob(0, value);
+    ASSERT_TRUE(insert.Run());
+    insert.Reset(/* clear_bound_vars= */ true);
+  }
+
+  Statement select(db_.GetUniqueStatement("SELECT b FROM blobs"));
+  for (const std::vector<uint8_t>& value : values) {
+    ASSERT_TRUE(select.Step());
+    std::vector<uint8_t> column_value;
+    EXPECT_TRUE(select.ColumnBlobAsVector(0, &column_value));
+    EXPECT_EQ(value, column_value);
+  }
+  EXPECT_FALSE(select.Step());
+}
+
 }  // namespace
 }  // namespace sql

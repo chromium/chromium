@@ -991,14 +991,7 @@ TEST_F(RecoverModuleTest, BlobEncodings) {
   sql::Statement insert(
       db_.GetUniqueStatement("INSERT INTO blob_encodings VALUES(?)"));
   for (const std::vector<uint8_t>& value : values) {
-    // std::vector::data() returns nullptr for empty vectors. Unfortunately,
-    // sqlite3_bind_blob() always interprets null data as a NULL value. In this
-    // case, we really want to write an empty blob, so we need to pass non-null
-    // data.
-    const uint8_t* blob_data =
-        (value.size() > 0) ? value.data() : values[1].data();
-
-    insert.BindBlob(0, blob_data, value.size());
+    insert.BindBlob(0, value);
     ASSERT_TRUE(insert.Run());
     insert.Reset(/* clear_bound_vars= */ true);
   }
