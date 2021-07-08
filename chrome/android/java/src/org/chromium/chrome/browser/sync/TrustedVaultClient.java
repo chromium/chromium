@@ -53,18 +53,7 @@ public class TrustedVaultClient {
          * @return a promise which indicates completion and also represents whether the operation
          * took any effect (false positives acceptable).
          */
-        // TODO(crbug.com/1100279): Switch to non-default method once all implementations are ready.
-        default Promise<Boolean> markLocalKeysAsStale(CoreAccountInfo accountInfo) {
-            return markKeysAsStale(accountInfo);
-        }
-
-        /**
-         * Same as above. Kept around temporarily only until all subclasses rename the method.
-         */
-        // TODO(crbug.com/1100279): Delete once all implementations have migrated off.
-        default Promise<Boolean> markKeysAsStale(CoreAccountInfo accountInfo) {
-            return Promise.fulfilled(false);
-        }
+        Promise<Boolean> markLocalKeysAsStale(CoreAccountInfo accountInfo);
 
         /**
          * Returns whether recoverability of the keys is degraded and user action is required to add
