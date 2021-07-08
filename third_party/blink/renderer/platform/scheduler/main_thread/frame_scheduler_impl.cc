@@ -1370,6 +1370,13 @@ FrameSchedulerImpl::GetDocumentBoundWeakPtr() {
 std::unique_ptr<WebSchedulingTaskQueue>
 FrameSchedulerImpl::CreateWebSchedulingTaskQueue(
     WebSchedulingPriority priority) {
+  // The QueueTraits for scheduler.postTask() are similar to those of
+  // setTimeout() (deferrable queue traits + throttling for delayed tasks), with
+  // the following differences:
+  //  1. All delayed tasks are intensively throttled (no nesting-level exception
+  //     or policy/flag opt-out)
+  //  2. There is no separate PrioritisationType (prioritization is based on the
+  //     WebSchedulingPriority, which is only set for these task queues)
   scoped_refptr<MainThreadTaskQueue> immediate_task_queue =
       frame_task_queue_controller_->NewWebSchedulingTaskQueue(
           DeferrableTaskQueueTraits(), priority);
