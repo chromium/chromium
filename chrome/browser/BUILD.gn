@@ -4275,12 +4275,6 @@ static_library("browser") {
       "//extensions/buildflags",
     ]
 
-    if (is_win || is_mac || is_linux) {
-      sources += []
-
-      deps += []
-    }
-
     if (!is_chromeos_ash) {
       sources += [
         "accessibility/soda_installer_impl.cc",
