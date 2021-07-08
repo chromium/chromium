@@ -35,7 +35,7 @@ GinJavaMethodInvocationHelper::GinJavaMethodInvocationHelper(
     const base::ListValue& arguments)
     : object_(std::move(object)),
       method_name_(method_name),
-      arguments_(arguments.DeepCopy()),
+      arguments_(arguments.CreateDeepCopy()),
       invocation_error_(kGinJavaBridgeNoError) {}
 
 GinJavaMethodInvocationHelper::~GinJavaMethodInvocationHelper() {}
@@ -178,7 +178,7 @@ void GinJavaMethodInvocationHelper::SetInvocationError(
 void GinJavaMethodInvocationHelper::SetPrimitiveResult(
     const base::ListValue& result_wrapper) {
   holds_primitive_result_ = true;
-  primitive_result_.reset(result_wrapper.DeepCopy());
+  primitive_result_ = result_wrapper.CreateDeepCopy();
 }
 
 void GinJavaMethodInvocationHelper::SetObjectResult(
