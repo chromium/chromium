@@ -19,15 +19,9 @@
 
 AXRootObjWrapper::AXRootObjWrapper(views::AXAuraObjCache::Delegate* delegate,
                                    views::AXAuraObjCache* cache)
-    : AXAuraObjWrapper(cache), delegate_(delegate) {
-  if (display::Screen::GetScreen())
-    display::Screen::GetScreen()->AddObserver(this);
-}
+    : AXAuraObjWrapper(cache), delegate_(delegate) {}
 
-AXRootObjWrapper::~AXRootObjWrapper() {
-  if (display::Screen::GetScreen())
-    display::Screen::GetScreen()->RemoveObserver(this);
-}
+AXRootObjWrapper::~AXRootObjWrapper() = default;
 
 bool AXRootObjWrapper::HasChild(views::AXAuraObjWrapper* child) {
   std::vector<views::AXAuraObjWrapper*> children;

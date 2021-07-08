@@ -41,6 +41,7 @@ class VIEWS_EXPORT AXRootObjWrapper : public views::AXAuraObjWrapper,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
+  display::ScopedOptionalDisplayObserver display_observer_{this};
   ui::AXUniqueId unique_id_;
 
   views::AXAuraObjCache::Delegate* delegate_;
