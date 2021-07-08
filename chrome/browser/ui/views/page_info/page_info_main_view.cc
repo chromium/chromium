@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -16,8 +17,10 @@
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
+#include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -147,6 +150,11 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
 void PageInfoMainView::SetPermissionInfo(
     const PermissionInfoList& permission_info_list,
     ChosenObjectInfoList chosen_object_info_list) {
+  if (permission_info_list.empty() && chosen_object_info_list.empty()) {
+    permissions_view_->RemoveAllChildViews(true);
+    return;
+  }
+
   // This method is called when Page Info is constructed/displayed, then called
   // again whenever permissions/chosen objects change while the bubble is still
   // opened. Once Page Info is displaying a non-zero number of permissions, all
@@ -157,20 +165,29 @@ void PageInfoMainView::SetPermissionInfo(
   // case that can be recovered from by closing & reopening the bubble.
   // TODO(patricialor): Investigate removing callsites to this method other than
   // the constructor.
-  if (!permissions_view_->children().empty())
+  if (!permissions_view_->children().empty()) {
+    UpdateResetButton(permission_info_list);
     return;
+  }
 
-  if (permission_info_list.empty() && chosen_object_info_list.empty())
-    return;
-
-  permissions_view_->SetLayoutManager(std::make_unique<views::BoxLayout>())
-      ->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  permissions_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
   permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
+
+  // If there is a permission that supports one time grants, offset all other
+  // permissions to align toggles.
+  bool should_show_spacer = false;
+  for (const auto& permission : permission_info_list) {
+    if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+            permission.type)) {
+      should_show_spacer = true;
+    }
+  }
 
   for (const auto& permission : permission_info_list) {
     auto* selector = permissions_view_->AddChildView(
         std::make_unique<PermissionToggleRowView>(
-            ui_delegate_, navigation_handler_, permission));
+            ui_delegate_, navigation_handler_, permission, should_show_spacer));
     selector->AddObserver(this);
     selector_rows_.push_back(std::move(selector));
   }
@@ -182,12 +199,70 @@ void PageInfoMainView::SetPermissionInfo(
         presenter_->GetChooserContextFromUIInfo(object->ui_info)
             ->GetObjectDisplayName(object->chooser_object->value));
     object_view->AddObserver(this);
-    permissions_view_->AddChildView(std::move(object_view));
+    chosen_object_rows_.push_back(
+        permissions_view_->AddChildView(std::move(object_view)));
   }
 
+  const int controls_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  reset_button_ = permissions_view_->AddChildView(
+      std::make_unique<views::MdTextButton>(base::BindRepeating(
+          [=](PageInfoMainView* view) {
+            for (auto* selector_row : view->selector_rows_) {
+              selector_row->ResetPermission();
+            }
+            for (auto* object_row : view->chosen_object_rows_) {
+              object_row->ResetPermission();
+            }
+            view->chosen_object_rows_.clear();
+            view->PreferredSizeChanged();
+          },
+          base::Unretained(this))));
+  reset_button_->SetProperty(views::kCrossAxisAlignmentKey,
+                             views::LayoutAlignment::kStart);
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  // Offset the reset button by left button padding, icon size and distance
+  // between icon and label to match text in the row above.
+  const int side_offset =
+      layout_provider
+          ->GetInsetsMetric(ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)
+          .left() +
+      GetLayoutConstant(PAGE_INFO_ICON_SIZE) +
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  reset_button_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets(controls_spacing, side_offset, controls_spacing, 0));
+
+  // If a permission is in a non-default state or chooser object is present,
+  // show reset button.
+  reset_button_->SetVisible(false);
+  UpdateResetButton(permission_info_list);
   permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
 
   PreferredSizeChanged();
+}
+
+void PageInfoMainView::UpdateResetButton(
+    const PermissionInfoList& permission_info_list) {
+  reset_button_->SetEnabled(false);
+  int num_permissions = 0;
+  for (const auto& permission : permission_info_list) {
+    if (permission.setting != CONTENT_SETTING_DEFAULT) {
+      reset_button_->SetEnabled(true);
+      reset_button_->SetVisible(true);
+    }
+    num_permissions++;
+  }
+  for (auto* object_view : chosen_object_rows_) {
+    if (object_view->GetVisible()) {
+      reset_button_->SetEnabled(true);
+      reset_button_->SetVisible(true);
+      num_permissions++;
+    }
+  }
+  reset_button_->SetText(l10n_util::GetPluralStringFUTF16(
+      IDS_PAGE_INFO_RESET_PERMISSIONS, num_permissions));
 }
 
 void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
@@ -201,6 +276,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // base::Unretained(navigation_handler_) is safe because navigation_handler_
     // is the bubble view which is the owner of this view and therefore will
     // always exist when this view exists.
+    // TODO(crbug.com/1225563): Replace with actual strings.
     connection_button_ = security_container_view_->AddChildView(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
@@ -208,7 +284,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
             PageInfoViewFactory::GetConnectionSecureIcon(), 0, std::u16string(),
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION,
-            std::u16string(), std::u16string(),
+            u"Open security subpage", std::u16string(),
             PageInfoViewFactory::GetOpenSubpageIcon())
             .release());
     connection_button_->SetTitleText(security_description->summary);
@@ -303,6 +379,7 @@ void PageInfoMainView::OnChosenObjectDeleted(
     const PageInfoUI::ChosenObjectInfo& info) {
   presenter_->OnSiteChosenObjectDeleted(info.ui_info,
                                         info.chooser_object->value);
+  PreferredSizeChanged();
 }
 
 std::unique_ptr<views::View> PageInfoMainView::CreateContainerView() {

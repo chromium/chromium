@@ -27,7 +27,7 @@ class PageInfoRowView : public views::View {
 
   void SetIcon(const ui::ImageModel image);
   void SetTitle(std::u16string title);
-  void AddSecondaryLabel(std::u16string text);
+  views::Label* AddSecondaryLabel(std::u16string text);
   template <typename T>
   T* AddControl(std::unique_ptr<T> control_view) {
     control_view->SetProperty(views::kInternalPaddingKey,

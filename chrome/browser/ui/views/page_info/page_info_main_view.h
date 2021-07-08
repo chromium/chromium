@@ -5,19 +5,27 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_MAIN_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_MAIN_VIEW_H_
 
+#include <map>
+#include <vector>
+
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
-#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
-#include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
-#include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "components/page_info/page_info_ui.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "ui/views/view.h"
 
+namespace views {
+class Label;
+class LabelButton;
+}  // namespace views
+
 class ChromePageInfoUiDelegate;
-class PageInfoSecurityContentView;
+class ChosenObjectView;
+class PageInfoHoverButton;
 class PageInfoNavigationHandler;
+class PageInfoSecurityContentView;
+class PermissionToggleRowView;
 
 // The main view of the page info, contains security information, permissions
 // and  site-related settings. This is used in the experimental
@@ -74,6 +82,11 @@ class PageInfoMainView : public views::View,
   // be alive to finish handling the mouse or keyboard click.
   void HandleMoreInfoRequestAsync(int view_id);
 
+  // Makes the permission reset button visible if there is any permission and
+  // enables it if any permission is in a non-default state. Also updates
+  // the label depending on the number of visible permissions.
+  void UpdateResetButton(const PermissionInfoList& permission_info_list);
+
   PageInfo* presenter_;
 
   ChromePageInfoUiDelegate* ui_delegate_;
@@ -112,9 +125,13 @@ class PageInfoMainView : public views::View,
   // |Permission| changes.
   std::vector<PermissionToggleRowView*> selector_rows_;
 
+  std::vector<ChosenObjectView*> chosen_object_rows_;
+
   views::Label* title_ = nullptr;
 
   views::View* security_container_view_ = nullptr;
+
+  views::LabelButton* reset_button_ = nullptr;
 
   base::WeakPtrFactory<PageInfoMainView> weak_factory_{this};
 };

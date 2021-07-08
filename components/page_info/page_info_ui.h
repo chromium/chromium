@@ -179,6 +179,29 @@ class PageInfoUI {
       PageInfoUiDelegate* delegate,
       const PageInfo::PermissionInfo& permission);
 
+  static std::u16string PermissionStateToUIString(
+      PageInfoUiDelegate* delegate,
+      const PageInfo::PermissionInfo& permission);
+
+  static std::u16string PermissionMainPageStateToUIString(
+      PageInfoUiDelegate* delegate,
+      const PageInfo::PermissionInfo& permission);
+
+  static std::u16string PermissionManagedTooltipToUIString(
+      PageInfoUiDelegate* delegate,
+      const PageInfo::PermissionInfo& permission);
+
+  static std::u16string PermissionAutoBlockedToUIString(
+      PageInfoUiDelegate* delegate,
+      const PageInfo::PermissionInfo& permission);
+
+  static void ToggleBetweenAllowAndBlock(PageInfo::PermissionInfo& permission);
+
+  static void ToggleBetweenRememberAndForget(
+      PageInfo::PermissionInfo& permission);
+
+  static bool IsToggleOn(const PageInfo::PermissionInfo& permission);
+
   // Returns the color to use for the permission decision reason strings.
   static SkColor GetSecondaryTextColor();
 

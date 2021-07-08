@@ -53,7 +53,7 @@ int PageInfoRowView::GetFirstLineHeight() {
   return title_->GetLineHeight();
 }
 
-void PageInfoRowView::AddSecondaryLabel(std::u16string text) {
+views::Label* PageInfoRowView::AddSecondaryLabel(std::u16string text) {
   auto secondary_label = std::make_unique<views::Label>(
       text, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -66,7 +66,7 @@ void PageInfoRowView::AddSecondaryLabel(std::u16string text) {
           .WithWeight(1));
   secondary_label->SetProperty(views::kCrossAxisAlignmentKey,
                                views::LayoutAlignment::kStart);
-  labels_wrapper_->AddChildView(std::move(secondary_label));
+  return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 
 gfx::Size PageInfoRowView::CalculatePreferredSize() const {

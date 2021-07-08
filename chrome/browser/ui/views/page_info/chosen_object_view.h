@@ -31,6 +31,7 @@ class ChosenObjectView : public views::View {
   ~ChosenObjectView() override;
 
   void AddObserver(ChosenObjectViewObserver* observer);
+  void ResetPermission();
 
   // views::View:
   void OnThemeChanged() override;

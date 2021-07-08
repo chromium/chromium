@@ -13,6 +13,11 @@ class ChromePageInfoUiDelegate;
 class PageInfoRowView;
 class PageInfoNavigationHandler;
 
+namespace views {
+class Label;
+class ToggleButton;
+}  // namespace views
+
 // A view that shows a permission that a site is able to access, and
 // allows the user to control via toggle whether that access is granted. Has a
 // button that opens a subpage with more controls.
@@ -20,25 +25,32 @@ class PermissionToggleRowView : public views::View {
  public:
   PermissionToggleRowView(ChromePageInfoUiDelegate* delegate,
                           PageInfoNavigationHandler* navigation_handler,
-                          const PageInfo::PermissionInfo& permission);
+                          const PageInfo::PermissionInfo& permission,
+                          bool should_show_spacer_view);
   PermissionToggleRowView(const PermissionToggleRowView&) = delete;
   PermissionToggleRowView& operator=(const PermissionToggleRowView&) = delete;
 
   ~PermissionToggleRowView() override;
 
   void AddObserver(PermissionSelectorRowObserver* observer);
-  void PermissionChanged(const PageInfo::PermissionInfo& permission);
+  void PermissionChanged();
+  void ResetPermission();
 
  private:
   void OnToggleButtonPressed();
-  void InitForUserSource();
+  void InitForUserSource(bool should_show_spacer_view);
   void InitForManagedSource(ChromePageInfoUiDelegate* delegate);
+  void UpdateUiOnPermissionChanged();
 
   PageInfo::PermissionInfo permission_;
 
   PageInfoRowView* row_view_ = nullptr;
+  views::Label* state_label_ = nullptr;
+  views::ToggleButton* toggle_button_ = nullptr;
+  views::View* spacer_view_ = nullptr;
 
-  PageInfoNavigationHandler* navigation_handler_;
+  ChromePageInfoUiDelegate* delegate_ = nullptr;
+  PageInfoNavigationHandler* navigation_handler_ = nullptr;
 
   base::ObserverList<PermissionSelectorRowObserver, false>::Unchecked
       observer_list_;

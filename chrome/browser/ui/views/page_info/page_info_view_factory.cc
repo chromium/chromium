@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
+#include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
+#include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -157,6 +159,8 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
   back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button->SetProperty(views::kInternalPaddingKey,
                            back_button->GetInsets());
+  // TODO(crbug.com/1225563): Replace with actual strings.
+  back_button->SetTooltipText(u"Back to main page");
   header->AddChildView(std::move(back_button));
 
   auto* label_wrapper = header->AddChildView(CreateLabelWrapper());
@@ -285,10 +289,14 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
                                ? info.default_setting
                                : info.setting;
+  const bool show_blocked_badge =
+      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop) &&
+              !permissions::PermissionUtil::IsGuardContentSetting(info.type)
+          ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
+          : setting == CONTENT_SETTING_BLOCK;
   return ui::ImageModel::FromVectorIcon(
       *icon, ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
-      (setting == CONTENT_SETTING_BLOCK) ? &vector_icons::kBlockedBadgeIcon
-                                         : nullptr);
+      show_blocked_badge ? &vector_icons::kBlockedBadgeIcon : nullptr);
 }
 
 // static
@@ -381,8 +389,13 @@ const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
 }
 
 // static
-const ui::ImageModel PageInfoViewFactory::GetManagedIcon() {
+const ui::ImageModel PageInfoViewFactory::GetManagedPermissionIcon(
+    const PageInfo::PermissionInfo& info) {
+  const gfx::VectorIcon& managed_vector_icon =
+      info.source == content_settings::SETTING_SOURCE_EXTENSION
+          ? vector_icons::kExtensionIcon
+          : vector_icons::kBusinessIcon;
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, ui::NativeTheme::kColorId_DefaultIconColor,
+      managed_vector_icon, ui::NativeTheme::kColorId_DefaultIconColor,
       GetIconSize());
 }

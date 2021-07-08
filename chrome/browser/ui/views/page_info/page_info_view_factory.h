@@ -91,7 +91,8 @@ class PageInfoViewFactory {
   static const ui::ImageModel GetOpenSubpageIcon();
 
   // Returns the icon for a permission in a state not managed by the user.
-  static const ui::ImageModel GetManagedIcon();
+  static const ui::ImageModel GetManagedPermissionIcon(
+      const PageInfo::PermissionInfo& info);
 
   std::unique_ptr<views::View> CreateMainPageView() WARN_UNUSED_RESULT;
   std::unique_ptr<views::View> CreateSecurityPageView() WARN_UNUSED_RESULT;

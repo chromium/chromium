@@ -82,6 +82,12 @@ void ChosenObjectView::OnThemeChanged() {
 
 ChosenObjectView::~ChosenObjectView() = default;
 
+void ChosenObjectView::ResetPermission() {
+  if (delete_button_->GetVisible()) {
+    ExecuteDeleteCommand();
+  }
+}
+
 void ChosenObjectView::ExecuteDeleteCommand() {
   // Policy-managed permissions cannot be deleted. This isn't normally
   // reachable but views::test::ButtonTestApi::NotifyClick doesn't check
@@ -97,6 +103,11 @@ void ChosenObjectView::ExecuteDeleteCommand() {
   DCHECK(delete_button_->GetEnabled());
   DCHECK(delete_button_->GetVisible());
   delete_button_->SetVisible(false);
+
+  // In the page info v2, hide the row after revoking access.
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
+    SetVisible(false);
+  }
 
   for (ChosenObjectViewObserver& observer : observer_list_) {
     observer.OnChosenObjectDeleted(*info_);

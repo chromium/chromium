@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #endif
 
 namespace content_settings {
@@ -47,11 +49,22 @@ void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
 std::u16string GetPermissionDetailString(Profile* profile,
                                          ContentSettingsType content_type,
                                          const GURL& url) {
-  if (content_type != ContentSettingsType::FILE_HANDLING || !url.is_valid())
+  if (!url.is_valid())
     return {};
 
-  return web_app::GetFileTypeAssociationsHandledByWebAppsForDisplay(profile,
-                                                                    url);
+  switch (content_type) {
+    case ContentSettingsType::FILE_HANDLING:
+      return web_app::GetFileTypeAssociationsHandledByWebAppsForDisplay(profile,
+                                                                        url);
+      break;
+    case ContentSettingsType::ADS:
+      return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE);
+      break;
+    default:
+      break;
+  }
+
+  return {};
 }
 #endif
 

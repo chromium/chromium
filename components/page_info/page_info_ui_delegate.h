@@ -14,6 +14,7 @@ class PageInfoUiDelegate {
   virtual ~PageInfoUiDelegate() = default;
 #if !defined(OS_ANDROID)
   virtual bool IsBlockAutoPlayEnabled() = 0;
+  virtual bool IsMultipleTabsOpen() = 0;
 #endif
   virtual permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type) = 0;

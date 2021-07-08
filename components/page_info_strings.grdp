@@ -404,9 +404,11 @@
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_BLOCKED_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to block by the user.">
       Block
     </message>
+    <if expr="not is_android">
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the button controls the sound permission and was explicitly set to mute by the user.">
       Mute
     </message>
+    </if>
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to ask by the user.">
       Ask
     </message>
@@ -417,18 +419,20 @@
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is allow.">
       Allow (default)
     </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_AUTOMATIC_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the button controls the sound permission and is set to the default setting and the default setting is automatic.">
-      Automatic (default)
-    </message>
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_BLOCKED_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is block.">
       Block (default)
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the button controls the sound permission and is set to the default setting and the default setting is mute.">
-      Mute (default)
     </message>
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is ask.">
       Ask (default)
     </message>
+    <if expr="not is_android">
+    <message name="IDS_PAGE_INFO_BUTTON_TEXT_AUTOMATIC_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the button controls the sound permission and is set to the default setting and the default setting is automatic.">
+      Automatic (default)
+    </message>
+    <message name="IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the button controls the sound permission and is set to the default setting and the default setting is mute.">
+      Mute (default)
+    </message>
+    </if>
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is detect important content.">
       Detect (default)
     </message>
@@ -460,6 +464,29 @@
     </message>
     <message name="IDS_PAGE_INFO_MENU_ITEM_ADS_BLOCK" desc="The text of the menu item of a permissions menu on the Page Info UI for the ads permission in Block mode">
       Block on this site
+    </message>
+
+    <message name="IDS_PAGE_INFO_STATE_TEXT_ALLOWED" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is allowed by any source (the user, the administrator, etc.).">
+      Allowed
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_ONE_TAB" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is allowed once by any source (the user, the administrator, etc.) and there is only one tab opened for the site.">
+      Allowed until you close this tab
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_MULTIPLE_TAB" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is allowed once by any source (the user, the administrator, etc.) and there are nultiple tabs opened for the site.">
+      Allowed until you close tabs for this site
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is not allowed (blocked or ask state) by any source (the user, the administrator, etc.).">
+      Not allowed
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_MUTED" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the sound permission is blocked by any source (the user, the administrator, etc.).">
+      Muted
+    </message>
+
+    <message name="IDS_PAGE_INFO_STATE_TEXT_ALLOWED_BY_DEFAULT" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission controlled is set to the default setting and the default settings is allow.">
+      Allowed (default)
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_BY_DEFAULT" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is set to the default setting and the default settings is block.">
+      Not allowed (default)
     </message>
 
     <message name="IDS_PAGE_INFO_SELECTOR_TOOLTIP" desc="The text of the tooltip on the page info selector.">
@@ -530,6 +557,12 @@
     </message>
     <message name="IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE" desc="A subtitle shown under the ‘Ads’ setting indicating that a site has, in the past, shown intrusive or misleading ads. Shown when user clicks/taps the lock/'Danger' icon in the address bar. Used on both desktop and Android platforms" formatter_data="android_java">
       Site shows intrusive or misleading ads
+    </message>
+    <message name="IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY" desc="The label used in the toolip for a permission listed in the Page Info bubble if the permission was explicitly set by the user's enterprise policy.">
+      Managed by your organisation
+    </message>
+    <message name="IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION" desc="The label used in the toolip for a permission listed in the Page Info bubble if the permission was explicitly set by one of the user's extensions.">
+      Managed by an extension
     </message>
 
     <!-- Permission change infobar. -->
@@ -695,5 +728,8 @@
   </message>
   <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_REMEMBER_THIS_SETTING" desc="The text near the checkbox, that controls if user's decision will be remembered for this permission, in permission's subpage in page info bubble.">
     Remember this setting
+  </message>
+  <message name="IDS_PAGE_INFO_RESET_PERMISSIONS" desc="The label of the button to reset permissions for a site.">
+    {NUM_PERMISSIONS, plural, =1 {Reset permission} other {Reset permissions}}
   </message>
 </grit-part>

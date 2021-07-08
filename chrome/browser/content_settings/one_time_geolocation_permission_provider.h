@@ -20,6 +20,8 @@ class LastTabStandingTracker;
 // Stores one-time per-origin geolocation permissions grants that expire as
 // soon as the last tab from an origin is closed but after one day at the
 // latest.
+// TODO(crbug.com/1226750): Use PermissionUtil::CanPermissionBeAllowedOnce to
+// decide which permissions can have one-time grants.
 class OneTimeGeolocationPermissionProvider
     : public content_settings::UserModifiableProvider,
       LastTabStandingTrackerObserver {

@@ -58,6 +58,14 @@ class PermissionUtil {
   // PermissionManager.
   static bool IsPermission(ContentSettingsType type);
 
+  // Checks whether the given ContentSettingsType is a guard content setting,
+  // meaning it does not support allow setting and toggles between "ask" and
+  // "block" instead. This is primarily used for chooser-based permissions.
+  static bool IsGuardContentSetting(ContentSettingsType type);
+
+  // Checks whether the given ContentSettingsType supports one time grants.
+  static bool CanPermissionBeAllowedOnce(ContentSettingsType type);
+
   // Returns the authoritative `embedding origin`, as a GURL, to be used for
   // permission decisions in `web_contents`.
   // TODO(crbug.com/698985): This method should only be used temporarily, and

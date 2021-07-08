@@ -16,6 +16,12 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
 
+#if !defined(OS_ANDROID)
+#include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
+
 ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(Profile* profile,
                                                    const GURL& site_url)
     : profile_(profile), site_url_(site_url) {}
@@ -46,23 +52,64 @@ bool ChromePageInfoUiDelegate::ShouldShowAllow(ContentSettingsType type) {
   }
 }
 
-bool ChromePageInfoUiDelegate::ShouldShowAsk(ContentSettingsType type) {
+std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
+    ContentSettingsType type) {
   switch (type) {
-    case ContentSettingsType::USB_GUARD:
-    case ContentSettingsType::SERIAL_GUARD:
-    case ContentSettingsType::BLUETOOTH_GUARD:
-    case ContentSettingsType::BLUETOOTH_SCANNING:
-    case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
-    case ContentSettingsType::HID_GUARD:
-      return true;
+    // Notifications and idle detection do not support CONTENT_SETTING_ALLOW in
+    // incognito.
+    case ContentSettingsType::NOTIFICATIONS:
+    case ContentSettingsType::IDLE_DETECTION: {
+      if (profile_->IsOffTheRecord()) {
+        // TODO(crbug.com/1225563): Replace with actual strings.
+        return u"Not allowed in Incognito";
+      }
+      break;
+    }
+    // Media only supports CONTENT_SETTING_ALLOW for secure origins.
+    case ContentSettingsType::MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_CAMERA: {
+      if (!network::IsUrlPotentiallyTrustworthy(site_url_)) {
+        // TODO(crbug.com/1225563): Replace with actual strings.
+        return u"Not allowed on non-secure connections";
+      }
+      break;
+    }
     default:
-      return false;
+      break;
   }
+
+  return std::u16string();
+}
+
+bool ChromePageInfoUiDelegate::ShouldShowAsk(ContentSettingsType type) {
+  return permissions::PermissionUtil::IsGuardContentSetting(type);
 }
 
 #if !defined(OS_ANDROID)
 bool ChromePageInfoUiDelegate::ShouldShowSiteSettings() {
   return !profile_->IsGuestSession();
+}
+
+// TODO(crbug.com/1227074): Reconcile with LastTabStandingTracker.
+bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
+  const extensions::WindowControllerList::ControllerList& windows =
+      extensions::WindowControllerList::GetInstance()->windows();
+  int count = 0;
+  auto site_origin = site_url_.GetOrigin();
+  for (auto* window : windows) {
+    const Browser* const browser = window->GetBrowser();
+    if (!browser)
+      continue;
+    const TabStripModel* const tabs = browser->tab_strip_model();
+    DCHECK(tabs);
+    for (int i = 0; i < tabs->count(); ++i) {
+      content::WebContents* const web_contents = tabs->GetWebContentsAt(i);
+      if (web_contents->GetURL().GetOrigin() == site_origin) {
+        count++;
+      }
+    }
+  }
+  return count > 1;
 }
 
 std::u16string ChromePageInfoUiDelegate::GetPermissionDetail(

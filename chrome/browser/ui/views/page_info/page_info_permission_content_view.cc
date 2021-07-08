@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "components/permissions/features.h"
+#include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,14 +21,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
-
-namespace {
-bool CanBeAllowedOnce(ContentSettingsType type) {
-  return base::FeatureList::IsEnabled(
-             permissions::features::kOneTimeGeolocationPermission) &&
-         type == ContentSettingsType::GEOLOCATION;
-}
-}  // namespace
 
 PageInfoPermissionContentView::PageInfoPermissionContentView(
     PageInfo* presenter,
@@ -70,6 +62,15 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       views::style::STYLE_SECONDARY));
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
+  // Add extra details as sublabel.
+  std::u16string detail = ui_delegate_->GetPermissionDetail(type);
+  if (!detail.empty()) {
+    auto detail_label = std::make_unique<views::Label>(
+        detail, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+    detail_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label_wrapper->AddChildView(std::move(detail_label));
+  }
+
   remember_setting_ =
       label_wrapper->AddChildView(std::make_unique<views::Checkbox>(
           l10n_util::GetStringUTF16(
@@ -97,7 +98,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets(margin, 0));
 
   AddChildView(PageInfoViewFactory::CreateSeparator());
-  // TODO(olesiamarukhno): Add toolip for manage button.
+  // TODO(crbug.com/1225563): Replace with actual strings.
   AddChildView(std::make_unique<PageInfoHoverButton>(
       base::BindRepeating(
           [](PageInfoPermissionContentView* view) {
@@ -106,7 +107,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),
       IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON, std::u16string(), 0,
-      std::u16string(), std::u16string()));
+      u"Open permission settings", std::u16string(),
+      PageInfoViewFactory::GetLaunchIcon()));
 
   presenter_->InitializeUiState(this);
 }
@@ -127,73 +129,37 @@ void PageInfoPermissionContentView::SetPermissionInfo(
   permission_ = *permission_it;
   icon_->SetImage(PageInfoViewFactory::GetPermissionIcon(permission_));
 
-  state_label_->SetText(PageInfoUI::PermissionActionToUIString(
-      ui_delegate_, permission_.type, permission_.setting,
-      permission_.default_setting, permission_.source,
-      permission_.is_one_time));
+  std::u16string auto_blocked_label =
+      PageInfoUI::PermissionAutoBlockedToUIString(ui_delegate_, permission_);
+  // TODO(olesiamarukhno): For pending request if available show a longer
+  // version of auto-block explanation here instead (same as in content
+  // settings bubble).
+  if (!auto_blocked_label.empty()) {
+    state_label_->SetText(auto_blocked_label);
+  } else {
+    state_label_->SetText(
+        PageInfoUI::PermissionStateToUIString(ui_delegate_, permission_));
+  }
 
-  auto setting = permission_.setting == CONTENT_SETTING_DEFAULT
-                     ? permission_.default_setting
-                     : permission_.setting;
-  toggle_button_->SetIsOn(setting == CONTENT_SETTING_ALLOW);
-
+  toggle_button_->SetIsOn(PageInfoUI::IsToggleOn(permission_));
   remember_setting_->SetChecked(!permission_.is_one_time &&
                                 permission_.setting != CONTENT_SETTING_DEFAULT);
+  remember_setting_->SetVisible(
+      permissions::PermissionUtil::IsPermission(type_) &&
+      permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+          permission_.type) &&
+      (permission_.default_setting != CONTENT_SETTING_BLOCK ||
+       permission_.setting != CONTENT_SETTING_DEFAULT));
   PreferredSizeChanged();
 }
 
 void PageInfoPermissionContentView::OnToggleButtonPressed() {
-  switch (permission_.setting) {
-    case CONTENT_SETTING_ALLOW:
-      permission_.setting = permission_.is_one_time ? CONTENT_SETTING_DEFAULT
-                                                    : CONTENT_SETTING_BLOCK;
-      permission_.is_one_time = false;
-      break;
-    case CONTENT_SETTING_BLOCK:
-      permission_.setting = CONTENT_SETTING_ALLOW;
-      permission_.is_one_time = false;
-      break;
-    case CONTENT_SETTING_DEFAULT:
-      permission_.setting = CONTENT_SETTING_ALLOW;
-      // If one-time permissions are supported, permission should go from
-      // default state to allow once state, not directly to allow.
-      if (CanBeAllowedOnce(permission_.type)) {
-        permission_.is_one_time = true;
-      }
-      break;
-    default:
-      break;
-  }
+  PageInfoUI::ToggleBetweenAllowAndBlock(permission_);
   PermissionChanged();
 }
 
 void PageInfoPermissionContentView::OnRememberSettingPressed() {
-  switch (permission_.setting) {
-    case CONTENT_SETTING_ALLOW:
-      // If one-time permissions are supported, toggle is_one_time.
-      // Otherwise, go directly to default.
-      if (CanBeAllowedOnce(permission_.type)) {
-        permission_.is_one_time = !permission_.is_one_time;
-      } else {
-        permission_.setting = CONTENT_SETTING_DEFAULT;
-      }
-      break;
-    case CONTENT_SETTING_BLOCK:
-      permission_.setting = CONTENT_SETTING_DEFAULT;
-      break;
-    case CONTENT_SETTING_DEFAULT:
-      // When user checks the checkbox to remember the permission setting,
-      // it should go to the "allow" state, only if default setting is
-      // explicitly allow.
-      if (permission_.default_setting == CONTENT_SETTING_ALLOW) {
-        permission_.setting = CONTENT_SETTING_ALLOW;
-      } else {
-        permission_.setting = CONTENT_SETTING_BLOCK;
-      }
-      break;
-    default:
-      break;
-  }
+  PageInfoUI::ToggleBetweenRememberAndForget(permission_);
   PermissionChanged();
 }
 

@@ -16,6 +16,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/page_info/features.h"
 #include "components/page_info/page_info_ui_delegate.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
@@ -242,6 +243,25 @@ ContentSetting GetEffectiveSetting(ContentSettingsType type,
     effective_setting = CONTENT_SETTING_ASK;
 
   return effective_setting;
+}
+
+void SetTargetContentSetting(PageInfo::PermissionInfo& permission,
+                             ContentSetting target_setting) {
+  // If content setting's default setting matches target setting, set
+  // default setting to avoid crearing a site exception.
+  permission.setting = permission.default_setting == target_setting
+                           ? CONTENT_SETTING_DEFAULT
+                           : target_setting;
+}
+
+void CreateOppositeToDefaultSiteException(
+    PageInfo::PermissionInfo& permission,
+    ContentSetting opposite_to_block_setting) {
+  // For guard content settings opposite to block setting is ask, for the
+  // rest opposite is allow.
+  permission.setting = permission.default_setting == opposite_to_block_setting
+                           ? CONTENT_SETTING_BLOCK
+                           : opposite_to_block_setting;
 }
 
 }  // namespace
@@ -489,23 +509,117 @@ std::u16string PageInfoUI::PermissionActionToUIString(
 }
 
 // static
-std::u16string PageInfoUI::PermissionDecisionReasonToUIString(
+std::u16string PageInfoUI::PermissionStateToUIString(
     PageInfoUiDelegate* delegate,
     const PageInfo::PermissionInfo& permission) {
+  int message_id = kInvalidResourceID;
   ContentSetting effective_setting = GetEffectiveSetting(
       permission.type, permission.setting, permission.default_setting);
+  switch (effective_setting) {
+    case CONTENT_SETTING_ALLOW:
+#if !defined(OS_ANDROID)
+      if (permission.type == ContentSettingsType::SOUND &&
+          delegate->IsBlockAutoPlayEnabled() &&
+          permission.setting == CONTENT_SETTING_DEFAULT) {
+        message_id = IDS_PAGE_INFO_BUTTON_TEXT_AUTOMATIC_BY_DEFAULT;
+        break;
+      }
+#endif
+      if (permission.setting == CONTENT_SETTING_DEFAULT) {
+        message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_BY_DEFAULT;
+#if !defined(OS_ANDROID)
+      } else if (permission.is_one_time) {
+        DCHECK_EQ(permission.source, content_settings::SETTING_SOURCE_USER);
+        DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+            permission.type));
+        message_id = delegate->IsMultipleTabsOpen()
+                         ? IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_MULTIPLE_TAB
+                         : IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_ONE_TAB;
+#endif
+      } else {
+        message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED;
+      }
+      break;
+    case CONTENT_SETTING_BLOCK:
+      if (permission.setting == CONTENT_SETTING_DEFAULT) {
+#if !defined(OS_ANDROID)
+        if (permission.type == ContentSettingsType::SOUND) {
+          message_id = IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_DEFAULT;
+          break;
+        }
+#endif
+        message_id = IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_BY_DEFAULT;
+      } else {
+#if !defined(OS_ANDROID)
+        if (permission.type == ContentSettingsType::SOUND) {
+          message_id = IDS_PAGE_INFO_STATE_TEXT_MUTED;
+          break;
+        }
+#endif
+        message_id = IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED;
+      }
+      break;
+    case CONTENT_SETTING_ASK:
+      if (permissions::PermissionUtil::IsGuardContentSetting(permission.type)) {
+        message_id = permission.setting == CONTENT_SETTING_DEFAULT
+                         ? IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT
+                         : IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER;
+      } else if (permission.setting == CONTENT_SETTING_DEFAULT) {
+        // TODO(crbug.com/1225563): Replace with actual strings.
+        return u"This site will ask before accessing";
+      } else {
+        message_id = IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED;
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  return l10n_util::GetStringUTF16(message_id);
+}
+
+// static
+std::u16string PageInfoUI::PermissionMainPageStateToUIString(
+    PageInfoUiDelegate* delegate,
+    const PageInfo::PermissionInfo& permission) {
+  std::u16string auto_blocked_text =
+      PermissionAutoBlockedToUIString(delegate, permission);
+  if (!auto_blocked_text.empty())
+    return auto_blocked_text;
+
+  if (permission.is_one_time || permission.setting == CONTENT_SETTING_DEFAULT) {
+    return PermissionStateToUIString(delegate, permission);
+  }
+
+  return std::u16string();
+}
+
+// static
+std::u16string PageInfoUI::PermissionManagedTooltipToUIString(
+    PageInfoUiDelegate* delegate,
+    const PageInfo::PermissionInfo& permission) {
   int message_id = kInvalidResourceID;
   switch (permission.source) {
     case content_settings::SettingSource::SETTING_SOURCE_POLICY:
-      message_id = kPermissionButtonTextIDPolicyManaged[effective_setting];
+      message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY;
       break;
     case content_settings::SettingSource::SETTING_SOURCE_EXTENSION:
-      message_id = kPermissionButtonTextIDExtensionManaged[effective_setting];
+      message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION;
       break;
     default:
       break;
   }
 
+  if (message_id == kInvalidResourceID)
+    return std::u16string();
+  return l10n_util::GetStringUTF16(message_id);
+}
+
+// static
+std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
+    PageInfoUiDelegate* delegate,
+    const PageInfo::PermissionInfo& permission) {
+  int message_id = kInvalidResourceID;
   // TODO(crbug.com/1063023): PageInfo::PermissionInfo should be modified
   // to contain all needed information regarding Automatically Blocked flag.
   if (permission.setting == CONTENT_SETTING_BLOCK &&
@@ -523,13 +637,126 @@ std::u16string PageInfoUI::PermissionDecisionReasonToUIString(
         break;
     }
   }
+  if (message_id == kInvalidResourceID)
+    return std::u16string();
+  return l10n_util::GetStringUTF16(message_id);
+}
 
-  if (permission.type == ContentSettingsType::ADS)
-    message_id = IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE;
+// static
+std::u16string PageInfoUI::PermissionDecisionReasonToUIString(
+    PageInfoUiDelegate* delegate,
+    const PageInfo::PermissionInfo& permission) {
+  ContentSetting effective_setting = GetEffectiveSetting(
+      permission.type, permission.setting, permission.default_setting);
+  int message_id = kInvalidResourceID;
+  switch (permission.source) {
+    case content_settings::SettingSource::SETTING_SOURCE_POLICY:
+      message_id = kPermissionButtonTextIDPolicyManaged[effective_setting];
+      break;
+    case content_settings::SettingSource::SETTING_SOURCE_EXTENSION:
+      message_id = kPermissionButtonTextIDExtensionManaged[effective_setting];
+      break;
+    default:
+      break;
+  }
+
+  auto auto_block_text = PermissionAutoBlockedToUIString(delegate, permission);
+  if (!auto_block_text.empty())
+    return auto_block_text;
 
   if (message_id == kInvalidResourceID)
     return std::u16string();
   return l10n_util::GetStringUTF16(message_id);
+}
+
+// static
+void PageInfoUI::ToggleBetweenAllowAndBlock(
+    PageInfo::PermissionInfo& permission) {
+  auto opposite_to_block_setting =
+      permissions::PermissionUtil::IsGuardContentSetting(permission.type)
+          ? CONTENT_SETTING_ASK
+          : CONTENT_SETTING_ALLOW;
+  switch (permission.setting) {
+    case CONTENT_SETTING_ALLOW:
+      DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ALLOW);
+      if (permission.is_one_time) {
+        permission.setting = CONTENT_SETTING_DEFAULT;
+      } else {
+        SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
+      }
+      permission.is_one_time = false;
+      break;
+    case CONTENT_SETTING_BLOCK:
+      SetTargetContentSetting(permission, opposite_to_block_setting);
+      permission.is_one_time = false;
+      break;
+    case CONTENT_SETTING_DEFAULT: {
+      CreateOppositeToDefaultSiteException(permission,
+                                           opposite_to_block_setting);
+      // If one-time permissions are supported, permission should go from
+      // default state to allow once state, not directly to allow.
+      if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+              permission.type)) {
+        permission.is_one_time = true;
+      }
+      break;
+    }
+    case CONTENT_SETTING_ASK:
+      DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ASK);
+      SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+}
+
+// static
+void PageInfoUI::ToggleBetweenRememberAndForget(
+    PageInfo::PermissionInfo& permission) {
+  DCHECK(permissions::PermissionUtil::IsPermission(permission.type));
+  switch (permission.setting) {
+    case CONTENT_SETTING_ALLOW: {
+      // If one-time permissions are supported, toggle is_one_time.
+      // Otherwise, go directly to default.
+      if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+              permission.type)) {
+        permission.is_one_time = !permission.is_one_time;
+      } else {
+        permission.setting = CONTENT_SETTING_DEFAULT;
+      }
+      break;
+    }
+    case CONTENT_SETTING_BLOCK:
+      // TODO(olesiamarukhno): If content setting is in the blocklist, setting
+      // it to default, doesn't do anything. Fix this before introducing
+      // subpages for content settings (not permissions).
+      permission.setting = CONTENT_SETTING_DEFAULT;
+      permission.is_one_time = false;
+      break;
+    case CONTENT_SETTING_DEFAULT:
+      // When user checks the checkbox to remember the permission setting,
+      // it should go to the "allow" state, only if default setting is
+      // explicitly allow.
+      if (permission.default_setting == CONTENT_SETTING_ALLOW) {
+        permission.setting = CONTENT_SETTING_ALLOW;
+      } else {
+        permission.setting = CONTENT_SETTING_BLOCK;
+      }
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+}
+
+// static
+bool PageInfoUI::IsToggleOn(const PageInfo::PermissionInfo& permission) {
+  ContentSetting effective_setting = GetEffectiveSetting(
+      permission.type, permission.setting, permission.default_setting);
+  return permissions::PermissionUtil::IsGuardContentSetting(permission.type)
+             ? effective_setting == CONTENT_SETTING_ASK
+             : effective_setting == CONTENT_SETTING_ALLOW;
 }
 
 // static

@@ -25,6 +25,9 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // Whether the combobox option to ask a permission should be shown for `type`.
   bool ShouldShowAsk(ContentSettingsType type);
 
+  // If "allow" option is not available, return the reason why.
+  std::u16string GetAutomaticallyBlockedReason(ContentSettingsType type);
+
 #if !defined(OS_ANDROID)
   // Whether to show a link that takes the user to the chrome://settings subpage
   // for `site_url_`.
@@ -36,6 +39,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
 
   // PageInfoUiDelegate implementation
   bool IsBlockAutoPlayEnabled() override;
+  bool IsMultipleTabsOpen() override;
 #endif  // !defined(OS_ANDROID)
   permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type) override;

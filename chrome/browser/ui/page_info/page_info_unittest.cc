@@ -38,6 +38,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/page_info/features.h"
 #include "components/page_info/page_info_ui.h"
+#include "components/permissions/features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_state/core/features.h"
@@ -1500,3 +1501,282 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
 }
 
 #endif  // !defined(OS_ANDROID)
+
+// Unit tests for logic in the PageInfoUI that toggles permission between
+// allow/block and remember/forget.
+class PageInfoToggleStatesUnitTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        permissions::features::kOneTimeGeolocationPermission);
+    ::testing::Test::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Testing all possible state transitions for a permission that doesn't
+// support allow once.
+TEST_F(PageInfoToggleStatesUnitTest,
+       TogglePermissionWithoutAllowOnceDefaultAskTest) {
+  PageInfo::PermissionInfo camera_permission;
+  camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
+  camera_permission.setting = CONTENT_SETTING_ALLOW;
+  camera_permission.default_setting = CONTENT_SETTING_ASK;
+  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.is_one_time = false;
+
+  // Allow -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Allow
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
+}
+
+TEST_F(PageInfoToggleStatesUnitTest,
+       TogglePermissionWithoutAllowOnceDefaultBlockTest) {
+  PageInfo::PermissionInfo camera_permission;
+  camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
+  camera_permission.setting = CONTENT_SETTING_ALLOW;
+  camera_permission.default_setting = CONTENT_SETTING_BLOCK;
+  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.is_one_time = false;
+
+  // Allow -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Block (default) -> Allow
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
+
+  // Block -> Allow
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  camera_permission.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
+}
+
+// Testing all possible state transitions for a permission that supports
+// allow once and default setting ask.
+TEST_F(PageInfoToggleStatesUnitTest,
+       TogglePermissionWithAllowOnceDefaultAskTest) {
+  PageInfo::PermissionInfo location_permission;
+  location_permission.type = ContentSettingsType::GEOLOCATION;
+  location_permission.setting = CONTENT_SETTING_ALLOW;
+  location_permission.default_setting = CONTENT_SETTING_ASK;
+  location_permission.source = content_settings::SETTING_SOURCE_USER;
+  location_permission.is_one_time = false;
+
+  // Allow -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Allow
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+
+  // Allow -> Allow once
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, true);
+
+  // Allow once -> Allow
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, false);
+
+  // Allow -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Default
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Default -> Block
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Default
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Default -> Allow once
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, true);
+
+  // Allow once -> Default
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+  EXPECT_EQ(location_permission.is_one_time, false);
+}
+
+// Testing all possible state transitions for a permission that supports
+// allow once and default setting block.
+TEST_F(PageInfoToggleStatesUnitTest,
+       TogglePermissionWithAllowOnceDefaultBlockTest) {
+  PageInfo::PermissionInfo location_permission;
+  location_permission.type = ContentSettingsType::GEOLOCATION;
+  location_permission.setting = CONTENT_SETTING_ALLOW;
+  location_permission.default_setting = CONTENT_SETTING_BLOCK;
+  location_permission.source = content_settings::SETTING_SOURCE_USER;
+  location_permission.is_one_time = false;
+
+  // If the default setting matches target setting, no site exception will be
+  // created and permission will be in the default state.
+  // Allow -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Block (default) -> Allow once
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, true);
+
+  // Allow once -> Allow
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, false);
+
+  // Allow -> Allow once
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, true);
+
+  // Allow once -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+  EXPECT_EQ(location_permission.is_one_time, false);
+
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  // Block -> Allow
+  location_permission.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  // Block -> Block (default)
+  location_permission.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+}
+
+// Testing all possible state transitions for a content settings with a default
+// setting allow.
+TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultAllowTest) {
+  PageInfo::PermissionInfo images_permission;
+  images_permission.type = ContentSettingsType::IMAGES;
+  images_permission.setting = CONTENT_SETTING_DEFAULT;
+  images_permission.default_setting = CONTENT_SETTING_ALLOW;
+  images_permission.source = content_settings::SETTING_SOURCE_USER;
+  images_permission.is_one_time = false;
+
+  // Allow (default) -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(images_permission);
+  EXPECT_EQ(images_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Allow (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(images_permission);
+  EXPECT_EQ(images_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Allow -> Block
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  images_permission.setting = CONTENT_SETTING_ALLOW;
+  PageInfoUI::ToggleBetweenAllowAndBlock(images_permission);
+  EXPECT_EQ(images_permission.setting, CONTENT_SETTING_BLOCK);
+}
+
+// Testing all possible state transitions for a content settings with a default
+// setting block.
+TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultBlockTest) {
+  PageInfo::PermissionInfo popups_permission;
+  popups_permission.type = ContentSettingsType::POPUPS;
+  popups_permission.setting = CONTENT_SETTING_DEFAULT;
+  popups_permission.default_setting = CONTENT_SETTING_BLOCK;
+  popups_permission.source = content_settings::SETTING_SOURCE_USER;
+  popups_permission.is_one_time = false;
+
+  // Block (default) -> Allow
+  PageInfoUI::ToggleBetweenAllowAndBlock(popups_permission);
+  EXPECT_EQ(popups_permission.setting, CONTENT_SETTING_ALLOW);
+
+  // Allow -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(popups_permission);
+  EXPECT_EQ(popups_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Block -> Allow
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  popups_permission.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(popups_permission);
+  EXPECT_EQ(popups_permission.setting, CONTENT_SETTING_ALLOW);
+}
+
+// TODO(olesiamarukhno): Add test for guard content setting for
+// chooser-based permissions (ex. ContentSettingsType::USB_GUARD for
+// ContentSettingsType::USB_CHOOSER_DATA). Guard content settings support only
+// ask and block state, don't support allow.
+
+// Testing all possible state transitions for a guard content settings with a
+// default setting ask.
+TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultAskTest) {
+  PageInfo::PermissionInfo usb_guard;
+  usb_guard.type = ContentSettingsType::USB_GUARD;
+  usb_guard.setting = CONTENT_SETTING_DEFAULT;
+  usb_guard.default_setting = CONTENT_SETTING_ASK;
+  usb_guard.source = content_settings::SETTING_SOURCE_USER;
+  usb_guard.is_one_time = false;
+
+  // Ask (default) -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(usb_guard);
+  EXPECT_EQ(usb_guard.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Ask (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(usb_guard);
+  EXPECT_EQ(usb_guard.setting, CONTENT_SETTING_DEFAULT);
+
+  // Ask -> Block
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  usb_guard.setting = CONTENT_SETTING_ASK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(usb_guard);
+  EXPECT_EQ(usb_guard.setting, CONTENT_SETTING_BLOCK);
+}
+
+// Testing all possible state transitions for a guard content settings with a
+// default setting block.
+TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultBlockTest) {
+  PageInfo::PermissionInfo hid_guard;
+  hid_guard.type = ContentSettingsType::HID_GUARD;
+  hid_guard.setting = CONTENT_SETTING_DEFAULT;
+  hid_guard.default_setting = CONTENT_SETTING_BLOCK;
+  hid_guard.source = content_settings::SETTING_SOURCE_USER;
+  hid_guard.is_one_time = false;
+
+  // Block (default) -> Ask
+  PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
+  EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_ASK);
+
+  // Ask -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
+  EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_DEFAULT);
+
+  // Block -> Ask
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  hid_guard.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
+  EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_ASK);
+}

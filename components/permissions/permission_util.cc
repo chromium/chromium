@@ -4,6 +4,7 @@
 
 #include "components/permissions/permission_util.h"
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -91,64 +92,92 @@ PermissionRequestGestureType PermissionUtil::GetGestureType(bool user_gesture) {
 
 bool PermissionUtil::GetPermissionType(ContentSettingsType type,
                                        PermissionType* out) {
-  if (type == ContentSettingsType::GEOLOCATION) {
-    *out = PermissionType::GEOLOCATION;
-  } else if (type == ContentSettingsType::NOTIFICATIONS) {
-    *out = PermissionType::NOTIFICATIONS;
-  } else if (type == ContentSettingsType::MIDI) {
-    *out = PermissionType::MIDI;
-  } else if (type == ContentSettingsType::MIDI_SYSEX) {
-    *out = PermissionType::MIDI_SYSEX;
-  } else if (type == ContentSettingsType::DURABLE_STORAGE) {
-    *out = PermissionType::DURABLE_STORAGE;
-  } else if (type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-    *out = PermissionType::VIDEO_CAPTURE;
-  } else if (type == ContentSettingsType::MEDIASTREAM_MIC) {
-    *out = PermissionType::AUDIO_CAPTURE;
-  } else if (type == ContentSettingsType::BACKGROUND_SYNC) {
-    *out = PermissionType::BACKGROUND_SYNC;
+  switch (type) {
+    case ContentSettingsType::GEOLOCATION:
+      *out = PermissionType::GEOLOCATION;
+      break;
+    case ContentSettingsType::NOTIFICATIONS:
+      *out = PermissionType::NOTIFICATIONS;
+      break;
+    case ContentSettingsType::MIDI:
+      *out = PermissionType::MIDI;
+      break;
+    case ContentSettingsType::MIDI_SYSEX:
+      *out = PermissionType::MIDI_SYSEX;
+      break;
+    case ContentSettingsType::DURABLE_STORAGE:
+      *out = PermissionType::DURABLE_STORAGE;
+      break;
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+      *out = PermissionType::VIDEO_CAPTURE;
+      break;
+    case ContentSettingsType::MEDIASTREAM_MIC:
+      *out = PermissionType::AUDIO_CAPTURE;
+      break;
+    case ContentSettingsType::BACKGROUND_SYNC:
+      *out = PermissionType::BACKGROUND_SYNC;
+      break;
 #if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OW_WIN)
-  } else if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER) {
-    *out = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
+      *out = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
+      break;
 #endif
-  } else if (type == ContentSettingsType::SENSORS) {
-    *out = PermissionType::SENSORS;
-  } else if (type == ContentSettingsType::ACCESSIBILITY_EVENTS) {
-    *out = PermissionType::ACCESSIBILITY_EVENTS;
-  } else if (type == ContentSettingsType::CLIPBOARD_READ_WRITE) {
-    *out = PermissionType::CLIPBOARD_READ_WRITE;
-  } else if (type == ContentSettingsType::PAYMENT_HANDLER) {
-    *out = PermissionType::PAYMENT_HANDLER;
-  } else if (type == ContentSettingsType::BACKGROUND_FETCH) {
-    *out = PermissionType::BACKGROUND_FETCH;
-  } else if (type == ContentSettingsType::PERIODIC_BACKGROUND_SYNC) {
-    *out = PermissionType::PERIODIC_BACKGROUND_SYNC;
-  } else if (type == ContentSettingsType::WAKE_LOCK_SCREEN) {
-    *out = PermissionType::WAKE_LOCK_SCREEN;
-  } else if (type == ContentSettingsType::WAKE_LOCK_SYSTEM) {
-    *out = PermissionType::WAKE_LOCK_SYSTEM;
-  } else if (type == ContentSettingsType::NFC) {
-    *out = PermissionType::NFC;
-  } else if (type == ContentSettingsType::VR) {
-    *out = PermissionType::VR;
-  } else if (type == ContentSettingsType::AR) {
-    *out = PermissionType::AR;
-  } else if (type == ContentSettingsType::STORAGE_ACCESS) {
-    *out = PermissionType::STORAGE_ACCESS_GRANT;
-  } else if (type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
-    *out = PermissionType::CAMERA_PAN_TILT_ZOOM;
-  } else if (type == ContentSettingsType::WINDOW_PLACEMENT) {
-    *out = PermissionType::WINDOW_PLACEMENT;
-  } else if (type == ContentSettingsType::FONT_ACCESS) {
-    *out = PermissionType::FONT_ACCESS;
-  } else if (type == ContentSettingsType::IDLE_DETECTION) {
-    *out = PermissionType::IDLE_DETECTION;
-  } else if (type == ContentSettingsType::DISPLAY_CAPTURE) {
-    *out = PermissionType::DISPLAY_CAPTURE;
-  } else if (type == ContentSettingsType::FILE_HANDLING) {
-    *out = PermissionType::FILE_HANDLING;
-  } else {
-    return false;
+    case ContentSettingsType::SENSORS:
+      *out = PermissionType::SENSORS;
+      break;
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
+      *out = PermissionType::ACCESSIBILITY_EVENTS;
+      break;
+    case ContentSettingsType::CLIPBOARD_READ_WRITE:
+      *out = PermissionType::CLIPBOARD_READ_WRITE;
+      break;
+    case ContentSettingsType::PAYMENT_HANDLER:
+      *out = PermissionType::PAYMENT_HANDLER;
+      break;
+    case ContentSettingsType::BACKGROUND_FETCH:
+      *out = PermissionType::BACKGROUND_FETCH;
+      break;
+    case ContentSettingsType::PERIODIC_BACKGROUND_SYNC:
+      *out = PermissionType::PERIODIC_BACKGROUND_SYNC;
+      break;
+    case ContentSettingsType::WAKE_LOCK_SCREEN:
+      *out = PermissionType::WAKE_LOCK_SCREEN;
+      break;
+    case ContentSettingsType::WAKE_LOCK_SYSTEM:
+      *out = PermissionType::WAKE_LOCK_SYSTEM;
+      break;
+    case ContentSettingsType::NFC:
+      *out = PermissionType::NFC;
+      break;
+    case ContentSettingsType::VR:
+      *out = PermissionType::VR;
+      break;
+    case ContentSettingsType::AR:
+      *out = PermissionType::AR;
+      break;
+    case ContentSettingsType::STORAGE_ACCESS:
+      *out = PermissionType::STORAGE_ACCESS_GRANT;
+      break;
+    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
+      *out = PermissionType::CAMERA_PAN_TILT_ZOOM;
+      break;
+    case ContentSettingsType::WINDOW_PLACEMENT:
+      *out = PermissionType::WINDOW_PLACEMENT;
+      break;
+    case ContentSettingsType::FONT_ACCESS:
+      *out = PermissionType::FONT_ACCESS;
+      break;
+    case ContentSettingsType::IDLE_DETECTION:
+      *out = PermissionType::IDLE_DETECTION;
+      break;
+    case ContentSettingsType::DISPLAY_CAPTURE:
+      *out = PermissionType::DISPLAY_CAPTURE;
+      break;
+    case ContentSettingsType::FILE_HANDLING:
+      *out = PermissionType::FILE_HANDLING;
+      break;
+    default:
+      return false;
   }
   return true;
 }
@@ -190,6 +219,30 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
   }
 }
 
+bool PermissionUtil::IsGuardContentSetting(ContentSettingsType type) {
+  switch (type) {
+    case ContentSettingsType::USB_GUARD:
+    case ContentSettingsType::SERIAL_GUARD:
+    case ContentSettingsType::BLUETOOTH_GUARD:
+    case ContentSettingsType::BLUETOOTH_SCANNING:
+    case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
+    case ContentSettingsType::HID_GUARD:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
+  switch (type) {
+    case ContentSettingsType::GEOLOCATION:
+      return base::FeatureList::IsEnabled(
+          permissions::features::kOneTimeGeolocationPermission);
+    default:
+      return false;
+  }
+}
+
 // Returns the last committed URL for `web_contents`. If the frame's URL is
 // about:blank, returns GetLastCommittedOrigin.
 // Due to dependency issues, this method is duplicated in
@@ -207,4 +260,5 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
 
   return web_contents->GetLastCommittedURL().GetOrigin();
 }
+
 }  // namespace permissions
