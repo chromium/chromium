@@ -31,55 +31,18 @@ class CORE_EXPORT PrePaintTreeWalk final {
   static bool ObjectRequiresPrePaint(const LayoutObject&);
   static bool ObjectRequiresTreeBuilderContext(const LayoutObject&);
 
-  struct PrePaintTreeWalkContext {
+  // This provides a default base copy constructor for PrePaintTreeWalkContext.
+  // It contains all fields except for tree_builder_context which needs special
+  // treatment in the copy constructor.
+  struct PrePaintTreeWalkContextBase {
     STACK_ALLOCATED();
 
+   protected:
+    PrePaintTreeWalkContextBase() = default;
+    PrePaintTreeWalkContextBase(const PrePaintTreeWalkContextBase&) = default;
+
    public:
-    PrePaintTreeWalkContext() {
-      tree_builder_context.emplace();
-    }
-    PrePaintTreeWalkContext(const PrePaintTreeWalkContext& parent_context,
-                            bool needs_tree_builder_context)
-        : paint_invalidator_context(parent_context.paint_invalidator_context),
-          ancestor_scroll_container_paint_layer(
-              parent_context.ancestor_scroll_container_paint_layer),
-          inside_blocking_touch_event_handler(
-              parent_context.inside_blocking_touch_event_handler),
-          effective_allowed_touch_action_changed(
-              parent_context.effective_allowed_touch_action_changed),
-          inside_blocking_wheel_event_handler(
-              parent_context.inside_blocking_wheel_event_handler),
-          blocking_wheel_event_handler_changed(
-              parent_context.blocking_wheel_event_handler_changed),
-          clip_changed(parent_context.clip_changed),
-          paint_invalidation_container(
-              parent_context.paint_invalidation_container),
-          paint_invalidation_container_for_stacked_contents(
-              parent_context
-                  .paint_invalidation_container_for_stacked_contents) {
-      if (needs_tree_builder_context || DCHECK_IS_ON()) {
-        DCHECK(parent_context.tree_builder_context);
-        tree_builder_context.emplace(*parent_context.tree_builder_context);
-      }
-#if DCHECK_IS_ON()
-      if (needs_tree_builder_context)
-        DCHECK(parent_context.tree_builder_context->is_actually_needed);
-      tree_builder_context->is_actually_needed = needs_tree_builder_context;
-#endif
-    }
-
-    absl::optional<PaintPropertyTreeBuilderContext> tree_builder_context;
-
     PaintInvalidatorContext paint_invalidator_context;
-
-    bool NeedsTreeBuilderContext() const {
-#if DCHECK_IS_ON()
-      DCHECK(tree_builder_context);
-      return tree_builder_context->is_actually_needed;
-#else
-      return tree_builder_context.has_value();
-#endif
-    }
 
     // The ancestor in the PaintLayer tree which is a scroll container. Note
     // that it is tree ancestor, not containing block or stacking ancestor.
@@ -108,6 +71,37 @@ class CORE_EXPORT PrePaintTreeWalk final {
     const LayoutBoxModelObject* paint_invalidation_container = nullptr;
     const LayoutBoxModelObject*
         paint_invalidation_container_for_stacked_contents = nullptr;
+  };
+
+  struct PrePaintTreeWalkContext : public PrePaintTreeWalkContextBase {
+    PrePaintTreeWalkContext() { tree_builder_context.emplace(); }
+    PrePaintTreeWalkContext(const PrePaintTreeWalkContext& parent_context,
+                            bool needs_tree_builder_context)
+        : PrePaintTreeWalkContextBase(parent_context) {
+      if (needs_tree_builder_context || DCHECK_IS_ON()) {
+        DCHECK(parent_context.tree_builder_context);
+        tree_builder_context.emplace(*parent_context.tree_builder_context);
+      }
+#if DCHECK_IS_ON()
+      if (needs_tree_builder_context)
+        DCHECK(parent_context.tree_builder_context->is_actually_needed);
+      tree_builder_context->is_actually_needed = needs_tree_builder_context;
+#endif
+    }
+
+    PrePaintTreeWalkContext(const PrePaintTreeWalkContext&) = delete;
+    PrePaintTreeWalkContext& operator=(const PrePaintTreeWalkContext&) = delete;
+
+    bool NeedsTreeBuilderContext() const {
+#if DCHECK_IS_ON()
+      DCHECK(tree_builder_context);
+      return tree_builder_context->is_actually_needed;
+#else
+      return tree_builder_context.has_value();
+#endif
+    }
+
+    absl::optional<PaintPropertyTreeBuilderContext> tree_builder_context;
   };
 
   static bool ContextRequiresChildPrePaint(const PrePaintTreeWalkContext&);
