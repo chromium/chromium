@@ -1519,7 +1519,7 @@ void WebController::SendChangeEvent(
 }
 
 void WebController::DispatchJsEvent(
-    base::OnceCallback<void(const ClientStatus&)> callback) const {
+    base::OnceCallback<void(const ClientStatus&)> callback) {
   devtools_client_->GetRuntime()->Evaluate(
       runtime::EvaluateParams::Builder()
           .SetExpression(kDispatchEventToDocumentScript)

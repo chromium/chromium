@@ -134,6 +134,8 @@ class MockWebController : public WebController {
                     base::OnceCallback<void(const ClientStatus&,
                                             DocumentReadyState,
                                             base::TimeDelta)> callback));
+  MOCK_METHOD1(DispatchJsEvent,
+               void(base::OnceCallback<void(const ClientStatus&)> callback));
 
   base::WeakPtr<WebController> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();

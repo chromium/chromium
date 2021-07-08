@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -16,13 +17,16 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::Property;
+using ::testing::Return;
 
 class DispatchJsEventActionTest : public testing::Test {
  public:
   DispatchJsEventActionTest() {}
 
   void SetUp() override {
-    ON_CALL(mock_action_delegate_, DispatchJsEvent(_))
+    ON_CALL(mock_action_delegate_, GetWebController())
+        .WillByDefault(Return(&mock_web_controller_));
+    ON_CALL(mock_web_controller_, DispatchJsEvent(_))
         .WillByDefault(RunOnceCallback<0>(OkClientStatus()));
   }
 
@@ -35,12 +39,13 @@ class DispatchJsEventActionTest : public testing::Test {
   }
 
   MockActionDelegate mock_action_delegate_;
+  MockWebController mock_web_controller_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   DispatchJsEventProto proto_;
 };
 
-TEST_F(DispatchJsEventActionTest, EmptyProtoSetsMessageDoesNothing) {
-  EXPECT_CALL(mock_action_delegate_, DispatchJsEvent(_));
+TEST_F(DispatchJsEventActionTest, EmptyProtoSendsEvent) {
+  EXPECT_CALL(mock_web_controller_, DispatchJsEvent(_));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));

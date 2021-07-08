@@ -827,11 +827,6 @@ bool ScriptExecutor::MaybeShowSlowWarning(const std::string& message,
   return true;
 }
 
-void ScriptExecutor::DispatchJsEvent(
-    base::OnceCallback<void(const ClientStatus&)> callback) const {
-  delegate_->GetWebController()->DispatchJsEvent(std::move(callback));
-}
-
 base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
   return weak_ptr_factory_.GetWeakPtr();
 }

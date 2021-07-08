@@ -339,9 +339,9 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Dispatch a custom JS event 'duplexweb' with an optional payload.
+  // Dispatch a custom JS event 'duplexweb'.
   virtual void DispatchJsEvent(
-      base::OnceCallback<void(const ClientStatus&)> callback) const;
+      base::OnceCallback<void(const ClientStatus&)> callback);
 
   virtual base::WeakPtr<WebController> GetWeakPtr() const;
 

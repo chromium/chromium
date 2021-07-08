@@ -207,9 +207,6 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(MaybeShowSlowWebsiteWarning,
                void(base::OnceCallback<void(bool)>));
   MOCK_METHOD0(MaybeShowSlowConnectionWarning, void());
-  MOCK_CONST_METHOD1(
-      DispatchJsEvent,
-      void(base::OnceCallback<void(const ClientStatus&)> callback));
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();
