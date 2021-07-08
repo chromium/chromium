@@ -2574,17 +2574,6 @@ constexpr FeatureEntry::FeatureVariation
          kPlatformProvidedTrustTokenIssuance,
          base::size(kPlatformProvidedTrustTokenIssuance), nullptr}};
 
-const FeatureEntry::FeatureParam kPasswordsAccountStorage_ProfileStore[] = {
-    {password_manager::features::kSaveToProfileStoreByDefault, "true"},
-    {password_manager::features::kSaveToAccountStoreOnOptIn, "true"},
-};
-
-const FeatureEntry::FeatureVariation kPasswordsAccountStorageVariations[] = {
-    {"(save to profile store by default)",
-     kPasswordsAccountStorage_ProfileStore,
-     base::size(kPasswordsAccountStorage_ProfileStore), nullptr},
-};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kWallpaperWebUIInternalName[] = "wallpaper-webui";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -5966,26 +5955,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSuggestedFilesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kEnableSuggestedFiles)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    {"passwords-account-storage",
-     flag_descriptions::kEnablePasswordsAccountStorageName,
-     flag_descriptions::kEnablePasswordsAccountStorageDescription,
-     kOsWin | kOsMac | kOsLinux,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         password_manager::features::kEnablePasswordsAccountStorage,
-         kPasswordsAccountStorageVariations,
-         "ButterForPasswords")},
-
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-    {"passwords-account-storage-iph",
-     flag_descriptions::kEnablePasswordsAccountStorageIPHName,
-     flag_descriptions::kEnablePasswordsAccountStorageIPHDescription,
-     kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(
-         feature_engagement::kIPHPasswordsAccountStorageFeature)},
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
 
     {"autofill-always-return-cloud-tokenized-card",
      flag_descriptions::kAutofillAlwaysReturnCloudTokenizedCardName,
