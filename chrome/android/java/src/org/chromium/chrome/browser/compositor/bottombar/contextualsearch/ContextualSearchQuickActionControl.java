@@ -248,11 +248,13 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
         for (ResolveInfo resolveInfo : resolveInfoList) {
             if (resolveInfo.activityInfo != null && resolveInfo.activityInfo.exported) {
                 numMatchingActivities++;
+                if (possibleDefaultActivity == null
+                        || possibleDefaultActivity.activityInfo == null) {
+                    continue;
+                }
 
                 // Return early if this resolveInfo matches the possibleDefaultActivity.
                 ActivityInfo possibleDefaultActivityInfo = possibleDefaultActivity.activityInfo;
-                if (possibleDefaultActivityInfo == null) continue;
-
                 ActivityInfo resolveActivityInfo = resolveInfo.activityInfo;
                 boolean matchesPossibleDefaultActivity =
                         TextUtils.equals(resolveActivityInfo.name, possibleDefaultActivityInfo.name)
