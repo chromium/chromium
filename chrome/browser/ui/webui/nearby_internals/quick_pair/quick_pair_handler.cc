@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ui/webui/nearby_internals/quick_pair/quick_pair_handler.h"
 
+#include <memory>
+
+#include "ash/quick_pair/ui/fast_pair/fast_pair_notification_controller.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/values.h"
+#include "ui/gfx/image/image.h"
 
 namespace {
 // Keys in the JSON representation of a log message
@@ -15,6 +20,9 @@ const char kLogMessageTimeKey[] = "time";
 const char kLogMessageFileKey[] = "file";
 const char kLogMessageLineKey[] = "line";
 const char kLogMessageSeverityKey[] = "severity";
+
+// Test device metadata for debug purposes
+const char16_t kTestDeviceName[] = u"Pixel Buds";
 
 // Converts |log_message| to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
@@ -32,7 +40,10 @@ base::Value LogMessageToDictionary(
 }
 }  // namespace
 
-QuickPairHandler::QuickPairHandler() {}
+QuickPairHandler::QuickPairHandler()
+    : fast_pair_notification_controller_(
+          std::make_unique<ash::quick_pair::FastPairNotificationController>()) {
+}
 
 QuickPairHandler::~QuickPairHandler() = default;
 
@@ -83,8 +94,17 @@ void QuickPairHandler::OnLogMessageAdded(
                     LogMessageToDictionary(log_message));
 }
 
-void QuickPairHandler::NotifyFastPairError(const base::ListValue* args) {}
+void QuickPairHandler::NotifyFastPairError(const base::ListValue* args) {
+  fast_pair_notification_controller_->ShowErrorNotification(
+      kTestDeviceName, gfx::Image(), base::DoNothing(), base::DoNothing());
+}
 
-void QuickPairHandler::NotifyFastPairDiscovery(const base::ListValue* args) {}
+void QuickPairHandler::NotifyFastPairDiscovery(const base::ListValue* args) {
+  fast_pair_notification_controller_->ShowDiscoveryNotification(
+      kTestDeviceName, gfx::Image(), base::DoNothing(), base::DoNothing());
+}
 
-void QuickPairHandler::NotifyFastPairPairing(const base::ListValue* args) {}
+void QuickPairHandler::NotifyFastPairPairing(const base::ListValue* args) {
+  fast_pair_notification_controller_->ShowPairingNotification(
+      kTestDeviceName, gfx::Image(), base::DoNothing(), base::DoNothing());
+}

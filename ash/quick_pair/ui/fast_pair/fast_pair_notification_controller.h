@@ -23,7 +23,6 @@ class COMPONENT_EXPORT(QUICK_PAIR_UI) FastPairNotificationController {
   FastPairNotificationController& operator=(
       const FastPairNotificationController&) = delete;
 
- private:
   // Creates and displays corresponding system notification.
   void ShowErrorNotification(const std::u16string& device_name,
                              gfx::Image device_image,

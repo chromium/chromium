@@ -5,12 +5,19 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_QUICK_PAIR_QUICK_PAIR_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_QUICK_PAIR_QUICK_PAIR_HANDLER_H_
 
+#include <memory>
 #include "ash/quick_pair/common/log_buffer.h"
 #include "ash/quick_pair/common/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
+
+namespace ash {
+namespace quick_pair {
+class FastPairNotificationController;
+}  // namespace quick_pair
+}  // namespace ash
 
 // WebUIMessageHandler for the Quick Pair debug page at
 // chrome://nearby-internals
@@ -43,6 +50,9 @@ class QuickPairHandler : public content::WebUIMessageHandler,
   void NotifyFastPairError(const base::ListValue* args);
   void NotifyFastPairDiscovery(const base::ListValue* args);
   void NotifyFastPairPairing(const base::ListValue* args);
+
+  std::unique_ptr<ash::quick_pair::FastPairNotificationController>
+      fast_pair_notification_controller_;
 
   base::ScopedObservation<ash::quick_pair::LogBuffer,
                           ash::quick_pair::LogBuffer::Observer>
