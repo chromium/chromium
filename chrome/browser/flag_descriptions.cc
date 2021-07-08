@@ -3657,6 +3657,11 @@ const char kGlobalMediaControlsCastStartStopDescription[] =
     "Allows global media controls to control when a Cast session is started "
     "or stopped instead of relying on the Cast dialog.";
 
+const char kMuteNotificationSnoozeActionName[] =
+    "Snooze action for mute notifications";
+const char kMuteNotificationSnoozeActionDescription[] =
+    "Adds a Snooze action to mute notifications shown while sharing a screen.";
+
 const char kNtpCacheOneGoogleBarName[] = "Cache OneGoogleBar";
 const char kNtpCacheOneGoogleBarDescription[] =
     "Enables using the OneGoogleBar cached response in chrome://new-tab-page, "

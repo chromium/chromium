@@ -11,13 +11,19 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/notification_blocker.h"
 #include "chrome/browser/notifications/notification_display_queue.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -26,6 +32,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#endif
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/notifications/muted_notification_handler.h"
+#include "chrome/browser/notifications/screen_capture_notification_blocker.h"
 #endif
 
 namespace {
@@ -89,12 +100,12 @@ message_center::Notification CreateNotification(const std::string& id) {
 
 }  // namespace
 
-class NotificationDisplayServiceImplTest : public testing::Test {
+class BaseNotificationDisplayServiceImplTest : public testing::Test {
  protected:
-  NotificationDisplayServiceImplTest() = default;
-  ~NotificationDisplayServiceImplTest() override = default;
+  BaseNotificationDisplayServiceImplTest() = default;
+  ~BaseNotificationDisplayServiceImplTest() override = default;
 
-  // BrowserWithTestWindowTest:
+  // testing::Test:
   void SetUp() override {
     service_ = std::make_unique<NotificationDisplayServiceImpl>(&profile_);
 
@@ -104,22 +115,11 @@ class NotificationDisplayServiceImplTest : public testing::Test {
 
     service_->SetNotificationPlatformBridgeDelegatorForTesting(
         std::move(notification_delegator));
-
-    auto blocker = std::make_unique<FakeNotificationBlocker>();
-    notification_blocker_ = blocker.get();
-
-    NotificationDisplayQueue::NotificationBlockers blockers;
-    blockers.push_back(std::move(blocker));
-    service_->SetBlockersForTesting(std::move(blockers));
   }
 
   Profile* profile() { return &profile_; }
 
   NotificationDisplayServiceImpl& service() { return *service_; }
-
-  FakeNotificationBlocker& notification_blocker() {
-    return *notification_blocker_;
-  }
 
  protected:
   std::set<std::string> GetDisplayedServiceSync() {
@@ -162,6 +162,32 @@ class NotificationDisplayServiceImplTest : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<NotificationDisplayServiceImpl> service_;
   TestNotificationPlatformBridgeDelegator* notification_delegator_ = nullptr;
+};
+
+// Test class that uses a FakeNotificationBlocker instead of the real ones.
+class NotificationDisplayServiceImplTest
+    : public BaseNotificationDisplayServiceImplTest {
+ protected:
+  NotificationDisplayServiceImplTest() = default;
+  ~NotificationDisplayServiceImplTest() override = default;
+
+  // BaseNotificationDisplayServiceImplTest:
+  void SetUp() override {
+    BaseNotificationDisplayServiceImplTest::SetUp();
+
+    auto blocker = std::make_unique<FakeNotificationBlocker>();
+    notification_blocker_ = blocker.get();
+
+    NotificationDisplayQueue::NotificationBlockers blockers;
+    blockers.push_back(std::move(blocker));
+    service().SetBlockersForTesting(std::move(blockers));
+  }
+
+  FakeNotificationBlocker& notification_blocker() {
+    return *notification_blocker_;
+  }
+
+ private:
   FakeNotificationBlocker* notification_blocker_ = nullptr;
 };
 
@@ -245,3 +271,79 @@ TEST_F(NotificationDisplayServiceImplTest, NearbyNotificationHandler) {
   }
 }
 #endif
+
+#if !defined(OS_ANDROID)
+
+// Desktop specific test class that uses the default NotificationBlockers.
+class DesktopNotificationDisplayServiceImplTest
+    : public BaseNotificationDisplayServiceImplTest {
+ protected:
+  DesktopNotificationDisplayServiceImplTest() = default;
+  ~DesktopNotificationDisplayServiceImplTest() override = default;
+
+  // BaseNotificationDisplayServiceImplTest:
+  void SetUp() override {
+    BaseNotificationDisplayServiceImplTest::SetUp();
+
+    auto* muted_handler =
+        static_cast<MutedNotificationHandler*>(service().GetNotificationHandler(
+            NotificationHandler::Type::NOTIFICATIONS_MUTED));
+    ASSERT_TRUE(muted_handler);
+    screen_capture_blocker_ = static_cast<ScreenCaptureNotificationBlocker*>(
+        muted_handler->get_delegate_for_testing());
+    ASSERT_TRUE(screen_capture_blocker_);
+  }
+
+  ScreenCaptureNotificationBlocker* screen_capture_notification_blocker() {
+    return screen_capture_blocker_;
+  }
+
+ private:
+  ScreenCaptureNotificationBlocker* screen_capture_blocker_ = nullptr;
+};
+
+TEST_F(DesktopNotificationDisplayServiceImplTest, SnoozeDuringScreenCapture) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kMuteNotificationSnoozeAction);
+
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* contents =
+      web_contents_factory.CreateWebContents(profile());
+  EXPECT_TRUE(GetDisplayedPlatformSync().empty());
+
+  // Start a screen capture session.
+  screen_capture_notification_blocker()->OnIsCapturingDisplayChanged(
+      contents, /*is_capturing_display=*/true);
+
+  // Displaying a notification should show the "Notifications Muted" generic
+  // notification instead of the real notification content.
+  std::string notification_id_1 = "id1";
+  DisplayNotification(notification_id_1);
+  EXPECT_EQ(1u, GetDisplayedPlatformSync().size());
+  EXPECT_EQ(1u, GetDisplayedPlatformSync().count(kMuteNotificationId));
+
+  // Emulate the user clicking on the "Snooze" action button.
+  service().ProcessNotificationOperation(
+      NotificationCommon::OPERATION_CLICK,
+      NotificationHandler::Type::NOTIFICATIONS_MUTED, /*origin=*/GURL(),
+      kMuteNotificationId, /*action_index=*/0, /*reply=*/absl::nullopt,
+      /*by_user=*/true);
+
+  // Clicking "Snooze" should remove the "Notifications Muted" notification.
+  EXPECT_TRUE(GetDisplayedPlatformSync().empty());
+
+  // Showing another notification should not trigger any visible notification.
+  std::string notification_id_2 = "id2";
+  DisplayNotification(notification_id_2);
+  EXPECT_TRUE(GetDisplayedPlatformSync().empty());
+
+  // Stopping the screen sharing session should re-display all previously muted
+  // notifications.
+  screen_capture_notification_blocker()->OnIsCapturingDisplayChanged(
+      contents, /*is_capturing_display=*/false);
+  EXPECT_EQ(2u, GetDisplayedPlatformSync().size());
+  EXPECT_EQ(1u, GetDisplayedPlatformSync().count(notification_id_1));
+  EXPECT_EQ(1u, GetDisplayedPlatformSync().count(notification_id_2));
+}
+
+#endif  // !defined(OS_ANDROID)

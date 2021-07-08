@@ -106,14 +106,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>peter@chromium.org</owner>
   <summary>
     Records the number of times the 'Notifications muted' notification got shown
-    before the user took an action. Clicking on 'Show' can only be recorded once
-    per session while 'Body' and 'Close' may be recorded multiple times. Logged
-    each time the user interacts with the notification. {Action}
+    before the user took an action. Clicking on 'Show' and 'Snooze' can only be
+    recorded once per session while 'Body' and 'Close' may be recorded multiple
+    times. Logged each time the user interacts with the notification. {Action}
   </summary>
   <token key="Action">
     <variant name="Body"/>
     <variant name="Close"/>
     <variant name="Show"/>
+    <variant name="Snooze"/>
   </token>
 </histogram>
 
@@ -130,6 +131,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="Body"/>
     <variant name="Close"/>
     <variant name="Show"/>
+    <variant name="Snooze"/>
   </token>
 </histogram>
 
@@ -187,6 +189,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the length of a screen capture session. Notifications will be muted
     initially but the user may reveal them during a session. This metric will be
     logged after the screen capture session ends.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Blocker.ScreenCapture.SnoozedCount"
+    units="notifications" expires_after="2021-11-21">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The number of snoozed notifications that got prevented from showing up on
+    screen during a screen capture session. This means that the user clicked on
+    the &quot;Snooze&quot; action of a muted notification and continued to
+    receive notifications but we queued them without notifying the user at all.
+    Logged once after each screen capture session ends.
   </summary>
 </histogram>
 

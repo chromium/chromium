@@ -3829,6 +3829,11 @@
     "expiry_milestone": 84
   },
   {
+    "name": "mute-notification-snooze-action",
+    "owners": [ "knollr@chromium.org", "peter@chromium.org" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "muting-compromised-credentials",
     "owners": [ "vsemeniuk", "vasilii" ],
     "expiry_milestone": 95

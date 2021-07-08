@@ -25,6 +25,8 @@ class MutedNotificationHandler : public NotificationHandler {
     kBodyClick,
     // The user clicked on the "Show" action button.
     kShowClick,
+    // The user clicked on the "Snooze" action button.
+    kSnoozeClick,
   };
 
   // Delegate for handling muted notification actions.
@@ -54,6 +56,8 @@ class MutedNotificationHandler : public NotificationHandler {
                bool by_user,
                base::OnceClosure completed_closure) override;
   void OpenSettings(Profile* profile, const GURL& origin) override;
+
+  Delegate* get_delegate_for_testing() const { return delegate_; }
 
  private:
   Delegate* delegate_;

@@ -6052,6 +6052,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMacCoreLocationImplementation)},
 #endif
 
+#if !defined(OS_ANDROID)
+    {"mute-notification-snooze-action",
+     flag_descriptions::kMuteNotificationSnoozeActionName,
+     flag_descriptions::kMuteNotificationSnoozeActionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kMuteNotificationSnoozeAction)},
+#endif  // !defined(OS_ANDROID)
+
 #if defined(OS_MAC)
     {"enable-new-mac-notification-api",
      flag_descriptions::kNewMacNotificationAPIName,

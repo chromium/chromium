@@ -19,6 +19,9 @@ class WebContents;
 
 class NotificationDisplayService;
 
+// To share with unit tests.
+extern const char kMuteNotificationId[];
+
 // This notification blocker listens to the events when the user starts
 // capturing a display. It will block notifications while such a capture is
 // ongoing. Note that this does not include casting the whole display and only
@@ -66,6 +69,8 @@ class ScreenCaptureNotificationBlocker
     kNotifyMuted,
     // The user clicked on "Show" and we show all notifications as usual.
     kShowAll,
+    // The user clicked on "Snooze" to snooze all notifications in this session.
+    kSnooze,
   };
 
   NotifyState state_ = NotifyState::kNotifyMuted;
@@ -76,6 +81,8 @@ class ScreenCaptureNotificationBlocker
   int replaced_notification_count_ = 0;
   // Number of notifications closed during the current screen capture session.
   int closed_notification_count_ = 0;
+  // Number of notifications prevented from showing while we're snoozing.
+  int snoozed_notification_count_ = 0;
   // Flag if metrics have been reported for the current screen capture session.
   bool reported_session_metrics_ = false;
   // Timestamp of when the last "muted" notification got shown.

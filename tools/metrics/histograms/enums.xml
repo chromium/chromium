@@ -46815,6 +46815,7 @@ from previous Chrome versions.
       label="SupervisedUserCommittedInterstitials:disabled"/>
   <int value="-1504305449" label="NTPPhysicalWebPageSuggestions:enabled"/>
   <int value="-1503851906" label="EnableSettingsShortcutSearch:enabled"/>
+  <int value="-1500811568" label="MuteNotificationSnoozeAction:disabled"/>
   <int value="-1498681588" label="AndroidWebContentsDarkMode:enabled"/>
   <int value="-1498334893" label="ExperimentalVRFeatures:enabled"/>
   <int value="-1497450774" label="TreatUnsafeDownloadsAsActive:disabled"/>
@@ -47241,6 +47242,7 @@ from previous Chrome versions.
   <int value="-1191671217" label="TabGroupsNewBadgePromo:disabled"/>
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
   <int value="-1190174011" label="enable-hdr"/>
+  <int value="-1187546444" label="MuteNotificationSnoozeAction:enabled"/>
   <int value="-1187251500" label="OmniboxPedalsBatch2NonEnglish:disabled"/>
   <int value="-1186760297" label="ForceSpectreVariant2Mitigation:disabled"/>
   <int value="-1185477291" label="ImeDecoderWithSandbox:enabled"/>

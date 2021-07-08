@@ -9038,6 +9038,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
             =1 {Show}
             other {Show all}}
         </message>
+        <message name="IDS_NOTIFICATION_MUTED_ACTION_SNOOZE" desc="Action button text to snooze future notifications during the current screen capture session." translateable="false">
+          Snooze
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_NOTIFICATION_MUTED_TITLE" desc="In Title Case: Title of a notification showing how many new notifications are currently hidden. The number is always greater than zero.">
@@ -9049,6 +9052,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
           {MUTED_NOTIFICATIONS_COUNT, plural,
             =1 {Show}
             other {Show All}}
+        </message>
+        <message name="IDS_NOTIFICATION_MUTED_ACTION_SNOOZE" desc="In Title Case: Action button text to snooze future notifications during the current screen capture session." translateable="false">
+          Snooze
         </message>
       </if>
       <if expr="is_android">
