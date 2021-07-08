@@ -98,9 +98,10 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
   std::vector<WebAppUrlHandlerHoverButton*> hover_buttons_;
-  // Allow the checkbox to be enabled or disabled.
+  // Allow the checkbox to be enabled or disabled. Enabled if the URL Handling
+  // feature flag is enabled, disabled otherwise.
   // TODO(crbug.com/1072058): Remove when settings are implemented.
-  const bool enable_remember_checkbox_ = true;
+  bool enable_remember_checkbox_ = false;
   views::Checkbox* remember_selection_checkbox_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
 

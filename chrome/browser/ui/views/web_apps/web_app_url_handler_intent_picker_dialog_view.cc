@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
@@ -38,6 +39,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -325,6 +327,9 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
                        kIntentPickerCheckBoxColumnWidth, 0);
   layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnSetIdPadded,
                               views::GridLayout::kFixedSize, 0);
+
+  enable_remember_checkbox_ =
+      base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers);
 
   if (enable_remember_checkbox_) {
     remember_selection_checkbox_ = layout->AddView(

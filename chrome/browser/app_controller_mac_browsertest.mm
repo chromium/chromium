@@ -82,6 +82,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -901,7 +902,10 @@ class StartupWebAppUrlHandlingBrowserTest : public InProcessBrowserTest {
  protected:
   StartupWebAppUrlHandlingBrowserTest()
       : test_web_app_provider_creator_(base::BindRepeating(
-            &StartupWebAppUrlHandlingBrowserTest::CreateTestWebAppProvider)) {}
+            &StartupWebAppUrlHandlingBrowserTest::CreateTestWebAppProvider)) {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppEnableUrlHandlers);
+  }
 
   web_app::AppId InstallWebAppWithUrlHandlers(
       const std::vector<apps::UrlHandlerInfo>& url_handlers) {
@@ -939,6 +943,7 @@ class StartupWebAppUrlHandlingBrowserTest : public InProcessBrowserTest {
   }
 
   web_app::TestWebAppProviderCreator test_web_app_provider_creator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
