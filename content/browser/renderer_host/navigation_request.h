@@ -772,11 +772,10 @@ class CONTENT_EXPORT NavigationRequest
   // calculations. Do not use it to make actual decisions.
   bool IsLoadDataWithBaseURLAndHasUnreachableURL();
 
-  // Will calculate an *approximation* of the origin that this NavigationRequest
-  // will commit.  (An "approximation", because sandboxing is not taken into
-  // account - see https://crbug.com/1041376.  The approximation is still good
-  // enough for |request_initiator_origin_lock| in
-  // network::mojom::URLLoaderFactoryParams.)
+  // Will calculate the origin that this NavigationRequest will commit. (This
+  // should be reasonably accurate, but some browser-vs-renderer inconsistencies
+  // might still exist - they are currently tracked in
+  // https://crbug.com/1220238).
   //
   // This method depends on GetRenderFrameHost() and therefore can only be
   // called after a response has been delivered for processing, or after the
