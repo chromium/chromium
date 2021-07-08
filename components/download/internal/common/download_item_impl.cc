@@ -988,7 +988,7 @@ DownloadFile* DownloadItemImpl::GetDownloadFile() {
 }
 
 DownloadItemRenameHandler* DownloadItemImpl::GetRenameHandler() {
-  if (reroute_info_.IsInitialized() && !rename_handler_) {
+  if (!rename_handler_) {
     rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
   }
   return rename_handler_.get();

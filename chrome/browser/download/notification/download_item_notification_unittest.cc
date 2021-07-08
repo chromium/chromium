@@ -29,16 +29,20 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/enterprise/common/proto/download_item_reroute_info.pb.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRefOfCopy;
-using testing::_;
+using testing::ValuesIn;
+using Provider = enterprise_connectors::FileSystemServiceProvider;
+using RerouteInfo = enterprise_connectors::DownloadItemRerouteInfo;
 
 namespace {
 
@@ -79,6 +83,8 @@ class DownloadItemNotificationTest : public testing::Test {
         .WillByDefault(Return(base::FilePath("TITLE.bin")));
     ON_CALL(*download_item_, GetTargetFilePath())
         .WillByDefault(ReturnRefOfCopy(download_item_target_path));
+    ON_CALL(*download_item_, GetRerouteInfo())
+        .WillByDefault(ReturnRefOfCopy(RerouteInfo()));
     ON_CALL(*download_item_, GetDangerType())
         .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     ON_CALL(*download_item_, IsDone()).WillByDefault(Return(false));
@@ -332,4 +338,72 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
   download_item_notification_->Click(absl::nullopt, absl::nullopt);
 }
 
+struct FileReroutedTestCase {
+  download::DownloadItem::DownloadState state;
+  download::DownloadInterruptReason reason;
+  RerouteInfo reroute_info;
+};
+
+RerouteInfo MakeTestRerouteInfo(std::string file_id = std::string()) {
+  RerouteInfo info;
+  info.set_service_provider(Provider::BOX);
+  if (file_id.size())
+    info.mutable_box()->set_file_id(file_id);
+  return info;
+}
+
+RerouteInfo MakeTestRerouteInfoWithError(std::string error_message) {
+  RerouteInfo info;
+  info.set_service_provider(Provider::BOX);
+  info.mutable_box()->set_error_message(error_message);
+  return info;
+}
+
+class DownloadItemNotificationParametrizedTest
+    : public DownloadItemNotificationTest,
+      public ::testing::WithParamInterface<FileReroutedTestCase> {};
+
+TEST_P(DownloadItemNotificationParametrizedTest,
+       CreateDownloadItemNotification) {
+  RerouteInfo reroute_info;
+  reroute_info.set_service_provider(Provider::BOX);
+
+  // Setup file rerouted to Box info.
+  EXPECT_CALL(*download_item_, GetRerouteInfo())
+      .WillRepeatedly(ReturnRefOfCopy(GetParam().reroute_info));
+  EXPECT_CALL(*download_item_, GetState())
+      .WillRepeatedly(Return(GetParam().state));
+
+  switch (GetParam().state) {
+    case (download::DownloadItem::INTERRUPTED):
+      EXPECT_CALL(*download_item_, GetLastReason())
+          .WillRepeatedly(Return(GetParam().reason));
+      break;
+    case (download::DownloadItem::COMPLETE):
+      EXPECT_CALL(*download_item_, IsDone()).WillRepeatedly(Return(true));
+      FALLTHROUGH;
+    default:
+      EXPECT_CALL(*download_item_, GetLastReason()).Times(0);
+  }
+
+  // Show the download item notification.
+  CreateDownloadItemNotification();
+  download_item_->NotifyObserversDownloadOpened();
+}
+
+const FileReroutedTestCase kFileReroutedTestCases[] = {
+    {download::DownloadItem::DownloadState::IN_PROGRESS,
+     download::DOWNLOAD_INTERRUPT_REASON_NONE, MakeTestRerouteInfo()},
+    {download::DownloadItem::DownloadState::INTERRUPTED,
+     download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
+     MakeTestRerouteInfo()},
+    {download::DownloadItem::DownloadState::INTERRUPTED,
+     download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
+     MakeTestRerouteInfoWithError("400 - \"item_name_invalid\"")},
+    {download::DownloadItem::DownloadState::COMPLETE,
+     download::DOWNLOAD_INTERRUPT_REASON_NONE, MakeTestRerouteInfo("13579")}};
+
+INSTANTIATE_TEST_SUITE_P(ReroutedByFileSystemConnectorTest,
+                         DownloadItemNotificationParametrizedTest,
+                         ValuesIn(kFileReroutedTestCases));
 }  // namespace test

@@ -1643,6 +1643,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Download page message: Server problem.">
         Unknown server error. Please try again, or contact the server administrator.
       </message>
+      <message name="IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_WEB_DRIVE_ERROR"
+               desc="Download page message: Upload failed.">
+        <ph name="WEB_DRIVE_MESSAGE">$1<ex>Storage limit reached.</ex></ph> (<ph name="SUPPORT_INFO">$2<ex>Request ID 12345</ex></ph>)
+      </message>
       <message name="IDS_DOWNLOAD_INTERRUPTED_STATUS_SHUTDOWN"
                desc="Shutdown.">
         Shutdown
@@ -1772,6 +1776,15 @@ are declared in tools/grit/grit_rule.gni.
       <!-- TODO(dbeam): can this be merged with IDS_DOWNLOAD_FILE_REMOVED? -->
       <message name="IDS_DOWNLOAD_STATUS_REMOVED" desc="Text that appears under the downloaded files that have been removed.">
         Removed
+      </message>
+      <message name="IDS_DOWNLOAD_STATUS_UPLOADING" desc="Status text for a download item that is being uploaded.">
+        Sending to <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_STATUS_UPLOADED" desc="Status text for a download item that has been uploaded.">
+        Saved to <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_STATUS_UPLOAD_INTERRUPTED" desc="Status text for a download item that was interrupted during reroute upload.">
+        Failed to save to <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph> - <ph name="INTERRUPT_REASON">$2<ex>Disk full</ex></ph>
       </message>
       <message name="IDS_DOWNLOAD_STATUS_INTERRUPTED" desc="Status text for a download item that was interrupted.">
         Failed - <ph name="INTERRUPT_REASON">$1<ex>Disk full</ex></ph>
@@ -11355,6 +11368,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_OPEN_NOW_BUTTON" desc="The text on the open now button in tab modal dialog when deep scanning times out.">
       Open now
+    </message>
+
+    <!-- Enterprise file system connector service providers' display names -->
+    <message name="IDS_FILE_SYSTEM_CONNECTOR_BOX" meaning="box.com" desc="Display name for Box.">
+      Box
+    </message>
+    <message name="IDS_FILE_SYSTEM_CONNECTOR_GOOGLE_DRIVE" desc="Display name for Google Drive.">
+      Google Drive
     </message>
 
     <!-- App uninstall prompt title -->

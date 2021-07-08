@@ -14,9 +14,11 @@
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/enterprise/common/proto/download_item_reroute_info.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -55,6 +57,29 @@ const base::FilePath::CharType kDefaultDisplayFileName[] =
 // Default URL for a mock download item in DownloadItemModelTest.
 const char kDefaultURL[] = "http://example.com/foo.bar";
 
+// Constants and helper functions to test rerouted items.
+using Provider = enterprise_connectors::FileSystemServiceProvider;
+using RerouteInfo = enterprise_connectors::DownloadItemRerouteInfo;
+const char kTestProviderDisplayName[] = "Box";
+const char kTestProviderErrorMessage[] = "400 - \"item_name_invalid\"";
+const char kTestProviderAdditionalMessage[] = "abcdefg";
+const Provider kTestProvider = Provider::BOX;
+RerouteInfo MakeTestRerouteInfo(Provider provider) {
+  RerouteInfo info;
+  info.set_service_provider(provider);
+  switch (provider) {
+    case (Provider::BOX):
+      info.mutable_box()->set_error_message(kTestProviderErrorMessage);
+      info.mutable_box()->set_additional_message(
+          kTestProviderAdditionalMessage);
+      break;
+    default:
+      NOTREACHED();
+  }
+  return info;
+}
+const RerouteInfo kTestRerouteInfo = MakeTestRerouteInfo(kTestProvider);
+
 class DownloadItemModelTest : public testing::Test {
  public:
   DownloadItemModelTest()
@@ -81,6 +106,8 @@ class DownloadItemModelTest : public testing::Test {
         .WillByDefault(Return(base::FilePath(kDefaultDisplayFileName)));
     ON_CALL(item_, GetTargetFilePath())
         .WillByDefault(ReturnRefOfCopy(base::FilePath(kDefaultTargetFilePath)));
+    ON_CALL(item_, GetRerouteInfo())
+        .WillByDefault(ReturnRefOfCopy(RerouteInfo()));
     ON_CALL(item_, GetTargetDisposition())
         .WillByDefault(
             Return(DownloadItem::TARGET_DISPOSITION_OVERWRITE));
@@ -94,6 +121,12 @@ class DownloadItemModelTest : public testing::Test {
             Return((reason == download::DOWNLOAD_INTERRUPT_REASON_NONE)
                        ? DownloadItem::IN_PROGRESS
                        : DownloadItem::INTERRUPTED));
+  }
+
+  void SetupCompletedDownloadItem() {
+    ON_CALL(item_, GetFileExternallyRemoved()).WillByDefault(Return(false));
+    EXPECT_CALL(item_, GetState())
+        .WillRepeatedly(Return(DownloadItem::COMPLETE));
   }
 
   download::MockDownloadItem& item() { return item_; }
@@ -117,71 +150,93 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
     download::DownloadInterruptReason reason;
 
     // Expected status string. This will include the progress as well.
-    const char* expected_status;
+    const char* expected_status_msg;
   } kTestCases[] = {
       {download::DOWNLOAD_INTERRUPT_REASON_NONE, "1/2 B"},
-      {download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
-       "Failed - Download error"},
+      {download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, "%s - Download error"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
-       "Failed - Insufficient permissions"},
-      {download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, "Failed - Disk full"},
+       "%s - Insufficient permissions"},
+      {download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, "%s - Disk full"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG,
-       "Failed - Path too long"},
+       "%s - Path too long"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE,
-       "Failed - File too large"},
+       "%s - File too large"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
-       "Failed - Virus detected"},
-      {download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, "Failed - Blocked"},
+       "%s - Virus detected"},
+      {download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, "%s - Blocked"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED,
-       "Failed - Virus scan failed"},
+       "%s - Virus scan failed"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT,
-       "Failed - File truncated"},
+       "%s - File truncated"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE,
-       "Failed - Already downloaded"},
+       "%s - Already downloaded"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
-       "Failed - System busy"},
+       "%s - System busy"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
-       "Failed - Download error"},
+       "%s - Download error"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
-       "Failed - Network error"},
+       "%s - Network error"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
-       "Failed - Network timeout"},
+       "%s - Network timeout"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
-       "Failed - Network disconnected"},
+       "%s - Network disconnected"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
-       "Failed - Server unavailable"},
+       "%s - Server unavailable"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
-       "Failed - Network error"},
+       "%s - Network error"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
-       "Failed - Server problem"},
+       "%s - Server problem"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
-       "Failed - Download error"},
-      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT,
-       "Failed - No file"},
+       "%s - Download error"},
+      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT, "%s - No file"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED,
-       "Failed - Needs authorization"},
+       "%s - Needs authorization"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
-       "Failed - Bad certificate"},
-      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN,
-       "Failed - Forbidden"},
+       "%s - Bad certificate"},
+      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN, "%s - Forbidden"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
-       "Failed - Server unreachable"},
+       "%s - Server unreachable"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
-       "Failed - File incomplete"},
+       "%s - File incomplete"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
-       "Failed - Download error"},
+       "%s - Download error"},
       {download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED, "Canceled"},
-      {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, "Failed - Shutdown"},
-      {download::DOWNLOAD_INTERRUPT_REASON_CRASH, "Failed - Crash"},
+      {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, "%s - Shutdown"},
+      {download::DOWNLOAD_INTERRUPT_REASON_CRASH, "%s - Crash"},
   };
   static_assert(kInterruptReasonCount == base::size(kTestCases),
                 "interrupt reason mismatch");
 
   SetupDownloadItemDefaults();
+
+  const char default_failed_msg[] = "Failed";
   for (const auto& test_case : kTestCases) {
     SetupInterruptedDownloadItem(test_case.reason);
-    EXPECT_EQ(test_case.expected_status,
-              base::UTF16ToUTF8(model().GetStatusText()));
+    std::string expected_status_msg =
+        base::StringPrintf(test_case.expected_status_msg, default_failed_msg);
+    EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
+  }
+
+  const std::string provider_failed_msg =
+      base::StringPrintf("Failed to save to %s", kTestProviderDisplayName);
+  for (const auto& test_case : kTestCases) {
+    SetupInterruptedDownloadItem(test_case.reason);
+    EXPECT_CALL(item(), GetRerouteInfo())
+        .WillRepeatedly(ReturnRef(kTestRerouteInfo));
+    std::string expected_status_msg, expected_history_page_text;
+    if (test_case.reason == download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED) {
+      expected_status_msg =
+          provider_failed_msg + " - " + kTestProviderErrorMessage;
+      expected_history_page_text =
+          expected_status_msg + " (" + kTestProviderAdditionalMessage + ")";
+    } else {
+      expected_status_msg = base::StringPrintf(test_case.expected_status_msg,
+                                               provider_failed_msg.c_str());
+      expected_history_page_text = expected_status_msg;
+    }
+    EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
+    EXPECT_EQ(expected_history_page_text,
+              base::UTF16ToUTF8(model().GetHistoryPageStatusText()));
   }
 }
 
@@ -264,52 +319,59 @@ TEST_F(DownloadItemModelTest, InterruptTooltip) {
 }
 
 TEST_F(DownloadItemModelTest, InProgressStatus) {
+  const std::string provider_sending_str =
+      base::StringPrintf("Sending to %s", kTestProviderDisplayName);
+  const char* reroute_status = provider_sending_str.c_str();
   const struct TestCase {
     int64_t received_bytes;             // Return value of GetReceivedBytes().
     int64_t total_bytes;                // Return value of GetTotalBytes().
     bool  time_remaining_known;         // If TimeRemaining() is known.
     bool  open_when_complete;           // GetOpenWhenComplete().
     bool  is_paused;                    // IsPaused().
-    const char* expected_status;        // Expected status text.
+    const RerouteInfo reroute_info;     // GetRerouteInfo().
+    const char* expected_status_msg;    // Expected status text.
   } kTestCases[] = {
-    // These are all the valid combinations of the above fields for a download
-    // that is in IN_PROGRESS state. Go through all of them and check the return
-    // value of DownloadItemModel::GetStatusText(). The point isn't to lock down
-    // the status strings, but to make sure we end up with something sane for
-    // all the circumstances we care about.
-    //
-    // For GetReceivedBytes()/GetTotalBytes(), we only check whether each is
-    // non-zero. In addition, if |total_bytes| is zero, then
-    // |time_remaining_known| is also false.
-    //
-    //         .-- .TimeRemaining() is known.
-    //        |       .-- .GetOpenWhenComplete()
-    //        |      |      .---- .IsPaused()
-    { 0, 0, false, false, false, "Starting\xE2\x80\xA6" },
-    { 1, 0, false, false, false, "1 B" },
-    { 0, 2, false, false, false, "Starting\xE2\x80\xA6"},
-    { 1, 2, false, false, false, "1/2 B" },
-    { 0, 2, true,  false, false, "0/2 B, 10 secs left" },
-    { 1, 2, true,  false, false, "1/2 B, 10 secs left" },
-    { 0, 0, false, true,  false, "Opening when complete" },
-    { 1, 0, false, true,  false, "Opening when complete" },
-    { 0, 2, false, true,  false, "Opening when complete" },
-    { 1, 2, false, true,  false, "Opening when complete" },
-    { 0, 2, true,  true,  false, "Opening in 10 secs\xE2\x80\xA6"},
-    { 1, 2, true,  true,  false, "Opening in 10 secs\xE2\x80\xA6"},
-    { 0, 0, false, false, true,  "0 B, Paused" },
-    { 1, 0, false, false, true,  "1 B, Paused" },
-    { 0, 2, false, false, true,  "0/2 B, Paused" },
-    { 1, 2, false, false, true,  "1/2 B, Paused" },
-    { 0, 2, true,  false, true,  "0/2 B, Paused" },
-    { 1, 2, true,  false, true,  "1/2 B, Paused" },
-    { 0, 0, false, true,  true,  "0 B, Paused" },
-    { 1, 0, false, true,  true,  "1 B, Paused" },
-    { 0, 2, false, true,  true,  "0/2 B, Paused" },
-    { 1, 2, false, true,  true,  "1/2 B, Paused" },
-    { 0, 2, true,  true,  true,  "0/2 B, Paused" },
-    { 1, 2, true,  true,  true,  "1/2 B, Paused" },
-  };
+      // These are all the valid combinations of the above fields for a download
+      // that is in IN_PROGRESS state. Go through all of them and check the
+      // return
+      // value of DownloadItemModel::GetStatusText(). The point isn't to lock
+      // down
+      // the status strings, but to make sure we end up with something sane for
+      // all the circumstances we care about.
+      //
+      // For GetReceivedBytes()/GetTotalBytes(), we only check whether each is
+      // non-zero. In addition, if |total_bytes| is zero, then
+      // |time_remaining_known| is also false.
+      //
+      //         .-- .TimeRemaining() is known.
+      //        |       .-- .GetOpenWhenComplete()
+      //        |      |      .---- .IsPaused()
+      //        |      |     |     .---- .GetRerouteInfo()
+      {0, 0, false, false, false, {}, "Starting\xE2\x80\xA6"},
+      {1, 0, false, false, false, {}, "1 B"},
+      {0, 2, false, false, false, {}, "Starting\xE2\x80\xA6"},
+      {1, 2, false, false, false, {}, "1/2 B"},
+      {0, 2, true, false, false, {}, "0/2 B, 10 secs left"},
+      {1, 2, true, false, false, {}, "1/2 B, 10 secs left"},
+      {0, 0, false, true, false, {}, "Opening when complete"},
+      {1, 0, false, true, false, {}, "Opening when complete"},
+      {0, 2, false, true, false, {}, "Opening when complete"},
+      {1, 2, false, true, false, {}, "Opening when complete"},
+      {0, 2, true, true, false, {}, "Opening in 10 secs\xE2\x80\xA6"},
+      {1, 2, true, true, false, {}, "Opening in 10 secs\xE2\x80\xA6"},
+      {0, 0, false, false, true, {}, "0 B, Paused"},
+      {1, 0, false, false, true, {}, "1 B, Paused"},
+      {0, 2, false, false, true, {}, "0/2 B, Paused"},
+      {1, 2, false, false, true, {}, "1/2 B, Paused"},
+      {0, 2, true, false, true, {}, "0/2 B, Paused"},
+      {1, 2, true, false, true, {}, "1/2 B, Paused"},
+      {0, 0, false, true, true, {}, "0 B, Paused"},
+      {1, 0, false, true, true, {}, "1 B, Paused"},
+      {0, 2, false, true, true, {}, "0/2 B, Paused"},
+      {1, 2, false, true, true, {}, "1/2 B, Paused"},
+      {0, 2, true, true, true, {}, "0/2 B, Paused"},
+      {1, 2, true, true, true, {}, "1/2 B, Paused"},
+      {5, 5, true, true, false, kTestRerouteInfo, reroute_status}};
 
   SetupDownloadItemDefaults();
 
@@ -328,10 +390,25 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
         .WillRepeatedly(Return(test_case.open_when_complete));
     EXPECT_CALL(item(), IsPaused())
         .WillRepeatedly(Return(test_case.is_paused));
+    EXPECT_CALL(item(), GetRerouteInfo())
+        .WillRepeatedly(ReturnRef(test_case.reroute_info));
 
-    EXPECT_EQ(test_case.expected_status,
+    EXPECT_EQ(test_case.expected_status_msg,
               base::UTF16ToUTF8(model().GetStatusText()));
   }
+}
+
+TEST_F(DownloadItemModelTest, CompletedStatus) {
+  SetupDownloadItemDefaults();
+  SetupCompletedDownloadItem();
+
+  EXPECT_TRUE(model().GetStatusText().empty());
+
+  EXPECT_CALL(item(), GetRerouteInfo())
+      .WillRepeatedly(ReturnRef(kTestRerouteInfo));
+  std::string expected_status_msg =
+      base::StringPrintf("Saved to %s", kTestProviderDisplayName);
+  EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
 }
 
 TEST_F(DownloadItemModelTest, ShouldShowInShelf) {

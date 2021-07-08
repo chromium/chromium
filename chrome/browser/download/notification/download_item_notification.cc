@@ -40,6 +40,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -965,6 +966,7 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
         IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_OPENED_DANGEROUS);
   }
 
+  auto web_drive = item_->GetWebDriveName();
   switch (item_->GetState()) {
     case download::DownloadItem::IN_PROGRESS:
       // The download is a CRX (app, extension, theme, ...) and it is being
@@ -972,35 +974,41 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
       if (item_->AllDataSaved() && IsExtensionDownload(item_.get())) {
         return l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING);
+      } else if (web_drive.size()) {
+        // If the file is being uploaded: "Sending to <WEB_DRIVE>"
+        return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADING,
+                                          web_drive);
       } else {
         return GetInProgressSubStatusString();
       }
-    case download::DownloadItem::COMPLETE:
-      // If the file has been removed: Removed
+    case download::DownloadItem::COMPLETE: {
       if (item_->GetFileExternallyRemoved()) {
+        // If the file has been removed: "Removed"
         return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_REMOVED);
+      } else if (web_drive.size()) {
+        // If the file was uploaded: "Saved to <WEB_DRIVE>"
+        return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADED,
+                                          web_drive);
       } else {
         std::u16string file_name =
             item_->GetFileNameToReportUser().LossyDisplayName();
         base::i18n::AdjustStringForLocaleDirection(&file_name);
         return file_name;
       }
-    case download::DownloadItem::CANCELLED:
-      // "Cancelled"
-      return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
+    }
     case download::DownloadItem::INTERRUPTED: {
       FailState fail_state = item_->GetLastFailState();
       if (fail_state != FailState::USER_CANCELED) {
-        // "Failed - <REASON>"
-        std::u16string interrupt_reason = item_->GetInterruptReasonText();
-        DCHECK(!interrupt_reason.empty());
-        return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED,
-                                          interrupt_reason);
-      } else {
-        // Same as DownloadItem::CANCELLED.
-        return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
+        const auto interrupt_text = item_->GetInterruptDescription();
+        DCHECK(!interrupt_text.empty());
+        return interrupt_text;
       }
+      FALLTHROUGH;  // Same as download::DownloadItem::CANCELLED.
     }
+    case download::DownloadItem::CANCELLED:
+      // "Cancelled"
+      return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
+
     default:
       NOTREACHED();
   }

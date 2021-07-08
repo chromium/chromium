@@ -309,11 +309,11 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       if (download_item->CanResume())
         percent = download_item->PercentComplete();
 
-      // TODO(asanka): last_reason_text should be set via
-      // download_model.GetInterruptReasonText(). But we are using
+      // TODO(https://crbug.com/609255): GetHistoryPageStatusText() is using
       // GetStatusText() as a temporary measure until the layout is fixed to
-      // accommodate the longer string. http://crbug.com/609255
-      last_reason_text = download_model.GetStatusText();
+      // accommodate the longer string. Should update it to simply use
+      // GetInterruptDescription().
+      last_reason_text = download_model.GetHistoryPageStatusText();
       if (download::DOWNLOAD_INTERRUPT_REASON_CRASH ==
               download_item->GetLastReason() &&
           !download_item->CanResume()) {
