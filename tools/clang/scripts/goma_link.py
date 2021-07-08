@@ -229,10 +229,11 @@ class GomaLinkBase(object):
   FUNCTION_SECTIONS_RE = re.compile('-f(no-)?function-sections|[-/]Gy(-)?',
                                     re.IGNORECASE)
   LIB_RE = re.compile('.*\\.(?:a|lib)', re.IGNORECASE)
+  # LTO_RE matches flags we want to pass in the thin link step but not in the
+  # native link step.
+  # Continue to pass -flto and -fsanitize flags in the native link even though
+  # they're not normally necessary because clang needs them to build with CFI.
   LTO_RE = re.compile('|'.join((
-      '-fsanitize=cfi.*',
-      '-flto.*',
-      '-fthin.*',
       '-Wl,-plugin-opt=.*',
       '-Wl,--lto.*',
       '-Wl,--thin.*',
