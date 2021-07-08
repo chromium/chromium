@@ -12,6 +12,7 @@
 #include "base/bind_post_task.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
@@ -25,6 +26,7 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/mailbox_manager_factory.h"
 #include "gpu/command_buffer/service/memory_program_cache.h"
@@ -44,6 +46,7 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_version_info.h"
@@ -82,6 +85,25 @@ void TrimD3DResources() {
   }
 }
 #endif
+
+void APIENTRY CrashReportOnGLErrorDebugCallback(GLenum source,
+                                                GLenum type,
+                                                GLuint id,
+                                                GLenum severity,
+                                                GLsizei length,
+                                                const GLchar* message,
+                                                const GLvoid* user_param) {
+  if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API &&
+      user_param) {
+    LOG(ERROR) << gl::GLEnums::GetStringEnum(id) << ": " << message;
+    int* remaining_reports =
+        const_cast<int*>(static_cast<const int*>(user_param));
+    if (*remaining_reports > 0) {
+      base::debug::DumpWithoutCrashing();
+      (*remaining_reports)--;
+    }
+  }
+}
 
 void FormatAllocationSourcesForTracing(
     base::trace_event::TracedValue* dict,
@@ -778,14 +800,6 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
       // attribs.robust_resource_initialization = false;
     }
 
-    // Only skip validation if the GLContext will be used exclusively by the
-    // SharedContextState and dcheck is off.
-#if DCHECK_IS_ON()
-    attribs.can_skip_validation = false;
-#else
-    attribs.can_skip_validation = !use_virtualized_gl_contexts;
-#endif
-
     context =
         gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
     if (!context) {
@@ -838,6 +852,23 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
         " SharedContextState";
     *result = ContextResult::kFatalFailure;
     return nullptr;
+  }
+
+  // Log crash reports when GL errors are generated.
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      feature_info->feature_flags().khr_debug) {
+    static int remaining_gl_error_reports =
+#if defined(OS_ANDROID)
+        // Don't generate crash reports on Android due to errors generated
+        // during video decode.
+        0;
+#else
+        // Limit the total number of gl error crash reports to 1 per GPU
+        // process.
+        1;
+#endif
+    gles2::InitializeGLDebugLogging(false, CrashReportOnGLErrorDebugCallback,
+                                    &remaining_gl_error_reports);
   }
 
   // OOP-R needs GrContext for raster tiles.
