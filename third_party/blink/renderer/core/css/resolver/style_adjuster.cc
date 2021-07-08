@@ -269,6 +269,7 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyle& style) {
   style.SetTextEmphasisMark(TextEmphasisMark::kNone);
   style.SetVerticalAlign(EVerticalAlign ::kMiddle);
   style.SetWordBreak(EWordBreak::kKeepAll);
+  style.SetWordSpacing(0.0f);
   style.SetWritingMode(WritingMode::kHorizontalTb);
 
   style.ClearAppliedTextDecorations();

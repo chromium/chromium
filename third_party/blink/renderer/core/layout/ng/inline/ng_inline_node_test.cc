@@ -1581,4 +1581,25 @@ TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
       << "We paint combined text '0' without scaling in X-axis.";
 }
 
+// http://crbug.com/1226930
+TEST_F(NGInlineNodeTest, TextCombineWordSpacing) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "  font: 10px/20px Ahem;"
+      "  letter-spacing: 1px;"
+      "  text-combine-upright: all;"
+      "  word-spacing: 1px;"
+      "  writing-mode: vertical-rl;"
+      "}");
+  SetBodyInnerHTML("<div id=t1>ab</div>");
+  const auto& text =
+      *To<Text>(GetElementById("t1")->firstChild())->GetLayoutObject();
+  const auto& font_description = text.StyleRef().GetFont().GetFontDescription();
+
+  EXPECT_EQ(0, font_description.LetterSpacing());
+  EXPECT_EQ(0, font_description.WordSpacing());
+}
+
 }  // namespace blink
