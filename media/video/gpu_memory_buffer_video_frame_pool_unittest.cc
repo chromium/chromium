@@ -515,6 +515,21 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateGpuMemoryBufferFail) {
   EXPECT_EQ(0u, sii_->shared_image_count());
 }
 
+TEST_F(GpuMemoryBufferVideoFramePoolTest,
+       CreateGpuMemoryBufferFailAfterShutdown) {
+  scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
+  scoped_refptr<VideoFrame> frame;
+  mock_gpu_factories_->SetFailToMapGpuMemoryBufferForTesting(true);
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+  gpu_memory_buffer_pool_.reset();
+  RunUntilIdle();
+
+  // Software frame should be returned if mapping fails.
+  EXPECT_EQ(software_frame.get(), frame.get());
+  EXPECT_EQ(0u, sii_->shared_image_count());
+}
+
 TEST_F(GpuMemoryBufferVideoFramePoolTest, ShutdownReleasesUnusedResources) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame_1;

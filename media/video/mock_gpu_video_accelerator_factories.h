@@ -74,6 +74,10 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
     fail_to_allocate_gpu_memory_buffer_ = fail;
   }
 
+  void SetFailToMapGpuMemoryBufferForTesting(bool fail) {
+    fail_to_map_gpu_memory_buffer_ = fail;
+  }
+
   void SetGpuMemoryBuffersInUseByMacOSWindowServer(bool in_use);
 
   // Allocate & return a read-only shared memory region
@@ -97,6 +101,8 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   OutputFormat video_frame_output_format_ = OutputFormat::I420;
 
   bool fail_to_allocate_gpu_memory_buffer_ = false;
+
+  bool fail_to_map_gpu_memory_buffer_ = false;
 
   gpu::SharedImageInterface* sii_;
 
