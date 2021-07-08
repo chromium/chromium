@@ -4,8 +4,11 @@
 
 #include "chromeos/components/phonehub/camera_roll_manager.h"
 
+#include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/components/phonehub/camera_roll_item.h"
+#include "chromeos/components/phonehub/camera_roll_thumbnail_decoder_impl.h"
 #include "chromeos/components/phonehub/message_receiver.h"
 #include "chromeos/components/phonehub/message_sender.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
@@ -24,7 +27,9 @@ bool IsCameraRollSupportedOnAndroidDevice(
 
 CameraRollManager::CameraRollManager(MessageReceiver* message_receiver,
                                      MessageSender* message_sender)
-    : message_receiver_(message_receiver), message_sender_(message_sender) {
+    : message_receiver_(message_receiver),
+      message_sender_(message_sender),
+      thumbnail_decoder_(std::make_unique<CameraRollThumbnailDecoderImpl>()) {
   message_receiver->AddObserver(this);
 }
 
@@ -37,6 +42,7 @@ void CameraRollManager::OnPhoneStatusSnapshotReceived(
   if (!IsCameraRollSupportedOnAndroidDevice(
           phone_status_snapshot.properties().camera_roll_access_state())) {
     ClearCurrentItems();
+    CancelPendingThumbnailRequests();
     return;
   }
 
@@ -48,6 +54,7 @@ void CameraRollManager::OnPhoneStatusUpdateReceived(
   if (!IsCameraRollSupportedOnAndroidDevice(
           phone_status_update.properties().camera_roll_access_state())) {
     ClearCurrentItems();
+    CancelPendingThumbnailRequests();
     return;
   }
 
@@ -57,9 +64,14 @@ void CameraRollManager::OnPhoneStatusUpdateReceived(
 }
 
 void CameraRollManager::SendFetchCameraRollItemsRequest() {
+  // Clears pending thumbnail decode requests to avoid changing the current item
+  // set after sending it with the |FetchCameraRollItemsRequest|. These pending
+  // thumbnails will be invalidated anyway when the new response is received.
+  CancelPendingThumbnailRequests();
+
   proto::FetchCameraRollItemsRequest request;
-  for (const std::unique_ptr<CameraRollItem>& current_item : current_items_) {
-    *request.add_current_item_metadata() = current_item->metadata();
+  for (const CameraRollItem& current_item : current_items_) {
+    *request.add_current_item_metadata() = current_item.metadata();
   }
   message_sender_->SendFetchCameraRollItemsRequest(request);
 }
@@ -77,29 +89,28 @@ void CameraRollManager::ClearCurrentItems() {
 
 void CameraRollManager::OnFetchCameraRollItemsResponseReceived(
     const proto::FetchCameraRollItemsResponse& response) {
-  current_items_.clear();
-
-  // TODO(http://crbug.com/1221297): Decode thumbnail data. Existing items that
-  // haven't changed won't have thumbnail data from the new proto. They need to
-  // be copied from the old vector into the new one.
-  for (const proto::CameraRollItem& item_proto : response.items()) {
-    current_items_.push_back(
-        std::make_unique<CameraRollItem>(item_proto.metadata()));
-  }
-
-  // The phone only sends FetchCameraRollItemsResponse when the set of items has
-  // changed. Always alert the observers in this case.
-  for (auto& observer : observer_list_) {
-    observer.OnCameraRollItemsChanged();
-  }
+  thumbnail_decoder_->BatchDecode(
+      response, current_items(),
+      base::BindOnce(&CameraRollManager::OnItemThumbnailsDecoded,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-std::vector<const CameraRollItem*> CameraRollManager::GetCurrentItems() const {
-  std::vector<const CameraRollItem*> items;
-  for (const std::unique_ptr<CameraRollItem>& current_item : current_items_) {
-    items.push_back(current_item.get());
+void CameraRollManager::OnItemThumbnailsDecoded(
+    CameraRollThumbnailDecoder::BatchDecodeResult result,
+    const std::vector<CameraRollItem>& items) {
+  if (result == CameraRollThumbnailDecoder::BatchDecodeResult::kSuccess) {
+    current_items_ = items;
+    // The phone only sends FetchCameraRollItemsResponse when the set of items
+    // has changed. Always alert the observers in this case.
+    for (auto& observer : observer_list_) {
+      observer.OnCameraRollItemsChanged();
+    }
   }
-  return items;
+  // TODO(http://crbug.com/1221297): log and handle failed decode requests.
+}
+
+void CameraRollManager::CancelPendingThumbnailRequests() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void CameraRollManager::AddObserver(Observer* observer) {

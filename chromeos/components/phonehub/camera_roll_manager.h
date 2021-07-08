@@ -5,8 +5,10 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/components/phonehub/camera_roll_thumbnail_decoder.h"
 #include "chromeos/components/phonehub/message_receiver.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
@@ -35,13 +37,17 @@ class CameraRollManager : public MessageReceiver::Observer {
   ~CameraRollManager() override;
 
   // Returns the set of current camera roll items in the order in which they
-  // should be displayed/
-  std::vector<const CameraRollItem*> GetCurrentItems() const;
+  // should be displayed
+  const std::vector<CameraRollItem>& current_items() const {
+    return current_items_;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
+  friend class CameraRollManagerTest;
+
   // MessageReceiver::Observer
   void OnPhoneStatusSnapshotReceived(
       proto::PhoneStatusSnapshot phone_status_snapshot) override;
@@ -52,11 +58,21 @@ class CameraRollManager : public MessageReceiver::Observer {
 
   void SendFetchCameraRollItemsRequest();
   void ClearCurrentItems();
+  void OnItemThumbnailsDecoded(
+      CameraRollThumbnailDecoder::BatchDecodeResult result,
+      const std::vector<CameraRollItem>& items);
+  void CancelPendingThumbnailRequests();
 
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;
-  std::vector<std::unique_ptr<CameraRollItem>> current_items_;
+
+  std::vector<CameraRollItem> current_items_;
+
   base::ObserverList<Observer> observer_list_;
+
+  std::unique_ptr<CameraRollThumbnailDecoder> thumbnail_decoder_;
+  // Contains pending callbacks passed to the |CameraRollThumbnailDecoder|.
+  base::WeakPtrFactory<CameraRollManager> weak_ptr_factory_{this};
 };
 
 }  // namespace phonehub

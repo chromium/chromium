@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_CAMERA_ROLL_ITEM_H_
 
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
+#include "ui/gfx/image/image.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -14,16 +15,20 @@ namespace phonehub {
 // metadata and thumbnail.
 class CameraRollItem {
  public:
-  CameraRollItem(const proto::CameraRollItemMetadata& metadata);
-  CameraRollItem(const CameraRollItem&) = delete;
-  CameraRollItem& operator=(const CameraRollItem&) = delete;
+  CameraRollItem(const proto::CameraRollItemMetadata& metadata,
+                 const gfx::Image& thumbnail);
+  CameraRollItem(const CameraRollItem&);
+  CameraRollItem& operator=(const CameraRollItem&);
   virtual ~CameraRollItem();
 
   // Returns the metadata of this item.
   const proto::CameraRollItemMetadata& metadata() const { return metadata_; }
+  // Returns the decoded thumbnail of this item.
+  const gfx::Image& thumbnail() const { return thumbnail_; }
 
  private:
   proto::CameraRollItemMetadata metadata_;
+  gfx::Image thumbnail_;
 };
 
 }  // namespace phonehub

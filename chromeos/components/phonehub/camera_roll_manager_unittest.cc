@@ -4,16 +4,25 @@
 
 #include "chromeos/components/phonehub/camera_roll_manager.h"
 
+#include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/camera_roll_item.h"
+#include "chromeos/components/phonehub/camera_roll_thumbnail_decoder_impl.h"
 #include "chromeos/components/phonehub/fake_message_receiver.h"
 #include "chromeos/components/phonehub/fake_message_sender.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace chromeos {
 namespace phonehub {
 namespace {
+
+using BatchDecodeResult = CameraRollThumbnailDecoder::BatchDecodeResult;
+using BatchDecodeCallback =
+    base::OnceCallback<void(BatchDecodeResult,
+                            const std::vector<CameraRollItem>&)>;
 
 class FakeObserver : public CameraRollManager::Observer {
  public:
@@ -47,7 +56,6 @@ void PopulateItemProto(proto::CameraRollItem* item_proto, std::string key) {
 
 // Verifies that the metadata of a generated item matches the corresponding
 // proto input.
-// TODO(http://crbug.com/1221297): verify thumbnail data when implemented
 void VerifyMetadataEqual(const proto::CameraRollItemMetadata& expected,
                          const proto::CameraRollItemMetadata& actual) {
   EXPECT_EQ(expected.key(), actual.key());
@@ -57,6 +65,42 @@ void VerifyMetadataEqual(const proto::CameraRollItemMetadata& expected,
 }
 
 }  // namespace
+
+class FakeThumbnailDecoder : public CameraRollThumbnailDecoder {
+ public:
+  FakeThumbnailDecoder() = default;
+  ~FakeThumbnailDecoder() override = default;
+
+  void BatchDecode(const proto::FetchCameraRollItemsResponse& response,
+                   const std::vector<CameraRollItem>& current_items,
+                   BatchDecodeCallback callback) override {
+    if (!pending_callback_.is_null()) {
+      CompletePendingCallback(BatchDecodeResult::kCancelled);
+    }
+    last_response_ = response;
+    pending_callback_ = std::move(callback);
+  }
+
+  void CompletePendingCallback(BatchDecodeResult result) {
+    std::vector<CameraRollItem> items;
+    if (result == BatchDecodeResult::kSuccess) {
+      for (const proto::CameraRollItem& item_proto : last_response_.items()) {
+        SkBitmap test_bitmap;
+        test_bitmap.allocN32Pixels(1, 1);
+        gfx::ImageSkia image_skia =
+            gfx::ImageSkia::CreateFrom1xBitmap(test_bitmap);
+        image_skia.MakeThreadSafe();
+        gfx::Image thumbnail(image_skia);
+        items.emplace_back(item_proto.metadata(), thumbnail);
+      }
+    }
+    std::move(pending_callback_).Run(result, items);
+  }
+
+ private:
+  proto::FetchCameraRollItemsResponse last_response_;
+  BatchDecodeCallback pending_callback_;
+};
 
 class CameraRollManagerTest : public testing::Test {
  protected:
@@ -68,23 +112,21 @@ class CameraRollManagerTest : public testing::Test {
   void SetUp() override {
     camera_roll_manager_ = std::make_unique<CameraRollManager>(
         &fake_message_receiver_, &fake_message_sender_);
-    camera_roll_manager_.get()->AddObserver(&fake_observer_);
+    camera_roll_manager_->thumbnail_decoder_ =
+        std::make_unique<FakeThumbnailDecoder>();
+    camera_roll_manager_->AddObserver(&fake_observer_);
   }
 
   void TearDown() override {
-    camera_roll_manager_.get()->RemoveObserver(&fake_observer_);
+    camera_roll_manager_->RemoveObserver(&fake_observer_);
   }
 
   int GetOnCameraRollItemChangedCallCount() const {
     return fake_observer_.GetOnCameraRollItemChangedCallCount();
   }
 
-  const CameraRollItem* GetReceivedItemAtIndex(int index) const {
-    return camera_roll_manager_.get()->GetCurrentItems()[index];
-  }
-
-  size_t GetCurrentItemsCount() const {
-    return camera_roll_manager_.get()->GetCurrentItems().size();
+  int GetCurrentItemsCount() const {
+    return camera_roll_manager_->current_items().size();
   }
 
   size_t GetSentFetchCameraRollItemsRequestCount() const {
@@ -94,6 +136,27 @@ class CameraRollManagerTest : public testing::Test {
   const proto::FetchCameraRollItemsRequest& GetSentFetchCameraRollItemsRequest()
       const {
     return fake_message_sender_.GetRecentFetchCameraRollItemsRequest();
+  }
+
+  // Verifies current items match the list of items in the last received
+  // |FetchCameraRollItemsResponse|, and their thumbnails have been properly
+  // decoded.
+  void VerifyCurrentItemsMatchResponse(
+      const proto::FetchCameraRollItemsResponse& response) const {
+    EXPECT_EQ(response.items_size(), GetCurrentItemsCount());
+    for (int i = 0; i < GetCurrentItemsCount(); i++) {
+      const CameraRollItem& current_item =
+          camera_roll_manager_->current_items()[i];
+      VerifyMetadataEqual(response.items(i).metadata(),
+                          current_item.metadata());
+      EXPECT_FALSE(current_item.thumbnail().IsEmpty());
+    }
+  }
+
+  void CompleteThumbnailDecoding(BatchDecodeResult result) {
+    static_cast<FakeThumbnailDecoder*>(
+        camera_roll_manager_->thumbnail_decoder_.get())
+        ->CompletePendingCallback(result);
   }
 
   FakeMessageReceiver fake_message_receiver_;
@@ -111,15 +174,45 @@ TEST_F(CameraRollManagerTest, OnCameraRollItemsReceived) {
   PopulateItemProto(response.add_items(), "key1");
 
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
 
   EXPECT_EQ(1, GetOnCameraRollItemChangedCallCount());
-  EXPECT_EQ(3UL, GetCurrentItemsCount());
-  VerifyMetadataEqual(response.items(0).metadata(),
-                      GetReceivedItemAtIndex(0)->metadata());
-  VerifyMetadataEqual(response.items(1).metadata(),
-                      GetReceivedItemAtIndex(1)->metadata());
-  VerifyMetadataEqual(response.items(2).metadata(),
-                      GetReceivedItemAtIndex(2)->metadata());
+  VerifyCurrentItemsMatchResponse(response);
+}
+
+TEST_F(CameraRollManagerTest,
+       OnCameraRollItemsReceivedWithThumbnailDecodingError) {
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key3");
+  PopulateItemProto(response.add_items(), "key2");
+  PopulateItemProto(response.add_items(), "key1");
+
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kError);
+
+  EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
+  EXPECT_EQ(0, GetCurrentItemsCount());
+}
+
+TEST_F(CameraRollManagerTest,
+       OnCameraRollItemsReceivedWithPendingThumbnailDecodedRequest) {
+  proto::FetchCameraRollItemsResponse first_response;
+  PopulateItemProto(first_response.add_items(), "key2");
+  PopulateItemProto(first_response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
+      first_response);
+
+  proto::FetchCameraRollItemsResponse second_response;
+  PopulateItemProto(second_response.add_items(), "key4");
+  PopulateItemProto(second_response.add_items(), "key3");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
+      second_response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+
+  // The first thumbnail decode request should be cancelled and the current item
+  // set should be updated only once after the second request completes.
+  EXPECT_EQ(1, GetOnCameraRollItemChangedCallCount());
+  VerifyCurrentItemsMatchResponse(second_response);
 }
 
 TEST_F(CameraRollManagerTest, OnCameraRollItemsReceivedWithExistingItems) {
@@ -130,8 +223,8 @@ TEST_F(CameraRollManagerTest, OnCameraRollItemsReceivedWithExistingItems) {
 
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
       first_response);
-
-  EXPECT_EQ(3UL, GetCurrentItemsCount());
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  VerifyCurrentItemsMatchResponse(first_response);
 
   proto::FetchCameraRollItemsResponse second_response;
   PopulateItemProto(second_response.add_items(), "key4");
@@ -144,15 +237,9 @@ TEST_F(CameraRollManagerTest, OnCameraRollItemsReceivedWithExistingItems) {
 
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
       second_response);
-
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
   EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
-  EXPECT_EQ(3UL, GetCurrentItemsCount());
-  VerifyMetadataEqual(second_response.items(0).metadata(),
-                      GetReceivedItemAtIndex(0)->metadata());
-  VerifyMetadataEqual(second_response.items(1).metadata(),
-                      GetReceivedItemAtIndex(1)->metadata());
-  VerifyMetadataEqual(second_response.items(2).metadata(),
-                      GetReceivedItemAtIndex(2)->metadata());
+  VerifyCurrentItemsMatchResponse(second_response);
 }
 
 TEST_F(CameraRollManagerTest,
@@ -191,6 +278,7 @@ TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithExistingItems) {
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
 
   proto::PhoneStatusUpdate update;
   update.set_has_camera_roll_updates(true);
@@ -220,6 +308,7 @@ TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithFeatureDisabled) {
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
 
   proto::PhoneStatusUpdate update;
   proto::CameraRollAccessState* access_state =
@@ -230,7 +319,7 @@ TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithFeatureDisabled) {
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
-  EXPECT_EQ(0UL, GetCurrentItemsCount());
+  EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
 TEST_F(CameraRollManagerTest,
@@ -239,6 +328,7 @@ TEST_F(CameraRollManagerTest,
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
 
   proto::PhoneStatusUpdate update;
   proto::CameraRollAccessState* access_state =
@@ -249,7 +339,7 @@ TEST_F(CameraRollManagerTest,
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
-  EXPECT_EQ(0UL, GetCurrentItemsCount());
+  EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
 TEST_F(CameraRollManagerTest, OnPhoneStatusSnapshotReceived) {
@@ -270,6 +360,7 @@ TEST_F(CameraRollManagerTest,
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
 
   proto::PhoneStatusSnapshot snapshot;
   proto::CameraRollAccessState* access_state =
@@ -280,7 +371,7 @@ TEST_F(CameraRollManagerTest,
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
-  EXPECT_EQ(0UL, GetCurrentItemsCount());
+  EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
 TEST_F(CameraRollManagerTest,
@@ -289,6 +380,7 @@ TEST_F(CameraRollManagerTest,
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
 
   proto::PhoneStatusSnapshot snapshot;
   proto::CameraRollAccessState* access_state =
@@ -299,7 +391,7 @@ TEST_F(CameraRollManagerTest,
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
-  EXPECT_EQ(0UL, GetCurrentItemsCount());
+  EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
 }  // namespace phonehub
