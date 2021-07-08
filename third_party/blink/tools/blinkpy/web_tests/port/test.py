@@ -530,7 +530,7 @@ def add_manifest_to_mock_filesystem(port):
     port.set_option_default('manifest_update', False)
     filesystem = port.host.filesystem
     filesystem.write_text_file(
-        '/mock-checkout/out/Release/gen' + '/external/wpt/MANIFEST.json',
+        WEB_TEST_DIR + '/external/wpt/MANIFEST.json',
         json.dumps({
             'items': {
                 'testharness': {
@@ -610,7 +610,7 @@ def add_manifest_to_mock_filesystem(port):
         WEB_TEST_DIR + '/external/wpt/common/blank.html', 'foo')
 
     filesystem.write_text_file(
-        '/mock-checkout/out/Release/gen' + '/wpt_internal/MANIFEST.json',
+        WEB_TEST_DIR + '/wpt_internal/MANIFEST.json',
         json.dumps({
             'items': {
                 'testharness': {

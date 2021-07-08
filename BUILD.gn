@@ -1157,6 +1157,7 @@ if (!is_ios) {
       "//testing/xvfb.py",
       "//third_party/blink/tools/",
       "//third_party/blink/web_tests/VirtualTestSuites",
+      "//third_party/blink/web_tests/external/WPT_BASE_MANIFEST_8.json",
       "//third_party/blink/web_tests/external/wpt/common/",
       "//third_party/blink/web_tests/external/wpt/resources/",
       "//third_party/blink/web_tests/resources/",
@@ -1211,7 +1212,6 @@ if (!is_ios) {
     "--seed",
     "4",
     "--debug-rwt-logging",
-    "--no-manifest-update",
     "--no-show-results",
     "--zero-tests-executed-ok",
     "--clobber-old-results",
@@ -1221,18 +1221,6 @@ if (!is_ios) {
     "100",
   ]
 
-  # generate manifest at build time
-  action("gen_manifest") {
-    script = "//third_party/blink/tools/gen_manifest.py"
-
-    args = ["--out", "$root_build_dir/gen/"]
-
-    outputs = [
-      "$root_build_dir/gen/external/wpt/MANIFEST.json",
-      "$root_build_dir/gen/wpt_internal/MANIFEST.json"
-    ]
-  }
-
   # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md
   script_test("blink_web_tests") {
     run_under_python2 = true
@@ -1240,10 +1228,7 @@ if (!is_ios) {
 
     args = _common_web_test_args
 
-    data_deps = [ ":blink_web_tests_support_data",
-                  ":gen_manifest"
-                ]
-
+    data_deps = [ ":blink_web_tests_support_data" ]
     data = [
       "//third_party/blink/perf_tests/",
       "//third_party/blink/web_tests/",
