@@ -93,6 +93,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
      */
     @Override
     public void dismiss() {
+        NoteCreationMetrics.recordNoteCreationStatus(/*created=*/false);
         mDialog.dismiss();
     }
 
@@ -110,6 +111,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
     @Override
     public void executeAction() {
         NoteCreationMetrics.recordNoteTemplateSelected();
+        NoteCreationMetrics.recordNoteCreationStatus(/*created=*/true);
 
         View noteView = mDialog.getNoteViewAt(mDialog.getSelectedItemIndex());
 

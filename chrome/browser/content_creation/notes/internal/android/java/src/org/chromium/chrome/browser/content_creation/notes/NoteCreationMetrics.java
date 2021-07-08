@@ -41,6 +41,10 @@ public final class NoteCreationMetrics {
                 NoteCreationFunnel.NOTE_SHARED, NoteCreationFunnel.NUM_ENTRIES);
     }
 
+    public static void recordNoteCreationStatus(boolean created) {
+        RecordHistogram.recordBooleanHistogram("NoteCreation.CreationStatus", created);
+    }
+
     // Empty private constructor for the "static" class.
     private NoteCreationMetrics() {}
 }
