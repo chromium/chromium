@@ -52,6 +52,13 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   SanitizerConfig* config() const;
   static SanitizerConfig* defaultConfig();
 
+  // Implementation of ElementSanitizer::SetSanitizedHTML, so that we have
+  // all the sanitizer logic in one place.
+  void ElementSetSanitizedHTML(ScriptState* script_state,
+                               Element& element,
+                               const String& markup,
+                               ExceptionState& exception_state);
+
   void Trace(Visitor*) const override;
 
  private:

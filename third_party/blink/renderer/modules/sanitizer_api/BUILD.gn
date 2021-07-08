@@ -8,6 +8,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 blink_modules_sources("sanitizer_api") {
   sources = [
+    "element_sanitizer.cc",
+    "element_sanitizer.h",
     "sanitizer.cc",
     "sanitizer.h",
     "sanitizer_config_impl.cc",

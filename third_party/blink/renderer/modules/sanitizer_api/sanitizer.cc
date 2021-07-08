@@ -140,6 +140,19 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
   return element;
 }
 
+void Sanitizer::ElementSetSanitizedHTML(ScriptState* script_state,
+                                        Element& element,
+                                        const String& markup,
+                                        ExceptionState& exception_state) {
+  Element* new_element =
+      sanitizeFor(script_state, element.localName(), markup, exception_state);
+  if (!new_element || exception_state.HadException())
+    return;
+  element.RemoveChildren();
+  while (Node* to_be_moved = new_element->firstChild())
+    element.AppendChild(to_be_moved);
+}
+
 DocumentFragment* Sanitizer::PrepareFragment(LocalDOMWindow* window,
                                              ScriptState* script_state,
                                              const V8SanitizerInput* input,

@@ -33887,6 +33887,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3947" label="WebkitImageSet"/>
   <int value="3948" label="RTCPeerConnectionWithBlockingCsp"/>
   <int value="3949" label="SanitizerAPISanitizeFor"/>
+  <int value="3950" label="SanitizerAPIElementSetSanitized"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

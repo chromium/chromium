@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 66 tests; 65 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS SanitizerAPI with config with Document: plaintext
 PASS SanitizerAPI with config with Document: xmp
 PASS SanitizerAPI with config with Document: Template element
@@ -43,5 +44,27 @@ PASS SanitizerAPI with config with DocumentFragment: malformed HTML
 PASS SanitizerAPI with config with DocumentFragment: Regression test for WICG/sanitizer-api#84.
 PASS SanitizerAPI with config with DocumentFragment: Regression test for WICG/sanitizer-api#85.
 PASS SanitizerAPI with config with DocumentFragment: Regression test for WICG/sanitizer-api#86.
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: plaintext
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: xmp
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: Template element
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLAnchorElement with javascript protocal
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLAnchorElement with javascript protocal start with space
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLAnchorElement
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLAreaElement with javascript protocal
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLAreaElement with javascript protocal start with space
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLAreaElement
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLFormElement with javascript action
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLFormElement with javascript action start with space
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLFormElement
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLInputElement with javascript formaction
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLInputElement with javascript formaction start with space
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLInputElement
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLButtonElement with javascript formaction
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLButtonElement with javascript formaction start with space
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: HTMLButtonElement
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: malformed HTML
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: Regression test for WICG/sanitizer-api#84.
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: Regression test for WICG/sanitizer-api#85.
+PASS SanitizerAPI with config with Element.SetSanitizedHTML: Regression test for WICG/sanitizer-api#86.
 Harness: the test ran to completion.
 
