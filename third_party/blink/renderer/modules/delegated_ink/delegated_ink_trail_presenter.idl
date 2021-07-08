@@ -8,7 +8,7 @@
     RuntimeEnabled=DelegatedInkTrails,
     Exposed=Window
 ] interface DelegatedInkTrailPresenter {
-    [CallWith=ScriptState] void updateInkTrailStartPoint(PointerEvent evt, InkTrailStyle style);
+    [CallWith=ScriptState, RaisesException] void updateInkTrailStartPoint(PointerEvent evt, InkTrailStyle style);
 
     readonly attribute Element? presentationArea;
     readonly attribute unsigned long expectedImprovement;

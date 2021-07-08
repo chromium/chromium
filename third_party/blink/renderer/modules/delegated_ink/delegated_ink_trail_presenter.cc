@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -33,48 +32,39 @@ DelegatedInkTrailPresenter::DelegatedInkTrailPresenter(Element* element,
                                                        LocalFrame* frame)
     : presentation_area_(element), local_frame_(frame) {}
 
-void ThrowException(v8::Isolate* isolate,
-                    ExceptionCode code,
-                    const String& error_message) {
-  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
-                                 "DelegatedInkTrailPresenter",
-                                 "updateInkTrailStatePoint");
-  exception_state.ThrowException(code, error_message);
-}
-
 void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
     ScriptState* state,
     PointerEvent* evt,
-    InkTrailStyle* style) {
+    InkTrailStyle* style,
+    ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::DelegatedInkTrailsEnabled());
 
   if (!state->ContextIsValid()) {
-    ThrowException(state->GetIsolate(),
-                   ToExceptionCode(DOMExceptionCode::kInvalidStateError),
-                   "The object is no longer associated with a window.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The object is no longer associated with a window.");
     return;
   }
 
   if (!evt->isTrusted()) {
-    ThrowException(state->GetIsolate(),
-                   ToExceptionCode(DOMExceptionCode::kNotAllowedError),
-                   "Only trusted pointerevents are accepted.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Only trusted pointerevents are accepted.");
     return;
   }
 
   // If diameter is less than or equal to 0, then nothing is going to be
   // displayed anyway, so just bail early and save the effort.
-  if (style->diameter() <= 0) {
-    ThrowException(state->GetIsolate(),
-                   ToExceptionCode(DOMExceptionCode::kNotSupportedError),
-                   "Delegated ink trail diameter must be greater than 0.");
+  if (!(style->diameter() > 0)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Delegated ink trail diameter must be greater than 0.");
     return;
   }
 
   Color color;
   if (!CSSParser::ParseColor(color, style->color(), true /*strict*/)) {
-    ThrowException(state->GetIsolate(),
-                   ToExceptionCode(ESErrorType::kTypeError), "Unknown color.");
+    exception_state.ThrowTypeError("Unknown color.");
     return;
   }
 
@@ -86,8 +76,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   physical_point.Scale(effective_zoom);
   physical_point = layout_view->LocalToAbsolutePoint(
       physical_point, kTraverseDocumentBoundaries);
-  gfx::PointF point(physical_point.left.ToFloat(),
-                    physical_point.top.ToFloat());
+  gfx::PointF point = FloatPoint(physical_point);
 
   LayoutBox* layout_box = nullptr;
   if (presentation_area_) {
@@ -128,10 +117,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   border_box_rect_absolute.Intersect(PhysicalRect(
       local_frame_->GetPage()->GetVisualViewport().VisibleContentRect()));
 
-  gfx::RectF area(border_box_rect_absolute.X().ToFloat(),
-                  border_box_rect_absolute.Y().ToFloat(),
-                  border_box_rect_absolute.Width().ToFloat(),
-                  border_box_rect_absolute.Height().ToFloat());
+  gfx::RectF area = FloatRect(border_box_rect_absolute);
 
   // This is used to know if the user starts inking with the pointer down or
   // not, so that we can stop drawing delegated ink trails as quickly as
