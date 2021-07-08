@@ -1493,17 +1493,6 @@ const char kMessageCenterDisabledExtensionIds[] =
 // platforms.
 const char kFullscreenAllowed[] = "fullscreen.allowed";
 
-// Enable controllable features in the local discovery UI (chrome://devices).
-// The UI shows discoverable devices near the user and registered cloud devices,
-// and allow users to add printers to cloud print when not on Chrome OS
-// devices .
-const char kLocalDiscoveryEnabled[] = "local_discovery.enabled";
-
-// Enable notifications for new devices on the local network that can be
-// registered to the user's account, e.g. Google Cloud Print printers.
-const char kLocalDiscoveryNotificationsEnabled[] =
-    "local_discovery.notifications_enabled";
-
 #if defined(OS_ANDROID)
 // Boolean pref indicating whether notification permissions were migrated to
 // notification channels (on Android O+ we use channels to store notification

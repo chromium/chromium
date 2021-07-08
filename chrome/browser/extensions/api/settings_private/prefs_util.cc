@@ -248,10 +248,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
 #endif
 
-  // Printing settings.
-  (*s_allowlist)[::prefs::kLocalDiscoveryNotificationsEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-
   // Miscellaneous. TODO(stevenjb): categorize.
   (*s_allowlist)[::prefs::kEnableDoNotTrack] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

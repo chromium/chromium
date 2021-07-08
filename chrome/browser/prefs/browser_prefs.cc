@@ -461,6 +461,13 @@ const char kSupervisedUserAllowlists[] = "profile.managed.whitelists";
 const char kFirstRunTrialGroup[] = "help_app_first_run.trial_group";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
+// Deprecated 11/2020
+const char kLocalDiscoveryEnabled[] = "local_discovery.enabled";
+const char kLocalDiscoveryNotificationsEnabled[] =
+    "local_discovery.notifications_enabled";
+#endif
+
 // Deprecated 6/2020
 const char kStricterMixedContentTreatmentEnabled[] =
     "security_state.stricter_mixed_content_treatment_enabled";
@@ -680,9 +687,8 @@ void RegisterProfilePrefsForMigration(
 #endif
 
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  registry->RegisterBooleanPref(prefs::kLocalDiscoveryEnabled, true);
-  registry->RegisterBooleanPref(prefs::kLocalDiscoveryNotificationsEnabled,
-                                false);
+  registry->RegisterBooleanPref(kLocalDiscoveryEnabled, true);
+  registry->RegisterBooleanPref(kLocalDiscoveryNotificationsEnabled, false);
 #endif
 
   registry->RegisterIntegerPref(kSettingsLaunchedPasswordChecks, 0);
@@ -1416,8 +1422,8 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 11/2020.
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  profile_prefs->ClearPref(prefs::kLocalDiscoveryEnabled);
-  profile_prefs->ClearPref(prefs::kLocalDiscoveryNotificationsEnabled);
+  profile_prefs->ClearPref(kLocalDiscoveryEnabled);
+  profile_prefs->ClearPref(kLocalDiscoveryNotificationsEnabled);
 #endif
 
   // Added 11/2020

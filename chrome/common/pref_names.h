@@ -484,9 +484,6 @@ extern const char kMessageCenterDisabledExtensionIds[];
 
 extern const char kFullscreenAllowed[];
 
-extern const char kLocalDiscoveryEnabled[];
-extern const char kLocalDiscoveryNotificationsEnabled[];
-
 #if defined(OS_ANDROID)
 extern const char kMigratedToSiteNotificationChannels[];
 extern const char kClearedBlockedSiteNotificationChannels[];
