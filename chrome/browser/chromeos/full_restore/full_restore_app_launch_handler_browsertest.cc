@@ -756,10 +756,16 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   EXPECT_EQ(kDeskId, window->GetProperty(aura::client::kWindowWorkspaceKey));
 
   // Windows created from full restore are not activated. They will become
-  // activatable after a post task is run.
+  // activatable after a couple seconds.
   EXPECT_FALSE(views::Widget::GetWidgetForNativeView(window)->IsActive());
   EXPECT_FALSE(wm::CanActivateWindow(window));
-  base::RunLoop().RunUntilIdle();
+
+  // Wait a couple seconds and verify the window is now activatable.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(3));
+  run_loop.Run();
+
   EXPECT_TRUE(wm::CanActivateWindow(window));
 
   EXPECT_EQ(0, ::full_restore::FetchRestoreWindowId(extension->id()));

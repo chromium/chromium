@@ -67,6 +67,12 @@ constexpr ShellWindowId kAppParentContainers[9] = {
 constexpr AppType kSupportedAppTypes[3] = {
     AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP};
 
+// Delay for certain app types before activation is allowed. This is because
+// some apps' client request activation after creation, which can break user
+// flow.
+constexpr base::TimeDelta kAllowActivationDelay =
+    base::TimeDelta::FromSeconds(2);
+
 full_restore::WindowInfo* GetWindowInfo(aura::Window* window) {
   return window->GetProperty(full_restore::kWindowInfoKey);
 }
@@ -234,6 +240,12 @@ void FullRestoreController::OnTabletControllerDestroyed() {
   tablet_mode_observation_.Reset();
 }
 
+void FullRestoreController::OnRestorePrefChanged(const AccountId& account_id,
+                                                 bool could_restore) {
+  if (could_restore)
+    SaveAllWindows();
+}
+
 void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
   DCHECK(widget);
 
@@ -276,12 +288,6 @@ void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
                                         window->GetBoundsInScreen());
 
   UpdateAndObserveWindow(window);
-}
-
-void FullRestoreController::OnRestorePrefChanged(const AccountId& account_id,
-                                                 bool could_restore) {
-  if (could_restore)
-    SaveAllWindows();
 }
 
 void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
@@ -369,6 +375,10 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   // window is first shown, which will be async for exo apps.
   if (WindowState::Get(window)->IsMinimized()) {
     window->SetProperty(full_restore::kLaunchedFromFullRestoreKey, false);
+  } else if (window->IsVisible()) {
+    // If the window is already visible, do not wait until it is next visible to
+    // restore the state type and clear the launched key.
+    RestoreStateTypeAndClearLaunchedKey(window);
   } else {
     to_be_shown_windows_.insert(window);
 
@@ -484,8 +494,18 @@ void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
   restore_property_clear_callbacks_.emplace(
       window, base::BindOnce(&FullRestoreController::ClearLaunchedKey,
                              weak_ptr_factory_.GetWeakPtr(), window));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, restore_property_clear_callbacks_[window].callback());
+
+  // Also, for some ARC and chrome apps, the client can request activation after
+  // showing. We cannot detect this, so we use a timeout to keep the window not
+  // activatable for a while longer.
+  const AppType app_type =
+      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  const base::TimeDelta delay =
+      app_type == AppType::CHROME_APP || app_type == AppType::ARC_APP
+          ? kAllowActivationDelay
+          : base::TimeDelta();
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, restore_property_clear_callbacks_[window].callback(), delay);
 }
 
 void FullRestoreController::ClearLaunchedKey(aura::Window* window) {

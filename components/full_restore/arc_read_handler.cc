@@ -76,11 +76,18 @@ void ArcReadHandler::OnTaskCreated(const std::string& app_id,
         return window->GetProperty(::full_restore::kWindowIdKey) == task_id;
       });
   if (window_it != arc_window_candidates_.end()) {
-    std::unique_ptr<WindowInfo> window_info = GetWindowInfo(restore_window_id);
-    WindowInfo* window_info_ptr = window_info->Clone();
-    (*window_it)->SetProperty(full_restore::kWindowInfoKey, window_info_ptr);
     (*window_it)
         ->SetProperty(full_restore::kRestoreWindowIdKey, restore_window_id);
+
+    // When the window was created, there was not any window info due to there
+    // being no task. Apply properties to the window now that there is window
+    // info.
+    std::unique_ptr<WindowInfo> window_info = GetWindowInfo(restore_window_id);
+    if (window_info) {
+      FullRestoreReadHandler::GetInstance()->ApplyProperties(window_info.get(),
+                                                             *window_it);
+    }
+
     FullRestoreInfo::GetInstance()->OnARCTaskReadyForUnparentedWindow(
         *window_it);
     arc_window_candidates_.erase(*window_it);

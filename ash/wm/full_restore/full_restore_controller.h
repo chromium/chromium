@@ -71,10 +71,10 @@ class ASH_EXPORT FullRestoreController
   void OnTabletControllerDestroyed() override;
 
   // full_restore::FullRestoreInfo::Observer:
-  void OnWidgetInitialized(views::Widget* widget) override;
-  void OnARCTaskReadyForUnparentedWindow(aura::Window* window) override;
   void OnRestorePrefChanged(const AccountId& account_id,
                             bool could_restore) override;
+  void OnWidgetInitialized(views::Widget* widget) override;
+  void OnARCTaskReadyForUnparentedWindow(aura::Window* window) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

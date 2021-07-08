@@ -5,6 +5,7 @@
 #include "components/full_restore/full_restore_read_handler.h"
 
 #include <cstdint>
+#include <memory>
 #include <utility>
 
 #include "ash/constants/app_types.h"
@@ -231,23 +232,8 @@ void FullRestoreReadHandler::ModifyWidgetParams(
   if (!window_info)
     return;
 
-  WindowInfo* window_info_ptr = window_info->Clone();
-  out_params->init_properties_container.SetProperty(kWindowInfoKey,
-                                                    window_info_ptr);
+  ApplyProperties(window_info.get(), &out_params->init_properties_container);
 
-  if (window_info->activation_index) {
-    const int32_t index = *window_info->activation_index;
-    // kActivationIndexKey is owned, which allows for passing in this raw
-    // pointer.
-    out_params->init_properties_container.SetProperty(kActivationIndexKey,
-                                                      new int32_t(index));
-    // Windows opened from full restore should not be activated. Widgets that
-    // are shown are activated by default. Force the widget to not be
-    // activatable; the activation will be restored in ash once the window is
-    // launched.
-    out_params->init_properties_container.SetProperty(
-        kLaunchedFromFullRestoreKey, true);
-  }
   if (window_info->desk_id)
     out_params->workspace = base::NumberToString(*window_info->desk_id);
   out_params->visible_on_all_workspaces =
@@ -260,11 +246,6 @@ void FullRestoreReadHandler::ModifyWidgetParams(
     // GetWindowInfo.
     out_params->show_state =
         chromeos::ToWindowShowState(*window_info->window_state_type);
-  }
-  if (window_info->pre_minimized_show_state_type) {
-    out_params->init_properties_container.SetProperty(
-        aura::client::kPreMinimizedShowStateKey,
-        *window_info->pre_minimized_show_state_type);
   }
 
   // Register to track when the widget has initialized. If a delegate is not
@@ -287,6 +268,34 @@ void FullRestoreReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
                                                         int32_t window_id) {
   DCHECK(arc_read_handler_);
   arc_read_handler_->SetArcSessionIdForWindowId(arc_session_id, window_id);
+}
+
+void FullRestoreReadHandler::ApplyProperties(
+    WindowInfo* window_info,
+    ui::PropertyHandler* property_handler) {
+  DCHECK(window_info);
+  DCHECK(property_handler);
+
+  // Create a clone so `property_handler` can have complete ownership of a copy
+  // of WindowInfo.
+  WindowInfo* window_info_clone = window_info->Clone();
+  property_handler->SetProperty(kWindowInfoKey, window_info_clone);
+
+  if (window_info->activation_index) {
+    const int32_t index = *window_info->activation_index;
+    // kActivationIndexKey is owned, which allows for passing in this raw
+    // pointer.
+    property_handler->SetProperty(kActivationIndexKey, new int32_t(index));
+    // Windows opened from full restore should not be activated. Widgets that
+    // are shown are activated by default. Force the widget to not be
+    // activatable; the activation will be restored in ash once the window is
+    // launched.
+    property_handler->SetProperty(kLaunchedFromFullRestoreKey, true);
+  }
+  if (window_info->pre_minimized_show_state_type) {
+    property_handler->SetProperty(aura::client::kPreMinimizedShowStateKey,
+                                  *window_info->pre_minimized_show_state_type);
+  }
 }
 
 void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(

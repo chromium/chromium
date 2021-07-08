@@ -130,6 +130,13 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // |arc session id| is assigned when ARC apps are restored.
   void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
 
+  // Applies properties from `window_info` to the given `property_handler`. This
+  // is called from `GetWindowInfo()` when a full restore window is created, or
+  // from `arc_read_handler_` when a task is ready for a full restore window
+  // that has already been created.
+  void ApplyProperties(WindowInfo* window_info,
+                       ui::PropertyHandler* property_handler);
+
   void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 
  private:
