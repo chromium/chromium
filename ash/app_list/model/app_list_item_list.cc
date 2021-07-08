@@ -48,10 +48,17 @@ bool AppListItemList::FindItemIndex(const std::string& id, size_t* index) {
 
 void AppListItemList::MoveItem(size_t from_index, size_t to_index) {
   DCHECK_LT(from_index, item_count());
-  // Speculative fix for crash, possibly due to single-item folders.
-  // https://crbug.com/937431
+  // Speculative fix for crash, possibly due to single-item folders
+  // (see https://crbug.com/937431).
+  // A folder could have single item due to the following reasons:
+  // (1) The folder is allowed to contain only one item. Or
+  // (2) The app list sync is in progress. For example, when the app list is
+  // syncing two apps under the same folder, one app could be added to the
+  // folder before the other by a noticeable time interval. As a result, the
+  // folder contains one item temporarily.
   if (item_count() <= 1)
     return;
+
   // Speculative fix for crash, possibly due |to_index| == item_count().
   // Make |to_index| point to the last item. https://crbug.com/1166011
   if (to_index >= item_count()) {

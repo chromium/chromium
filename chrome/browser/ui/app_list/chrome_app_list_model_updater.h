@@ -66,7 +66,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
       const std::string& id,
       std::unique_ptr<ash::SearchResultMetadata> metadata) override;
 
-  // Methods only for visiting Chrome items that never talk to ash.
   void ActivateChromeItem(const std::string& id, int event_flags) override;
   ChromeAppListItem* AddChromeItem(std::unique_ptr<ChromeAppListItem> app_item);
   void RemoveChromeItem(const std::string& id);
