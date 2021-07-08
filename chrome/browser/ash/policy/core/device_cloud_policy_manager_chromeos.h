@@ -22,8 +22,8 @@
 namespace ash {
 namespace attestation {
 class AttestationPolicyObserver;
-class EnrollmentPolicyObserver;
 class EnrollmentCertificateUploader;
+class EnrollmentPolicyObserver;
 class MachineCertificateUploader;
 }  // namespace attestation
 }  // namespace ash
@@ -129,13 +129,6 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
       bool component_policy_disabled_for_testing) {
     component_policy_disabled_for_testing_ =
         component_policy_disabled_for_testing;
-  }
-
-  // Return a pointer to the enrollment certificate uploader. The callers do
-  // not take ownership of that pointer.
-  ash::attestation::EnrollmentCertificateUploader*
-  GetEnrollmentCertificateUploader() {
-    return enrollment_certificate_uploader_.get();
   }
 
   // Return a pointer to the machine certificate uploader. The callers do
