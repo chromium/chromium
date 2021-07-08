@@ -3975,6 +3975,38 @@ public class ContextualSearchManagerTest {
         // TODO(donnd): Validate UMA metrics once we log in-bar selections.
     }
 
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testRelatedSearchesInBarWithDefaultQuery() throws Exception {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+                ContextualSearchFieldTrial.RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME,
+                "true");
+        FeatureList.setTestValues(testValues);
+        mFakeServer.reset();
+
+        FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
+        ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
+        Assert.assertTrue("Related Searches results should have been returned but were not!",
+                !resolvedSearchTerm.relatedSearchesJson().isEmpty());
+        // Select a chip in the Bar, which should expand the panel.
+        final int chipToSelect = 0;
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mPanel.getRelatedSearchesInBarControl().selectChipForTest(chipToSelect));
+        waitForPanelToExpand();
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mPanel.getSearchBarControl().getSearchTerm(), Matchers.is("Intelligence"));
+        });
+
+        // Close the panel
+        closePanel();
+        // TODO(donnd): Validate UMA metrics once we log in-bar selections.
+    }
+
     // --------------------------------------------------------------------------------------------
     // Forced Caption Feature tests.
     // --------------------------------------------------------------------------------------------

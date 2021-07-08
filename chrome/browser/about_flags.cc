@@ -1705,6 +1705,28 @@ const FeatureEntry::FeatureVariation kRelatedSearchesUiVariations[] = {
     {"extreme", &kRelatedSearchesUiExtreme, 1, nullptr},
 };
 
+const FeatureEntry::FeatureParam kRelatedSearchesInBarNoShowDefaultChip = {
+    "default_query_chip", "false"};
+const FeatureEntry::FeatureParam kRelatedSearchesInBarShowDefaultChip = {
+    "default_query_chip", "true"};
+const FeatureEntry::FeatureVariation kRelatedSearchesInBarVariations[] = {
+    {"without default query chip", &kRelatedSearchesInBarNoShowDefaultChip, 1,
+     nullptr},
+    {"with default query chip", &kRelatedSearchesInBarShowDefaultChip, 1,
+     nullptr},
+};
+
+const FeatureEntry::FeatureParam kRelatedSearchesAlternateUxNoShowDefaultChip =
+    {"default_query_chip", "false"};
+const FeatureEntry::FeatureParam kRelatedSearchesAlternateUxShowDefaultChip = {
+    "default_query_chip", "true"};
+const FeatureEntry::FeatureVariation kRelatedSearchesAlternateUxVariations[] = {
+    {"without default query chip",
+     &kRelatedSearchesAlternateUxNoShowDefaultChip, 1, nullptr},
+    {"with default query chip", &kRelatedSearchesAlternateUxShowDefaultChip, 1,
+     nullptr},
+};
+
 #endif  // defined(OS_ANDROID)
 
 const FeatureEntry::FeatureParam kResamplingInputEventsLSQEnabled[] = {
@@ -2809,11 +2831,16 @@ const FeatureEntry kFeatureEntries[] = {
                                     "RelatedSearchesUi")},
     {"related-searches-in-bar", flag_descriptions::kRelatedSearchesInBarName,
      flag_descriptions::kRelatedSearchesInBarDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRelatedSearchesInBar)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearchesInBar,
+                                    kRelatedSearchesInBarVariations,
+                                    "RelatedSearchesInBar")},
     {"related-searches-alternate-ux",
      flag_descriptions::kRelatedSearchesAlternateUxName,
      flag_descriptions::kRelatedSearchesAlternateUxDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRelatedSearchesAlternateUx)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kRelatedSearchesAlternateUx,
+         kRelatedSearchesAlternateUxVariations,
+         "RelatedSearchesAlternateUx")},
     {"related-searches-simplified-ux",
      flag_descriptions::kRelatedSearchesSimplifiedUxName,
      flag_descriptions::kRelatedSearchesSimplifiedUxDescription, kOsAndroid,

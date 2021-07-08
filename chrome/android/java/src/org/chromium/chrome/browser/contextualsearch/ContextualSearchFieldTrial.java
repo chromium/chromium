@@ -36,6 +36,8 @@ public class ContextualSearchFieldTrial {
     static final String RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME = "language_allowlist";
     private static final String RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME = "stamp";
 
+    static final String RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME = "default_query_chip";
+
     // Deprecated.
     private static final int MANDATORY_PROMO_DEFAULT_LIMIT = 10;
 
@@ -304,6 +306,18 @@ public class ContextualSearchFieldTrial {
     static boolean isRelatedSearchesParamEnabled(String relatedSearchesParamName) {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.RELATED_SEARCHES, relatedSearchesParamName, false);
+    }
+
+    static boolean showDefaultChipInBar() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+                RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME, false);
+    }
+
+    static boolean showDefaultChipInPanel() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX,
+                RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME, false);
     }
 
     // --------------------------------------------------------------------------------------------

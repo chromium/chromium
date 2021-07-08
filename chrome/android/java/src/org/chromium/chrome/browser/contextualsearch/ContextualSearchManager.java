@@ -83,6 +83,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -827,14 +828,20 @@ public class ContextualSearchManager
                 || !TextUtils.isEmpty(resolvedSearchTerm.thumbnailUrl());
 
         assert mSearchPanel != null;
-        List<String> inBarRelatedSearches =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)
-                ? mRelatedSearches.getQueries(true)
-                : null;
-        List<String> inPanelRelatedSearches =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX)
-                ? mRelatedSearches.getQueries(false)
-                : null;
+        // If there was an error, fall back onto a literal search for the selection.
+        // Since we're showing the panel, there must be a selection.
+        String searchTerm = resolvedSearchTerm.searchTerm();
+        String alternateTerm = resolvedSearchTerm.alternateTerm();
+        boolean doPreventPreload = resolvedSearchTerm.doPreventPreload();
+        if (doLiteralSearch) {
+            searchTerm = mSelectionController.getSelectedText();
+            alternateTerm = null;
+            doPreventPreload = true;
+        }
+
+        List<String> inBarRelatedSearches = buildRelatedSearches(true, searchTerm);
+        List<String> inPanelRelatedSearches = buildRelatedSearches(false, searchTerm);
+
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
                 resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, inPanelRelatedSearches);
@@ -864,16 +871,6 @@ public class ContextualSearchManager
         mSearchPanel.getPanelMetrics().setWasQuickActionShown(
                 quickActionShown, resolvedSearchTerm.quickActionCategory());
 
-        // If there was an error, fall back onto a literal search for the selection.
-        // Since we're showing the panel, there must be a selection.
-        String searchTerm = resolvedSearchTerm.searchTerm();
-        String alternateTerm = resolvedSearchTerm.alternateTerm();
-        boolean doPreventPreload = resolvedSearchTerm.doPreventPreload();
-        if (doLiteralSearch) {
-            searchTerm = mSelectionController.getSelectedText();
-            alternateTerm = null;
-            doPreventPreload = true;
-        }
         if (!TextUtils.isEmpty(searchTerm)) {
             // TODO(donnd): Instead of preloading, we should prefetch (ie the URL should not
             // appear in the user's history until the user views it).  See crbug.com/406446.
@@ -1393,18 +1390,36 @@ public class ContextualSearchManager
 
     @Override
     public void onRelatedSearchesSuggestionClicked(int suggestionIndex, boolean isInBarSuggestion) {
-        assert suggestionIndex < mRelatedSearches.getQueries(isInBarSuggestion).size();
+        boolean showDefaultSearch = isInBarSuggestion
+                ? ContextualSearchFieldTrial.showDefaultChipInBar()
+                : ContextualSearchFieldTrial.showDefaultChipInPanel();
+        int defaultSearchAdjustment = showDefaultSearch ? 1 : 0;
+        assert (suggestionIndex - defaultSearchAdjustment)
+                < mRelatedSearches.getQueries(isInBarSuggestion).size();
+
         if (isInBarSuggestion) mSearchPanel.expandPanel(StateChangeReason.CLICK);
-        // TODO(donnd): Does the index reflect the default query? See https://crbug.com/1216593.
-        String searchQuery = mRelatedSearches.getQueries(isInBarSuggestion).get(suggestionIndex);
-        Uri searchUri = mRelatedSearches.getSearchUri(suggestionIndex, isInBarSuggestion);
-        if (searchUri != null) {
-            mSearchRequest = new ContextualSearchRequest(searchUri);
+        if (showDefaultSearch && suggestionIndex == 0) {
+            // Click on the default query
+            mSearchRequest = new ContextualSearchRequest(mResolvedSearchTerm.searchTerm(),
+                    mResolvedSearchTerm.alternateTerm(), mResolvedSearchTerm.mid(),
+                    false /* isLowPriorityEnabled */, mResolvedSearchTerm.searchUrlFull(),
+                    mResolvedSearchTerm.searchUrlPreload());
+            mSearchPanel.setSearchTerm(mResolvedSearchTerm.searchTerm());
+            mIsRelatedSearchesSerp = false;
         } else {
-            mSearchRequest = new ContextualSearchRequest(searchQuery);
+            String searchQuery = mRelatedSearches.getQueries(isInBarSuggestion)
+                                         .get(suggestionIndex - defaultSearchAdjustment);
+            Uri searchUri = mRelatedSearches.getSearchUri(
+                    suggestionIndex - defaultSearchAdjustment, isInBarSuggestion);
+            if (searchUri != null) {
+                mSearchRequest = new ContextualSearchRequest(searchUri);
+            } else {
+                mSearchRequest = new ContextualSearchRequest(searchQuery);
+            }
+            mSearchPanel.setSearchTerm(searchQuery);
+            mIsRelatedSearchesSerp = true;
         }
-        mSearchPanel.setSearchTerm(searchQuery);
-        mIsRelatedSearchesSerp = true;
+
         // TODO(donnd): determine what to show in the Caption, if anything.
         loadSearchUrl();
 
@@ -1999,6 +2014,37 @@ public class ContextualSearchManager
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION)) {
             mSearchPanel.ensureCaption();
         }
+    }
+
+    /**
+     * Build the searches suggestions for the Bar or Panel.
+     * @param isInBarSuggestion Whether the query was displayed in the Bar or content area of the
+     *         Panel.
+     * @param defaultSearch The resolved search term..
+     * @return A {@code List<String>} of search suggestions in the bar or the Panel, or {@code null}
+     *         if the feature for showing chips is not enabled.
+     */
+    private @Nullable List<String> buildRelatedSearches(
+            boolean isInBarSuggestion, String defaultSearch) {
+        if (!ChromeFeatureList.isEnabled(isInBarSuggestion
+                            ? ChromeFeatureList.RELATED_SEARCHES_IN_BAR
+                            : ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX)) {
+            return null;
+        }
+
+        List<String> queries = mRelatedSearches.getQueries(isInBarSuggestion);
+        boolean showDefaultSearch = isInBarSuggestion
+                ? ContextualSearchFieldTrial.showDefaultChipInBar()
+                : ContextualSearchFieldTrial.showDefaultChipInPanel();
+        if (!showDefaultSearch || queries.size() == 0) {
+            return queries;
+        }
+
+        List<String> relatedSearches = new ArrayList<String>(queries.size() + 1);
+        relatedSearches.add(defaultSearch);
+        relatedSearches.addAll(queries);
+
+        return relatedSearches;
     }
 
     // ============================================================================================
