@@ -21,9 +21,9 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -196,8 +196,7 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
     return absl::nullopt;
   }
 
-  auto* tab_helper =
-      web_app::WebAppTabHelperBase::FromWebContents(web_contents);
+  auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
   if (tab_helper && tab_helper->GetAppId() == *app_id) {
     // Already in app scope, do not alter window state while using the app.
     return absl::nullopt;

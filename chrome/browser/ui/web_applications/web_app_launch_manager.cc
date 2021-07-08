@@ -78,8 +78,7 @@ void SetTabHelperAppId(content::WebContents* web_contents,
                        const std::string& app_id) {
   // TODO(https://crbug.com/1032443):
   // Eventually move this to browser_navigator.cc: CreateTargetContents().
-  WebAppTabHelperBase* tab_helper =
-      WebAppTabHelperBase::FromWebContents(web_contents);
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
   DCHECK(tab_helper);
   tab_helper->SetAppId(app_id);
 }

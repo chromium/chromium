@@ -8,8 +8,8 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_limit_enforcer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -48,8 +48,8 @@ bool WebTimeNavigationObserver::IsWebApp() const {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   if (!web_app::AreWebAppsEnabled(profile))
     return false;
-  const web_app::WebAppTabHelperBase* web_app_helper =
-      web_app::WebAppTabHelperBase::FromWebContents(web_contents());
+  const web_app::WebAppTabHelper* web_app_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents());
   return !web_app_helper->GetAppId().empty();
 }
 

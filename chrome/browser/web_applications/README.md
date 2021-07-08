@@ -132,7 +132,7 @@ The task of turning web sites into "apps" in the user's OS environment has many 
 * The `WebAppProvider` core system lives on the `Profile` object.
 * The `WebAppUiManagerImpl` also lives on the `Profile` object (to avoid deps issues).
 * The `AppBrowserController` (typically `WebAppBrowserController` for our interests) lives on the `Browser` object.
-* The `WebAppTabHelperBase` lives on the `WebContents` object.
+* The `WebAppTabHelper` lives on the `WebContents` object.
 
 While most on-disk storage is done in the [`WebAppSyncBridge`](#webappsyncbridge), the system also sometimes uses the `PrefService`. Most of these prefs live on the `Profile` (`profile->GetPrefs()`), but some prefs are in the global browser prefs (`g_browser_process->local_state()`). See the [storage](#storage) section below for more info.
 

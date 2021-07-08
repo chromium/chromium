@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_switches.h"
@@ -32,8 +31,8 @@ namespace apps {
 std::string GetAppIdForWebContents(content::WebContents* web_contents) {
   std::string app_id;
 
-  web_app::WebAppTabHelperBase* web_app_tab_helper =
-      web_app::WebAppTabHelperBase::FromWebContents(web_contents);
+  web_app::WebAppTabHelper* web_app_tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
   // web_app_tab_helper is nullptr in some unit tests.
   if (web_app_tab_helper) {
     app_id = web_app_tab_helper->GetAppId();
@@ -77,14 +76,14 @@ void SetAppIdForWebContents(Profile* profile,
           app_id);
   if (extension && !extension->from_bookmark()) {
     DCHECK(extension->is_app());
-    web_app::WebAppTabHelperBase::FromWebContents(web_contents)
+    web_app::WebAppTabHelper::FromWebContents(web_contents)
         ->SetAppId(std::string());
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionAppById(app_id);
   } else {
     web_app::AppRegistrar& registrar =
         web_app::WebAppProviderBase::GetProviderBase(profile)->registrar();
-    web_app::WebAppTabHelperBase::FromWebContents(web_contents)
+    web_app::WebAppTabHelper::FromWebContents(web_contents)
         ->SetAppId(registrar.IsInstalled(app_id) ? app_id : std::string());
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionAppById(std::string());

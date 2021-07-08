@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
-#include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -149,8 +149,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
 
   // Don't capture if already inside the target app scope.
   if (app_type == apps::mojom::AppType::kWeb) {
-    auto* tab_helper =
-        web_app::WebAppTabHelperBase::FromWebContents(web_contents);
+    auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
     if (tab_helper && tab_helper->GetAppId() == preferred_app_id.value())
       return false;
   }
