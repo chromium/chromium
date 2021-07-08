@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -229,6 +228,7 @@ public class LocationBarMediatorTest {
     private LocationBarMediator mMediator;
     private LocationBarMediator mTabletMediator;
     private UrlBarData mUrlBarData;
+    private boolean mIsToolbarMicEnabled;
 
     @Before
     public void setUp() {
@@ -248,8 +248,8 @@ public class LocationBarMediatorTest {
                 mLocationBarLayout, mLocationBarDataProvider, mProfileSupplier,
                 mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
                 mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
-                /*isTablet=*/false, mSearchEngineLogoUtils, mLensController, noAction, tab -> true,
-                (tab, transition) -> {}, VoiceToolbarButtonController::isToolbarMicEnabled);
+                /*isTablet=*/false, mSearchEngineLogoUtils, mLensController, noAction,
+                tab -> true, (tab, transition) -> {}, () -> mIsToolbarMicEnabled);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
         GSAStateShadow.setGSAState(mGSAState);
@@ -258,8 +258,8 @@ public class LocationBarMediatorTest {
                 mLocationBarTablet, mLocationBarDataProvider, mProfileSupplier,
                 mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
                 mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
-                /*isTablet=*/true, mSearchEngineLogoUtils, mLensController, noAction, tab -> true,
-                (tab, transition) -> {}, VoiceToolbarButtonController::isToolbarMicEnabled);
+                /*isTablet=*/true, mSearchEngineLogoUtils, mLensController, noAction,
+                tab -> true, (tab, transition) -> {}, () -> mIsToolbarMicEnabled);
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
     }
@@ -906,10 +906,10 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
-    public void testButtonVisibility_toolbarMicEnabled_phone() {
+    public void testButtonVisibility_phone_toolbarMicEnabled() {
         // Regression test for phones: toolbar mic visibility shouldn't impact the location
         // bar mic.
+        mIsToolbarMicEnabled = true;
         verifyPhoneMicButtonVisibility();
     }
 
@@ -940,8 +940,8 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
     public void testMicButtonVisibility_toolbarMicEnabled_tablet() {
+        mIsToolbarMicEnabled = true;
         verifyMicButtonVisibilityWhenFocusChanges(false);
     }
 
@@ -981,8 +981,8 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
     public void testButtonVisibility_showMicUnfocused_toolbarMicEnabled_tablet() {
+        mIsToolbarMicEnabled = true;
         verifyMicButtonVisibilityWhenShowMicUnfocused(false);
     }
 

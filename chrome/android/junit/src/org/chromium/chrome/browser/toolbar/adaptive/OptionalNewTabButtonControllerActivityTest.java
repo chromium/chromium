@@ -18,6 +18,7 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +32,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -49,7 +49,9 @@ import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -57,6 +59,7 @@ import java.util.NoSuchElementException;
  * ChromeTabbedActivity}.
  */
 @Config(shadows = {OptionalNewTabButtonControllerActivityTest.ShadowDelegate.class,
+                OptionalNewTabButtonControllerActivityTest.ShadowChromeFeatureList.class,
                 ShadowGURL.class})
 @RunWith(BaseRobolectricTestRunner.class)
 public class OptionalNewTabButtonControllerActivityTest {
@@ -85,6 +88,27 @@ public class OptionalNewTabButtonControllerActivityTest {
         }
     }
 
+    // TODO(crbug.com/1199025): Remove this shadow.
+    @Implements(ChromeFeatureList.class)
+    static class ShadowChromeFeatureList {
+        private static final Map<String, String> sParamValues = new HashMap<>();
+
+        @Implementation
+        public static String getFieldTrialParamByFeature(String feature, String paramKey) {
+            Assert.assertTrue(ChromeFeatureList.isEnabled(feature));
+            return sParamValues.getOrDefault(paramKey, "");
+        }
+
+        @Implementation
+        public static boolean isEnabled(String featureName) {
+            return featureName.equals(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR);
+        }
+
+        public static void reset() {
+            sParamValues.clear();
+        }
+    }
+
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private AdaptiveToolbarButtonController mAdaptiveButtonController;
     private MockTab mTab;
@@ -95,8 +119,7 @@ public class OptionalNewTabButtonControllerActivityTest {
         resetStaticState();
         CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE);
         CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, true);
-        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
+        ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
 
         MockTabModelSelector tabModelSelector = new MockTabModelSelector(
                 /*tabCount=*/1, /*incognitoTabCount=*/0, (id, incognito) -> {
@@ -114,6 +137,7 @@ public class OptionalNewTabButtonControllerActivityTest {
         mActivityScenario = ActivityScenario.launch(ChromeTabbedActivity.class);
         mActivityScenario.onActivity(activity -> {
             mAdaptiveButtonController = getAdaptiveButton(getOptionalButtonController(activity));
+            mAdaptiveButtonController.onFinishNativeInitialization();
         });
     }
 
@@ -125,6 +149,7 @@ public class OptionalNewTabButtonControllerActivityTest {
 
     private static void resetStaticState() {
         ShadowDelegate.reset();
+        ShadowChromeFeatureList.reset();
         // DisplayAndroidManager will reuse the Display between tests. This can cause
         // AsyncInitializationActivity#applyOverrides to set incorrect smallestWidth.
         DisplayAndroidManager.resetInstanceForTesting();

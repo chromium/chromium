@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -54,9 +53,6 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
 
     @Mock
     private Callback<Integer> mCallback;
-
-    @Before
-    public void setUp() {}
 
     @Test
     @SmallTest

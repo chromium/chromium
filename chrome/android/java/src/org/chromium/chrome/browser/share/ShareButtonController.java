@@ -206,18 +206,10 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
     }
 
     private static boolean isFeatureEnabled() {
-        if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) {
-            return AdaptiveToolbarFeatures.getSingleVariantMode()
-                    == AdaptiveToolbarButtonVariant.SHARE;
-        } else {
-            // For customization, we do not check the variant here, AdaptiveToolbarButtonController
-            // will check it by AdaptiveToolbarStatePredictor#recomputeUiState. We do not check here
-            // because AdaptiveToolbarStatePredictor#recomputeUiState depends on native
-            // initialization, to avoid race condition, we only check at one place, which is
-            // AdaptiveToolbarButtonController.
-            return ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR)
-                    || AdaptiveToolbarFeatures.isCustomizationEnabled();
-        }
+        return (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()
+                       && AdaptiveToolbarFeatures.getSingleVariantMode()
+                               == AdaptiveToolbarButtonVariant.SHARE)
+                || AdaptiveToolbarFeatures.isCustomizationEnabled();
     }
 
     private void notifyObservers(boolean hint) {

@@ -19,6 +19,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,9 +29,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,10 +48,30 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** Unit tests for {@link VoiceToolbarButtonController}. */
 @RunWith(LocalRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE,
+        shadows = {VoiceToolbarButtonControllerUnitTest.ShadowChromeFeatureList.class})
 public final class VoiceToolbarButtonControllerUnitTest {
+    // TODO(crbug.com/1199025): Remove this shadow.
+    @Implements(ChromeFeatureList.class)
+    static class ShadowChromeFeatureList {
+        private static final Map<String, String> sParamValues = new HashMap<>();
+
+        @Implementation
+        public static String getFieldTrialParamByFeature(String feature, String paramKey) {
+            Assert.assertTrue(ChromeFeatureList.isEnabled(feature));
+            return sParamValues.getOrDefault(paramKey, "");
+        }
+
+        public static void reset() {
+            sParamValues.clear();
+        }
+    }
+
     private static final int WIDTH_DELTA = 50;
 
     @Rule
@@ -80,6 +102,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        ShadowChromeFeatureList.reset();
 
         mConfiguration.screenWidthDp =
                 VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
@@ -104,15 +127,14 @@ public final class VoiceToolbarButtonControllerUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
     }
 
-    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
     @Test
+    @DisableFeatures({ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID,
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION,
+            ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
+    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
     public void
     onConfigurationChanged_screenWidthChanged() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
-        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_NONE);
-
         assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
 
         // Screen width shrinks below the threshold (e.g. screen rotated).
@@ -130,13 +152,14 @@ public final class VoiceToolbarButtonControllerUnitTest {
         assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
     }
 
+    @Test
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION,
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
+            ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
     @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
             ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID})
-    @Test
     public void
     testIPHCommandHelper() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
-        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_NONE);
         assertNull(mVoiceToolbarButtonController.get(/*tab*/ null)
                            .getButtonSpec()
                            .getIPHCommandBuilder());
@@ -152,13 +175,11 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
     @DisableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
             ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
     public void
     testIPHEvent() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
-        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_NONE);
         doReturn(true).when(mTracker).shouldTriggerHelpUI(
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE);
 
@@ -170,26 +191,29 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void isToolbarMicEnabled_adaptiveButtons_nonVoice() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, true);
-        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_SHARE);
-
+        ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
         assertFalse(VoiceToolbarButtonController.isToolbarMicEnabled());
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void isToolbarMicEnabled_adaptiveButtons_voice() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, true);
-        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_VOICE);
-
+        ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_VOICE);
         assertTrue(VoiceToolbarButtonController.isToolbarMicEnabled());
     }
 
-    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
     @Test
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION,
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
+            ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
+    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
+    // clang-format off
     public void isToolbarMicEnabled_toolbarMic() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
-
+        // clang-format on
         assertTrue(VoiceToolbarButtonController.isToolbarMicEnabled());
     }
 }
