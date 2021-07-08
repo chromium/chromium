@@ -4995,6 +4995,30 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Commerce.TabGridSwitched.HasPriceDrop">
+  <owner>davidjm@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <description>
+    Price drops are displayed on the Tab Grid Card in the Tab Grid Switcher for
+    commerce related websites where a decrease in price, relative to the
+    previously known price is identified. This metric records when the user
+    clicks the Tab Grid Card which contains a price drop.
+  </description>
+</action>
+
+<action name="Commerce.TabGridSwitched.NoPriceDrop">
+  <owner>davidjm@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <description>
+    Price drops are displayed on the Tab Grid Card in the Tab Grid Switcher for
+    commerce related websites where a decrease in price, relative to the
+    previously known price is identified. This metric records when the user
+    clicks the Tab Grid Card which does not contain a price drop.
+  </description>
+</action>
+
 <action name="ConfirmNotToOrderSpringCharger">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

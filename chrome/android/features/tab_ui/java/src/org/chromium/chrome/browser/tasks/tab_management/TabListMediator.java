@@ -401,6 +401,12 @@ class TabListMediator {
                                         .indexOf(toTab);
 
             RecordUserAction.record("MobileTabSwitched." + mComponentName);
+            if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled()
+                    && TabSwitcherCoordinator.COMPONENT_NAME.equals(mComponentName)) {
+                RecordUserAction.record("Commerce.TabGridSwitched."
+                        + (ShoppingPersistedTabData.hasPriceDrop(toTab) ? "HasPriceDrop"
+                                                                        : "NoPriceDrop"));
+            }
             if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) {
                 assert fromFilterIndex != toFilterIndex;
                 RecordHistogram.recordSparseHistogram("Tabs.TabOffsetOfSwitch." + mComponentName,

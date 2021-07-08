@@ -390,6 +390,19 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     /**
+     * @param tab {@link Tab} of interest.
+     * @return true if the {@link Tab} has a price drop associated with it.
+     */
+    public static boolean hasPriceDrop(Tab tab) {
+        ShoppingPersistedTabData shoppingPersistedTabData =
+                PersistedTabData.from(tab, USER_DATA_KEY);
+        if (shoppingPersistedTabData == null) {
+            return false;
+        }
+        return shoppingPersistedTabData.getPriceDrop() != null;
+    }
+
+    /**
      * Whether a BuyableProductAnnotation was found or not
      */
     @IntDef({FoundBuyableProduct.NOT_FOUND, FoundBuyableProduct.FOUND,
