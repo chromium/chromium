@@ -184,12 +184,26 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 }
 
 - (void)dealloc {
-  [self stopStillImageOutput];
-  [self stopCapture];
-  _sampleBufferTransformer.reset();
-  _weakPtrFactoryForTakePhoto = nullptr;
-  _mainThreadTaskRunner = nullptr;
-  _sampleQueue.reset();
+  {
+    // To avoid races with concurrent callbacks, grab the lock before stopping
+    // capture and clearing all the variables.
+    base::AutoLock lock(_lock);
+    [self stopStillImageOutput];
+    [self stopCapture];
+    _frameReceiver = nullptr;
+    _sampleBufferTransformer.reset();
+    _weakPtrFactoryForTakePhoto = nullptr;
+    _mainThreadTaskRunner = nullptr;
+    _sampleQueue.reset();
+  }
+  {
+    // Ensures -captureOutput has finished before we continue the destruction
+    // steps. If -captureOutput grabbed the destruction lock before us this
+    // prevents UAF. If -captureOutput grabbed the destruction lock after us
+    // it will exit early because |_frameReceiver| is already null at this
+    // point.
+    base::AutoLock destructionLock(_destructionLock);
+  }
   [super dealloc];
 }
 
@@ -887,7 +901,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   VLOG(3) << __func__;
 
   // Concurrent calls into |_frameReceiver| are not supported, so take |_lock|
-  // before any of the subsequent paths.
+  // before any of the subsequent paths. The |_destructionLock| must be grabbed
+  // first to avoid races with -dealloc.
+  base::AutoLock destructionLock(_destructionLock);
   base::AutoLock lock(_lock);
   _capturedFrameSinceLastStallCheck = YES;
   if (!_frameReceiver)
