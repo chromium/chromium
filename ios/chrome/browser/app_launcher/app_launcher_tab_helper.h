@@ -46,10 +46,9 @@ class AppLauncherTabHelper
                           bool link_transition);
 
   // web::WebStatePolicyDecider implementation
-  void ShouldAllowRequest(
+  web::WebStatePolicyDecider::PolicyDecision ShouldAllowRequest(
       NSURLRequest* request,
-      const web::WebStatePolicyDecider::RequestInfo& request_info,
-      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
+      const web::WebStatePolicyDecider::RequestInfo& request_info) override;
 
  private:
   friend class web::WebStateUserData<AppLauncherTabHelper>;

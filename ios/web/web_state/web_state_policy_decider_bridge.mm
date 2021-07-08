@@ -17,21 +17,15 @@ WebStatePolicyDeciderBridge::WebStatePolicyDeciderBridge(
 
 WebStatePolicyDeciderBridge::~WebStatePolicyDeciderBridge() = default;
 
-void WebStatePolicyDeciderBridge::ShouldAllowRequest(
+WebStatePolicyDecider::PolicyDecision
+WebStatePolicyDeciderBridge::ShouldAllowRequest(
     NSURLRequest* request,
-    const RequestInfo& request_info,
-    PolicyDecisionCallback callback) {
-  if ([decider_ respondsToSelector:@selector
-                (shouldAllowRequest:requestInfo:decisionHandler:)]) {
-    __block PolicyDecisionCallback block_callback = std::move(callback);
-    [decider_ shouldAllowRequest:request
-                     requestInfo:request_info
-                 decisionHandler:^(PolicyDecision result) {
-                   std::move(block_callback).Run(result);
-                 }];
-    return;
+    const WebStatePolicyDecider::RequestInfo& request_info) {
+  if ([decider_
+          respondsToSelector:@selector(shouldAllowRequest:requestInfo:)]) {
+    return [decider_ shouldAllowRequest:request requestInfo:request_info];
   }
-  std::move(callback).Run(PolicyDecision::Allow());
+  return WebStatePolicyDecider::PolicyDecision::Allow();
 }
 
 bool WebStatePolicyDeciderBridge::ShouldAllowErrorPageToBeDisplayed(
@@ -48,16 +42,17 @@ bool WebStatePolicyDeciderBridge::ShouldAllowErrorPageToBeDisplayed(
 void WebStatePolicyDeciderBridge::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,
-    PolicyDecisionCallback callback) {
+    base::OnceCallback<void(PolicyDecision)> callback) {
   if ([decider_ respondsToSelector:@selector
                 (decidePolicyForNavigationResponse:
-                                      forMainFrame:decisionHandler:)]) {
-    __block PolicyDecisionCallback block_callback = std::move(callback);
+                                      forMainFrame:completionHandler:)]) {
+    __block base::OnceCallback<void(PolicyDecision)> block_callback =
+        std::move(callback);
     [decider_ decidePolicyForNavigationResponse:response
                                    forMainFrame:for_main_frame
-                                decisionHandler:^(PolicyDecision result) {
-                                  std::move(block_callback).Run(result);
-                                }];
+                              completionHandler:^(PolicyDecision result) {
+                                std::move(block_callback).Run(result);
+                              }];
     return;
   }
   std::move(callback).Run(PolicyDecision::Allow());

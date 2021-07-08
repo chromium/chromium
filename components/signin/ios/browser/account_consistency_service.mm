@@ -125,16 +125,15 @@ class AccountConsistencyService::AccountConsistencyHandler
       web::PageLoadCompletionStatus load_completion_status) override;
 
   // web::WebStatePolicyDecider override.
-  void ShouldAllowRequest(
+  WebStatePolicyDecider::PolicyDecision ShouldAllowRequest(
       NSURLRequest* request,
-      const web::WebStatePolicyDecider::RequestInfo& request_info,
-      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
+      const web::WebStatePolicyDecider::RequestInfo& request_info) override;
   // Decides on navigation corresponding to |response| whether the navigation
   // should continue and updates authentication cookies on Google domains.
   void ShouldAllowResponse(
       NSURLResponse* response,
       bool for_main_frame,
-      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
+      base::OnceCallback<void(PolicyDecision)> callback) override;
   void WebStateDestroyed() override;
 
   // Loads |url| in the current tab.
@@ -165,10 +164,10 @@ AccountConsistencyService::AccountConsistencyHandler::AccountConsistencyHandler(
   web_state->AddObserver(this);
 }
 
-void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowRequest(
+web::WebStatePolicyDecider::PolicyDecision
+AccountConsistencyService::AccountConsistencyHandler::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
-    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+    const web::WebStatePolicyDecider::RequestInfo& request_info) {
   GURL url = net::GURLWithNSURL(request.URL);
   if (base::FeatureList::IsEnabled(signin::kRestoreGaiaCookiesOnUserAction) &&
       signin::IsUrlEligibleForMirrorCookie(url) &&
@@ -180,13 +179,13 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowRequest(
     // necessary.
     account_consistency_service_->AddChromeConnectedCookies();
   }
-  std::move(callback).Run(PolicyDecision::Allow());
+  return PolicyDecision::Allow();
 }
 
 void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,
-    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+    base::OnceCallback<void(PolicyDecision)> callback) {
   NSHTTPURLResponse* http_response =
       base::mac::ObjCCast<NSHTTPURLResponse>(response);
   if (!http_response) {

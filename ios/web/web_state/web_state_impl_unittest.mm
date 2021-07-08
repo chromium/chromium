@@ -118,17 +118,19 @@ class MockWebStatePolicyDecider : public WebStatePolicyDecider {
       : WebStatePolicyDecider(web_state) {}
   virtual ~MockWebStatePolicyDecider() {}
 
-  MOCK_METHOD3(ShouldAllowRequest,
-               void(NSURLRequest* request,
-                    const WebStatePolicyDecider::RequestInfo& request_info,
-                    WebStatePolicyDecider::PolicyDecisionCallback callback));
+  MOCK_METHOD2(ShouldAllowRequest,
+               WebStatePolicyDecider::PolicyDecision(
+                   NSURLRequest* request,
+                   const WebStatePolicyDecider::RequestInfo& request_info));
 
   MOCK_METHOD2(ShouldAllowErrorPageToBeDisplayed,
                bool(NSURLResponse* response, bool for_main_frame));
-  MOCK_METHOD3(ShouldAllowResponse,
-               void(NSURLResponse* response,
-                    bool for_main_frame,
-                    WebStatePolicyDecider::PolicyDecisionCallback callback));
+  MOCK_METHOD3(
+      ShouldAllowResponse,
+      void(NSURLResponse* response,
+           bool for_main_frame,
+           base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)>
+               callback));
   MOCK_METHOD0(WebStateDestroyed, void());
 };
 
@@ -618,28 +620,17 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
       /*target_main_frame=*/true,
       /*target_frame_is_cross_origin=*/false,
       /*has_user_gesture=*/false);
-  EXPECT_CALL(
-      decider,
-      ShouldAllowRequest(request, RequestInfoMatch(request_info_main_frame), _))
+  EXPECT_CALL(decider, ShouldAllowRequest(
+                           request, RequestInfoMatch(request_info_main_frame)))
       .Times(1)
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(
-      decider2,
-      ShouldAllowRequest(request, RequestInfoMatch(request_info_main_frame), _))
+      .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(decider2, ShouldAllowRequest(
+                            request, RequestInfoMatch(request_info_main_frame)))
       .Times(1)
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+      .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
 
   WebStatePolicyDecider::PolicyDecision policy_decision =
-      WebStatePolicyDecider::PolicyDecision::Cancel();
-  auto callback = base::BindRepeating(
-      [](WebStatePolicyDecider::PolicyDecision* policy_decision,
-         WebStatePolicyDecider::PolicyDecision result) {
-        *policy_decision = result;
-      },
-      base::Unretained(&policy_decision));
-  web_state_->ShouldAllowRequest(request, request_info_main_frame, callback);
+      web_state_->ShouldAllowRequest(request, request_info_main_frame);
   EXPECT_TRUE(policy_decision.ShouldAllowNavigation());
   EXPECT_FALSE(policy_decision.ShouldCancelNavigation());
 
@@ -649,17 +640,16 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
       /*target_frame_is_cross_origin=*/false,
       /*has_user_gesture=*/false);
   EXPECT_CALL(decider, ShouldAllowRequest(
-                           request, RequestInfoMatch(request_info_iframe), _))
+                           request, RequestInfoMatch(request_info_iframe)))
       .Times(1)
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+      .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
   EXPECT_CALL(decider2, ShouldAllowRequest(
-                            request, RequestInfoMatch(request_info_iframe), _))
+                            request, RequestInfoMatch(request_info_iframe)))
       .Times(1)
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+      .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
 
-  web_state_->ShouldAllowRequest(request, request_info_iframe, callback);
+  policy_decision =
+      web_state_->ShouldAllowRequest(request, request_info_iframe);
   EXPECT_TRUE(policy_decision.ShouldAllowNavigation());
   EXPECT_FALSE(policy_decision.ShouldCancelNavigation());
 
@@ -668,22 +658,23 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
   {
     bool decider_called = false;
     bool decider2_called = false;
-    EXPECT_CALL(decider,
-                ShouldAllowRequest(
-                    request, RequestInfoMatch(request_info_main_frame), _))
+    EXPECT_CALL(
+        decider,
+        ShouldAllowRequest(request, RequestInfoMatch(request_info_main_frame)))
         .Times(AtMost(1))
-        .WillOnce(DoAll(Assign(&decider_called, true),
-                        RunOnceCallback<2>(
-                            WebStatePolicyDecider::PolicyDecision::Cancel())));
-    EXPECT_CALL(decider2,
-                ShouldAllowRequest(
-                    request, RequestInfoMatch(request_info_main_frame), _))
+        .WillOnce(
+            DoAll(Assign(&decider_called, true),
+                  Return(WebStatePolicyDecider::PolicyDecision::Cancel())));
+    EXPECT_CALL(
+        decider2,
+        ShouldAllowRequest(request, RequestInfoMatch(request_info_main_frame)))
         .Times(AtMost(1))
-        .WillOnce(DoAll(Assign(&decider2_called, true),
-                        RunOnceCallback<2>(
-                            WebStatePolicyDecider::PolicyDecision::Cancel())));
+        .WillOnce(
+            DoAll(Assign(&decider2_called, true),
+                  Return(WebStatePolicyDecider::PolicyDecision::Cancel())));
 
-    web_state_->ShouldAllowRequest(request, request_info_main_frame, callback);
+    WebStatePolicyDecider::PolicyDecision policy_decision =
+        web_state_->ShouldAllowRequest(request, request_info_main_frame);
     EXPECT_FALSE(policy_decision.ShouldAllowNavigation());
     EXPECT_TRUE(policy_decision.ShouldCancelNavigation());
     EXPECT_FALSE(decider_called && decider2_called);
@@ -699,6 +690,13 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
 
+  policy_decision = WebStatePolicyDecider::PolicyDecision::Cancel();
+  auto callback = base::BindRepeating(
+      [](WebStatePolicyDecider::PolicyDecision* policy_decision,
+         WebStatePolicyDecider::PolicyDecision result) {
+        *policy_decision = result;
+      },
+      base::Unretained(&policy_decision));
   web_state_->ShouldAllowResponse(response, true, callback);
   EXPECT_TRUE(policy_decision.ShouldAllowNavigation());
   EXPECT_FALSE(policy_decision.ShouldCancelNavigation());

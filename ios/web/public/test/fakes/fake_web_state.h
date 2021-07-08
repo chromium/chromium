@@ -118,20 +118,18 @@ class FakeWebState : public WebState {
   void SetCanTakeSnapshot(bool can_take_snapshot);
 
   // Getters for test data.
-  // Uses |policy_deciders| to determine whether the navigation corresponding to
-  // |request| should be allowed. Calls |callback| with the decision. Defaults
-  // to PolicyDecision::Allow().
-  void ShouldAllowRequest(
+  // Uses |policy_deciders| to return whether the navigation corresponding to
+  // |request| should be allowed. Defaults to PolicyDecision::Allow().
+  WebStatePolicyDecider::PolicyDecision ShouldAllowRequest(
       NSURLRequest* request,
-      const WebStatePolicyDecider::RequestInfo& request_info,
-      WebStatePolicyDecider::PolicyDecisionCallback callback);
+      const WebStatePolicyDecider::RequestInfo& request_info);
   // Uses |policy_deciders| to determine whether the navigation corresponding to
   // |response| should be allowed. Calls |callback| with the decision. Defaults
   // to PolicyDecision::Allow().
   void ShouldAllowResponse(
       NSURLResponse* response,
       bool for_main_frame,
-      WebStatePolicyDecider::PolicyDecisionCallback callback);
+      base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)> callback);
   std::u16string GetLastExecutedJavascript() const;
   // Returns a copy of the last added callback, if one has been added.
   absl::optional<ScriptCommandCallback> GetLastAddedCallback() const;

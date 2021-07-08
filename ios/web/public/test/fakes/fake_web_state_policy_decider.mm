@@ -18,17 +18,16 @@ void FakeWebStatePolicyDecider::SetShouldAllowRequest(
   should_allow_request_ = should_allow_request;
 }
 
-void FakeWebStatePolicyDecider::ShouldAllowRequest(
-    NSURLRequest* request,
-    const RequestInfo& request_info,
-    PolicyDecisionCallback callback) {
-  std::move(callback).Run(should_allow_request_);
+WebStatePolicyDecider::PolicyDecision
+FakeWebStatePolicyDecider::ShouldAllowRequest(NSURLRequest* request,
+                                              const RequestInfo& request_info) {
+  return should_allow_request_;
 }
 
 void FakeWebStatePolicyDecider::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,
-    PolicyDecisionCallback callback) {
+    base::OnceCallback<void(PolicyDecision)> callback) {
   std::move(callback).Run(PolicyDecision::Allow());
 }
 

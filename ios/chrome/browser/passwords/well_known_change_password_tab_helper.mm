@@ -48,10 +48,10 @@ void WellKnownChangePasswordTabHelper::DidStartNavigation(
   }
 }
 
-void WellKnownChangePasswordTabHelper::ShouldAllowRequest(
+web::WebStatePolicyDecider::PolicyDecision
+WellKnownChangePasswordTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
-    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+    const RequestInfo& request_info) {
   GURL request_url = net::GURLWithNSURL(request.URL);
   // The custom behaviour is only used if the .well-known/change-password
   // request if the request is the main frame opened in a new tab.
@@ -76,7 +76,7 @@ void WellKnownChangePasswordTabHelper::ShouldAllowRequest(
     }
   }
 
-  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
+  return web::WebStatePolicyDecider::PolicyDecision::Allow();
 }
 
 void WellKnownChangePasswordTabHelper::ShouldAllowResponse(

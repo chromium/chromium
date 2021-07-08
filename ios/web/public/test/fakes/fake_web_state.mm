@@ -354,34 +354,23 @@ void FakeWebState::OnWebFrameWillBecomeUnavailable(WebFrame* frame) {
   }
 }
 
-void FakeWebState::ShouldAllowRequest(
+WebStatePolicyDecider::PolicyDecision FakeWebState::ShouldAllowRequest(
     NSURLRequest* request,
-    const WebStatePolicyDecider::RequestInfo& request_info,
-    WebStatePolicyDecider::PolicyDecisionCallback callback) {
-  auto request_state_tracker =
-      std::make_unique<PolicyDecisionStateTracker>(std::move(callback));
-  PolicyDecisionStateTracker* request_state_tracker_ptr =
-      request_state_tracker.get();
-  auto policy_decider_callback = base::BindRepeating(
-      &PolicyDecisionStateTracker::OnSinglePolicyDecisionReceived,
-      base::Owned(std::move(request_state_tracker)));
-  int num_decisions_requested = 0;
+    const WebStatePolicyDecider::RequestInfo& request_info) {
   for (auto& policy_decider : policy_deciders_) {
-    policy_decider.ShouldAllowRequest(request, request_info,
-                                      policy_decider_callback);
-    num_decisions_requested++;
-    if (request_state_tracker_ptr->DeterminedFinalResult())
-      break;
+    WebStatePolicyDecider::PolicyDecision result =
+        policy_decider.ShouldAllowRequest(request, request_info);
+    if (result.ShouldCancelNavigation()) {
+      return result;
+    }
   }
-
-  request_state_tracker_ptr->FinishedRequestingDecisions(
-      num_decisions_requested);
+  return WebStatePolicyDecider::PolicyDecision::Allow();
 }
 
 void FakeWebState::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,
-    WebStatePolicyDecider::PolicyDecisionCallback callback) {
+    base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)> callback) {
   auto response_state_tracker =
       std::make_unique<PolicyDecisionStateTracker>(std::move(callback));
   PolicyDecisionStateTracker* response_state_tracker_ptr =

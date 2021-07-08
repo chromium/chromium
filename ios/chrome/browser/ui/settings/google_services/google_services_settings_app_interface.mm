@@ -27,10 +27,9 @@ class NavigationBlockerDecider
   NavigationBlockerDecider(web::WebState* web_state)
       : web::WebStatePolicyDecider(web_state) {}
 
-  void ShouldAllowRequest(NSURLRequest* request,
-                          const RequestInfo& request_info,
-                          PolicyDecisionCallback callback) override {
-    std::move(callback).Run(PolicyDecision::Cancel());
+  PolicyDecision ShouldAllowRequest(NSURLRequest* request,
+                                    const RequestInfo& request_info) override {
+    return PolicyDecision::Cancel();
   }
 
   WEB_STATE_USER_DATA_KEY_DECL();

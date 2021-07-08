@@ -69,7 +69,7 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
       std::move(callback).Run(CreateLookalikeErrorDecision());
       return;
     }
-    std::move(callback).Run(
+    return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 

@@ -19,10 +19,10 @@ WebViewWebStatePolicyDecider::WebViewWebStatePolicyDecider(
     CWVWebView* web_view)
     : web::WebStatePolicyDecider(web_state), web_view_(web_view) {}
 
-void WebViewWebStatePolicyDecider::ShouldAllowRequest(
+web::WebStatePolicyDecider::PolicyDecision
+WebViewWebStatePolicyDecider::ShouldAllowRequest(
     NSURLRequest* request,
-    const WebStatePolicyDecider::RequestInfo& request_info,
-    WebStatePolicyDecider::PolicyDecisionCallback callback) {
+    const web::WebStatePolicyDecider::RequestInfo& request_info) {
   id<CWVNavigationDelegate> delegate = web_view_.navigationDelegate;
   if ([delegate respondsToSelector:@selector
                 (webView:shouldStartLoadWithRequest:navigationType:)]) {
@@ -36,18 +36,16 @@ void WebViewWebStatePolicyDecider::ShouldAllowRequest(
         shouldStartLoadWithRequest:request
                     navigationType:navigation_type];
     if (!allow) {
-      return std::move(callback).Run(
-          web::WebStatePolicyDecider::WebStatePolicyDecider::PolicyDecision::
-              Cancel());
+      return WebStatePolicyDecider::PolicyDecision::Cancel();
     }
   }
-  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
+  return WebStatePolicyDecider::PolicyDecision::Allow();
 }
 
 void WebViewWebStatePolicyDecider::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,
-    WebStatePolicyDecider::PolicyDecisionCallback callback) {
+    base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)> callback) {
   id<CWVNavigationDelegate> delegate = web_view_.navigationDelegate;
   if ([delegate respondsToSelector:@selector
                 (webView:shouldContinueLoadWithResponse:forMainFrame:)]) {
@@ -55,8 +53,8 @@ void WebViewWebStatePolicyDecider::ShouldAllowResponse(
         shouldContinueLoadWithResponse:response
                           forMainFrame:for_main_frame];
     if (!allow) {
-      return std::move(callback).Run(
-          WebStatePolicyDecider::PolicyDecision::Cancel());
+      std::move(callback).Run(WebStatePolicyDecider::PolicyDecision::Cancel());
+      return;
     };
   }
   std::move(callback).Run(WebStatePolicyDecider::PolicyDecision::Allow());

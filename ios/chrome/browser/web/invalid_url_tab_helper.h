@@ -23,10 +23,8 @@ class InvalidUrlTabHelper : public web::WebStatePolicyDecider,
 
  private:
   explicit InvalidUrlTabHelper(web::WebState* web_state);
-  void ShouldAllowRequest(
-      NSURLRequest* request,
-      const web::WebStatePolicyDecider::RequestInfo& request_info,
-      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
+  PolicyDecision ShouldAllowRequest(NSURLRequest* request,
+                                    const RequestInfo& request_info) override;
 
   friend class web::WebStateUserData<InvalidUrlTabHelper>;
   WEB_STATE_USER_DATA_KEY_DECL();

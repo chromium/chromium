@@ -98,10 +98,9 @@ class SafeBrowsingTabHelper
     };
 
     // web::WebStatePolicyDecider implementation
-    void ShouldAllowRequest(
+    web::WebStatePolicyDecider::PolicyDecision ShouldAllowRequest(
         NSURLRequest* request,
-        const web::WebStatePolicyDecider::RequestInfo& request_info,
-        web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
+        const web::WebStatePolicyDecider::RequestInfo& request_info) override;
     void ShouldAllowResponse(
         NSURLResponse* response,
         bool for_main_frame,

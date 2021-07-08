@@ -566,20 +566,18 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 }
 #pragma mark - CRWWebStatePolicyDecider
 
-- (void)shouldAllowRequest:(NSURLRequest*)request
-               requestInfo:
-                   (const WebStatePolicyDecider::RequestInfo&)requestInfo
-           decisionHandler:(PolicyDecisionHandler)decisionHandler {
+- (WebStatePolicyDecider::PolicyDecision)
+    shouldAllowRequest:(NSURLRequest*)request
+           requestInfo:(const WebStatePolicyDecider::RequestInfo&)info {
   GURL requestURL = net::GURLWithNSURL(request.URL);
   // Don't allow preloading for requests that are handled by opening another
   // application or by presenting a native UI.
   if (AppLauncherTabHelper::IsAppUrl(requestURL) ||
       ITunesUrlsHandlerTabHelper::CanHandleUrl(requestURL)) {
     [self schedulePrerenderCancel];
-    decisionHandler(WebStatePolicyDecider::PolicyDecision::Cancel());
-    return;
+    return WebStatePolicyDecider::PolicyDecision::Cancel();
   }
-  decisionHandler(WebStatePolicyDecider::PolicyDecision::Allow());
+  return WebStatePolicyDecider::PolicyDecision::Allow();
 }
 
 #pragma mark - ManageAccountsDelegate

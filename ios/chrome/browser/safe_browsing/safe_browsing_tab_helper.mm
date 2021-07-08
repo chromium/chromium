@@ -132,18 +132,16 @@ void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameServerRedirect() {
 
 #pragma mark web::WebStatePolicyDecider
 
-void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
+web::WebStatePolicyDecider::PolicyDecision
+SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
-    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+    const web::WebStatePolicyDecider::RequestInfo& request_info) {
   // Allow navigations for URLs that cannot be checked by the service.
   GURL request_url = GetCanonicalizedUrl(net::GURLWithNSURL(request.URL));
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
-  if (!safe_browsing_service->CanCheckUrl(request_url)) {
-    return std::move(callback).Run(
-        web::WebStatePolicyDecider::PolicyDecision::Allow());
-  }
+  if (!safe_browsing_service->CanCheckUrl(request_url))
+    return web::WebStatePolicyDecider::PolicyDecision::Allow();
 
   // Track all pending URL queries.
   bool is_main_frame = request_info.target_frame_is_main;
@@ -172,8 +170,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
       // error decision once error pages for cancelled requests are supported.
       // For now, only cancelled response errors are displayed properly.
       pending_main_frame_query_->decision = CreateSafeBrowsingErrorDecision();
-      return std::move(callback).Run(
-          web::WebStatePolicyDecider::PolicyDecision::Allow());
+      return web::WebStatePolicyDecider::PolicyDecision::Allow();
     }
 
     // Error pages for unsafe subframes are triggered by associating an
@@ -193,8 +190,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
       // error decision once error pages for cancelled requests are supported.
       // For now, only cancelled response errors are displayed properly.
       pending_main_frame_query_->decision = CreateSafeBrowsingErrorDecision();
-      return std::move(callback).Run(
-          web::WebStatePolicyDecider::PolicyDecision::Allow());
+      return web::WebStatePolicyDecider::PolicyDecision::Allow();
     }
   }
 
@@ -205,8 +201,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
             web_state()->GetNavigationManager()->GetLastCommittedItem()) {
       main_frame_item_id = item->GetUniqueID();
     } else {
-      return std::move(callback).Run(
-          web::WebStatePolicyDecider::PolicyDecision::Allow());
+      return web::WebStatePolicyDecider::PolicyDecision::Allow();
     }
   }
 
@@ -216,20 +211,22 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
 
   // Allow all requests to continue.  If a safe browsing error is detected, the
   // navigation will be cancelled for using the response policy decision.
-  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
+  return web::WebStatePolicyDecider::PolicyDecision::Allow();
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,
-    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+    base::OnceCallback<void(web::WebStatePolicyDecider::PolicyDecision)>
+        callback) {
   // Allow navigations for URLs that cannot be checked by the service.
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   GURL response_url = GetCanonicalizedUrl(net::GURLWithNSURL(response.URL));
   if (!safe_browsing_service->CanCheckUrl(response_url)) {
-    return std::move(callback).Run(
+    std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
   }
 
   if (for_main_frame) {
