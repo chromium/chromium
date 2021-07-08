@@ -127,8 +127,6 @@ class TranslatePrefsTest : public testing::Test {
   // Shared time constants.
   base::Time now_;
   base::Time two_days_ago_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that GetLanguageInfoList() returns the correct list of languages based
@@ -1076,19 +1074,39 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
   EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
       &translate_accept_languages, "en"));
 
-  // Blocked language that is not in accept languages.
+  // Blocked languages that are not in accept languages are not blocked.
   translate_prefs_->BlockLanguage("de");
   EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
       &translate_accept_languages, "de"));
 
-  // English in force translate experiment.
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      language::kOverrideTranslateTriggerInIndia,
-      {{"override_model", "heuristic"},
-       {"enforce_ranker", "false"},
-       {"backoff_threshold", "1"}});
-  EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-      &translate_accept_languages, "en"));
+// When the detailed language settings are enabled blocked languages not in
+// accept languages can be translated.
+#if defined(OS_ANDROID)
+  {  // Android scoped feature.
+    base::test::ScopedFeatureList scoped_feature_list(
+        language::kDetailedLanguageSettings);
+    EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
+        &translate_accept_languages, "de"));
+  }
+#elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  {  // Desktop scoped feature.
+    base::test::ScopedFeatureList scoped_feature_list(
+        language::kDesktopDetailedLanguageSettings);
+    EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
+        &translate_accept_languages, "de"));
+  }
+#endif
+
+  {  // English in force translate experiment scoped feature.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        language::kOverrideTranslateTriggerInIndia,
+        {{"override_model", "heuristic"},
+         {"enforce_ranker", "false"},
+         {"backoff_threshold", "1"}});
+    EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
+        &translate_accept_languages, "en"));
+  }
 }
 
 TEST_F(TranslatePrefsTest, ForceTriggerOnEnglishPagesCount) {

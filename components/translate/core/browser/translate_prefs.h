@@ -300,6 +300,8 @@ class TranslatePrefs {
                             base::StringPiece language);
   bool ShouldAutoTranslate(base::StringPiece source_language,
                            std::string* target_language);
+  // True if the detailed language settings are enabled for this user.
+  static bool IsDetailedLanguageSettingsEnabled();
 
   // Stores and retrieves the last-observed translate target language. Used to
   // determine which target language to offer in future. The translate target

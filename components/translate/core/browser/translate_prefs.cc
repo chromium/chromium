@@ -756,20 +756,19 @@ void TranslatePrefs::GetUserSelectedLanguageList(
 bool TranslatePrefs::CanTranslateLanguage(
     TranslateAcceptLanguages* accept_languages,
     base::StringPiece language) {
-  // Don't translate any user blocklisted languages.
+  // Languages not on the blocklist can always be translated.
   if (!IsBlockedLanguage(language))
     return true;
 
-  // Checking |is_accept_language| is necessary because if the user eliminates
-  // the language from the preference, it is natural to forget whether or not
-  // the language should be translated. Checking |cannot_be_accept_language| is
-  // also necessary because some minor languages can't be selected in the
-  // language preference even though the language is available in Translate
-  // server.
+  // Languages not on the Accept-Language list should not be blocked unless the
+  // detailed language settings are showing or the language can not be on the
+  // Accept-Language list (this is true for languages that do not have a ICU
+  // localization for the current UI locale.
   bool can_be_accept_language =
       TranslateAcceptLanguages::CanBeAcceptLanguage(language);
   bool is_accept_language = accept_languages->IsAcceptLanguage(language);
-  if (!is_accept_language && can_be_accept_language)
+  if (!is_accept_language && can_be_accept_language &&
+      !IsDetailedLanguageSettingsEnabled())
     return true;
 
   // Under this experiment, translate English page even though English may be
@@ -777,6 +776,17 @@ bool TranslatePrefs::CanTranslateLanguage(
   if (language == "en" && language::ShouldForceTriggerTranslateOnEnglishPages(
                               GetForceTriggerOnEnglishPagesCount()))
     return true;
+  return false;
+}
+
+// static
+bool TranslatePrefs::IsDetailedLanguageSettingsEnabled() {
+#if defined(OS_ANDROID)
+  return base::FeatureList::IsEnabled(language::kDetailedLanguageSettings);
+#elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  return base::FeatureList::IsEnabled(
+      language::kDesktopDetailedLanguageSettings);
+#endif
   return false;
 }
 
