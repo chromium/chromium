@@ -115,7 +115,10 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         NoteCreationMetrics.recordNoteCreationStatus(/*created=*/true);
         NoteCreationMetrics.recordNbTemplateChanges(mDialog.getNbTemplateSwitches());
 
-        View noteView = mDialog.getNoteViewAt(mDialog.getSelectedItemIndex());
+        int selectedNoteIndex = mDialog.getSelectedItemIndex();
+        NoteCreationMetrics.recordSelectedTemplateId(
+                mListModel.get(selectedNoteIndex).model.get(NoteProperties.TEMPLATE).id);
+        View noteView = mDialog.getNoteViewAt(selectedNoteIndex);
 
         assert noteView != null;
 

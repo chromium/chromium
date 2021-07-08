@@ -26,6 +26,24 @@ public final class NoteCreationMetrics {
         int NUM_ENTRIES = 3;
     }
 
+    // Constants used to log the selected template ID.
+    // This is a mirror of the NoteTemplateIds enum found in
+    // components/content_creation/notes/core/templates/template_types.h
+    private @interface NoteTemplateIds {
+        int UNKNOWN = 0;
+        int CLASSIC = 1;
+        int FRIENDLY = 2;
+        int FRESH = 3;
+        int POWERFUL = 4;
+        int IMPACTFUL = 5;
+        int LOVELY = 6;
+        int GROOVY = 7;
+        int MONOCHROME = 8;
+        int BOLD = 9;
+        int DREAMY = 10;
+        int NUM_ENTRIES = 11;
+    }
+
     public static void recordNoteCreationSelected() {
         RecordHistogram.recordEnumeratedHistogram("NoteCreation.Funnel",
                 NoteCreationFunnel.NOTE_CREATION_SELECTED, NoteCreationFunnel.NUM_ENTRIES);
@@ -52,6 +70,17 @@ public final class NoteCreationMetrics {
 
     public static void recordNbTemplateChanges(int nbChanges) {
         RecordHistogram.recordCount100Histogram("NoteCreation.NumberOfTemplateChanges", nbChanges);
+    }
+
+    public static void recordSelectedTemplateId(int selectedTemplateId) {
+        assert selectedTemplateId < NoteTemplateIds.NUM_ENTRIES;
+
+        if (selectedTemplateId >= NoteTemplateIds.NUM_ENTRIES) {
+            selectedTemplateId = NoteTemplateIds.UNKNOWN;
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "NoteCreation.SelectedTemplate", selectedTemplateId, NoteTemplateIds.NUM_ENTRIES);
     }
 
     // Empty private constructor for the "static" class.

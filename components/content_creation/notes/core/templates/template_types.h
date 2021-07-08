@@ -11,7 +11,8 @@ namespace content_creation {
 
 using ARGBColor = uint32_t;
 
-// Represents all currently known templates.
+// Represents all currently known templates. Keep this enum in sync with its
+// Java counterpart of the same name (in NoteCreationMetrics.java).
 enum class NoteTemplateIds {
   kUnknown = 0,
   kClassic = 1,
