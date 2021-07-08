@@ -6,6 +6,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/bookmarks/common/bookmark_pref_names.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
@@ -376,6 +378,36 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
                  chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
                      IDS_IOS_BOOKMARK_EDIT_SCREEN_TITLE)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that Add to Bookmarks action is greyed out when editBookmarksEnabled
+// pref is set to false.
+- (void)testTabGridItemContextMenuAddToBookmarkGreyed {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Context menu item traits are only set correctly after iOS 14.");
+  }
+  [ChromeEarlGreyAppInterface
+      setBoolValue:NO
+       forUserPref:base::SysUTF8ToNSString(
+                       bookmarks::prefs::kEditBookmarksEnabled)];
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+  [[EarlGrey selectElementWithMatcher:AddToBookmarksButton()]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
+  [ChromeEarlGreyAppInterface
+      setBoolValue:YES
+       forUserPref:base::SysUTF8ToNSString(
+                       bookmarks::prefs::kEditBookmarksEnabled)];
 }
 
 // Tests the Share action on a tab grid item's context menu.

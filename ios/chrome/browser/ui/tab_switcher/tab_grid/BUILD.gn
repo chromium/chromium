@@ -222,6 +222,7 @@ source_set("eg2_tests") {
   deps = [
     ":tab_grid_ui_constants",
     "//base",
+    "//components/bookmarks/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
