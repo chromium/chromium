@@ -6888,6 +6888,7 @@ crbug.com/v8/11365 external/wpt/html/browsers/offline/introduction-4/event_progr
 crbug.com/v8/11365 external/wpt/html/dom/usvstring-reflection.https.html [ Failure Pass ]
 crbug.com/v8/11365 external/wpt/html/semantics/rellist-feature-detection.html [ Failure Pass ]
 crbug.com/v8/11365 external/wpt/html/semantics/embedded-content/the-object-element/usemap-casing.html [ Failure Pass ]
+crbug.com/v8/11365 [ Mac ] external/wpt/html/semantics/forms/input-change-event-properties.html [ Failure Pass ]
 crbug.com/v8/11365 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/contentType.window.html [ Failure Pass ]
 crbug.com/v8/11365 external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator-window-controls-overlay.html [ Failure Pass ]
 crbug.com/v8/11365 external/wpt/input-events/input-events-exec-command.html [ Failure Pass ]
