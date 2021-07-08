@@ -115,11 +115,11 @@ void ClientSideDetectionHostDelegate::AddReferrerChain(
 
 size_t ClientSideDetectionHostDelegate::CountOfRecentNavigationsToAppend(
     SafeBrowsingNavigationObserverManager::AttributionResult result) {
+  auto* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   return web_contents_ ? SafeBrowsingNavigationObserverManager::
                              CountOfRecentNavigationsToAppend(
-                                 *Profile::FromBrowserContext(
-                                     web_contents_->GetBrowserContext()),
-                                 result)
+                                 profile, profile->GetPrefs(), result)
                        : 0u;
 }
 

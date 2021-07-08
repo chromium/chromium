@@ -13,11 +13,7 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -299,9 +295,9 @@ GURL SafeBrowsingNavigationObserverManager::ClearURLRef(const GURL& url) {
 
 // static
 bool SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
-    Profile* profile) {
-  return IsSafeBrowsingEnabled(*profile->GetPrefs()) &&
-         g_browser_process->safe_browsing_service();
+    PrefService* prefs,
+    SafeBrowsingServiceInterface* safe_browsing_service) {
+  return IsSafeBrowsingEnabled(*prefs) && safe_browsing_service;
 }
 
 // static
@@ -606,10 +602,11 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
 
 // static
 size_t SafeBrowsingNavigationObserverManager::CountOfRecentNavigationsToAppend(
-    const Profile& profile,
+    content::BrowserContext* browser_context,
+    PrefService* prefs,
     AttributionResult result) {
-  if (!IsExtendedReportingEnabled(*profile.GetPrefs()) ||
-      profile.IsOffTheRecord() || result == SUCCESS_LANDING_REFERRER) {
+  if (!IsExtendedReportingEnabled(*prefs) ||
+      browser_context->IsOffTheRecord() || result == SUCCESS_LANDING_REFERRER) {
     return 0u;
   }
   return kMaxNumberOfNavigationsToAppend;

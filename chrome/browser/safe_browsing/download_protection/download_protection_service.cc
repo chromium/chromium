@@ -498,12 +498,12 @@ DownloadProtectionService::IdentifyReferrerChain(
 
   // Determines how many recent navigation events to append to referrer chain
   // if any.
+  auto* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   size_t recent_navigations_to_collect =
       web_contents ? SafeBrowsingNavigationObserverManager::
                          CountOfRecentNavigationsToAppend(
-                             *Profile::FromBrowserContext(
-                                 web_contents->GetBrowserContext()),
-                             result)
+                             profile, profile->GetPrefs(), result)
                    : 0u;
   GetNavigationObserverManager(web_contents)
       ->AppendRecentNavigations(recent_navigations_to_collect,
@@ -543,12 +543,12 @@ DownloadProtectionService::IdentifyReferrerChain(
 
   // Determines how many recent navigation events to append to referrer chain
   // if any.
+  auto* profile = Profile::FromBrowserContext(item.browser_context);
   size_t recent_navigations_to_collect =
-      item.browser_context
-          ? SafeBrowsingNavigationObserverManager::
-                CountOfRecentNavigationsToAppend(
-                    *Profile::FromBrowserContext(item.browser_context), result)
-          : 0u;
+      item.browser_context ? SafeBrowsingNavigationObserverManager::
+                                 CountOfRecentNavigationsToAppend(
+                                     profile, profile->GetPrefs(), result)
+                           : 0u;
   GetNavigationObserverManager(item.web_contents)
       ->AppendRecentNavigations(recent_navigations_to_collect,
                                 referrer_chain.get());

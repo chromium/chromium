@@ -35,6 +35,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -1151,7 +1152,8 @@ WebstorePrivateGetReferrerChainFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateGetReferrerChainFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(profile))
+  if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
+          profile->GetPrefs(), g_browser_process->safe_browsing_service()))
     return RespondNow(ArgumentList(
         api::webstore_private::GetReferrerChain::Results::Create("")));
 
@@ -1177,7 +1179,7 @@ WebstorePrivateGetReferrerChainFunction::Run() {
   // Scout reporting. Otherwise, |CountOfRecentNavigationsToAppend| returns 0.
   int recent_navigations_to_collect =
       SafeBrowsingNavigationObserverManager::CountOfRecentNavigationsToAppend(
-          *profile, result);
+          profile, profile->GetPrefs(), result);
   if (recent_navigations_to_collect > 0) {
     navigation_observer_manager->AppendRecentNavigations(
         recent_navigations_to_collect, &referrer_chain);

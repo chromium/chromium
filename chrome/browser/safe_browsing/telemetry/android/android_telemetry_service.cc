@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -171,7 +172,8 @@ const PrefService* AndroidTelemetryService::GetPrefs() {
 void AndroidTelemetryService::FillReferrerChain(
     content::WebContents* web_contents,
     ClientSafeBrowsingReportRequest* report) {
-  if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(profile_)) {
+  if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
+          profile_->GetPrefs(), g_browser_process->safe_browsing_service())) {
     RecordApkDownloadTelemetryIncompleteReason(
         ApkDownloadTelemetryIncompleteReason::SB_NAVIGATION_MANAGER_NOT_READY);
     return;
@@ -204,7 +206,8 @@ void AndroidTelemetryService::FillReferrerChain(
   // Determines how many recent navigation events to append to referrer chain.
   size_t recent_navigations_to_collect =
       profile_ ? SafeBrowsingNavigationObserverManager::
-                     CountOfRecentNavigationsToAppend(*profile_, result)
+                     CountOfRecentNavigationsToAppend(
+                         profile_, profile_->GetPrefs(), result)
                : 0u;
   if (observer_manager) {
     observer_manager->AppendRecentNavigations(recent_navigations_to_collect,

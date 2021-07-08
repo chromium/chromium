@@ -527,12 +527,13 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
                                      extended_reporting_enabled);
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
                                                  extended_reporting_enabled);
+    auto* maybe_otr_profile = is_incognito
+                                  ? browser()->profile()->GetPrimaryOTRProfile(
+                                        /*create_if_needed=*/true)
+                                  : browser()->profile();
     return SafeBrowsingNavigationObserverManager::
-        CountOfRecentNavigationsToAppend(
-            is_incognito ? *browser()->profile()->GetPrimaryOTRProfile(
-                               /*create_if_needed=*/true)
-                         : *browser()->profile(),
-            result);
+        CountOfRecentNavigationsToAppend(maybe_otr_profile,
+                                         maybe_otr_profile->GetPrefs(), result);
   }
 
   void AppendRecentNavigations(int recent_navigation_count,

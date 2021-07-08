@@ -12,6 +12,7 @@
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
@@ -20,7 +21,6 @@
 #include "url/gurl.h"
 
 class PrefService;
-class Profile;
 
 namespace content {
 class NavigationHandle;
@@ -171,7 +171,9 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   // Checks if we should enable observing navigations for safe browsing purpose.
   // Return true if the safe browsing safe browsing service is enabled and
   // initialized.
-  static bool IsEnabledAndReady(Profile* profile);
+  static bool IsEnabledAndReady(
+      PrefService* prefs,
+      SafeBrowsingServiceInterface* safe_browsing_service);
 
   // Sanitize referrer chain by only keeping origin information of all URLs.
   static void SanitizeReferrerChain(ReferrerChain* referrer_chain);
@@ -265,8 +267,10 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
 
   // Based on user state, attribution result and finch parameter, calculates the
   // number of recent navigations we want to append to the referrer chain.
-  static size_t CountOfRecentNavigationsToAppend(const Profile& profile,
-                                                 AttributionResult result);
+  static size_t CountOfRecentNavigationsToAppend(
+      content::BrowserContext* browser_context,
+      PrefService* prefs,
+      AttributionResult result);
 
   // Appends |recent_navigation_count| number of recent navigation events to
   // referrer chain in reverse chronological order.
