@@ -153,7 +153,7 @@ class VideoEncoderTest : public ::testing::Test {
     // couldn't compress a low resolution video efficiently with a low bitrate.
     constexpr gfx::Size k360p(640, 360);
     constexpr double kSSIMToleranceForLowerResolution = 0.65;
-    const gfx::Size encode_resolution = video->VisibleRect().size();
+    const gfx::Size encode_resolution = decoder_config.visible_rect().size();
     const double ssim_tolerance =
         encode_resolution.GetArea() < k360p.GetArea()
             ? kSSIMToleranceForLowerResolution
