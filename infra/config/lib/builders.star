@@ -783,6 +783,15 @@ _BOOTSTRAP_ALLOWLIST = {e: True for e in [
     ("try", "linux-bootstrap"),
 ]}
 
+_NON_BOOTSTRAPPED_PROPERTIES = [
+    # Sheriff-o-Matic queries for builder_group in the input properties to find
+    # builds for the main sheriff rotation. Bootstrapped properties don't appear
+    # in the build's input properties, so don't bootstrap this property.
+    # TODO(gbeaty) When finalized input properties are exported to BQ, remove
+    # this.
+    "builder_group",
+]
+
 def _bootstrap_key(bucket_name, builder_name):
     return graph.key("@chromium", "", "bootstrap", "{}/{}".format(bucket_name, builder_name))
 
@@ -822,11 +831,8 @@ def _bootstrap_properties(ctx):
                 fail("{}/{} is not approved for bootstrapping at this time"
                     .format(bucket_name, builder_name))
 
-            builder_properties = json.decode(builder.properties)
             properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
-            ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
-
-            builder.properties = json.encode({
+            non_bootstrapped_properties = {
                 "$bootstrap": {
                     "top_level_project": {
                         "repo": {
@@ -838,7 +844,14 @@ def _bootstrap_properties(ctx):
                     "properties_file": "infra/config/generated/{}".format(properties_file),
                     "exe": builder.exe,
                 },
-            })
+            }
+            builder_properties = json.decode(builder.properties)
+            for p in _NON_BOOTSTRAPPED_PROPERTIES:
+                if p in builder_properties:
+                    non_bootstrapped_properties[p] = builder_properties.pop(p)
+            ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
+
+            builder.properties = json.encode(non_bootstrapped_properties)
 
             builder.exe.cipd_package = "infra/chromium/bootstrapper/${platform}"
             builder.exe.cipd_version = "latest"
