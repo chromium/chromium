@@ -1,13 +1,14 @@
+<iframe width="96" height="96" src="iframe_with_image.html"></iframe>
 <script>
   const lcpPromise = new Promise(resolve => {
     window.addEventListener("message", event => {
       iframeLCP = event.data.startTime;
       timeOriginDelta = event.data.timeOrigin - performance.timeOrigin;
-      resolve(iframeLCP + timeOriginDelta);
+      lcpTime = iframeLCP + timeOriginDelta;
+      resolve();
     });
   });
-  function waitForLCP() {
-    return lcpPromise;
+  async function waitForLCP() {
+    await lcpPromise;
   }
 </script>
-<iframe width="96" height="96" src="iframe_with_image.html"></iframe>

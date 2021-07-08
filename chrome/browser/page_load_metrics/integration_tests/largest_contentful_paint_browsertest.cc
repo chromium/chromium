@@ -166,11 +166,12 @@ class PageViewportInLCPTest : public MetricIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
+IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, DISABLED_FullSizeImageInIframe) {
   Start();
   StartTracing({"loading"});
   Load("/full_size_image.html");
-  double lcpTime = EvalJs(web_contents(), "waitForLCP()").ExtractDouble();
+  content::EvalJsResult result = EvalJs(web_contents(), "waitForLCP()");
+  double lcpTime = EvalJs(web_contents(), "lcpTime").ExtractDouble();
 
   // Navigate away to force metrics recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
