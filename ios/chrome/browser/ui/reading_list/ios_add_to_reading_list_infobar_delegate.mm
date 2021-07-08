@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/ui/reading_list/ios_add_to_reading_list_infobar_delegate.h"
 
+#import <Foundation/Foundation.h>
+
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/infobars/core/infobar.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/web/public/web_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -62,5 +65,8 @@ bool IOSAddToReadingListInfobarDelegate::Accept() {
         .SetAddedFromMessages(true)
         .Record(ukm::UkmRecorder::Get());
   }
+  [[NSUserDefaults standardUserDefaults]
+      setBool:YES
+       forKey:kLastReadingListEntryAddedFromMessages];
   return true;
 }

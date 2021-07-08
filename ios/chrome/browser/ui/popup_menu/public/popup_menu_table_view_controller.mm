@@ -5,12 +5,16 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 
 #include "base/ios/ios_util.h"
+#include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_tools_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_footer_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_constants.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -189,6 +193,51 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 }
 
 #pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+      willDisplayCell:(UITableViewCell*)cell
+    forRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewItem<PopupMenuItem>* item =
+      [self.tableViewModel itemAtIndexPath:indexPath];
+  PopupMenuToolsItem* popupToolsItem =
+      base::mac::ObjCCast<PopupMenuToolsItem>(item);
+  // Only consider doing animation if the Reading List badge is visible.
+  if (item.actionIdentifier != PopupMenuActionReadingList ||
+      popupToolsItem.badgeNumber == 0) {
+    return;
+  }
+  // Show display animation of Reading List Unread Badge if the Reading List
+  // Messages experiment is enabled and a page was added by the Messages
+  // recently.
+  BOOL shouldShowUnreadBadgeAnimation =
+      IsReadingListMessagesEnabled() &&
+      [[NSUserDefaults standardUserDefaults]
+          boolForKey:kShouldAnimateReadingListOverflowMenuUnreadCountBadge];
+  if (shouldShowUnreadBadgeAnimation) {
+    PopupMenuToolsCell* readingListCell =
+        base::mac::ObjCCast<PopupMenuToolsCell>(cell);
+    readingListCell.numberBadgeView.alpha = 0;
+    readingListCell.numberBadgeView.transform =
+        CGAffineTransformMakeScale(0.1, 0.1);
+    __weak PopupMenuToolsCell* weakCell = readingListCell;
+    [UIView animateWithDuration:kReadingListUnreadCountBadgeAnimationDuration
+        delay:0.1
+        options:UIViewAnimationOptionBeginFromCurrentState
+        animations:^{
+          if (weakCell) {
+            weakCell.numberBadgeView.transform = CGAffineTransformIdentity;
+            weakCell.numberBadgeView.alpha = 1;
+          }
+        }
+        completion:^(BOOL finished) {
+          if (finished) {
+            [[NSUserDefaults standardUserDefaults]
+                setBool:NO
+                 forKey:kShouldAnimateReadingListOverflowMenuUnreadCountBadge];
+          }
+        }];
+  }
+}
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {

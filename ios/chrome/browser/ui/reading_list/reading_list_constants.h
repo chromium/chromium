@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_CONSTANTS_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Accessibility identifier for reading list view.
 extern NSString* const kReadingListViewID;
@@ -22,5 +22,9 @@ extern NSString* const kReadingListToolbarMarkButtonID;
 
 // NSUserDefault key to save last time a Messages prompt was shown.
 extern NSString* const kLastTimeUserShownReadingListMessages;
+extern NSString* const kLastReadingListEntryAddedFromMessages;
+extern NSString* const kShouldAnimateReadingListNTPUnreadCountBadge;
+extern NSString* const kShouldAnimateReadingListOverflowMenuUnreadCountBadge;
+extern CGFloat const kReadingListUnreadCountBadgeAnimationDuration;
 
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_CONSTANTS_H_

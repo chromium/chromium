@@ -209,6 +209,14 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  if (IsReadingListMessagesEnabled()) {
+    // Reset the boolean if an entry was added from a Messages prompt since the
+    // user has now seen that new entry in the Reading List.
+    [[NSUserDefaults standardUserDefaults]
+        setBool:NO
+         forKey:kLastReadingListEntryAddedFromMessages];
+  }
+
   self.title = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_READING_LIST);
 
   self.tableView.accessibilityIdentifier =

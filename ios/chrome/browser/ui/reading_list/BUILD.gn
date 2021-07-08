@@ -122,6 +122,7 @@ source_set("infobar") {
     "//components/infobars/core",
     "//components/reading_list/core",
     "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/web/public",
     "//services/metrics/public/cpp:ukm_builders",
   ]

@@ -33,19 +33,18 @@ const NSTimeInterval kReadingListBackgroundThreshold = 60 * 30;
   if (!IsReadingListMessagesEnabled()) {
     return;
   }
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   if (level <= SceneActivationLevelBackground) {
     // If the ApplicationState is not active, then that means no other scenes
     // are in the foreground, meaning the app is completely backgrounded.
     if (UIApplication.sharedApplication.applicationState !=
         UIApplicationStateActive) {
       // Save the time when the app is backgrounded.
-      [[NSUserDefaults standardUserDefaults]
-          setObject:[NSDate date]
-             forKey:kReadingListLastBackgroundTime];
+      [defaults setObject:[NSDate date] forKey:kReadingListLastBackgroundTime];
     }
   } else if (level == SceneActivationLevelForegroundInactive) {
-    NSDate* last_background_timestamp = [[NSUserDefaults standardUserDefaults]
-        objectForKey:kReadingListLastBackgroundTime];
+    NSDate* last_background_timestamp =
+        [defaults objectForKey:kReadingListLastBackgroundTime];
     if (!last_background_timestamp) {
       // There may not be a saved time if the app crashes. It's ok that
       // kLastTimeUserShownReadingListMessages is not reset in this situation.
@@ -57,11 +56,19 @@ const NSTimeInterval kReadingListBackgroundThreshold = 60 * 30;
         NSOrderedAscending) {
       // Reset the last Messages prompt timestamp when it is the start of a new
       // "session".
-      [[NSUserDefaults standardUserDefaults]
-          removeObjectForKey:kLastTimeUserShownReadingListMessages];
+      [defaults removeObjectForKey:kLastTimeUserShownReadingListMessages];
+      if ([defaults boolForKey:kLastReadingListEntryAddedFromMessages]) {
+        // If there was a Reading List entry added in the last session, set
+        // flags to allow for Reading List unread count badges to animate.
+        [defaults removeObjectForKey:kLastReadingListEntryAddedFromMessages];
+        [defaults setBool:YES
+                   forKey:kShouldAnimateReadingListNTPUnreadCountBadge];
+        [defaults
+            setBool:YES
+             forKey:kShouldAnimateReadingListOverflowMenuUnreadCountBadge];
+      }
     }
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:kReadingListLastBackgroundTime];
+    [defaults removeObjectForKey:kReadingListLastBackgroundTime];
   }
 }
 

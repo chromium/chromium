@@ -26,3 +26,10 @@ NSString* const kReadingListToolbarMarkButtonID =
 
 NSString* const kLastTimeUserShownReadingListMessages =
     @"LastTimeUserShownReadingListMessages";
+NSString* const kLastReadingListEntryAddedFromMessages =
+    @"LastReadingListEntryAddedFromMessages";
+NSString* const kShouldAnimateReadingListNTPUnreadCountBadge =
+    @"ShouldAnimateReadingListNTPUnreadCountBadge";
+NSString* const kShouldAnimateReadingListOverflowMenuUnreadCountBadge =
+    @"ShouldAnimateReadingListOverflowMenuUnreadCountBadge";
+CGFloat const kReadingListUnreadCountBadgeAnimationDuration = 0.3;
