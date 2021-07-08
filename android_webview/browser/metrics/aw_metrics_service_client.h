@@ -13,6 +13,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -21,6 +22,10 @@
 #include "content/public/browser/notification_registrar.h"
 
 namespace android_webview {
+
+namespace prefs {
+extern const char kMetricsShouldRecordAppPackageNameExpiryDate[];
+}  // namespace prefs
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -127,6 +132,8 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   static void SetInstance(
       std::unique_ptr<AwMetricsServiceClient> aw_metrics_service_client);
 
+  static void RegisterMetricsPrefs(PrefRegistrySimple* registry);
+
   AwMetricsServiceClient(std::unique_ptr<Delegate> delegate);
   ~AwMetricsServiceClient() override;
 
@@ -154,15 +161,24 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   // `::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName` is used.
   bool ShouldRecordPackageName() override;
 
-  // Sets whether the embedding app's package name is allowed to be recorded in
-  // UMA logs or not. This is determened by looking up the app package name in a
+  // Sets that the embedding app's package name is allowed to be recorded in
+  // UMA logs. This is determened by looking up the app package name in a
   // dynamically downloaded allowlist of apps see
   // `AwAppsPackageNamesAllowlistComponentLoaderPolicy`.
-  void SetShouldRecordPackageName(bool should_record_package_name);
+  //
+  // `expiry_date` the date after which the app package name shouldn't be
+  //               recoreded in UMA because the allowlist that contained this
+  //               app has expired. If it has a null value, then it will be
+  //               ignored and the cached date will be used if any.
+  void SetShouldRecordPackageName(absl::optional<base::Time> expiry_date);
+
+ protected:
+  // Restrict usage of the inherited AndroidMetricsServiceClient::RegisterPrefs,
+  // RegisterMetricsPrefs should be used instead.
+  using AndroidMetricsServiceClient::RegisterPrefs;
 
  private:
   bool app_in_foreground_ = false;
-  bool should_record_package_name_ = false;
   std::unique_ptr<Delegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(AwMetricsServiceClient);

@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "components/component_updater/android/component_loader_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DictionaryValue;
@@ -30,6 +31,16 @@ constexpr char kBloomFilterNumHashKey[] = "bloomfilter_num_hash";
 constexpr char kBloomFilterNumBitsKey[] = "bloomfilter_num_bits";
 constexpr char kExpiryDateKey[] = "expiry_date";
 
+// A callback that accepts an `absl::optional<base::Time>` expiry_date:
+// - If the allowlist loading fails, it will be called with a null value.
+// - If the package name isn't in the allowlist, it will be called with an
+//   always expired date `base::Time::Min()`.
+// - If the package name is in the allowlist, it will be called with the
+//   expiry_date after which the app package name shouldn't be recorded in UMA
+//   metrics.
+using AllowListLookupCallback =
+    base::OnceCallback<void(absl::optional<base::Time>)>;
+
 // Defines a loader responsible for receiving the allowlist for apps package
 // names that can be included in UMA records and lookup the embedding app's name
 // in that list.
@@ -41,7 +52,7 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
   //                   `app_package_name` in the packages names allowlist.
   AwAppsPackageNamesAllowlistComponentLoaderPolicy(
       std::string app_package_name,
-      base::OnceCallback<void(bool)> lookup_callback);
+      AllowListLookupCallback lookup_callback);
   ~AwAppsPackageNamesAllowlistComponentLoaderPolicy() override;
 
   AwAppsPackageNamesAllowlistComponentLoaderPolicy(
@@ -59,7 +70,7 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
 
  private:
   std::string app_package_name_;
-  base::OnceCallback<void(bool)> lookup_callback_;
+  AllowListLookupCallback lookup_callback_;
 };
 
 void LoadPackageNamesAllowlistComponent(

@@ -89,6 +89,11 @@ const char* const kPersistentPrefsAllowlist[] = {
     // determine if the seed is expired.
     variations::prefs::kVariationsLastFetchTime,
     variations::prefs::kVariationsSeedDate,
+
+    // Cache the expiry date of the list of apps whose package names are allowed
+    // to be recorded in UMA. This will have a valid value (not
+    // base::Time::Min()) only if the app is in the allowlist.
+    prefs::kMetricsShouldRecordAppPackageNameExpiryDate,
 };
 
 void HandleReadError(PersistentPrefStore::PrefReadError error) {}
@@ -120,7 +125,7 @@ AwFeatureListCreator::~AwFeatureListCreator() {}
 std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
 
-  AwMetricsServiceClient::RegisterPrefs(pref_registry.get());
+  AwMetricsServiceClient::RegisterMetricsPrefs(pref_registry.get());
   variations::VariationsService::RegisterPrefs(pref_registry.get());
 
   embedder_support::OriginTrialPrefs::RegisterPrefs(pref_registry.get());

@@ -33,23 +33,17 @@ constexpr int kNumHash = 11;
 constexpr int kNumBitsPerEntry = 16;
 const std::string kTestAllowlist[] = {"com.example.test", "my.fake.app",
                                       "yet.another.app"};
-double OneDayFromNowMs() {
-  return (base::Time::Now() + base::TimeDelta::FromDays(1) -
-          base::Time::UnixEpoch())
-      .InMillisecondsF();
-}
-
-double OneDayAgoMs() {
-  return (base::Time::Now() - base::TimeDelta::FromDays(1) -
-          base::Time::UnixEpoch())
-      .InMillisecondsF();
+double MillisFromUnixEpoch(const base::Time& time) {
+  return (time - base::Time::UnixEpoch()).InMillisecondsF();
 }
 
 std::unique_ptr<base::Value> BuildTestManifest() {
   auto manifest = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   manifest->SetKey(kBloomFilterNumHashKey, base::Value(kNumHash));
   manifest->SetKey(kBloomFilterNumBitsKey, base::Value(3 * kNumBitsPerEntry));
-  manifest->SetKey(kExpiryDateKey, base::Value(OneDayFromNowMs()));
+  manifest->SetKey(kExpiryDateKey,
+                   base::Value(MillisFromUnixEpoch(
+                       base::Time::Now() + base::TimeDelta::FromDays(1))));
 
   return manifest;
 }
@@ -86,9 +80,9 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicyTest
     return base::ScopedFD(allowlist_fd);
   }
 
-  void LookupConfirmationCallback(bool lookup_result) {
+  void LookupConfirmationCallback(absl::optional<base::Time> expiry_date) {
     EXPECT_TRUE(checker_.CalledOnValidSequence());
-    lookup_result_ = lookup_result;
+    allowlist_expiry_date_ = expiry_date;
     lookup_run_loop_.Quit();
   }
 
@@ -98,7 +92,7 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicyTest
   base::SequenceCheckerImpl checker_;
   base::RunLoop lookup_run_loop_;
 
-  bool lookup_result_;
+  absl::optional<base::Time> allowlist_expiry_date_;
 
  private:
   base::FilePath allowlist_path_;
@@ -109,6 +103,10 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
   WritePackageNamesAllowListToFile();
   base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
+  std::unique_ptr<base::Value> manifest = BuildTestManifest();
+  base::Time one_day_from_now =
+      base::Time::Now() + base::TimeDelta::FromDays(1);
+  manifest->SetDoubleKey(kExpiryDateKey, MillisFromUnixEpoch(one_day_from_now));
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
@@ -118,10 +116,11 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                          base::Unretained(this)));
 
   policy->ComponentLoaded(base::Version(), fd_map,
-                          base::DictionaryValue::From(BuildTestManifest()));
+                          base::DictionaryValue::From(std::move(manifest)));
 
   lookup_run_loop_.Run();
-  EXPECT_TRUE(lookup_result_);
+  EXPECT_TRUE(allowlist_expiry_date_.has_value());
+  EXPECT_EQ(allowlist_expiry_date_.value(), one_day_from_now);
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -141,7 +140,8 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                           base::DictionaryValue::From(BuildTestManifest()));
 
   lookup_run_loop_.Run();
-  EXPECT_FALSE(lookup_result_);
+  EXPECT_TRUE(allowlist_expiry_date_.has_value());
+  EXPECT_TRUE(allowlist_expiry_date_.value().is_min());
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -160,7 +160,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                           base::DictionaryValue::From(BuildTestManifest()));
 
   lookup_run_loop_.Run();
-  EXPECT_FALSE(lookup_result_);
+  EXPECT_FALSE(allowlist_expiry_date_.has_value());
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -180,7 +180,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                           std::make_unique<base::DictionaryValue>());
 
   lookup_run_loop_.Run();
-  EXPECT_FALSE(lookup_result_);
+  EXPECT_FALSE(allowlist_expiry_date_.has_value());
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -200,7 +200,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                           base::DictionaryValue::From(BuildTestManifest()));
 
   lookup_run_loop_.Run();
-  EXPECT_FALSE(lookup_result_);
+  EXPECT_FALSE(allowlist_expiry_date_.has_value());
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -220,7 +220,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                           base::DictionaryValue::From(BuildTestManifest()));
 
   lookup_run_loop_.Run();
-  EXPECT_FALSE(lookup_result_);
+  EXPECT_FALSE(allowlist_expiry_date_.has_value());
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -229,7 +229,9 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
   base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
   std::unique_ptr<base::Value> manifest = BuildTestManifest();
-  manifest->SetKey(kExpiryDateKey, base::Value(OneDayAgoMs()));
+  manifest->SetKey(kExpiryDateKey,
+                   base::Value(MillisFromUnixEpoch(
+                       base::Time::Now() - base::TimeDelta::FromDays(1))));
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
@@ -242,7 +244,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                           base::DictionaryValue::From(std::move(manifest)));
 
   lookup_run_loop_.Run();
-  EXPECT_FALSE(lookup_result_);
+  EXPECT_FALSE(allowlist_expiry_date_.has_value());
 }
 
 }  // namespace android_webview

@@ -38,40 +38,45 @@ namespace {
 
 constexpr int kBitsPerByte = 8;
 
-// Creates a bloomfilter after loading its data from file in `allowlist_fd`
-// and lookup the given `package_name` in it.
-bool IsLoggingPackageNameAllowed(base::ScopedFD allowlist_fd,
-                                 int num_hash,
-                                 int num_bits,
-                                 const std::string& package_name) {
+// It returns an empty (null) absl::optional<base::Time> if loading of the
+// allowlist file fails. Otherwise it returns:
+// - `expiry_date` if the given `package_name` is in the allowlist.
+// - `base::Time::Min()` if the given `package_name` isn't in the allowlist.
+absl::optional<base::Time> GetExpiryTimeIfPackageNameLoggable(
+    base::ScopedFD allowlist_fd,
+    int num_hash,
+    int num_bits,
+    const std::string& package_name,
+    const base::Time& expiry_date) {
   // Transfer the ownership of the file from `allowlist_fd` to `file_stream`.
   base::ScopedFILE file_stream(fdopen(allowlist_fd.release(), "r"));
   if (!file_stream.get())
-    return false;
+    return absl::optional<base::Time>();
 
   // TODO(https://crbug.com/1219496): use mmap instead of reading the whole
   // file.
   std::string bloom_filter_data;
   if (!base::ReadStreamToString(file_stream.get(), &bloom_filter_data) ||
       bloom_filter_data.empty()) {
-    return false;
+    return absl::optional<base::Time>();
   }
 
   // Make sure the bloomfilter binary data is of the correct length.
   if (bloom_filter_data.size() !=
       size_t((num_bits + kBitsPerByte - 1) / kBitsPerByte)) {
-    return false;
+    return absl::optional<base::Time>();
   }
 
   return optimization_guide::BloomFilter(num_hash, num_bits, bloom_filter_data)
-      .Contains(package_name);
+                 .Contains(package_name)
+             ? expiry_date
+             : base::Time::Min();
 }
 
-void SetShouldRecordPackageName(bool package_present_in_allowlist) {
+void SetShouldRecordPackageName(absl::optional<base::Time> expiry_date) {
   auto* metrics_service_client = AwMetricsServiceClient::GetInstance();
   DCHECK(metrics_service_client);
-  metrics_service_client->SetShouldRecordPackageName(
-      package_present_in_allowlist);
+  metrics_service_client->SetShouldRecordPackageName(expiry_date);
 }
 
 }  // namespace
@@ -79,7 +84,7 @@ void SetShouldRecordPackageName(bool package_present_in_allowlist) {
 AwAppsPackageNamesAllowlistComponentLoaderPolicy::
     AwAppsPackageNamesAllowlistComponentLoaderPolicy(
         std::string app_package_name,
-        base::OnceCallback<void(bool)> lookup_callback)
+        AllowListLookupCallback lookup_callback)
     : app_package_name_(std::move(app_package_name)),
       lookup_callback_(std::move(lookup_callback)) {
   DCHECK(!app_package_name_.empty());
@@ -111,25 +116,27 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     base::flat_map<std::string, base::ScopedFD>& fd_map,
     std::unique_ptr<base::DictionaryValue> manifest) {
+  // TODO(https://crbug.com/1216202): store the allowlist version in the local
+  // cache, don't lookup the allowlist if it's the same version.
+
   // Have to use double because base::DictionaryValue doesn't support int64
   // values.
   absl::optional<double> expiry_date_ms =
       manifest->FindDoublePath(kExpiryDateKey);
-
+  absl::optional<int> num_hash = manifest->FindIntPath(kBloomFilterNumHashKey);
+  absl::optional<int> num_bits = manifest->FindIntPath(kBloomFilterNumBitsKey);
   // Being conservative and consider the allowlist expired when a valid expiry
   // date is absent.
-  if (!expiry_date_ms.has_value() ||
-      base::Time::UnixEpoch() +
-              base::TimeDelta::FromMillisecondsD(expiry_date_ms.value()) <=
-          base::Time::Now()) {
+  if (!expiry_date_ms.has_value() || !num_hash.has_value() ||
+      !num_bits.has_value() || num_hash.value() <= 0 || num_bits.value() <= 0) {
     ComponentLoadFailed();
     return;
   }
 
-  absl::optional<int> num_hash = manifest->FindIntPath(kBloomFilterNumHashKey);
-  absl::optional<int> num_bits = manifest->FindIntPath(kBloomFilterNumBitsKey);
-  if (!num_hash.has_value() || !num_bits.has_value() || num_hash.value() <= 0 ||
-      num_bits.value() <= 0) {
+  base::Time expiry_date =
+      base::Time::UnixEpoch() +
+      base::TimeDelta::FromMillisecondsD(expiry_date_ms.value_or(0.0));
+  if (expiry_date <= base::Time::Now()) {
     ComponentLoadFailed();
     return;
   }
@@ -142,15 +149,17 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&IsLoggingPackageNameAllowed,
+      base::BindOnce(&GetExpiryTimeIfPackageNameLoggable,
                      std::move(allowlist_iterator->second), num_hash.value(),
-                     num_bits.value(), std::move(app_package_name_)),
+                     num_bits.value(), std::move(app_package_name_),
+                     expiry_date),
       std::move(lookup_callback_));
 }
 
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed() {
   DCHECK(lookup_callback_);
-  std::move(lookup_callback_).Run(/* lookup_result= */ false);
+  std::move(lookup_callback_)
+      .Run(/* expiry_date= */ absl::optional<base::Time>());
 }
 
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::GetHash(

@@ -16,12 +16,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/android/channel_getter.h"
 
 namespace android_webview {
+
+namespace prefs {
+const char kMetricsShouldRecordAppPackageNameExpiryDate[] =
+    "aw_metrics_app_package_name_allowlist.expiry_date";
+}  // namespace prefs
 
 namespace {
 
@@ -90,18 +96,29 @@ int AwMetricsServiceClient::GetSampleRatePerMille() const {
 }
 
 bool AwMetricsServiceClient::ShouldRecordPackageName() {
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           android_webview::features::kWebViewAppsPackageNamesAllowlist)) {
-    return should_record_package_name_;
+    // Revert to the default implementation of using a random sample to decide
+    // whether to record the app package name or not.
+    return ::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName();
   }
-  // Revert to the default implementation of using a random sample to decide
-  // whether to record the app package name or not.
-  return ::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName();
+
+  PrefService* local_state = pref_service();
+  DCHECK(local_state);
+  return local_state->GetTime(
+             prefs::kMetricsShouldRecordAppPackageNameExpiryDate) >=
+         base::Time::Now();
 }
 
 void AwMetricsServiceClient::SetShouldRecordPackageName(
-    bool should_record_package_name) {
-  should_record_package_name_ = should_record_package_name;
+    absl::optional<base::Time> expiry_date) {
+  if (!expiry_date.has_value())
+    return;
+
+  PrefService* local_state = pref_service();
+  DCHECK(local_state);
+  local_state->SetTime(prefs::kMetricsShouldRecordAppPackageNameExpiryDate,
+                       expiry_date.value());
 }
 
 void AwMetricsServiceClient::OnMetricsStart() {
@@ -149,6 +166,14 @@ void AwMetricsServiceClient::RegisterAdditionalMetricsProviders(
       std::make_unique<android_webview::AwStabilityMetricsProvider>(
           pref_service()));
   delegate_->RegisterAdditionalMetricsProviders(service);
+}
+
+// static
+void AwMetricsServiceClient::RegisterMetricsPrefs(
+    PrefRegistrySimple* registry) {
+  RegisterPrefs(registry);
+  registry->RegisterTimePref(
+      prefs::kMetricsShouldRecordAppPackageNameExpiryDate, base::Time::Min());
 }
 
 // static
