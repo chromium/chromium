@@ -46,10 +46,11 @@ class ASH_PUBLIC_EXPORT DesksHelper {
   // necessary information that can be used to create a same desk.
   virtual std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate() const = 0;
 
-  // Creates and activates a new desk for a template with name `desk_name`. Runs
-  // `callback` with true if creation was successful, false otherwise.
+  // Creates and activates a new desk for a template with name `template_name`
+  // or `template_name ({counter})` to resolve naming conflicts. Runs `callback`
+  // with true if creation was successful, false otherwise.
   virtual void CreateAndActivateNewDeskForTemplate(
-      const std::u16string& desk_name,
+      const std::u16string& template_name,
       base::OnceCallback<void(bool)> callback) = 0;
 
  protected:

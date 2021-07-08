@@ -269,6 +269,54 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
   EXPECT_EQ(kDeskName, desks_helper->GetDeskName(1));
 }
 
+// Tests that launching the same desk template multiple times creates desks with
+// different/incremented names.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchMultipleEmptyDeskTemplates) {
+  const double kDeskUuid = 40.0;
+  const std::u16string kDeskName(u"Test Desk Name");
+
+  auto* desks_controller = ash::DesksController::Get();
+
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+
+  auto desk_template = std::make_unique<ash::DeskTemplate>(kDeskUuid);
+  desk_template->set_template_name(kDeskName);
+  SetLaunchTemplate(std::move(desk_template));
+
+  auto check_launch_template_desk_name =
+      [kDeskUuid, desks_controller](const std::u16string& desk_name) {
+        ash::DeskSwitchAnimationWaiter waiter;
+        DesksClient::Get()->LaunchDeskTemplate(kDeskUuid);
+        waiter.Wait();
+
+        EXPECT_EQ(desk_name, desks_controller->GetDeskName(
+                                 desks_controller->GetActiveDeskIndex()));
+      };
+
+  // Launching a desk from the template creates a desk with the same name as the
+  // template.
+  check_launch_template_desk_name(kDeskName);
+
+  // Launch more desks from the template and verify that the newly created desks
+  // have unique names.
+  check_launch_template_desk_name(std::u16string(kDeskName).append(u" (1)"));
+  check_launch_template_desk_name(std::u16string(kDeskName).append(u" (2)"));
+
+  // Remove "Test Desk Name (1)", which means the next created desk from
+  // template will have that name. Then it will skip (2) since it already
+  // exists, and create the next desk with (3).
+  RemoveDesk(desks_controller->desks()[2].get());
+  check_launch_template_desk_name(std::u16string(kDeskName).append(u" (1)"));
+  check_launch_template_desk_name(std::u16string(kDeskName).append(u" (3)"));
+
+  // Same as above, but make sure that deleting the desk with the exact template
+  // name still functions the same by only filling in whatever name is
+  // available.
+  RemoveDesk(desks_controller->desks()[1].get());
+  check_launch_template_desk_name(kDeskName);
+  check_launch_template_desk_name(std::u16string(kDeskName).append(u" (4)"));
+}
+
 // Tests that launching a template that contains a system web app works as
 // expected.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {

@@ -240,7 +240,7 @@ class ASH_EXPORT DesksController : public DesksHelper,
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
   std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate() const override;
   void CreateAndActivateNewDeskForTemplate(
-      const std::u16string& desk_name,
+      const std::u16string& template_name,
       base::OnceCallback<void(bool)> callback) override;
 
   // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
@@ -272,6 +272,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
   void OnAnimationFinished(DeskAnimationBase* animation);
 
   bool HasDesk(const Desk* desk) const;
+
+  bool HasDeskWithName(const std::u16string& desk_name) const;
 
   // Activates the given |desk| and deactivates the currently active one. |desk|
   // has to be an existing desk. If |update_window_activation| is true,

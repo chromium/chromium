@@ -41,6 +41,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -914,7 +915,7 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
 }
 
 void DesksController::CreateAndActivateNewDeskForTemplate(
-    const std::u16string& desk_name,
+    const std::u16string& template_name,
     base::OnceCallback<void(bool)> callback) {
   if (!CanCreateDesks()) {
     std::move(callback).Run(/*success=*/false);
@@ -925,6 +926,15 @@ void DesksController::CreateAndActivateNewDeskForTemplate(
   // activating the new desk, which triggers its own animation.
   if (animation_)
     animation_.reset();
+
+  // Change the desk name if the current name already exists.
+  int count = 1;
+  std::u16string desk_name = template_name;
+  while (HasDeskWithName(desk_name)) {
+    desk_name = std::u16string(template_name)
+                    .append(u" (" + base::FormatNumber(count) + u")");
+    count++;
+  }
 
   NewDesk(DesksCreationRemovalSource::kLaunchTemplate);
   Desk* desk = desks().back().get();
@@ -1024,6 +1034,14 @@ bool DesksController::HasDesk(const Desk* desk) const {
   auto iter = std::find_if(
       desks_.begin(), desks_.end(),
       [desk](const std::unique_ptr<Desk>& d) { return d.get() == desk; });
+  return iter != desks_.end();
+}
+
+bool DesksController::HasDeskWithName(const std::u16string& desk_name) const {
+  auto iter = std::find_if(desks_.begin(), desks_.end(),
+                           [desk_name](const std::unique_ptr<Desk>& d) {
+                             return d->name() == desk_name;
+                           });
   return iter != desks_.end();
 }
 
