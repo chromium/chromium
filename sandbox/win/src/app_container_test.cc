@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/process/process_info.h"
 #include "base/rand_util.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
@@ -411,6 +412,12 @@ SBOX_TESTS_COMMAND int LoadDLL(int argc, wchar_t** argv) {
   return SBOX_TEST_FAILED;
 }
 
+SBOX_TESTS_COMMAND int CheckIsAppContainer(int argc, wchar_t** argv) {
+  if (base::IsCurrentProcessInAppContainer())
+    return SBOX_TEST_SUCCEEDED;
+  return SBOX_TEST_FAILED;
+}
+
 TEST(AppContainerLaunchTest, CheckLPACACE) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
@@ -420,6 +427,23 @@ TEST(AppContainerLaunchTest, CheckLPACACE) {
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"LoadDLL"));
 
   AppContainerBase::Delete(GetAppContainerProfileName().c_str());
+}
+
+TEST(AppContainerLaunchTest, IsAppContainer) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+    return;
+  TestRunner runner;
+  AddNetworkAppContainerPolicy(runner.GetPolicy());
+
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckIsAppContainer"));
+
+  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
+}
+
+TEST(AppContainerLaunchTest, IsNotAppContainer) {
+  TestRunner runner;
+
+  EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
 }
 
 }  // namespace sandbox

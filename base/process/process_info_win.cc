@@ -83,4 +83,17 @@ bool IsCurrentProcessElevated() {
   return !!elevation.TokenIsElevated;
 }
 
+bool IsCurrentProcessInAppContainer() {
+  base::win::ScopedHandle scoped_process_token(CreateCurrentProcessToken());
+
+  DWORD size;
+  DWORD appcontainer;
+  if (!GetTokenInformation(scoped_process_token.Get(), ::TokenIsAppContainer,
+                           &appcontainer, sizeof(appcontainer), &size)) {
+    PLOG(ERROR) << "GetTokenInformation() failed";
+    return false;
+  }
+  return !!appcontainer;
+}
+
 }  // namespace base
