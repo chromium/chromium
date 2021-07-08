@@ -26,7 +26,8 @@ const char kTimeUMAPrefix[] = "TimeTo.";
 // If constructed with a |uma_name|, CdmResultPromise will report the promise
 // result (success or rejection code) to UMA.
 template <typename... T>
-class PLATFORM_EXPORT CdmResultPromise : public CdmPromiseTemplate<T...> {
+class PLATFORM_EXPORT CdmResultPromise
+    : public media::CdmPromiseTemplate<T...> {
  public:
   CdmResultPromise(const blink::WebContentDecryptionModuleResult& result,
                    const std::string& key_system_uma_prefix,
@@ -35,16 +36,16 @@ class PLATFORM_EXPORT CdmResultPromise : public CdmPromiseTemplate<T...> {
   CdmResultPromise& operator=(const CdmResultPromise&) = delete;
   ~CdmResultPromise() override;
 
-  // CdmPromiseTemplate<T> implementation.
+  // media::CdmPromiseTemplate<T> implementation.
   void resolve(const T&... result) override;
-  void reject(CdmPromise::Exception exception_code,
+  void reject(media::CdmPromise::Exception exception_code,
               uint32_t system_code,
               const std::string& error_message) override;
 
  private:
-  using CdmPromiseTemplate<T...>::IsPromiseSettled;
-  using CdmPromiseTemplate<T...>::MarkPromiseSettled;
-  using CdmPromiseTemplate<T...>::RejectPromiseOnDestruction;
+  using media::CdmPromiseTemplate<T...>::IsPromiseSettled;
+  using media::CdmPromiseTemplate<T...>::MarkPromiseSettled;
+  using media::CdmPromiseTemplate<T...>::RejectPromiseOnDestruction;
 
   blink::WebContentDecryptionModuleResult web_cdm_result_;
 
@@ -90,8 +91,8 @@ inline void CdmResultPromise<>::resolve() {
 }
 
 template <>
-inline void CdmResultPromise<CdmKeyInformation::KeyStatus>::resolve(
-    const CdmKeyInformation::KeyStatus& key_status) {
+inline void CdmResultPromise<media::CdmKeyInformation::KeyStatus>::resolve(
+    const media::CdmKeyInformation::KeyStatus& key_status) {
   MarkPromiseSettled();
   ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_, 0, SUCCESS);
 
@@ -103,7 +104,7 @@ inline void CdmResultPromise<CdmKeyInformation::KeyStatus>::resolve(
 }
 
 template <typename... T>
-void CdmResultPromise<T...>::reject(CdmPromise::Exception exception_code,
+void CdmResultPromise<T...>::reject(media::CdmPromise::Exception exception_code,
                                     uint32_t system_code,
                                     const std::string& error_message) {
   MarkPromiseSettled();

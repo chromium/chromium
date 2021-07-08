@@ -43,7 +43,7 @@ using SessionInitializedCB =
 // |new_session_created_cb| must be in |expected_statuses| for the promise to
 // be resolved. If it's not in the list, the promise will be rejected.
 class PLATFORM_EXPORT NewSessionCdmResultPromise
-    : public CdmPromiseTemplate<std::string> {
+    : public media::CdmPromiseTemplate<std::string> {
  public:
   NewSessionCdmResultPromise(
       const blink::WebContentDecryptionModuleResult& result,
@@ -56,7 +56,7 @@ class PLATFORM_EXPORT NewSessionCdmResultPromise
       delete;
   ~NewSessionCdmResultPromise() override;
 
-  // CdmPromiseTemplate<T> implementation.
+  // media::CdmPromiseTemplate<T> implementation.
   void resolve(const std::string& session_id) override;
   void reject(CdmPromise::Exception exception_code,
               uint32_t system_code,

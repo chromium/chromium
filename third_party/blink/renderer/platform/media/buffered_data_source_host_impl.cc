@@ -100,10 +100,10 @@ static base::TimeDelta TimeForByteOffset(int64_t byte_offset,
 }
 
 void BufferedDataSourceHostImpl::AddBufferedTimeRanges(
-    Ranges<base::TimeDelta>* buffered_time_ranges,
+    media::Ranges<base::TimeDelta>* buffered_time_ranges,
     base::TimeDelta media_duration) const {
-  DCHECK(media_duration != kNoTimestamp);
-  DCHECK(media_duration != kInfiniteDuration);
+  DCHECK(media_duration != media::kNoTimestamp);
+  DCHECK(media_duration != media::kInfiniteDuration);
   if (total_bytes_ && !buffered_byte_ranges_.empty()) {
     for (const auto i : buffered_byte_ranges_) {
       if (i.second) {
@@ -155,7 +155,7 @@ bool BufferedDataSourceHostImpl::CanPlayThrough(
     double playback_rate) const {
   DCHECK_GE(playback_rate, 0);
   if (!total_bytes_ || media_duration <= base::TimeDelta() ||
-      media_duration == kInfiniteDuration) {
+      media_duration == media::kInfiniteDuration) {
     return false;
   }
   if (current_position > media_duration)

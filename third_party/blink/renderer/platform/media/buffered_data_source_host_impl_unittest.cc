@@ -31,7 +31,7 @@ class BufferedDataSourceHostImplTest : public testing::Test {
  protected:
   int progress_callback_calls_ = 0;
   BufferedDataSourceHostImpl host_;
-  Ranges<base::TimeDelta> ranges_;
+  media::Ranges<base::TimeDelta> ranges_;
   base::SimpleTestTickClock clock_;
 };
 

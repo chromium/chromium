@@ -52,7 +52,7 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   MultiBufferBlockId Tell() const override;
   bool Available() const override;
   int64_t AvailableBytes() const override;
-  scoped_refptr<DataBuffer> Read() override;
+  scoped_refptr<media::DataBuffer> Read() override;
   void SetDeferred(bool defer) override;
 
   // blink::WebAssociatedURLLoaderClient implementation.
@@ -103,7 +103,7 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   UrlData* url_data_;
 
   // Temporary storage for incoming data.
-  std::list<scoped_refptr<DataBuffer>> fifo_;
+  std::list<scoped_refptr<media::DataBuffer>> fifo_;
 
   // How many retries have we done at the current position.
   int retries_;

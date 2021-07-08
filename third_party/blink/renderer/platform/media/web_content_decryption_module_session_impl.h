@@ -42,7 +42,7 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   blink::WebString SessionId() const override;
 
   void InitializeNewSession(
-      EmeInitDataType init_data_type,
+      media::EmeInitDataType init_data_type,
       const unsigned char* initData,
       size_t initDataLength,
       blink::WebContentDecryptionModuleResult result) override;
@@ -55,12 +55,12 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   void Remove(blink::WebContentDecryptionModuleResult result) override;
 
   // Callbacks.
-  void OnSessionMessage(CdmMessageType message_type,
+  void OnSessionMessage(media::CdmMessageType message_type,
                         const std::vector<uint8_t>& message);
   void OnSessionKeysChange(bool has_additional_usable_key,
-                           CdmKeysInfo keys_info);
+                           media::CdmKeysInfo keys_info);
   void OnSessionExpirationUpdate(base::Time new_expiry_time);
-  void OnSessionClosed(CdmSessionClosedReason reason);
+  void OnSessionClosed(media::CdmSessionClosedReason reason);
 
  private:
   // Called when a new session is created or loaded. |status| is set as
@@ -72,7 +72,7 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
 
   // Keep track of the session type to be passed into InitializeNewSession() and
   // LoadSession().
-  const CdmSessionType session_type_;
+  const media::CdmSessionType session_type_;
 
   // Non-owned pointer.
   Client* client_;

@@ -12,9 +12,10 @@
 namespace media {
 
 WebMediaPlayerParams::WebMediaPlayerParams(
-    std::unique_ptr<MediaLog> media_log,
+    std::unique_ptr<media::MediaLog> media_log,
     const DeferLoadCB& defer_load_cb,
-    const scoped_refptr<SwitchableAudioRendererSink>& audio_renderer_sink,
+    const scoped_refptr<media::SwitchableAudioRendererSink>&
+        audio_renderer_sink,
     const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
     const scoped_refptr<base::TaskRunner>& worker_task_runner,
     const scoped_refptr<base::SingleThreadTaskRunner>& compositor_task_runner,
@@ -22,18 +23,18 @@ WebMediaPlayerParams::WebMediaPlayerParams(
         video_frame_compositor_task_runner,
     const AdjustAllocatedMemoryCB& adjust_allocated_memory_cb,
     blink::WebContentDecryptionModule* initial_cdm,
-    RequestRoutingTokenCallback request_routing_token_cb,
-    base::WeakPtr<MediaObserver> media_observer,
+    media::RequestRoutingTokenCallback request_routing_token_cb,
+    base::WeakPtr<media::MediaObserver> media_observer,
     bool enable_instant_source_buffer_gc,
     bool embedded_media_experience_enabled,
-    mojo::PendingRemote<mojom::MediaMetricsProvider> metrics_provider,
+    mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
     blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video,
     bool is_background_suspend_enabled,
     bool is_background_video_playback_enabled,
     bool is_background_video_track_optimization_supported,
-    std::unique_ptr<Demuxer> demuxer_override,
+    std::unique_ptr<media::Demuxer> demuxer_override,
     std::unique_ptr<PowerStatusHelper> power_status_helper)
     : defer_load_cb_(defer_load_cb),
       audio_renderer_sink_(audio_renderer_sink),
@@ -62,7 +63,7 @@ WebMediaPlayerParams::WebMediaPlayerParams(
 
 WebMediaPlayerParams::~WebMediaPlayerParams() = default;
 
-std::unique_ptr<Demuxer> WebMediaPlayerParams::TakeDemuxerOverride() {
+std::unique_ptr<media::Demuxer> WebMediaPlayerParams::TakeDemuxerOverride() {
   return std::move(demuxer_override_);
 }
 

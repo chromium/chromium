@@ -162,9 +162,9 @@ int64_t ResourceMultiBufferDataProvider::AvailableBytes() const {
   return bytes;
 }
 
-scoped_refptr<DataBuffer> ResourceMultiBufferDataProvider::Read() {
+scoped_refptr<media::DataBuffer> ResourceMultiBufferDataProvider::Read() {
   DCHECK(Available());
-  scoped_refptr<DataBuffer> ret = fifo_.front();
+  scoped_refptr<media::DataBuffer> ret = fifo_.front();
   fifo_.pop_front();
   ++pos_;
   return ret;
@@ -380,7 +380,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   }
 
   if (end_of_file) {
-    fifo_.push_back(DataBuffer::CreateEOSBuffer());
+    fifo_.push_back(media::DataBuffer::CreateEOSBuffer());
     url_data_->multibuffer()->OnDataProviderEvent(this);
   }
 }
@@ -406,7 +406,7 @@ void ResourceMultiBufferDataProvider::DidReceiveData(const char* data,
 
   while (data_length) {
     if (fifo_.empty() || fifo_.back()->data_size() == block_size()) {
-      fifo_.push_back(new DataBuffer(block_size()));
+      fifo_.push_back(new media::DataBuffer(block_size()));
       fifo_.back()->set_data_size(0);
     }
     int last_block_size = fifo_.back()->data_size();
@@ -458,7 +458,7 @@ void ResourceMultiBufferDataProvider::DidFinishLoading() {
   }
 
   url_data_->set_length(size);
-  fifo_.push_back(DataBuffer::CreateEOSBuffer());
+  fifo_.push_back(media::DataBuffer::CreateEOSBuffer());
 
   if (url_data_->url_index()) {
     url_data_->url_index()->TryInsert(url_data_);
@@ -535,7 +535,7 @@ bool ResourceMultiBufferDataProvider::ParseContentRange(
 }
 
 void ResourceMultiBufferDataProvider::Terminate() {
-  fifo_.push_back(DataBuffer::CreateEOSBuffer());
+  fifo_.push_back(media::DataBuffer::CreateEOSBuffer());
   url_data_->multibuffer()->OnDataProviderEvent(this);
 }
 

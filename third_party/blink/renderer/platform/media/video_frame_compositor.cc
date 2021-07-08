@@ -84,10 +84,9 @@ VideoFrameCompositor::~VideoFrameCompositor() {
     client_->StopUsingProvider();
 }
 
-void VideoFrameCompositor::EnableSubmission(
-    const viz::SurfaceId& id,
-    VideoRotation rotation,
-    bool force_submit) {
+void VideoFrameCompositor::EnableSubmission(const viz::SurfaceId& id,
+                                            media::VideoRotation rotation,
+                                            bool force_submit) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   // If we're switching to |submitter_| from some other client, then tell it.
@@ -157,18 +156,19 @@ void VideoFrameCompositor::SetVideoFrameProviderClient(
     client_->StartRendering();
 }
 
-scoped_refptr<VideoFrame> VideoFrameCompositor::GetCurrentFrame() {
+scoped_refptr<media::VideoFrame> VideoFrameCompositor::GetCurrentFrame() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   return current_frame_;
 }
 
-scoped_refptr<VideoFrame> VideoFrameCompositor::GetCurrentFrameOnAnyThread() {
+scoped_refptr<media::VideoFrame>
+VideoFrameCompositor::GetCurrentFrameOnAnyThread() {
   base::AutoLock lock(current_frame_lock_);
   return current_frame_;
 }
 
 void VideoFrameCompositor::SetCurrentFrame_Locked(
-    scoped_refptr<VideoFrame> frame,
+    scoped_refptr<media::VideoFrame> frame,
     base::TimeTicks expected_display_time) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media", "VideoFrameCompositor::SetCurrentFrame", "frame",
@@ -230,8 +230,9 @@ void VideoFrameCompositor::Stop() {
                                 weak_ptr_factory_.GetWeakPtr(), false));
 }
 
-void VideoFrameCompositor::PaintSingleFrame(scoped_refptr<VideoFrame> frame,
-                                            bool repaint_duplicate_frame) {
+void VideoFrameCompositor::PaintSingleFrame(
+    scoped_refptr<media::VideoFrame> frame,
+    bool repaint_duplicate_frame) {
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&VideoFrameCompositor::PaintSingleFrame,
@@ -317,7 +318,7 @@ VideoFrameCompositor::GetLastPresentedFrameMetadata() {
   auto frame_metadata =
       std::make_unique<blink::WebMediaPlayer::VideoFramePresentationMetadata>();
 
-  scoped_refptr<VideoFrame> last_frame;
+  scoped_refptr<media::VideoFrame> last_frame;
   {
     // Manually acquire the lock instead of calling GetCurrentFrameOnAnyThread()
     // to also fetch the other frame dependent properties.
@@ -347,9 +348,10 @@ VideoFrameCompositor::GetLastPresentedFrameMetadata() {
   return frame_metadata;
 }
 
-bool VideoFrameCompositor::ProcessNewFrame(scoped_refptr<VideoFrame> frame,
-                                           base::TimeTicks presentation_time,
-                                           bool repaint_duplicate_frame) {
+bool VideoFrameCompositor::ProcessNewFrame(
+    scoped_refptr<media::VideoFrame> frame,
+    base::TimeTicks presentation_time,
+    bool repaint_duplicate_frame) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (frame && GetCurrentFrame() && !repaint_duplicate_frame &&
@@ -380,7 +382,7 @@ bool VideoFrameCompositor::ProcessNewFrame(scoped_refptr<VideoFrame> frame,
   return true;
 }
 
-void VideoFrameCompositor::UpdateRotation(VideoRotation rotation) {
+void VideoFrameCompositor::UpdateRotation(media::VideoRotation rotation) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   submitter_->SetRotation(rotation);
 }

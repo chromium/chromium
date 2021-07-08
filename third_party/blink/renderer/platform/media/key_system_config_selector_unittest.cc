@@ -146,7 +146,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
     return false;
 
   std::vector<std::string> codec_vector;
-  SplitCodecs(codecs, &codec_vector);
+  media::SplitCodecs(codecs, &codec_vector);
   for (const std::string& codec : codec_vector) {
     DCHECK_NE(codec, kExtendedVideoCodecStripped)
         << "codecs passed into this function should not be stripped";
@@ -193,7 +193,7 @@ WebMediaKeySystemConfiguration UsableConfiguration() {
   return config;
 }
 
-class FakeKeySystems : public KeySystems {
+class FakeKeySystems : public media::KeySystems {
  public:
   ~FakeKeySystems() override = default;
 
@@ -353,7 +353,7 @@ class FakeKeySystems : public KeySystems {
   int update_count = 0;
 };
 
-class FakeMediaPermission : public MediaPermission {
+class FakeMediaPermission : public media::MediaPermission {
  public:
   // MediaPermission implementation.
   void HasPermission(Type type,
@@ -462,7 +462,7 @@ class KeySystemConfigSelectorTest : public testing::Test {
 
   void OnConfigSelected(KeySystemConfigSelector::Status status,
                         WebMediaKeySystemConfiguration* config,
-                        CdmConfig* cdm_config) {
+                        media::CdmConfig* cdm_config) {
     if (status == KeySystemConfigSelector::Status::kSupported) {
       succeeded_count_++;
       config_ = *config;
@@ -482,7 +482,7 @@ class KeySystemConfigSelectorTest : public testing::Test {
 
   // Holds the selected configuration and CdmConfig.
   WebMediaKeySystemConfiguration config_;
-  CdmConfig cdm_config_;
+  media::CdmConfig cdm_config_;
 
   int succeeded_count_;
   int not_supported_count_;

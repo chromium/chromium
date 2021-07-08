@@ -397,7 +397,7 @@ void MultiBuffer::OnDataProviderEvent(DataProvider* provider_tmp) {
         break;
       }
       DCHECK_GE(pos, 0);
-      scoped_refptr<DataBuffer> data = provider->Read();
+      scoped_refptr<media::DataBuffer> data = provider->Read();
       data_[pos] = data;
       eof = data->end_of_stream();
       if (!pinned_[pos])
@@ -478,7 +478,7 @@ void MultiBuffer::MergeFrom(MultiBuffer* other) {
 void MultiBuffer::GetBlocksThreadsafe(
     const BlockId& from,
     const BlockId& to,
-    std::vector<scoped_refptr<DataBuffer>>* output) {
+    std::vector<scoped_refptr<media::DataBuffer>>* output) {
   base::AutoLock auto_lock(data_lock_);
   auto i = data_.find(from);
   BlockId j = from;

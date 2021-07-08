@@ -23,7 +23,7 @@ namespace media {
 
 class WebInbandTextTrackImpl;
 
-class PLATFORM_EXPORT TextTrackImpl : public TextTrack {
+class PLATFORM_EXPORT TextTrackImpl : public media::TextTrack {
  public:
   // Constructor assumes ownership of the |text_track| object.
   TextTrackImpl(const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,

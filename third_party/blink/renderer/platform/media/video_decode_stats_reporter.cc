@@ -15,12 +15,12 @@
 namespace media {
 
 VideoDecodeStatsReporter::VideoDecodeStatsReporter(
-    mojo::PendingRemote<mojom::VideoDecodeStatsRecorder> recorder_remote,
+    mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder> recorder_remote,
     GetPipelineStatsCB get_pipeline_stats_cb,
-    VideoCodecProfile codec_profile,
+    media::VideoCodecProfile codec_profile,
     const gfx::Size& natural_size,
     std::string key_system,
-    absl::optional<CdmConfig> cdm_config,
+    absl::optional<media::CdmConfig> cdm_config,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : kRecordingInterval(
@@ -30,7 +30,7 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
       recorder_remote_(std::move(recorder_remote)),
       get_pipeline_stats_cb_(std::move(get_pipeline_stats_cb)),
       codec_profile_(codec_profile),
-      natural_size_(GetSizeBucket(natural_size)),
+      natural_size_(media::GetSizeBucket(natural_size)),
       key_system_(key_system),
       use_hw_secure_codecs_(cdm_config ? cdm_config->use_hw_secure_codecs
                                        : false),
@@ -38,7 +38,7 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
       stats_cb_timer_(tick_clock_) {
   DCHECK(recorder_remote_.is_bound());
   DCHECK(get_pipeline_stats_cb_);
-  DCHECK_NE(VIDEO_CODEC_PROFILE_UNKNOWN, codec_profile_);
+  DCHECK_NE(media::VIDEO_CODEC_PROFILE_UNKNOWN, codec_profile_);
   DCHECK(!cdm_config || !key_system_.empty());
 
   recorder_remote_.set_disconnect_handler(base::BindOnce(
@@ -98,7 +98,7 @@ void VideoDecodeStatsReporter::OnShown() {
   if (num_stable_fps_samples_ >= kRequiredStableFpsSamples) {
     // Dropped frames are not reported during background rendering. Start a new
     // record to avoid reporting background stats.
-    PipelineStatistics stats = get_pipeline_stats_cb_.Run();
+    media::PipelineStatistics stats = get_pipeline_stats_cb_.Run();
     StartNewRecord(stats.video_frames_decoded, stats.video_frames_dropped,
                    stats.video_frames_decoded_power_efficient);
   }
@@ -110,8 +110,8 @@ void VideoDecodeStatsReporter::OnShown() {
 bool VideoDecodeStatsReporter::MatchesBucketedNaturalSize(
     const gfx::Size& natural_size) const {
   // Stored natural size should always be bucketed.
-  DCHECK(natural_size_ == GetSizeBucket(natural_size_));
-  return GetSizeBucket(natural_size) == natural_size_;
+  DCHECK(natural_size_ == media::GetSizeBucket(natural_size_));
+  return media::GetSizeBucket(natural_size) == natural_size_;
 }
 
 void VideoDecodeStatsReporter::RunStatsTimerAtInterval(
@@ -137,8 +137,8 @@ void VideoDecodeStatsReporter::StartNewRecord(
            << " use_hw_secure_codecs:" << use_hw_secure_codecs_;
 
   // Size and frame rate should always be bucketed.
-  DCHECK(natural_size_ == GetSizeBucket(natural_size_));
-  DCHECK_EQ(last_observed_fps_, GetFpsBucket(last_observed_fps_));
+  DCHECK(natural_size_ == media::GetSizeBucket(natural_size_));
+  DCHECK_EQ(last_observed_fps_, media::GetFpsBucket(last_observed_fps_));
 
   // New records decoded and dropped counts should start at zero.
   // These should never move backward.
@@ -152,7 +152,7 @@ void VideoDecodeStatsReporter::StartNewRecord(
       frames_decoded_power_efficient_offset;
 
   bool use_hw_secure_codecs = use_hw_secure_codecs_;
-  mojom::PredictionFeaturesPtr features = mojom::PredictionFeatures::New(
+  auto features = media::mojom::PredictionFeatures::New(
       codec_profile_, natural_size_, last_observed_fps_, key_system_,
       use_hw_secure_codecs);
 
@@ -184,7 +184,7 @@ void VideoDecodeStatsReporter::OnIpcConnectionError() {
 }
 
 bool VideoDecodeStatsReporter::UpdateDecodeProgress(
-    const PipelineStatistics& stats) {
+    const media::PipelineStatistics& stats) {
   DCHECK_GE(stats.video_frames_decoded, last_frames_decoded_);
   DCHECK_GE(stats.video_frames_dropped, last_frames_dropped_);
 
@@ -205,7 +205,7 @@ bool VideoDecodeStatsReporter::UpdateDecodeProgress(
 }
 
 bool VideoDecodeStatsReporter::UpdateFrameRateStability(
-    const PipelineStatistics& stats) {
+    const media::PipelineStatistics& stats) {
   // When (re)initializing, the pipeline may momentarily return an average frame
   // duration of zero. Ignore it and wait for a real frame rate.
   if (stats.video_frame_duration_average.is_zero())
@@ -213,7 +213,7 @@ bool VideoDecodeStatsReporter::UpdateFrameRateStability(
 
   // Bucket frame rate to simplify metrics aggregation.
   int frame_rate =
-      GetFpsBucket(1 / stats.video_frame_duration_average.InSecondsF());
+      media::GetFpsBucket(1 / stats.video_frame_duration_average.InSecondsF());
 
   if (frame_rate != last_observed_fps_) {
     DVLOG(2) << __func__ << " fps changed: " << last_observed_fps_ << " -> "
@@ -285,7 +285,7 @@ bool VideoDecodeStatsReporter::UpdateFrameRateStability(
 void VideoDecodeStatsReporter::UpdateStats() {
   DCHECK(ShouldBeReporting());
 
-  PipelineStatistics stats = get_pipeline_stats_cb_.Run();
+  media::PipelineStatistics stats = get_pipeline_stats_cb_.Run();
   DVLOG(2) << __func__ << " Raw stats -- dropped:" << stats.video_frames_dropped
            << "/" << stats.video_frames_decoded
            << " power efficient:" << stats.video_frames_decoded_power_efficient
@@ -319,7 +319,7 @@ void VideoDecodeStatsReporter::UpdateStats() {
                    frames_decoded_power_efficient_offset_,
                frames_decoded);
 
-  mojom::PredictionTargetsPtr targets = mojom::PredictionTargets::New(
+  auto targets = media::mojom::PredictionTargets::New(
       frames_decoded, frames_dropped, frames_power_efficient);
 
   DVLOG(2) << __func__ << " Recording -- dropped:" << targets->frames_dropped

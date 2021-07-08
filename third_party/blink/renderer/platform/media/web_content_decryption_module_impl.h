@@ -35,10 +35,10 @@ using WebCdmCreatedCB =
 class PLATFORM_EXPORT WebContentDecryptionModuleImpl
     : public blink::WebContentDecryptionModule {
  public:
-  static void Create(CdmFactory* cdm_factory,
+  static void Create(media::CdmFactory* cdm_factory,
                      const std::u16string& key_system,
                      const blink::WebSecurityOrigin& security_origin,
-                     const CdmConfig& cdm_config,
+                     const media::CdmConfig& cdm_config,
                      WebCdmCreatedCB web_cdm_created_cb);
 
   WebContentDecryptionModuleImpl(const WebContentDecryptionModuleImpl&) =
@@ -58,11 +58,11 @@ class PLATFORM_EXPORT WebContentDecryptionModuleImpl
       const blink::WebString& min_hdcp_version_string,
       blink::WebContentDecryptionModuleResult result) override;
 
-  std::unique_ptr<CdmContextRef> GetCdmContextRef();
+  std::unique_ptr<media::CdmContextRef> GetCdmContextRef();
 
   std::string GetKeySystem() const;
 
-  CdmConfig GetCdmConfig() const;
+  media::CdmConfig GetCdmConfig() const;
 
  private:
   friend CdmSessionAdapter;

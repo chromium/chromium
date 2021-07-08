@@ -73,7 +73,7 @@ void WebContentDecryptionModuleImpl::Create(
     media::CdmFactory* cdm_factory,
     const std::u16string& key_system,
     const blink::WebSecurityOrigin& security_origin,
-    const CdmConfig& cdm_config,
+    const media::CdmConfig& cdm_config,
     WebCdmCreatedCB web_cdm_created_cb) {
   DCHECK(!security_origin.IsNull());
   DCHECK(!key_system.empty());
@@ -154,12 +154,12 @@ void WebContentDecryptionModuleImpl::GetStatusForPolicy(
 
   adapter_->GetStatusForPolicy(
       min_hdcp_version,
-      std::make_unique<CdmResultPromise<CdmKeyInformation::KeyStatus>>(
+      std::make_unique<CdmResultPromise<media::CdmKeyInformation::KeyStatus>>(
           result, adapter_->GetKeySystemUMAPrefix(),
           kGetStatusForPolicyUMAName));
 }
 
-std::unique_ptr<CdmContextRef>
+std::unique_ptr<media::CdmContextRef>
 WebContentDecryptionModuleImpl::GetCdmContextRef() {
   return adapter_->GetCdmContextRef();
 }
@@ -168,7 +168,7 @@ std::string WebContentDecryptionModuleImpl::GetKeySystem() const {
   return adapter_->GetKeySystem();
 }
 
-CdmConfig WebContentDecryptionModuleImpl::GetCdmConfig() const {
+media::CdmConfig WebContentDecryptionModuleImpl::GetCdmConfig() const {
   return adapter_->GetCdmConfig();
 }
 

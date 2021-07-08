@@ -34,7 +34,7 @@ class CdmFactory;
 class WebContentDecryptionModuleSessionImpl;
 
 // Owns the CDM instance and makes calls from session objects to the CDM.
-// Forwards the session ID-based callbacks of the ContentDecryptionModule
+// Forwards the session ID-based callbacks of the media::ContentDecryptionModule
 // interface to the appropriate session object. Callers should hold references
 // to this class as long as they need the CDM instance.
 class PLATFORM_EXPORT CdmSessionAdapter
@@ -46,20 +46,20 @@ class PLATFORM_EXPORT CdmSessionAdapter
 
   // Creates the CDM for |key_system| using |cdm_factory| and returns the result
   // via |result|.
-  void CreateCdm(CdmFactory* cdm_factory,
+  void CreateCdm(media::CdmFactory* cdm_factory,
                  const std::string& key_system,
-                 const CdmConfig& cdm_config,
+                 const media::CdmConfig& cdm_config,
                  WebCdmCreatedCB web_cdm_created_cb);
 
   // Provides a server certificate to be used to encrypt messages to the
   // license server.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
-                            std::unique_ptr<SimpleCdmPromise> promise);
+                            std::unique_ptr<media::SimpleCdmPromise> promise);
 
   // Gets the key status for a hypothetical key with |min_hdcp_version|
   // requirement.
-  void GetStatusForPolicy(HdcpVersion min_hdcp_version,
-                          std::unique_ptr<KeyStatusCdmPromise> promise);
+  void GetStatusForPolicy(media::HdcpVersion min_hdcp_version,
+                          std::unique_ptr<media::KeyStatusCdmPromise> promise);
 
   // Creates a new session and adds it to the internal map. RemoveSession()
   // must be called when destroying it, if RegisterSession() was called.
@@ -78,33 +78,34 @@ class PLATFORM_EXPORT CdmSessionAdapter
 
   // Initializes a session with the |init_data_type|, |init_data| and
   // |session_type| provided.
-  void InitializeNewSession(EmeInitDataType init_data_type,
-                            const std::vector<uint8_t>& init_data,
-                            CdmSessionType session_type,
-                            std::unique_ptr<NewSessionCdmPromise> promise);
+  void InitializeNewSession(
+      media::EmeInitDataType init_data_type,
+      const std::vector<uint8_t>& init_data,
+      media::CdmSessionType session_type,
+      std::unique_ptr<media::NewSessionCdmPromise> promise);
 
   // Loads the session specified by |session_id|.
-  void LoadSession(CdmSessionType session_type,
+  void LoadSession(media::CdmSessionType session_type,
                    const std::string& session_id,
-                   std::unique_ptr<NewSessionCdmPromise> promise);
+                   std::unique_ptr<media::NewSessionCdmPromise> promise);
 
   // Updates the session specified by |session_id| with |response|.
   void UpdateSession(const std::string& session_id,
                      const std::vector<uint8_t>& response,
-                     std::unique_ptr<SimpleCdmPromise> promise);
+                     std::unique_ptr<media::SimpleCdmPromise> promise);
 
   // Closes the session specified by |session_id|.
   void CloseSession(const std::string& session_id,
-                    std::unique_ptr<SimpleCdmPromise> promise);
+                    std::unique_ptr<media::SimpleCdmPromise> promise);
 
   // Removes stored session data associated with the session specified by
   // |session_id|.
   void RemoveSession(const std::string& session_id,
-                     std::unique_ptr<SimpleCdmPromise> promise);
+                     std::unique_ptr<media::SimpleCdmPromise> promise);
 
   // Returns a CdmContextRef which provides access to CdmContext and by holding
   // the CdmContextRef, makes sure the CdmContext is kept alive.
-  std::unique_ptr<CdmContextRef> GetCdmContextRef();
+  std::unique_ptr<media::CdmContextRef> GetCdmContextRef();
 
   // Returns the key system name.
   const std::string& GetKeySystem() const;
@@ -113,7 +114,7 @@ class PLATFORM_EXPORT CdmSessionAdapter
   const std::string& GetKeySystemUMAPrefix() const;
 
   // Returns the CdmConfig used in creation of CDM.
-  const CdmConfig& GetCdmConfig() const;
+  const media::CdmConfig& GetCdmConfig() const;
 
  private:
   friend class base::RefCounted<CdmSessionAdapter>;
@@ -128,36 +129,36 @@ class PLATFORM_EXPORT CdmSessionAdapter
 
   // Callback for CreateCdm().
   void OnCdmCreated(const std::string& key_system,
-                    const CdmConfig& cdm_config,
+                    const media::CdmConfig& cdm_config,
                     base::TimeTicks start_time,
-                    const scoped_refptr<ContentDecryptionModule>& cdm,
+                    const scoped_refptr<media::ContentDecryptionModule>& cdm,
                     const std::string& error_message);
 
   // Callbacks for firing session events.
   void OnSessionMessage(const std::string& session_id,
-                        CdmMessageType message_type,
+                        media::CdmMessageType message_type,
                         const std::vector<uint8_t>& message);
   void OnSessionKeysChange(const std::string& session_id,
                            bool has_additional_usable_key,
-                           CdmKeysInfo keys_info);
+                           media::CdmKeysInfo keys_info);
   void OnSessionExpirationUpdate(const std::string& session_id,
                                  base::Time new_expiry_time);
   void OnSessionClosed(const std::string& session_id,
-                       CdmSessionClosedReason reason);
+                       media::CdmSessionClosedReason reason);
 
   // Helper function of the callbacks.
   WebContentDecryptionModuleSessionImpl* GetSession(
       const std::string& session_id);
 
-  scoped_refptr<ContentDecryptionModule> cdm_;
+  scoped_refptr<media::ContentDecryptionModule> cdm_;
 
   SessionMap sessions_;
 
   std::string key_system_;
   std::string key_system_uma_prefix_;
 
-  // CdmConfig used in creation of cdm_.
-  CdmConfig cdm_config_;
+  // media::CdmConfig used in creation of cdm_.
+  media::CdmConfig cdm_config_;
 
   // A unique ID to trace CdmSessionAdapter::CreateCdm() call and the matching
   // OnCdmCreated() call.

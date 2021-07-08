@@ -64,7 +64,7 @@ bool SanitizeInitData(EmeInitDataType init_data_type,
                       std::vector<uint8_t>* sanitized_init_data,
                       std::string* error_message) {
   DCHECK_GT(init_data_length, 0u);
-  if (init_data_length > limits::kMaxInitDataLength) {
+  if (init_data_length > media::limits::kMaxInitDataLength) {
     error_message->assign("Initialization data too long.");
     return false;
   }
@@ -72,7 +72,7 @@ bool SanitizeInitData(EmeInitDataType init_data_type,
   switch (init_data_type) {
     case EmeInitDataType::WEBM:
       // |init_data| for WebM is a single key.
-      if (init_data_length > limits::kMaxKeyIdLength) {
+      if (init_data_length > media::limits::kMaxKeyIdLength) {
         error_message->assign("Initialization data for WebM is too long.");
         return false;
       }
@@ -81,7 +81,7 @@ bool SanitizeInitData(EmeInitDataType init_data_type,
 
     case EmeInitDataType::CENC:
       sanitized_init_data->assign(init_data, init_data + init_data_length);
-      if (!ValidatePsshInput(*sanitized_init_data)) {
+      if (!media::ValidatePsshInput(*sanitized_init_data)) {
         error_message->assign("Initialization data for CENC is incorrect.");
         return false;
       }
@@ -91,20 +91,20 @@ bool SanitizeInitData(EmeInitDataType init_data_type,
       // Extract the keys and then rebuild the message. This ensures that any
       // extra data in the provided JSON is dropped.
       std::string init_data_string(init_data, init_data + init_data_length);
-      KeyIdList key_ids;
-      if (!ExtractKeyIdsFromKeyIdsInitData(init_data_string, &key_ids,
-                                           error_message))
+      media::KeyIdList key_ids;
+      if (!media::ExtractKeyIdsFromKeyIdsInitData(init_data_string, &key_ids,
+                                                  error_message))
         return false;
 
       for (const auto& key_id : key_ids) {
-        if (key_id.size() < limits::kMinKeyIdLength ||
-            key_id.size() > limits::kMaxKeyIdLength) {
+        if (key_id.size() < media::limits::kMinKeyIdLength ||
+            key_id.size() > media::limits::kMaxKeyIdLength) {
           error_message->assign("Incorrect key size.");
           return false;
         }
       }
 
-      CreateKeyIdsInitData(key_ids, sanitized_init_data);
+      media::CreateKeyIdsInitData(key_ids, sanitized_init_data);
       return true;
     }
 
@@ -126,7 +126,7 @@ bool SanitizeSessionId(const blink::WebString& session_id,
     return false;
 
   sanitized_session_id->assign(session_id.Ascii());
-  if (sanitized_session_id->length() > limits::kMaxSessionIdLength)
+  if (sanitized_session_id->length() > media::limits::kMaxSessionIdLength)
     return false;
 
   // Check that |sanitized_session_id| only contains printable characters for
@@ -151,13 +151,13 @@ bool SanitizeResponse(const std::string& key_system,
   // and/or generating a fully sanitized version. The user agent should check
   // that the length and values of fields are reasonable. Unknown fields should
   // be rejected or removed.
-  if (response_length > limits::kMaxSessionResponseLength)
+  if (response_length > media::limits::kMaxSessionResponseLength)
     return false;
 
-  if (IsClearKey(key_system) || IsExternalClearKey(key_system)) {
+  if (media::IsClearKey(key_system) || media::IsExternalClearKey(key_system)) {
     std::string key_string(response, response + response_length);
-    KeyIdAndKeyPairs keys;
-    CdmSessionType session_type = CdmSessionType::kTemporary;
+    media::KeyIdAndKeyPairs keys;
+    auto session_type = CdmSessionType::kTemporary;
     if (!ExtractKeysFromJWKSet(key_string, &keys, &session_type))
       return false;
 
@@ -166,8 +166,8 @@ bool SanitizeResponse(const std::string& key_system,
       return false;
 
     for (const auto& key_pair : keys) {
-      if (key_pair.first.size() < limits::kMinKeyIdLength ||
-          key_pair.first.size() > limits::kMaxKeyIdLength) {
+      if (key_pair.first.size() < media::limits::kMinKeyIdLength ||
+          key_pair.first.size() > media::limits::kMaxKeyIdLength) {
         return false;
       }
     }
@@ -212,7 +212,7 @@ WebContentDecryptionModuleSessionImpl::
     // session will be gone.
     if (!is_closed_ && !has_close_been_called_) {
       adapter_->CloseSession(session_id_,
-                             std::make_unique<DoNothingCdmPromise<>>());
+                             std::make_unique<media::DoNothingCdmPromise<>>());
     }
   }
 }
@@ -295,12 +295,14 @@ void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
   // 10.9 Use the cdm to execute the following steps:
   adapter_->InitializeNewSession(
       eme_init_data_type, sanitized_init_data, session_type_,
-      std::unique_ptr<NewSessionCdmPromise>(new NewSessionCdmResultPromise(
-          result, adapter_->GetKeySystemUMAPrefix(), kGenerateRequestUMAName,
-          base::BindOnce(
-              &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
-              weak_ptr_factory_.GetWeakPtr()),
-          {SessionInitStatus::NEW_SESSION})));
+      std::unique_ptr<media::NewSessionCdmPromise>(
+          new NewSessionCdmResultPromise(
+              result, adapter_->GetKeySystemUMAPrefix(),
+              kGenerateRequestUMAName,
+              base::BindOnce(
+                  &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
+                  weak_ptr_factory_.GetWeakPtr()),
+              {SessionInitStatus::NEW_SESSION})));
 }
 
 void WebContentDecryptionModuleSessionImpl::Load(
@@ -328,13 +330,14 @@ void WebContentDecryptionModuleSessionImpl::Load(
 
   adapter_->LoadSession(
       session_type_, sanitized_session_id,
-      std::unique_ptr<NewSessionCdmPromise>(new NewSessionCdmResultPromise(
-          result, adapter_->GetKeySystemUMAPrefix(), kLoadSessionUMAName,
-          base::BindOnce(
-              &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
-              weak_ptr_factory_.GetWeakPtr()),
-          {SessionInitStatus::NEW_SESSION,
-           SessionInitStatus::SESSION_NOT_FOUND})));
+      std::unique_ptr<media::NewSessionCdmPromise>(
+          new NewSessionCdmResultPromise(
+              result, adapter_->GetKeySystemUMAPrefix(), kLoadSessionUMAName,
+              base::BindOnce(
+                  &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
+                  weak_ptr_factory_.GetWeakPtr()),
+              {SessionInitStatus::NEW_SESSION,
+               SessionInitStatus::SESSION_NOT_FOUND})));
 }
 
 void WebContentDecryptionModuleSessionImpl::Update(
@@ -413,7 +416,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionMessage(
 
 void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
     bool has_additional_usable_key,
-    CdmKeysInfo keys_info) {
+    media::CdmKeysInfo keys_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   blink::WebVector<blink::WebEncryptedMediaKeyInformation> keys(
       keys_info.size());
@@ -444,7 +447,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionExpirationUpdate(
 }
 
 void WebContentDecryptionModuleSessionImpl::OnSessionClosed(
-    CdmSessionClosedReason reason) {
+    media::CdmSessionClosedReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Only send one closed event to blink.

@@ -229,7 +229,7 @@ class MockMultiBufferDataSource : public MultiBufferDataSource {
  private:
   // Whether the resource is downloading or deferred.
   bool downloading_;
-  NullMediaLog media_log_;
+  media::NullMediaLog media_log_;
 };
 
 static const int64_t kFileSize = 5000000;

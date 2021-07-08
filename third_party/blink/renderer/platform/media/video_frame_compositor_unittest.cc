@@ -29,7 +29,7 @@ using testing::StrictMock;
 
 namespace media {
 
-using RenderingMode = VideoRendererSink::RenderCallback::RenderingMode;
+using RenderingMode = ::media::VideoRendererSink::RenderCallback::RenderingMode;
 
 class MockWebVideoFrameSubmitter : public blink::WebVideoFrameSubmitter {
  public:
@@ -53,8 +53,9 @@ class MockWebVideoFrameSubmitter : public blink::WebVideoFrameSubmitter {
   int did_receive_frame_count_ = 0;
 };
 
-class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
-                                 public testing::Test {
+class VideoFrameCompositorTest
+    : public media::VideoRendererSink::RenderCallback,
+      public testing::Test {
  public:
   VideoFrameCompositorTest()
       : client_(new StrictMock<MockWebVideoFrameSubmitter>()) {}
@@ -84,14 +85,15 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
     compositor_->SetVideoFrameProviderClient(nullptr);
   }
 
-  scoped_refptr<VideoFrame> CreateOpaqueFrame() {
+  scoped_refptr<media::VideoFrame> CreateOpaqueFrame() {
     return CreateOpaqueFrame(8, 8);
   }
 
-  scoped_refptr<VideoFrame> CreateOpaqueFrame(int width, int height) {
+  scoped_refptr<media::VideoFrame> CreateOpaqueFrame(int width, int height) {
     gfx::Size size(width, height);
-    return VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size, gfx::Rect(size),
-                                   size, base::TimeDelta());
+    return media::VideoFrame::CreateFrame(media::PIXEL_FORMAT_I420, size,
+                                          gfx::Rect(size), size,
+                                          base::TimeDelta());
   }
 
   VideoFrameCompositor* compositor() { return compositor_.get(); }
@@ -104,9 +106,9 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
  protected:
   // VideoRendererSink::RenderCallback implementation.
   MOCK_METHOD3(Render,
-               scoped_refptr<VideoFrame>(base::TimeTicks,
-                                         base::TimeTicks,
-                                         RenderingMode));
+               scoped_refptr<media::VideoFrame>(base::TimeTicks,
+                                                base::TimeTicks,
+                                                RenderingMode));
   MOCK_METHOD0(OnFrameDropped, void());
   MOCK_METHOD0(OnNewFramePresented, void());
 
@@ -202,12 +204,13 @@ TEST_F(VideoFrameCompositorTest, SetIsPageVisible) {
 }
 
 TEST_F(VideoFrameCompositorTest, PaintSingleFrame) {
-  scoped_refptr<VideoFrame> expected = VideoFrame::CreateEOSFrame();
+  scoped_refptr<media::VideoFrame> expected =
+      media::VideoFrame::CreateEOSFrame();
 
   // Should notify compositor synchronously.
   EXPECT_EQ(0, submitter_->did_receive_frame_count());
   compositor()->PaintSingleFrame(expected);
-  scoped_refptr<VideoFrame> actual = compositor()->GetCurrentFrame();
+  scoped_refptr<media::VideoFrame> actual = compositor()->GetCurrentFrame();
   EXPECT_EQ(expected, actual);
   EXPECT_EQ(1, submitter_->did_receive_frame_count());
 }
@@ -217,7 +220,7 @@ TEST_F(VideoFrameCompositorTest, RenderFiresPresentationCallback) {
   // and base::TimeTicks().
   tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
 
-  scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
+  scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
       .WillRepeatedly(Return(opaque_frame));
   EXPECT_CALL(*this, OnNewFramePresented());
@@ -257,9 +260,12 @@ TEST_F(VideoFrameCompositorTest, MultiplePresentationCallbacks) {
   constexpr int kSize1 = 8;
   constexpr int kSize2 = 16;
   constexpr int kSize3 = 24;
-  scoped_refptr<VideoFrame> opaque_frame_1 = CreateOpaqueFrame(kSize1, kSize1);
-  scoped_refptr<VideoFrame> opaque_frame_2 = CreateOpaqueFrame(kSize2, kSize2);
-  scoped_refptr<VideoFrame> opaque_frame_3 = CreateOpaqueFrame(kSize3, kSize3);
+  scoped_refptr<media::VideoFrame> opaque_frame_1 =
+      CreateOpaqueFrame(kSize1, kSize1);
+  scoped_refptr<media::VideoFrame> opaque_frame_2 =
+      CreateOpaqueFrame(kSize2, kSize2);
+  scoped_refptr<media::VideoFrame> opaque_frame_3 =
+      CreateOpaqueFrame(kSize3, kSize3);
 
   EXPECT_CALL(*this, OnNewFramePresented()).Times(1);
   EXPECT_CALL(*submitter_, SetForceBeginFrames(_)).Times(AnyNumber());
@@ -290,7 +296,7 @@ TEST_F(VideoFrameCompositorTest, MultiplePresentationCallbacks) {
 }
 
 TEST_F(VideoFrameCompositorTest, VideoRendererSinkFrameDropped) {
-  scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
+  scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
 
   EXPECT_CALL(*this, Render(_, _, _)).WillRepeatedly(Return(opaque_frame));
   StartVideoRendererSink();
@@ -324,7 +330,7 @@ TEST_F(VideoFrameCompositorTest, VideoRendererSinkFrameDropped) {
 }
 
 TEST_F(VideoFrameCompositorTest, StartFiresBackgroundRender) {
-  scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
+  scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
       .WillRepeatedly(Return(opaque_frame));
   StartVideoRendererSink();
@@ -332,7 +338,7 @@ TEST_F(VideoFrameCompositorTest, StartFiresBackgroundRender) {
 }
 
 TEST_F(VideoFrameCompositorTest, BackgroundRenderTicks) {
-  scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
+  scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
   compositor_->set_background_rendering_for_testing(true);
 
   base::RunLoop run_loop;
@@ -356,7 +362,7 @@ TEST_F(VideoFrameCompositorTest, BackgroundRenderTicks) {
 
 TEST_F(VideoFrameCompositorTest,
        UpdateCurrentFrameWorksWhenBackgroundRendered) {
-  scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
+  scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
   compositor_->set_background_rendering_for_testing(true);
 
   // Background render a frame that succeeds immediately.
@@ -368,7 +374,7 @@ TEST_F(VideoFrameCompositorTest,
   // UpdateCurrentFrame is expected to return true to account for the frame
   // rendered in the background.
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kNormal))
-      .WillOnce(Return(scoped_refptr<VideoFrame>(opaque_frame)));
+      .WillOnce(Return(scoped_refptr<media::VideoFrame>(opaque_frame)));
   EXPECT_TRUE(
       compositor()->UpdateCurrentFrame(base::TimeTicks(), base::TimeTicks()));
   RenderFrame();
@@ -376,7 +382,7 @@ TEST_F(VideoFrameCompositorTest,
   // Second call to UpdateCurrentFrame will return false as no new frame has
   // been created since the last call.
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kNormal))
-      .WillOnce(Return(scoped_refptr<VideoFrame>(opaque_frame)));
+      .WillOnce(Return(scoped_refptr<media::VideoFrame>(opaque_frame)));
   EXPECT_FALSE(
       compositor()->UpdateCurrentFrame(base::TimeTicks(), base::TimeTicks()));
 
@@ -384,8 +390,8 @@ TEST_F(VideoFrameCompositorTest,
 }
 
 TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
-  scoped_refptr<VideoFrame> opaque_frame_1 = CreateOpaqueFrame();
-  scoped_refptr<VideoFrame> opaque_frame_2 = CreateOpaqueFrame();
+  scoped_refptr<media::VideoFrame> opaque_frame_1 = CreateOpaqueFrame();
+  scoped_refptr<media::VideoFrame> opaque_frame_2 = CreateOpaqueFrame();
   compositor_->set_background_rendering_for_testing(true);
 
   EXPECT_CALL(*submitter_, IsDrivingFrameUpdates)
@@ -446,8 +452,8 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
 }
 
 TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale_ClientBypass) {
-  scoped_refptr<VideoFrame> opaque_frame_1 = CreateOpaqueFrame();
-  scoped_refptr<VideoFrame> opaque_frame_2 = CreateOpaqueFrame();
+  scoped_refptr<media::VideoFrame> opaque_frame_1 = CreateOpaqueFrame();
+  scoped_refptr<media::VideoFrame> opaque_frame_2 = CreateOpaqueFrame();
   compositor_->set_background_rendering_for_testing(true);
 
   EXPECT_CALL(*submitter_, IsDrivingFrameUpdates)

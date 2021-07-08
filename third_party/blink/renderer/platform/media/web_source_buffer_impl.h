@@ -22,7 +22,7 @@ enum class SourceBufferParseWarning;
 
 class PLATFORM_EXPORT WebSourceBufferImpl : public blink::WebSourceBuffer {
  public:
-  WebSourceBufferImpl(const std::string& id, ChunkDemuxer* demuxer);
+  WebSourceBufferImpl(const std::string& id, media::ChunkDemuxer* demuxer);
   WebSourceBufferImpl(const WebSourceBufferImpl&) = delete;
   WebSourceBufferImpl& operator=(const WebSourceBufferImpl&) = delete;
   ~WebSourceBufferImpl() override;
@@ -55,13 +55,13 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public blink::WebSourceBuffer {
  private:
   // Demuxer callback handler to process an initialization segment received
   // during an append() call.
-  void InitSegmentReceived(std::unique_ptr<MediaTracks> tracks);
+  void InitSegmentReceived(std::unique_ptr<media::MediaTracks> tracks);
 
   // Demuxer callback handler to notify Blink of a non-fatal parse warning.
-  void NotifyParseWarning(const SourceBufferParseWarning warning);
+  void NotifyParseWarning(const media::SourceBufferParseWarning warning);
 
   std::string id_;
-  ChunkDemuxer* demuxer_;  // Owned by WebMediaPlayerImpl.
+  media::ChunkDemuxer* demuxer_;  // Owned by WebMediaPlayerImpl.
 
   blink::WebSourceBufferClient* client_;
 

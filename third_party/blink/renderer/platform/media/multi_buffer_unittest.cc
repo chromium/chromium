@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
@@ -40,7 +41,7 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
                               int max_blocks_after_defer,
                               bool must_read_whole_file,
                               MultiBuffer* multibuffer,
-                              TestRandom* rnd)
+                              media::TestRandom* rnd)
       : pos_(pos),
         blocks_until_deferred_(1 << 30),
         max_blocks_after_defer_(max_blocks_after_defer),
@@ -70,9 +71,9 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
   bool Available() const override { return !fifo_.empty(); }
   int64_t AvailableBytes() const override { return 0; }
 
-  scoped_refptr<DataBuffer> Read() override {
+  scoped_refptr<media::DataBuffer> Read() override {
     DCHECK(Available());
-    scoped_refptr<DataBuffer> ret = fifo_.front();
+    scoped_refptr<media::DataBuffer> ret = fifo_.front();
     fifo_.pop_front();
     ++pos_;
     return ret;
@@ -98,7 +99,7 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
     --blocks_until_deferred_;
 
     bool ret = true;
-    scoped_refptr<DataBuffer> block = new DataBuffer(kBlockSize);
+    auto block = base::MakeRefCounted<media::DataBuffer>(kBlockSize);
     size_t x = 0;
     size_t byte_pos = (fifo_.size() + pos_) * kBlockSize;
     for (x = 0; x < kBlockSize; x++, byte_pos++) {
@@ -110,7 +111,7 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
     block->set_data_size(static_cast<int>(x));
     fifo_.push_back(block);
     if (byte_pos == file_size_) {
-      fifo_.push_back(DataBuffer::CreateEOSBuffer());
+      fifo_.push_back(media::DataBuffer::CreateEOSBuffer());
       ret = false;
     }
     multibuffer_->OnDataProviderEvent(this);
@@ -118,21 +119,21 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
   }
 
  private:
-  base::circular_deque<scoped_refptr<DataBuffer>> fifo_;
+  base::circular_deque<scoped_refptr<media::DataBuffer>> fifo_;
   MultiBufferBlockId pos_;
   int32_t blocks_until_deferred_;
   int32_t max_blocks_after_defer_;
   size_t file_size_;
   bool must_read_whole_file_;
   MultiBuffer* multibuffer_;
-  TestRandom* rnd_;
+  media::TestRandom* rnd_;
 };
 
 class TestMultiBuffer : public MultiBuffer {
  public:
   explicit TestMultiBuffer(int32_t shift,
                            const scoped_refptr<MultiBuffer::GlobalLRU>& lru,
-                           TestRandom* rnd)
+                           media::TestRandom* rnd)
       : MultiBuffer(shift, lru),
         range_supported_(false),
         create_ok_(true),
@@ -219,14 +220,14 @@ class TestMultiBuffer : public MultiBuffer {
   int32_t max_blocks_after_defer_;
   bool must_read_whole_file_;
   int32_t writers_created_;
-  TestRandom* rnd_;
+  media::TestRandom* rnd_;
 };
 
 class MultiBufferTest : public testing::Test {
  public:
   MultiBufferTest()
       : rnd_(42),
-        task_runner_(new FakeSingleThreadTaskRunner(&clock_)),
+        task_runner_(new media::FakeSingleThreadTaskRunner(&clock_)),
         lru_(new MultiBuffer::GlobalLRU(task_runner_)),
         multibuffer_(kBlockSizeShift, lru_, &rnd_) {}
 
@@ -252,9 +253,9 @@ class MultiBufferTest : public testing::Test {
   }
 
  protected:
-  TestRandom rnd_;
+  media::TestRandom rnd_;
   base::SimpleTestTickClock clock_;
-  scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
+  scoped_refptr<media::FakeSingleThreadTaskRunner> task_runner_;
   scoped_refptr<MultiBuffer::GlobalLRU> lru_;
   TestMultiBuffer multibuffer_;
 };
@@ -483,7 +484,7 @@ class ReadHelper {
   ReadHelper(size_t end,
              size_t max_read_size,
              MultiBuffer* multibuffer,
-             TestRandom* rnd,
+             media::TestRandom* rnd,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : pos_(0),
         end_(end),
@@ -540,7 +541,7 @@ class ReadHelper {
   int64_t end_;
   int64_t max_read_size_;
   int64_t read_size_;
-  TestRandom* rnd_;
+  media::TestRandom* rnd_;
   MultiBufferReader reader_;
 };
 

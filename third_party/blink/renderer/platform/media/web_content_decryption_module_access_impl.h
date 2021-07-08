@@ -31,13 +31,13 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
       const blink::WebString& key_system,
       const blink::WebSecurityOrigin& security_origin,
       const blink::WebMediaKeySystemConfiguration& configuration,
-      const CdmConfig& cdm_config,
+      const media::CdmConfig& cdm_config,
       const base::WeakPtr<WebEncryptedMediaClientImpl>& client);
   WebContentDecryptionModuleAccessImpl(
       const blink::WebString& key_system,
       const blink::WebSecurityOrigin& security_origin,
       const blink::WebMediaKeySystemConfiguration& configuration,
-      const CdmConfig& cdm_config,
+      const media::CdmConfig& cdm_config,
       const base::WeakPtr<WebEncryptedMediaClientImpl>& client);
   WebContentDecryptionModuleAccessImpl(
       const WebContentDecryptionModuleAccessImpl&) = delete;
@@ -57,7 +57,7 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
   const blink::WebString key_system_;
   const blink::WebSecurityOrigin security_origin_;
   const blink::WebMediaKeySystemConfiguration configuration_;
-  const CdmConfig cdm_config_;
+  const media::CdmConfig cdm_config_;
 
   // Keep a WeakPtr as client is owned by render_frame_impl.
   base::WeakPtr<WebEncryptedMediaClientImpl> client_;

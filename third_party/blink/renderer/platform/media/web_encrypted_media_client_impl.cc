@@ -96,12 +96,12 @@ class WebEncryptedMediaClientImpl::Reporter {
 };
 
 WebEncryptedMediaClientImpl::WebEncryptedMediaClientImpl(
-    CdmFactory* cdm_factory,
-    MediaPermission* media_permission,
+    media::CdmFactory* cdm_factory,
+    media::MediaPermission* media_permission,
     std::unique_ptr<KeySystemConfigSelector::WebLocalFrameDelegate>
         web_frame_delegate)
     : cdm_factory_(cdm_factory),
-      key_system_config_selector_(KeySystems::GetInstance(),
+      key_system_config_selector_(media::KeySystems::GetInstance(),
                                   media_permission,
                                   std::move(web_frame_delegate)) {
   DCHECK(cdm_factory_);
@@ -122,7 +122,7 @@ void WebEncryptedMediaClientImpl::RequestMediaKeySystemAccess(
 void WebEncryptedMediaClientImpl::CreateCdm(
     const blink::WebString& key_system,
     const blink::WebSecurityOrigin& security_origin,
-    const CdmConfig& cdm_config,
+    const media::CdmConfig& cdm_config,
     std::unique_ptr<blink::WebContentDecryptionModuleResult> result) {
   WebContentDecryptionModuleImpl::Create(
       cdm_factory_, key_system.Utf16(), security_origin, cdm_config,
@@ -134,7 +134,7 @@ void WebEncryptedMediaClientImpl::OnConfigSelected(
     blink::WebEncryptedMediaRequest request,
     KeySystemConfigSelector::Status status,
     blink::WebMediaKeySystemConfiguration* accumulated_configuration,
-    CdmConfig* cdm_config) {
+    media::CdmConfig* cdm_config) {
   // Update encrypted_media_supported_types_browsertest.cc if updating these
   // strings.
   // TODO(xhwang): Consider using different messages for kUnsupportedKeySystem
@@ -180,7 +180,7 @@ WebEncryptedMediaClientImpl::Reporter* WebEncryptedMediaClientImpl::GetReporter(
     key_system_ascii = key_system.Ascii();
 
   // Return a per-frame singleton so that UMA reports will be once-per-frame.
-  std::string uma_name = GetKeySystemNameForUMA(key_system_ascii);
+  std::string uma_name = media::GetKeySystemNameForUMA(key_system_ascii);
   std::unique_ptr<Reporter>& reporter = reporters_[uma_name];
   if (!reporter)
     reporter = std::make_unique<Reporter>(uma_name);

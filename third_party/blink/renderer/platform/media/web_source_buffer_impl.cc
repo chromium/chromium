@@ -23,9 +23,9 @@
 namespace media {
 
 static blink::WebSourceBufferClient::ParseWarning ParseWarningToBlink(
-    const SourceBufferParseWarning warning) {
+    const media::SourceBufferParseWarning warning) {
 #define CHROMIUM_PARSE_WARNING_TO_BLINK_ENUM_CASE(name) \
-  case SourceBufferParseWarning::name:                  \
+  case media::SourceBufferParseWarning::name:           \
     return blink::WebSourceBufferClient::ParseWarning::name
 
   switch (warning) {
@@ -48,7 +48,7 @@ static base::TimeDelta DoubleToTimeDelta(double time) {
   DCHECK_NE(time, -std::numeric_limits<double>::infinity());
 
   if (time == std::numeric_limits<double>::infinity())
-    return kInfiniteDuration;
+    return media::kInfiniteDuration;
 
   constexpr double max_time_in_seconds =
       base::TimeDelta::FiniteMax().InSecondsF();
@@ -61,11 +61,11 @@ static base::TimeDelta DoubleToTimeDelta(double time) {
 }
 
 WebSourceBufferImpl::WebSourceBufferImpl(const std::string& id,
-                                         ChunkDemuxer* demuxer)
+                                         media::ChunkDemuxer* demuxer)
     : id_(id),
       demuxer_(demuxer),
       client_(nullptr),
-      append_window_end_(kInfiniteDuration) {
+      append_window_end_(media::kInfiniteDuration) {
   DCHECK(demuxer_);
   demuxer_->SetTracksWatcher(
       id, base::BindRepeating(&WebSourceBufferImpl::InitSegmentReceived,
@@ -105,7 +105,7 @@ bool WebSourceBufferImpl::SetMode(WebSourceBuffer::AppendMode mode) {
 }
 
 blink::WebTimeRanges WebSourceBufferImpl::Buffered() {
-  Ranges<base::TimeDelta> ranges = demuxer_->GetBufferedRanges(id_);
+  media::Ranges<base::TimeDelta> ranges = demuxer_->GetBufferedRanges(id_);
   blink::WebTimeRanges result(ranges.size());
   for (size_t i = 0; i < ranges.size(); i++) {
     result[i].start = ranges.start(i).InSecondsF();
@@ -219,13 +219,14 @@ void WebSourceBufferImpl::RemovedFromMediaSource() {
   client_ = nullptr;
 }
 
-blink::WebMediaPlayer::TrackType mediaTrackTypeToBlink(MediaTrack::Type type) {
+blink::WebMediaPlayer::TrackType mediaTrackTypeToBlink(
+    media::MediaTrack::Type type) {
   switch (type) {
-    case MediaTrack::Audio:
+    case media::MediaTrack::Audio:
       return blink::WebMediaPlayer::kAudioTrack;
-    case MediaTrack::Text:
+    case media::MediaTrack::Text:
       return blink::WebMediaPlayer::kTextTrack;
-    case MediaTrack::Video:
+    case media::MediaTrack::Video:
       return blink::WebMediaPlayer::kVideoTrack;
   }
   NOTREACHED();
@@ -233,7 +234,7 @@ blink::WebMediaPlayer::TrackType mediaTrackTypeToBlink(MediaTrack::Type type) {
 }
 
 void WebSourceBufferImpl::InitSegmentReceived(
-    std::unique_ptr<MediaTracks> tracks) {
+    std::unique_ptr<media::MediaTracks> tracks) {
   DCHECK(tracks.get());
   DVLOG(1) << __func__ << " tracks=" << tracks->tracks().size();
 
@@ -254,7 +255,7 @@ void WebSourceBufferImpl::InitSegmentReceived(
 }
 
 void WebSourceBufferImpl::NotifyParseWarning(
-    const SourceBufferParseWarning warning) {
+    const media::SourceBufferParseWarning warning) {
   client_->NotifyParseWarning(ParseWarningToBlink(warning));
 }
 

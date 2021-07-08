@@ -158,7 +158,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
            << ", use_aes_decryptor=" << use_aes_decryptor;
 
   std::vector<std::string> codec_vector;
-  SplitCodecs(codecs, &codec_vector);
+  media::SplitCodecs(codecs, &codec_vector);
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
   // EME HEVC is supported on under this build flag, but it is not supported for
@@ -188,11 +188,12 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 
   // AesDecryptor decrypts the stream in the demuxer before it reaches the
   // decoder so check whether the media format is supported when clear.
-  SupportsType support_result =
+  media::SupportsType support_result =
       use_aes_decryptor
-          ? IsSupportedMediaFormat(container_mime_type, codec_vector)
-          : IsSupportedEncryptedMediaFormat(container_mime_type, codec_vector);
-  return (support_result == IsSupported);
+          ? media::IsSupportedMediaFormat(container_mime_type, codec_vector)
+          : media::IsSupportedEncryptedMediaFormat(container_mime_type,
+                                                   codec_vector);
+  return (support_result == media::IsSupported);
 }
 
 }  // namespace
@@ -362,8 +363,8 @@ class KeySystemConfigSelector::ConfigState {
 };
 
 KeySystemConfigSelector::KeySystemConfigSelector(
-    KeySystems* key_systems,
-    MediaPermission* media_permission,
+    media::KeySystems* key_systems,
+    media::MediaPermission* media_permission,
     std::unique_ptr<WebLocalFrameDelegate> web_frame_delegate)
     : key_systems_(key_systems),
       media_permission_(media_permission),
@@ -413,7 +414,7 @@ bool KeySystemConfigSelector::IsSupportedContentType(
 
   // Before checking CDM support, split |codecs| into a vector of codecs.
   std::vector<std::string> codec_vector;
-  SplitCodecs(codecs, &codec_vector);
+  media::SplitCodecs(codecs, &codec_vector);
 
   // Check that |container_lower| and |codec_vector| are supported by the CDM.
   EmeConfigRule codecs_rule = key_systems_->GetContentTypeConfigRule(
@@ -602,12 +603,12 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //    run the following steps:
   if (!candidate.init_data_types.empty()) {
     // 3.1. Let supported types be an empty sequence of DOMStrings.
-    std::vector<EmeInitDataType> supported_types;
+    std::vector<media::EmeInitDataType> supported_types;
 
     // 3.2. For each value in candidate configuration's initDataTypes member:
     for (size_t i = 0; i < candidate.init_data_types.size(); i++) {
       // 3.2.1. Let initDataType be the value.
-      EmeInitDataType init_data_type = candidate.init_data_types[i];
+      auto init_data_type = candidate.init_data_types[i];
 
       // 3.2.2. If the implementation supports generating requests based on
       //        initDataType, add initDataType to supported types. String
@@ -1017,7 +1018,7 @@ void KeySystemConfigSelector::SelectConfig(
   //
   // Therefore, always support Clear Key key system and only check settings for
   // other key systems.
-  if (!is_encrypted_media_enabled && !IsClearKey(key_system_ascii)) {
+  if (!is_encrypted_media_enabled && !media::IsClearKey(key_system_ascii)) {
     std::move(cb).Run(Status::kUnsupportedKeySystem, nullptr, nullptr);
     return;
   }
@@ -1051,7 +1052,7 @@ void KeySystemConfigSelector::SelectConfigInternal(
     ConfigState config_state(request->was_permission_requested,
                              request->is_permission_granted);
     blink::WebMediaKeySystemConfiguration accumulated_configuration;
-    CdmConfig cdm_config;
+    media::CdmConfig cdm_config;
     ConfigurationSupport support = GetSupportedConfiguration(
         request->key_system, request->candidate_configurations[i],
         &config_state, &accumulated_configuration);
@@ -1066,7 +1067,7 @@ void KeySystemConfigSelector::SelectConfigInternal(
         }
         DVLOG(3) << "Request permission.";
         media_permission_->RequestPermission(
-            MediaPermission::PROTECTED_MEDIA_IDENTIFIER,
+            media::MediaPermission::PROTECTED_MEDIA_IDENTIFIER,
             base::BindOnce(&KeySystemConfigSelector::OnPermissionResult,
                            weak_factory_.GetWeakPtr(), std::move(request)));
         return;

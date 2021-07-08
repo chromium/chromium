@@ -19,7 +19,7 @@ static void CreateCdm(
     const base::WeakPtr<WebEncryptedMediaClientImpl>& client,
     const blink::WebString& key_system,
     const blink::WebSecurityOrigin& security_origin,
-    const CdmConfig& cdm_config,
+    const media::CdmConfig& cdm_config,
     std::unique_ptr<blink::WebContentDecryptionModuleResult> result) {
   // If |client| is gone (due to the frame getting destroyed), it is
   // impossible to create the CDM, so fail.
@@ -45,7 +45,7 @@ WebContentDecryptionModuleAccessImpl::Create(
     const blink::WebString& key_system,
     const blink::WebSecurityOrigin& security_origin,
     const blink::WebMediaKeySystemConfiguration& configuration,
-    const CdmConfig& cdm_config,
+    const media::CdmConfig& cdm_config,
     const base::WeakPtr<WebEncryptedMediaClientImpl>& client) {
   return std::make_unique<WebContentDecryptionModuleAccessImpl>(
       key_system, security_origin, configuration, cdm_config, client);
@@ -55,14 +55,13 @@ WebContentDecryptionModuleAccessImpl::WebContentDecryptionModuleAccessImpl(
     const blink::WebString& key_system,
     const blink::WebSecurityOrigin& security_origin,
     const blink::WebMediaKeySystemConfiguration& configuration,
-    const CdmConfig& cdm_config,
+    const media::CdmConfig& cdm_config,
     const base::WeakPtr<WebEncryptedMediaClientImpl>& client)
     : key_system_(key_system),
       security_origin_(security_origin),
       configuration_(configuration),
       cdm_config_(cdm_config),
-      client_(client) {
-}
+      client_(client) {}
 
 WebContentDecryptionModuleAccessImpl::~WebContentDecryptionModuleAccessImpl() =
     default;

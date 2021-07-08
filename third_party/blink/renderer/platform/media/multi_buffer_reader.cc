@@ -87,7 +87,7 @@ int64_t MultiBufferReader::AvailableAt(int64_t pos) const {
 
 int64_t MultiBufferReader::TryReadAt(int64_t pos, uint8_t* data, int64_t len) {
   DCHECK_GT(len, 0);
-  std::vector<scoped_refptr<DataBuffer>> buffers;
+  std::vector<scoped_refptr<media::DataBuffer>> buffers;
   multibuffer_->GetBlocksThreadsafe(block(pos), block_ceil(pos + len),
                                     &buffers);
   int64_t bytes_read = 0;

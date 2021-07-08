@@ -99,7 +99,7 @@ using WatchTimeReporterTestData = std::tuple<bool, bool>;
 class WatchTimeReporterTest
     : public testing::TestWithParam<WatchTimeReporterTestData> {
  public:
-  class WatchTimeInterceptor : public mojom::WatchTimeRecorder {
+  class WatchTimeInterceptor : public media::mojom::WatchTimeRecorder {
    public:
     WatchTimeInterceptor(WatchTimeReporterTest* parent) : parent_(parent) {}
     WatchTimeInterceptor(const WatchTimeInterceptor&) = delete;
@@ -200,10 +200,12 @@ class WatchTimeReporterTest
       }
     }
 
-    void OnError(PipelineStatus status) override { parent_->OnError(status); }
+    void OnError(media::PipelineStatus status) override {
+      parent_->OnError(status);
+    }
 
-    void UpdateSecondaryProperties(
-        mojom::SecondaryPlaybackPropertiesPtr secondary_properties) override {
+    void UpdateSecondaryProperties(media::mojom::SecondaryPlaybackPropertiesPtr
+                                       secondary_properties) override {
       parent_->OnUpdateSecondaryProperties(std::move(secondary_properties));
     }
 
@@ -238,7 +240,7 @@ class WatchTimeReporterTest
     WatchTimeReporterTest* parent_;
   };
 
-  class FakeMediaMetricsProvider : public mojom::MediaMetricsProvider {
+  class FakeMediaMetricsProvider : public media::mojom::MediaMetricsProvider {
    public:
     explicit FakeMediaMetricsProvider(WatchTimeReporterTest* parent)
         : parent_(parent) {}
@@ -246,13 +248,14 @@ class WatchTimeReporterTest
 
     // mojom::WatchTimeRecorderProvider implementation:
     void AcquireWatchTimeRecorder(
-        mojom::PlaybackPropertiesPtr properties,
-        mojo::PendingReceiver<mojom::WatchTimeRecorder> receiver) override {
+        media::mojom::PlaybackPropertiesPtr properties,
+        mojo::PendingReceiver<media::mojom::WatchTimeRecorder> receiver)
+        override {
       mojo::MakeSelfOwnedReceiver(
           std::make_unique<WatchTimeInterceptor>(parent_), std::move(receiver));
     }
     void AcquireVideoDecodeStatsRecorder(
-        mojo::PendingReceiver<mojom::VideoDecodeStatsRecorder> receiver)
+        mojo::PendingReceiver<media::mojom::VideoDecodeStatsRecorder> receiver)
         override {
       FAIL();
     }
@@ -261,27 +264,27 @@ class WatchTimeReporterTest
         mojo::PendingReceiver<media::learning::mojom::LearningTaskController>
             receiver) override {}
     void AcquirePlaybackEventsRecorder(
-        mojo::PendingReceiver<mojom::PlaybackEventsRecorder> receiver)
+        mojo::PendingReceiver<media::mojom::PlaybackEventsRecorder> receiver)
         override {}
     void Initialize(bool is_mse,
-                    mojom::MediaURLScheme url_scheme,
-                    mojom::MediaStreamType media_stream_type) override {}
-    void OnError(PipelineStatus status) override {}
+                    media::mojom::MediaURLScheme url_scheme,
+                    media::mojom::MediaStreamType media_stream_type) override {}
+    void OnError(media::PipelineStatus status) override {}
     void SetIsEME() override {}
     void SetTimeToMetadata(base::TimeDelta elapsed) override {}
     void SetTimeToFirstFrame(base::TimeDelta elapsed) override {}
     void SetTimeToPlayReady(base::TimeDelta elapsed) override {}
     void SetContainerName(
-        container_names::MediaContainerName container_name) override {}
-    void SetRendererType(RendererType renderer_type) override {}
+        media::container_names::MediaContainerName container_name) override {}
+    void SetRendererType(media::RendererType renderer_type) override {}
     void SetKeySystem(const std::string& key_system) override {}
     void SetIsHardwareSecure() override {}
     void SetHasPlayed() override {}
     void SetHaveEnough() override {}
-    void SetHasAudio(AudioCodec audio_codec) override {}
-    void SetHasVideo(VideoCodec video_codec) override {}
-    void SetVideoPipelineInfo(const VideoPipelineInfo& info) override {}
-    void SetAudioPipelineInfo(const AudioPipelineInfo& info) override {}
+    void SetHasAudio(media::AudioCodec audio_codec) override {}
+    void SetHasVideo(media::VideoCodec video_codec) override {}
+    void SetVideoPipelineInfo(const media::VideoPipelineInfo& info) override {}
+    void SetAudioPipelineInfo(const media::AudioPipelineInfo& info) override {}
 
    private:
     WatchTimeReporterTest* parent_;
@@ -307,9 +310,9 @@ class WatchTimeReporterTest
       EXPECT_WATCH_TIME_FINALIZED();
 
     wtr_ = std::make_unique<blink::WatchTimeReporter>(
-        mojom::PlaybackProperties::New(has_audio_, has_video_, false, false,
-                                       is_mse, is_encrypted, false,
-                                       mojom::MediaStreamType::kNone),
+        media::mojom::PlaybackProperties::New(
+            has_audio_, has_video_, false, false, is_mse, is_encrypted, false,
+            media::mojom::MediaStreamType::kNone),
         initial_video_size,
         base::BindRepeating(&WatchTimeReporterTest::GetCurrentMediaTime,
                             base::Unretained(this)),
@@ -322,7 +325,7 @@ class WatchTimeReporterTest
 
     // Most tests don't care about this.
     EXPECT_CALL(*this, GetPipelineStatistics())
-        .WillRepeatedly(testing::Return(PipelineStatistics()));
+        .WillRepeatedly(testing::Return(media::PipelineStatistics()));
     EXPECT_CALL(*this, OnUpdateVideoDecodeStats(_, _))
         .Times(testing::AnyNumber());
   }
@@ -616,7 +619,7 @@ class WatchTimeReporterTest
   }
 
   MOCK_METHOD0(GetCurrentMediaTime, base::TimeDelta());
-  MOCK_METHOD0(GetPipelineStatistics, PipelineStatistics());
+  MOCK_METHOD0(GetPipelineStatistics, media::PipelineStatistics());
 
   MOCK_METHOD0(OnWatchTimeFinalized, void(void));
   MOCK_METHOD0(OnPowerWatchTimeFinalized, void(void));
@@ -625,9 +628,9 @@ class WatchTimeReporterTest
   MOCK_METHOD2(OnWatchTimeUpdate, void(WatchTimeKey, base::TimeDelta));
   MOCK_METHOD1(OnUnderflowUpdate, void(int));
   MOCK_METHOD2(OnUnderflowDurationUpdate, void(int, base::TimeDelta));
-  MOCK_METHOD1(OnError, void(PipelineStatus));
+  MOCK_METHOD1(OnError, void(media::PipelineStatus));
   MOCK_METHOD1(OnUpdateSecondaryProperties,
-               void(mojom::SecondaryPlaybackPropertiesPtr));
+               void(media::mojom::SecondaryPlaybackPropertiesPtr));
   MOCK_METHOD1(OnSetAutoplayInitiated, void(bool));
   MOCK_METHOD1(OnDurationChanged, void(base::TimeDelta));
   MOCK_METHOD2(OnUpdateVideoDecodeStats, void(uint32_t, uint32_t));
@@ -675,9 +678,9 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporter) {
   wtr_->OnPlaying();
   EXPECT_TRUE(IsMonitoring());
 
-  EXPECT_CALL(*this, OnError(PIPELINE_ERROR_DECODE))
+  EXPECT_CALL(*this, OnError(media::PIPELINE_ERROR_DECODE))
       .Times((has_audio_ && has_video_) ? 3 : 2);
-  wtr_->OnError(PIPELINE_ERROR_DECODE);
+  wtr_->OnError(media::PIPELINE_ERROR_DECODE);
 
   Initialize(true, true, gfx::Size());
   wtr_->OnPlaying();
@@ -698,7 +701,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporter) {
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterInfiniteStartTime) {
   EXPECT_CALL(*this, GetCurrentMediaTime())
-      .WillRepeatedly(testing::Return(kInfiniteDuration));
+      .WillRepeatedly(testing::Return(media::kInfiniteDuration));
   Initialize(false, false, kSizeJustRight);
   wtr_->OnPlaying();
   EXPECT_FALSE(IsMonitoring());
@@ -713,12 +716,12 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterBasic) {
       .WillRepeatedly(testing::Return(kWatchTimeLate));
   Initialize(true, true, kSizeJustRight);
 
-  PipelineStatistics stats;
+  media::PipelineStatistics stats;
   stats.video_frames_decoded = 10;
   stats.video_frames_dropped = 2;
   if (has_video_) {
     EXPECT_CALL(*this, GetPipelineStatistics())
-        .WillOnce(testing::Return(PipelineStatistics()))
+        .WillOnce(testing::Return(media::PipelineStatistics()))
         .WillRepeatedly(testing::Return(stats));
     EXPECT_CALL(*this, OnUpdateVideoDecodeStats(stats.video_frames_decoded,
                                                 stats.video_frames_dropped));
@@ -763,11 +766,11 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterStatsOffsetCorrectly) {
       .WillRepeatedly(testing::Return(kWatchTimeLate));
   Initialize(true, true, kSizeJustRight);
 
-  PipelineStatistics initial_stats;
+  media::PipelineStatistics initial_stats;
   initial_stats.video_frames_decoded = 10;
   initial_stats.video_frames_dropped = 2;
 
-  PipelineStatistics stats;
+  media::PipelineStatistics stats;
   stats.video_frames_decoded = 17;
   stats.video_frames_dropped = 7;
   if (has_video_) {
@@ -1093,15 +1096,20 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterNoUnderflowDoubleReport) {
 TEST_P(WatchTimeReporterTest, WatchTimeReporterSecondaryProperties) {
   Initialize(true, true, kSizeJustRight);
 
-  auto properties = mojom::SecondaryPlaybackProperties::New(
-      has_audio_ ? kCodecAAC : kUnknownAudioCodec,
-      has_video_ ? kCodecH264 : kUnknownVideoCodec,
-      has_audio_ ? AudioCodecProfile::kXHE_AAC : AudioCodecProfile::kUnknown,
-      has_video_ ? H264PROFILE_MAIN : VIDEO_CODEC_PROFILE_UNKNOWN,
-      has_audio_ ? AudioDecoderType::kMojo : AudioDecoderType::kUnknown,
-      has_video_ ? VideoDecoderType::kMojo : VideoDecoderType::kUnknown,
-      has_audio_ ? EncryptionScheme::kCenc : EncryptionScheme::kUnencrypted,
-      has_video_ ? EncryptionScheme::kCbcs : EncryptionScheme::kUnencrypted,
+  auto properties = media::mojom::SecondaryPlaybackProperties::New(
+      has_audio_ ? media::kCodecAAC : media::kUnknownAudioCodec,
+      has_video_ ? media::kCodecH264 : media::kUnknownVideoCodec,
+      has_audio_ ? media::AudioCodecProfile::kXHE_AAC
+                 : media::AudioCodecProfile::kUnknown,
+      has_video_ ? media::H264PROFILE_MAIN : media::VIDEO_CODEC_PROFILE_UNKNOWN,
+      has_audio_ ? media::AudioDecoderType::kMojo
+                 : media::AudioDecoderType::kUnknown,
+      has_video_ ? media::VideoDecoderType::kMojo
+                 : media::VideoDecoderType::kUnknown,
+      has_audio_ ? media::EncryptionScheme::kCenc
+                 : media::EncryptionScheme::kUnencrypted,
+      has_video_ ? media::EncryptionScheme::kCbcs
+                 : media::EncryptionScheme::kUnencrypted,
       has_video_ ? gfx::Size(800, 600) : gfx::Size());
 
   // Get a pointer to our original properties since we're not allowed to use
@@ -1133,11 +1141,14 @@ TEST_P(WatchTimeReporterTest, SecondaryProperties_SizeIncreased) {
 
   EXPECT_CALL(*this, OnUpdateSecondaryProperties(_))
       .Times((has_audio_ && has_video_) ? 3 : 2);
-  wtr_->UpdateSecondaryProperties(mojom::SecondaryPlaybackProperties::New(
-      kUnknownAudioCodec, kUnknownVideoCodec, AudioCodecProfile::kUnknown,
-      VIDEO_CODEC_PROFILE_UNKNOWN, AudioDecoderType::kUnknown,
-      VideoDecoderType::kUnknown, EncryptionScheme::kUnencrypted,
-      EncryptionScheme::kUnencrypted, kSizeJustRight));
+  wtr_->UpdateSecondaryProperties(
+      media::mojom::SecondaryPlaybackProperties::New(
+          media::kUnknownAudioCodec, media::kUnknownVideoCodec,
+          media::AudioCodecProfile::kUnknown,
+          media::VIDEO_CODEC_PROFILE_UNKNOWN, media::AudioDecoderType::kUnknown,
+          media::VideoDecoderType::kUnknown,
+          media::EncryptionScheme::kUnencrypted,
+          media::EncryptionScheme::kUnencrypted, kSizeJustRight));
   EXPECT_TRUE(IsMonitoring());
 
   EXPECT_WATCH_TIME_FINALIZED();
@@ -1156,11 +1167,14 @@ TEST_P(WatchTimeReporterTest, SecondaryProperties_SizeDecreased) {
 
   EXPECT_CALL(*this, OnUpdateSecondaryProperties(_))
       .Times((has_audio_ && has_video_) ? 3 : 2);
-  wtr_->UpdateSecondaryProperties(mojom::SecondaryPlaybackProperties::New(
-      kUnknownAudioCodec, kUnknownVideoCodec, AudioCodecProfile::kUnknown,
-      VIDEO_CODEC_PROFILE_UNKNOWN, AudioDecoderType::kUnknown,
-      VideoDecoderType::kUnknown, EncryptionScheme::kUnencrypted,
-      EncryptionScheme::kUnencrypted, kSizeTooSmall));
+  wtr_->UpdateSecondaryProperties(
+      media::mojom::SecondaryPlaybackProperties::New(
+          media::kUnknownAudioCodec, media::kUnknownVideoCodec,
+          media::AudioCodecProfile::kUnknown,
+          media::VIDEO_CODEC_PROFILE_UNKNOWN, media::AudioDecoderType::kUnknown,
+          media::VideoDecoderType::kUnknown,
+          media::EncryptionScheme::kUnencrypted,
+          media::EncryptionScheme::kUnencrypted, kSizeTooSmall));
   EXPECT_WATCH_TIME_FINALIZED();
   CycleReportingTimer();
 
@@ -1198,9 +1212,9 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHidden) {
 
   // One call for the background, one for the foreground, and one for the muted
   // reporter if we have audio+video.
-  EXPECT_CALL(*this, OnError(PIPELINE_ERROR_DECODE))
+  EXPECT_CALL(*this, OnError(media::PIPELINE_ERROR_DECODE))
       .Times((has_audio_ && has_video_) ? 3 : 2);
-  wtr_->OnError(PIPELINE_ERROR_DECODE);
+  wtr_->OnError(media::PIPELINE_ERROR_DECODE);
 
   const base::TimeDelta kExpectedForegroundWatchTime = kWatchTimeEarly;
   EXPECT_WATCH_TIME(Ac, kExpectedForegroundWatchTime);

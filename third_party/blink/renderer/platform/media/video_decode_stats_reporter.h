@@ -32,15 +32,17 @@ namespace media {
 // finalized at destruction and process tear-down.
 class PLATFORM_EXPORT VideoDecodeStatsReporter {
  public:
-  using GetPipelineStatsCB = base::RepeatingCallback<PipelineStatistics(void)>;
+  using GetPipelineStatsCB =
+      base::RepeatingCallback<media::PipelineStatistics(void)>;
 
   VideoDecodeStatsReporter(
-      mojo::PendingRemote<mojom::VideoDecodeStatsRecorder> recorder_remote,
+      mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder>
+          recorder_remote,
       GetPipelineStatsCB get_pipeline_stats_cb,
-      VideoCodecProfile codec_profile,
+      media::VideoCodecProfile codec_profile,
       const gfx::Size& natural_size,
       std::string key_system,
-      absl::optional<CdmConfig> cdm_config,
+      absl::optional<media::CdmConfig> cdm_config,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock =
           base::DefaultTickClock::GetInstance());
@@ -59,7 +61,7 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
   bool MatchesBucketedNaturalSize(const gfx::Size& natural_size) const;
 
   // NOTE: We do not listen for playback rate changes. These implicitly change
-  // the frame rate and surface via PipelineStatistics'
+  // the frame rate and surface via media::PipelineStatistics'
   // video_frame_duration_average.
 
  private:
@@ -127,12 +129,12 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
   // decode/dropped frame counts. Will manage decoded/dropped frame state and
   // relax timer when no decode progress is made. Returns true iff decode is
   // progressing.
-  bool UpdateDecodeProgress(const PipelineStatistics& stats);
+  bool UpdateDecodeProgress(const media::PipelineStatistics& stats);
 
   // Called by UpdateStats() to do frame rate detection. Will manage frame rate
   // state, stats timer, and will start new capabilities records when frame rate
   // changes. Returns true iff frame rate is stable.
-  bool UpdateFrameRateStability(const PipelineStatistics& stats);
+  bool UpdateFrameRateStability(const media::PipelineStatistics& stats);
 
   // Returns true if the |stats_timer_cb_| should be running. Should be called
   // after any state change (e.g. |is_playing_|) as a check on whether to start
@@ -150,13 +152,13 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
 
   // mojo::Remote for the recorder. The recorder runs in the browser process
   // and finalizes the record in the event of fast render process tear down.
-  mojo::Remote<mojom::VideoDecodeStatsRecorder> recorder_remote_;
+  mojo::Remote<media::mojom::VideoDecodeStatsRecorder> recorder_remote_;
 
   // Callback for retrieving playback statistics.
   GetPipelineStatsCB get_pipeline_stats_cb_;
 
   // Current video codec profile, used to index recorded stats.
-  const VideoCodecProfile codec_profile_;
+  const media::VideoCodecProfile codec_profile_;
 
   // Current video natural size, used to index recorded stats. These dimensions
   // will always be rounded to the nearest size bucket. If the original size is
@@ -166,7 +168,7 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
   // The name of the current key system. Empty for unencrypted playback.
   const std::string key_system_;
 
-  // From CdmConfig in constructor.
+  // From media::CdmConfig in constructor.
   const bool use_hw_secure_codecs_;
 
   // Clock for |stats_cb_timer_| and getting current tick count (NowTicks()).

@@ -17,16 +17,16 @@ using ::blink::WebMediaSource;
 
 namespace media {
 
-#define STATIC_ASSERT_MATCHING_STATUS_ENUM(webkit_name, chromium_name) \
-  static_assert(static_cast<int>(WebMediaSource::webkit_name) == \
-                static_cast<int>(ChunkDemuxer::chromium_name),  \
+#define STATIC_ASSERT_MATCHING_STATUS_ENUM(webkit_name, chromium_name)    \
+  static_assert(static_cast<int>(WebMediaSource::webkit_name) ==          \
+                    static_cast<int>(media::ChunkDemuxer::chromium_name), \
                 "mismatching status enum values: " #webkit_name)
 STATIC_ASSERT_MATCHING_STATUS_ENUM(kAddStatusOk, kOk);
 STATIC_ASSERT_MATCHING_STATUS_ENUM(kAddStatusNotSupported, kNotSupported);
 STATIC_ASSERT_MATCHING_STATUS_ENUM(kAddStatusReachedIdLimit, kReachedIdLimit);
 #undef STATIC_ASSERT_MATCHING_STATUS_ENUM
 
-WebMediaSourceImpl::WebMediaSourceImpl(ChunkDemuxer* demuxer)
+WebMediaSourceImpl::WebMediaSourceImpl(media::ChunkDemuxer* demuxer)
     : demuxer_(demuxer) {
   DCHECK(demuxer_);
 }
@@ -49,7 +49,7 @@ std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
 }
 
 std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
-    std::unique_ptr<AudioDecoderConfig> audio_config,
+    std::unique_ptr<media::AudioDecoderConfig> audio_config,
     WebMediaSource::AddStatus& out_status /* out */) {
   std::string id = base::GenerateGUID();
 
@@ -63,7 +63,7 @@ std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
 }
 
 std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
-    std::unique_ptr<VideoDecoderConfig> video_config,
+    std::unique_ptr<media::VideoDecoderConfig> video_config,
     WebMediaSource::AddStatus& out_status /* out */) {
   std::string id = base::GenerateGUID();
 
@@ -87,16 +87,16 @@ void WebMediaSourceImpl::SetDuration(double new_duration) {
 
 void WebMediaSourceImpl::MarkEndOfStream(
     WebMediaSource::EndOfStreamStatus status) {
-  PipelineStatus pipeline_status = PIPELINE_OK;
+  media::PipelineStatus pipeline_status = media::PIPELINE_OK;
 
   switch (status) {
     case WebMediaSource::kEndOfStreamStatusNoError:
       break;
     case WebMediaSource::kEndOfStreamStatusNetworkError:
-      pipeline_status = CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR;
+      pipeline_status = media::CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR;
       break;
     case WebMediaSource::kEndOfStreamStatusDecodeError:
-      pipeline_status = CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR;
+      pipeline_status = media::CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR;
       break;
   }
 

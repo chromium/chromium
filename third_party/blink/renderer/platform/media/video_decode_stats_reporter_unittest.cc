@@ -33,34 +33,36 @@ using ::testing::_;
 
 namespace media {
 
-const VideoCodecProfile kDefaultProfile = VP9PROFILE_PROFILE0;
+const media::VideoCodecProfile kDefaultProfile = media::VP9PROFILE_PROFILE0;
 const int kDefaultHeight = 480;
 const int kDefaultWidth = 640;
 const char kDefaultKeySystem[] = "org.w3.clearkey";
 const bool kDefaultUseHwSecureCodecs = true;
-const CdmConfig kDefaultCdmConfig = {false, false, kDefaultUseHwSecureCodecs};
+const media::CdmConfig kDefaultCdmConfig = {false, false,
+                                            kDefaultUseHwSecureCodecs};
 const double kDefaultFps = 30;
 const int kDecodeCountIncrement = 20;
 const int kDroppedCountIncrement = 1;
 const int kDecodePowerEfficientCountIncrement = 1;
 
-VideoDecoderConfig MakeVideoConfig(VideoCodec codec,
-                                   VideoCodecProfile profile,
-                                   gfx::Size natural_size) {
+media::VideoDecoderConfig MakeVideoConfig(media::VideoCodec codec,
+                                          media::VideoCodecProfile profile,
+                                          gfx::Size natural_size) {
   gfx::Size coded_size = natural_size;
   gfx::Rect visible_rect(coded_size.width(), coded_size.height());
-  return VideoDecoderConfig(
-      codec, profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace::JPEG(), kNoTransformation, coded_size, visible_rect,
-      natural_size, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  return media::VideoDecoderConfig(
+      codec, profile, media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+      media::VideoColorSpace::JPEG(), media::kNoTransformation, coded_size,
+      visible_rect, natural_size, media::EmptyExtraData(),
+      media::EncryptionScheme::kUnencrypted);
 }
 
-PipelineStatistics MakeStats(int frames_decoded,
-                             int frames_dropped,
-                             int power_efficient_decoded_frames,
-                             double fps) {
+media::PipelineStatistics MakeStats(int frames_decoded,
+                                    int frames_dropped,
+                                    int power_efficient_decoded_frames,
+                                    double fps) {
   // Will initialize members with reasonable defaults.
-  PipelineStatistics stats;
+  media::PipelineStatistics stats;
   stats.video_frames_decoded = frames_decoded;
   stats.video_frames_dropped = frames_dropped;
   stats.video_frames_decoded_power_efficient = power_efficient_decoded_frames;
@@ -69,26 +71,26 @@ PipelineStatistics MakeStats(int frames_decoded,
 }
 
 // Mock VideoDecodeStatsRecorder to verify reporter/recorder interactions.
-class RecordInterceptor : public mojom::VideoDecodeStatsRecorder {
+class RecordInterceptor : public media::mojom::VideoDecodeStatsRecorder {
  public:
   RecordInterceptor() = default;
   ~RecordInterceptor() override = default;
 
   // Until move-only types work.
-  void StartNewRecord(mojom::PredictionFeaturesPtr features) override {
+  void StartNewRecord(media::mojom::PredictionFeaturesPtr features) override {
     MockStartNewRecord(features->profile, features->video_size,
                        features->frames_per_sec, features->key_system,
                        features->use_hw_secure_codecs);
   }
 
   MOCK_METHOD5(MockStartNewRecord,
-               void(VideoCodecProfile profile,
+               void(media::VideoCodecProfile profile,
                     const gfx::Size& natural_size,
                     int frames_per_sec,
                     std::string key_system,
                     bool use_hw_secure_codecs));
 
-  void UpdateRecord(mojom::PredictionTargetsPtr targets) override {
+  void UpdateRecord(media::mojom::PredictionTargetsPtr targets) override {
     MockUpdateRecord(targets->frames_decoded, targets->frames_dropped,
                      targets->frames_power_efficient);
   }
@@ -127,7 +129,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  PipelineStatistics MakeAdvancingDecodeStats() {
+  media::PipelineStatistics MakeAdvancingDecodeStats() {
     pipeline_decoded_frames_ += kDecodeCountIncrement;
     pipeline_dropped_frames_ += kDroppedCountIncrement;
     pipeline_power_efficient_frames_ += kDecodePowerEfficientCountIncrement;
@@ -137,7 +139,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
 
   // Peek at what MakeAdvancingDecodeStats() will return next without advancing
   // the tracked counts.
-  PipelineStatistics PeekNextDecodeStats() const {
+  media::PipelineStatistics PeekNextDecodeStats() const {
     return MakeStats(
         pipeline_decoded_frames_ + kDecodeCountIncrement,
         pipeline_dropped_frames_ + kDroppedCountIncrement,
@@ -157,16 +159,16 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
     SLOW_STABILIZE_FPS,
   };
 
-  // Return mojo::PendingRemote<mojom::VideoDecodeStatsRecorder>
+  // Return mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder>
   // after binding the RecordInterceptor to the receiver for a
   // VideoDecodeStatsRecorder. The interceptor serves as a mock recorder to
   // verify reporter/recorder interactions.
-  mojo::PendingRemote<mojom::VideoDecodeStatsRecorder> SetupRecordInterceptor(
-      RecordInterceptor** interceptor) {
+  mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder>
+  SetupRecordInterceptor(RecordInterceptor** interceptor) {
     // Capture a the interceptor pointer for verifying recorder calls. Lifetime
     // will be managed by the |recorder_remote|.
     *interceptor = new RecordInterceptor();
-    mojo::PendingRemote<mojom::VideoDecodeStatsRecorder> recorder_remote;
+    mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder> recorder_remote;
     mojo::MakeSelfOwnedReceiver(
         base::WrapUnique(*interceptor),
         recorder_remote.InitWithNewPipeAndPassReceiver());
@@ -176,10 +178,10 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
 
   // Inject mock objects and create a new |reporter_| to test.
   void MakeReporter(
-      VideoCodecProfile profile = kDefaultProfile,
+      media::VideoCodecProfile profile = kDefaultProfile,
       const gfx::Size& natural_size = gfx::Size(kDefaultWidth, kDefaultHeight),
       const std::string key_system = kDefaultKeySystem,
-      const absl::optional<CdmConfig> cdm_config = kDefaultCdmConfig) {
+      const absl::optional<media::CdmConfig> cdm_config = kDefaultCdmConfig) {
     reporter_ = std::make_unique<VideoDecodeStatsReporter>(
         SetupRecordInterceptor(&interceptor_),
         base::BindRepeating(&VideoDecodeStatsReporterTest::GetPipelineStatsCB,
@@ -211,7 +213,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   //     hidden state)
   //  3) No progress made yet toward stabilizing framerate.
   void StartPlayingAndStabilizeFramerate(
-      VideoCodecProfile expected_profile = kDefaultProfile,
+      media::VideoCodecProfile expected_profile = kDefaultProfile,
       gfx::Size expected_natural_size = gfx::Size(kDefaultWidth,
                                                   kDefaultHeight),
       int expected_fps = kDefaultFps,
@@ -248,7 +250,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   //  2. Only call with GetPipelineStatsCB configured to return
   //     progressing decode stats with a steady framerate.
   void StabilizeFramerateAndStartNewRecord(
-      VideoCodecProfile expected_profile,
+      media::VideoCodecProfile expected_profile,
       gfx::Size expected_natural_size,
       int expected_fps,
       std::string expected_key_system,
@@ -256,18 +258,18 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
       FpsStabiliaztionSpeed fps_timer_speed = FAST_STABILIZE_FPS) {
     ASSERT_TRUE(ShouldBeReporting());
 
-    base::TimeDelta last_frame_duration = kNoTimestamp;
+    base::TimeDelta last_frame_duration = media::kNoTimestamp;
     uint32_t last_decoded_frames = 0;
 
     while (CurrentStableFpsSamples() < kRequiredStableFpsSamples) {
-      PipelineStatistics next_stats = PeekNextDecodeStats();
+      media::PipelineStatistics next_stats = PeekNextDecodeStats();
 
       // Sanity check that the stats callback is progressing decode.
       DCHECK_GT(next_stats.video_frames_decoded, last_decoded_frames);
       last_decoded_frames = next_stats.video_frames_decoded;
 
       // Sanity check that the stats callback is providing steady fps.
-      if (last_frame_duration != kNoTimestamp) {
+      if (last_frame_duration != media::kNoTimestamp) {
         DCHECK_EQ(next_stats.video_frame_duration_average, last_frame_duration);
       }
       last_frame_duration = next_stats.video_frame_duration_average;
@@ -318,7 +320,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
     // variable to workaround linker confusion with test macros.
     EXPECT_EQ(kRecordingInterval, CurrentStatsCbInterval());
 
-    PipelineStatistics next_stats = PeekNextDecodeStats();
+    media::PipelineStatistics next_stats = PeekNextDecodeStats();
 
     // Decode stats must be advancing for record updates to be expected. Dropped
     // frames should at least not move backward.
@@ -343,7 +345,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
 
   // Injected callback for fetching statistics. Each test will manage
   // expectations and return behavior.
-  MOCK_METHOD0(GetPipelineStatsCB, PipelineStatistics());
+  MOCK_METHOD0(GetPipelineStatsCB, media::PipelineStatistics());
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -777,7 +779,7 @@ TEST_F(VideoDecodeStatsReporterTest, FpsBucketing) {
   FastForward(kRecordingInterval);
 
   // Verify new record uses bucketed framerate.
-  int bucketed_fps = GetFpsBucket(pipeline_framerate_);
+  int bucketed_fps = media::GetFpsBucket(pipeline_framerate_);
   EXPECT_NE(bucketed_fps, pipeline_framerate_);
   StabilizeFramerateAndStartNewRecord(kDefaultProfile, kDefaultSize_,
                                       bucketed_fps, kDefaultKeySystem,
@@ -796,7 +798,7 @@ TEST_F(VideoDecodeStatsReporterTest, ResolutionBucketing) {
   EXPECT_TRUE(reporter_->MatchesBucketedNaturalSize(kDefaultSize_));
 
   // Note that our current size fits perfectly into known buckets...
-  EXPECT_EQ(GetSizeBucket(kDefaultSize_), kDefaultSize_);
+  EXPECT_EQ(media::GetSizeBucket(kDefaultSize_), kDefaultSize_);
 
   // A slightly smaller size should fall into the same size bucket as before.
   gfx::Size slightly_smaller_size(kDefaultWidth - 2, kDefaultHeight - 2);
@@ -845,7 +847,8 @@ TEST_F(VideoDecodeStatsReporterTest, ResolutionTooSmall) {
   MakeReporter(kDefaultProfile, small_size);
 
   // Stabilize new framerate and verify record updates come with new offsets.
-  StartPlayingAndStabilizeFramerate(kDefaultProfile, GetSizeBucket(small_size));
+  StartPlayingAndStabilizeFramerate(kDefaultProfile,
+                                    media::GetSizeBucket(small_size));
 
   // Framerate is now stable! Recorded stats should be offset by the values
   // last provided to GetPipelineStatsCB.
@@ -861,8 +864,8 @@ TEST_F(VideoDecodeStatsReporterTest, VaryEmeProperties) {
   const gfx::Size kDefaultSize(kDefaultWidth, kDefaultHeight);
   const char kEmptyKeySystem[] = "";
   const bool kNonDefaultHwSecureCodecs = !kDefaultUseHwSecureCodecs;
-  const CdmConfig kNonDefaultCdmConfig = {false, false,
-                                          kNonDefaultHwSecureCodecs};
+  const media::CdmConfig kNonDefaultCdmConfig = {false, false,
+                                                 kNonDefaultHwSecureCodecs};
   const char kFooKeySystem[] = "fookeysytem";
 
   // Make reporter with no EME properties.

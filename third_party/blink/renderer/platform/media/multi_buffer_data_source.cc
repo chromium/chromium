@@ -69,7 +69,7 @@ class MultiBufferDataSource::ReadOperation {
   ReadOperation(int64_t position,
                 int size,
                 uint8_t* data,
-                DataSource::ReadCB callback);
+                media::DataSource::ReadCB callback);
   ReadOperation(const ReadOperation&) = delete;
   ReadOperation& operator=(const ReadOperation&) = delete;
   ~ReadOperation();
@@ -86,13 +86,14 @@ class MultiBufferDataSource::ReadOperation {
   const int64_t position_;
   const int size_;
   uint8_t* data_;
-  DataSource::ReadCB callback_;
+  media::DataSource::ReadCB callback_;
 };
 
-MultiBufferDataSource::ReadOperation::ReadOperation(int64_t position,
-                                                    int size,
-                                                    uint8_t* data,
-                                                    DataSource::ReadCB callback)
+MultiBufferDataSource::ReadOperation::ReadOperation(
+    int64_t position,
+    int size,
+    uint8_t* data,
+    media::DataSource::ReadCB callback)
     : position_(position),
       size_(size),
       data_(data),
@@ -114,7 +115,7 @@ void MultiBufferDataSource::ReadOperation::Run(
 MultiBufferDataSource::MultiBufferDataSource(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
     scoped_refptr<UrlData> url_data_arg,
-    MediaLog* media_log,
+    media::MediaLog* media_log,
     BufferedDataSourceHost* host,
     DownloadingCB downloading_cb)
     : total_bytes_(kPositionNotSpecified),
@@ -392,7 +393,7 @@ GURL MultiBufferDataSource::GetUrlAfterRedirects() const {
 void MultiBufferDataSource::Read(int64_t position,
                                  int size,
                                  uint8_t* data,
-                                 DataSource::ReadCB read_cb) {
+                                 media::DataSource::ReadCB read_cb) {
   DVLOG(1) << "Read: " << position << " offset, " << size << " bytes";
   // Reading is not allowed until after initialization.
   DCHECK(!init_cb_);
@@ -606,8 +607,8 @@ void MultiBufferDataSource::StartCallback() {
         !AssumeFullyBuffered() && (total_bytes_ == kPositionNotSpecified ||
                                    !url_data_->range_supported());
 
-    media_log_->SetProperty<MediaLogProperty::kTotalBytes>(total_bytes_);
-    media_log_->SetProperty<MediaLogProperty::kIsStreaming>(streaming_);
+    media_log_->SetProperty<media::MediaLogProperty::kTotalBytes>(total_bytes_);
+    media_log_->SetProperty<media::MediaLogProperty::kIsStreaming>(streaming_);
   } else {
     SetReader(nullptr);
   }
@@ -627,8 +628,9 @@ void MultiBufferDataSource::StartCallback() {
 
     // Progress callback might be called after the start callback,
     // make sure that we update single_origin_ now.
-    media_log_->SetProperty<MediaLogProperty::kIsSingleOrigin>(single_origin_);
-    media_log_->SetProperty<MediaLogProperty::kIsRangeHeaderSupported>(
+    media_log_->SetProperty<media::MediaLogProperty::kIsSingleOrigin>(
+        single_origin_);
+    media_log_->SetProperty<media::MediaLogProperty::kIsRangeHeaderSupported>(
         url_data_->range_supported());
   }
 
