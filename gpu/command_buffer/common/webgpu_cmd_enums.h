@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_ENUMS_H_
 #define GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_ENUMS_H_
 
+#include <stdint.h>
+
 namespace gpu {
 namespace webgpu {
 

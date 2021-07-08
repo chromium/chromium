@@ -6,7 +6,7 @@
 
 #include "gpu/command_buffer/service/raster_cmd_validation.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 
 namespace gpu {
