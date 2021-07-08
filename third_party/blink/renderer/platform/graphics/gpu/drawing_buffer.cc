@@ -942,7 +942,8 @@ bool DrawingBuffer::Initialize(const IntSize& size, bool use_multisampling) {
       gl_->FramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_FLIP_Y_MESA, 1);
   }
   if (!ResizeFramebufferInternal(size)) {
-    DLOG(ERROR) << "Initialization failed to allocate backbuffer.";
+    DLOG(ERROR) << "Initialization failed to allocate backbuffer of size "
+                << size.Width() << " x " << size.Height() << ".";
     return false;
   }
 
