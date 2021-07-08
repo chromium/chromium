@@ -76,7 +76,8 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
     for (const auto& header : headers)
       response_headers->SetHeader(header.first, header.second);
     auto hints = mojom::EarlyHints::New(
-        PopulateParsedHeaders(response_headers.get(), GetRequestedURL()));
+        PopulateParsedHeaders(response_headers.get(), GetRequestedURL()),
+        mojom::IPAddressSpace::kPublic);
     client_remote_->OnReceiveEarlyHints(std::move(hints));
   }
 

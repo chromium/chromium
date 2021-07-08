@@ -755,8 +755,14 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
   // Early Hints should not come after actual response.
   DCHECK(on_receive_response_time_.is_null());
   DCHECK(!received_response_);
+  DCHECK_NE(early_hints->ip_address_space,
+            network::mojom::IPAddressSpace::kUnknown);
 
   if (!early_hints_manager_) {
+    // TODO(crbug.com/1225556): Create URLLoaderFactory via
+    // URLLoaderFactoryParams of which values are calculated from `early_hints`
+    // and `this`. Then add browsertests which check whether the resulting
+    // factory cannot fetch subresources from the private network.
     early_hints_manager_ = std::make_unique<NavigationEarlyHintsManager>(
         *browser_context_,
         storage_partition_->GetURLLoaderFactoryForBrowserProcess(),

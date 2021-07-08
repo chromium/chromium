@@ -5,10 +5,13 @@
 module network.mojom;
 
 import "services/network/public/mojom/parsed_headers.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 
 // Represents a 103 Early Hints response.
 // https://tools.ietf.org/html/rfc8297
 struct EarlyHints {
   // The parsed headers.
   ParsedHeaders headers;
+  // The IP address space of the request client instantiated from this response.
+  IPAddressSpace ip_address_space;
 };

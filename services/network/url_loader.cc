@@ -1915,8 +1915,21 @@ void URLLoader::NotifyEarlyResponse(
   DCHECK(headers);
   DCHECK_EQ(headers->response_code(), 103);
 
-  url_loader_client_->OnReceiveEarlyHints(mojom::EarlyHints::New(
-      PopulateParsedHeaders(headers.get(), url_request_->url())));
+  // Calculate IP address space.
+  mojom::ParsedHeadersPtr parsed_headers =
+      PopulateParsedHeaders(headers.get(), url_request_->url());
+  std::vector<GURL> url_list_via_service_worker;
+  net::IPEndPoint transaction_endpoint;
+  bool has_endpoint =
+      url_request_->GetTransactionRemoteEndpoint(&transaction_endpoint);
+  DCHECK(has_endpoint);
+  CalculateClientAddressSpaceParams params(
+      url_list_via_service_worker, parsed_headers, transaction_endpoint);
+  mojom::IPAddressSpace ip_address_space =
+      CalculateClientAddressSpace(url_request_->url(), params);
+
+  url_loader_client_->OnReceiveEarlyHints(
+      mojom::EarlyHints::New(std::move(parsed_headers), ip_address_space));
 }
 
 void URLLoader::SetRawRequestHeadersAndNotify(
