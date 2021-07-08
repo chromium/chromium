@@ -22,7 +22,7 @@ TEST_IS_ENABLED = True
 
 # If the auditor.py part of this test starts failing, please set
 # TEST_PYTHON_AUDITOR to "False" and file a bug (see comment above).
-TEST_PYTHON_AUDITOR = False
+TEST_PYTHON_AUDITOR = True
 
 MINIMUM_EXPECTED_NUMBER_OF_ANNOTATIONS = 260
 

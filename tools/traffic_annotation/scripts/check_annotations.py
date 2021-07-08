@@ -23,7 +23,7 @@ TEST_IS_ENABLED = True
 
 # If the auditor.py part of this test starts failing, please set
 # TEST_PYTHON_AUDITOR to "False" and file a bug (see comment above).
-TEST_PYTHON_AUDITOR = False
+TEST_PYTHON_AUDITOR = True
 
 # Threshold for the change list size to trigger full test.
 CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST = 100
