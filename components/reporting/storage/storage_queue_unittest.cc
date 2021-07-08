@@ -1188,6 +1188,43 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithFailure) {
   }
 }
 
+TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
+
+  // Write a record as Immediate, initiating an upload which fails
+  // and then restarts.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client, &waiter)
+              .Required(0, kData[0]);
+          return Status::StatusOK();
+        }))
+        .WillRepeatedly(Invoke(&DoNotUpload));
+    WriteStringOrDie(kData[0]);  // Immediately uploads and does not confirm.
+  }
+
+  // Let it retry upload and verify.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client, &waiter)
+              .Required(0, kData[0]);
+          return Status::StatusOK();
+        }))
+        .WillRepeatedly(Invoke(&DoNotUpload));
+    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  }
+
+  // Confirm 0 and make sure no retry happens (since everything is confirmed).
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull())).Times(0);
+
+  ConfirmOrDie(/*sequencing_id=*/0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
 TEST_P(StorageQueueTest, WriteEncryptFailure) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   DCHECK(test_encryption_module_);

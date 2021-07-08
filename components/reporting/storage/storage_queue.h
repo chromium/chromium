@@ -289,6 +289,10 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Files on the disk remain as they were.
   void ReleaseAllFileInstances();
 
+  // Helper method to retry upload if prior one failed or if some events below
+  // |next_sequencing_id| were not uploaded.
+  void CheckBackUpload(Status status, int64_t next_sequencing_id);
+
   // Sequential task runner for all activities in this StorageQueue
   // (must be first member in class).
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

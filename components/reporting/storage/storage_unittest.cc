@@ -848,6 +848,9 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
     EXPECT_OK(storage_->Flush(MANUAL_BATCH));
   }
 
+  // Confirm written data to prevent upload retry.
+  ConfirmOrDie(MANUAL_BATCH, /*sequencing_id=*/2);
+
   // Write more data.
   WriteStringOrDie(MANUAL_BATCH, kMoreData[0]);
   WriteStringOrDie(MANUAL_BATCH, kMoreData[1]);
@@ -864,9 +867,6 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
       .WillOnce(
           WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
             MockUploadClient::SetUp(MANUAL_BATCH, mock_upload_client, &waiter)
-                .Required(0, kData[0])
-                .Required(1, kData[1])
-                .Required(2, kData[2])
                 .Required(3, kMoreData[0])
                 .Required(4, kMoreData[1])
                 .Required(5, kMoreData[2]);
@@ -1275,6 +1275,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
 
   WriteStringOrDie(SLOW_BATCH, kMoreData[1]);
 
+  // Confirm #1 IMMEDIATE, removing data #0 and #1, to prevent upload retry.
+  ConfirmOrDie(IMMEDIATE, /*sequencing_id=*/1);
+
   // Set uploader expectations for FAST_BATCH and SLOW_BATCH.
   {
     test::TestCallbackAutoWaiter waiter;
@@ -1294,9 +1297,6 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   // Confirm #0 SLOW_BATCH, removing data #0
   ConfirmOrDie(SLOW_BATCH, /*sequencing_id=*/0);
 
-  // Confirm #1 IMMEDIATE, removing data #0 and #1
-  ConfirmOrDie(IMMEDIATE, /*sequencing_id=*/1);
-
   // Add more data
   {
     test::TestCallbackAutoWaiter waiter;
@@ -1305,7 +1305,6 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
-                  .Possible(1, kData[1])
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
@@ -1313,6 +1312,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
     WriteStringOrDie(IMMEDIATE, kData[2]);
   }
   WriteStringOrDie(SLOW_BATCH, kMoreData[2]);
+
+  // Confirm #2 IMMEDIATE, to prevent upload retry.
+  ConfirmOrDie(IMMEDIATE, /*sequencing_id=*/2);
 
   // Set uploader expectations for FAST_BATCH and SLOW_BATCH.
   {

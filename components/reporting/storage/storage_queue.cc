@@ -823,13 +823,16 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     if (uploader_) {
       uploader_->Completed(status);
     }
-    // If upload failed, retry it after a delay (if any).
-    if (!status.ok()) {
-      if (storage_queue_ &&
-          !storage_queue_->options_.upload_retry_delay().is_zero()) {
-        ScheduleAfter(storage_queue_->options_.upload_retry_delay(),
-                      base::BindOnce(&StorageQueue::Flush, storage_queue_));
-      }
+    // If retry delay is specified, check back after the delay.
+    // If the status was error, or if any events are still there,
+    // retry the upload.
+    if (storage_queue_ &&
+        !storage_queue_->options_.upload_retry_delay().is_zero()) {
+      ScheduleAfter(
+          storage_queue_->options_.upload_retry_delay(),
+          base::BindOnce(
+              &StorageQueue::CheckBackUpload, storage_queue_, status,
+              /*next_sequencing_id=*/sequencing_info_.sequencing_id()));
     }
   }
 
@@ -1495,6 +1498,24 @@ Status StorageQueue::RemoveConfirmedData(int64_t sequencing_id) {
   }
   // Even if there were errors, ignore them.
   return Status::StatusOK();
+}
+
+void StorageQueue::CheckBackUpload(Status status, int64_t next_sequencing_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+  if (!status.ok()) {
+    // Previous upload failed, retry.
+    Flush();
+    return;
+  }
+
+  if (!first_unconfirmed_sequencing_id_.has_value() ||
+      first_unconfirmed_sequencing_id_.value() < next_sequencing_id) {
+    // Not all uploaded events were confirmed after upload, retry.
+    Flush();
+    return;
+  }
+
+  // No need to retry.
 }
 
 void StorageQueue::Flush() {
