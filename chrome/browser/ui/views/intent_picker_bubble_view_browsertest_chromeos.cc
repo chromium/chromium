@@ -533,10 +533,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
 // Test that loading a page with pushState() call that changes URL
 // updates the intent picker view.
-//
-// TODO(crbug.com/1201397): fix flakiness and reenable
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       DISABLED_PushStateURLChangeTest) {
+                       PushStateURLChangeTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL test_url =
       embedded_test_server()->GetURL("/intent_picker/push_state_test.html");
@@ -570,7 +568,9 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
-  SimulateMouseClickOrTapElementWithId(web_contents, "push_to_new_url_button");
+  ASSERT_TRUE(content::ExecuteScript(
+      web_contents,
+      "document.getElementById('push_to_new_url_button').click();"));
   observer.WaitForNavigationFinished();
   EXPECT_FALSE(intent_picker_view->GetVisible());
 }
