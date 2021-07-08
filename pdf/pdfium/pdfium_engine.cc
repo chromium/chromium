@@ -31,7 +31,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gin/array_buffer.h"
-#include "gin/public/cppgc.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/public/v8_platform.h"
@@ -81,7 +80,7 @@
 #include "v8/include/v8.h"
 
 #if defined(PDF_ENABLE_XFA)
-#include "v8/include/cppgc/platform.h"
+#include "gin/public/cppgc.h"
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -266,7 +265,7 @@ void SetUpV8() {
 
 void TearDownV8() {
 #if defined(PDF_ENABLE_XFA)
-  cppgc::ShutdownProcess();
+  gin::MaybeShutdownCppgc();
 #endif
 
   delete g_isolate_holder;

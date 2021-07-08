@@ -3,19 +3,33 @@
 // found in the LICENSE file.
 
 #include "gin/public/cppgc.h"
+
+#include "base/check_op.h"
 #include "gin/public/v8_platform.h"
 #include "v8/include/cppgc/platform.h"
 
 namespace gin {
 
+namespace {
+
+int g_init_count = 0;
+
+}  // namespace
+
 void InitializeCppgcFromV8Platform() {
-  static bool cppgc_is_initialized = false;
-  if (cppgc_is_initialized)
+  DCHECK_GE(g_init_count, 0);
+  if (g_init_count++ > 0)
     return;
 
   cppgc::InitializeProcess(gin::V8Platform::Get()->GetPageAllocator());
+}
 
-  cppgc_is_initialized = true;
+void MaybeShutdownCppgc() {
+  DCHECK_GT(g_init_count, 0);
+  if (--g_init_count > 0)
+    return;
+
+  cppgc::ShutdownProcess();
 }
 
 }  // namespace gin
