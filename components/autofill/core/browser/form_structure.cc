@@ -1190,6 +1190,7 @@ void FormStructure::LogQualityMetrics(
   bool did_autofill_some_possible_fields = false;
   bool is_for_credit_card = IsCompleteCreditCardForm();
   bool has_upi_vpa_field = false;
+  bool has_observed_one_time_code_field = false;
   // A perfectly filled form is submitted as it was filled from Autofill without
   // subsequent changes.
   bool perfect_filling = true;
@@ -1223,6 +1224,9 @@ void FormStructure::LogQualityMetrics(
     // whether the data now in the field is recognized.
     if (field->previously_autofilled())
       num_edited_autofilled_fields++;
+
+    if (field->Type().html_type() == HTML_TYPE_ONE_TIME_CODE)
+      has_observed_one_time_code_field = true;
 
     // The form was not perfectly filled if a non-empty field was not
     // autofilled.
@@ -1313,6 +1317,21 @@ void FormStructure::LogQualityMetrics(
             GetFormTypes(), did_autofill_some_possible_fields, elapsed);
       }
     }
+
+    if (has_observed_one_time_code_field) {
+      if (!load_time.is_null()) {
+        DCHECK_GE(submission_time, load_time);
+        base::TimeDelta elapsed = submission_time - load_time;
+        AutofillMetrics::LogFormFillDurationFromLoadForOneTimeCode(elapsed);
+      }
+      if (!interaction_time.is_null()) {
+        DCHECK(submission_time > interaction_time);
+        base::TimeDelta elapsed = submission_time - interaction_time;
+        AutofillMetrics::LogFormFillDurationFromInteractionForOneTimeCode(
+            elapsed);
+      }
+    }
+
     AutofillMetrics::LogAutofillFormSubmittedState(
         state, is_for_credit_card, has_upi_vpa_field, GetFormTypes(),
         form_parsed_timestamp_, form_signature(), form_interactions_ukm_logger);

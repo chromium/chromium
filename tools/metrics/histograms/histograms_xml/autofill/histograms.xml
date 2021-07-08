@@ -2455,6 +2455,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction"
+    units="ms" expires_after="2021-11-07">
+  <owner>yigu@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
+  <summary>
+    Time elapsed between the user's first interaction with a form and the form's
+    submission, for form with autocomplete=&quot;one-time-code&quot;. An
+    interaction requires changing a form control's value manually or via
+    autofill. The interaction can happen on a different form than the one which
+    is submitted. This is recorded once per form submission.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.WebOTP.OneTimeCode.FillDuration.FromLoad" units="ms"
+    expires_after="2021-11-07">
+  <owner>yigu@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
+  <summary>
+    Time elapsed between form load and form submission, for forms with
+    autocomplete=&quot;one-time-code&quot;. This is recorded once per form
+    submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WebOTP.OneTimeCode.FromAutocomplete" units="Boolean"
     expires_after="2021-11-07">
   <owner>yigu@chromium.org</owner>

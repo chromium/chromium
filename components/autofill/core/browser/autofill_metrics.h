@@ -1387,12 +1387,24 @@ class AutofillMetrics {
   static void LogFormFillDurationFromLoadWithoutAutofill(
       const base::TimeDelta& duration);
 
+  // This should be called when a form with |autocomplete="one-time-code"| is
+  // submitted. |duration| should be the time elapsed between form load and
+  // submission.
+  static void LogFormFillDurationFromLoadForOneTimeCode(
+      const base::TimeDelta& duration);
+
   // This should be called when a form is submitted. |duration| should be the
   // time elapsed between the initial form interaction and submission. This
   // metric is sliced by |form_type| and |used_autofill|.
   static void LogFormFillDurationFromInteraction(
       const DenseSet<FormType>& form_types,
       bool used_autofill,
+      const base::TimeDelta& duration);
+
+  // This should be called when a form with |autocomplete="one-time-code"| is
+  // submitted. |duration| should be the time elapsed between the initial form
+  // interaction and submission.
+  static void LogFormFillDurationFromInteractionForOneTimeCode(
       const base::TimeDelta& duration);
 
   static void LogFormFillDuration(const std::string& metric,

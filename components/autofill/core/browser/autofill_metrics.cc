@@ -1849,6 +1849,13 @@ void AutofillMetrics::LogFormFillDurationFromLoadWithoutAutofill(
 }
 
 // static
+void AutofillMetrics::LogFormFillDurationFromLoadForOneTimeCode(
+    const base::TimeDelta& duration) {
+  LogFormFillDuration("Autofill.WebOTP.OneTimeCode.FillDuration.FromLoad",
+                      duration);
+}
+
+// static
 void AutofillMetrics::LogFormFillDurationFromInteraction(
     const DenseSet<FormType>& form_types,
     bool used_autofill,
@@ -1872,6 +1879,13 @@ void AutofillMetrics::LogFormFillDurationFromInteraction(
   if (base::Contains(form_types, FormType::kUnknownFormType)) {
     LogFormFillDuration(parent_metric + ".Unknown", duration);
   }
+}
+
+// static
+void AutofillMetrics::LogFormFillDurationFromInteractionForOneTimeCode(
+    const base::TimeDelta& duration) {
+  LogFormFillDuration(
+      "Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction", duration);
 }
 
 // static

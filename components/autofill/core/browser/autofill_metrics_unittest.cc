@@ -11569,6 +11569,65 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
                          PhoneCollectionMetricState::kPhonePlusWebOTPPlusOTC));
 }
 
+TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
+  FormData form;
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
+  form.url = GURL("http://example.com/form.html");
+  form.action = GURL("http://example.com/submit.html");
+  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+
+  FormFieldData field;
+  test::CreateTestFormField("", "", "", "password", &field);
+  field.autocomplete_attribute = "one-time-code";
+  form.fields.push_back(field);
+
+  std::vector<FormData> forms(1, form);
+  form.fields[0].value = u"123456";
+
+  {
+    base::HistogramTester histogram_tester;
+    browser_autofill_manager_->OnFormsSeen(forms);
+    base::TimeTicks parse_time = browser_autofill_manager_->form_structures()
+                                     .begin()
+                                     ->second->form_parsed_timestamp();
+    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+    browser_autofill_manager_->OnFormSubmitted(
+        form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
+
+    histogram_tester.ExpectTotalCount(
+        "Autofill.WebOTP.OneTimeCode.FillDuration.FromLoad", 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.WebOTP.OneTimeCode.FillDuration.FromLoad", 16, 1);
+    browser_autofill_manager_->Reset();
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    browser_autofill_manager_->OnFormsSeen(forms);
+    base::TimeTicks parse_time = browser_autofill_manager_->form_structures()
+                                     .begin()
+                                     ->second->form_parsed_timestamp();
+    browser_autofill_manager_->OnDidFillAutofillFormData(
+        form, parse_time + base::TimeDelta::FromMicroseconds(5));
+    browser_autofill_manager_->OnTextFieldDidChange(
+        form, form.fields.front(), gfx::RectF(),
+        parse_time + base::TimeDelta::FromMicroseconds(3));
+    test_clock.SetNowTicks(parse_time + base::TimeDelta::FromMicroseconds(17));
+    browser_autofill_manager_->OnFormSubmitted(
+        form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
+
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction", 14, 1);
+    browser_autofill_manager_->Reset();
+  }
+}
+
 #endif  // !defined(OS_IOS)
 
 TEST_F(AutofillMetricsTest, LogAutocompleteSuggestionAcceptedIndex_WithIndex) {
