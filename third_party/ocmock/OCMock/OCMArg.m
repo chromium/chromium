@@ -33,7 +33,7 @@
 
 + (id __autoreleasing *)anyObjectRef
 {
-    return (id *)0x01234567;
+    return (id *)[self anyPointer];
 }
 
 + (SEL)anySelector
@@ -96,9 +96,9 @@
 	if(type[0] == '^')
 	{
 		void *pointer = [value pointerValue];
-		if(pointer == (void *)0x01234567)
+		if(pointer == [self anyPointer])
 			return [OCMArg any];
-		if((pointer != NULL) && (object_getClass((id)pointer) == [OCMPassByRefSetter class]))
+		if((pointer != NULL) && [OCMPassByRefSetter ptrIsPassByRefSetter:pointer])
 			return (id)pointer;
 	}
     else if(type[0] == ':')
