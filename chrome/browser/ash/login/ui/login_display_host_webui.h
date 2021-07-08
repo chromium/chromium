@@ -93,6 +93,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void VerifyOwnerForKiosk(base::OnceClosure) override;
   void ShowPasswordChangedDialog(const AccountId& account_id,
                                  bool show_password_error) override;
+  void StartBrowserDataMigration() override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
 

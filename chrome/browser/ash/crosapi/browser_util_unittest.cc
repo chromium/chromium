@@ -514,8 +514,8 @@ TEST_F(BrowserUtilTest, IsDataWipeRequiredInvalid) {
   const base::Version required{"2"};
 
   ASSERT_FALSE(data_version.IsValid());
-  EXPECT_TRUE(
-      browser_util::IsDataWipeRequired(data_version, current, required));
+  EXPECT_TRUE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
+                                                         required));
 }
 
 TEST_F(BrowserUtilTest, IsDataWipeRequiredFutureVersion) {
@@ -523,8 +523,8 @@ TEST_F(BrowserUtilTest, IsDataWipeRequiredFutureVersion) {
   const base::Version current{"2"};
   const base::Version required{"3"};
 
-  EXPECT_FALSE(
-      browser_util::IsDataWipeRequired(data_version, current, required));
+  EXPECT_FALSE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
+                                                          required));
 }
 
 TEST_F(BrowserUtilTest, IsDataWipeRequiredSameVersion) {
@@ -532,8 +532,8 @@ TEST_F(BrowserUtilTest, IsDataWipeRequiredSameVersion) {
   const base::Version current{"4"};
   const base::Version required{"3"};
 
-  EXPECT_FALSE(
-      browser_util::IsDataWipeRequired(data_version, current, required));
+  EXPECT_FALSE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
+                                                          required));
 }
 
 TEST_F(BrowserUtilTest, IsDataWipeRequired) {
@@ -541,8 +541,8 @@ TEST_F(BrowserUtilTest, IsDataWipeRequired) {
   const base::Version current{"3"};
   const base::Version required{"2"};
 
-  EXPECT_TRUE(
-      browser_util::IsDataWipeRequired(data_version, current, required));
+  EXPECT_TRUE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
+                                                         required));
 }
 
 TEST_F(BrowserUtilTest, IsDataWipeRequired2) {
@@ -550,8 +550,8 @@ TEST_F(BrowserUtilTest, IsDataWipeRequired2) {
   const base::Version current{"3"};
   const base::Version required{"3"};
 
-  EXPECT_TRUE(
-      browser_util::IsDataWipeRequired(data_version, current, required));
+  EXPECT_TRUE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
+                                                         required));
 }
 
 TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlock) {

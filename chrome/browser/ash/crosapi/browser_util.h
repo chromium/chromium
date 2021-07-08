@@ -204,14 +204,14 @@ void RecordDataVer(PrefService* local_state,
                    const base::Version& version);
 
 // Checks if lacros' data directory needs to be wiped for backward incompatible
-// data. `data_version` is the version of last data wipe. `current_version` is
-// the version of ash-chrome. `required_version` is the version that introduces
-// some breaking change. `data_version` needs to be greater or equal to
-// `required_version`. If `required_version` is newer than `current_version`,
-// data wipe is not required.
-bool IsDataWipeRequired(base::Version data_version,
-                        const base::Version& current_version,
-                        const base::Version& required_version);
+// data.
+bool IsDataWipeRequired(const std::string& user_id_hash);
+
+// Exposed for testing. The arguments are passed to
+// `IsDataWipeRequiredInternal()`.
+bool IsDataWipeRequiredForTesting(base::Version data_version,
+                                  const base::Version& current_version,
+                                  const base::Version& required_version);
 
 // Gets the version of the rootfs lacros-chrome. By reading the metadata json
 // file in the correct format.

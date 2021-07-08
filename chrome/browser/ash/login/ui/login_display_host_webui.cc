@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
@@ -242,7 +243,12 @@ void ShowLoginWizardFinish(
   if (LoginDisplayHost::default_host()) {
     // Tests may have already allocated an instance for us to use.
     display_host = LoginDisplayHost::default_host();
-  } else if (ShouldShowSigninScreen(first_screen)) {
+  } else if (ShouldShowSigninScreen(first_screen) ||
+             first_screen == LacrosDataMigrationScreenView::kScreenId) {
+    // TODO(crbug.com/1178702): Once lacros is officially released,
+    // `ShowLoginWizard()` will no longer be called with lacros screen id.
+    // Instead simply call `SigninUI::StartBrowserDataMigration()` as part of
+    // the login flow.
     display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
   } else {
     display_host = new LoginDisplayHostWebUI();
@@ -1062,6 +1068,10 @@ void LoginDisplayHostWebUI::VerifyOwnerForKiosk(base::OnceClosure) {
 void LoginDisplayHostWebUI::ShowPasswordChangedDialog(
     const AccountId& account_id,
     bool show_password_error) {
+  NOTREACHED();
+}
+
+void LoginDisplayHostWebUI::StartBrowserDataMigration() {
   NOTREACHED();
 }
 

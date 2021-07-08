@@ -39,6 +39,7 @@ class MockSigninUI : public SigninUI {
               ShowSigninError,
               (SigninError, const std::string&, int),
               (override));
+  MOCK_METHOD(void, StartBrowserDataMigration, (), (override));
 };
 
 }  // namespace chromeos

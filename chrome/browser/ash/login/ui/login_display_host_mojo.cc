@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
@@ -138,6 +139,11 @@ void LoginDisplayHostMojo::ShowPasswordChangedDialog(
   wizard_controller_->ShowGaiaPasswordChangedScreen(account_id,
                                                     show_password_error);
   ShowDialog();
+}
+
+void LoginDisplayHostMojo::StartBrowserDataMigration() {
+  DCHECK(GetOobeUI());
+  wizard_controller_->AdvanceToScreen(LacrosDataMigrationScreenView::kScreenId);
 }
 
 void LoginDisplayHostMojo::ShowAllowlistCheckFailedError() {

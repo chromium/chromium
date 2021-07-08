@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ash/login/screens/lacros_data_migration_screen.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
+
 namespace ash {
 
 LacrosDataMigrationScreen::LacrosDataMigrationScreen(
@@ -30,6 +35,13 @@ void LacrosDataMigrationScreen::OnViewDestroyed(
 void LacrosDataMigrationScreen::ShowImpl() {
   if (!view_)
     return;
+
+  const std::string user_id_hash =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kBrowserDataMigrationForUser);
+  // Start browser data migration.
+  BrowserDataMigrator::Migrate(user_id_hash,
+                               base::BindOnce(&chrome::AttemptRestart));
 
   // Show the screen.
   view_->Show();

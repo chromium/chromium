@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -22,10 +24,14 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
 namespace {
@@ -40,6 +46,9 @@ const char* const kNoCopyPaths[] = {kTmpDir, "Downloads", "Cache"};
 // The base names of files and directories directory under the user data
 // directory.
 const char* const kCopyUserDataPaths[] = {"First Run"};
+// Flag values for `switches::kForceBrowserDataMigrationForTesting`.
+const char kBrowserDataMigrationForceSkip[] = "force-skip";
+const char kBrowserDataMigrationForceMigration[] = "force-migration";
 
 // Copies `item` to location pointed by `dest`. Returns true on success and
 // false on failure.
@@ -56,6 +65,26 @@ bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
   PLOG(ERROR) << "Copy failed for " << item.path;
   return false;
 }
+
+void OnRestartRequestResponse(bool result) {
+  if (!result) {
+    LOG(ERROR) << "SessionManagerClient::RequestBrowserDataMigration failed.";
+    return;
+  }
+
+  chrome::AttemptRestart();
+}
+
+// This will be posted with `IsMigrationRequiredOnWorker()` as the reply on UI
+// thread or called directly from `MaybeRestartToMigrate()`.
+void MaybeRestartToMigrateCallback(const AccountId& account_id,
+                                   bool is_required) {
+  if (!is_required)
+    return;
+  SessionManagerClient::Get()->RequestBrowserDataMigration(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id),
+      base::BindOnce(&OnRestartRequestResponse));
+}
 }  // namespace
 
 BrowserDataMigrator::TargetItem::TargetItem(base::FilePath path,
@@ -71,9 +100,56 @@ BrowserDataMigrator::TargetInfo::TargetInfo(const TargetInfo&) = default;
 BrowserDataMigrator::TargetInfo::~TargetInfo() = default;
 
 // static
+void BrowserDataMigrator::MaybeRestartToMigrate(
+    const UserContext& user_context) {
+  const AccountId account_id = user_context.GetAccountId();
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  // Check if lacros is enabled. If not immediately return.
+  if (!crosapi::browser_util::IsLacrosEnabledWithUser(user))
+    return;
+
+  // Check if the switch for testing is present.
+  const std::string force_migration_switch =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kForceBrowserDataMigrationForTesting);
+  if (force_migration_switch == kBrowserDataMigrationForceSkip)
+    return;
+  if (force_migration_switch == kBrowserDataMigrationForceMigration) {
+    MaybeRestartToMigrateCallback(account_id, true /* is_required */);
+    return;
+  }
+
+  // Browser data migration is only available for Googlers at the moment.
+  if (!gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()))
+    return;
+
+  const std::string user_id_hash = user_context.GetUserIDHash();
+  if (crosapi::browser_util::IsDataWipeRequired(user_id_hash)) {
+    // If data wipe is required, no need for a further check to determine if
+    // lacros data dir exists or not.
+    MaybeRestartToMigrateCallback(account_id, true /* is_required */);
+    return;
+  }
+
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    LOG(ERROR) << "Could not get the original user data dir path.";
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&BrowserDataMigrator::IsMigrationRequiredOnWorker,
+                     user_data_dir, user_id_hash),
+      base::BindOnce(&MaybeRestartToMigrateCallback, account_id));
+}
+
+// static
 // Returns true if "lacros user data dir doesn't exist".
-bool BrowserDataMigrator::IsMigrationRequired(base::FilePath user_data_dir,
-                                              const std::string& user_id_hash) {
+bool BrowserDataMigrator::IsMigrationRequiredOnWorker(
+    base::FilePath user_data_dir,
+    const std::string& user_id_hash) {
   // Use `GetUserProfileDir()` to manually get base name for profile dir so that
   // this method can be called even before user profile is created.
   base::FilePath profile_data_dir =
@@ -86,7 +162,8 @@ void BrowserDataMigrator::Migrate(const std::string& user_id_hash,
                                   base::OnceClosure callback) {
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-    LOG(ERROR) << "Could not get the original UDD path. Aborting migration.";
+    LOG(ERROR)
+        << "Could not get the original user data dir path. Aborting migration.";
     RecordStatus(FinalStatus::kGetPathFailed);
     std::move(callback).Run();
     return;

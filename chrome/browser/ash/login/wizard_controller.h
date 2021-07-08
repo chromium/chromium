@@ -286,6 +286,7 @@ class WizardController {
   void ShowEduCoexistenceLoginScreen();
   void ShowParentalHandoffScreen();
   void ShowOsInstallScreen();
+  void ShowLacrosDataMigrationScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();

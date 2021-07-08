@@ -97,10 +97,10 @@ class BrowserDataMigrator {
   BrowserDataMigrator& operator=(const BrowserDataMigrator&) = delete;
   ~BrowserDataMigrator();
 
-  // The method includes a blocking operation. It checks if lacros user data dir
-  // already exists or not. Check if lacros is enabled or not beforehand.
-  static bool IsMigrationRequired(base::FilePath user_data_dir,
-                                  const std::string& user_id_hash);
+  // Checks if migration is required for the user identified by `user_context`
+  // and if it is required, calls a DBus method to session_manager and
+  // terminates ash-chrome.
+  static void MaybeRestartToMigrate(const UserContext& user_context);
 
   // The method needs to be called on UI thread. It instantiates
   // BrowserDataMigrator and posts `MigrateInternal()` on a worker thread. It
@@ -110,10 +110,16 @@ class BrowserDataMigrator {
                       base::OnceClosure callback);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
+                           IsMigrationRequiredOnWorker);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, RecordStatus);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
 
+  // The method includes a blocking operation. It checks if lacros user data dir
+  // already exists or not. Check if lacros is enabled or not beforehand.
+  static bool IsMigrationRequiredOnWorker(base::FilePath user_data_dir,
+                                          const std::string& user_id_hash);
   // Handles the migration on a worker thread. Returns the end status of data
   // wipe and migration.
   MigrationResult MigrateInternal();

@@ -930,6 +930,10 @@ void WizardController::ShowActiveDirectoryPasswordChangeScreen(
   AdvanceToScreen(ActiveDirectoryPasswordChangeView::kScreenId);
 }
 
+void WizardController::ShowLacrosDataMigrationScreen() {
+  SetCurrentScreen(GetScreen(LacrosDataMigrationScreenView::kScreenId));
+}
+
 void WizardController::OnActiveDirectoryPasswordChangeScreenExit() {
   OnScreenExit(ActiveDirectoryPasswordChangeView::kScreenId,
                kDefaultExitReason);
@@ -1903,6 +1907,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowMarketingOptInScreen();
   } else if (screen_id == ManagementTransitionScreenView::kScreenId) {
     ShowManagementTransitionScreen();
+  } else if (screen_id == LacrosDataMigrationScreenView::kScreenId) {
+    ShowLacrosDataMigrationScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||

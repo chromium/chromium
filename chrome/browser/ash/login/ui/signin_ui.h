@@ -65,6 +65,9 @@ class SigninUI {
   virtual void ShowSigninError(SigninError error,
                                const std::string& details,
                                int login_attempts) = 0;
+
+  // Show the browser data migration UI and start the migration.
+  virtual void StartBrowserDataMigration() = 0;
 };
 
 }  // namespace chromeos

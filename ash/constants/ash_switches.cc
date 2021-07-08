@@ -633,6 +633,13 @@ const char kLoginProfile[] = "login-profile";
 // Specifies the user which is already logged in.
 const char kLoginUser[] = "login-user";
 
+// Specifies the user that the browser data migration should happen for.
+const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
+
+// Force skip or force migration. Should only be used for testing.
+const char kForceBrowserDataMigrationForTesting[] =
+    "force-browser-data-migration-for-testing";
+
 // Determines the URL to be used when calling the backend.
 const char kMarketingOptInUrl[] = "marketing-opt-in-url";
 

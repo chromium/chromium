@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
@@ -1260,6 +1261,7 @@ void UserSessionManager::OnProfileCreated(const UserContext& user_context,
     case Profile::CREATE_STATUS_CREATED:
       CHECK(profile);
       // Profile created but before initializing extensions and promo resources.
+      BrowserDataMigrator::MaybeRestartToMigrate(user_context);
       InitProfilePreferences(profile, user_context);
       break;
     case Profile::CREATE_STATUS_INITIALIZED:
@@ -1468,8 +1470,9 @@ void UserSessionManager::InitProfilePreferences(
 void UserSessionManager::UserProfileInitialized(Profile* profile,
                                                 bool is_incognito_profile,
                                                 const AccountId& account_id) {
-  // Only migrate sync prefs for existing users. New users are given the choice
-  // to turn on OS sync in OOBE, so they get the default sync pref values.
+  // Only migrate sync prefs for existing users. New users are given the
+  // choice to turn on OS sync in OOBE, so they get the default sync pref
+  // values.
   if (!IsNewProfile(profile))
     os_sync_util::MigrateOsSyncPreferences(profile->GetPrefs());
 
@@ -1494,9 +1497,9 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
   btl->AddLoginTimeMarker("UserProfileGotten", false);
 
   // Associates AppListClient with the current active profile.
-  // Make sure AppListClient is active when AppListSyncableService builds model
-  // to avoid oem folder being created with invalid position. Note we should put
-  // this call before OAuth check in case of gaia sign in.
+  // Make sure AppListClient is active when AppListSyncableService builds
+  // model to avoid oem folder being created with invalid position. Note we
+  // should put this call before OAuth check in case of gaia sign in.
   AppListClientImpl::GetInstance()->UpdateProfile();
 
   if (user_context_.IsUsingOAuth()) {
@@ -1527,21 +1530,21 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
     } else if (!in_session_password_change_feature_enabled ||
                user_context_.GetAuthFlow() ==
                    UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML) {
-      // These attributes are no longer relevant and should be deleted if either
-      // a) the in-session password change feature is no longer enabled or
-      // b) this user is no longer using SAML to log in.
+      // These attributes are no longer relevant and should be deleted if
+      // either a) the in-session password change feature is no longer enabled
+      // or b) this user is no longer using SAML to log in.
       SamlPasswordAttributes::DeleteFromPrefs(profile->GetPrefs());
     }
 
-    // Transfers authentication-related data from the profile that was used for
-    // authentication to the user's profile. The proxy authentication state is
-    // transferred unconditionally. If the user authenticated via an auth
-    // extension, authentication cookies will be transferred as well when the
-    // user's cookie jar is empty. If the cookie jar is not empty, the
-    // authentication states in the browser context and the user's profile must
-    // be merged using /MergeSession instead. Authentication cookies set by a
-    // SAML IdP will also be transferred when the user's cookie jar is not empty
-    // if `transfer_saml_auth_cookies_on_subsequent_login` is true.
+    // Transfers authentication-related data from the profile that was used
+    // for authentication to the user's profile. The proxy authentication
+    // state is transferred unconditionally. If the user authenticated via an
+    // auth extension, authentication cookies will be transferred as well when
+    // the user's cookie jar is empty. If the cookie jar is not empty, the
+    // authentication states in the browser context and the user's profile
+    // must be merged using /MergeSession instead. Authentication cookies set
+    // by a SAML IdP will also be transferred when the user's cookie jar is
+    // not empty if `transfer_saml_auth_cookies_on_subsequent_login` is true.
     const bool transfer_auth_cookies_on_first_login = has_auth_cookies_;
 
     content::StoragePartition* signin_partition = login::GetSigninPartition();

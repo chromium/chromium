@@ -467,14 +467,7 @@ void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
           ProfileManager::GetPrimaryUserProfile());
   // Check if user data directory needs to be wiped for a backward incompatible
   // update.
-  base::Version data_version =
-      browser_util::GetDataVer(g_browser_process->local_state(), user_id_hash);
-  base::Version current_version = version_info::GetVersion();
-  base::Version required_version =
-      base::Version(base::StringPiece(browser_util::kRequiredDataVersion));
-
-  bool cleared_user_data_dir = !browser_util::IsDataWipeRequired(
-      data_version, current_version, required_version);
+  bool cleared_user_data_dir = !browser_util::IsDataWipeRequired(user_id_hash);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},

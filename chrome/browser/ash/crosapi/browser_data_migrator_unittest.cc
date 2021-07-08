@@ -75,21 +75,21 @@ class BrowserDataMigratorTest : public ::testing::Test {
   base::FilePath from_dir_;
 };
 
-TEST_F(BrowserDataMigratorTest, IsMigrationRequired) {
+TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnWorker) {
   const std::string user_id_hash = "user";
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
 
   // Lacros UDD does not exist.
-  EXPECT_TRUE(BrowserDataMigrator::IsMigrationRequired(user_data_dir_path,
-                                                       user_id_hash));
+  EXPECT_TRUE(BrowserDataMigrator::IsMigrationRequiredOnWorker(
+      user_data_dir_path, user_id_hash));
 
   // Create lacros user data dir.
   ASSERT_TRUE(base::CreateDirectory(
       user_data_dir_path.Append("user").Append(kLacrosDir)));
 
   // Lacros UDD exists.
-  EXPECT_FALSE(BrowserDataMigrator::IsMigrationRequired(user_data_dir_path,
-                                                        user_id_hash));
+  EXPECT_FALSE(BrowserDataMigrator::IsMigrationRequiredOnWorker(
+      user_data_dir_path, user_id_hash));
 }
 
 TEST_F(BrowserDataMigratorTest, GetTargetInfo) {

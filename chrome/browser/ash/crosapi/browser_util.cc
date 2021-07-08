@@ -227,7 +227,7 @@ mojom::DevicePropertiesPtr GetDeviceProperties() {
   }
 
   return result;
-}  // namespace
+}
 
 struct InterfaceVersionEntry {
   base::Token uuid;
@@ -295,6 +295,37 @@ constexpr bool HasDuplicatedUuid() {
     }
   }
   return false;
+}
+
+// Called from `IsDataWipeRequired()` or `IsDataWipeRequiredForTesting()`.
+// data_version` is the version of last data wipe. `current_version` is the
+// version of ash-chrome. `required_version` is the version that introduces some
+// breaking change. `data_version` needs to be greater or equal to
+// `required_version`. If `required_version` is newer than `current_version`,
+// data wipe is not required.
+bool IsDataWipeRequiredInternal(base::Version data_version,
+                                const base::Version& current_version,
+                                const base::Version& required_version) {
+  // `data_version` is invalid if any wipe has not been recorded yet. In
+  // such a case, assume that the last data wipe happened significantly long
+  // time ago.
+  if (!data_version.IsValid())
+    data_version = base::Version("0");
+
+  if (current_version < required_version) {
+    // If `current_version` is smaller than the `required_version`, that means
+    // that the data wipe doesn't need to happen yet.
+    return false;
+  }
+
+  if (data_version >= required_version) {
+    // If `data_version` is greater or equal to `required_version`, this means
+    // data wipe has already happened and that user data is compatible with the
+    // current lacros.
+    return false;
+  }
+
+  return true;
 }
 
 static_assert(
@@ -686,29 +717,22 @@ void RecordDataVer(PrefService* local_state,
   dict->SetString(user_id_hash, version.GetString());
 }
 
-bool IsDataWipeRequired(base::Version data_version,
-                        const base::Version& current_version,
-                        const base::Version& required_version) {
-  // `data_version` is invalid if any wipe has not been recorded yet. In
-  // such a case, assume that the last data wipe happened significantly long
-  // time ago.
-  if (!data_version.IsValid())
-    data_version = base::Version("0");
+bool IsDataWipeRequired(const std::string& user_id_hash) {
+  base::Version data_version =
+      GetDataVer(g_browser_process->local_state(), user_id_hash);
+  base::Version current_version = version_info::GetVersion();
+  base::Version required_version =
+      base::Version(base::StringPiece(kRequiredDataVersion));
 
-  if (current_version < required_version) {
-    // If `current_version` is smaller than the `required_version`, that means
-    // that the data wipe doesn't need to happen yet.
-    return false;
-  }
+  return IsDataWipeRequiredInternal(data_version, current_version,
+                                    required_version);
+}
 
-  if (data_version >= required_version) {
-    // If `data_version` is greater or equal to `required_version`, this means
-    // data wipe has already happened and that user data is compatible with the
-    // current lacros.
-    return false;
-  }
-
-  return true;
+bool IsDataWipeRequiredForTesting(base::Version data_version,
+                                  const base::Version& current_version,
+                                  const base::Version& required_version) {
+  return IsDataWipeRequiredInternal(data_version, current_version,
+                                    required_version);
 }
 
 base::Version GetRootfsLacrosVersionMayBlock(

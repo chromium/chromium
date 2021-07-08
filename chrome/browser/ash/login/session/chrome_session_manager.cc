@@ -47,6 +47,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
@@ -230,6 +231,14 @@ void ChromeSessionManager::Initialize(
                                g_browser_process->local_state())) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
     StartKioskSession();
+    return;
+  }
+
+  if (parsed_command_line.HasSwitch(switches::kBrowserDataMigrationForUser)) {
+    VLOG(1) << "Ash is running to do browser data migration.";
+    // Show UI for browser data migration. The migration itself will be started
+    // in `LacrosDataMigrationScreen::ShowImpl`.
+    ShowLoginWizard(LacrosDataMigrationScreenView::kScreenId);
     return;
   }
 

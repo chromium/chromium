@@ -251,6 +251,12 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // Notifies session_manager that Chrome has hidden the lock screen.
   virtual void NotifyLockScreenDismissed() = 0;
 
+  // Tells session_manager to restart ash-chrome to carry out browser data
+  // migration.
+  virtual void RequestBrowserDataMigration(
+      const cryptohome::AccountIdentifier& cryptohome_id,
+      VoidDBusMethodCallback callback) = 0;
+
   // Map that is used to describe the set of active user sessions where |key|
   // is cryptohome id and |value| is user_id_hash.
   using ActiveSessionsMap = std::map<std::string, std::string>;
