@@ -25,8 +25,7 @@ enum class RespondWithCallbackType { kInvoke, kAbort, kCanMakePayment };
 // Abstract base class for event callbacks that are invoked when the payment
 // handler resolves the promise passed in to TheEvent.respondWith() method.
 class RespondWithCallback
-    : public payments::mojom::PaymentHandlerResponseCallback,
-      public WebContentsObserver {
+    : public payments::mojom::PaymentHandlerResponseCallback {
  public:
   // Disallow copy and assign.
   RespondWithCallback(const RespondWithCallback& other) = delete;
@@ -37,7 +36,6 @@ class RespondWithCallback
 
  protected:
   RespondWithCallback(
-      WebContents* web_contents,
       ServiceWorkerMetrics::EventType event_type,
       scoped_refptr<ServiceWorkerVersion> service_worker_version,
       base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher);
@@ -78,7 +76,6 @@ class RespondWithCallback
 class CanMakePaymentRespondWithCallback : public RespondWithCallback {
  public:
   CanMakePaymentRespondWithCallback(
-      WebContents* web_contents,
       scoped_refptr<ServiceWorkerVersion> service_worker_version,
       base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher,
       PaymentAppProvider::CanMakePaymentCallback callback);
@@ -108,7 +105,6 @@ class CanMakePaymentRespondWithCallback : public RespondWithCallback {
 class InvokeRespondWithCallback : public RespondWithCallback {
  public:
   InvokeRespondWithCallback(
-      WebContents* web_contents,
       scoped_refptr<ServiceWorkerVersion> service_worker_version,
       base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher,
       PaymentAppProvider::InvokePaymentAppCallback callback);
@@ -143,7 +139,6 @@ class InvokeRespondWithCallback : public RespondWithCallback {
 class AbortRespondWithCallback : public RespondWithCallback {
  public:
   AbortRespondWithCallback(
-      WebContents* web_contents,
       scoped_refptr<ServiceWorkerVersion> service_worker_version,
       base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher,
       PaymentAppProvider::AbortCallback callback);

@@ -33,12 +33,10 @@ RespondWithCallback::BindNewPipeAndPassRemote() {
 }
 
 RespondWithCallback::RespondWithCallback(
-    WebContents* web_contents,
     ServiceWorkerMetrics::EventType event_type,
     scoped_refptr<ServiceWorkerVersion> service_worker_version,
     base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher)
-    : WebContentsObserver(web_contents),
-      service_worker_version_(service_worker_version),
+    : service_worker_version_(service_worker_version),
       event_dispatcher_(event_dispatcher) {
   request_id_ = service_worker_version->StartRequest(
       event_type, base::BindOnce(&RespondWithCallback::OnServiceWorkerError,
@@ -61,9 +59,6 @@ void RespondWithCallback::MaybeRecordTimeoutMetric(
 
 void RespondWithCallback::ClearRespondWithCallbackAndCloseWindow() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  if (!web_contents())
-    return;
-
   if (!event_dispatcher_)
     return;
 
@@ -76,12 +71,10 @@ void RespondWithCallback::ClearRespondWithCallbackAndCloseWindow() {
 }
 
 CanMakePaymentRespondWithCallback::CanMakePaymentRespondWithCallback(
-    WebContents* web_contents,
     scoped_refptr<ServiceWorkerVersion> service_worker_version,
     base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher,
     PaymentAppProvider::CanMakePaymentCallback callback)
-    : RespondWithCallback(web_contents,
-                          ServiceWorkerMetrics::EventType::CAN_MAKE_PAYMENT,
+    : RespondWithCallback(ServiceWorkerMetrics::EventType::CAN_MAKE_PAYMENT,
                           service_worker_version,
                           event_dispatcher),
       callback_(std::move(callback)) {}
@@ -125,12 +118,10 @@ void CanMakePaymentRespondWithCallback::OnServiceWorkerError(
 }
 
 InvokeRespondWithCallback::InvokeRespondWithCallback(
-    WebContents* web_contents,
     scoped_refptr<ServiceWorkerVersion> service_worker_version,
     base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher,
     PaymentAppProvider::InvokePaymentAppCallback callback)
-    : RespondWithCallback(web_contents,
-                          ServiceWorkerMetrics::EventType::PAYMENT_REQUEST,
+    : RespondWithCallback(ServiceWorkerMetrics::EventType::PAYMENT_REQUEST,
                           service_worker_version,
                           event_dispatcher),
       callback_(std::move(callback)) {}
@@ -187,12 +178,10 @@ void InvokeRespondWithCallback::RespondToPaymentRequestWithErrorAndDeleteSelf(
 }
 
 AbortRespondWithCallback::AbortRespondWithCallback(
-    WebContents* web_contents,
     scoped_refptr<ServiceWorkerVersion> service_worker_version,
     base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher,
     PaymentAppProvider::AbortCallback callback)
-    : RespondWithCallback(web_contents,
-                          ServiceWorkerMetrics::EventType::ABORT_PAYMENT,
+    : RespondWithCallback(ServiceWorkerMetrics::EventType::ABORT_PAYMENT,
                           service_worker_version,
                           event_dispatcher),
       callback_(std::move(callback)) {}

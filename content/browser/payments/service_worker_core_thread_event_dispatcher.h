@@ -16,16 +16,14 @@
 
 namespace content {
 
-class WebContents;
 class PaymentAppProviderImpl;
 
 // All of the methods and the destructor should be running on the
 // service worker core thread.
-class ServiceWorkerCoreThreadEventDispatcher : public WebContentsObserver {
+class ServiceWorkerCoreThreadEventDispatcher {
  public:
-  explicit ServiceWorkerCoreThreadEventDispatcher(WebContents* web_contents);
-
-  ~ServiceWorkerCoreThreadEventDispatcher() override;
+  ServiceWorkerCoreThreadEventDispatcher();
+  ~ServiceWorkerCoreThreadEventDispatcher();
 
   using ServiceWorkerStartCallback =
       base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion>,

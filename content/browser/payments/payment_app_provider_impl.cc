@@ -432,15 +432,11 @@ PaymentAppProviderImpl::PaymentAppProviderImpl(
     WebContents* payment_request_web_contents)
     : payment_request_web_contents_(payment_request_web_contents),
       event_dispatcher_(
-          std::make_unique<ServiceWorkerCoreThreadEventDispatcher>(
-              payment_request_web_contents_)) {
+          std::make_unique<ServiceWorkerCoreThreadEventDispatcher>()) {
   event_dispatcher_->set_payment_app_provider(weak_ptr_factory_.GetWeakPtr());
 }
 
-PaymentAppProviderImpl::~PaymentAppProviderImpl() {
-  BrowserThread::DeleteSoon(ServiceWorkerContext::GetCoreThreadId(), FROM_HERE,
-                            std::move(event_dispatcher_));
-}
+PaymentAppProviderImpl::~PaymentAppProviderImpl() = default;
 
 PaymentAppProviderImpl::PaymentHandlerWindowObserver::
     PaymentHandlerWindowObserver(WebContents* payment_handler_web_contents)
