@@ -188,6 +188,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:self.expirationYearItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
+  // The extra legal line and account info should only be shown together.
+  bool shouldShowExtraLegalLineAndAccountInfo =
+      [self.displayedTargetAccountEmail length] > 0 &&
+      self.displayedTargetAccountAvatar != nil;
+
+  // Concatenate legal lines and maybe add the extra one.
+  // TODO(crbug.com/1224680): In reality the server sends a single legal line.
+  // The extra text should be added directly to the server string instead of
+  // here (see b/192290070).
   NSMutableString* joinedMessage = [[NSMutableString alloc] init];
   BOOL shouldAddSpace = NO;
   for (SaveCardMessageWithLinks* message in self.legalMessages) {
@@ -196,21 +205,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [joinedMessage appendString:message.messageText];
     shouldAddSpace = YES;
   }
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableAccountWalletStorage)) {
+  if (shouldShowExtraLegalLineAndAccountInfo) {
     if (shouldAddSpace)
       [joinedMessage appendString:@" "];
     [joinedMessage appendString:l10n_util::GetNSString(
                                     IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT)];
   }
+
   TableViewTextLinkItem* legalMessageItem =
       [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
   legalMessageItem.text = joinedMessage;
   [model addItem:legalMessageItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
-  if ([self.displayedTargetAccountEmail length] &&
-      self.displayedTargetAccountAvatar != nil) {
+  if (shouldShowExtraLegalLineAndAccountInfo) {
     TargetAccountItem* targetTargetAccountItem =
         [[TargetAccountItem alloc] initWithType:ItemTypeTargetAccount];
     targetTargetAccountItem.email = self.displayedTargetAccountEmail;
