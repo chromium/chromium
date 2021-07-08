@@ -15,6 +15,10 @@
 namespace feed {
 namespace {
 
+// The number of views of the notice card to consider it acknowledged by the
+// user.
+const int kViewsCountThreshold = 3;
+
 bool IsPrivacyNoticeCard(const feedwire::ContentId& id) {
   // TODO(b/192015346): This is a less than ideal solution. We're relying on
   // the server to continue serving the notice card with this domain (and not
@@ -30,25 +34,7 @@ NoticeCardTracker::NoticeCardTracker(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
   DCHECK(profile_prefs_);
   views_count_ = prefs::GetNoticeCardViewsCount(*profile_prefs_);
-  clicks_count_ = prefs::GetNoticeCardClicksCount(*profile_prefs_);
-
-  views_count_threshold_ = base::GetFieldTrialParamByFeatureAsInt(
-      feed::kInterestFeedNoticeCardAutoDismiss,
-      kNoticeCardViewsCountThresholdParamName, 3);
-  DLOG_IF(ERROR, views_count_threshold_ < 0)
-      << "views_count_threshold_<0, views_count_threshold_="
-      << views_count_threshold_;
-
-  clicks_count_threshold_ = base::GetFieldTrialParamByFeatureAsInt(
-      feed::kInterestFeedNoticeCardAutoDismiss,
-      kNoticeCardClicksCountThresholdParamName, 1);
-  DLOG_IF(ERROR, clicks_count_threshold_ < 0)
-      << "clicks_count_threshold_<0, clicks_count_threshold_="
-      << clicks_count_threshold_;
-
-  DLOG_IF(ERROR, views_count_threshold_ <= 0 && clicks_count_threshold_ <= 0)
-      << "all notice card auto-dismiss thresholds are set to 0 when there "
-         "should be at least one threshold above 0";
+  has_clicked_ = prefs::GetNoticeCardClicksCount(*profile_prefs_) > 0;
 }
 
 void NoticeCardTracker::OnCardViewed(bool is_signed_in,
@@ -69,9 +55,6 @@ void NoticeCardTracker::OnCardViewed(bool is_signed_in,
         *profile_prefs_, true);
   }
 
-  if (!base::FeatureList::IsEnabled(feed::kInterestFeedNoticeCardAutoDismiss))
-    return;
-
   auto now = base::TimeTicks::Now();
   if (now - last_view_time_ < base::TimeDelta::FromMinutes(5))
     return;
@@ -84,23 +67,16 @@ void NoticeCardTracker::OnCardViewed(bool is_signed_in,
 
 void NoticeCardTracker::OnOpenAction(const feedwire::ContentId& content_id) {
   if (!IsPrivacyNoticeCard(content_id) ||
-      !base::FeatureList::IsEnabled(feed::kInterestFeedNoticeCardAutoDismiss) ||
-      !prefs::GetLastFetchHadNoticeCard(*profile_prefs_)) {
+      !prefs::GetLastFetchHadNoticeCard(*profile_prefs_) || has_clicked_) {
     return;
   }
 
   prefs::IncrementNoticeCardClicksCount(*profile_prefs_);
-  clicks_count_++;
+  has_clicked_ = true;
 }
 
 bool NoticeCardTracker::HasAcknowledgedNoticeCard() const {
-  if (!base::FeatureList::IsEnabled(feed::kInterestFeedNoticeCardAutoDismiss))
-    return false;
-
-  return (views_count_threshold_ > 0 &&
-          views_count_ >= views_count_threshold_) ||
-         (clicks_count_threshold_ > 0 &&
-          clicks_count_ >= clicks_count_threshold_);
+  return has_clicked_ || (views_count_ >= kViewsCountThreshold);
 }
 
 }  // namespace feed

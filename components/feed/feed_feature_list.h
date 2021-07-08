@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 // TODO(crbug.com/1165828): Clean up feedv1 features.
 
@@ -35,7 +36,9 @@ extern const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload;
 
 // Feature that allows the client to automatically dismiss the notice card based
 // on the clicks and views on the notice card.
+#if defined(OS_IOS)
 extern const base::Feature kInterestFeedNoticeCardAutoDismiss;
+#endif
 
 // Used for A:B testing of a bug fix (crbug.com/1151391).
 extern const base::Feature kInterestFeedSpinnerAlwaysAnimate;

@@ -14,11 +14,6 @@ class ContentId;
 }
 namespace feed {
 
-constexpr char kNoticeCardViewsCountThresholdParamName[] =
-    "notice-card-views-count-threshold";
-constexpr char kNoticeCardClicksCountThresholdParamName[] =
-    "notice-card-clicks-count-threshold";
-
 // Tracker for the notice card related actions that also provide signals based
 // on those.
 class NoticeCardTracker {
@@ -50,15 +45,7 @@ class NoticeCardTracker {
   int views_count_;
 
   // The number of clicks/taps of the notice card.
-  int clicks_count_;
-
-  // The number of views of the notice card to consider it acknowledged by the
-  // user.
-  int views_count_threshold_;
-
-  // The number of clicks/taps of the notice card to consider it acknowledged by
-  // the user.
-  int clicks_count_threshold_;
+  bool has_clicked_;
 
   // Whether there was previously a notice card view reported this session.
   base::TimeTicks last_view_time_;

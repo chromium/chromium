@@ -46,9 +46,6 @@ class NoticeCardTrackerTest : public testing::Test {
 
 TEST_F(NoticeCardTrackerTest,
        TrackingNoticeCardActionsDoesntUpdateCountsForNonNoticeCard) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      feed::kInterestFeedNoticeCardAutoDismiss);
   NoticeCardTracker tracker(&profile_prefs_);
 
   // Generate enough views to reach the acknowlegement threshold, but the views
@@ -63,9 +60,6 @@ TEST_F(NoticeCardTrackerTest,
 }
 
 TEST_F(NoticeCardTrackerTest, AcknowledgedNoticeCardWhenEnoughViews) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      feed::kInterestFeedNoticeCardAutoDismiss);
   NoticeCardTracker tracker(&profile_prefs_);
 
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
@@ -78,9 +72,6 @@ TEST_F(NoticeCardTrackerTest, AcknowledgedNoticeCardWhenEnoughViews) {
 }
 
 TEST_F(NoticeCardTrackerTest, ViewsAreIgnoredIfNotEnoughTimeElapsed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      feed::kInterestFeedNoticeCardAutoDismiss);
   NoticeCardTracker tracker(&profile_prefs_);
 
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
@@ -94,9 +85,6 @@ TEST_F(NoticeCardTrackerTest, ViewsAreIgnoredIfNotEnoughTimeElapsed) {
 
 TEST_F(NoticeCardTrackerTest,
        DontAcknowledgedNoticeCardWhenNotEnoughViewsNorClicks) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      feed::kInterestFeedNoticeCardAutoDismiss);
   NoticeCardTracker tracker(&profile_prefs_);
 
   // Generate views but not enough to reach the threshold.
@@ -104,42 +92,6 @@ TEST_F(NoticeCardTrackerTest,
   task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(6));
   tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
 
-  EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
-}
-
-TEST_F(NoticeCardTrackerTest, DontAcknowledgedNoticeCardWhenFeatureDisabled) {
-  // Generate enough views and clicks on the notice card to reach the threshold,
-  // but the feature is disabled.
-  prefs::IncrementNoticeCardClicksCount(profile_prefs_);
-  prefs::IncrementNoticeCardViewsCount(profile_prefs_);
-  prefs::IncrementNoticeCardViewsCount(profile_prefs_);
-  prefs::IncrementNoticeCardViewsCount(profile_prefs_);
-
-  NoticeCardTracker tracker(&profile_prefs_);
-  EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
-}
-
-TEST_F(NoticeCardTrackerTest,
-       DontAcknowledgedNoticeCardFromViewsCountWhenThresholdIsZero) {
-  base::FieldTrialParams params;
-  params[kNoticeCardViewsCountThresholdParamName] = "0";
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      feed::kInterestFeedNoticeCardAutoDismiss, params);
-
-  NoticeCardTracker tracker(&profile_prefs_);
-  EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
-}
-
-TEST_F(NoticeCardTrackerTest,
-       DontAcknowledgedNoticeCardFromClicksCountWhenThresholdIsZero) {
-  base::FieldTrialParams params;
-  params[kNoticeCardClicksCountThresholdParamName] = "0";
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      feed::kInterestFeedNoticeCardAutoDismiss, params);
-
-  NoticeCardTracker tracker(&profile_prefs_);
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
 }
 

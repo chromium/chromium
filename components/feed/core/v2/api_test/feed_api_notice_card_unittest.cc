@@ -38,9 +38,6 @@ class FeedStreamConditionalActionsUploadTest : public FeedApiNoticeCardTest {
 };
 
 TEST_F(FeedApiNoticeCardTest, LoadStreamSendsNoticeCardAcknowledgement) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      feed::kInterestFeedNoticeCardAutoDismiss);
   response_translator_.InjectResponse(model_generator_.MakeFirstPage());
 
   TestForYouSurface surface(stream_.get());
