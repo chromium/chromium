@@ -32,7 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kFingerprint[] = "pinky";
@@ -87,8 +87,6 @@ class ScreenLockerTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(ScreenLockerTest);
 };
 
-}  // namespace
-
 IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestBadThenGoodPassword) {
   ScreenLockerTester tester;
   tester.Lock();
@@ -118,8 +116,7 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestFullscreenExit) {
   // auto hidden when in immersive fullscreen.
   ScreenLockerTester tester;
   BrowserWindow* browser_window = browser()->window();
-  ash::WindowState* window_state =
-      ash::WindowState::Get(browser_window->GetNativeWindow());
+  auto* window_state = WindowState::Get(browser_window->GetNativeWindow());
   {
     FullscreenNotificationObserver fullscreen_waiter(browser());
     browser()
@@ -144,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestFullscreenExit) {
 
   // Browser window should be activated after screen locker is gone. Otherwise,
   // the rest of the test would fail.
-  ASSERT_EQ(window_state, ash::WindowState::ForActiveWindow());
+  ASSERT_EQ(window_state, WindowState::ForActiveWindow());
 
   // 2) Similar to 1) if the active browser window is in fullscreen and the
   // fullscreen window has all of the pixels, locking the screen should exit
@@ -208,10 +205,10 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, PasswordAuthWhenAuthDisabled) {
   // Disable authentication for user.
   ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
       user_manager::StubAccountId(),
-      ash::AuthDisabledData(ash::AuthDisabledReason::kTimeWindowLimit,
-                            base::Time::Now() + base::TimeDelta::FromHours(1),
-                            base::TimeDelta::FromHours(1),
-                            true /*disable_lock_screen_media*/));
+      AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
+                       base::Time::Now() + base::TimeDelta::FromHours(1),
+                       base::TimeDelta::FromHours(1),
+                       true /*disable_lock_screen_media*/));
 
   // Try to authenticate with password.
   tester.ForceSubmitPassword(user_manager::StubAccountId(), kPassword);
@@ -246,10 +243,10 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, FingerprintAuthWhenAuthDisabled) {
   // Disable authentication for user.
   ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
       user_manager::StubAccountId(),
-      ash::AuthDisabledData(ash::AuthDisabledReason::kTimeUsageLimit,
-                            base::Time::Now() + base::TimeDelta::FromHours(1),
-                            base::TimeDelta::FromHours(3),
-                            true /*disable_lock_screen_media*/));
+      AuthDisabledData(AuthDisabledReason::kTimeUsageLimit,
+                       base::Time::Now() + base::TimeDelta::FromHours(1),
+                       base::TimeDelta::FromHours(3),
+                       true /*disable_lock_screen_media*/));
 
   // Try to authenticate with fingerprint.
   AuthenticateWithFingerprint();
@@ -269,4 +266,5 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, FingerprintAuthWhenAuthDisabled) {
       1, session_manager_client()->notify_lock_screen_dismissed_call_count());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

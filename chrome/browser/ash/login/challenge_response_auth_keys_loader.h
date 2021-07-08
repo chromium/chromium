@@ -93,4 +93,10 @@ class ChallengeResponseAuthKeysLoader final : public ProfileObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ChallengeResponseAuthKeysLoader;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_CHALLENGE_RESPONSE_AUTH_KEYS_LOADER_H_

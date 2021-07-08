@@ -266,7 +266,7 @@ bool ShouldShowNotificationForVolume(
   // the screen is locked or running in kiosk app mode and make sure the file
   // manager is opened only for the active user.
   if (ash::LoginDisplayHost::default_host() ||
-      chromeos::ScreenLocker::default_screen_locker() ||
+      ash::ScreenLocker::default_screen_locker() ||
       chrome::IsRunningInForcedAppMode() ||
       profile != ProfileManager::GetActiveUserProfile()) {
     return false;

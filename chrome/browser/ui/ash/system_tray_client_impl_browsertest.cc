@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockTest, PRE_FocusedPod24HourClock) {
   EXPECT_FALSE(tray_test_api->Is24HourClock());
 
   // Test lock screen.
-  chromeos::ScreenLockerTester locker;
+  ash::ScreenLockerTester locker;
   locker.Lock();
 
   EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id1_));

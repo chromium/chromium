@@ -101,4 +101,12 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
 }  // namespace input_method
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace input_method {
+using ::chromeos::input_method::MockInputMethodManagerImpl;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_INPUT_METHOD_MOCK_INPUT_METHOD_MANAGER_IMPL_H_

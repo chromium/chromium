@@ -23,7 +23,11 @@
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_ash_impl.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/challenge_response_key.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -34,10 +38,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
-namespace chromeos {
-
-class Authenticator;
-class ExtendedAuthenticator;
+namespace ash {
 class ViewsScreenLocker;
 
 // ScreenLocker displays the lock UI and takes care of authenticating the user
@@ -93,7 +94,7 @@ class ScreenLocker
   // screen UI. `auth_disabled_data` is used to display information in the UI.
   void TemporarilyDisableAuthForUser(
       const AccountId& account_id,
-      const ash::AuthDisabledData& auth_disabled_data);
+      const AuthDisabledData& auth_disabled_data);
 
   // Reenables authentication for the user with `account_id` previously disabled
   // by `TemporarilyDisableAuthForUser`. Notifies lock screen UI.
@@ -322,11 +323,11 @@ class ScreenLocker
   DISALLOW_COPY_AND_ASSIGN(ScreenLocker);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when //c/b/ash/login moved to ash.
-namespace ash {
-using ::chromeos::ScreenLocker;
-}  // namespace ash
+namespace chromeos {
+using ::ash::ScreenLocker;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOCK_SCREEN_LOCKER_H_

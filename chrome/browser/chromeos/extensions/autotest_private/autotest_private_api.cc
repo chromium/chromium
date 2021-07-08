@@ -1175,8 +1175,8 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
   // default_screen_locker()->locked() is set when the UI is ready, so this
   // tells us both views based lockscreen UI and screenlocker are ready.
   const bool is_screen_locked =
-      !!chromeos::ScreenLocker::default_screen_locker() &&
-      chromeos::ScreenLocker::default_screen_locker()->locked();
+      !!ash::ScreenLocker::default_screen_locker() &&
+      ash::ScreenLocker::default_screen_locker()->locked();
 
   if (user_manager) {
     result->SetBoolean("isLoggedIn", user_manager->IsUserLoggedIn());

@@ -90,6 +90,8 @@ namespace quick_unlock {
 using ::chromeos::quick_unlock::EnabledForTesting;
 using ::chromeos::quick_unlock::IsPinDisabledByPolicy;
 using ::chromeos::quick_unlock::IsPinEnabled;
+using ::chromeos::quick_unlock::PasswordConfirmationFrequency;
+using ::chromeos::quick_unlock::PasswordConfirmationFrequencyToTimeDelta;
 }  // namespace quick_unlock
 }  // namespace ash
 

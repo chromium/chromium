@@ -13,7 +13,7 @@ namespace chromeos {
 class UserContext;
 
 // A thin wrapper around |SessionControllerClientImpl| and
-// |chromeos::ScreenLocker| to allow easier mocking for tests. Also manages the
+// |ScreenLocker| to allow easier mocking for tests. Also manages the
 // |unlock_in_progress| state.
 class LoginApiLockHandler {
  public:

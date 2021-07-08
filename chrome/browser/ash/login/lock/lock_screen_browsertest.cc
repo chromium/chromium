@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 class LockScreenBaseTest : public LoginManagerTest {
@@ -75,12 +75,12 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
 
   ScreenLockerTester locker_tester;
   locker_tester.Lock();
-  EXPECT_EQ(2, ash::LoginScreenTestApi::GetUsersCount());
+  EXPECT_EQ(2, LoginScreenTestApi::GetUsersCount());
   // IME state should be lock screen specific.
   EXPECT_NE(ime_states[0], input_manager->GetActiveIMEState());
   EXPECT_NE(ime_states[1], input_manager->GetActiveIMEState());
 
-  EXPECT_EQ(users[0].account_id, ash::LoginScreenTestApi::GetFocusedUser());
+  EXPECT_EQ(users[0].account_id, LoginScreenTestApi::GetFocusedUser());
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetCurrentInputMethod().id(),
             user_input_methods_[0]);
   locker_tester.UnlockWithPassword(users[0].account_id, "password");
@@ -92,15 +92,15 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
             user_input_methods_[0]);
 
   locker_tester.Lock();
-  EXPECT_EQ(2, ash::LoginScreenTestApi::GetUsersCount());
+  EXPECT_EQ(2, LoginScreenTestApi::GetUsersCount());
   // IME state should be lock screen specific.
   EXPECT_NE(ime_states[0], input_manager->GetActiveIMEState());
   EXPECT_NE(ime_states[1], input_manager->GetActiveIMEState());
 
-  EXPECT_EQ(users[0].account_id, ash::LoginScreenTestApi::GetFocusedUser());
+  EXPECT_EQ(users[0].account_id, LoginScreenTestApi::GetFocusedUser());
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetCurrentInputMethod().id(),
             user_input_methods_[0]);
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(users[1].account_id));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(users[1].account_id));
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetCurrentInputMethod().id(),
             user_input_methods_[1]);
   locker_tester.UnlockWithPassword(users[1].account_id, "password");
@@ -234,4 +234,4 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

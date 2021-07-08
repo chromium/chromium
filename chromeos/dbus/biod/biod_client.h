@@ -160,4 +160,10 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::BiodClient;
+}
+
 #endif  // CHROMEOS_DBUS_BIOD_BIOD_CLIENT_H_

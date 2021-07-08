@@ -180,7 +180,7 @@ class ShutdownPolicyLockerTest : public ShutdownPolicyBaseTest {
     ShutdownPolicyBaseTest::SetUpOnMainThread();
 
     // Bring up the locker screen.
-    chromeos::ScreenLockerTester().Lock();
+    ScreenLockerTester().Lock();
   }
 
   void TearDownOnMainThread() override {

@@ -11,7 +11,7 @@
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 // ScreenLockerTester provides a high-level API to test the lock screen.
 class ScreenLockerTester {
@@ -49,12 +49,12 @@ class ScreenLockerTester {
   DISALLOW_COPY_AND_ASSIGN(ScreenLockerTester);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::ScreenLockerTester;
-}  // namespace ash
+namespace chromeos {
+using ::ash::ScreenLockerTester;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOCK_SCREEN_LOCKER_TESTER_H_

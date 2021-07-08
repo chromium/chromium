@@ -51,4 +51,10 @@ class UserBoardViewMojo : public UserBoardView {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::UserBoardViewMojo;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_USER_BOARD_VIEW_MOJO_H_

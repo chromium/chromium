@@ -39,7 +39,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 
-namespace chromeos {
+namespace ash {
 
 ViewsScreenLocker::ViewsScreenLocker(ScreenLocker* screen_locker)
     : screen_locker_(screen_locker),
@@ -66,9 +66,9 @@ void ViewsScreenLocker::Init() {
 
   system_info_updater_->StartRequest();
 
-  ash::LoginScreen::Get()->GetModel()->SetUserList(
+  LoginScreen::Get()->GetModel()->SetUserList(
       user_selection_screen_->UpdateAndReturnUserListForAsh());
-  ash::LoginScreen::Get()->SetAllowLoginAsGuest(false /*show_guest*/);
+  LoginScreen::Get()->SetAllowLoginAsGuest(false /*show_guest*/);
 
   if (user_manager::UserManager::IsInitialized()) {
     // Enable pin and challenge-response authentication for any users who can
@@ -192,8 +192,7 @@ void ViewsScreenLocker::UnregisterLockScreenAppFocusHandler() {
 }
 
 void ViewsScreenLocker::HandleLockScreenAppFocusOut(bool reverse) {
-  ash::LoginScreen::Get()->GetModel()->HandleFocusLeavingLockScreenApps(
-      reverse);
+  LoginScreen::Get()->GetModel()->HandleFocusLeavingLockScreenApps(reverse);
 }
 
 void ViewsScreenLocker::UpdatePinKeyboardState(const AccountId& account_id) {
@@ -206,14 +205,14 @@ void ViewsScreenLocker::UpdateChallengeResponseAuthAvailability(
     const AccountId& account_id) {
   const bool enable_challenge_response =
       ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id);
-  ash::LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
+  LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
       account_id, enable_challenge_response);
 }
 
 void ViewsScreenLocker::OnPinCanAuthenticate(const AccountId& account_id,
                                              bool can_authenticate) {
-  ash::LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
-                                                            can_authenticate);
+  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
+                                                       can_authenticate);
 }
 
-}  // namespace chromeos
+}  // namespace ash

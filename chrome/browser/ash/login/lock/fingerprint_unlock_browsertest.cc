@@ -27,7 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 using QuickUnlockStorage = quick_unlock::QuickUnlockStorage;
@@ -152,8 +152,6 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
 
   DISALLOW_COPY_AND_ASSIGN(FingerprintUnlockTest);
 };
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FingerprintNotTimedOutTest) {
   // Show lock screen and wait until it is shown.
@@ -345,4 +343,5 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FeatureUsageMetrics) {
       static_cast<int>(quick_unlock::FingerprintUnlockResult::kMatchFailed), 1);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

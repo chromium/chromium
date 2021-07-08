@@ -56,16 +56,13 @@
 #include "services/audio/public/cpp/sounds/test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 std::unique_ptr<KeyedService> CreateCertificateProviderService(
     content::BrowserContext* context) {
   return std::make_unique<chromeos::CertificateProviderService>();
 }
-
-}  // namespace
 
 class ScreenLockerUnitTest : public testing::Test {
  public:
@@ -112,7 +109,7 @@ class ScreenLockerUnitTest : public testing::Test {
     AccessibilityManager::Initialize();
 
     // Initialize ScreenLocker dependencies:
-    chromeos::ProfileHelper::GetSigninProfile();
+    ProfileHelper::GetSigninProfile();
     SystemSaltGetter::Initialize();
   }
 
@@ -213,4 +210,5 @@ TEST_F(ScreenLockerUnitTest, GetUsersToShow) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

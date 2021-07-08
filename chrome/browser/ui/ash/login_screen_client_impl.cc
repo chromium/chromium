@@ -280,7 +280,7 @@ void LoginScreenClientImpl::LoadWallpaper(const AccountId& account_id) {
 }
 
 void LoginScreenClientImpl::SignOutUser() {
-  chromeos::ScreenLocker::default_screen_locker()->Signout();
+  ash::ScreenLocker::default_screen_locker()->Signout();
 }
 
 void LoginScreenClientImpl::CancelAddUser() {
@@ -288,7 +288,7 @@ void LoginScreenClientImpl::CancelAddUser() {
 }
 
 void LoginScreenClientImpl::LoginAsGuest() {
-  DCHECK(!chromeos::ScreenLocker::default_screen_locker());
+  DCHECK(!ash::ScreenLocker::default_screen_locker());
   if (ash::LoginDisplayHost::default_host()) {
     ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
         chromeos::UserContext(user_manager::USER_TYPE_GUEST,

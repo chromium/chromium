@@ -65,4 +65,10 @@ class SecurityTokenPinDialogHostAshImpl final
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SecurityTokenPinDialogHostAshImpl;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_ASH_IMPL_H_

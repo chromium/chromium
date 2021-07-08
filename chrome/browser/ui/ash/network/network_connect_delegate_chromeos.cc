@@ -15,8 +15,8 @@ namespace {
 
 bool IsUIAvailable() {
   // UI is available when screen is unlocked.
-  return !chromeos::ScreenLocker::default_screen_locker() ||
-         !chromeos::ScreenLocker::default_screen_locker()->locked();
+  return !ash::ScreenLocker::default_screen_locker() ||
+         !ash::ScreenLocker::default_screen_locker()->locked();
 }
 
 }  // namespace

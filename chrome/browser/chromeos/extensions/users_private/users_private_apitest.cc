@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiLoginStatusTest, User) {
 
 // Screenlock - logged in, screen locked.
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiLockStatusTest, ScreenLock) {
-  chromeos::ScreenLockerTester().Lock();
+  ash::ScreenLockerTester().Lock();
   EXPECT_TRUE(RunExtensionTest("users_private",
                                {.page_url = "main.html?getLoginStatus"},
                                {.load_as_component = true}))

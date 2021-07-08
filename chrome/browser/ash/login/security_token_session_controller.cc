@@ -324,7 +324,7 @@ void SecurityTokenSessionController::TriggerAction() {
     case Behavior::kIgnore:
       return;
     case Behavior::kLock:
-      chromeos::ScreenLocker::Show();
+      ScreenLocker::Show();
       AddLockNotification();
       return;
     case Behavior::kLogout:

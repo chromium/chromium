@@ -239,4 +239,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::CrasAudioClient;
+}
+
 #endif  // CHROMEOS_DBUS_AUDIO_CRAS_AUDIO_CLIENT_H_

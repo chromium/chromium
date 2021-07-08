@@ -328,7 +328,7 @@ class BrailleDisplayPrivateAPIUserTest : public BrailleDisplayPrivateApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateAPIUserTest, KeyEventOnLockScreen) {
-  chromeos::ScreenLockerTester tester;
+  ash::ScreenLockerTester tester;
 
   // Make sure the signin profile and active profile are different.
   Profile* signin_profile = chromeos::ProfileHelper::GetSigninProfile();

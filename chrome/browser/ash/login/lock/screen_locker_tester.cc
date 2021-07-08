@@ -27,7 +27,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 bool IsScreenLockerLocked() {
@@ -119,31 +119,29 @@ void ScreenLockerTester::SetUnlockPassword(const AccountId& account_id,
 }
 
 bool ScreenLockerTester::IsLocked() {
-  return IsScreenLockerLocked() && ash::LoginScreenTestApi::IsLockShown();
+  return IsScreenLockerLocked() && LoginScreenTestApi::IsLockShown();
 }
 
 bool ScreenLockerTester::IsLockRestartButtonShown() {
-  return IsScreenLockerLocked() &&
-         ash::LoginScreenTestApi::IsRestartButtonShown();
+  return IsScreenLockerLocked() && LoginScreenTestApi::IsRestartButtonShown();
 }
 
 bool ScreenLockerTester::IsLockShutdownButtonShown() {
-  return IsScreenLockerLocked() &&
-         ash::LoginScreenTestApi::IsShutdownButtonShown();
+  return IsScreenLockerLocked() && LoginScreenTestApi::IsShutdownButtonShown();
 }
 
 void ScreenLockerTester::UnlockWithPassword(const AccountId& account_id,
                                             const std::string& password) {
-  ash::LoginScreenTestApi::SubmitPassword(account_id, password,
-                                          true /*check_if_submittable*/);
+  LoginScreenTestApi::SubmitPassword(account_id, password,
+                                     true /*check_if_submittable*/);
   base::RunLoop().RunUntilIdle();
 }
 
 void ScreenLockerTester::ForceSubmitPassword(const AccountId& account_id,
                                              const std::string& password) {
-  ash::LoginScreenTestApi::SubmitPassword(account_id, password,
-                                          false /*check_if_submittable*/);
+  LoginScreenTestApi::SubmitPassword(account_id, password,
+                                     false /*check_if_submittable*/);
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash
