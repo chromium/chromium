@@ -272,11 +272,9 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitHash(
 
     for (base::DictionaryValue::Iterator it(*split_macs); !it.IsAtEnd();
          it.Advance()) {
-      const base::Value* value_as_string;
-      bool is_string = it.value().GetAsString(&value_as_string);
-      DCHECK(is_string);
+      DCHECK(it.value().is_string());
 
-      contents_->SetSplitMac(path, it.key(), value_as_string->GetString());
+      contents_->SetSplitMac(path, it.key(), it.value().GetString());
     }
   }
   super_mac_dirty_ = true;

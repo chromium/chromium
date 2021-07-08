@@ -308,12 +308,9 @@ void PrefHashFilter::FlushToExternalStore(
             changed_path, inner_it.key(), mac);
       }
     } else {
-      const base::Value* value_as_string;
-      bool is_string = it.value().GetAsString(&value_as_string);
-      DCHECK(is_string);
-
-      external_validation_hash_store_contents->SetMac(
-          changed_path, value_as_string->GetString());
+      DCHECK(it.value().is_string());
+      external_validation_hash_store_contents->SetMac(changed_path,
+                                                      it.value().GetString());
     }
   }
 }
