@@ -647,11 +647,18 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
 
 bool InterfaceEndpointClient::HandleIncomingMessage(Message* message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-   if (!dispatcher_.Accept(message)) {
-      LOG(ERROR) << "Message " << message->name() << " rejected by interface " << interface_name_;
-      return false;
-    }
-    return true;
+
+  // Accept() may invalidate `this` and `message` so we need to copy the
+  // members we need for logging in case of an error.
+  const char* interface_name = interface_name_;
+  uint32_t name = message->name();
+  if (!dispatcher_.Accept(message)) {
+    LOG(ERROR) << "Message " << name << " rejected by interface "
+               << interface_name;
+    return false;
+  }
+
+  return true;
 }
 
 void InterfaceEndpointClient::NotifyError(
