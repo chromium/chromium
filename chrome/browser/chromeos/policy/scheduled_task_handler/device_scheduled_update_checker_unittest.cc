@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/os_and_policies_update_checker.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_executor.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -58,6 +59,8 @@ constexpr char kPSTTimeZoneID[] = "America/Los_Angeles";
 // The tag associated to register |update_check_timer_|.
 constexpr char kUpdateCheckTimerTagForTest[] =
     "DeviceScheduledUpdateCheckerForTest";
+
+constexpr char kTaskTimeFieldName[] = "update_check_time";
 
 void DecodeJsonStringAndNormalize(const std::string& json_string,
                                   base::Value* value) {
@@ -679,9 +682,8 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckIfMonthlyUpdateCheckIsScheduled) {
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
       CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kMonthly);
-  auto scheduled_update_check_data =
-      update_checker_internal::ParseScheduledUpdate(
-          policy_and_next_update_check_time.first);
+  auto scheduled_update_check_data = scheduled_task_util::ParseScheduledTask(
+      policy_and_next_update_check_time.first, kTaskTimeFieldName);
   ASSERT_TRUE(scheduled_update_check_data);
   ASSERT_TRUE(scheduled_update_check_data->day_of_month);
   auto first_update_check_icu_time =
@@ -741,9 +743,8 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckMonthlyRolloverLogic) {
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
       CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kMonthly);
-  auto scheduled_update_check_data =
-      update_checker_internal::ParseScheduledUpdate(
-          policy_and_next_update_check_time.first);
+  auto scheduled_update_check_data = scheduled_task_util::ParseScheduledTask(
+      policy_and_next_update_check_time.first, kTaskTimeFieldName);
   ASSERT_TRUE(scheduled_update_check_data);
   ASSERT_TRUE(scheduled_update_check_data->day_of_month);
   auto update_check_icu_time =

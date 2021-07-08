@@ -116,11 +116,6 @@ constexpr int kMaxStartUpdateCheckTimerRetryIterations = 5;
 constexpr base::TimeDelta kStartUpdateCheckTimerRetryTime =
     base::TimeDelta::FromMinutes(1);
 
-// Parses |value| into a |ScheduledUpdateCheckData|. Returns nullopt if there
-// is any error while parsing |value|.
-absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledUpdate(
-    const base::Value& value);
-
 // Converts an icu::Calendar to base::Time. Assumes |time| is valid.
 base::Time IcuToBaseTime(const icu::Calendar& time);
 
