@@ -534,9 +534,10 @@ void FederatedAuthRequestImpl::SetSharingPermissionDelegateForTests(
 FederatedIdentityRequestPermissionContextDelegate*
 FederatedAuthRequestImpl::GetRequestPermissionContext() {
   if (!request_permission_delegate_) {
-    render_frame_host()
-        ->GetBrowserContext()
-        ->GetFederatedIdentityRequestPermissionContext();
+    request_permission_delegate_ =
+        render_frame_host()
+            ->GetBrowserContext()
+            ->GetFederatedIdentityRequestPermissionContext();
   }
   return request_permission_delegate_;
 }
@@ -544,9 +545,10 @@ FederatedAuthRequestImpl::GetRequestPermissionContext() {
 FederatedIdentitySharingPermissionContextDelegate*
 FederatedAuthRequestImpl::GetSharingPermissionContext() {
   if (!sharing_permission_delegate_) {
-    render_frame_host()
-        ->GetBrowserContext()
-        ->GetFederatedIdentitySharingPermissionContext();
+    sharing_permission_delegate_ =
+        render_frame_host()
+            ->GetBrowserContext()
+            ->GetFederatedIdentitySharingPermissionContext();
   }
   return sharing_permission_delegate_;
 }
