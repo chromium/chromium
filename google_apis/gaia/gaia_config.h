@@ -15,9 +15,14 @@
 
 class GURL;
 
+namespace base {
+class CommandLine;
+}  // namespace base
+
 // Class representing a configuration for Gaia URLs and Google API keys.
-// Parses a JSON config file specified by |switches::kGaiaConfig| and provides
-// convenient getters for reading this config.
+// Parses a JSON config file specified by |switches::kGaiaConfigPath| or
+// |switches::kGaiaConfigContents| and provides convenient getters for reading
+// this config.
 //
 // The config is represented by a JSON object with the following structure:
 // {
@@ -26,7 +31,7 @@ class GURL;
 //       "url": "https://accounts.example.com"
 //     },
 //     ...
-//   }
+//   },
 //   "api_keys": {
 //     "GOOGLE_CLIENT_ID_MAIN": "example_key",
 //     ...
@@ -36,12 +41,14 @@ class GaiaConfig {
  public:
   // Returns a global instance of GaiaConfig.
   // This may return nullptr if the config file was not specified by a command
-  // line parameter or couldn't be parsed correctly.
+  // line parameter.
   static GaiaConfig* GetInstance();
 
   // Constructs a new GaiaConfig from a parsed JSON dictionary.
   // Prefer GetInstance() over this constructor.
   explicit GaiaConfig(base::Value parsed_config);
+  GaiaConfig(const GaiaConfig&) = delete;
+  GaiaConfig& operator=(const GaiaConfig&) = delete;
   ~GaiaConfig();
 
   // Searches for a URL by |key|.
@@ -55,6 +62,17 @@ class GaiaConfig {
   // |out_api_key| will be set to that string.
   // Otherwise, returns false. |out_api_key| will be unmodified.
   bool GetAPIKeyIfExists(base::StringPiece key, std::string* out_api_key);
+
+  // Serializes the state of |this| into |command_line|, in a way that
+  // GaiaConfig::GetInstance() would honor. Internally, it uses switch
+  // |kGaiaConfigContents| for this purpose, which is appended to
+  // |*command_line|.
+  void SerializeContentsToCommandLineSwitch(
+      base::CommandLine* command_line) const;
+
+  // Instantiates this object given |base::CommandLine|, used in tests.
+  static std::unique_ptr<GaiaConfig> CreateFromCommandLineForTesting(
+      const base::CommandLine* command_line);
 
  private:
   friend class GaiaUrlsTest;

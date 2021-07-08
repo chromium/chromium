@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -19,31 +20,54 @@
 
 namespace {
 
-std::unique_ptr<GaiaConfig> ReadConfigFromDisk() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kGaiaConfig))
-    return nullptr;
-
-  const base::FilePath config_path =
-      command_line->GetSwitchValuePath(switches::kGaiaConfig);
-  std::string config_contents;
-  if (!base::ReadFileToString(config_path, &config_contents)) {
-    LOG(ERROR) << "Couldn't read gaia config file " << config_path;
-    return nullptr;
-  }
-
+std::unique_ptr<GaiaConfig> ReadConfigFromString(
+    const std::string& config_contents) {
   absl::optional<base::Value> dict = base::JSONReader::Read(config_contents);
   if (!dict || !dict->is_dict()) {
-    LOG(ERROR) << "Couldn't parse gaia config file " << config_path;
+    LOG(FATAL) << "Couldn't parse Gaia config file";
     return nullptr;
   }
 
   return std::make_unique<GaiaConfig>(std::move(dict.value()));
 }
 
+std::unique_ptr<GaiaConfig> ReadConfigFromDisk(
+    const base::FilePath& config_path) {
+  std::string config_contents;
+  if (!base::ReadFileToString(config_path, &config_contents)) {
+    LOG(FATAL) << "Couldn't read Gaia config file " << config_path;
+    return nullptr;
+  }
+  return ReadConfigFromString(config_contents);
+}
+
+std::unique_ptr<GaiaConfig> ReadConfigFromCommandLineSwitches(
+    const base::CommandLine* command_line) {
+  if (command_line->HasSwitch(switches::kGaiaConfigPath) &&
+      command_line->HasSwitch(switches::kGaiaConfigContents)) {
+    LOG(FATAL) << "Either a Gaia config file path or a config file contents "
+                  "can be provided; "
+               << "not both";
+    return nullptr;
+  }
+
+  if (command_line->HasSwitch(switches::kGaiaConfigContents)) {
+    return ReadConfigFromString(
+        command_line->GetSwitchValueASCII(switches::kGaiaConfigContents));
+  }
+
+  if (command_line->HasSwitch(switches::kGaiaConfigPath)) {
+    return ReadConfigFromDisk(
+        command_line->GetSwitchValuePath(switches::kGaiaConfigPath));
+  }
+
+  return nullptr;
+}
+
 std::unique_ptr<GaiaConfig>* GetGlobalConfig() {
   static base::NoDestructor<std::unique_ptr<GaiaConfig>> config(
-      ReadConfigFromDisk());
+      ReadConfigFromCommandLineSwitches(
+          base::CommandLine::ForCurrentProcess()));
   return config.get();
 }
 
@@ -100,7 +124,22 @@ bool GaiaConfig::GetAPIKeyIfExists(base::StringPiece key,
   return true;
 }
 
+void GaiaConfig::SerializeContentsToCommandLineSwitch(
+    base::CommandLine* command_line) const {
+  std::string config_contents;
+  base::JSONWriter::Write(parsed_config_, &config_contents);
+  command_line->AppendSwitchASCII(switches::kGaiaConfigContents,
+                                  config_contents);
+}
+
+// static
+std::unique_ptr<GaiaConfig> GaiaConfig::CreateFromCommandLineForTesting(
+    const base::CommandLine* command_line) {
+  return ReadConfigFromCommandLineSwitches(command_line);
+}
+
 // static
 void GaiaConfig::ResetInstanceForTesting() {
-  *GetGlobalConfig() = ReadConfigFromDisk();
+  *GetGlobalConfig() =
+      ReadConfigFromCommandLineSwitches(base::CommandLine::ForCurrentProcess());
 }

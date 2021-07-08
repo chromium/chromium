@@ -218,6 +218,7 @@ test("google_apis_unittests") {
   sources = [
     "gaia/gaia_auth_fetcher_unittest.cc",
     "gaia/gaia_auth_util_unittest.cc",
+    "gaia/gaia_config_unittest.cc",
     "gaia/gaia_oauth_client_unittest.cc",
     "gaia/gaia_urls_unittest.cc",
     "gaia/google_service_auth_error_unittest.cc",

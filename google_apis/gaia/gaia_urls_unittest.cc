@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -452,6 +453,21 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
             "https://accounts.example.com/");
 }
 
+TEST_F(GaiaUrlsTest, InitializeFromConfigContents) {
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "gaia-config-contents", R"(
+{
+  "urls": {
+    "gaia_url": {
+      "url": "https://accounts.example.com"
+    }
+  }
+})");
+
+  EXPECT_EQ(gaia_urls()->gaia_url().spec(), "https://accounts.example.com/");
+}
+
 TEST_F(GaiaUrlsTest, InitializeFromConfig_BadUrl) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchPath(
@@ -484,8 +500,7 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_FileNotFound) {
   command_line.GetProcessCommandLine()->AppendSwitchPath(
       "gaia-config", GetTestFilePath("no_such_file.json"));
 
-  // Fallback to the default URL.
-  EXPECT_EQ(gaia_urls()->google_url().spec(), "http://google.com/");
+  EXPECT_DEATH_IF_SUPPORTED(gaia_urls(), "Couldn't read Gaia config file");
 }
 
 TEST_F(GaiaUrlsTest, InitializeFromConfig_NotAJson) {
@@ -493,6 +508,5 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_NotAJson) {
   command_line.GetProcessCommandLine()->AppendSwitchPath(
       "gaia-config", GetTestFilePath("not_a_json.txt"));
 
-  // Fallback to the default URL.
-  EXPECT_EQ(gaia_urls()->google_url().spec(), "http://google.com/");
+  EXPECT_DEATH_IF_SUPPORTED(gaia_urls(), "Couldn't parse Gaia config file");
 }
