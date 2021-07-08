@@ -998,10 +998,12 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 
   // Add a screenschange handler to requestFullscreen after awaiting getScreens.
   const std::string request_fullscreen_script = R"(
-      window.onscreenschange = async () => {
-        const screens = await self.getScreensDeprecated();
-        await document.body.requestFullscreen();
-      };
+      (async () => {
+        const screenInterface = await window.getScreens();
+        screenInterface.onscreenschange = async () => {
+          await document.body.requestFullscreen();
+        };
+      })();
   )";
   EXPECT_TRUE(EvalJs(tab, request_fullscreen_script).error.empty());
   EXPECT_FALSE(browser()->window()->IsFullscreen());

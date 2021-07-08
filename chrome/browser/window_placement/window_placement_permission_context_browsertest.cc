@@ -34,19 +34,6 @@ constexpr char kGetScreens[] = R"(
   })();
 )";
 
-#if !defined(OS_WIN)
-// TODO(enne): Remove this in http://crbug.com/1205676
-constexpr char kDeprecatedIsMultiscreen[] = R"(
-  (async () => {
-    try {
-      return await window.isMultiScreen()
-    } catch (e) {
-      return 'error';
-    }
-  })();
-)";
-#endif  // !defined(OS_WIN)
-
 // Tests of WindowPlacementPermissionContext behavior.
 class WindowPlacementPermissionContextTest : public InProcessBrowserTest {
  public:
@@ -260,12 +247,6 @@ IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
                          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ(true, EvalJs(child, R"(window.screen.isExtended)",
                          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  // TODO(enne): Remove this in http://crbug.com/1205676
-  EXPECT_EQ(true, EvalJs(tab, kDeprecatedIsMultiscreen,
-                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  EXPECT_EQ(true, EvalJs(child, kDeprecatedIsMultiscreen,
-                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // Verify that window.screen.isExtended returns false in a cross-origin
@@ -286,12 +267,6 @@ IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
                          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ(false, EvalJs(child, R"(window.screen.isExtended)",
                           content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  // TODO(enne): Remove this in http://crbug.com/1205676
-  EXPECT_EQ(true, EvalJs(tab, kDeprecatedIsMultiscreen,
-                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  EXPECT_EQ("error", EvalJs(child, kDeprecatedIsMultiscreen,
-                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // Verify that window.screen.isExtended returns true in a cross-origin
@@ -318,12 +293,6 @@ IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
   EXPECT_EQ(true, EvalJs(tab, R"(window.screen.isExtended)",
                          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ(true, EvalJs(child, R"(window.screen.isExtended)",
-                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  // TODO(enne): Remove this in http://crbug.com/1205676
-  EXPECT_EQ(true, EvalJs(tab, kDeprecatedIsMultiscreen,
-                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  EXPECT_EQ(true, EvalJs(child, kDeprecatedIsMultiscreen,
                          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 

@@ -46,11 +46,6 @@ constexpr char kGetScreensScript[] = R"(
   })();
 )";
 
-// Used to get the async result of isMultiScreen().
-constexpr char kIsMultiScreenScript[] = R"(
-  (async () => { return await self.isMultiScreen(); })();
-)";
-
 // Returns a list of dictionary values from native screen information, intended
 // for comparison with the result of kGetScreensScript.
 base::ListValue GetExpectedScreens() {
@@ -120,16 +115,6 @@ IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, DISABLED_GetScreensBasic) {
   EXPECT_EQ(GetExpectedScreens(), base::Value::AsListValue(result.value));
 }
 
-// TODO(crbug.com/1205676): Remove this test in favor of IsExtendedBasic.
-// window.isMultiScreen() is deprecated in favor of screen.isExtended.
-IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, IsMultiScreenBasic) {
-  ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true, EvalJs(shell(), "'isMultiScreen' in self"));
-  auto result = EvalJs(shell(), kIsMultiScreenScript);
-  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays() > 1,
-            result.ExtractBool());
-}
-
 IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, IsExtendedBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'isExtended' in screen"));
@@ -191,28 +176,6 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
 
   auto result = EvalJs(test_shell(), kGetScreensScript);
   EXPECT_EQ(GetExpectedScreens(), base::Value::AsListValue(result.value));
-}
-
-// TODO(crbug.com/1205676): Remove this test in favor of IsExtendedFaked.
-// window.isMultiScreen() is deprecated in favor of screen.isExtended.
-// TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
-// TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
-#define MAYBE_IsMultiScreenFaked DISABLED_IsMultiScreenFaked
-#else
-#define MAYBE_IsMultiScreenFaked IsMultiScreenFaked
-#endif
-IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsMultiScreenFaked) {
-  ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true, EvalJs(test_shell(), "'isMultiScreen' in self"));
-  EXPECT_EQ(false, EvalJs(test_shell(), kIsMultiScreenScript));
-
-  screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
-                                      display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
-
-  screen()->display_list().RemoveDisplay(1);
-  EXPECT_EQ(false, EvalJs(test_shell(), kIsMultiScreenScript));
 }
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
