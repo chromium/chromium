@@ -10631,6 +10631,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records whether the created note was shared or not.</summary>
 </histogram>
 
+<histogram name="NoteCreation.NumberOfTemplateChanges"
+    units="Number of changes" expires_after="2021-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the number of times the user changed templates when creating a note.
+  </summary>
+</histogram>
+
 <histogram name="NQE.CachedNetworkQualityAvailable" enum="BooleanAvailable"
     expires_after="2021-10-10">
   <owner>tbansal@chromium.org</owner>

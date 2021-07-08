@@ -45,6 +45,7 @@ public class NoteCreationDialog extends DialogFragment {
     private int mSelectedItemIndex;
     private Toast mToast;
     private boolean mIsPublishAvailable;
+    private int mNbTemplateSwitches;
 
     interface NoteDialogObserver {
         void onViewCreated(View view);
@@ -159,6 +160,13 @@ public class NoteCreationDialog extends DialogFragment {
         return noteContainerView == null ? null : noteContainerView.findViewById(R.id.item);
     }
 
+    /**
+     * Returns the number of template switches the user did.
+     */
+    public int getNbTemplateSwitches() {
+        return mNbTemplateSwitches;
+    }
+
     private void bindCarouselItem(PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {
         NoteTemplate template = model.get(NoteProperties.TEMPLATE);
 
@@ -239,6 +247,7 @@ public class NoteCreationDialog extends DialogFragment {
     }
 
     private void focus(int index) {
+        ++mNbTemplateSwitches;
         View noteView = getNoteViewAt(index);
         noteView.setElevation(
                 getActivity().getResources().getDimension(R.dimen.focused_note_elevation));

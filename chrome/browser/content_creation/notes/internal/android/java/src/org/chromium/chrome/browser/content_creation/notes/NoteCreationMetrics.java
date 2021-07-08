@@ -50,6 +50,10 @@ public final class NoteCreationMetrics {
         RecordHistogram.recordBooleanHistogram("NoteCreation.CreationStatus", created);
     }
 
+    public static void recordNbTemplateChanges(int nbChanges) {
+        RecordHistogram.recordCount100Histogram("NoteCreation.NumberOfTemplateChanges", nbChanges);
+    }
+
     // Empty private constructor for the "static" class.
     private NoteCreationMetrics() {}
 }
