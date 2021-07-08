@@ -18,9 +18,17 @@
           $i18n{appManagementIntentSharingLabel}
         </div>
       </div>
+      <template is="dom-if" if="[[isInTabMode_(app)]]">
+        <div id="tabModeText">
+          <iron-icon icon="cr:info-outline"></iron-icon>
+          [[getAppNameTabModeExplanation_(app)]]
+          <a href="google.com">$i18n{appManagementIntentSharingTabLearnMore}</a>
+        </div>
+      </template>
       <div class="list-frame">
         <cr-radio-group id="isSupportedRadioGroup"
-          selected="[[getSelectedRadioButtonName_(app)]]">
+          selected="[[getSelectedRadioButtonName_(app)]]"
+          disabled="[[isInTabMode_(app)]]">
           <cr-radio-button id="preferred"
             name="preferred"
             label="[[getAppNameRadioButtonLabel_(app)]]">

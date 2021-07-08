@@ -52,7 +52,7 @@ Polymer({
    */
   shouldShowIntentSettings_(app) {
     return this.appManagementIntentSettingsEnabled_ &&
-        this.app.supportedLinks.length > 0;
+        app.supportedLinks.length > 0;
   },
 
   /**
@@ -63,6 +63,26 @@ Polymer({
   getAppNameRadioButtonLabel_(app) {
     return this.i18n(
         'appManagementIntentSharingOpenAppLabel', String(app.title));
+  },
+
+  /**
+   * @private
+   * @param {!App} app
+   * @return {boolean}
+   */
+  isInTabMode_(app) {
+    return app.type === AppType.kWeb &&
+        app.windowMode === apps.mojom.WindowMode.kBrowser;
+  },
+
+  /**
+   * @private
+   * @param {App} app
+   * @return {string} label for app name radio button
+   */
+  getAppNameTabModeExplanation_(app) {
+    return this.i18n(
+        'appManagementIntentSharingTabExplanation', String(app.title));
   },
 
   /** @private */

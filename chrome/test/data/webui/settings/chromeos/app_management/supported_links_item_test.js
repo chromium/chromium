@@ -130,6 +130,36 @@ suite('<app-management-supported-links-item>', () => {
     fakeHandler.flushPipesForTesting();
     test_util.flushTasks();
 
-    assertFalse(!!supportedLinksItem.$$('app-management-supported-links-item'));
+    assertFalse(!!supportedLinksItem.$$('permission-section-header'));
+    assertFalse(!!supportedLinksItem.$$('list-frame'));
+  });
+
+  test('Window/tab mode', async function() {
+    const options = {
+      type: apps.mojom.AppType.kWeb,
+      isPreferredApp: true,
+      windowMode: apps.mojom.WindowMode.kBrowser,
+      supportedLinks: ['google.com'],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    const app = await fakeHandler.addApp('app1', options);
+
+    app_management.AppManagementStore.getInstance().dispatch(
+        app_management.actions.updateSelectedAppId(app.id));
+
+    await fakeHandler.flushPipesForTesting();
+
+    assertTrue(
+        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+
+    supportedLinksItem.app = app;
+
+    replaceBody(supportedLinksItem);
+    fakeHandler.flushPipesForTesting();
+    test_util.flushTasks();
+
+    assertTrue(!!supportedLinksItem.$$('#tabModeText'));
+    assertTrue(!!supportedLinksItem.$$('#isSupportedRadioGroup').disabled);
   });
 });
