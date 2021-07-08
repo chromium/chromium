@@ -84,10 +84,7 @@ bool InstallValue(const base::Value& value,
     }
 
     case base::Value::Type::DOUBLE: {
-      double double_value;
-      if (!value.GetAsDouble(&double_value))
-        return false;
-      std::wstring str_value = base::NumberToWString(double_value);
+      std::wstring str_value = base::NumberToWString(value.GetDouble());
       return key.WriteValue(name.c_str(), str_value.c_str()) == ERROR_SUCCESS;
     }
 
