@@ -129,6 +129,10 @@ StyleImage* StyleImageLoader::CrossfadeArgument(
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
     return nullptr;
   }
+  // Reject paint() functions. They make assumptions about the client (being
+  // a LayoutObject) that we can't meet with the current implementation.
+  if (IsA<CSSPaintValue>(value))
+    return nullptr;
   return Load(value, FetchParameters::kNone, cross_origin);
 }
 
