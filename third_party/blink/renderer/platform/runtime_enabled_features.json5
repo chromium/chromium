@@ -2525,7 +2525,7 @@
     // exposes requisite information about displays connected to the device.
     {
       name: "WindowPlacement",
-      origin_trial_feature_name: "WindowPlacement",
+      origin_trial_feature_name: "WindowPlacementOT2",
       status: "experimental",
     },
     {
