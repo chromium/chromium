@@ -2273,12 +2273,10 @@ void CrostiniManager::OnStartTerminaVm(
   }
 
   // The UI can only resize the default VM, so only (maybe) show the
-  // notification for the default VM. Additionally, ignore <= 0 as -1 means
-  // error and 0 is ambiguous meaning both no free space and missing data.
-  // TODO(crbug/1212890): Distinguish 0 bytes free from didn't populate field
-  // e.g. when VM is already running.
+  // notification for the default VM, if we got a value, and if the value isn't
+  // an error (the API we call for space returns -1 on error).
   if (vm_name == ContainerId::GetDefault().vm_name &&
-      response->free_bytes() > 0) {
+      response->free_bytes_has_value() && response->free_bytes() >= 0) {
     low_disk_notifier_->ShowNotificationIfAppropriate(response->free_bytes());
   }
 

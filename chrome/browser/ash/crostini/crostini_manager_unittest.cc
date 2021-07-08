@@ -512,7 +512,8 @@ TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
   const base::FilePath& disk_path = base::FilePath(kVmName);
   NotificationDisplayServiceTester notification_service(nullptr);
   vm_tools::concierge::StartVmResponse response;
-  response.set_free_bytes(1);
+  response.set_free_bytes(0);
+  response.set_free_bytes_has_value(true);
   response.set_success(true);
   response.set_status(::vm_tools::concierge::VmStatus::VM_STATUS_RUNNING);
   fake_concierge_client_->set_start_vm_response(response);
@@ -526,6 +527,28 @@ TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
   auto notification = notification_service.GetNotification("crostini_low_disk");
   EXPECT_NE(absl::nullopt, notification);
+}
+
+TEST_F(CrostiniManagerTest,
+       StartTerminaVmLowDiskNotificationNotShownIfNoValue) {
+  const base::FilePath& disk_path = base::FilePath(kVmName);
+  NotificationDisplayServiceTester notification_service(nullptr);
+  vm_tools::concierge::StartVmResponse response;
+  response.set_free_bytes(1234);
+  response.set_free_bytes_has_value(false);
+  response.set_success(true);
+  response.set_status(::vm_tools::concierge::VmStatus::VM_STATUS_RUNNING);
+  fake_concierge_client_->set_start_vm_response(response);
+
+  EnsureTerminaInstalled();
+  crostini_manager()->StartTerminaVm(
+      ContainerId::GetDefault().vm_name, disk_path, 0,
+      base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
+  run_loop()->Run();
+
+  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  auto notification = notification_service.GetNotification("crostini_low_disk");
+  EXPECT_EQ(absl::nullopt, notification);
 }
 
 TEST_F(CrostiniManagerTest, OnStartTremplinRecordsRunningVm) {
