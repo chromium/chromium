@@ -801,23 +801,16 @@ crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_texture_c
 crbug.com/1114284 [ linux angle-swiftshader passthrough google-0xffff ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 crbug.com/1114284 [ mac angle-swiftshader passthrough google-0xffff ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 
-# Mac. All backends.
-crbug.com/1099960 [ mac angle-swiftshader passthrough ] conformance/context/context-no-alpha-fbo-with-alpha.html [ Failure ]
-crbug.com/1099960 [ mac angle-swiftshader passthrough ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
-crbug.com/1099960 [ mac angle-swiftshader passthrough ] conformance/rendering/scissor-rect-repeated-rendering.html [ Failure ]
+# Mac. GL backend.
+crbug.com/1099977 [ mac swiftshader-gl no-passthrough ] conformance/context/context-attribute-preserve-drawing-buffer.html [ Failure ]
+crbug.com/1099977 [ mac swiftshader-gl no-passthrough ] conformance/glsl/bugs/sampler-array-struct-function-arg.html [ Failure ]
 crbug.com/1099960 [ mac swiftshader-gl no-passthrough ] conformance/context/context-no-alpha-fbo-with-alpha.html [ Failure ]
 crbug.com/1099960 [ mac swiftshader-gl no-passthrough ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
 crbug.com/1099960 [ mac swiftshader-gl no-passthrough ] conformance/rendering/scissor-rect-repeated-rendering.html [ Failure ]
 
-# Mac. GL backend.
-crbug.com/1099977 [ mac swiftshader-gl no-passthrough ] conformance/context/context-attribute-preserve-drawing-buffer.html [ Failure ]
-crbug.com/1099977 [ mac swiftshader-gl no-passthrough ] conformance/glsl/bugs/sampler-array-struct-function-arg.html [ Failure ]
-
 # Mac. Vulkan backend.
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/canvas/canvas-test.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/canvas/webgl-to-2d-canvas.html [ Failure ]
-crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/context/context-hidden-alpha.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/context/premultiplyalpha-test.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/extensions/oes-texture-float-with-canvas.html [ Failure ]
 crbug.com/1099978 [ mac angle-swiftshader passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
@@ -856,7 +849,6 @@ crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/vid
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 crbug.com/1134756 [ mac angle-swiftshader passthrough ] conformance/textures/misc/copy-tex-image-2d-formats.html [ Failure ]
 crbug.com/1134756 [ mac angle-swiftshader passthrough ] conformance/misc/uninitialized-test.html [ Failure ]
