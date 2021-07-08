@@ -1619,7 +1619,8 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
   // above will return true if the *used* value of transform-style is
   // preserve-3d, so to estimate compat we need to count if the line below is
   // reached.
-  if (style->TransformStyle3D() == ETransformStyle3D::kPreserve3d) {
+  if (style->TransformStyle3D() == ETransformStyle3D::kPreserve3d &&
+      (!IsInline() || IsAtomicInlineLevel())) {
     UseCounter::Count(
         GetDocument(),
         WebFeature::kTransformStyleContainingBlockComputedUsedMismatch);
