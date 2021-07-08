@@ -597,6 +597,17 @@ void SurfaceControl::Transaction::SetOnCommitCb(
 void SurfaceControl::Transaction::Apply() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu,benchmark",
                                     "SurfaceControlTransaction", id_);
+
+  PrepareCallbacks();
+  SurfaceControlMethods::Get().ASurfaceTransaction_applyFn(transaction_);
+}
+
+ASurfaceTransaction* SurfaceControl::Transaction::GetTransaction() {
+  PrepareCallbacks();
+  return transaction_;
+}
+
+void SurfaceControl::Transaction::PrepareCallbacks() {
   if (on_commit_cb_) {
     TransactionAckCtx* ack_ctx = new TransactionAckCtx;
     ack_ctx->latch_callback = std::move(on_commit_cb_);
@@ -614,8 +625,6 @@ void SurfaceControl::Transaction::Apply() {
     SurfaceControlMethods::Get().ASurfaceTransaction_setOnCompleteFn(
         transaction_, ack_ctx, &OnTransactionCompletedOnAnyThread);
   }
-
-  SurfaceControlMethods::Get().ASurfaceTransaction_applyFn(transaction_);
 }
 
 }  // namespace gfx

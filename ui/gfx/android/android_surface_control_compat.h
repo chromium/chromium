@@ -151,9 +151,11 @@ class GFX_EXPORT SurfaceControl {
                        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
     void Apply();
-    ASurfaceTransaction* transaction() { return transaction_; }
+    ASurfaceTransaction* GetTransaction();
 
    private:
+    void PrepareCallbacks();
+
     int id_;
     ASurfaceTransaction* transaction_;
     OnCommitCb on_commit_cb_;

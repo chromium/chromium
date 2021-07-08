@@ -451,7 +451,7 @@ void HardwareRendererViz::MergeTransactionIfNeeded(
     auto transaction = overlay_processor->TakeSurfaceTransactionOnRT();
     if (transaction) {
       DCHECK(merge_transaction);
-      merge_transaction(transaction->transaction());
+      merge_transaction(transaction->GetTransaction());
     }
   }
 }
