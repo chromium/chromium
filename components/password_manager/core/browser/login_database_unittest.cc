@@ -2888,6 +2888,30 @@ TEST_F(LoginDatabaseTest,
   EXPECT_THAT(db().insecure_credentials_table().GetAllRows(), IsEmpty());
 }
 
+TEST_F(LoginDatabaseTest, AddLoginWithInsecureCredentialsPersistsThem) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  InsecureCredential leaked{form.signon_realm, form.username_value,
+                            base::Time(), InsecureType::kLeaked,
+                            IsMuted(false)};
+  InsecureCredential phished = leaked;
+  phished.insecure_type = InsecureType::kPhished;
+
+  form.password_value = u"new_password";
+  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
+  form.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(leaked.create_time, leaked.is_muted));
+  form.password_issues->insert_or_assign(
+      InsecureType::kPhished,
+      InsecurityMetadata(phished.create_time, phished.is_muted));
+
+  PasswordStoreChangeList list;
+  list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
+  EXPECT_EQ(list, db().AddLogin(form));
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::UnorderedElementsAre(leaked, phished));
+}
+
 class LoginDatabaseForAccountStoreTest : public testing::Test {
  protected:
   void SetUp() override {

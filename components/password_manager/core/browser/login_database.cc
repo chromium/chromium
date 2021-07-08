@@ -1169,9 +1169,13 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
   if (success) {
     // If success, the row never existed so password was not changed.
     FillFormInStore(&form_with_encrypted_password);
+    FormPrimaryKey primary_key = FormPrimaryKey(db_.GetLastInsertRowId());
+    if (form_with_encrypted_password.password_issues.has_value()) {
+      UpdateInsecureCredentials(
+          primary_key, form_with_encrypted_password.password_issues.value());
+    }
     list.emplace_back(PasswordStoreChange::ADD,
-                      std::move(form_with_encrypted_password),
-                      FormPrimaryKey(db_.GetLastInsertRowId()),
+                      std::move(form_with_encrypted_password), primary_key,
                       /*password_changed=*/false);
     return list;
   }
@@ -1192,9 +1196,17 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     list.emplace_back(PasswordStoreChange::REMOVE, removed_form,
                       FormPrimaryKey(old_primary_key_password.primary_key));
     FillFormInStore(&form_with_encrypted_password);
-    list.emplace_back(
-        PasswordStoreChange::ADD, std::move(form_with_encrypted_password),
-        FormPrimaryKey(db_.GetLastInsertRowId()), password_changed);
+
+    FormPrimaryKey primary_key = FormPrimaryKey(db_.GetLastInsertRowId());
+    InsecureCredentialsChanged insecure_changed(false);
+    if (form_with_encrypted_password.password_issues.has_value()) {
+      insecure_changed = UpdateInsecureCredentials(
+          primary_key, form_with_encrypted_password.password_issues.value());
+    }
+    list.emplace_back(PasswordStoreChange::ADD,
+                      std::move(form_with_encrypted_password),
+                      FormPrimaryKey(db_.GetLastInsertRowId()),
+                      password_changed, insecure_changed);
   } else if (error) {
     if (sqlite_error_code == 19 /*SQLITE_CONSTRAINT*/) {
       *error = AddLoginError::kConstraintViolation;
