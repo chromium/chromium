@@ -163,7 +163,8 @@ class SelfieCamBubbleDialogView : public WebUIBubbleDialogView {
     content_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kVertical)
         .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetInteriorMargin(gfx::Insets(0, 0, /*bottom=*/4, 0));
 
     views::Button::PressedCallback expand_or_collapse_callback =
         base::BindRepeating(
