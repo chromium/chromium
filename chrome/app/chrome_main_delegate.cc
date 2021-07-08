@@ -107,7 +107,6 @@
 #include <signal.h>
 
 #include "chrome/app/chrome_crash_reporter_client.h"
-#include "chrome/app/shutdown_signal_handlers_posix.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
