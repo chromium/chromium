@@ -1,4 +1,25 @@
 <style include="diagnostics-shared diagnostics-fonts">
+  a[href] {
+    color: var(--cr-link-color);
+    text-decoration: none;
+  }
+
+  #settingsIcon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    fill: var(--google-grey-700);
+    margin-right: 5px;
+    top: 1px;
+  }
+
+  #settingsLink {
+    @apply --diagnostics-settings-link-font;
+  }
+
+  .settings-link-container {
+    align-items: center;
+    display: flex;
+  }
 </style>
 
 <div id="networkListContainer" class="diagnostics-cards-container">
@@ -16,4 +37,9 @@
       </network-card>
     </template>
   </dom-repeat>
+  <div class="settings-link-container">
+    <iron-icon icon="cr:settings_icon" id="settingsIcon"></iron-icon>
+    <div id="settingsLink" inner-h-t-m-l="[[getSettingsString_()]]">
+    </div>
+  </div>
 </div>

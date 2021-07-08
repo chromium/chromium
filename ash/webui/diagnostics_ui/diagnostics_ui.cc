@@ -22,12 +22,15 @@
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -35,6 +38,21 @@
 namespace chromeos {
 
 namespace {
+
+std::u16string GetSettingsLinkLabel() {
+  int string_id = IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT;
+  std::vector<std::u16string> replacements;
+  const char* kOsSettingsUrl = "chrome://os-settings/";
+  replacements.push_back(base::UTF8ToUTF16(kOsSettingsUrl));
+
+  return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
+}
+
+std::unique_ptr<base::DictionaryValue> GetDataSourceUpdate() {
+  auto update = std::make_unique<base::DictionaryValue>();
+  update->SetKey("settingsLinkText", base::Value(GetSettingsLinkLabel()));
+  return update;
+}
 
 void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -136,6 +154,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"versionInfo", IDS_DIAGNOSTICS_VERSION_INFO_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddLocalizedStrings(*GetDataSourceUpdate());
   html_source->UseStringsJs();
 }
 // TODO(jimmyxgong): Replace with webui::SetUpWebUIDataSource() once it no
