@@ -115,11 +115,11 @@ mojom::VRDisplayInfoPtr CreateVRDisplayInfo(gvr::GvrApi* gvr_api) {
 
 const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
   static base::NoDestructor<std::vector<mojom::XRSessionFeature>>
-      kSupportedFeatures({
+      kSupportedFeatures{{
     mojom::XRSessionFeature::REF_SPACE_VIEWER,
     mojom::XRSessionFeature::REF_SPACE_LOCAL,
     mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
-  });
+  }};
 
   return *kSupportedFeatures;
 }

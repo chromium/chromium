@@ -57,14 +57,14 @@ mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo() {
 
 const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
   static base::NoDestructor<std::vector<mojom::XRSessionFeature>>
-      kSupportedFeatures({
+      kSupportedFeatures{{
     mojom::XRSessionFeature::REF_SPACE_VIEWER,
     mojom::XRSessionFeature::REF_SPACE_LOCAL,
     mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
     mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR,
     mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
     mojom::XRSessionFeature::ANCHORS,
-  });
+  }};
 
   return *kSupportedFeatures;
 }
