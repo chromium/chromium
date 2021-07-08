@@ -1953,9 +1953,9 @@ class AuditorUI:
 
     errors.extend(self.auditor.parse_extractor_output(all_annotations))
 
-    # Perform checks on successfully extracted annotations, otherwise skip to
-    # reporting errors.
-    if self.auditor.extracted_annotations:
+    # If we already have errors from parsing annotations, report them. Otherwise
+    # check the extracted annotations and their consistency with previous state.
+    if not errors:
       errors.extend(
           self.auditor.run_all_checks(self.path_filters, self.test_only))
 
