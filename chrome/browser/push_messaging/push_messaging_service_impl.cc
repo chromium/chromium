@@ -58,7 +58,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -177,14 +176,6 @@ void LogMessageReceivedEventToDevTools(
       url::Origin::Create(app_identifier.origin()),
       content::DevToolsBackgroundService::kPushMessaging,
       "Push message received" /* event_name */, message_id, event_metadata);
-}
-
-content::RenderFrameHost* GetMainFrameForRenderFrameHost(
-    content::RenderFrameHost* render_frame_host) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-
-  return web_contents ? web_contents->GetMainFrame() : nullptr;
 }
 
 PendingMessage::PendingMessage(std::string app_id, gcm::IncomingMessage message)
@@ -779,13 +770,9 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
   }
 
   if (!options->user_visible_only) {
-    content::RenderFrameHost* main_frame =
-        GetMainFrameForRenderFrameHost(render_frame_host);
-
-    if (main_frame) {
-      main_frame->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
-                                      kSilentPushUnsupportedMessage);
-    }
+    render_frame_host->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        kSilentPushUnsupportedMessage);
 
     SubscribeEndWithError(
         std::move(callback),
@@ -883,13 +870,10 @@ void PushMessagingServiceImpl::DoSubscribe(
   if (!push_messaging::IsVapidKey(application_server_key_string)) {
     content::RenderFrameHost* render_frame_host =
         content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-    content::RenderFrameHost* main_frame =
-        GetMainFrameForRenderFrameHost(render_frame_host);
-
     if (base::FeatureList::IsEnabled(
             features::kPushMessagingDisallowSenderIDs)) {
-      if (main_frame) {
-        main_frame->AddMessageToConsole(
+      if (render_frame_host) {
+        render_frame_host->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kError,
             kSenderIdRegistrationDisallowedMessage);
       }
@@ -897,8 +881,8 @@ void PushMessagingServiceImpl::DoSubscribe(
           std::move(register_callback),
           blink::mojom::PushRegistrationStatus::UNSUPPORTED_GCM_SENDER_ID);
       return;
-    } else if (main_frame) {
-      main_frame->AddMessageToConsole(
+    } else if (render_frame_host) {
+      render_frame_host->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kWarning,
           kSenderIdRegistrationDeprecatedMessage);
     }
