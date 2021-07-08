@@ -1499,6 +1499,27 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
                                             rfh_sub_1, rfh_sub_2, rfh_sub_1_1));
 }
 
+// Tests that a prerendering page cannot change the visible URL of the
+// corresponding WebContentsImpl instance before activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TabVisibleURL) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  ASSERT_EQ(shell()->web_contents()->GetVisibleURL(), kInitialUrl);
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  // The visible URL should not be modified by the prerendering page.
+  EXPECT_EQ(shell()->web_contents()->GetVisibleURL(), kInitialUrl);
+
+  // Activate the prerendered page.
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  // The visible URL should be updated after activation.
+  EXPECT_EQ(shell()->web_contents()->GetVisibleURL(), kPrerenderingUrl);
+}
+
 class MojoCapabilityControlTestContentBrowserClient
     : public TestContentBrowserClient,
       mojom::TestInterfaceForDefer,
