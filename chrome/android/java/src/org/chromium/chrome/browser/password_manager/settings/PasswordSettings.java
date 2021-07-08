@@ -568,7 +568,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
         mTrustedVaultOptIn.setKey(PREF_TRUSTED_VAULT_OPT_IN);
         mTrustedVaultOptIn.setTitle(R.string.android_trusted_vault_opt_in_label);
         mTrustedVaultOptIn.setOrder(ORDER_TRUSTED_VAULT_OPT_IN);
-        mTrustedVaultOptIn.setIcon(android.R.drawable.ic_lock_lock);
         mTrustedVaultOptIn.setSummary(R.string.android_trusted_vault_opt_in_sub_label);
         mTrustedVaultOptIn.setOnPreferenceClickListener(preference -> {
             assert SyncService.get() != null;
