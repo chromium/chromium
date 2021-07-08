@@ -432,6 +432,13 @@ void Dispatcher::DidCreateScriptContext(
   }
 
   VLOG(1) << "Num tracked contexts: " << script_context_set_->size();
+
+  ExtensionFrameHelper* frame_helper =
+      ExtensionFrameHelper::Get(content::RenderFrame::FromWebFrame(frame));
+  if (!frame_helper)
+    return;  // The frame is invisible to extensions.
+
+  frame_helper->set_did_create_script_context();
 }
 
 void Dispatcher::DidInitializeServiceWorkerContextOnWorkerThread(

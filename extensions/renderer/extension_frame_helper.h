@@ -116,6 +116,9 @@ class ExtensionFrameHelper
                                 const std::string& script_id,
                                 const GURL& url) override;
 
+  void set_did_create_script_context() { did_create_script_context_ = true; }
+  bool did_create_script_context() const { return did_create_script_context_; }
+
   // Called when the document element has been inserted in this frame. This
   // method may invoke untrusted JavaScript code that invalidate the frame and
   // this ExtensionFrameHelper.
@@ -210,6 +213,8 @@ class ExtensionFrameHelper
   // Note: Chrome Apps intentionally do not support new navigations. When a
   // navigation happens, it is either the initial one or a reload.
   bool has_started_first_navigation_ = false;
+
+  bool did_create_script_context_ = false;
 
   mojo::AssociatedRemote<mojom::LocalFrameHost> local_frame_host_remote_;
 
