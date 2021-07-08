@@ -27,6 +27,7 @@ import org.mockito.Mock;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -202,6 +203,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @LargeTest
     @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.SEARCH_HISTORY_LINK)
+    @DisabledTest(message = "https://crbug.com/1227122")
     public void testRenderSignedInNotSyncing() throws IOException {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         // Simulate that Sync was stopped but the primary account remained.
