@@ -30,6 +30,11 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    cardStyle: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**

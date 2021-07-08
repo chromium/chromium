@@ -332,6 +332,9 @@ Polymer({
         zippy.setAttribute('step', i);
         if (!this.newLayoutEnabled_) {
           zippy.setAttribute('hide-line', true);
+        } else if (this.isMinorMode_) {
+          zippy.setAttribute('hide-line', true);
+          zippy.setAttribute('card-style', true);
         }
 
         var title = document.createElement('div');

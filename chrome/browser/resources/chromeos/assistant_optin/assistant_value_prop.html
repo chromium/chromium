@@ -30,7 +30,9 @@
       <div slot="content" id="content-container"
           class="landscape-vertical-centered">
         <div class="content" id="intro-text"></div>
-        <div class="line" hidden$="[[!newLayoutEnabled_]]"></div>
+        <div hidden$="[[!newLayoutEnabled_]]">
+          <div class="line" hidden$="[[isMinorMode_]]"></div>
+        </div>
         <div id="column-container" class="flex layout horizontal">
           <div id="value-prop-container" hidden$="[[newLayoutEnabled_]]">
             <div class="flex layout horizontal center">
