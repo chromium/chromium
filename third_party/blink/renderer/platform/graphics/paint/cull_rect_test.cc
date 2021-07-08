@@ -503,7 +503,7 @@ TEST_F(CullRectTest, SingleScrollPartialScrollingContents) {
   EXPECT_EQ(IntRect(0, 1010, 7060, 6990), cull_rect4.Rect());
 }
 
-TEST_F(CullRectTest, TranslationUnderScrollTranslation) {
+TEST_F(CullRectTest, TransformUnderScrollTranslation) {
   ScopedCullRectUpdateForTest cull_rect_update(true);
 
   auto t1 = Create2DTranslation(t0(), 1, 2);
@@ -539,44 +539,6 @@ TEST_F(CullRectTest, TranslationUnderScrollTranslation) {
   // This result differs from the first result in height (7050 vs 7060)
   // because it's not clipped by the infinite input cull rect.
   EXPECT_EQ(IntRect(-2000, -1990, 7060, 6990), cull_rect4.Rect());
-}
-
-TEST_F(CullRectTest, ScaleUnderScrollTranslation) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
-  auto t1 = Create2DTranslation(t0(), 1, 2);
-  PropertyTreeState state1(*t1, c0(), e0());
-  auto scroll_translation_state = CreateCompositedScrollTranslationState(
-      state1, -3000, -5000, IntRect(20, 10, 40, 50), IntSize(8000, 8000));
-  auto t2 = CreateTransform(scroll_translation_state.Transform(),
-                            TransformationMatrix().Scale(2));
-  PropertyTreeState state2 =
-      scroll_translation_state.GetPropertyTreeState().Unalias();
-  state2.SetTransform(*t2);
-
-  // Cases below are the same as those in SingleScrollPartialScrollingContents,
-  // except that the offset is adjusted with |t2|.
-  CullRect cull_rect1(IntRect(0, 0, 50, 100));
-  cull_rect1.ApplyPaintProperties(state1, state1, state2, absl::nullopt);
-  EXPECT_EQ(IntRect(0, 505, 3525, 3495), cull_rect1.Rect());
-
-  CullRect old_cull_rect(IntRect(0, 500, 3525, 3495));
-  CullRect cull_rect2(IntRect(0, 0, 50, 100));
-  // ChangedEnough() doesn't apply because of the scale.
-  cull_rect2.ApplyPaintProperties(state1, state1, state2, old_cull_rect);
-  EXPECT_EQ(cull_rect1, cull_rect2);
-
-  old_cull_rect.Move(IntSize(1000, 1000));
-  CullRect cull_rect3(IntRect(0, 0, 50, 100));
-  // Use the new cull rect if it changed enough.
-  cull_rect3.ApplyPaintProperties(state1, state1, state2, old_cull_rect);
-  EXPECT_EQ(cull_rect1, cull_rect3);
-
-  CullRect cull_rect4 = CullRect::Infinite();
-  cull_rect4.ApplyPaintProperties(state1, state1, state2, absl::nullopt);
-  // This result differs from the first result in height (3525 vs 3530)
-  // because it's not clipped by the infinite input cull rect.
-  EXPECT_EQ(IntRect(0, 505, 3530, 3495), cull_rect4.Rect());
 }
 
 TEST_F(CullRectTest, TransformEscapingScroll) {
@@ -741,9 +703,9 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
   CullRect cull_rect2(IntRect(0, 0, 300, 500));
   CullRect old_cull_rect = cull_rect1;
   old_cull_rect.Move(IntSize(200, 200));
-  // TODO(wangxianzhu): For now ChangedEnough() doesn't apply. Revisit this.
+  // Use old_cull_rect if the new cull rect didn't change enough.
   cull_rect2.ApplyPaintProperties(root, root, state1, old_cull_rect);
-  EXPECT_EQ(cull_rect1, cull_rect2);
+  EXPECT_EQ(old_cull_rect, cull_rect2);
 
   CullRect cull_rect3(IntRect(0, 0, 300, 500));
   old_cull_rect.Move(IntSize(1000, 1000));
@@ -768,7 +730,7 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
   auto t1 = Create2DTranslation(t0(), 0, 10000);
   auto scroll_clip = CreateClip(*c1, *t1, FloatRoundedRect(0, 0, 120, 120));
   auto scroll_translation = CreateCompositedScrollTranslation(
-      *t1, 0, 0, IntRect(0, 0, 120, 120), IntSize(10000, 10000));
+      *t1, 0, 0, IntRect(0, 0, 120, 120), IntSize(10000, 5000));
   auto c2a = CreateClip(*scroll_clip, *scroll_translation,
                         FloatRoundedRect(0, 300, 100, 100));
   auto c2b = CreateClip(*scroll_clip, *scroll_translation,
@@ -787,6 +749,20 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
   cull_rect = CullRect::Infinite();
   cull_rect.ApplyPaintProperties(root, root, PropertyTreeState(*t2, *c2a, e0()),
                                  absl::nullopt);
+  EXPECT_EQ(IntRect(-4000, -3700, 8100, 8100), cull_rect.Rect());
+
+  // Using c2a with old cull rect.
+  cull_rect = CullRect::Infinite();
+  cull_rect.ApplyPaintProperties(
+      root, root, PropertyTreeState(*scroll_translation, *c2a, e0()),
+      CullRect(IntRect(0, 310, 100, 100)));
+  EXPECT_EQ(IntRect(0, 310, 100, 100), cull_rect.Rect());
+  // Composited case. The cull rect should be expanded.
+  cull_rect = CullRect::Infinite();
+  cull_rect.ApplyPaintProperties(root, root, PropertyTreeState(*t2, *c2a, e0()),
+                                 CullRect(IntRect(-3900, -3700, 8100, 8100)));
+  // The new cull rect touches the left edge of the expanded scrolling contents
+  // bounds, so the old cull rect is not used.
   EXPECT_EQ(IntRect(-4000, -3700, 8100, 8100), cull_rect.Rect());
 
   // c2b is out of the expansion area of the composited scroll.

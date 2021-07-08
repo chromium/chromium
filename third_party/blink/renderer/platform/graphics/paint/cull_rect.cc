@@ -254,21 +254,13 @@ bool CullRect::ApplyPaintProperties(
   absl::optional<IntRect> expansion_bounds;
   bool expanded = false;
   if (last_scroll_translation_result == kExpandedForPartialScrollingContents) {
-    DCHECK(last_transform);
     DCHECK(last_transform->ScrollNode());
+    expansion_bounds.emplace(IntPoint(),
+                             last_transform->ScrollNode()->ContentsSize());
+    // Map expansion_bounds into the same space as rect_.
+    GeometryMapper::SourceToDestinationRect(
+        *last_transform, destination.Transform(), *expansion_bounds);
     expanded = true;
-    // Expansion bounds checking is reliable only when there are no additional
-    // clips or non-translation transforms below the last scroll translation.
-    if (last_clip == &destination.Clip()) {
-      // Map expansion_bounds into the same space as rect_.
-      auto projection = GeometryMapper::SourceToDestinationProjection(
-          *last_transform, destination.Transform());
-      if (projection.IsIdentityOr2DTranslation()) {
-        expansion_bounds.emplace(IntPoint(),
-                                 last_transform->ScrollNode()->ContentsSize());
-        projection.MapRect(*expansion_bounds);
-      }
-    }
   }
 
   if (last_transform != &destination.Transform() &&
@@ -283,17 +275,19 @@ bool CullRect::ApplyPaintProperties(
         LocalPixelDistanceToExpand(root.Transform(), destination.Transform());
     if (rect_.Width() < pixel_distance_to_expand) {
       rect_.InflateX(pixel_distance_to_expand);
+      if (expansion_bounds)
+        expansion_bounds->InflateX(pixel_distance_to_expand);
       expanded = true;
     }
     if (rect_.Height() < pixel_distance_to_expand) {
       rect_.InflateY(pixel_distance_to_expand);
+      if (expansion_bounds)
+        expansion_bounds->InflateY(pixel_distance_to_expand);
       expanded = true;
     }
   }
 
-  // TODO(wangxianzhu): For now disable ChangedEnough if the expansion_bounds
-  // in not set. Revisit this for carousel/marquee cases.
-  if (expanded && old_cull_rect && expansion_bounds &&
+  if (expanded && old_cull_rect &&
       !ChangedEnough(*old_cull_rect, expansion_bounds))
     rect_ = old_cull_rect->Rect();
 
