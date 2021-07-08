@@ -169,9 +169,13 @@ void PasswordFormToJSON(const PasswordForm& form,
     hashes.push_back(gaia_id_hash.ToBase64());
   }
 
+  target->SetString("moving_blocked_for_list", base::JoinString(hashes, ", "));
+
+  if (!form.password_issues.has_value())
+    return;
   std::vector<base::Value> password_issues;
-  password_issues.reserve(form.password_issues.size());
-  for (const auto& issue : form.password_issues) {
+  password_issues.reserve(form.password_issues->size());
+  for (const auto& issue : form.password_issues.value()) {
     base::Value issue_value(base::Value::Type::DICTIONARY);
     issue_value.SetStringPath("insecurity_type", ToString(issue.first));
     issue_value.SetPath("create_time",
@@ -180,7 +184,7 @@ void PasswordFormToJSON(const PasswordForm& form,
                             static_cast<bool>(issue.second.is_muted));
     password_issues.push_back(std::move(issue_value));
   }
-  target->SetString("moving_blocked_for_list", base::JoinString(hashes, ", "));
+
   target->SetPath("password_issues ", base::Value(password_issues));
 }
 
@@ -244,6 +248,12 @@ bool PasswordForm::IsUsingProfileStore() const {
 
 bool PasswordForm::HasNonEmptyPasswordValue() const {
   return !password_value.empty() || !new_password_value.empty();
+}
+
+bool PasswordForm::IsInsecureCredential(InsecureType type) {
+  if (!password_issues.has_value())
+    return false;
+  return password_issues->find(type) != password_issues->end();
 }
 
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,

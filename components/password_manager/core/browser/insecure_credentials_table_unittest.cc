@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/login_database.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "sql/database.h"
@@ -200,6 +201,46 @@ TEST_F(InsecureCredentialsTableTest, RemoveRows) {
 
   EXPECT_THAT(db()->GetAllRows(), IsEmpty());
   EXPECT_THAT(db()->GetRows(test_data().signon_realm), IsEmpty());
+}
+
+TEST_F(InsecureCredentialsTableTest, RemoveRowMultipleTypes) {
+  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  InsecureCredential leaked = test_data();
+  leaked.insecure_type = InsecureType::kLeaked;
+  InsecureCredential phished = test_data();
+  phished.insecure_type = InsecureType::kPhished;
+  EXPECT_TRUE(db()->AddRow(leaked));
+  EXPECT_TRUE(db()->AddRow(phished));
+
+  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
+              UnorderedElementsAre(leaked, phished));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 1));
+
+  EXPECT_TRUE(db()->RemoveRow(FormPrimaryKey(1), InsecureType::kPhished));
+  EXPECT_THAT(db()->GetRows(test_data().signon_realm), ElementsAre(leaked));
+}
+
+TEST_F(InsecureCredentialsTableTest, UpdateRow) {
+  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+
+  InsecureCredential insecure_credential = test_data();
+  insecure_credential.is_muted = IsMuted(false);
+  insecure_credential.parent_key = FormPrimaryKey(1);
+  EXPECT_TRUE(db()->AddRow(insecure_credential));
+
+  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
+              UnorderedElementsAre(insecure_credential));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1));
+
+  InsecurityMetadata new_metadata(insecure_credential.create_time,
+                                  IsMuted(true));
+  InsecureCredential new_insecure_credential = insecure_credential;
+  new_insecure_credential.is_muted = IsMuted(true);
+  EXPECT_TRUE(db()->InsertOrReplace(insecure_credential.parent_key,
+                                    insecure_credential.insecure_type,
+                                    new_metadata));
+  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
+              ElementsAre(new_insecure_credential));
 }
 
 TEST_F(InsecureCredentialsTableTest, ReportMetricsBeforeBulkCheck) {

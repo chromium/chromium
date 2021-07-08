@@ -60,6 +60,8 @@ struct InsecurityMetadata {
   IsMuted is_muted{false};
 };
 
+bool operator==(const InsecurityMetadata& lhs, const InsecurityMetadata& rhs);
+
 // The PasswordForm struct encapsulates information about a login form,
 // which can be an HTML form or a dialog with username/password text fields.
 //
@@ -366,7 +368,10 @@ struct PasswordForm {
 
   // A mapping from the credential insecurity type (e.g. leaked, phished),
   // to its metadata (e.g. time it was discovered, whether alerts are muted).
-  base::flat_map<InsecureType, InsecurityMetadata> password_issues;
+  // Forms retrieved for the store always have a `password_issues` value.
+  // NOTE: If it is known that there are no issues, this should be an empty map.
+  absl::optional<base::flat_map<InsecureType, InsecurityMetadata>>
+      password_issues;
 
   // Return true if we consider this form to be a change password form and not
   // a signup form. It's based on local heuristics and may be inaccurate.
@@ -396,6 +401,10 @@ struct PasswordForm {
 
   // Returns true when |password_value| or |new_password_value| are non-empty.
   bool HasNonEmptyPasswordValue() const;
+
+  // Utility method to check whether the form represents an insecure credential
+  // of insecure type `type`.
+  bool IsInsecureCredential(InsecureType type);
 
   PasswordForm();
   PasswordForm(const PasswordForm& other);

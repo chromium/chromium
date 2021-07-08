@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,11 +32,13 @@
 #include "build/build_config.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sql_table_builder.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -1276,27 +1279,40 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
     return PasswordStoreChangeList();
   }
 
-  PasswordStoreChangeList list;
-  if (db_.GetLastChangeCount()) {
-    bool password_changed =
-        form.password_value != old_primary_key_password.decrypted_password;
-
-    InsecureCredentialsChanged insecure_changed(
-        password_changed ? insecure_credentials_table().RemoveRows(
-                               form.signon_realm, form.username_value,
-                               RemoveInsecureCredentialsReason::kUpdate)
-                         : false);
-
-    PasswordForm form_with_encrypted_password = form;
-    form_with_encrypted_password.encrypted_password = encrypted_password;
-    FillFormInStore(&form_with_encrypted_password);
-    list.emplace_back(PasswordStoreChange::UPDATE,
-                      std::move(form_with_encrypted_password),
-                      FormPrimaryKey(old_primary_key_password.primary_key),
-                      password_changed, insecure_changed);
-  } else if (error) {
-    *error = UpdateLoginError::kNoUpdatedRecords;
+  // If no rows changed due to this command, it means that there was no row to
+  // update, so there is no point trying to update insecure credentials data.
+  if (db_.GetLastChangeCount() == 0) {
+    if (error) {
+      *error = UpdateLoginError::kNoUpdatedRecords;
+    }
+    return PasswordStoreChangeList();
   }
+
+  bool password_changed =
+      form.password_value != old_primary_key_password.decrypted_password;
+
+  InsecureCredentialsChanged insecure_changed(false);
+  // TODO(crbug.com/1223022): It should be the responsibility of the caller to
+  // set `password_issues` to empty instead of leaving it nullopt in this case.
+  // Remove this once all `UpdateLogin` calls have been checked.
+  if (password_changed && !form.password_issues.has_value()) {
+    insecure_changed = UpdateInsecureCredentials(
+        FormPrimaryKey(old_primary_key_password.primary_key),
+        base::flat_map<InsecureType, InsecurityMetadata>());
+  } else if (form.password_issues.has_value()) {
+    insecure_changed = UpdateInsecureCredentials(
+        FormPrimaryKey(old_primary_key_password.primary_key),
+        form.password_issues.value());
+  }
+
+  PasswordStoreChangeList list;
+  PasswordForm form_with_encrypted_password = form;
+  form_with_encrypted_password.encrypted_password = encrypted_password;
+  FillFormInStore(&form_with_encrypted_password);
+  list.emplace_back(PasswordStoreChange::UPDATE,
+                    std::move(form_with_encrypted_password),
+                    FormPrimaryKey(old_primary_key_password.primary_key),
+                    password_changed, insecure_changed);
 
   return list;
 }
@@ -1516,11 +1532,12 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
 
   std::vector<InsecureCredential> insecure_credentials =
       insecure_credentials_table_.GetRows(FormPrimaryKey(*primary_key));
+  base::flat_map<InsecureType, InsecurityMetadata> issues;
   for (const auto& insecure_credential : insecure_credentials) {
-    form->password_issues[insecure_credential.insecure_type] =
-        InsecurityMetadata(insecure_credential.create_time,
-                           insecure_credential.is_muted);
+    issues[insecure_credential.insecure_type] = InsecurityMetadata(
+        insecure_credential.create_time, insecure_credential.is_muted);
   }
+  form->password_issues = std::move(issues);
 
   return ENCRYPTION_RESULT_SUCCESS;
 }
@@ -2160,6 +2177,29 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
 void LoginDatabase::FillFormInStore(PasswordForm* form) const {
   form->in_store = is_account_store() ? PasswordForm::Store::kAccountStore
                                       : PasswordForm::Store::kProfileStore;
+}
+
+InsecureCredentialsChanged LoginDatabase::UpdateInsecureCredentials(
+    FormPrimaryKey primary_key,
+    const base::flat_map<InsecureType, InsecurityMetadata>& password_issues) {
+  bool changed = false;
+  for (const auto& password_issue : password_issues) {
+    changed = insecure_credentials_table_.InsertOrReplace(
+                  primary_key, password_issue.first, password_issue.second) ||
+              changed;
+  }
+
+  // If an insecure type has been removed from the form it has to be removed
+  // from the database. This can currently happen for phished entries.
+  for (auto insecure_type : {InsecureType::kLeaked, InsecureType::kPhished,
+                             InsecureType::kWeak, InsecureType::kReused}) {
+    if (password_issues.find(insecure_type) == password_issues.end()) {
+      changed =
+          insecure_credentials_table_.RemoveRow(primary_key, insecure_type) ||
+          changed;
+    }
+  }
+  return InsecureCredentialsChanged(changed);
 }
 
 }  // namespace password_manager

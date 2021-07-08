@@ -110,6 +110,12 @@ void SaveToPasswordStore(const password_manager::PasswordForm& form) {
   // When we retrieve the form from the store, |in_store| should be set.
   password_manager::PasswordForm expected_form = form;
   expected_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  expected_form.password_issues =
+      base::flat_map<password_manager::InsecureType,
+                     password_manager::InsecurityMetadata>();
   // Check the result and ensure PasswordStore processed this.
   TestStoreConsumer consumer;
   for (const auto& result : consumer.GetStoreResults()) {
