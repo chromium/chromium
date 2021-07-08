@@ -20,7 +20,6 @@ class NavigationHandle;
 
 namespace password_manager {
 class AffiliationService;
-class ChangePasswordUrlService;
 }  // namespace password_manager
 
 // This NavigationThrottle checks whether a site supports the
@@ -65,8 +64,6 @@ class WellKnownChangePasswordNavigationThrottle
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
-  password_manager::ChangePasswordUrlService* change_password_url_service_ =
-      nullptr;
   password_manager::AffiliationService* affiliation_service_ = nullptr;
 };
 

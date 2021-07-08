@@ -4,7 +4,6 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_WELL_KNOWN_CHANGE_PASSWORD_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_WELL_KNOWN_CHANGE_PASSWORD_TAB_HELPER_H_
 
-#include "components/password_manager/core/browser/change_password_url_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "ios/web/public/navigation/web_state_policy_decider.h"
@@ -85,7 +84,6 @@ class WellKnownChangePasswordTabHelper
   web::WebStatePolicyDecider::PolicyDecisionCallback response_policy_callback_;
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
-  ChangePasswordUrlService* change_password_url_service_ = nullptr;
   password_manager::AffiliationService* affiliation_service_ = nullptr;
   WEB_STATE_USER_DATA_KEY_DECL();
 };

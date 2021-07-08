@@ -16,11 +16,6 @@ namespace features {
 const base::Feature kBiometricTouchToFill = {"BiometricTouchToFill",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables creating Affiliation Service and prefetching change password info for
-// requested sites.
-const base::Feature kChangePasswordAffiliationInfo = {
-    "ChangePasswordAffiliationInfo", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables submission detection for forms dynamically cleared but not removed
 // from the page.
 const base::Feature kDetectFormSubmissionOnFormClear = {

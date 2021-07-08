@@ -68,11 +68,6 @@ extern const char kSyntheticCrashReportsForUteDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
-// Title and description for the flag to control if change password url should
-// be obtained by affiliation service.
-extern const char kChangePasswordAffiliationInfoName[];
-extern const char kChangePasswordAffiliationInfoDescription[];
-
 // Title and description for the flag to control which crash generation tool
 // is used.
 extern const char kCrashpadIOSName[];

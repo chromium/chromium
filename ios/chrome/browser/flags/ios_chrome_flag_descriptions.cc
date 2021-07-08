@@ -73,12 +73,6 @@ const char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
-const char kChangePasswordAffiliationInfoName[] =
-    "Using Affiliation Service for Change Password URLs";
-const char kChangePasswordAffiliationInfoDescription[] =
-    "In case site doesn't support /.well-known/change-password Chrome will try "
-    "to obtain it using Affiliation Service.";
-
 const char kCollectionsCardPresentationStyleName[] =
     "Card style presentation for Collections.";
 const char kCollectionsCardPresentationStyleDescription[] =

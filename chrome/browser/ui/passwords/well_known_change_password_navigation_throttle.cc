@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
-#include "chrome/browser/password_manager/change_password_url_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -111,20 +110,12 @@ WellKnownChangePasswordNavigationThrottle::
   if (!handle->IsInPrimaryMainFrame())
     return;
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kChangePasswordAffiliationInfo)) {
-    affiliation_service_ =
-        AffiliationServiceFactory::GetForProfile(Profile::FromBrowserContext(
-            handle->GetWebContents()->GetBrowserContext()));
-    if (affiliation_service_->GetChangePasswordURL(request_url_).is_empty()) {
-      well_known_change_password_state_.PrefetchChangePasswordURLs(
-          affiliation_service_, {request_url_});
-    }
-  } else {
-    change_password_url_service_ =
-        ChangePasswordUrlServiceFactory::GetForBrowserContext(
-            handle->GetWebContents()->GetBrowserContext());
-    change_password_url_service_->PrefetchURLs();
+  affiliation_service_ =
+      AffiliationServiceFactory::GetForProfile(Profile::FromBrowserContext(
+          handle->GetWebContents()->GetBrowserContext()));
+  if (affiliation_service_->GetChangePasswordURL(request_url_).is_empty()) {
+    well_known_change_password_state_.PrefetchChangePasswordURLs(
+        affiliation_service_, {request_url_});
   }
 }
 
@@ -193,14 +184,8 @@ void WellKnownChangePasswordNavigationThrottle::OnProcessingFinished(
     Resume();
     return;
   }
-  GURL redirect_url;
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kChangePasswordAffiliationInfo)) {
-    redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
-  } else {
-    redirect_url =
-        change_password_url_service_->GetChangePasswordUrl(request_url_);
-  }
+  GURL redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
+
   if (redirect_url.is_valid()) {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
     Redirect(redirect_url);

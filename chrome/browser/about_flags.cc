@@ -6922,12 +6922,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSwipeToMoveCursor)},
 #endif  // defined(OS_ANDROID)
 
-    {"change-password-affiliation",
-     flag_descriptions::kChangePasswordAffiliationInfoName,
-     flag_descriptions::kChangePasswordAffiliationInfoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kChangePasswordAffiliationInfo)},
-
     {"use-of-hash-affiliation-fetcher",
      flag_descriptions::kUseOfHashAffiliationFetcherName,
      flag_descriptions::kUseOfHashAffiliationFetcherDescription, kOsAll,

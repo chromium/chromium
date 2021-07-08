@@ -18,7 +18,6 @@ namespace features {
 // alongside the definition of their values in the .cc file.
 
 extern const base::Feature kBiometricTouchToFill;
-extern const base::Feature kChangePasswordAffiliationInfo;
 extern const base::Feature kEditPasswordsInSettings;
 extern const base::Feature kDetectFormSubmissionOnFormClear;
 extern const base::Feature kEnableManualPasswordGeneration;
