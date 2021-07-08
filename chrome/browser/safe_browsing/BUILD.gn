@@ -397,8 +397,6 @@ static_library("advanced_protection") {
 
 source_set("metrics_collector") {
   sources = [
-    "safe_browsing_metrics_collector.cc",
-    "safe_browsing_metrics_collector.h",
     "safe_browsing_metrics_collector_factory.cc",
     "safe_browsing_metrics_collector_factory.h",
   ]
@@ -409,6 +407,7 @@ source_set("metrics_collector") {
     "//chrome/common",
     "//components/keyed_service/content",
     "//components/prefs",
+    "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//content/public/browser",
