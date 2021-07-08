@@ -33,7 +33,7 @@ int GetProcessTypeToScoreWithTabRanker();
 // Gets number of oldest tabs that should be logged by TabRanker.
 int GetNumOldestTabsToLogWithTabRanker();
 
-// Whether to disable background time TabMetrics log.
+// Whether to disable recording of the TabManager_TabMetrics UKM.
 bool DisableBackgroundLogWithTabRanker();
 
 // Gets reload count penalty parameter for TabRanker.

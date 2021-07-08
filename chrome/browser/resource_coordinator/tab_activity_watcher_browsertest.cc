@@ -567,8 +567,16 @@ IN_PROC_BROWSER_TEST_F(
       0, {TabStripModel::GestureType::kOther});
   test_clock.Advance(base::TimeDelta::FromMinutes(1));
 
-  // No tab metrics should be logged till now.
+  // TabManager_TabMetrics should not have been logged yet.
   EXPECT_EQ(0, ukm_entry_checker_->NumNewEntriesRecorded(kTabMetricsEntryName));
+
+  // TabManager_Background_ForegroundedOrClosed should have been logged when
+  // tab@0 was activated.
+  ukm_entry_checker_->ExpectNewEntry(
+      kFOCEntryName, test_urls_[0],
+      {{TabManager_Background_ForegroundedOrClosed::kIsForegroundedName, 1},
+       {TabManager_Background_ForegroundedOrClosed::kLabelIdName, 0},
+       {TabManager_Background_ForegroundedOrClosed::kIsDiscardedName, 0}});
 
   // Logs tab@1.
   LogTabFeaturesAt(1);
@@ -629,13 +637,22 @@ IN_PROC_BROWSER_TEST_F(
   CloseBrowserSynchronously(browser());
   {
     SCOPED_TRACE("");
-    // Close Browser should log a ForegroundedOrClosed event for tab@2 with
-    // correct label_id.
+    // No ForegroundedOrClosed event is logged for tab@1 because it was
+    // foregrounded. The event should be logged for tab@0 and tab@2.
+
+    // tab@2
     ukm_entry_checker_->ExpectNewEntry(
         kFOCEntryName, test_urls_[2],
         {{TabManager_Background_ForegroundedOrClosed::kIsForegroundedName, 0},
          {TabManager_Background_ForegroundedOrClosed::kLabelIdName,
           4 * kIdShift},
+         {TabManager_Background_ForegroundedOrClosed::kIsDiscardedName, 0}});
+
+    // tab@0
+    ukm_entry_checker_->ExpectNewEntry(
+        kFOCEntryName, test_urls_[0],
+        {{TabManager_Background_ForegroundedOrClosed::kIsForegroundedName, 0},
+         {TabManager_Background_ForegroundedOrClosed::kLabelIdName, 0},
          {TabManager_Background_ForegroundedOrClosed::kIsDiscardedName, 0}});
   }
 }

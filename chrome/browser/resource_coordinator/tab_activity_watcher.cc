@@ -402,11 +402,6 @@ class TabActivityWatcher::WebContentsData
 
   // Collect current ForegroundedOrClosedMetrics and send to ukm.
   void LogForegroundedOrClosedMetrics(bool is_foregrounded) {
-    // If background time logging is disabled, then we only log the case where
-    // the label_id_ != 0 (a feature is logged and a label has not been logged).
-    if (DisableBackgroundLogWithTabRanker() && label_id_ == 0)
-      return;
-
     TabMetricsLogger::ForegroundedOrClosedMetrics metrics;
     metrics.is_foregrounded = is_foregrounded;
     metrics.is_discarded = discarded_since_backgrounded_;
