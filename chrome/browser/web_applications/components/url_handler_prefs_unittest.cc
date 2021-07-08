@@ -1019,6 +1019,71 @@ TEST_F(UrlHandlerPrefsTest, SaveUserChoiceInBrowserAndInstallNewApp) {
   }
 }
 
+TEST_F(UrlHandlerPrefsTest, SaveUserChoice_InBrowserThenInApp) {
+  const auto web_app_1 = WebAppWithUrlHandlers(
+      app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {"/*"}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
+                               web_app_1->url_handlers(), time_1_);
+
+  url_handler_prefs::SaveOpenInBrowser(LocalState(), origin_url_1_, time_1_);
+  {
+    ExpectUrlHandlerPrefs(R"({
+      "https://origin-1.com": [ {
+        "app_id":"hfbpnmjjjooicehokhgjihcnkmbbpefl",
+        "exclude_paths": [  ],
+        "has_origin_wildcard": false,
+        "include_paths": [ {
+          "choice": 0,
+          "path": "/*",
+          "timestamp": "12591158400000000"
+        } ],
+        "profile_path": "/profile1"
+      } ]
+    })");
+  }
+
+  // Install a second app that also handles origin_1_/*.
+  const auto web_app_2 = WebAppWithUrlHandlers(
+      app_url_2_, {apps::UrlHandlerInfo(origin_1_, false, {"/*"}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_1_,
+                               web_app_2->url_handlers(), time_2_);
+  // Now save to open origin_1_/* in web_app_2.
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app_2->app_id(),
+                                   profile_1_, origin_url_1_, time_2_);
+  {
+    // web_app_1 and web_app_2 both can handle origin_1_/*. Since we now saved
+    // web_app_2 as the default handler app, the "/*" path of web_app_2 is
+    // saved as kInApp, and "/*" of web_app_1 is reset to kNone. Timestamps
+    // are updated to time_2_.
+    ExpectUrlHandlerPrefs(R"({
+      "https://origin-1.com": [ {
+        "app_id":"hfbpnmjjjooicehokhgjihcnkmbbpefl",
+        "exclude_paths": [  ],
+        "has_origin_wildcard": false,
+        "include_paths": [ {
+          "choice": 1,
+          "path": "/*",
+          "timestamp": "12591244800000000"
+        } ],
+        "profile_path": "/profile1"
+      }, {
+        "app_id":"dioomdeompgjpnegoidgaopfdnbbljlb",
+        "exclude_paths": [  ],
+        "has_origin_wildcard": false,
+        "include_paths": [ {
+          "choice": 2,
+          "path": "/*",
+          "timestamp": "12591244800000000"
+        } ],
+        "profile_path": "/profile1"
+      } ]
+    })");
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  }
+}
+
 // Updating an app with a new handler should preserve a previously added handler
 // and previously saved user choice.
 TEST_F(UrlHandlerPrefsTest, UpdateAppWithSavedChoice_AddHandler) {

@@ -5,8 +5,12 @@
 #include "chrome/browser/web_applications/components/url_handler_prefs.h"
 
 #include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
@@ -36,6 +40,14 @@ constexpr const char kDefaultPath[] = "/*";
 constexpr const char kPath[] = "path";
 constexpr const char kChoice[] = "choice";
 constexpr const char kTimestamp[] = "timestamp";
+
+// Used to hold the pieces of handler information needed for saving default
+// choices.
+struct HandlerView {
+  const std::string& app_id;
+  base::FilePath profile_path;
+  base::Value& include_paths;
+};
 
 // Returns true if |url| has the same origin as origin_str. If
 // |look_for_subdomains| is true, url must have an origin that extends
@@ -225,10 +237,18 @@ void FilterBySavedChoice(std::vector<UrlHandlerLaunchParams>& matches) {
   if (matches.empty())
     return;
 
-  // Record the most recent match.
+  // Record the most recent match. If two matches have the same timestamp,
+  // prefer the one with a higher saved_choice value.
   auto most_recent_match_iterator = base::ranges::max_element(
-      matches, base::ranges::less(),
-      &UrlHandlerLaunchParams::saved_choice_timestamp);
+      matches, [](const UrlHandlerLaunchParams& match1,
+                  const UrlHandlerLaunchParams& match2) {
+        if (match1.saved_choice_timestamp > match2.saved_choice_timestamp)
+          return false;
+        if (match1.saved_choice_timestamp < match2.saved_choice_timestamp)
+          return true;
+
+        return match1.saved_choice < match2.saved_choice;
+      });
 
   switch (most_recent_match_iterator->saved_choice) {
     case UrlHandlerSavedChoice::kInApp:
@@ -401,11 +421,42 @@ void RemoveEntries(base::Value& pref_value,
     pref_value.RemoveKey(origin_to_remove);
 }
 
-// Sets |choice| on every path in |include_paths| that matches |url|.
-void UpdateSavedChoice(base::Value& include_paths,
-                       const GURL& url,
-                       UrlHandlerSavedChoice choice,
-                       const base::Time& time) {
+using PathSet = base::flat_set<std::string>;
+
+// Sets |choice| on every include path in |all_include_paths| where the path
+// exists in |updated_include_paths|.
+void UpdateSavedChoiceInIncludePaths(PathSet updated_include_paths,
+                                     UrlHandlerSavedChoice choice,
+                                     const base::Time& time,
+                                     base::Value& all_include_paths) {
+  // |all_include_paths| is a list of include path dicts. Eg:
+  // [ {
+  //    "choice": 0,
+  //    "path": "/abc",
+  //    "timestamp": "-9223372036854775808"
+  // } ]
+  auto include_paths_list = std::move(all_include_paths).TakeList();
+  for (base::Value& include_path_dict : include_paths_list) {
+    if (!include_path_dict.is_dict())
+      continue;
+    const std::string* path = include_path_dict.FindStringKey(kPath);
+    if (!path)
+      continue;
+
+    if (updated_include_paths.contains(*path)) {
+      include_path_dict.SetIntKey(kChoice, static_cast<int>(choice));
+      include_path_dict.SetKey(kTimestamp, util::TimeToValue(time));
+    }
+  }
+  all_include_paths = base::Value(std::move(include_paths_list));
+}
+
+// Sets |choice| on every path in |include_paths| that matches |url|. Returns
+// a set of paths that are updated.
+PathSet UpdateSavedChoice(const GURL& url,
+                          UrlHandlerSavedChoice choice,
+                          const base::Time& time,
+                          base::Value& include_paths) {
   // |include_paths| is a list of include path dicts. Eg:
   // [ {
   //    "choice": 0,
@@ -413,6 +464,7 @@ void UpdateSavedChoice(base::Value& include_paths,
   //    "timestamp": "-9223372036854775808"
   // } ]
   auto include_paths_list = std::move(include_paths).TakeList();
+  std::vector<std::string> updated_include_paths;
   for (base::Value& include_path_dict : include_paths_list) {
     if (!include_path_dict.is_dict())
       continue;
@@ -425,9 +477,116 @@ void UpdateSavedChoice(base::Value& include_paths,
     if (PathMatchesPathPattern(url.path(), *path)) {
       include_path_dict.SetIntKey(kChoice, static_cast<int>(choice));
       include_path_dict.SetKey(kTimestamp, util::TimeToValue(time));
+      updated_include_paths.push_back(*path);
     }
   }
   include_paths = base::Value(std::move(include_paths_list));
+  return std::move(updated_include_paths);
+}
+
+absl::optional<HandlerView> GetHandlerView(base::Value& handler) {
+  if (!handler.is_dict())
+    return absl::nullopt;
+
+  const std::string* const handler_app_id = handler.FindStringKey(kAppId);
+  absl::optional<base::FilePath> handler_profile_path =
+      util::ValueToFilePath(handler.FindKey(kProfilePath));
+  if (!handler_app_id || !handler_profile_path)
+    return absl::nullopt;
+
+  base::Value* const include_paths = handler.FindListKey(kIncludePaths);
+  if (!include_paths)
+    return absl::nullopt;
+
+  HandlerView handler_view = {
+      *handler_app_id,
+      handler_profile_path.value(),
+      *include_paths,
+  };
+
+  return handler_view;
+}
+
+// Update the save choice on every include path that matches the |url|.
+void SaveChoiceToAllMatchingIncludePaths(const GURL& url,
+                                         const UrlHandlerSavedChoice choice,
+                                         const base::Time& time,
+                                         base::Value::ListStorage& handlers) {
+  for (auto& handler : handlers) {
+    auto handler_view = GetHandlerView(handler);
+    if (!handler_view)
+      continue;
+
+    UpdateSavedChoice(url, choice, time, handler_view->include_paths);
+  }
+}
+
+bool AppIdAndProfileMatch(const AppId* app_id,
+                          const base::FilePath* profile_path,
+                          const std::string& handler_app_id,
+                          const base::FilePath& handler_profile_path) {
+  return (*app_id == handler_app_id) && (*profile_path == handler_profile_path);
+}
+
+// Update the matching include paths' saved choice where app id and profile
+// path match |app_id| and |profile_path|. Return which include paths are
+// updated.
+PathSet SaveInAppChoiceToSelectedApp(const AppId* app_id,
+                                     const base::FilePath* profile_path,
+                                     const GURL& url,
+                                     const base::Time& time,
+                                     base::Value::ListStorage& handlers) {
+  PathSet updated_include_paths;
+  for (auto& handler : handlers) {
+    auto handler_view = GetHandlerView(handler);
+    if (!handler_view ||
+        !AppIdAndProfileMatch(app_id, profile_path, handler_view->app_id,
+                              handler_view->profile_path)) {
+      continue;
+    }
+
+    PathSet updated_paths = UpdateSavedChoice(
+        url, UrlHandlerSavedChoice::kInApp, time, handler_view->include_paths);
+    updated_include_paths.insert(updated_paths.begin(), updated_paths.end());
+  }
+  return updated_include_paths;
+}
+
+// Find include paths in |updated_include_paths| from apps that don't match
+// |app_id| and |profile_path|. Reset the saved choice of these to kNone so
+// they don't conflict with the app choice that was just saved.
+void ResetSavedChoiceInOtherApps(const AppId* app_id,
+                                 const base::FilePath* profile_path,
+                                 const base::Time& time,
+                                 PathSet updated_include_paths,
+                                 base::Value::ListStorage& handlers) {
+  for (auto& handler : handlers) {
+    auto handler_view = GetHandlerView(handler);
+    if (!handler_view ||
+        AppIdAndProfileMatch(app_id, profile_path, handler_view->app_id,
+                             handler_view->profile_path)) {
+      continue;
+    }
+
+    UpdateSavedChoiceInIncludePaths(updated_include_paths,
+                                    UrlHandlerSavedChoice::kNone, time,
+                                    handler_view->include_paths);
+  }
+}
+
+void SaveAppChoice(const AppId* app_id,
+                   const base::FilePath* profile_path,
+                   const GURL& url,
+                   const base::Time& time,
+                   base::Value::ListStorage& handlers) {
+  PathSet updated_include_paths =
+      SaveInAppChoiceToSelectedApp(app_id, profile_path, url, time, handlers);
+
+  if (updated_include_paths.empty())
+    return;
+
+  ResetSavedChoiceInOtherApps(app_id, profile_path, time,
+                              std::move(updated_include_paths), handlers);
 }
 
 void SaveChoiceImpl(const AppId* app_id,
@@ -439,31 +598,19 @@ void SaveChoiceImpl(const AppId* app_id,
                     const std::string& origin_str,
                     const bool origin_trimmed) {
   base::Value* const handlers_mutable = pref_value.FindListKey(origin_str);
-  if (handlers_mutable) {
-    DCHECK(UrlMatchesOrigin(url, origin_str, origin_trimmed));
-    base::Value::ListStorage handlers = std::move(*handlers_mutable).TakeList();
-    for (auto& handler : handlers) {
-      if (!handler.is_dict())
-        continue;
-      const std::string* const handler_app_id = handler.FindStringKey(kAppId);
-      absl::optional<base::FilePath> handler_profile_path =
-          util::ValueToFilePath(handler.FindKey(kProfilePath));
-      if (!handler_app_id || !handler_profile_path)
-        continue;
+  if (!handlers_mutable)
+    return;
 
-      if (choice == UrlHandlerSavedChoice::kInApp) {
-        if (*handler_app_id != *app_id ||
-            *handler_profile_path != *profile_path) {
-          continue;
-        }
-      }
+  DCHECK(UrlMatchesOrigin(url, origin_str, origin_trimmed));
+  base::Value::ListStorage handlers = std::move(*handlers_mutable).TakeList();
 
-      base::Value* const include_paths = handler.FindListKey(kIncludePaths);
-      if (include_paths)
-        UpdateSavedChoice(*include_paths, url, choice, time);
-    }
-    *handlers_mutable = base::Value(std::move(handlers));
+  if (choice == UrlHandlerSavedChoice::kInApp) {
+    SaveAppChoice(app_id, profile_path, url, time, handlers);
+  } else {
+    SaveChoiceToAllMatchingIncludePaths(url, choice, time, handlers);
   }
+
+  *handlers_mutable = base::Value(std::move(handlers));
 }
 
 // Saves |choice| and |time| to all handler include_paths that match |app_id|,
