@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
-#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(USE_V8_OILPAN)
@@ -139,7 +138,9 @@ class TraceWrapperV8Reference {
 
   v8::TracedReference<T> handle_;
 
+#if BUILDFLAG(USE_V8_OILPAN)
   friend struct cppgc::TraceTrait<TraceWrapperV8Reference<T>>;
+#endif  // USE_V8_OILPAN
 };
 }  // namespace blink
 
