@@ -30,6 +30,8 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   bool CheckBrowseUrl(const GURL& url,
                       const SBThreatTypeSet& threat_types,
                       Client* client) override;
+  bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
+                        Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
@@ -42,6 +44,9 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   static void CheckBrowseURLAsync(GURL url,
                                   SBThreatType result_threat_type,
                                   Client* client);
+  static void CheckDownloadURLAsync(const std::vector<GURL>& url_chain,
+                                    SBThreatType result_threat_type,
+                                    Client* client);
 
   base::flat_map<GURL, SBThreatType> dangerous_urls_;
 };

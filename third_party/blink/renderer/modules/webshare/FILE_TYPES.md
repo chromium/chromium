@@ -5,6 +5,8 @@ The following list should be kept in sync with
 - //components/browser_ui/webshare/android/java/src/org/chromium/components/browser_ui/webshare/ShareServiceImpl.java
 
 
+# Application
+                    "pdf"  -  application/pdf
 # Audio
                     "flac"  -  audio/flac
                     "m4a"  -  audio/x-m4a

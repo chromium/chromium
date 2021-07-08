@@ -155,6 +155,16 @@
       }
     }
 
+    async function share_pdf_file() {
+      try {
+        const pdf_file = create_file('sample.pdf', 'application/pdf', 12);
+        await navigator.share({files: [pdf_file]});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
   </script>
 </head>
 <body>

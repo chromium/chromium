@@ -8,10 +8,13 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/webshare/safe_browsing_request.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -49,14 +52,26 @@ class ShareServiceImpl : public blink::mojom::ShareService,
              std::vector<blink::mojom::SharedFilePtr> files,
              ShareCallback callback) override;
 
+  void OnSafeBrowsingResultReceived(
+      const std::string& title,
+      const std::string& text,
+      const GURL& share_url,
+      std::vector<blink::mojom::SharedFilePtr> files,
+      ShareCallback callback,
+      bool is_safe);
+
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
  private:
+  absl::optional<SafeBrowsingRequest> safe_browsing_request_;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   webshare::SharesheetClient sharesheet_client_;
 #endif
   content::RenderFrameHost* render_frame_host_;
+
+  base::WeakPtrFactory<ShareServiceImpl> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_WEBSHARE_SHARE_SERVICE_IMPL_H_

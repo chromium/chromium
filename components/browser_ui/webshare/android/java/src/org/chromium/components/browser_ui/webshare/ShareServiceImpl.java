@@ -95,6 +95,7 @@ public class ShareServiceImpl implements ShareService {
                     "ogm", // video/ogg
                     "ogv", // video/ogg
                     "opus", // audio/ogg
+                    "pdf", // application/pdf
                     "pjp", // image/jpeg
                     "pjpeg", // image/jpeg
                     "png", // image/png
@@ -116,6 +117,7 @@ public class ShareServiceImpl implements ShareService {
     private static final Set<String> PERMITTED_MIME_TYPES =
             Collections.unmodifiableSet(CollectionUtil.newHashSet(
                      "audio/flac",
+                     "application/pdf",
                      "audio/mp3",
                      "audio/mpeg",
                      "audio/ogg",

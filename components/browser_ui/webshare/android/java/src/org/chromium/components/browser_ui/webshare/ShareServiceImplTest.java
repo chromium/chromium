@@ -74,6 +74,7 @@ public class ShareServiceImplTest {
     @Test
     @SmallTest
     public void testSupportedMime() {
+        Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("application/pdf"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("audio/mp3"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("audio/mpeg"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("audio/wav"));

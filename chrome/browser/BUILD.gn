@@ -5379,6 +5379,8 @@ static_library("browser") {
 
   if (is_win || is_chromeos_ash || is_mac) {
     sources += [
+      "webshare/safe_browsing_request.cc",
+      "webshare/safe_browsing_request.h",
       "webshare/share_service_impl.cc",
       "webshare/share_service_impl.h",
     ]

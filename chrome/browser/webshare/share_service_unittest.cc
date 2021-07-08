@@ -232,10 +232,7 @@ TEST_F(ShareServiceUnitTest, PortableDocumentFormat) {
     return;
 #endif
 
-  // TODO(crbug.com/1006055): Support sharing of pdf files.
-  // The URL will be checked using Safe Browsing.
-  EXPECT_EQ(ShareError::PERMISSION_DENIED,
-            ShareGeneratedFileData(".pdf", "application/pdf"));
+  EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".pdf", "application/pdf"));
 }
 
 #if defined(OS_WIN)

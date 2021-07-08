@@ -11,7 +11,11 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -50,7 +54,7 @@ void ShareServiceImpl::Create(
 
 // static
 bool ShareServiceImpl::IsDangerousFilename(base::StringPiece name) {
-  constexpr std::array<const char*, 39> kPermitted = {
+  constexpr std::array<const char*, 40> kPermitted = {
       ".bmp",    // image/bmp / image/x-ms-bmp
       ".css",    // text/css
       ".csv",    // text/csv / text/comma-separated-values
@@ -74,6 +78,7 @@ bool ShareServiceImpl::IsDangerousFilename(base::StringPiece name) {
       ".ogm",    // video/ogg
       ".ogv",    // video/ogg
       ".opus",   // audio/ogg
+      ".pdf",    // application/pdf
       ".pjp",    // image/jpeg
       ".pjpeg",  // image/jpeg
       ".png",    // image/png
@@ -101,7 +106,8 @@ bool ShareServiceImpl::IsDangerousFilename(base::StringPiece name) {
 
 // static
 bool ShareServiceImpl::IsDangerousMimeType(base::StringPiece content_type) {
-  constexpr std::array<const char*, 26> kPermitted = {
+  constexpr std::array<const char*, 27> kPermitted = {
+      "application/pdf",
       "audio/flac",
       "audio/mp3",
       "audio/mpeg",
@@ -156,6 +162,7 @@ void ShareServiceImpl::Share(const std::string& title,
     return;
   }
 
+  bool should_check_url = false;
   for (auto& file : files) {
     if (!file || !file->blob || !file->blob->blob) {
       mojo::ReportBadMessage("Invalid file to share()");
@@ -170,11 +177,59 @@ void ShareServiceImpl::Share(const std::string& title,
       return;
     }
 
+    // Check if at least one file is marked by the download protection service
+    // to send a ping to check this file type.
+    const base::FilePath path = base::FilePath::FromUTF8Unsafe(file->name);
+    if (!should_check_url &&
+        safe_browsing::FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
+            path)) {
+      should_check_url = true;
+    }
+
     // In the case where the original blob handle was to a native file (of
     // unknown size), the serialized data does not contain an accurate file
     // size. To handle this, the comparison against kMaxSharedFileBytes should
     // be done by the platform-specific implementations as part of processing
     // the blobs.
+  }
+
+  DCHECK(!safe_browsing_request_);
+  if (should_check_url && g_browser_process->safe_browsing_service()) {
+    safe_browsing_request_.emplace(
+        g_browser_process->safe_browsing_service()->database_manager(),
+        web_contents->GetLastCommittedURL(),
+        base::BindOnce(&ShareServiceImpl::OnSafeBrowsingResultReceived,
+                       weak_factory_.GetWeakPtr(), title, text, share_url,
+                       std::move(files), std::move(callback)));
+    return;
+  }
+
+  OnSafeBrowsingResultReceived(title, text, share_url, std::move(files),
+                               std::move(callback),
+                               /*is_url_safe=*/true);
+}
+
+void ShareServiceImpl::OnSafeBrowsingResultReceived(
+    const std::string& title,
+    const std::string& text,
+    const GURL& share_url,
+    std::vector<blink::mojom::SharedFilePtr> files,
+    ShareCallback callback,
+    bool is_url_safe) {
+  safe_browsing_request_.reset();
+
+  content::WebContents* const web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host_);
+  if (!web_contents) {
+    VLOG(1) << "Cannot share after navigating away";
+    std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
+    return;
+  }
+
+  if (!is_url_safe) {
+    VLOG(1) << "File not safe to share from this website";
+    std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
+    return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
