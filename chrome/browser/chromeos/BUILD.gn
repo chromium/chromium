@@ -4073,6 +4073,7 @@ source_set("unit_tests") {
     "extensions/file_manager/device_event_router_unittest.cc",
     "extensions/file_manager/drivefs_event_router_unittest.cc",
     "extensions/file_manager/event_router_unittest.cc",
+    "extensions/file_manager/system_notification_manager_unittest.cc",
     "extensions/gfx_utils_unittest.cc",
     "extensions/install_limiter_unittest.cc",
     "extensions/login_screen/login/login_api_unittest.cc",

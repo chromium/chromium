@@ -217,7 +217,7 @@ void SystemNotificationManager::HandleCopyEvent(
       required_copy_space_.erase(copy_id);
       break;
     default:
-      NOTREACHED();
+      DLOG(WARNING) << "Unhandled copy event for type " << status.type;
       break;
   }
 
