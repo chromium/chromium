@@ -120,6 +120,8 @@ class RTCRtpReceiver final : public ScriptWrappable {
       video_from_depacketizer_underlying_source_;
   Member<RTCEncodedVideoUnderlyingSink> video_to_decoder_underlying_sink_;
   Member<RTCInsertableStreams> encoded_video_streams_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace blink

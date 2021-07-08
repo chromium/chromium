@@ -126,6 +126,8 @@ class RTCRtpSender final : public ScriptWrappable {
   Member<RTCEncodedVideoUnderlyingSource> video_from_encoder_underlying_source_;
   Member<RTCEncodedVideoUnderlyingSink> video_to_packetizer_underlying_sink_;
   Member<RTCInsertableStreams> encoded_video_streams_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace blink

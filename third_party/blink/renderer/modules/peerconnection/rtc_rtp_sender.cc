@@ -418,10 +418,12 @@ RTCRtpSender::RTCRtpSender(RTCPeerConnection* pc,
 }
 
 MediaStreamTrack* RTCRtpSender::track() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return track_;
 }
 
 RTCDtlsTransport* RTCRtpSender::transport() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return transport_;
 }
 
@@ -432,6 +434,7 @@ RTCDtlsTransport* RTCRtpSender::rtcpTransport() {
 
 ScriptPromise RTCRtpSender::replaceTrack(ScriptState* script_state,
                                          MediaStreamTrack* with_track) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (pc_->IsClosed()) {
@@ -452,6 +455,7 @@ ScriptPromise RTCRtpSender::replaceTrack(ScriptState* script_state,
 }
 
 RTCRtpSendParameters* RTCRtpSender::getParameters() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RTCRtpSendParameters* parameters = RTCRtpSendParameters::Create();
   std::unique_ptr<webrtc::RtpParameters> webrtc_parameters =
       sender_->GetParameters();
@@ -542,6 +546,7 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
 ScriptPromise RTCRtpSender::setParameters(
     ScriptState* script_state,
     const RTCRtpSendParameters* parameters) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -578,10 +583,12 @@ ScriptPromise RTCRtpSender::setParameters(
 }
 
 void RTCRtpSender::ClearLastReturnedParameters() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   last_returned_parameters_ = nullptr;
 }
 
 ScriptPromise RTCRtpSender::getStats(ScriptState* script_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   sender_->GetStats(
@@ -591,10 +598,12 @@ ScriptPromise RTCRtpSender::getStats(ScriptState* script_state) {
 }
 
 RTCRtpSenderPlatform* RTCRtpSender::web_sender() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return sender_.get();
 }
 
 void RTCRtpSender::SetTrack(MediaStreamTrack* track) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   track_ = track;
   if (track) {
     if (kind_.IsNull()) {
@@ -608,22 +617,27 @@ void RTCRtpSender::SetTrack(MediaStreamTrack* track) {
 }
 
 MediaStreamVector RTCRtpSender::streams() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return streams_;
 }
 
 void RTCRtpSender::set_streams(MediaStreamVector streams) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   streams_ = std::move(streams);
 }
 
 void RTCRtpSender::set_transceiver(RTCRtpTransceiver* transceiver) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   transceiver_ = transceiver;
 }
 
 void RTCRtpSender::set_transport(RTCDtlsTransport* transport) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   transport_ = transport;
 }
 
 RTCDTMFSender* RTCRtpSender::dtmf() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Lazy initialization of dtmf_ to avoid overhead when not used.
   if (!dtmf_ && kind_ == "audio") {
     auto handler = sender_->GetDtmfSender();
@@ -639,6 +653,7 @@ RTCDTMFSender* RTCRtpSender::dtmf() {
 
 void RTCRtpSender::setStreams(HeapVector<Member<MediaStream>> streams,
                               ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (pc_->IsClosed()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -659,6 +674,7 @@ void RTCRtpSender::setStreams(HeapVector<Member<MediaStream>> streams,
 RTCInsertableStreams* RTCRtpSender::createEncodedStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (kind_ == "audio")
     return createEncodedAudioStreams(script_state, exception_state);
   DCHECK_EQ(kind_, "video");
@@ -668,6 +684,7 @@ RTCInsertableStreams* RTCRtpSender::createEncodedStreams(
 RTCInsertableStreams* RTCRtpSender::createEncodedAudioStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!force_encoded_audio_insertable_streams_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -687,6 +704,7 @@ RTCInsertableStreams* RTCRtpSender::createEncodedAudioStreams(
 RTCInsertableStreams* RTCRtpSender::createEncodedVideoStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!force_encoded_video_insertable_streams_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -818,6 +836,7 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
 }
 
 void RTCRtpSender::RegisterEncodedAudioStreamCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!web_sender()
               ->GetEncodedAudioStreamTransformer()
               ->HasTransformerCallback());
@@ -828,10 +847,12 @@ void RTCRtpSender::RegisterEncodedAudioStreamCallback() {
 }
 
 void RTCRtpSender::UnregisterEncodedAudioStreamCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   web_sender()->GetEncodedAudioStreamTransformer()->ResetTransformerCallback();
 }
 
 void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!audio_from_encoder_underlying_source_);
   DCHECK(!audio_to_packetizer_underlying_sink_);
   DCHECK(!encoded_audio_streams_);
@@ -878,12 +899,14 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
 
 void RTCRtpSender::OnAudioFrameFromEncoder(
     std::unique_ptr<webrtc::TransformableFrameInterface> frame) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (audio_from_encoder_underlying_source_) {
     audio_from_encoder_underlying_source_->OnFrameFromSource(std::move(frame));
   }
 }
 
 void RTCRtpSender::RegisterEncodedVideoStreamCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!web_sender()
               ->GetEncodedVideoStreamTransformer()
               ->HasTransformerCallback());
@@ -894,10 +917,12 @@ void RTCRtpSender::RegisterEncodedVideoStreamCallback() {
 }
 
 void RTCRtpSender::UnregisterEncodedVideoStreamCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   web_sender()->GetEncodedVideoStreamTransformer()->ResetTransformerCallback();
 }
 
 void RTCRtpSender::InitializeEncodedVideoStreams(ScriptState* script_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!video_from_encoder_underlying_source_);
   DCHECK(!video_to_packetizer_underlying_sink_);
   DCHECK(!encoded_video_streams_);
@@ -943,6 +968,7 @@ void RTCRtpSender::InitializeEncodedVideoStreams(ScriptState* script_state) {
 
 void RTCRtpSender::OnVideoFrameFromEncoder(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (video_from_encoder_underlying_source_) {
     video_from_encoder_underlying_source_->OnFrameFromSource(std::move(frame));
   }

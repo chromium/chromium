@@ -67,10 +67,12 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
 }
 
 MediaStreamTrack* RTCRtpReceiver::track() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return track_;
 }
 
 RTCDtlsTransport* RTCRtpReceiver::transport() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return transport_;
 }
 
@@ -80,11 +82,13 @@ RTCDtlsTransport* RTCRtpReceiver::rtcpTransport() {
 }
 
 absl::optional<double> RTCRtpReceiver::playoutDelayHint() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return playout_delay_hint_;
 }
 
 void RTCRtpReceiver::setPlayoutDelayHint(absl::optional<double> hint,
                                          ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (hint.has_value() && hint.value() < 0.0) {
     exception_state.ThrowTypeError("playoutDelayHint can't be negative");
     return;
@@ -97,6 +101,7 @@ void RTCRtpReceiver::setPlayoutDelayHint(absl::optional<double> hint,
 HeapVector<Member<RTCRtpSynchronizationSource>>
 RTCRtpReceiver::getSynchronizationSources(ScriptState* script_state,
                                           ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached");
@@ -139,6 +144,7 @@ RTCRtpReceiver::getSynchronizationSources(ScriptState* script_state,
 HeapVector<Member<RTCRtpContributingSource>>
 RTCRtpReceiver::getContributingSources(ScriptState* script_state,
                                        ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached");
@@ -179,6 +185,7 @@ RTCRtpReceiver::getContributingSources(ScriptState* script_state,
 }
 
 ScriptPromise RTCRtpReceiver::getStats(ScriptState* script_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   receiver_->GetStats(
@@ -190,6 +197,7 @@ ScriptPromise RTCRtpReceiver::getStats(ScriptState* script_state) {
 RTCInsertableStreams* RTCRtpReceiver::createEncodedStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (track_->kind() == "audio")
     return createEncodedAudioStreams(script_state, exception_state);
   DCHECK_EQ(track_->kind(), "video");
@@ -199,6 +207,7 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedStreams(
 RTCInsertableStreams* RTCRtpReceiver::createEncodedAudioStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!force_encoded_audio_insertable_streams_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -218,6 +227,7 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedAudioStreams(
 RTCInsertableStreams* RTCRtpReceiver::createEncodedVideoStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!force_encoded_video_insertable_streams_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -235,26 +245,32 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedVideoStreams(
 }
 
 RTCRtpReceiverPlatform* RTCRtpReceiver::platform_receiver() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return receiver_.get();
 }
 
 MediaStreamVector RTCRtpReceiver::streams() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return streams_;
 }
 
 void RTCRtpReceiver::set_streams(MediaStreamVector streams) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   streams_ = std::move(streams);
 }
 
 void RTCRtpReceiver::set_transceiver(RTCRtpTransceiver* transceiver) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   transceiver_ = transceiver;
 }
 
 void RTCRtpReceiver::set_transport(RTCDtlsTransport* transport) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   transport_ = transport;
 }
 
 void RTCRtpReceiver::UpdateSourcesIfNeeded() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!web_sources_needs_updating_)
     return;
   web_sources_ = receiver_->GetSources();
@@ -270,6 +286,7 @@ void RTCRtpReceiver::UpdateSourcesIfNeeded() {
 }
 
 void RTCRtpReceiver::SetContributingSourcesNeedsUpdating() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   web_sources_needs_updating_ = true;
 }
 
@@ -350,6 +367,7 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
 }
 
 RTCRtpReceiveParameters* RTCRtpReceiver::getParameters() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RTCRtpReceiveParameters* parameters = RTCRtpReceiveParameters::Create();
   std::unique_ptr<webrtc::RtpParameters> webrtc_parameters =
       receiver_->GetParameters();
@@ -390,6 +408,7 @@ RTCRtpReceiveParameters* RTCRtpReceiver::getParameters() {
 }
 
 void RTCRtpReceiver::RegisterEncodedAudioStreamCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!platform_receiver()
               ->GetEncodedAudioStreamTransformer()
               ->HasTransformerCallback());
@@ -402,6 +421,7 @@ void RTCRtpReceiver::RegisterEncodedAudioStreamCallback() {
 }
 
 void RTCRtpReceiver::UnregisterEncodedAudioStreamCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(track_->kind(), "audio");
   platform_receiver()
       ->GetEncodedAudioStreamTransformer()
@@ -409,6 +429,7 @@ void RTCRtpReceiver::UnregisterEncodedAudioStreamCallback() {
 }
 
 void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!encoded_audio_streams_);
   DCHECK(!audio_from_depacketizer_underlying_source_);
   DCHECK(!audio_to_decoder_underlying_sink_);
@@ -456,6 +477,7 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
 
 void RTCRtpReceiver::OnAudioFrameFromDepacketizer(
     std::unique_ptr<webrtc::TransformableFrameInterface> encoded_audio_frame) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (audio_from_depacketizer_underlying_source_) {
     audio_from_depacketizer_underlying_source_->OnFrameFromSource(
         std::move(encoded_audio_frame));
@@ -463,6 +485,7 @@ void RTCRtpReceiver::OnAudioFrameFromDepacketizer(
 }
 
 void RTCRtpReceiver::RegisterEncodedVideoStreamCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!platform_receiver()
               ->GetEncodedVideoStreamTransformer()
               ->HasTransformerCallback());
@@ -475,6 +498,7 @@ void RTCRtpReceiver::RegisterEncodedVideoStreamCallback() {
 }
 
 void RTCRtpReceiver::UnregisterEncodedVideoStreamCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(track_->kind(), "video");
   platform_receiver()
       ->GetEncodedVideoStreamTransformer()
@@ -482,6 +506,7 @@ void RTCRtpReceiver::UnregisterEncodedVideoStreamCallback() {
 }
 
 void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!encoded_video_streams_);
   DCHECK(!video_from_depacketizer_underlying_source_);
   DCHECK(!video_to_decoder_underlying_sink_);
@@ -529,6 +554,7 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
 void RTCRtpReceiver::OnVideoFrameFromDepacketizer(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface>
         encoded_video_frame) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (video_from_depacketizer_underlying_source_) {
     video_from_depacketizer_underlying_source_->OnFrameFromSource(
         std::move(encoded_video_frame));
