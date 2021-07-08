@@ -42,7 +42,7 @@ const char16_t kStreetNameRe[] =
     u"|calle";                  // es-MX
 const char16_t kHouseNumberRe[] =
     u"(house.?|street.?|^)number"              // en
-    u"|(haus|^)nummer"                         // de
+    u"|(haus|^)(nummer|nr\\.?)"                // de
     u"|^\\*?.?número(.?\\*?$| da residência)"  // pt-BR, pt-PT
     u"|дом|номер.?дома"                        // ru
     u"|exterior";                              // es-MX
