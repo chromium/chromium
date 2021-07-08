@@ -40,14 +40,45 @@ message ScrollIntoViewIfNeededProto {
   optional bool center = 2;
 }
 
+message ScrollDistance {
+  oneof value {
+    // Padding in CSS pixels.
+    int32 pixels = 1;
+    // Ratio in relation to the window in direction of the scrolling. E.g.
+    // |window.innerHeight|.
+    float window_ratio = 2;
+  }
+}
+
+message ScrollWindowProto {
+  // Optional frame. If not specified, will scroll the main window.
+  optional ClientIdProto optional_frame_id = 1;
+  optional ScrollDistance scroll_distance = 2;
+  // Defines the transition animation. One of "auto" or "smooth". Defaults to
+  // "auto".
+  optional string animation = 3;
+}
+
+message ScrollContainerProto {
+  optional ClientIdProto client_id = 1;
+  optional ScrollDistance scroll_distance = 2;
+  // Defines the transition animation. One of "auto" or "smooth". Defaults to
+  // "auto".
+  optional string animation = 3;
+}
+
 // Wait for the document ready status to be at least "interactive".
 message WaitForDocumentToBecomeInteractiveProto {
+  // Optional frame. If not specified, will wait for the state of the main
+  // frame.
   optional ClientIdProto client_id = 1;
   optional int32 timeout_in_ms = 2;
 }
 
 // Wait for the document ready status to be "complete".
 message WaitForDocumentToBecomeCompleteProto {
+  // Optional frame. If not specified, will wait for the state of the main
+  // frame.
   optional ClientIdProto client_id = 1;
   optional int32 timeout_in_ms = 2;
 }

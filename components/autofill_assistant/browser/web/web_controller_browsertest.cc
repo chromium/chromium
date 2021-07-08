@@ -2709,4 +2709,77 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ScrollIntoViewIfNeeded) {
   EXPECT_GT(content::EvalJs(shell(), "window.scrollY").ExtractDouble(), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ScrollWindow) {
+  EXPECT_EQ(content::EvalJs(shell(), "window.scrollY").ExtractInt(), 0);
+
+  ScrollDistance scroll_distance;
+  scroll_distance.set_pixels(20);
+
+  ClientStatus status;
+  base::RunLoop run_loop;
+  web_controller_->ScrollWindow(
+      scroll_distance, /* animation= */ std::string(),
+      /* optional_frame= */ ElementFinder::Result(),
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), run_loop.QuitClosure(), &status));
+  run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, status.proto_status());
+  EXPECT_NEAR(content::EvalJs(shell(), "window.scrollY").ExtractDouble(), 20.0,
+              0.5);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ScrollWindowOfIFrame) {
+  EXPECT_EQ(content::EvalJs(shell(), "window.scrollY").ExtractInt(), 0);
+
+  ScrollDistance scroll_distance;
+  scroll_distance.set_pixels(20);
+
+  // This needs to target an OOPIF, otherwise it will have the same `window`
+  // and the test will fail.
+  ClientStatus frame_status;
+  ElementFinder::Result frame;
+  FindElement(Selector({"#iframeExternal", "body"}), &frame_status, &frame);
+  EXPECT_EQ(ACTION_APPLIED, frame_status.proto_status());
+
+  ClientStatus status;
+  base::RunLoop run_loop;
+  web_controller_->ScrollWindow(
+      scroll_distance, /* animation= */ std::string(), frame,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), run_loop.QuitClosure(), &status));
+  run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, status.proto_status());
+  EXPECT_EQ(content::EvalJs(shell(), "window.scrollY").ExtractInt(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ScrollContainer) {
+  EXPECT_EQ(
+      content::EvalJs(shell(),
+                      "document.getElementById('scroll_container').scrollTop")
+          .ExtractInt(),
+      0);
+
+  ScrollDistance scroll_distance;
+  scroll_distance.set_pixels(20);
+
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#scroll_container"}), &element_status, &element);
+  EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  ClientStatus status;
+  base::RunLoop run_loop;
+  web_controller_->ScrollContainer(
+      scroll_distance, /* animation= */ std::string(), element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), run_loop.QuitClosure(), &status));
+  run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, status.proto_status());
+  EXPECT_NEAR(
+      content::EvalJs(shell(),
+                      "document.getElementById('scroll_container').scrollTop")
+          .ExtractDouble(),
+      20.0, 0.5);
+}
+
 }  // namespace autofill_assistant

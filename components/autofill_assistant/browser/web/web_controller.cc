@@ -98,6 +98,38 @@ const char* const kScrollIntoViewIfNeededScript =
       this.scrollIntoViewIfNeeded(center);
     })";
 
+// Scroll the current window by a given amount of |pixels|. If |pixels| is 0,
+// take a ratio of the window's height instead.
+const char* const kScrollWindowScript =
+    R"(function(pixels, windowRatio, animation) {
+      let scrollDistance = pixels;
+      if (scrollDistance === 0) {
+        scrollDistance = window.innerHeight * windowRatio;
+      }
+      const options = {};
+      options.top = scrollDistance;
+      if (animation !== '') {
+        options.behavior = animation;
+      }
+      window.scrollBy(options);
+    })";
+
+// Scroll the container by a given amount of |pixels|. If |pixels| is 0,
+// take a ratio of the window's height instead.
+const char* const kScrollContainerScript =
+    R"(function(pixels, windowRatio, animation) {
+      let scrollDistance = pixels;
+      if (scrollDistance === 0) {
+        scrollDistance = window.innerHeight * windowRatio;
+      }
+      const options = {};
+      options.top = scrollDistance;
+      if (animation !== '') {
+        options.behavior = animation;
+      }
+      this.scrollBy(options);
+    })";
+
 // Javascript to select a value from a select box. Also fires a "change" event
 // to trigger any listeners. Changing the index directly does not trigger this.
 // See |WebController::OnSelectOptionJavascriptResult| for result handling.
@@ -511,6 +543,62 @@ void WebController::ScrollIntoViewIfNeeded(
               &DecorateWebControllerStatus,
               WebControllerErrorInfoProto::SCROLL_INTO_VIEW_IF_NEEDED,
               std::move(callback))));
+}
+
+void WebController::ScrollWindow(
+    const ScrollDistance& scroll_distance,
+    const std::string& animation,
+    const ElementFinder::Result& optional_frame,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  std::string scroll_script = base::StrCat(
+      {"(", kScrollWindowScript, ")",
+       base::StringPrintf("(%d, %f, %s)", scroll_distance.pixels(),
+                          scroll_distance.window_ratio(), animation.c_str())});
+  // Note: An optional frame element will have an empty node_frame_id which
+  // will be considered as operating in the main frame.
+  devtools_client_->GetRuntime()->Evaluate(
+      runtime::EvaluateParams::Builder()
+          .SetExpression(scroll_script)
+          .SetReturnByValue(true)
+          .Build(),
+      optional_frame.node_frame_id(),
+      base::BindOnce(&WebController::OnScrollWindow,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&DecorateWebControllerStatus,
+                                    WebControllerErrorInfoProto::SCROLL_WINDOW,
+                                    std::move(callback))));
+}
+
+void WebController::OnScrollWindow(
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<runtime::EvaluateResult> result) {
+  std::move(callback).Run(
+      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__));
+}
+
+void WebController::ScrollContainer(
+    const ScrollDistance& scroll_distance,
+    const std::string& animation,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
+  AddRuntimeCallArgument(scroll_distance.pixels(), &arguments);
+  AddRuntimeCallArgument(scroll_distance.window_ratio(), &arguments);
+  AddRuntimeCallArgument(animation, &arguments);
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id())
+          .SetArguments(std::move(arguments))
+          .SetFunctionDeclaration(std::string(kScrollContainerScript))
+          .SetReturnByValue(true)
+          .Build(),
+      element.node_frame_id(),
+      base::BindOnce(
+          &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&DecorateWebControllerStatus,
+                         WebControllerErrorInfoProto::SCROLL_CONTAINER,
+                         std::move(callback))));
 }
 
 void WebController::CheckOnTop(

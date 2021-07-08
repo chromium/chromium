@@ -111,6 +111,24 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
+  // Scroll the window by |scroll_distance|. |animation| defines the transition
+  // animation. Specify |optional_frame| if an iFrame instead of the main
+  // window should be scrolled.
+  virtual void ScrollWindow(
+      const ScrollDistance& scroll_distance,
+      const std::string& animation,
+      const ElementFinder::Result& optional_frame,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
+  // Scroll the |element| by |scroll_distance|. |animation| defines the
+  // transition animation. Specify |optional_frame| if an iFrame instead of the
+  // main window should be scrolled.
+  virtual void ScrollContainer(
+      const ScrollDistance& scroll_distance,
+      const std::string& animation,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
   // Send a JS click to the |element|.
   virtual void JsClickElement(
       const ElementFinder::Result& element,
@@ -379,6 +397,9 @@ class WebController {
                               const std::vector<std::string>&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void OnScrollWindow(base::OnceCallback<void(const ClientStatus&)> callback,
+                      const DevtoolsClient::ReplyStatus& reply_status,
+                      std::unique_ptr<runtime::EvaluateResult> result);
   void OnCheckOnTop(CheckOnTopWorker* worker,
                     base::OnceCallback<void(const ClientStatus&)> callback,
                     const ClientStatus& status);

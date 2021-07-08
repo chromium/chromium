@@ -761,6 +761,9 @@ message ActionProto {
     SetPersistentUiProto set_persistent_ui = 77;
     ClearPersistentUiProto clear_persistent_ui = 78;
     ScrollIntoViewIfNeededProto scroll_into_view_if_needed = 79;
+    ScrollWindowProto scroll_window = 80;
+    ScrollContainerProto scroll_container = 81;
+    SetTouchableAreaProto set_touchable_area = 82;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1127,6 +1130,12 @@ message WebControllerErrorInfoProto {
 
     // Scroll an element into view only if needed.
     SCROLL_INTO_VIEW_IF_NEEDED = 25;
+
+    // Scroll the window of a frame by a certain amount.
+    SCROLL_WINDOW = 26;
+
+    // Scroll the container by a certain amount.
+    SCROLL_CONTAINER = 27;
   }
 
   // The web-action that failed. This is usually a step in an execution chain
@@ -1438,12 +1447,6 @@ message ShowCastProto {
   // Optional title to show in the status bar.
   optional string title = 2;
 
-  // Restrict interaction to the area spanned by the given elements.
-  //
-  // Deprecated: use touchable_element_area instead. Ignored if
-  // touchable_element_area is non-empty.
-  repeated SelectorProto deprecated_touchable_elements = 5;
-
   // Restrict interaction to a series of rectangular areas.
   optional ElementAreaProto touchable_element_area = 6;
 
@@ -1468,7 +1471,12 @@ message ShowCastProto {
   // not set, the window will be scrolled.
   optional SelectorProto container = 12;
 
-  reserved 3, 4, 8;
+  reserved 3, 4, 5, 8;
+}
+
+// Set the touchable and restricted area of the overlay.
+message SetTouchableAreaProto {
+  optional ElementAreaProto element_area = 1;
 }
 
 // An area made up of rectangles whole border are made defined by the position

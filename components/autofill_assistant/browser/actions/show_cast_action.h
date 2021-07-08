@@ -5,14 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_CAST_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_CAST_ACTION_H_
 
-#include "components/autofill_assistant/browser/actions/action.h"
-#include "components/autofill_assistant/browser/top_padding.h"
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {

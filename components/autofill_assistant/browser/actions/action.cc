@@ -237,6 +237,15 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kScrollIntoViewIfNeeded:
       out << "ScrollIntoViewIfNeeded";
       break;
+    case ActionProto::ActionInfoCase::kScrollWindow:
+      out << "ScrollWindow";
+      break;
+    case ActionProto::ActionInfoCase::kScrollContainer:
+      out << "ScrollContainer";
+      break;
+    case ActionProto::ActionInfoCase::kSetTouchableArea:
+      out << "SetTouchableArea";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

@@ -32,6 +32,7 @@
 #include "components/autofill_assistant/browser/actions/set_attribute_action.h"
 #include "components/autofill_assistant/browser/actions/set_form_field_value_action.h"
 #include "components/autofill_assistant/browser/actions/set_persistent_ui_action.h"
+#include "components/autofill_assistant/browser/actions/set_touchable_area_action.h"
 #include "components/autofill_assistant/browser/actions/show_cast_action.h"
 #include "components/autofill_assistant/browser/actions/show_details_action.h"
 #include "components/autofill_assistant/browser/actions/show_form_action.h"
@@ -369,6 +370,22 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
                          action.scroll_into_view_if_needed().has_center()
                              ? action.scroll_into_view_if_needed().center()
                              : true));
+    case ActionProto::ActionInfoCase::kScrollWindow:
+      return PerformOnSingleElementAction::WithOptionalClientId(
+          delegate, action, action.scroll_window().optional_frame_id(),
+          base::BindOnce(&WebController::ScrollWindow,
+                         delegate->GetWebController()->GetWeakPtr(),
+                         action.scroll_window().scroll_distance(),
+                         action.scroll_window().animation()));
+    case ActionProto::ActionInfoCase::kScrollContainer:
+      return PerformOnSingleElementAction::WithClientId(
+          delegate, action, action.scroll_container().client_id(),
+          base::BindOnce(&WebController::ScrollContainer,
+                         delegate->GetWebController()->GetWeakPtr(),
+                         action.scroll_container().scroll_distance(),
+                         action.scroll_container().animation()));
+    case ActionProto::ActionInfoCase::kSetTouchableArea:
+      return std::make_unique<SetTouchableAreaAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);
