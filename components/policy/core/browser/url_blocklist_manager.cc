@@ -242,10 +242,12 @@ void URLBlocklistManager::Update() {
       background_task_runner_.get(), FROM_HERE,
       base::BindOnce(
           &BuildBlocklist,
-          base::Owned(
-              pref_service_->GetList(policy_prefs::kUrlBlocklist)->DeepCopy()),
-          base::Owned(
-              pref_service_->GetList(policy_prefs::kUrlAllowlist)->DeepCopy())),
+          base::Owned(pref_service_->GetList(policy_prefs::kUrlBlocklist)
+                          ->CreateDeepCopy()
+                          .release()),
+          base::Owned(pref_service_->GetList(policy_prefs::kUrlAllowlist)
+                          ->CreateDeepCopy()
+                          .release())),
       base::BindOnce(&URLBlocklistManager::SetBlocklist,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }
