@@ -113,6 +113,14 @@ const base::Feature kOverrideLanguagePrefsForHrefTranslate{
 const base::Feature kOverrideSitePrefsForHrefTranslate{
     "OverrideSitePrefsForHrefTranslate", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kOverrideUnsupportedPageLanguageForHrefTranslate{
+    "OverrideUnsupportedPageLanguageForHrefTranslate",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kOverrideSimilarLanguagesForHrefTranslate{
+    "OverrideSimilarLanguagesForHrefTranslate",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kForceAutoTranslateKey[] = "force-auto-translate";
 
 TranslateManager::~TranslateManager() = default;
@@ -761,20 +769,24 @@ bool TranslateManager::ShouldOverrideMatchesPreviousLanguageDecision() {
       translate_driver_->GetUkmSourceId(), translate_event_.get());
 }
 
-bool TranslateManager::ShouldSuppressBubbleUI() {
-  // Suppress the UI if the user navigates to a page with
-  // the same language as the previous page. In the new UI,
-  // continue offering translation after the user navigates
-  // to another page.
-  if (!language_state_.HasLanguageChanged() &&
-      !ShouldOverrideMatchesPreviousLanguageDecision()) {
-    TranslateBrowserMetrics::ReportInitiationStatus(
-        TranslateBrowserMetrics::
-            INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE);
-    return true;
+bool TranslateManager::ShouldSuppressBubbleUI(
+    const std::string& target_language) {
+  // Suppress the UI if the user navigates to a page with the same language as
+  // the previous page, unless the page was loaded from a link click with
+  // hrefTranslate attached that matches the target language, since in that case
+  // the site might have a good reason to show the translate UI regardless of
+  // the source language of the previous page. In the new UI, continue offering
+  // translation after the user navigates to another page.
+  DCHECK(!target_language.empty());
+  if (language_state_.href_translate() == target_language ||
+      language_state_.HasLanguageChanged() ||
+      ShouldOverrideMatchesPreviousLanguageDecision()) {
+    return false;
   }
-
-  return false;
+  TranslateBrowserMetrics::ReportInitiationStatus(
+      TranslateBrowserMetrics::
+          INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE);
+  return true;
 }
 
 void TranslateManager::AddTargetLanguageToAcceptLanguages(
@@ -1095,6 +1107,7 @@ void TranslateManager::FilterForHrefTranslate(
     decision->PreventAutoHrefTranslate();
   }
 
+  decision->href_translate_source = page_language_code;
   decision->href_translate_target = language_state_.href_translate();
 
   if (language_state_.navigation_from_google()) {
@@ -1102,12 +1115,55 @@ void TranslateManager::FilterForHrefTranslate(
         !decision->href_translate_target.empty());
   }
 
-  // Can't honor hrefTranslate if there's no specified target, the source or
-  // the target aren't supported, or the source and target match.
-  if (!IsTranslatableLanguagePair(page_language_code,
-                                  decision->href_translate_target)) {
+  // Can't honor hrefTranslate if there's no specified target or the target
+  // language isn't supported.
+  if (decision->href_translate_target.empty() ||
+      !TranslateDownloadManager::IsSupportedLanguage(
+          decision->href_translate_target)) {
     decision->PreventAutoHrefTranslate();
     decision->PreventShowingHrefTranslateUI();
+  }
+
+  if (!TranslateDownloadManager::IsSupportedLanguage(page_language_code)) {
+    // If the page language is unsupported or unknown, but hrefTranslate is
+    // present and the Feature is set such that translation should be attempted
+    // anyways, then as a last ditch effort assume that language detection was
+    // incorrect and send "und" as the source language to make the translate
+    // service attempt to detect the language as it processes the page content.
+    if (language_state_.navigation_from_google() &&
+        base::FeatureList::IsEnabled(
+            kOverrideUnsupportedPageLanguageForHrefTranslate)) {
+      decision->href_translate_source = translate::kUnknownLanguageCode;
+      if (!base::GetFieldTrialParamByFeatureAsBool(
+              kOverrideUnsupportedPageLanguageForHrefTranslate,
+              "force-auto-translate-for-unsupported-page-language", false)) {
+        decision->PreventAutoHrefTranslate();
+      }
+    } else {
+      decision->PreventAutoHrefTranslate();
+      decision->PreventShowingHrefTranslateUI();
+    }
+  }
+
+  if (page_language_code == decision->href_translate_target) {
+    // If the page language seems to match the hrefTranslate target language and
+    // the Feature is set such that translation should be attempted anyways,
+    // then as a last ditch effort assume that language detection was incorrect
+    // and send "und" as the source language to make the translate service
+    // attempt to detect the language as it processes the page content.
+    if (language_state_.navigation_from_google() &&
+        base::FeatureList::IsEnabled(
+            kOverrideSimilarLanguagesForHrefTranslate)) {
+      decision->href_translate_source = translate::kUnknownLanguageCode;
+      if (!base::GetFieldTrialParamByFeatureAsBool(
+              kOverrideSimilarLanguagesForHrefTranslate,
+              "force-auto-translate-for-similar-languages", false)) {
+        decision->PreventAutoHrefTranslate();
+      }
+    } else {
+      decision->PreventAutoHrefTranslate();
+      decision->PreventShowingHrefTranslateUI();
+    }
   }
 }
 
@@ -1157,7 +1213,8 @@ bool TranslateManager::MaterializeDecision(
   }
 
   if (decision.can_auto_href_translate()) {
-    TranslatePage(page_language_code, decision.href_translate_target, false,
+    TranslatePage(decision.href_translate_source,
+                  decision.href_translate_target, false,
                   GetLanguageState()->InTranslateNavigation()
                       ? TranslationType::kAutomaticTranslationByLink
                       : TranslationType::kAutomaticTranslationByPref);
@@ -1201,8 +1258,9 @@ bool TranslateManager::MaterializeDecision(
   // hrefTranslate attribute if it was present on the originating link.
   if (!did_show_ui && decision.can_show_href_translate_ui()) {
     did_show_ui = translate_client_->ShowTranslateUI(
-        translate::TRANSLATE_STEP_BEFORE_TRANSLATE, page_language_code,
-        decision.href_translate_target, TranslateErrors::NONE, false);
+        translate::TRANSLATE_STEP_BEFORE_TRANSLATE,
+        decision.href_translate_source, decision.href_translate_target,
+        TranslateErrors::NONE, false);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kShowUIFromHref);
   }

@@ -49,6 +49,8 @@ struct TranslateInitDetails;
 
 extern const base::Feature kOverrideLanguagePrefsForHrefTranslate;
 extern const base::Feature kOverrideSitePrefsForHrefTranslate;
+extern const base::Feature kOverrideUnsupportedPageLanguageForHrefTranslate;
+extern const base::Feature kOverrideSimilarLanguagesForHrefTranslate;
 extern const char kForceAutoTranslateKey[];
 
 // The TranslateManager class is responsible for showing an info-bar when a page
@@ -220,8 +222,9 @@ class TranslateManager {
   // and logs the event appropriately.
   bool ShouldOverrideMatchesPreviousLanguageDecision();
 
-  // Returns true if the BubbleUI should be suppressed.
-  bool ShouldSuppressBubbleUI();
+  // Returns true if the BubbleUI should be suppressed, where |target_language|
+  // is the target language that would be shown in the UI.
+  bool ShouldSuppressBubbleUI(const std::string& target_language);
 
   // Sets target language.
   void SetPredefinedTargetLanguage(const std::string& language_code);

@@ -4241,9 +4241,19 @@
     "expiry_milestone": 91
   },
   {
+    "name": "override-similar-languages-for-href-translate",
+    "owners": [ "sclittle", "chrome-language@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "override-site-prefs-for-href-translate",
     "owners": [ "sclittle", "chrome-language@google.com" ],
     "expiry_milestone": 91
+  },
+  {
+    "name": "override-unsupported-page-language-for-href-translate",
+    "owners": [ "sclittle", "chrome-language@google.com" ],
+    "expiry_milestone": 97
   },
   {
     // This flag is used by ChromeOS for some accessibility users.

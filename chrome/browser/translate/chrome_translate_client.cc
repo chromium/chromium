@@ -258,7 +258,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
   DCHECK(TranslateService::IsTranslateBubbleEnabled());
   // Bubble UI.
   if (step == translate::TRANSLATE_STEP_BEFORE_TRANSLATE &&
-      translate_manager_->ShouldSuppressBubbleUI()) {
+      translate_manager_->ShouldSuppressBubbleUI(target_language)) {
     return false;
   }
 

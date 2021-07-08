@@ -1641,6 +1641,30 @@ const FeatureEntry::FeatureVariation
          kOverridePrefsForHrefTranslateForceAuto,
          base::size(kOverridePrefsForHrefTranslateForceAuto), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kOverrideUnsupportedPageLanguageForHrefTranslateForceAuto[] = {
+        {"force-auto-translate-for-unsupported-page-language", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kOverrideUnsupportedPageLanguageForHrefTranslateVariations[] = {
+        {"(Force automatic translation of pages with unknown language for "
+         "hrefTranslate)",
+         kOverrideUnsupportedPageLanguageForHrefTranslateForceAuto,
+         base::size(kOverrideUnsupportedPageLanguageForHrefTranslateForceAuto),
+         nullptr}};
+
+const FeatureEntry::FeatureParam
+    kOverrideSimilarLanguagesForHrefTranslateForceAuto[] = {
+        {"force-auto-translate-for-similar-languages", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kOverrideSimilarLanguagesForHrefTranslateVariations[] = {
+        {"(Force automatic translation of pages with the same language as the "
+         "target language for hrefTranslate)",
+         kOverrideSimilarLanguagesForHrefTranslateForceAuto,
+         base::size(kOverrideSimilarLanguagesForHrefTranslateForceAuto),
+         nullptr}};
+
 #if defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kExploreSitesExperimental = {
     chrome::android::explore_sites::kExploreSitesVariationParameterName,
@@ -3314,6 +3338,23 @@ const FeatureEntry kFeatureEntries[] = {
          translate::kOverrideSitePrefsForHrefTranslate,
          kOverrideSitePrefsForHrefTranslateVariations,
          "OverrideSitePrefsForHrefTranslate")},
+    {"override-unsupported-page-language-for-href-translate",
+     flag_descriptions::kOverrideUnsupportedPageLanguageForHrefTranslateName,
+     flag_descriptions::
+         kOverrideUnsupportedPageLanguageForHrefTranslateDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         translate::kOverrideUnsupportedPageLanguageForHrefTranslate,
+         kOverrideUnsupportedPageLanguageForHrefTranslateVariations,
+         "OverrideUnsupportedPageLanguageForHrefTranslate")},
+    {"override-similar-languages-for-href-translate",
+     flag_descriptions::kOverrideSimilarLanguagesForHrefTranslateName,
+     flag_descriptions::kOverrideSimilarLanguagesForHrefTranslateDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         translate::kOverrideSimilarLanguagesForHrefTranslate,
+         kOverrideSimilarLanguagesForHrefTranslateVariations,
+         "OverrideSimilarLanguagesForHrefTranslate")},
 
 #if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-system-notifications",

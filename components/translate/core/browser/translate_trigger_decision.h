@@ -57,6 +57,7 @@ struct TranslateTriggerDecision {
       initiation_statuses;
   std::vector<int> ranker_events;
   std::string auto_translate_target;
+  std::string href_translate_source;
   std::string href_translate_target;
   std::string predefined_translate_target;
 

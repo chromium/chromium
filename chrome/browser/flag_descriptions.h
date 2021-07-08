@@ -1125,6 +1125,10 @@ extern const char kOverrideLanguagePrefsForHrefTranslateName[];
 extern const char kOverrideLanguagePrefsForHrefTranslateDescription[];
 extern const char kOverrideSitePrefsForHrefTranslateName[];
 extern const char kOverrideSitePrefsForHrefTranslateDescription[];
+extern const char kOverrideUnsupportedPageLanguageForHrefTranslateName[];
+extern const char kOverrideUnsupportedPageLanguageForHrefTranslateDescription[];
+extern const char kOverrideSimilarLanguagesForHrefTranslateName[];
+extern const char kOverrideSimilarLanguagesForHrefTranslateDescription[];
 
 extern const char kUpdateHoverAtBeginFrameName[];
 extern const char kUpdateHoverAtBeginFrameDescription[];

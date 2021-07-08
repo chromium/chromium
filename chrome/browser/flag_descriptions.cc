@@ -1974,6 +1974,16 @@ const char kOverrideSitePrefsForHrefTranslateName[] =
 const char kOverrideSitePrefsForHrefTranslateDescription[] =
     "When using hrefTranslate, ignore the user's blocklist of websites that "
     "shouldn't be translated.";
+const char kOverrideUnsupportedPageLanguageForHrefTranslateName[] =
+    "Force translation on pages with unsupported languages for hrefTranslate";
+const char kOverrideUnsupportedPageLanguageForHrefTranslateDescription[] =
+    "When using hrefTranslate, force translation on pages where the page's "
+    "language cannot be determined or is unsupported.";
+const char kOverrideSimilarLanguagesForHrefTranslateName[] =
+    "Force translation on pages with a similar page language for hrefTranslate";
+const char kOverrideSimilarLanguagesForHrefTranslateDescription[] =
+    "When using hrefTranslate, force translation on pages where the page's "
+    "language is similar to the target language specified via hrefTranslate.";
 
 const char kOverscrollHistoryNavigationName[] = "Overscroll history navigation";
 const char kOverscrollHistoryNavigationDescription[] =
