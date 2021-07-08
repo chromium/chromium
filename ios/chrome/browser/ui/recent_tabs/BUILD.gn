@@ -132,6 +132,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui:feature_flags",

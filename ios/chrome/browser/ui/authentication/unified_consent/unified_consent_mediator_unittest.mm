@@ -38,6 +38,9 @@ class UnifiedConsentMediatorTest : public PlatformTest {
     identity2_ = [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
                                                 gaiaID:@"foo2ID"
                                                   name:@"Fake Foo 2"];
+    identity3_ = [FakeChromeIdentity identityWithEmail:@"foo3@gmail.com"
+                                                gaiaID:@"foo3ID"
+                                                  name:@"Fake Foo 3"];
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
@@ -51,13 +54,6 @@ class UnifiedConsentMediatorTest : public PlatformTest {
 
     mediator_delegate_mock_ =
         OCMProtocolMock(@protocol(UnifiedConsentMediatorDelegate));
-    mediator_ = [[UnifiedConsentMediator alloc]
-        initWithUnifiedConsentViewController:view_controller_
-                       authenticationService:authentication_service()
-                       accountManagerService:
-                           ChromeAccountManagerServiceFactory::
-                               GetForBrowserState(browser_state_.get())];
-    mediator_.delegate = mediator_delegate_mock_;
   }
 
   void TearDown() override {
@@ -68,22 +64,39 @@ class UnifiedConsentMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
   // Identity services.
-  AuthenticationService* authentication_service() {
+  AuthenticationService* GetAuthenticationService() {
     return AuthenticationServiceFactory::GetForBrowserState(
         browser_state_.get());
   }
 
-  ios::FakeChromeIdentityService* identity_service() {
+  ios::FakeChromeIdentityService* GetIdentityService() {
     return ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+  }
+
+  void AddIdentities() {
+    GetIdentityService()->AddIdentity(identity1_);
+    GetIdentityService()->AddIdentity(identity2_);
+    GetIdentityService()->AddIdentity(identity3_);
+  }
+
+  void CreateMediator() {
+    mediator_ = [[UnifiedConsentMediator alloc]
+        initWithUnifiedConsentViewController:view_controller_
+                       authenticationService:GetAuthenticationService()
+                       accountManagerService:
+                           ChromeAccountManagerServiceFactory::
+                               GetForBrowserState(browser_state_.get())];
+    mediator_.delegate = mediator_delegate_mock_;
   }
 
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+
   FakeChromeIdentity* identity1_ = nullptr;
   FakeChromeIdentity* identity2_ = nullptr;
-
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  FakeChromeIdentity* identity3_ = nullptr;
 
   UnifiedConsentMediator* mediator_ = nullptr;
   PrefService* pref_service_ = nullptr;
@@ -96,6 +109,7 @@ class UnifiedConsentMediatorTest : public PlatformTest {
 // no accounts on the device.
 TEST_F(UnifiedConsentMediatorTest,
        SelectDefaultIdentityForSignedOutUserWithNoAccounts) {
+  CreateMediator();
   [mediator_ start];
 
   ASSERT_EQ(nil, mediator_.selectedIdentity);
@@ -105,10 +119,23 @@ TEST_F(UnifiedConsentMediatorTest,
 // on the device is the first option.
 TEST_F(UnifiedConsentMediatorTest,
        SelectDefaultIdentityForSignedOutUserWithAccounts) {
-  identity_service()->AddIdentity(identity2_);
-  identity_service()->AddIdentity(identity1_);
+  AddIdentities();
+  CreateMediator();
 
   [mediator_ start];
+
+  ASSERT_EQ(identity1_, mediator_.selectedIdentity);
+}
+
+// Tests that the default identity becomes the next identity on the device after
+// forgetting the default identity.
+TEST_F(UnifiedConsentMediatorTest, SelectDefaultIdentityAfterForgetIdentity) {
+  AddIdentities();
+  CreateMediator();
+
+  [mediator_ start];
+  ASSERT_EQ(identity1_, mediator_.selectedIdentity);
+  GetIdentityService()->ForgetIdentity(identity1_, nil);
 
   ASSERT_EQ(identity2_, mediator_.selectedIdentity);
 }
@@ -116,24 +143,52 @@ TEST_F(UnifiedConsentMediatorTest,
 // Tests that the default identity selected for a signed-in user is the
 // authenticated identity.
 TEST_F(UnifiedConsentMediatorTest, SelectDefaultIdentityForSignedInUser) {
-  identity_service()->AddIdentity(identity2_);
-  identity_service()->AddIdentity(identity1_);
+  AddIdentities();
+  CreateMediator();
 
-  authentication_service()->SignIn(identity1_);
+  GetAuthenticationService()->SignIn(identity2_);
   [mediator_ start];
+
+  ASSERT_EQ(identity2_, mediator_.selectedIdentity);
+}
+
+// Tests that the default identity is the next identity on the device after
+// sign-out and forgetting the authenticated identity.
+TEST_F(UnifiedConsentMediatorTest,
+       SelectDefaultIdentityAfterSignOutAndForgetIdentity) {
+  AddIdentities();
+  CreateMediator();
+
+  GetAuthenticationService()->SignIn(identity3_);
+  [mediator_ start];
+  ASSERT_EQ(identity3_, mediator_.selectedIdentity);
+  GetAuthenticationService()->SignOut(signin_metrics::SIGNOUT_TEST, false, nil);
+  GetIdentityService()->ForgetIdentity(identity3_, nil);
 
   ASSERT_EQ(identity1_, mediator_.selectedIdentity);
 }
 
-// Tests that |start| will override the selected identity with a pre-determined
-// default identity based on the accounts on the device and user sign-in state.
-TEST_F(UnifiedConsentMediatorTest, OverrideIdentityForSignedInUser) {
-  identity_service()->AddIdentity(identity2_);
-  identity_service()->AddIdentity(identity1_);
+// Tests that the selected identity before start is kept.
+TEST_F(UnifiedConsentMediatorTest, SelectIdentity) {
+  AddIdentities();
+  CreateMediator();
 
-  authentication_service()->SignIn(identity1_);
   mediator_.selectedIdentity = identity2_;
   [mediator_ start];
 
-  ASSERT_EQ(identity1_, mediator_.selectedIdentity);
+  ASSERT_EQ(identity2_, mediator_.selectedIdentity);
+}
+
+// Tests that |start| will not override the selected identity with a
+// pre-determined default identity based on the accounts on the device and user
+// sign-in state.
+TEST_F(UnifiedConsentMediatorTest, DontOverrideIdentityForSignedInUser) {
+  AddIdentities();
+  CreateMediator();
+
+  GetAuthenticationService()->SignIn(identity1_);
+  mediator_.selectedIdentity = identity2_;
+  [mediator_ start];
+
+  ASSERT_EQ(identity2_, mediator_.selectedIdentity);
 }

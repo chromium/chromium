@@ -181,6 +181,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/tabs:tabs_internal",

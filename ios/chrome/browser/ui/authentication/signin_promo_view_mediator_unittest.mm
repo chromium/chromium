@@ -97,9 +97,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                           GetForBrowserState(
                                               chrome_browser_state_.get())
-                          authService:AuthenticationServiceFactory::
-                                          GetForBrowserState(
-                                              chrome_browser_state_.get())
+                          authService:GetAuthenticationService()
                           prefService:chrome_browser_state_.get()->GetPrefs()
                           accessPoint:accessPoint
                             presenter:nil];
@@ -121,6 +119,11 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         factory.CreateSyncable(registry.get());
     RegisterBrowserStatePrefs(registry.get());
     return prefs;
+  }
+
+  AuthenticationService* GetAuthenticationService() {
+    return AuthenticationServiceFactory::GetForBrowserState(
+        chrome_browser_state_.get());
   }
 
   // Creates the default identity and adds it into the ChromeIdentityService.
@@ -434,6 +437,22 @@ TEST_F(SigninPromoViewMediatorTest,
       shouldDisplaySigninPromoViewWithAccessPoint:signin_metrics::AccessPoint::
                                                       ACCESS_POINT_RECENT_TABS
                                       prefService:browser_state->GetPrefs()]);
+}
+
+// Tests that the default identity is the primary account, when the user is
+// signed in.
+TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
+  AddDefaultIdentity();
+  ChromeIdentity* signed_in_identity =
+      [FakeChromeIdentity identityWithEmail:@"johndoe2@example.com"
+                                     gaiaID:@"2"
+                                       name:@"johndoe2"];
+  GetAuthenticationService()->SignIn(signed_in_identity);
+  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
+  OCMStub([consumer_ configureSigninPromoWithConfigurator:[OCMArg any]
+                                          identityChanged:NO]);
+  [mediator_ signinPromoViewIsVisible];
+  EXPECT_EQ(signed_in_identity, mediator_.identity);
 }
 
 }  // namespace

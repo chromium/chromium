@@ -12,6 +12,8 @@
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #include "ios/web/public/test/test_web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,6 +29,10 @@ void BookmarkIOSUnitTest::SetUp() {
   // Get a BookmarkModel from the test ChromeBrowserState.
   TestChromeBrowserState::Builder test_cbs_builder;
 
+  test_cbs_builder.AddTestingFactory(
+      AuthenticationServiceFactory::GetInstance(),
+      base::BindRepeating(
+          &AuthenticationServiceFake::CreateAuthenticationService));
   state_dir_ = std::make_unique<base::ScopedTempDir>();
   ASSERT_TRUE(state_dir_->CreateUniqueTempDir());
   test_cbs_builder.SetPath(state_dir_->GetPath());
