@@ -192,7 +192,7 @@ class MockWebMediaPlayerEncryptedMediaClient
   MockWebMediaPlayerEncryptedMediaClient() = default;
 
   MOCK_METHOD3(Encrypted,
-               void(EmeInitDataType, const unsigned char*, unsigned));
+               void(media::EmeInitDataType, const unsigned char*, unsigned));
   MOCK_METHOD0(DidBlockPlaybackWaitingForKey, void());
   MOCK_METHOD0(DidResumePlaybackBlockedForKey, void());
 
@@ -217,7 +217,8 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
     observer_ = nullptr;
   }
 
-  MOCK_METHOD4(DidMediaMetadataChange, void(int, bool, bool, MediaContentType));
+  MOCK_METHOD4(DidMediaMetadataChange,
+               void(int, bool, bool, media::MediaContentType));
 
   void DidPlay(int player_id) override { DCHECK_EQ(player_id_, player_id); }
 
@@ -303,7 +304,7 @@ class MockVideoFrameCompositor : public VideoFrameCompositor {
   MOCK_METHOD0(
       GetLastPresentedFrameMetadata,
       std::unique_ptr<blink::WebMediaPlayer::VideoFramePresentationMetadata>());
-  MOCK_METHOD0(GetCurrentFrameOnAnyThread, scoped_refptr<VideoFrame>());
+  MOCK_METHOD0(GetCurrentFrameOnAnyThread, scoped_refptr<media::VideoFrame>());
   MOCK_METHOD1(UpdateCurrentFrameIfStale,
                void(VideoFrameCompositor::UpdateType));
   MOCK_METHOD3(EnableSubmission,
@@ -340,7 +341,7 @@ class WebMediaPlayerImplTest
                                                   blink::LocalFrameToken(),
                                                   nullptr)),
         context_provider_(viz::TestContextProvider::Create()),
-        audio_parameters_(TestAudioParameters::Normal()),
+        audio_parameters_(media::TestAudioParameters::Normal()),
         memory_dump_manager_(
             base::trace_event::MemoryDumpManager::CreateInstanceForTesting()),
         agent_group_scheduler_(std::move(agent_group_scheduler)) {
@@ -384,7 +385,7 @@ class WebMediaPlayerImplTest
  protected:
   void InitializeWebMediaPlayerImplInternal(
       std::unique_ptr<media::Demuxer> demuxer_override) {
-    auto media_log = std::make_unique<NiceMock<MockMediaLog>>();
+    auto media_log = std::make_unique<NiceMock<media::MockMediaLog>>();
     InitializeSurfaceLayerBridge();
 
     // Retain a raw pointer to |media_log| for use by tests. Meanwhile, give its
@@ -393,30 +394,31 @@ class WebMediaPlayerImplTest
     ASSERT_FALSE(media_log_) << "Reinitialization of media_log_ is disallowed";
     media_log_ = media_log.get();
 
-    auto factory_selector = std::make_unique<RendererFactorySelector>();
+    auto factory_selector = std::make_unique<media::RendererFactorySelector>();
     renderer_factory_selector_ = factory_selector.get();
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(nullptr);
 #if defined(OS_ANDROID)
     factory_selector->AddBaseFactory(
-        RendererType::kDefault,
-        std::make_unique<DefaultRendererFactory>(
+        media::RendererType::kDefault,
+        std::make_unique<media::DefaultRendererFactory>(
             media_log.get(), decoder_factory_.get(),
-            DefaultRendererFactory::GetGpuFactoriesCB()));
+            media::DefaultRendererFactory::GetGpuFactoriesCB()));
     factory_selector->StartRequestRemotePlayStateCB(base::DoNothing());
 #else
     factory_selector->AddBaseFactory(
-        RendererType::kDefault,
-        std::make_unique<DefaultRendererFactory>(
+        media::RendererType::kDefault,
+        std::make_unique<media::DefaultRendererFactory>(
             media_log.get(), decoder_factory_.get(),
-            DefaultRendererFactory::GetGpuFactoriesCB(), nullptr));
+            media::DefaultRendererFactory::GetGpuFactoriesCB(), nullptr));
 #endif
 
-    mojo::Remote<mojom::MediaMetricsProvider> provider;
-    MediaMetricsProvider::Create(
-        MediaMetricsProvider::BrowsingMode::kNormal,
-        MediaMetricsProvider::FrameStatus::kNotTopFrame, ukm::kInvalidSourceId,
-        learning::FeatureValue(0), VideoDecodePerfHistory::SaveCallback(),
-        MediaMetricsProvider::GetLearningSessionCallback(),
+    mojo::Remote<media::mojom::MediaMetricsProvider> provider;
+    media::MediaMetricsProvider::Create(
+        media::MediaMetricsProvider::BrowsingMode::kNormal,
+        media::MediaMetricsProvider::FrameStatus::kNotTopFrame,
+        ukm::kInvalidSourceId, media::learning::FeatureValue(0),
+        media::VideoDecodePerfHistory::SaveCallback(),
+        media::MediaMetricsProvider::GetLearningSessionCallback(),
         base::BindRepeating(
             &WebMediaPlayerImplTest::GetRecordAggregateWatchTimeCallback,
             base::Unretained(this)),
@@ -425,10 +427,11 @@ class WebMediaPlayerImplTest
     // Initialize provider since none of the tests below actually go through the
     // full loading/pipeline initialize phase. If this ever changes the provider
     // will start DCHECK failing.
-    provider->Initialize(false, mojom::MediaURLScheme::kHttp,
-                         mojom::MediaStreamType::kNone);
+    provider->Initialize(false, media::mojom::MediaURLScheme::kHttp,
+                         media::mojom::MediaStreamType::kNone);
 
-    audio_sink_ = base::WrapRefCounted(new NiceMock<MockAudioRendererSink>());
+    audio_sink_ =
+        base::WrapRefCounted(new NiceMock<media::MockAudioRendererSink>());
 
     url_index_ = std::make_unique<UrlIndex>(&mock_resource_fetch_context_,
                                             media_thread_.task_runner());
@@ -439,7 +442,7 @@ class WebMediaPlayerImplTest
         media_thread_.task_runner(), media_thread_.task_runner(),
         base::BindRepeating(&WebMediaPlayerImplTest::OnAdjustAllocatedMemory,
                             base::Unretained(this)),
-        nullptr, RequestRoutingTokenCallback(), nullptr, false, false,
+        nullptr, media::RequestRoutingTokenCallback(), nullptr, false, false,
         provider.Unbind(),
         base::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
                        base::Unretained(this)),
@@ -486,7 +489,7 @@ class WebMediaPlayerImplTest
     wmpi_->OnDurationChange();
   }
 
-  MediaMetricsProvider::RecordAggregateWatchTimeCallback
+  media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
   GetRecordAggregateWatchTimeCallback() {
     return base::NullCallback();
   }
@@ -529,21 +532,21 @@ class WebMediaPlayerImplTest
     }
   }
 
-  void SetError(PipelineStatus status = PIPELINE_ERROR_DECODE) {
+  void SetError(media::PipelineStatus status = media::PIPELINE_ERROR_DECODE) {
     wmpi_->OnError(status);
   }
 
-  void OnMetadata(const PipelineMetadata& metadata) {
+  void OnMetadata(const media::PipelineMetadata& metadata) {
     wmpi_->OnMetadata(metadata);
   }
 
-  void OnWaiting(WaitingReason reason) { wmpi_->OnWaiting(reason); }
+  void OnWaiting(media::WaitingReason reason) { wmpi_->OnWaiting(reason); }
 
   void OnVideoNaturalSizeChange(const gfx::Size& size) {
     wmpi_->OnVideoNaturalSizeChange(size);
   }
 
-  void OnVideoConfigChange(const VideoDecoderConfig& config) {
+  void OnVideoConfigChange(const media::VideoDecoderConfig& config) {
     wmpi_->OnVideoConfigChange(config);
   }
 
@@ -658,7 +661,7 @@ class WebMediaPlayerImplTest
     return wmpi_->video_decode_stats_reporter_.get();
   }
 
-  VideoCodecProfile GetVideoStatsReporterCodecProfile() const {
+  media::VideoCodecProfile GetVideoStatsReporterCodecProfile() const {
     DCHECK(GetVideoStatsReporter());
     return GetVideoStatsReporter()->codec_profile_;
   }
@@ -671,10 +674,11 @@ class WebMediaPlayerImplTest
     return wmpi_->mb_data_source_->media_has_played();
   }
 
-  scoped_refptr<VideoFrame> CreateFrame() {
+  scoped_refptr<media::VideoFrame> CreateFrame() {
     gfx::Size size(8, 8);
-    return VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size, gfx::Rect(size),
-                                   size, base::TimeDelta());
+    return media::VideoFrame::CreateFrame(media::PIXEL_FORMAT_I420, size,
+                                          gfx::Rect(size), size,
+                                          base::TimeDelta());
   }
 
   void RequestVideoFrameCallback() { wmpi_->RequestVideoFrameCallback(); }
@@ -685,7 +689,7 @@ class WebMediaPlayerImplTest
 
   void OnNewFramePresentedCallback() { wmpi_->OnNewFramePresentedCallback(); }
 
-  scoped_refptr<VideoFrame> GetCurrentFrameFromCompositor() {
+  scoped_refptr<media::VideoFrame> GetCurrentFrameFromCompositor() {
     return wmpi_->GetCurrentFrameFromCompositor();
   }
 
@@ -724,7 +728,8 @@ class WebMediaPlayerImplTest
     base::RunLoop().RunUntilIdle();
 
     // Load a real media file into memory.
-    scoped_refptr<DecoderBuffer> data = ReadTestDataFile(data_file);
+    scoped_refptr<media::DecoderBuffer> data =
+        media::ReadTestDataFile(data_file);
 
     // "Serve" the file to the DataSource. Note: We respond with 200 okay, which
     // will prevent range requests or partial responses from being used. For
@@ -808,7 +813,7 @@ class WebMediaPlayerImplTest
 
     base::RunLoop run_loop;
     WebContentDecryptionModuleImpl::Create(
-        &mock_cdm_factory_, key_system, test_origin, CdmConfig(),
+        &mock_cdm_factory_, key_system, test_origin, media::CdmConfig(),
         base::BindOnce(&WebMediaPlayerImplTest::OnCdmCreated,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -822,10 +827,10 @@ class WebMediaPlayerImplTest
     wmpi_->SetCdmInternal(web_cdm_.get());
   }
 
-  MemoryDumpProviderProxy* GetMainThreadMemDumper() {
+  media::MemoryDumpProviderProxy* GetMainThreadMemDumper() {
     return wmpi_->main_thread_mem_dumper_.get();
   }
-  MemoryDumpProviderProxy* GetMediaThreadMemDumper() {
+  media::MemoryDumpProviderProxy* GetMediaThreadMemDumper() {
     return wmpi_->media_thread_mem_dumper_.get();
   }
 
@@ -843,12 +848,12 @@ class WebMediaPlayerImplTest
   scoped_refptr<viz::TestContextProvider> context_provider_;
   NiceMock<MockVideoFrameCompositor>* compositor_;
 
-  scoped_refptr<NiceMock<MockAudioRendererSink>> audio_sink_;
+  scoped_refptr<NiceMock<media::MockAudioRendererSink>> audio_sink_;
   MockResourceFetchContext mock_resource_fetch_context_;
-  std::unique_ptr<media::UrlIndex> url_index_;
+  std::unique_ptr<UrlIndex> url_index_;
 
   // Audio hardware configuration.
-  AudioParameters audio_parameters_;
+  media::AudioParameters audio_parameters_;
 
   bool is_background_suspend_enabled_ = false;
   bool is_background_video_playback_enabled_ = true;
@@ -857,11 +862,12 @@ class WebMediaPlayerImplTest
   NiceMock<MockWebMediaPlayerClient> client_;
   MockWebMediaPlayerEncryptedMediaClient encrypted_client_;
 
-  // Used to create the MockCdm to test encrypted playback.
-  scoped_refptr<MockCdm> mock_cdm_{new MockCdm()};
-  MockCdmFactory mock_cdm_factory_{mock_cdm_};
+  // Used to create the media::MockCdm to test encrypted playback.
+  scoped_refptr<media::MockCdm> mock_cdm_ =
+      base::MakeRefCounted<media::MockCdm>();
+  media::MockCdmFactory mock_cdm_factory_{mock_cdm_};
   std::unique_ptr<blink::WebContentDecryptionModule> web_cdm_;
-  MockCdmContext mock_cdm_context_;
+  media::MockCdmContext mock_cdm_context_;
 
   viz::FrameSinkId frame_sink_id_ = viz::FrameSinkId(1, 1);
   viz::LocalSurfaceId local_surface_id_ =
@@ -877,16 +883,16 @@ class WebMediaPlayerImplTest
 
   // Only valid once set by InitializeWebMediaPlayerImpl(), this is for
   // verifying a subset of potential media logs.
-  NiceMock<MockMediaLog>* media_log_ = nullptr;
+  NiceMock<media::MockMediaLog>* media_log_ = nullptr;
 
   // Total memory in bytes allocated by the WebMediaPlayerImpl instance.
   int64_t reported_memory_ = 0;
 
-  // Raw pointer of the RendererFactorySelector owned by |wmpi_|.
-  RendererFactorySelector* renderer_factory_selector_ = nullptr;
+  // Raw pointer of the media::RendererFactorySelector owned by |wmpi_|.
+  media::RendererFactorySelector* renderer_factory_selector_ = nullptr;
 
   // default decoder factory for WMPI
-  std::unique_ptr<DecoderFactory> decoder_factory_;
+  std::unique_ptr<media::DecoderFactory> decoder_factory_;
 
   // The WebMediaPlayerImpl instance under test.
   std::unique_ptr<WebMediaPlayerImpl> wmpi_;
@@ -1083,7 +1089,7 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoStreaming) {
 // Verify that lazy load for preload=metadata works properly.
 TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kPreloadMetadataLazyLoad);
+  scoped_feature_list.InitAndEnableFeature(media::kPreloadMetadataLazyLoad);
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
   wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadMetaData);
@@ -1348,7 +1354,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenAudioOnly) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenSuspendNoResume) {
   SetUpMediaSuspend(true);
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kResumeBackgroundVideo);
+  scoped_feature_list.InitAndDisableFeature(media::kResumeBackgroundVideo);
 
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
@@ -1371,7 +1377,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenSuspendNoResume) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenSuspendWithResume) {
   SetUpMediaSuspend(true);
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kResumeBackgroundVideo);
+  scoped_feature_list.InitAndEnableFeature(media::kResumeBackgroundVideo);
 
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
@@ -1535,7 +1541,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_Streaming) {
 }
 
 TEST_F(WebMediaPlayerImplTest, ResumeEnded) {
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
   metadata.has_video = true;
   metadata.video_decoder_config = TestVideoConfig::Normal();
   metadata.has_audio = true;
@@ -1563,7 +1569,7 @@ TEST_F(WebMediaPlayerImplTest, ResumeEnded) {
 }
 
 TEST_F(WebMediaPlayerImplTest, AutoplayMuted) {
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
   metadata.has_video = true;
   metadata.video_decoder_config = TestVideoConfig::Normal();
   metadata.has_audio = true;
@@ -1679,16 +1685,17 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_Underflow) {
 }
 
 // It's possible for current time to be infinite if the page seeks to
-// |kInfiniteDuration| (2**64 - 1) when duration is infinite.
+// |media::kInfiniteDuration| (2**64 - 1) when duration is infinite.
 TEST_F(WebMediaPlayerImplTest, MediaPositionState_InfiniteCurrentTime) {
   InitializeWebMediaPlayerImpl();
-  SetDuration(kInfiniteDuration);
+  SetDuration(media::kInfiniteDuration);
   wmpi_->OnTimeUpdate();
 
-  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
-                           0.0, kInfiniteDuration, kInfiniteDuration,
-                           /*end_of_media=*/false));
-  wmpi_->Seek(kInfiniteDuration.InSecondsF());
+  EXPECT_CALL(client_,
+              DidPlayerMediaPositionStateChange(0.0, media::kInfiniteDuration,
+                                                media::kInfiniteDuration,
+                                                /*end_of_media=*/false));
+  wmpi_->Seek(media::kInfiniteDuration.InSecondsF());
   wmpi_->OnTimeUpdate();
 
   testing::Mock::VerifyAndClearExpectations(&client_);
@@ -1699,7 +1706,7 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_InfiniteCurrentTime) {
 
 TEST_F(WebMediaPlayerImplTest, NoStreams) {
   InitializeWebMediaPlayerImpl();
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
 
   EXPECT_CALL(client_, SetCcLayer(_)).Times(0);
   EXPECT_CALL(*surface_layer_bridge_ptr_, CreateSurfaceLayer()).Times(0);
@@ -1730,7 +1737,7 @@ TEST_F(WebMediaPlayerImplTest, Encrypted) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(encrypted_client_,
-                Encrypted(EmeInitDataType::WEBM, NotNull(), Gt(0u)));
+                Encrypted(media::EmeInitDataType::WEBM, NotNull(), Gt(0u)));
     EXPECT_CALL(encrypted_client_, DidBlockPlaybackWaitingForKey());
     EXPECT_CALL(encrypted_client_, DidResumePlaybackBlockedForKey())
         .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
@@ -1769,12 +1776,12 @@ TEST_F(WebMediaPlayerImplTest, Waiting_NoDecryptionKey) {
   EXPECT_CALL(encrypted_client_, DidBlockPlaybackWaitingForKey());
   EXPECT_CALL(encrypted_client_, DidResumePlaybackBlockedForKey());
 
-  OnWaiting(WaitingReason::kNoDecryptionKey);
+  OnWaiting(media::WaitingReason::kNoDecryptionKey);
 }
 
 ACTION(ReportHaveEnough) {
-  arg0->OnBufferingStateChange(BUFFERING_HAVE_ENOUGH,
-                               BUFFERING_CHANGE_REASON_UNKNOWN);
+  arg0->OnBufferingStateChange(media::BUFFERING_HAVE_ENOUGH,
+                               media::BUFFERING_CHANGE_REASON_UNKNOWN);
 }
 
 #if defined(OS_WIN)
@@ -1786,19 +1793,19 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   // Use MockRendererFactory for kMediaFoundation where the created Renderer
   // will take the CDM, complete Renderer initialization and report HAVE_ENOUGH
   // so that WMPI can reach kReadyStateHaveCurrentData.
-  auto mock_renderer_factory = std::make_unique<MockRendererFactory>();
+  auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
   EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
       .WillOnce(testing::WithoutArgs(Invoke([]() {
         auto mock_renderer = std::make_unique<NiceMock<MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnSetCdm(_, _))
             .WillOnce(RunOnceCallback<1>(true));
         EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
-            .WillOnce(DoAll(RunOnceCallback<2>(PIPELINE_OK),
+            .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
                             WithArg<1>(ReportHaveEnough())));
         return mock_renderer;
       })));
 
-  renderer_factory_selector_->AddFactory(RendererType::kMediaFoundation,
+  renderer_factory_selector_->AddFactory(media::RendererType::kMediaFoundation,
                                          std::move(mock_renderer_factory));
 
   // Create and set CDM. The CDM doesn't support a Decryptor and requires Media
@@ -1813,7 +1820,7 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
 
   // Load encrypted media and expect encrypted event.
   EXPECT_CALL(encrypted_client_,
-              Encrypted(EmeInitDataType::WEBM, NotNull(), Gt(0u)));
+              Encrypted(media::EmeInitDataType::WEBM, NotNull(), Gt(0u)));
 
   base::RunLoop run_loop;
   // MediaFoundationRenderer doesn't use AudioService.
@@ -1826,10 +1833,10 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
 
 TEST_F(WebMediaPlayerImplTest, VideoConfigChange) {
   InitializeWebMediaPlayerImpl();
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
   metadata.has_video = true;
-  metadata.video_decoder_config =
-      TestVideoConfig::NormalCodecProfile(kCodecVP9, VP9PROFILE_PROFILE0);
+  metadata.video_decoder_config = TestVideoConfig::NormalCodecProfile(
+      media::kCodecVP9, media::VP9PROFILE_PROFILE0);
   metadata.natural_size = gfx::Size(320, 240);
 
   // Arrival of metadata should trigger creation of reporter with video config
@@ -1837,42 +1844,43 @@ TEST_F(WebMediaPlayerImplTest, VideoConfigChange) {
   OnMetadata(metadata);
   VideoDecodeStatsReporter* last_reporter = GetVideoStatsReporter();
   ASSERT_NE(nullptr, last_reporter);
-  ASSERT_EQ(VP9PROFILE_PROFILE0, GetVideoStatsReporterCodecProfile());
+  ASSERT_EQ(media::VP9PROFILE_PROFILE0, GetVideoStatsReporterCodecProfile());
 
   // Changing the codec profile should trigger recreation of the reporter.
-  auto new_profile_config =
-      TestVideoConfig::NormalCodecProfile(kCodecVP9, VP9PROFILE_PROFILE1);
+  auto new_profile_config = TestVideoConfig::NormalCodecProfile(
+      media::kCodecVP9, media::VP9PROFILE_PROFILE1);
   OnVideoConfigChange(new_profile_config);
-  ASSERT_EQ(VP9PROFILE_PROFILE1, GetVideoStatsReporterCodecProfile());
+  ASSERT_EQ(media::VP9PROFILE_PROFILE1, GetVideoStatsReporterCodecProfile());
   ASSERT_NE(last_reporter, GetVideoStatsReporter());
   last_reporter = GetVideoStatsReporter();
 
   // Changing the codec (implies changing profile) should similarly trigger
   // recreation of the reporter.
-  auto new_codec_config = TestVideoConfig::NormalCodecProfile(kCodecVP8);
+  auto new_codec_config = TestVideoConfig::NormalCodecProfile(media::kCodecVP8);
   OnVideoConfigChange(new_codec_config);
-  ASSERT_EQ(VP8PROFILE_MIN, GetVideoStatsReporterCodecProfile());
+  ASSERT_EQ(media::VP8PROFILE_MIN, GetVideoStatsReporterCodecProfile());
   ASSERT_NE(last_reporter, GetVideoStatsReporter());
   last_reporter = GetVideoStatsReporter();
 
   // Changing other aspects of the config (like colorspace) should not trigger
   // recreation of the reporter
-  VideoDecoderConfig new_color_config = TestVideoConfig::NormalWithColorSpace(
-      kCodecVP8, VideoColorSpace::REC709());
-  ASSERT_EQ(VP8PROFILE_MIN, new_color_config.profile());
+  media::VideoDecoderConfig new_color_config =
+      TestVideoConfig::NormalWithColorSpace(media::kCodecVP8,
+                                            media::VideoColorSpace::REC709());
+  ASSERT_EQ(media::VP8PROFILE_MIN, new_color_config.profile());
   OnVideoConfigChange(new_color_config);
   ASSERT_EQ(last_reporter, GetVideoStatsReporter());
-  ASSERT_EQ(VP8PROFILE_MIN, GetVideoStatsReporterCodecProfile());
+  ASSERT_EQ(media::VP8PROFILE_MIN, GetVideoStatsReporterCodecProfile());
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }
 
 TEST_F(WebMediaPlayerImplTest, NaturalSizeChange) {
   InitializeWebMediaPlayerImpl();
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
   metadata.has_video = true;
-  metadata.video_decoder_config =
-      TestVideoConfig::NormalCodecProfile(kCodecVP8, VP8PROFILE_MIN);
+  metadata.video_decoder_config = TestVideoConfig::NormalCodecProfile(
+      media::kCodecVP8, media::VP8PROFILE_MIN);
   metadata.natural_size = gfx::Size(320, 240);
 
   OnMetadata(metadata);
@@ -1898,10 +1906,10 @@ TEST_F(WebMediaPlayerImplTest, NaturalSizeChange) {
 
 TEST_F(WebMediaPlayerImplTest, NaturalSizeChange_Rotated) {
   InitializeWebMediaPlayerImpl();
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
   metadata.has_video = true;
   metadata.video_decoder_config =
-      TestVideoConfig::NormalRotated(VIDEO_ROTATION_90);
+      TestVideoConfig::NormalRotated(media::VIDEO_ROTATION_90);
   metadata.natural_size = gfx::Size(320, 240);
 
   OnMetadata(metadata);
@@ -1930,7 +1938,7 @@ TEST_F(WebMediaPlayerImplTest, VideoLockedWhenPausedWhenHidden) {
   InitializeWebMediaPlayerImpl();
 
   // Setting metadata initializes |watch_time_reporter_| used in play().
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
   metadata.has_video = true;
   metadata.video_decoder_config = TestVideoConfig::Normal();
 
@@ -1994,10 +2002,10 @@ TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {
 // Verifies that an infinite duration doesn't muck up GetCurrentTimeInternal.
 TEST_F(WebMediaPlayerImplTest, InfiniteDuration) {
   InitializeWebMediaPlayerImpl();
-  SetDuration(kInfiniteDuration);
+  SetDuration(media::kInfiniteDuration);
 
   // Send metadata so we have a watch time reporter created.
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
   metadata.has_video = true;
   metadata.video_decoder_config = TestVideoConfig::Normal();
   metadata.has_audio = true;
@@ -2025,10 +2033,10 @@ TEST_F(WebMediaPlayerImplTest, InfiniteDuration) {
 TEST_F(WebMediaPlayerImplTest, SetContentsLayerGetsWebLayerFromBridge) {
   InitializeWebMediaPlayerImpl();
 
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
   metadata.has_video = true;
   metadata.video_decoder_config =
-      TestVideoConfig::NormalRotated(VIDEO_ROTATION_90);
+      TestVideoConfig::NormalRotated(media::VIDEO_ROTATION_90);
   metadata.natural_size = gfx::Size(320, 240);
 
   EXPECT_CALL(client_, SetCcLayer(_)).Times(0);
@@ -2079,7 +2087,7 @@ TEST_F(WebMediaPlayerImplTest, PictureInPictureStateChange) {
   EXPECT_CALL(*compositor_, EnableSubmission(_, _, _));
   EXPECT_CALL(*surface_layer_bridge_ptr_, SetContentsOpaque(false));
 
-  PipelineMetadata metadata;
+  media::PipelineMetadata metadata;
   metadata.has_video = true;
   OnMetadata(metadata);
 
@@ -2209,17 +2217,17 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
 // Verify that a demuxer override is used when specified.
 // TODO(https://crbug.com/1084476): This test is flaky.
 TEST_F(WebMediaPlayerImplTest, DISABLED_DemuxerOverride) {
-  std::unique_ptr<MockDemuxer> demuxer =
-      std::make_unique<NiceMock<MockDemuxer>>();
-  StrictMock<MockDemuxerStream> stream(DemuxerStream::AUDIO);
+  std::unique_ptr<media::MockDemuxer> demuxer =
+      std::make_unique<NiceMock<media::MockDemuxer>>();
+  StrictMock<media::MockDemuxerStream> stream(media::DemuxerStream::AUDIO);
   stream.set_audio_decoder_config(TestAudioConfig::Normal());
-  std::vector<DemuxerStream*> streams;
+  std::vector<media::DemuxerStream*> streams;
   streams.push_back(&stream);
 
   EXPECT_CALL(stream, SupportsConfigChanges()).WillRepeatedly(Return(false));
 
   EXPECT_CALL(*demuxer.get(), OnInitialize(_, _))
-      .WillOnce(RunOnceCallback<1>(PIPELINE_OK));
+      .WillOnce(RunOnceCallback<1>(media::PIPELINE_OK));
   EXPECT_CALL(*demuxer.get(), GetAllStreams()).WillRepeatedly(Return(streams));
   // Called when WebMediaPlayerImpl is destroyed.
   EXPECT_CALL(*demuxer.get(), Stop());
@@ -2263,21 +2271,21 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     if (IsBackgroundPauseOn()) {
       if (!enabled_features.empty())
         enabled_features += ",";
-      enabled_features += kBackgroundVideoPauseOptimization.name;
+      enabled_features += media::kBackgroundVideoPauseOptimization.name;
     } else {
       if (!disabled_features.empty())
         disabled_features += ",";
-      disabled_features += kBackgroundVideoPauseOptimization.name;
+      disabled_features += media::kBackgroundVideoPauseOptimization.name;
     }
 
     if (IsResumeBackgroundVideoEnabled()) {
       if (!enabled_features.empty())
         enabled_features += ",";
-      enabled_features += kResumeBackgroundVideo.name;
+      enabled_features += media::kResumeBackgroundVideo.name;
     } else {
       if (!disabled_features.empty())
         disabled_features += ",";
-      disabled_features += kResumeBackgroundVideo.name;
+      disabled_features += media::kResumeBackgroundVideo.name;
     }
 
     feature_list_.InitFromCommandLine(enabled_features, disabled_features);
@@ -2304,7 +2312,7 @@ class WebMediaPlayerImplBackgroundBehaviorTest
   }
 
   void SetVideoKeyframeDistanceAverage(base::TimeDelta value) {
-    PipelineStatistics statistics;
+    media::PipelineStatistics statistics;
     statistics.video_keyframe_distance_average = value;
     wmpi_->SetPipelineStatisticsForTest(statistics);
   }
