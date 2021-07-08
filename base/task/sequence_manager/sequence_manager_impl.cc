@@ -989,7 +989,8 @@ void SequenceManagerImpl::OnTaskQueueEnabled(internal::TaskQueueImpl* queue) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK(queue->IsQueueEnabled());
   // Only schedule DoWork if there's something to do.
-  if (queue->HasTaskToRunImmediately() && !queue->BlockedByFence())
+  if (queue->HasTaskToRunImmediatelyOrReadyDelayedTask() &&
+      !queue->BlockedByFence())
     ScheduleWork();
 }
 

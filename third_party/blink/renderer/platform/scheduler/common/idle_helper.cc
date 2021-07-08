@@ -100,7 +100,7 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
   if (long_idle_period_duration >=
       base::TimeDelta::FromMilliseconds(kMinimumIdlePeriodDurationMillis)) {
     *next_long_idle_period_delay_out = long_idle_period_duration;
-    if (!idle_queue_->HasTaskToRunImmediately())
+    if (!idle_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask())
       return IdlePeriodState::kInLongIdlePeriodPaused;
     if (long_idle_period_duration == max_long_idle_period_duration)
       return IdlePeriodState::kInLongIdlePeriodWithMaxDeadline;
@@ -248,7 +248,7 @@ void IdleHelper::UpdateLongIdlePeriodStateAfterIdleTask() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "UpdateLongIdlePeriodStateAfterIdleTask");
 
-  if (!idle_queue_->HasTaskToRunImmediately()) {
+  if (!idle_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask()) {
     // If there are no more idle tasks then pause long idle period ticks until a
     // new idle task is posted.
     state_.UpdateState(IdlePeriodState::kInLongIdlePeriodPaused,

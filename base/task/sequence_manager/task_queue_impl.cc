@@ -513,7 +513,7 @@ size_t TaskQueueImpl::GetNumberOfPendingTasks() const {
   return task_count;
 }
 
-bool TaskQueueImpl::HasTaskToRunImmediately() const {
+bool TaskQueueImpl::HasTaskToRunImmediatelyOrReadyDelayedTask() const {
   // Any work queue tasks count as immediate work.
   if (!main_thread_only().delayed_work_queue->Empty() ||
       !main_thread_only().immediate_work_queue->Empty()) {
@@ -964,7 +964,7 @@ void TaskQueueImpl::SetQueueEnabled(bool enabled) {
   {
     base::internal::CheckedAutoLock lock(any_thread_lock_);
     UpdateCrossThreadQueueStateLocked();
-    has_pending_immediate_work = HasPendingImmediateWorkLocked();
+    has_pending_immediate_work = HasTaskToRunImmediatelyLocked();
 
     // Copy over the task-reporting related state.
     any_thread_.tracing_only.is_enabled = enabled;
@@ -1128,7 +1128,7 @@ void TaskQueueImpl::UpdateDelayedWakeUpImpl(
   main_thread_only().scheduled_wake_up = wake_up;
 
   if (wake_up && main_thread_only().task_queue_observer &&
-      !HasPendingImmediateWork()) {
+      !HasTaskToRunImmediately()) {
     main_thread_only().task_queue_observer->OnQueueNextWakeUpChanged(
         wake_up->time);
   }
@@ -1143,7 +1143,7 @@ void TaskQueueImpl::SetDelayedWakeUpForTesting(
   UpdateDelayedWakeUpImpl(&lazy_now, wake_up);
 }
 
-bool TaskQueueImpl::HasPendingImmediateWork() {
+bool TaskQueueImpl::HasTaskToRunImmediately() const {
   // Any work queue tasks count as immediate work.
   if (!main_thread_only().delayed_work_queue->Empty() ||
       !main_thread_only().immediate_work_queue->Empty()) {
@@ -1155,7 +1155,7 @@ bool TaskQueueImpl::HasPendingImmediateWork() {
   return !any_thread_.immediate_incoming_queue.empty();
 }
 
-bool TaskQueueImpl::HasPendingImmediateWorkLocked() {
+bool TaskQueueImpl::HasTaskToRunImmediatelyLocked() const {
   return !main_thread_only().delayed_work_queue->Empty() ||
          !main_thread_only().immediate_work_queue->Empty() ||
          !any_thread_.immediate_incoming_queue.empty();

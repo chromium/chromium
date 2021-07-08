@@ -29,7 +29,7 @@ namespace {
 
 absl::optional<base::TimeTicks> NextTaskRunTime(LazyNow* lazy_now,
                                                 TaskQueue* queue) {
-  if (queue->HasTaskToRunImmediately())
+  if (queue->HasTaskToRunImmediatelyOrReadyDelayedTask())
     return lazy_now->Now();
   return queue->GetNextScheduledWakeUp();
 }

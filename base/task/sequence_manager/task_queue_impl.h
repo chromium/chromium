@@ -111,7 +111,7 @@ class BASE_EXPORT TaskQueueImpl {
   void SetShouldReportPostedTasksWhenDisabled(bool should_report);
   bool IsEmpty() const;
   size_t GetNumberOfPendingTasks() const;
-  bool HasTaskToRunImmediately() const;
+  bool HasTaskToRunImmediatelyOrReadyDelayedTask() const;
   absl::optional<TimeTicks> GetNextScheduledWakeUp();
   void SetQueuePriority(TaskQueue::QueuePriority priority);
   TaskQueue::QueuePriority GetQueuePriority() const;
@@ -153,10 +153,13 @@ class BASE_EXPORT TaskQueueImpl {
                              bool was_blocked_or_low_priority);
   void NotifyDidProcessTask(const Task& task);
 
-  // Check for available tasks in immediate work queues.
-  // Used to check if we need to generate notifications about delayed work.
-  bool HasPendingImmediateWork();
-  bool HasPendingImmediateWorkLocked()
+  // Returns true iff this queue has work that can execute now, i.e. immediate
+  // tasks or delayed tasks that have been transferred to the work queue by
+  // MoveReadyDelayedTasksToWorkQueue(). Delayed tasks that are still in the
+  // incoming queue are not taken into account. Ignores the queue's enabled
+  // state and fences.
+  bool HasTaskToRunImmediately() const;
+  bool HasTaskToRunImmediatelyLocked() const
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
   bool has_pending_high_resolution_tasks() const {

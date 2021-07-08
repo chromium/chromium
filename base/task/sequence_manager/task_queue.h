@@ -240,9 +240,10 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Returns the number of pending tasks in the queue.
   size_t GetNumberOfPendingTasks() const;
 
-  // Returns true if the queue has work that's ready to execute now.
+  // Returns true iff this queue has immediate tasks or delayed tasks that are
+  // ripe for execution. Ignores the queue's enabled state and fences.
   // NOTE: this must be called on the thread this TaskQueue was created by.
-  bool HasTaskToRunImmediately() const;
+  bool HasTaskToRunImmediatelyOrReadyDelayedTask() const;
 
   // Returns requested run time of next scheduled wake-up for a delayed task
   // which is not ready to run. If there are no such tasks (immediate tasks

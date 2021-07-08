@@ -228,11 +228,11 @@ size_t TaskQueue::GetNumberOfPendingTasks() const {
   return impl_->GetNumberOfPendingTasks();
 }
 
-bool TaskQueue::HasTaskToRunImmediately() const {
+bool TaskQueue::HasTaskToRunImmediatelyOrReadyDelayedTask() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
     return false;
-  return impl_->HasTaskToRunImmediately();
+  return impl_->HasTaskToRunImmediatelyOrReadyDelayedTask();
 }
 
 absl::optional<TimeTicks> TaskQueue::GetNextScheduledWakeUp() {
