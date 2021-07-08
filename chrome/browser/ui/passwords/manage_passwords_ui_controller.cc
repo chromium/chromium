@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller_impl.h"
@@ -502,6 +504,13 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
                                                const std::u16string& password) {
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_data_.form_manager());
+
+  if (auto* sentiment_service =
+          TrustSafetySentimentServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(
+                  web_contents()->GetBrowserContext()))) {
+    sentiment_service->SavedPassword();
+  }
 
   if (GetPasswordFormMetricsRecorder() && BubbleIsManualFallbackForSaving()) {
     GetPasswordFormMetricsRecorder()->RecordDetailedUserAction(

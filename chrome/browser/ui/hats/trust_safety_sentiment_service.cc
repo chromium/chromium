@@ -264,6 +264,10 @@ void TrustSafetySentimentService::PageInfoClosed() {
   page_info_state_.reset();
 }
 
+void TrustSafetySentimentService::SavedPassword() {
+  TriggerOccurred(FeatureArea::kTransactions, {{"Saved password", true}});
+}
+
 void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
   // Only interested in the primary OTR profile i.e. the one used for incognito

@@ -17,6 +17,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_icon_view.h"
@@ -476,6 +478,13 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleCancelled) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, PasswordSaved) {
+  auto* mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
+      TrustSafetySentimentServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+  EXPECT_CALL(*mock_sentiment_service_, SavedPassword());
+
   std::vector<const PasswordForm*> best_matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());

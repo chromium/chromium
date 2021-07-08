@@ -44,6 +44,11 @@ class TrustSafetySentimentService : public KeyedService,
   // Called when the user interacts in some way with Page Info.
   virtual void InteractedWithPageInfo();
 
+  // Called when the user saves a password via the manage passwords UI. This is
+  // the native UI shown when Chrome detects a password has been entered into
+  // the web page.
+  virtual void SavedPassword();
+
   // Called when the user closes Page Info. If Page Info was opened for the
   // target time, or the user interacted with it while it was open, a trigger
   // action is recorded.

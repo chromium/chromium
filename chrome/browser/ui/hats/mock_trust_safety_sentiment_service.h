@@ -31,6 +31,7 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
   MOCK_METHOD(void, PageInfoOpened, (), (override));
   MOCK_METHOD(void, InteractedWithPageInfo, (), (override));
   MOCK_METHOD(void, PageInfoClosed, (), (override));
+  MOCK_METHOD(void, SavedPassword, (), (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockTrustSafetySentimentService(

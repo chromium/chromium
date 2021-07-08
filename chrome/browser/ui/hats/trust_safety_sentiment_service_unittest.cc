@@ -273,6 +273,25 @@ TEST_F(TrustSafetySentimentServiceTest, RanSafetyCheck) {
   service()->OpenedNewTabPage();
 }
 
+TEST_F(TrustSafetySentimentServiceTest, SavedPassword) {
+  // Saving a password is considered a trigger, and should make a user eligible
+  // to receive a survey.
+  FeatureParams params;
+  params.transactions_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  std::map<std::string, bool> expected_psd = {{"Saved password", true}};
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyTransactions,
+                           testing::_, testing::_, expected_psd));
+  service()->SavedPassword();
+  service()->OpenedNewTabPage();
+}
+
 TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   // Check the product specific data accompanying surveys for the Privacy
   // Settings feature area correctly records whether the user has a non default
