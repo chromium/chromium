@@ -17,7 +17,7 @@ def CheckCppTypemapConfigs(target_name, config_filename, out_filename):
   ])
   _SUPPORTED_TYPE_KEYS = set([
       'mojom', 'cpp', 'copyable_pass_by_value', 'force_serialize', 'hashable',
-      'move_only', 'nullable_is_same_type'
+      'move_only', 'nullable_is_same_type', 'forward_declaration'
   ])
   with open(config_filename, 'r') as f:
     for config in json.load(f):
