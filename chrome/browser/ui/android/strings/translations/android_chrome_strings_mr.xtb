@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> बटण</translation>
 <translation id="2000419248597011803">ॲड्रेस बार आणि सर्च बॉक्समधून तुमच्या डीफॉल्ट शोध इंजिनला काही कुकीज आणि शोध पाठवते</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइल}}</translation>
-<translation id="2017836877785168846">ॲड्रेस बारमधील इतिहास आणि आपोआप पूर्ण केलेले साफ करते.</translation>
 <translation id="2021896219286479412">फुल स्क्रीन साइट नियंत्रणे</translation>
 <translation id="2038563949887743358">डेस्कटॉप साइट विनंती सुरू करा</translation>
 <translation id="2039379262107991683">रिमाइंडर मिळवण्यासाठी तुमच्या वाचन सूची यामध्ये पेज जोडा</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015"><ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> Google लेन्स वापरून शोधा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4198423547019359126">कोणतीही डाउनलोड स्थाने उपलब्ध नाहीत</translation>
-<translation id="4206707945726604465">इतर प्रकारचा इतिहास साफ करण्यासाठी, <ph name="BEGIN_LINK1" />माझी Google अ‍ॅक्टिव्हिटी<ph name="END_LINK1" /> ला भेट द्या</translation>
 <translation id="4209895695669353772">Google ने सुचवलेला पर्सनलाइझ केलेला आशय मिळवण्यासाठी, सिंक सुरू करा</translation>
 <translation id="4225895483398857530">टूलबार शॉर्टकट</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड करत आहे…</translation>
 <translation id="4404568932422911380">कोणतेही बुकमार्क नाहीत</translation>
 <translation id="4405224443901389797">यामध्ये हलवा…</translation>
+<translation id="4409271659088619928"><ph name="DSE" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा.</translation>
 <translation id="4411535500181276704">लाइट मोड</translation>
 <translation id="4415276339145661267">तुमचे Google खाते व्यवस्थापित करा</translation>
 <translation id="4427306783828095590">वर्धित सुरक्षितता फिशिंग आणि मालवेअर अधिक चांगल्यारितीने ब्लॉक करते</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">पासवर्ड तपासा</translation>
 <translation id="6000066717592683814">Google ठेवा</translation>
 <translation id="6000203700195075278">पुन्हा फॉलो करा</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />शोध<ph name="END_LINK1" /> किंवा इतिहासाचे इतर प्रकार साफ करण्यासाठी, <ph name="BEGIN_LINK2" />माझी Google अ‍ॅक्टिव्हिटी<ph name="END_LINK2" /> ला भेट द्या</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
 <translation id="6032091552407840792">ही चाचणी फक्त <ph name="BEGIN_LINK" />काही प्रदेश<ph name="END_LINK" /> यांमध्ये ॲक्टिव्ह आहे.</translation>
 <translation id="6033245666633565791">खुल्या वेबचे संरक्षण करत असताना, क्रॉस-साइट ट्रॅकिंगपासून तुमचे रक्षण करण्यासाठी, <ph name="BEGIN_LINK" />प्रायव्हसी सॅंडबाॅक्स<ph name="END_LINK" /> च्या आधारे Chrome नवीन तंत्रज्ञाने विकसित करत आहे.
@@ -885,7 +883,6 @@
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
 <translation id="6618554661997243500">तुमच्यासाठी टॉप साइट आणि स्टोरी पाहण्यासाठी, होम बटणावर टॅप करा</translation>
 <translation id="6627583120233659107">फोल्डर संपादित करा</translation>
-<translation id="6635718764393004944"><ph name="DSE" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्यांच्या सूचना पहा.</translation>
 <translation id="663674369910034433">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK1" />सिंक<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google सेवा<ph name="END_LINK2" /> पाहा</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6643649862576733715">वाचवलेल्या डेटानुसार क्रमाने लावा</translation>

@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> копче</translation>
 <translation id="2000419248597011803">Испраќа колачиња и пребарувања од лентата за адреси и полето за пребарување во вашиот стандарден пребарувач</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# датотека}one{# датотека}other{# датотеки}}</translation>
-<translation id="2017836877785168846">Ги брише историјата и автоматските довршувања во лентата за адреси.</translation>
 <translation id="2021896219286479412">Контроли на сајтот на цел екран</translation>
 <translation id="2038563949887743358">Вклучи „Барај локација на работна површина“</translation>
 <translation id="2039379262107991683">Додавајте страници во „Списокот за читање“ за да добивате потсетници</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4183868528246477015">Пребарувајте со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4198423547019359126">Нема достапни локации за преземање</translation>
-<translation id="4206707945726604465">За да избришете друг тип историја, одете на <ph name="BEGIN_LINK1" />Моја активност на Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">За да добивате персонализирани содржини предложени од Google, вклучете ја синхронизацијата</translation>
 <translation id="4225895483398857530">Кратенка за алатникот</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4402611456429872546"><ph name="LANG" /> - Се презема…</translation>
 <translation id="4404568932422911380">Нема обележувачи</translation>
 <translation id="4405224443901389797">Премести во…</translation>
+<translation id="4409271659088619928">Вашиот пребарувач е <ph name="DSE" />. Погледнете го неговото упатство за бришење на историјата на пребарување ако е применливо.</translation>
 <translation id="4411535500181276704">Лесен режим</translation>
 <translation id="4415276339145661267">Управувајте со сметката на Google</translation>
 <translation id="4427306783828095590">„Подобрената заштита“ помага при блокирање кражби на идентитетот и злонамерен софтвер</translation>
@@ -773,7 +772,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5979084224081478209">Провери ги лозинките</translation>
 <translation id="6000066717592683814">Задржи го Google</translation>
 <translation id="6000203700195075278">Следете пак</translation>
-<translation id="6002623704405939939">За да избришете <ph name="BEGIN_LINK1" />пребарување<ph name="END_LINK1" /> или друг тип историја, одете на <ph name="BEGIN_LINK2" />Моја активност на Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Предложена лозинка</translation>
 <translation id="6032091552407840792">Оваа пробна верзија е активна само во <ph name="BEGIN_LINK" />некои региони<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Со <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome развива нови технологии за заштита од следење на повеќе сајтови, додека истовремено го зачувува отворениот интернет.
@@ -885,7 +883,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>
 <translation id="6618554661997243500">За да ги гледате најдобрите сајтови и стории за вас, допрете го копчето за почетен екран</translation>
 <translation id="6627583120233659107">Уредувај папка</translation>
-<translation id="6635718764393004944">Вашиот пребарувач е <ph name="DSE" />. Ако е применливо, погледнете ги упатствата за да ја избришете историјата на пребарување.</translation>
 <translation id="663674369910034433">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK1" />Синхронизација<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Услуги на Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="6643649862576733715">Подреди по количина на заштеден сообраќај</translation>

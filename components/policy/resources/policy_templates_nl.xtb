@@ -4429,26 +4429,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
           Opmerking: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> overschrijft dit beleid als het is opgegeven.</translation>
 <translation id="6833988859168635883">Startpagina, homepage en pagina 'Nieuw tabblad'</translation>
-<translation id="6834298774555537368">Als je het beleid instelt, bepaal je de proxyinstellingen voor Chrome en ARC-apps, die alle proxygerelateerde opties negeren die via de opdrachtregel worden opgegeven.
-
-       Als je het beleid niet instelt, kunnen gebruikers hun proxyinstellingen kiezen.
-
-       Als je het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> instelt, worden de volgende velden geaccepteerd:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Hiermee kun je de proxyserver opgeven die Chrome gebruikt en voorkomen dat gebruikers de proxyinstellingen wijzigen.
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: Een URL naar een pac-bestand van de proxy.
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: Een URL van de proxyserver.
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: Een lijst met proxyhosts die de proxy omzeilen.
-
-Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten gunste van het veld <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Als je voor <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> de volgende waarde kiest:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />: Er wordt nooit een proxy gebruikt en alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: De proxy van het systeem wordt gebruikt en alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: Alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: De velden <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: De velden <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
-
-      Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="6835883744948188639">Toon de gebruiker een terugkerende prompt om aan te geven dat opnieuw opstarten wordt aanbevolen</translation>
 <translation id="683688607121170501">Deze instelling biedt gebruikers de mogelijkheid om in het contentgedeelte van hun browservenster tussen Google-accounts te schakelen nadat ze zijn ingelogd bij hun <ph name="PRODUCT_OS_NAME" />-apparaat.
 

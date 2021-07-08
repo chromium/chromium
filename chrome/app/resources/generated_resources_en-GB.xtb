@@ -643,6 +643,7 @@
 <translation id="16815041330799488">Do not allow sites to see text and images copied to the clipboard</translation>
 <translation id="1682548588986054654">New Incognito Window</translation>
 <translation id="1682867089915960590">Turn on caret browsing?</translation>
+<translation id="1684279041537802716">Accent colour</translation>
 <translation id="1686550358074589746">Enable glide typing</translation>
 <translation id="168715261339224929">To get your bookmarks on all your devices, turn on sync.</translation>
 <translation id="1688867105868176567">Clear site data?</translation>
@@ -839,6 +840,7 @@
 <translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Password check is not available in Chromium</translation>
 <translation id="1869433484041798909">Bookmark button</translation>
+<translation id="1871098866036088250">Open in Chrome browser</translation>
 <translation id="187145082678092583">Fewer apps</translation>
 <translation id="1871534214638631766">Show related info when you right-click or long press on content</translation>
 <translation id="1871615898038944731">Your <ph name="DEVICE_TYPE" /> is up to date</translation>
@@ -914,6 +916,7 @@
 <translation id="1954597385941141174">Sites can ask to connect to USB devices</translation>
 <translation id="1954813140452229842">Error mounting share. Please check your credentials and try again.</translation>
 <translation id="1956050014111002555">The file contained multiple certificates, none of which were imported:</translation>
+<translation id="1956167375087861299">Not allowed to use identifiers to play protected content</translation>
 <translation id="1956390763342388273">This will upload all files from '<ph name="FOLDER_PATH" />'. Only do this if you trust the site.</translation>
 <translation id="1962233722219655970">This page uses a Native Client app that doesn't work on your computer.</translation>
 <translation id="1963227389609234879">Remove all</translation>
@@ -1171,6 +1174,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2229161054156947610">More than 1 hour left</translation>
 <translation id="222931766245975952">File truncated</translation>
 <translation id="2230005943220647148">Celsius</translation>
+<translation id="2231160360698766265">Sites can play protected content</translation>
 <translation id="2231238007119540260">If you delete a server certificate, you restore the usual security checks for that server and require that it uses a valid certificate.</translation>
 <translation id="2232751457155581899">Sites can ask to track your camera position</translation>
 <translation id="2232876851878324699">The file contained one certificate, which was not imported:</translation>
@@ -1360,6 +1364,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2440604414813129000">View s&amp;ource</translation>
 <translation id="244231003699905658">Invalid address. Please check the address and try again.</translation>
 <translation id="2442916515643169563">Text shadow</translation>
+<translation id="2443487764245141020">Sites may also need to recognise your device using an identifier</translation>
 <translation id="2445081178310039857">Extension root directory is required.</translation>
 <translation id="2445484935443597917">Create a new profile</translation>
 <translation id="244641233057214044">Related to your search</translation>
@@ -1469,6 +1474,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2542050502251273923">Sets the debugging level of the network connection manager and other services using ff_debug.</translation>
 <translation id="2544352060595557290">This Tab</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
+<translation id="2546302722632337735">Don't allow sites to use identifiers to play protected content</translation>
 <translation id="2548347166720081527">Allowed <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Reset eSIM profile cache</translation>
 <translation id="2549985041256363841">Start recording</translation>
@@ -2223,6 +2229,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3391482648489541560">file editing</translation>
 <translation id="3391512812407811893">Privacy Sandbox trials</translation>
 <translation id="339178315942519818">View notifications from your chat apps on your <ph name="DEVICE_TYPE" /></translation>
+<translation id="3394850431319394743">Allowed to use identifiers to play protected content</translation>
 <translation id="3396800784455899911">By clicking the 'Accept and continue' button, you agree to the processing described above for these Google services.</translation>
 <translation id="339722927132407568">Freezes</translation>
 <translation id="3399432415385675819">Notifications will be disabled</translation>
@@ -2757,6 +2764,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3928659086758780856">Low on ink</translation>
 <translation id="3929426037718431833">These extensions can see and change information on this site.</translation>
 <translation id="3930155420525972941">Move Group to New Window</translation>
+<translation id="3930602610362250897">To play content protected by copyright, sites may need to use a content protection service</translation>
 <translation id="3930737994424905957">Looking for devices</translation>
 <translation id="3930968231047618417">Background colour</translation>
 <translation id="3933283459331715412">Restore deleted password for <ph name="USERNAME" /></translation>
@@ -2879,6 +2887,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4061374428807229313">To share, right-click on a folder in the Files app, then select 'Share with Parallels Desktop'.</translation>
 <translation id="406213378265872299">Customised behaviours</translation>
 <translation id="4062561150282203854">Sync your <ph name="DEVICE_TYPE" /> apps, settings and more</translation>
+<translation id="4064575710864784237">1x</translation>
 <translation id="4065876735068446555">The network you are using (<ph name="NETWORK_ID" />) may require you to visit its login page.</translation>
 <translation id="4066207411788646768">Please check your connection to see available printers in your network</translation>
 <translation id="4068776064906523561">Saved fingerprints</translation>
@@ -3275,6 +3284,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4535127706710932914">Default Profile</translation>
 <translation id="4535767533210902251">The fingerprint sensor is the top-right key on your keyboard. Touch it lightly with any finger.</translation>
 <translation id="4536140153723794651">Sites that can always use cookies</translation>
+<translation id="4538163005498287211">Based on your wallpaper</translation>
 <translation id="4538417792467843292">Delete word</translation>
 <translation id="4538792345715658285">Installed by enterprise policy.</translation>
 <translation id="4541123282641193691">Couldn't verify your account. Please try again or restart your Chromebook.</translation>
@@ -4557,6 +4567,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="5985458664595100876">Invalid URL format. Supported formats are \\server\share and smb://server/share.</translation>
 <translation id="598810097218913399">Remove assignment</translation>
+<translation id="5989136665954016134">Opening supported links</translation>
 <translation id="5990266201903445068">Wi-Fi only</translation>
 <translation id="5990386583461751448">Translated</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{To ensure that you can keep browsing the web, ask your administrator to remove this application.}other{To ensure that you can keep browsing the web, ask your administrator to remove these applications.}}</translation>
@@ -5260,6 +5271,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6787839852456839824">Keyboard shortcuts</translation>
 <translation id="6788210894632713004">Unpacked extension</translation>
 <translation id="6789592661892473991">Split horizontal</translation>
+<translation id="678982761784843853">Protected content IDs</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> was added remotely</translation>
 <translation id="6790820461102226165">Add Person...</translation>
@@ -5740,6 +5752,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7328867076235380839">Invalid combination</translation>
 <translation id="7329154610228416156">Sign-in failed because it was configured to use a non-secure URL (<ph name="BLOCKED_URL" />). Please contact your administrator.</translation>
 <translation id="7332053360324989309">Dedicated worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7334014994694414993">Choose the colour theme for Launcher, shelf, Quick Settings and more</translation>
 <translation id="7334274148831027933">Enable docked magnifier</translation>
 <translation id="7335974957018254119">Use spell check for</translation>
 <translation id="7336799713063880535">Notifications blocked.</translation>
@@ -6631,6 +6644,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8241868517363889229">Read and change your bookmarks</translation>
 <translation id="8242370300221559051">Enable Play Store</translation>
 <translation id="8242426110754782860">Proceed</translation>
+<translation id="8243948765190375130">Media quality may be reduced</translation>
 <translation id="8244514732452879619">Lights out soon</translation>
 <translation id="8246776524656196770">Protect your security key with a PIN (Personal Identification Number)</translation>
 <translation id="8248050856337841185">&amp;Paste</translation>
@@ -7441,6 +7455,7 @@ You can assign multiple switches to this action</translation>
 <translation id="9128870381267983090">Connect to network</translation>
 <translation id="9130015405878219958">Invalid mode entered.</translation>
 <translation id="9131487537093447019">Send messages to and receive messages from Bluetooth devices.</translation>
+<translation id="9134066738478820307">Sites can use identifiers to play protected content</translation>
 <translation id="913411432238655354">Restore apps on start-up</translation>
 <translation id="9137013805542155359">Show original</translation>
 <translation id="9137157311132182254">Preferred search engine</translation>

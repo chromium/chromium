@@ -4463,26 +4463,6 @@
 
           Примечание. Если настроено правило <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />, его значение будет иметь приоритет над этим правилом.</translation>
 <translation id="6833988859168635883">Главная страница и страница быстрого доступа при запуске</translation>
-<translation id="6834298774555537368">Правило позволяет задать настройки прокси-сервера для Chrome и ARC-приложений, игнорируя все настройки прокси, указанные с помощью командной строки.
-
-       Если правило не задано, пользователи могут самостоятельно настраивать прокси-сервер.
-
-       Правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> позволяет указать значения следующих полей:
-         * поле <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> задает прокси-сервер для Chrome и запрещает пользователям изменять эти настройки;
-         * поле <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> задает URL PAC-файла прокси-сервера;
-         * поле <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> задает URL прокси-сервера;
-         * поле <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> задает список хостов, для которых прокси-сервер будет игнорироваться.
-
-       Поле <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> заменено полем <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Выбор значения поля <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" /> – прокси-сервер никогда не будет использоваться, а значения остальных полей будут игнорироваться.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> – будут использоваться системные настройки прокси-сервера, значения остальных полей будут игнорироваться.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> – значения остальных полей будут игнорироваться.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> – будут использоваться поля <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> и <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> – будут использоваться поля <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> и <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Примечание. Подробную информацию можно найти здесь: https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="6835883744948188639">Уведомлять пользователя о том, что рекомендуется перезапустить браузер</translation>
 <translation id="683688607121170501">Позволяет переключаться между несколькими аккаунтами Google в Android-приложениях и в окне браузера после входа в аккаунт на устройстве с <ph name="PRODUCT_OS_NAME" />.
 

@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> بٹن</translation>
 <translation id="2000419248597011803">پتہ بار اور تلاش خانے سے کچھ کوکیز اور تلاشیاں آپ کے ڈیفالٹ تلاش انجن کو بھیجتا ہے</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# فائل}other{# فائلیں}}</translation>
-<translation id="2017836877785168846">پتہ بار کی سرگزشت اور خودکار تکمیلات کو صاف کرتا ہے۔</translation>
 <translation id="2021896219286479412">پوری اسکرین کے سائٹ کنٹرولز</translation>
 <translation id="2038563949887743358">ڈیسک ٹاپ سائٹ کی درخواست کو آن کریں</translation>
 <translation id="2039379262107991683">یاد دہانی حاصل کرنے کے ليے اپنی پڑھنے کی فہرست میں صفحات شامل کریں</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">‏Google لینز سے تلاش کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4198423547019359126">ڈاؤن لوڈ کیلئے کوئی مقام دستیاب نہیں ہے</translation>
-<translation id="4206707945726604465">‏سرگزشت کی دیگر فارمز کو صاف کرنے کیلئے <ph name="BEGIN_LINK1" />Google کی میری سرگرمی<ph name="END_LINK1" /> ملاحظہ کریں</translation>
 <translation id="4209895695669353772">‏Google کی جانب سے تجویز کردہ ذاتی نوعیت کا مواد حاصل کرنے کیلئے، سِنک کو آن کریں</translation>
 <translation id="4225895483398857530">ٹول بار کا شارٹ کٹ</translation>
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - ڈاؤن لوڈ ہو رہی ہے…</translation>
 <translation id="4404568932422911380">کوئی بُک مارک نہیں</translation>
 <translation id="4405224443901389797">اس میں منتقل کریں…</translation>
+<translation id="4409271659088619928">آپ کا سرچ انجن <ph name="DSE" /> ہے۔ اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت حذف کرنے کے لیے ان کی ہدایات دیکھیں۔</translation>
 <translation id="4411535500181276704">لائٹ موڈ</translation>
 <translation id="4415276339145661267">‏اپنے Google اکاؤنٹ کا نظم کریں</translation>
 <translation id="4427306783828095590">فریب دہی اور میلوئیر کو مسدود کرنے کیلئے بہتر کردہ حفاظت مزید کام کرتی ہے</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
 <translation id="6000066717592683814">‏Google کو رکھیں</translation>
 <translation id="6000203700195075278">دوبارہ پیروی کریں</translation>
-<translation id="6002623704405939939">‏<ph name="BEGIN_LINK1" />تلاش<ph name="END_LINK1" /> یا کسی اور طرح کی سرگزشت کو صاف کرنے کے لیے <ph name="BEGIN_LINK2" />Google کی میری سرگرمی<ph name="END_LINK2" /> ملاحظہ کریں</translation>
 <translation id="6005538289190791541">تجویز کردہ پاس ورڈ</translation>
 <translation id="6032091552407840792">یہ ٹرائل صرف <ph name="BEGIN_LINK" />کچھ علاقوں<ph name="END_LINK" /> میں ہی فعال ہے۔</translation>
 <translation id="6033245666633565791">‏<ph name="BEGIN_LINK" />رازداری سینڈ باکس<ph name="END_LINK" /> کے ساتھ، Chrome آپ کو اوپن ویب کے تحفظ کے دوران کراس سائٹ کی ٹریکنگ سے محفوظ رکھنے کے لیے نئی ٹیکنالوجیز تیار کر رہا ہے۔
@@ -885,7 +883,6 @@
 <translation id="661266467055912436">آپ کے لیے اور ویب پر ہر کسی کے لیے سیکیورٹی کو بہتر بناتا ہے۔</translation>
 <translation id="6618554661997243500">اپنے لئے سر فہرست سائٹس اور کہانیاں دیکھنے کے لئے، ہوم بٹن پر تھپتھپائیں</translation>
 <translation id="6627583120233659107">فولڈر میں ترمیم کریں</translation>
-<translation id="6635718764393004944">آپ کا سرچ انجن <ph name="DSE" /> ہے۔ اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کیلئے ان کی ہدایات دیکھیں۔</translation>
 <translation id="663674369910034433">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کیلئے، <ph name="BEGIN_LINK1" />مطابقت پذیری<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google سروسز<ph name="END_LINK2" /> دیکھیں</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6643649862576733715">بچت کردہ ڈیٹا کی مقدار کے لحاظ سے ترتیب دیں</translation>

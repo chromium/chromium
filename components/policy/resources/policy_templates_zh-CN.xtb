@@ -363,6 +363,13 @@
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 将会尝试检测某台服务器是否在内网上，确认在内网后才会响应它发出的 IWA 请求。如果检测到某台服务器是在互联网上，<ph name="PRODUCT_NAME" /> 将会忽略这台服务器发出的 IWA 请求。
 
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
+<translation id="1495817006535797003">如果您设置了此政策，逗号分隔列表中指定的每个来源都将在自己的进程中运行，以子网域形式指定的来源也会被隔离。例如，指定 https://example.com/ 会导致 https://foo.example.com/ 被隔离（作为 https://example.com/ 网站的一部分）。请注意，从 <ph name="PRODUCT_NAME" /> 版本 77 起，Android 会在默认情况下隔离某些敏感网站，并且此政策会扩展该模式，以隔离其他特定的来源。
+
+      如果将此政策设为停用，系统会关闭所有形式的网站隔离功能，包括隔离敏感网站、IsolateOriginsAndroid 和 SitePerProcessAndroid 的现场试验，以及其他网站隔离模式。不过，用户仍可以通过命令行标记手动开启 IsolateOrigins。
+
+      如果您不设置此政策，用户便可更改此设置。
+
+      注意：在 Android 上隔离过多网站可能会导致性能问题，尤其是在低内存设备上。此政策仅适用于在符合条件（RAM 不小于 1 GB）的设备上运行的 Android 版 Chrome。如需在非 Android 平台上应用此政策，请改用 <ph name="ISOLATE_ORIGINS_POLICY_NAME" />。</translation>
 <translation id="1502843533062797703">禁止插入第三方软件</translation>
 <translation id="1503969899251962413">通过设置此政策，您可为该设备指定 <ph name="PLUGIN_VM_NAME" /> 许可密钥。
 
@@ -694,6 +701,7 @@
 <translation id="1930127294345368978">单个打印任务可以使用的纸张数上限</translation>
 <translation id="193259052151668190">分离式 USB 设备白名单</translation>
 <translation id="1933378685401357864">壁纸图片</translation>
+<translation id="1942626390957213764">停用桌面分享中心</translation>
 <translation id="1945994447126139909">这项企业政策只是短期的适应性措施，将在 <ph name="PRODUCT_NAME" /> 版本 88 中移除。
 
       为配合 Chrome 85 稳定版的逐步推出，Chrome 的默认引荐来源网址政策正从其当前值 no-referrer-when-downgrade 强化为更安全的 strict-origin-when-cross-origin。
@@ -2423,6 +2431,9 @@
 <translation id="4086150283035515220">如果此政策已启用，系统会在开始下载前询问用户要将相应文件保存到何处。如果此政策已停用，系统不会先询问用户要将相应文件保存到何处，而是会立即开始下载文件。
 
       如果您不设置此政策，用户便可更改此设置。</translation>
+<translation id="4087476676669545471">如果此政策设为 True 或未设置，用户便可使用桌面分享中心提供的操作分享或保存当前网页。可通过多功能框或三点状菜单访问分享中心。
+
+       如果此政策设为 False，系统会从多功能框移除分享图标，并从三点状菜单移除相应条目。</translation>
 <translation id="4088589230932595924">强制使用隐身模式</translation>
 <translation id="4089849819635523136">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 来指定关键字或快捷方式，以用于在地址栏中触发针对此提供商的搜索。
 
@@ -3368,6 +3379,7 @@
 
           如果此政策已停用，系统会强制停用该功能。
           </translation>
+<translation id="5435888298115339571">在多功能框和三点状菜单中启用桌面分享功能</translation>
 <translation id="5442026853063570579">此政策亦用于控制对 Android 开发者选项的访问权限。如果此政策设为“DeveloperToolsDisallowed”（值为 2），用户将无法访问开发者选项。如果此政策设为其他值或未设置，用户只需在 Android 的“设置”应用中连续点按 7 次版本号即可访问开发者选项。</translation>
 <translation id="5445596354079213552">仅当设备的自动更新期限已过且不符合允许使用的最低 <ph name="PRODUCT_OS_NAME" />版本（通过 <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> 政策设置）的要求时，此政策才有效。
 
@@ -4212,6 +4224,17 @@
       如果您不设置此政策或此政策是空列表，则不存在设备本地帐号。</translation>
 <translation id="6584541828182430328">停用“显示全屏提醒”功能</translation>
 <translation id="6598235178374410284">用户头像图片</translation>
+<translation id="6601311299236772162">此政策用于控制 <ph name="PRODUCT_NAME" /> 如何解析“旧版浏览器支持”功能的 sitelist/greylist 政策。它会影响以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
+
+      如果此政策设为“默认”(0) 或未设置，网址匹配将不太严格。不含“/”的规则会在网址主机名中的任意位置查找子字符串。
+
+      如果此政策设为“严格”(1)，网址匹配将更为严格。不含“/”的规则仅在主机名末尾处匹配。它们还必须位于域名边界。此政策可以更好地兼容 <ph name="MS_IE_PRODUCT_NAME" /> 和 <ph name="MS_EDGE_PRODUCT_NAME" />。
+
+      例如，对于规则“example.com”：
+
+      “http://example.com/”和“http://subdomain.example.com/”匹配，无论解析模式为何。
+
+      “http://notexample.com/”、“http://example.com.invalid.com/”和“http://example.comabc/”仅在“默认”模式下匹配。</translation>
 <translation id="6603004149426829878">解析时区时一律将任何可用的位置信号发送给服务器</translation>
 <translation id="6604049565198492174">通过设置此政策，您可以允许向各部 <ph name="PRODUCT_NAME" /> 设备推送要用于各个用户的网络配置。网络配置是 JSON 格式的字符串，如 Open Network Configuration 格式所定义。</translation>
 <translation id="660567106648774919">此政策已被弃用，请改用 <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> 政策。
@@ -4401,26 +4424,6 @@
 
           注意：<ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />（若已指定）会覆盖此政策。</translation>
 <translation id="6833988859168635883">启动页、主页和新标签页</translation>
-<translation id="6834298774555537368">通过设置此政策，您可为 Chrome 和 ARC 应用配置代理设置，它们会忽略从命令行中指定的所有与代理有关的选项。
-
-       如果您未设置此政策，用户便可自行选择代理设置。
-
-       设置 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策时可使用以下字段：
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，该字段让您能够指定 Chrome 使用的代理服务器，并禁止用户更改代理设置
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />，即代理 .pac 文件的网址
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />，即代理服务器的网址
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />，该字段让您能够以列表形式指定允许哪些主机绕过代理
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 字段已被弃用且已被 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 字段取代。
-
-        对于 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，如果您选择以下值：
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />，系统永远不会使用代理，并且会忽略所有其他字段。
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />，系统会使用自己的代理，并且会忽略所有其他字段。
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />，系统会忽略所有其他字段。
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />，系统会使用 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 字段。
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />，系统会使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 字段。
-
-      注意：如需查看更详细的示例，请访问 Chromium 项目 ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="6835883744948188639">显示建议用户重新启动浏览器的周期性提示</translation>
 <translation id="683688607121170501">通过此设置，您可允许用户在登录其 <ph name="PRODUCT_OS_NAME" />设备后从浏览器窗口的内容区域和 Android 应用中切换 Google 帐号。
 
@@ -5148,6 +5151,13 @@
 
           指定的政策值应以毫秒为单位，且不得大于屏幕关闭延迟时间（若已设置）和闲置延迟时间。</translation>
 <translation id="7680437377926096177">在用户关闭最后一个窗口时不显示让用户确认退出登录的对话框。</translation>
+<translation id="7681958144280390173">如果此政策已启用，系统会隔离所有网站（每个网站都在自己的进程内运行）。请注意，从 <ph name="PRODUCT_NAME" /> 版本 77 起，Android 会在默认情况下隔离某些敏感网站，并且此政策会扩展该默认网站隔离模式，以将其应用于所有网站。
+
+      如果将此政策设为停用，系统会关闭所有形式的网站隔离功能，包括隔离敏感网站、IsolateOriginsAndroid 和 SitePerProcessAndroid 的现场试验，以及其他网站隔离模式。不过，用户仍可以手动开启此政策。
+
+      如果您未设置此政策，用户便能更改此设置。
+
+      注意：对在 Android 设备上隔离每个网站的支持将会不断完善，但目前它可能会导致性能问题，尤其是在低端设备上。此政策仅适用于在符合条件（RAM 不小于 1 GB）的设备上运行的 Android 版 Chrome。如果想要既隔离特定网站，又减少给用户带来的性能影响，请使用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 来指定您想隔离的一系列网站。如需在非 Android 平台上应用此政策，请改用 <ph name="SITE_PER_PROCESS_POLICY_NAME" />。</translation>
 <translation id="7683777542468165012">动态政策刷新</translation>
 <translation id="7687943045976362719">如果设置了此政策，则指定的内容类型由 <ph name="PRODUCT_FRAME_NAME" />处理。
 
@@ -5850,6 +5860,7 @@
       如果您未设置此政策，“新标签页”页面会在 Chrome 启动时打开。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
+<translation id="8671119576957984818">启用桌面分享中心</translation>
 <translation id="8672321184841719703">目标自动更新版本</translation>
 <translation id="867410340948518937">U2F（通用第二重因素）</translation>
 <translation id="8676959842615154675">如果此政策已启用，远程访问主机会对比这两个名称：与主机关联的本地用户的名称，以及注册为主机所有者的 Google 帐号的名称（如果主机归“johndoe@example.com”所有，Google 帐号的名称就是“johndoe”）。如果主机所有者的名称不同于与主机关联的本地用户的名称，该主机将不会启动。若要强制将所有者的 Google 帐号与特定网域关联，请将此政策与 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> 搭配使用。

@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> poga</translation>
 <translation id="2000419248597011803">Nosūta dažus sīkfailus un meklēšanas vaicājumus no adreses joslas un meklēšanas lodziņa uz jūsu noklusējuma meklētājprogrammu.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fails}zero{# faili}one{# fails}other{# faili}}</translation>
-<translation id="2017836877785168846">Notīra vēsturi un automātiskās pabeigšanas ierakstus adreses joslā.</translation>
 <translation id="2021896219286479412">Pilnekrāna vietnes vadīklas</translation>
 <translation id="2038563949887743358">Ieslēgt iestatījumu “Pieprasīt datora vietni”</translation>
 <translation id="2039379262107991683">Pievienojiet lapas savam lasīšanas sarakstam, lai saņemtu atgādinājumu.</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="4183868528246477015">Meklēšana ar Google Lens <ph name="BEGIN_NEW" />Jauns<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4198423547019359126">Nav pieejamu lejupielādes atrašanās vietu.</translation>
-<translation id="4206707945726604465">Lai notīrītu citu vēstures informāciju, apmeklējiet lapu <ph name="BEGIN_LINK1" />Manas Google darbības<ph name="END_LINK1" />.</translation>
 <translation id="4209895695669353772">Lai saņemtu Google ieteikto personalizēto saturu, ieslēdziet sinhronizāciju.</translation>
 <translation id="4225895483398857530">Rīkjoslas īsinājumtaustiņš</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="4402611456429872546"><ph name="LANG" /> — notiek lejupielāde…</translation>
 <translation id="4404568932422911380">Nav grāmatzīmju</translation>
 <translation id="4405224443901389797">Pārvietot uz…</translation>
+<translation id="4409271659088619928">Jūsu meklētājprogramma ir <ph name="DSE" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="4411535500181276704">Vienkāršais režīms</translation>
 <translation id="4415276339145661267">Google konta pārvaldība</translation>
 <translation id="4427306783828095590">Uzlabotā aizsardzība labāk bloķē pikšķerēšanas mēģinājumus un ļaunprātīgu programmatūru</translation>
@@ -773,7 +772,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5979084224081478209">Pārbaudīt paroles</translation>
 <translation id="6000066717592683814">Arī turpmāk izmantot Google</translation>
 <translation id="6000203700195075278">Atsākt sekošanu</translation>
-<translation id="6002623704405939939">Lai notīrītu <ph name="BEGIN_LINK1" />meklēšanas vaicājumus<ph name="END_LINK1" /> vai citu vēstures informāciju, atveriet lapu <ph name="BEGIN_LINK2" />Manas Google darbības<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Ieteiktā parole</translation>
 <translation id="6032091552407840792">Šī izmēģinājuma versija ir aktīva tikai <ph name="BEGIN_LINK" />dažos reģionos<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Izmantojot <ph name="BEGIN_LINK" />konfidencialitātes smilškasti<ph name="END_LINK" />, pārlūkā Chrome ir iespējams izstrādāt jaunas tehnoloģijas, kas aizsargā jūs no starpvietņu izsekošanas, vienlaikus saglabājot atvērtā tīmekļa darbību.
@@ -885,7 +883,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>
 <translation id="6618554661997243500">Lai skatītu vietnes, ko apmeklējat visbiežāk, un ieteicamos rakstus, pieskarieties pogai Sākumlapa</translation>
 <translation id="6627583120233659107">Rediģēt mapi</translation>
-<translation id="6635718764393004944">Jūsu meklētājprogramma ir <ph name="DSE" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja tādi ir pieejami.</translation>
 <translation id="663674369910034433">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu vākšanu, skatiet sadaļās <ph name="BEGIN_LINK1" />Sinhronizēšana<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Google pakalpojumi<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6643649862576733715">Kārtot pēc saglabāto datu apjoma</translation>

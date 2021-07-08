@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> – knapp för <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Skickar vissa cookies och sökningar från adressfältet och sökrutan till standardsökmotorn</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
-<translation id="2017836877785168846">Rensar historik och autoslutföranden i adressfältet.</translation>
 <translation id="2021896219286479412">Helskärmskontroller på webbsidan</translation>
 <translation id="2038563949887743358">Aktivera begäran av skrivbordsversion</translation>
 <translation id="2039379262107991683">Lägg till sidor i läslistan om du vill få en påminnelse</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="4183868528246477015">Sök med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4198423547019359126">Det fins inga tillgängliga nedladdningsplatser</translation>
-<translation id="4206707945726604465">Du kan rensa annan historik på <ph name="BEGIN_LINK1" />Min aktivitet på Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Aktivera synkronisering om du vill få förslag på anpassat innehåll från Google</translation>
 <translation id="4225895483398857530">Genväg i verktygsfältet</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="4402611456429872546"><ph name="LANG" /> – Laddar ned …</translation>
 <translation id="4404568932422911380">Inga bokmärken</translation>
 <translation id="4405224443901389797">Flytta till …</translation>
+<translation id="4409271659088619928">Du använder <ph name="DSE" /> som sökmotor. Läs den sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="4411535500181276704">Begränsat läge</translation>
 <translation id="4415276339145661267">Hantera Google-kontot</translation>
 <translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig programvara</translation>
@@ -773,7 +772,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5979084224081478209">Kontrollera lösenord</translation>
 <translation id="6000066717592683814">Behåll Google</translation>
 <translation id="6000203700195075278">Följ på nytt</translation>
-<translation id="6002623704405939939">Du kan rensa <ph name="BEGIN_LINK1" />sökhistoriken<ph name="END_LINK1" /> och annan historik på <ph name="BEGIN_LINK2" />Min aktivitet på Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Föreslaget lösenord</translation>
 <translation id="6032091552407840792">Provperioden är endast aktiv i <ph name="BEGIN_LINK" />vissa regioner<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Med <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> utvecklar vi ny teknik för Chrome som skyddar dig från att bli spårad från webbplats till webbplats samtidigt som vi värnar den öppna webben.
@@ -885,7 +883,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="661266467055912436">Förbättrar säkerheten för dig och alla andra på webben.</translation>
 <translation id="6618554661997243500">Tryck på hemknappen om du vill se dina mest besökta webbplatser och artiklar för dig</translation>
 <translation id="6627583120233659107">Redigera mapp</translation>
-<translation id="6635718764393004944">Din sökmotor är <ph name="DSE" />. Följ eventuella anvisningar från sökmotorn för att radera din sökhistorik.</translation>
 <translation id="663674369910034433">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK1" />Synk<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />Googles tjänster<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6643649862576733715">Sortera efter databesparing</translation>

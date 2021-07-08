@@ -467,6 +467,7 @@
 <translation id="1507246803636407672">&amp;অগ্ৰাহ্য কৰক</translation>
 <translation id="1508491105858779599">ডিভাইচটো আনলক কৰিবলৈ আপোনাৰ আঙুলিটো ফিংগাৰপ্ৰিণ্ট ছেন্সত ৰাখক।</translation>
 <translation id="1508575541972276599">বৰ্তমানৰ সংস্কৰণটো হৈছে Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">গোট পুনঃস্থাপন কৰক</translation>
 <translation id="1509281256533087115">USBৰ জৰিয়তে যিকোনো <ph name="DEVICE_NAME_AND_VENDOR" /> এক্সেছ কৰক</translation>
 <translation id="1509960214886564027">বহুতো ছাইটৰ সুবিধাসমূহ ব্যাহত হ’ব পাৰে</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
@@ -586,6 +587,7 @@
 <translation id="1627408615528139100">ইতিমধ্যে ডাউনল’ড কৰা আছে</translation>
 <translation id="1628948239858170093">খোলাৰ আগতে ফাইলটো স্কেন কৰিবনে?</translation>
 <translation id="1629314197035607094">পাছৱৰ্ডৰ ম্যাদ উকলিল</translation>
+<translation id="1629451755632656601">Googleক আপোনাৰ কাৰ্টসমূহত ব্যক্তিগতকৃত ৰেহাই মূল্য সন্ধান কৰিবলৈ দিবনে?</translation>
 <translation id="1630300831289687074">আপুনি সোনকালেই নিজৰ Chromebook ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="163072119192489970">ডেটা পঠিওৱা অথবা গ্ৰহণ কৰাটো সম্পূৰ্ণ কৰাৰ অনুমতি আছে</translation>
 <translation id="1630768113285622200">ৰিষ্টাৰ্ট কৰক আৰু অব্যাহত ৰাখক</translation>
@@ -1303,6 +1305,7 @@
 <translation id="236117173274098341">Optimize</translation>
 <translation id="2361340419970998028">মতামত পঠিয়াই থকা হৈছে…</translation>
 <translation id="236141728043665931">মাইক্ৰ'ফ'নৰ এক্সেছ সদায়েই অৱৰোধ কৰক</translation>
+<translation id="2363744066037724557">ৱিণ্ড’ পুনঃস্থাপন কৰক</translation>
 <translation id="2364498172489649528">পাছ কৰিছে</translation>
 <translation id="2365507699358342471">এই ছাইটটোৱে ক্লীপব’র্ডলৈ প্ৰতিলিপি কৰা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাব পাৰে।</translation>
 <translation id="2367972762794486313">এপ্‌সমূহ দেখুৱাওক</translation>
@@ -2685,6 +2688,7 @@
 <translation id="3857807444929313943">ওপৰলৈ উঠাওক, তাৰ পিছত পুনৰ স্পৰ্শ কৰক</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" ব্যৱহাৰকাৰীৰ নামটো উপলব্ধ নহয়</translation>
 <translation id="3861977424605124250">আৰম্ভ হওঁতে দেখুৱাওক</translation>
+<translation id="386239283124269513">গোট পুনঃস্থাপন কৰক</translation>
 <translation id="3862788408946266506">’kiosk_only’ মেনিফেষ্ট বৈশিষ্ট থকা এপক Chrome OS কিঅ’স্ক ম’ডতেই ইনষ্টল কৰিব লাগিব</translation>
 <translation id="3865414814144988605">ৰিজ'লিউশ্বন</translation>
 <translation id="3866249974567520381">বিৱৰণ</translation>
@@ -5651,6 +5655,7 @@
 <translation id="7225179976675429563">নেটৱৰ্কৰ প্ৰকাৰ নাই</translation>
 <translation id="7228479291753472782">ৱেবছাইটে ভৌগলিক অৱস্থান, মাইক্ৰ'ফ'ন. কেমেৰা ইত্যাদি সুবিধাসমূহ ব্যৱহাৰ কৰিব পাৰিব নে নাই সেয়া নির্দিষ্ট কৰা ছেটিংসমূহ সলনি সাল সলনি কৰে।</translation>
 <translation id="7228523857728654909">স্ক্ৰীণ লক আৰু ছাইন-ইন</translation>
+<translation id="7230222852462421043">ৱিণ্ড’ পুনঃস্থাপন কৰক</translation>
 <translation id="7230787553283372882">আপোনাৰ পাঠৰ আকাৰ কাষ্টমাইজ কৰক</translation>
 <translation id="7232750842195536390">নাম সলনি কৰিব পৰা নগ’ল</translation>
 <translation id="7234010996000898150">Linux পুনঃস্থাপন কৰাটো বাতিল কৰি থকা হৈছে</translation>
@@ -6258,12 +6263,14 @@
 <translation id="7853747251428735">অধিক সঁজু&amp;লি</translation>
 <translation id="7855678561139483478">টেবটো নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক</translation>
 <translation id="7857093393627376423">পাঠৰ পৰামৰ্শ</translation>
+<translation id="7857675386615530425">Google Lensৰ সহায়ত পৃষ্ঠাখনৰ কোনো অংশত সন্ধান কৰক</translation>
 <translation id="7857949311770343000">আপুনি বিচৰা নতুন পৃষ্ঠা এইটো হয়নে?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">সেৱা: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ডাউনল'ডসমূহ</translation>
 <translation id="7861846108263890455">Google একাউণ্টৰ ভাষা</translation>
 <translation id="7864539943188674973">ব্লুটুথ অক্ষম কৰক</translation>
+<translation id="7866230141401327032">Google Lensৰ সহায়ত পৃষ্ঠাখনৰ কোনো অংশত সন্ধান কৰক</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - যোৰা লগোৱা আছে</translation>
 <translation id="7870730066603611552">ছেটআপৰ পিছত ছিংকৰ বিকল্পসমূহৰ পৰ্যালোচনা কৰক</translation>
 <translation id="7870790288828963061">কিঅ'স্ক এপৰ কোনো নতুন সংস্কৰণ পোৱা নাই। আপডে'ট কৰিবলৈ একো নাই। অনুগ্ৰহ কৰি USB ষ্টিক আঁতৰাওক।</translation>
@@ -6837,6 +6844,7 @@
 <translation id="850875081535031620">কোনো ক্ষতিকাৰক ছফ্টৱেৰ পোৱা নগ'ল</translation>
 <translation id="8509177919508253835">সুৰক্ষা চাবিসমূহ ৰিছেট কৰি পিন সৃষ্টি কৰক</translation>
 <translation id="8509646642152301857">বানান পৰীক্ষা কৰা অভিধান ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
+<translation id="8509967119010808787">আপোনাৰ টেবসমূহ সন্ধান কৰিবলৈ ইয়াত ক্লিক কৰক</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{কোনো দুৰ্বল পাছৱৰ্ড বিচাৰি পোৱা নগ’ল}=1{{COUNT} টা দুৰ্বল পাছৱৰ্ড বিচাৰি পোৱা গৈছে}one{{COUNT} টা দুৰ্বল পাছৱৰ্ড বিচাৰি পোৱা গৈছে}other{{COUNT} টা দুৰ্বল পাছৱৰ্ড বিচাৰি পোৱা গৈছে}}</translation>
 <translation id="8512476990829870887">প্ৰক্ৰিয়া সমাপ্ত কৰক</translation>
 <translation id="851263357009351303"><ph name="HOST" />ক সদায়েই প্ৰতিচ্ছবি দেখুৱাবলৈ অনুমতি দিয়ক</translation>

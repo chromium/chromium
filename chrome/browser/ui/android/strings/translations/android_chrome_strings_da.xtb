@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-knap</translation>
 <translation id="2000419248597011803">Sender visse cookies og søgninger fra adresselinjen og søgefeltet til din standardsøgemaskine</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}one{# fil}other{# filer}}</translation>
-<translation id="2017836877785168846">Nulstiller historikken og autofuldførelser i adresselinjen.</translation>
 <translation id="2021896219286479412">Kontrolelementer på website i fuld skærm</translation>
 <translation id="2038563949887743358">Slå computerversionen af websitet til</translation>
 <translation id="2039379262107991683">Føj sider til din læseliste, så du kan få en påmindelse</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="4183868528246477015">Søg med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
-<translation id="4206707945726604465">Du kan rydde andre typer historik ved at gå til <ph name="BEGIN_LINK1" />Min Google-aktivitet<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Aktivér synkronisering for at hente brugertilpasset indhold, som er foreslået af Google</translation>
 <translation id="4225895483398857530">Genvej til værktøjslinje</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="4402611456429872546"><ph name="LANG" /> – Downloader…</translation>
 <translation id="4404568932422911380">Der er ingen bogmærker</translation>
 <translation id="4405224443901389797">Flyt til…</translation>
+<translation id="4409271659088619928">Dine standardsøgemaskine er <ph name="DSE" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="4411535500181276704">Lite-tilstand</translation>
 <translation id="4415276339145661267">Administrer din Google-konto</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
@@ -773,7 +772,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6000203700195075278">Følg igen</translation>
-<translation id="6002623704405939939">Du kan rydde dine <ph name="BEGIN_LINK1" />søgninger<ph name="END_LINK1" /> eller andre former for historik ved at gå til <ph name="BEGIN_LINK2" />Min Google-aktivitet<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Foreslået adgangskode</translation>
 <translation id="6032091552407840792">Denne prøveperiode er kun aktiv i <ph name="BEGIN_LINK" />nogle områder<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Med <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> udvikler Chrome nye teknologier, der beskytter dig mod sporing på tværs af forskellige websites og samtidig bevarer det åbne net.
@@ -885,7 +883,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
 <translation id="6618554661997243500">Tryk på knappen Hjem for at se de mest anvendte websites og anbefalede artikler</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
-<translation id="6635718764393004944">Dine standardsøgemaskine er <ph name="DSE" />. Se evt. vejledningen til denne søgemaskine for at slette din søgehistorik.</translation>
 <translation id="663674369910034433">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK1" />Synkronisering<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />Google-tjenester<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6643649862576733715">Sortér efter mængden af data, der blev sparet</translation>

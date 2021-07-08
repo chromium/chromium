@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Dugme <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Podrazumevanom pretraživaču šalje neke kolačiće i pretrage iz trake za adresu i okvira za pretragu</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
-<translation id="2017836877785168846">Briše istoriju i automatska dovršavanja u traci za adresu.</translation>
 <translation id="2021896219286479412">Kontrole sajta na celom ekranu</translation>
 <translation id="2038563949887743358">Uključi zahtevanje verzije sajta za računare</translation>
 <translation id="2039379262107991683">Dodajte stranice na Listu za čitanje da biste dobili podsetnik</translation>
@@ -490,7 +489,6 @@ Aktivno programiranje Zaštićenog okruženja privatnosti je još uvek u toku i
 <translation id="4183868528246477015">Traži uz Google objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanja</translation>
-<translation id="4206707945726604465">Da biste obrisali druge oblike istorije, posetite <ph name="BEGIN_LINK1" />Moje aktivnosti na Google-u<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Da biste dobijali personalizovani sadržaj koji predlaže Google, uključite sinhronizaciju</translation>
 <translation id="4225895483398857530">Prečica za traku s alatkama</translation>
 <translation id="4242533952199664413">Otvori podešavanja</translation>
@@ -514,6 +512,7 @@ Aktivno programiranje Zaštićenog okruženja privatnosti je još uvek u toku i
 <translation id="4402611456429872546"><ph name="LANG" /> – Preuzima se…</translation>
 <translation id="4404568932422911380">Nema obeleživača</translation>
 <translation id="4405224443901389797">Premesti u...</translation>
+<translation id="4409271659088619928">Vaš pretraživač je <ph name="DSE" />. Pogledajte uputstva tog pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="4411535500181276704">Lite režim</translation>
 <translation id="4415276339145661267">Upravljajte Google nalogom</translation>
 <translation id="4427306783828095590">Poboljšana zaštita nudi više mogućnosti za blokiranje „pecanja“ i malvera</translation>
@@ -773,7 +772,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5979084224081478209">Proveri lozinke</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
 <translation id="6000203700195075278">Ponovo prati</translation>
-<translation id="6002623704405939939">Da biste obrisali <ph name="BEGIN_LINK1" />pretragu<ph name="END_LINK1" /> ili druge oblike istorije, posetite <ph name="BEGIN_LINK2" />Moje aktivnosti na Google-u<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Predložena lozinka</translation>
 <translation id="6032091552407840792">Ova proba je aktivna samo u <ph name="BEGIN_LINK" />nekim regionima<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Sa <ph name="BEGIN_LINK" />Zaštićenim okruženjem privatnosti<ph name="END_LINK" /> Chrome razvija nove tehnologije koje će vas predostrožno zaštititi od praćenja na više sajtova uz očuvanje otvorenog veba.
@@ -885,7 +883,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
 <translation id="6618554661997243500">Da biste videli sajtove koje najčešće posećujete i vesti koje najčešće čitate, dodirnite dugme Početak</translation>
 <translation id="6627583120233659107">Izmeni direktorijum</translation>
-<translation id="6635718764393004944">Vaš pretraživač je <ph name="DSE" />. Ako je to primenjivo, pročitajte njegovo uputstvo za brisanje istorije pretrage.</translation>
 <translation id="663674369910034433">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljku <ph name="BEGIN_LINK1" />Sinhronizacija<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Google usluge<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6643649862576733715">Sortiraj po količini ušteđenih podataka</translation>

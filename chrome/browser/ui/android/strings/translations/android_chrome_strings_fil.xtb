@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Button ng <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Nagpapadala ng ilang cookies at paghahanap mula sa address bar at box para sa paghahanap sa iyong default na search engine</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}one{# File}other{# na File}}</translation>
-<translation id="2017836877785168846">Kini-clear ang history at mga awtomatikong pagkumpleto sa address bar.</translation>
 <translation id="2021896219286479412">Control ng full screen sa site</translation>
 <translation id="2038563949887743358">I-on ang Hilingin ang site sa desktop</translation>
 <translation id="2039379262107991683">Magdagdag ng mga page sa iyong Listahan ng Babasahin para makatanggap ng paalala</translation>
@@ -490,7 +489,6 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="4183868528246477015">Hanapin gamit ang Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
 <translation id="4198423547019359126">Walang available na lokasyon ng pag-download</translation>
-<translation id="4206707945726604465">Para i-clear ang iba pang uri ng history, bisitahin ang <ph name="BEGIN_LINK1" />Aking Aktibidad sa Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Para makakuha ng naka-personalize na content na iminumungkahi ng Google, i-on ang pag-sync</translation>
 <translation id="4225895483398857530">Shortcut ng toolbar</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
@@ -514,6 +512,7 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="4402611456429872546"><ph name="LANG" /> - Dina-download…</translation>
 <translation id="4404568932422911380">Walang bookmark</translation>
 <translation id="4405224443901389797">Ilipat sa…</translation>
+<translation id="4409271659088619928"><ph name="DSE" /> ang iyong search engine. Tingnan ang mga tagubilin nito para sa pag-delete sa iyong history ng paghahanap, kung naaangkop.</translation>
 <translation id="4411535500181276704">Lite mode</translation>
 <translation id="4415276339145661267">Pamahalaan ang iyong Google Account</translation>
 <translation id="4427306783828095590">Mas maraming magagawa ang pinahusay na proteksyon para mag-block ng phishing and malware</translation>
@@ -773,7 +772,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5979084224081478209">Suriin ang mga password</translation>
 <translation id="6000066717592683814">Panatilihin ang Google</translation>
 <translation id="6000203700195075278">Subaybayan ulit</translation>
-<translation id="6002623704405939939">Para i-clear ang <ph name="BEGIN_LINK1" />paghahanap<ph name="END_LINK1" /> o iba pang uri ng history, bisitahin ang <ph name="BEGIN_LINK2" />Aking Aktibidad sa Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Iminumungkahing password</translation>
 <translation id="6032091552407840792">Aktibo lang ang trial na ito sa <ph name="BEGIN_LINK" />ilang rehiyon<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Sa pamamagitan ng <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, nagde-develop ang Chrome ng mga bagong teknolohiya para protektahan ka laban sa cross-site na pagsubaybay habang pinapanatili ang bukas na web.
@@ -885,7 +883,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="661266467055912436">Pinapahusay ang seguridad para sa iyo at sa lahat ng tao sa web.</translation>
 <translation id="6618554661997243500">Para makita ang mga nangungunang site at kuwento para sa iyo, i-tap ang button ng Home</translation>
 <translation id="6627583120233659107">I-edit ang folder</translation>
-<translation id="6635718764393004944"><ph name="DSE" /> ang iyong search engine. Kung naaangkop, tingnan ang kanilang mga tagubilin para i-delete ang iyong history ng paghahanap.</translation>
 <translation id="663674369910034433">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pagkolekta ng data, tingnan ang <ph name="BEGIN_LINK1" />Pag-sync<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />Mga serbisyo ng Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6643649862576733715">Pagbukud-bukurin ayon sa dami ng data na natipid</translation>

@@ -4445,26 +4445,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
           Not: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> belirtilmişse bu politikayı geçersiz kılar.</translation>
 <translation id="6833988859168635883">Başlangıç, Ana sayfa ve Yeni Sekme sayfası</translation>
-<translation id="6834298774555537368">Politikanın ayarlanması, komut satırında proxy ile ilgili belirtilen tüm seçenekleri yok sayan Chrome ve ARC-uygulamaları için proxy ayarlarını yapılandırır.
-
-       Politika ayarlanmazsa kullanıcılar kendi proxy ayarlarını seçebilir.
-
-       <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası ayarlandığında aşağıdaki alanlar kabul edilmiş olur:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, Chrome'un kullandığı proxy sunucusunu belirtmenizi sağlar ve kullanıcıların proxy ayarlarını değiştirmesini önler
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, proxy .pac dosyası için URL
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, proxy sunucu URL'si
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, proxy'nin atlanmasını sağlayan sunucuların listesi
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> alanı kullanımdan kaldırılmış, yerine <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> alanı getirilmiştir.
-
-        <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> için aşağıdaki değerleri seçerseniz:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy hiçbir zaman kullanılmaz ve diğer tüm alanlar yok sayılır.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, sisteme ait proxy kullanılır ve diğer tüm alanlar yok sayılır.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, diğer tüm alanlar yok sayılır.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> ve <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> alanları kullanılır.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> ve <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> alanları kullanılır.
-
-      Not: Daha ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="6835883744948188639">Kullanıcıya yeniden başlatmanın önerildiğini belirten yinelenen bir istem gösterme</translation>
 <translation id="683688607121170501">Bu ayar, kullanıcıların <ph name="PRODUCT_OS_NAME" /> cihazlarında oturum açtıktan sonra tarayıcı pencerelerinin içerik alanındaki Google Hesapları arasında geçiş yapmalarına olanak tanır.
 

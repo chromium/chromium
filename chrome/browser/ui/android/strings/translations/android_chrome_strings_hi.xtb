@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> बटन</translation>
 <translation id="2000419248597011803">'पता बार' और 'खोज बॉक्स' की कुछ कुकी और खोजों को आपके डिफ़ॉल्ट खोज इंजन पर भेजा जाता है</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फ़ाइल}one{# फ़ाइलें}other{# फ़ाइलें}}</translation>
-<translation id="2017836877785168846">इतिहास साफ़ करता है और पता बार मेंअपने-आपपूर्णता को साफ़ करता है.</translation>
 <translation id="2021896219286479412">पूरी स्क्रीन के साइट नियंत्रण</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटॉप साइट चालू करें</translation>
 <translation id="2039379262107991683">अपनी रीडिंग लिस्ट में पेज जोड़ें, ताकि आप उनके बारे में रिमाइंडर पा सकें</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">Google Lens से खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
 <translation id="4198423547019359126">डाउनलोड करने की कोई जगह उपलब्ध नहीं है</translation>
-<translation id="4206707945726604465">अन्य तरह के इतिहास को मिटाने के लिए, <ph name="BEGIN_LINK1" />मेरी Google गतिविधि<ph name="END_LINK1" /> पर जाएं</translation>
 <translation id="4209895695669353772">Google की ओर से सुझाई गई मनमुताबिक सामग्री पाने के लिए, 'सिंक करें' को चालू करें</translation>
 <translation id="4225895483398857530">Toolbar का शॉर्टकट</translation>
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड हो रही है…</translation>
 <translation id="4404568932422911380">कोई बुकमार्क नहीं</translation>
 <translation id="4405224443901389797">इसमें ले जाएं…</translation>
+<translation id="4409271659088619928">आपका सर्च इंजन <ph name="DSE" /> है. अगर लागू होता है, तो अपना खोज इतिहास मिटाने के लिए निर्देश देखें.</translation>
 <translation id="4411535500181276704">लाइट मोड</translation>
 <translation id="4415276339145661267">अपना Google खाता प्रबंधित करें</translation>
 <translation id="4427306783828095590">बेहतर सुरक्षा की मदद से फ़िशिंग और मैलवेयर को बेहतर तरीके से ब्लॉक किया जाता है</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">पासवर्ड जांचें</translation>
 <translation id="6000066717592683814">Google को डिफ़ॉल्ट बनाए रखें</translation>
 <translation id="6000203700195075278">फिर से फ़ॉलो करें</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />खोज इतिहास<ph name="END_LINK1" /> या किसी और तरह की गतिविधि का इतिहास मिटाने के लिए, <ph name="BEGIN_LINK2" />मेरी Google गतिविधि<ph name="END_LINK2" /> पर जाएं</translation>
 <translation id="6005538289190791541">सुझाया गया पासवर्ड</translation>
 <translation id="6032091552407840792">मुफ़्त में आज़माने की यह सुविधा सिर्फ़ <ph name="BEGIN_LINK" />कुछ क्षेत्रों<ph name="END_LINK" /> में चालू है.</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />निजता सैंडबॉक्स<ph name="END_LINK" /> की मदद से Chrome एक नई टेक्नोलॉजी डेवलप कर रहा है. यह टेक्नोलॉजी ओपन वेब को सुरक्षित रखते हुए, आपको क्रॉस-साइट ट्रैकिंग से बचाने में मदद करेगी.
@@ -885,7 +883,6 @@
 <translation id="661266467055912436">यह सुविधा, वेब पर आपकी और सभी उपयोगकर्ताओं की सुरक्षा को बेहतर बनाती है.</translation>
 <translation id="6618554661997243500">अपने हिसाब से खास साइटें और खबरें देखने के लिए, होम बटन पर टैप करें</translation>
 <translation id="6627583120233659107">फ़ोल्‍डर में बदलाव करें</translation>
-<translation id="6635718764393004944">आपका सर्च इंजन <ph name="DSE" /> है. अगर लागू हो, तो अपना खोज इतिहास मिटाने के लिए, उनके निर्देश देखें.</translation>
 <translation id="663674369910034433">निजता, सुरक्षा और डेटा इकट्ठा करने से जुड़ी ज़्यादा सेटिंग के लिए, <ph name="BEGIN_LINK1" />सिंक करें<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google की सेवाएं<ph name="END_LINK2" /> देखें</translation>
 <translation id="6643016212128521049">साफ़ करें</translation>
 <translation id="6643649862576733715">सेव किए गए डेटा की मात्रा के हिसाब से क्रम में लगाएं</translation>

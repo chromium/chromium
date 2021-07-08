@@ -4479,26 +4479,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
           Observação: se <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> for especificada, ela substituirá esta política.</translation>
 <translation id="6833988859168635883">Inicialização, página inicial e página "Nova guia"</translation>
-<translation id="6834298774555537368">Se a política for definida, haverá configurações de proxy para o Chrome e apps ARC, ignorando todas as opções relacionadas a proxy especificadas na linha de comando.
-
-       Se a política não for definida, os usuários poderão escolher as configurações de proxy.
-
-       Se a política <ph name="PROXY_SETTINGS_POLICY_NAME" /> for definida, os campos a seguir serão aceitos:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, permite especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy.
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, um URL de um arquivo de proxy .pac.
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, um URL do servidor de proxy.
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, uma lista de hosts pelos quais o proxy será ignorado.
-
-       O uso do campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> foi suspenso em favor do campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se você escolher o valor:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, um proxy nunca será usado e todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, o proxy do sistema será usado e todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, os campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados;
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, os campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados.
-
-      Observação: para ver mais exemplos detalhados, acesse The Chromium Projects em https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett (link em inglês).</translation>
 <translation id="6835883744948188639">Mostrar um prompt recorrente ao usuário indicando que a reinicialização é necessária</translation>
 <translation id="683688607121170501">Esta configuração permite que os usuários alternem entre Contas do Google na área de conteúdo da janela do navegador e nos aplicativos Android, depois de fazer login no dispositivo <ph name="PRODUCT_OS_NAME" />.
 

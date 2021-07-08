@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> (botón <ph name="LINK_NAME" />)</translation>
 <translation id="2000419248597011803">Envía buscas e cookies da barra de enderezos e da caixa de busca ao motor de busca predeterminado</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
-<translation id="2017836877785168846">Borra o historial e os completados automáticos na barra de enderezos.</translation>
 <translation id="2021896219286479412">Controis de pantalla completa</translation>
 <translation id="2038563949887743358">Activa a opción Ver como ordenador</translation>
 <translation id="2039379262107991683">Engade páxinas á túa lista de lectura para recibir un recordatorio</translation>
@@ -490,7 +489,6 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4183868528246477015">Buscar con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4198423547019359126">Non hai localizacións de descarga dispoñibles</translation>
-<translation id="4206707945726604465">Para borrar outros historiais, visita <ph name="BEGIN_LINK1" />A miña actividade de Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Para recibir contido personalizado suxerido por Google, activa a sincronización</translation>
 <translation id="4225895483398857530">Atallo da barra de ferramentas</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
@@ -514,6 +512,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4402611456429872546"><ph name="LANG" />: descargando…</translation>
 <translation id="4404568932422911380">Non hai marcadores</translation>
 <translation id="4405224443901389797">Mover a…</translation>
+<translation id="4409271659088619928">O teu motor de busca é <ph name="DSE" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="4411535500181276704">Modo básico</translation>
 <translation id="4415276339145661267">Xestionar a túa Conta de Google</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
@@ -773,7 +772,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
 <translation id="6000066717592683814">Manter Google</translation>
 <translation id="6000203700195075278">Volver seguir</translation>
-<translation id="6002623704405939939">Para borrar o historial de <ph name="BEGIN_LINK1" />busca<ph name="END_LINK1" /> ou doutros tipos, visita <ph name="BEGIN_LINK2" />A miña actividade de Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Contrasinal suxerido</translation>
 <translation id="6032091552407840792">A proba está dispoñible só <ph name="BEGIN_LINK" />nalgunhas rexións<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desenvolvendo novas tecnoloxías para protexerte dos mecanismos de seguimento en múltiples sitios e para garantir asemade que a Web siga sendo un espazo aberto.
@@ -885,7 +883,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6618554661997243500">Tocar botón Inicio para ver os principais sitios e historias recomendados para ti</translation>
 <translation id="6627583120233659107">Editar cartafol</translation>
-<translation id="6635718764393004944">O teu motor de busca é <ph name="DSE" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="663674369910034433">Para ver máis opcións de configuración relacionadas coa privacidade, a seguranza e a recompilación de datos, consulta <ph name="BEGIN_LINK1" />Sincronización<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />Servizos de Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6643649862576733715">Ordenar por cantidade de datos aforrados</translation>

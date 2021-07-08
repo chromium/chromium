@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> બટન</translation>
 <translation id="2000419248597011803">ઍડ્રેસ બાર અને શોધ બૉક્સમાંથી કેટલીક કુકી અને શોધને તમારા ડિફૉલ્ટ શોધ એંજિન પર મોકલે છે</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ફાઇલ}one{# ફાઇલો}other{# ફાઇલો}}</translation>
-<translation id="2017836877785168846">ઍડ્રેસ બારમાં ઇતિહાસ અને સ્વતઃપૂર્ણ કરવું સાફ કરો.</translation>
 <translation id="2021896219286479412">પૂર્ણ સ્ક્રીન સાઇટ નિયંત્રણો</translation>
 <translation id="2038563949887743358">વિનંતી ડેસ્કટૉપ સાઇટ ચાલુ કરો</translation>
 <translation id="2039379262107991683">રિમાઇન્ડર મેળવવા માટે, તમારી વાંચન સૂચિમાં પેજ ઉમેરો</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">Google લેન્સ વડે શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4198423547019359126">કોઈ ડાઉનલોડ સ્થાનો ઉપલબ્ધ નથી</translation>
-<translation id="4206707945726604465">ઇતિહાસની અન્ય પ્રકારની માહિતી સાફ કરવા માટે, <ph name="BEGIN_LINK1" />મારી Google પ્રવૃત્તિ<ph name="END_LINK1" />ની મુલાકાત લો</translation>
 <translation id="4209895695669353772">Google દ્વારા સૂચવેલ વ્યક્તિગત કરેલ કન્ટેન્ટ મેળવવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="4225895483398857530">ટૂલબારનો શૉર્ટકટ</translation>
 <translation id="4242533952199664413">સેટિંગ્સ ખોલો</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> ડાઉનલોડ કરી રહ્યાં છીએ…</translation>
 <translation id="4404568932422911380">કોઈ બુકમાર્ક નથી</translation>
 <translation id="4405224443901389797">આમાં ખસેડો…</translation>
+<translation id="4409271659088619928">તમારું શોધ એન્જિન <ph name="DSE" /> છે. જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તેમની સૂચનાઓ જુઓ.</translation>
 <translation id="4411535500181276704">લાઇટ મોડ</translation>
 <translation id="4415276339145661267">તમારું Google એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="4427306783828095590">વધારેલી સુરક્ષા ફિશિંગ અને માલવેરને બ્લૉક કરવામાં વધુ સહાયરૂપ થાય છે</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">પાસવર્ડ ચેક કરો</translation>
 <translation id="6000066717592683814">Google રાખો</translation>
 <translation id="6000203700195075278">ફરીથી ફૉલો કરો</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />શોધ<ph name="END_LINK1" /> ઇતિહાસ અથવા ઇતિહાસના અન્ય પ્રકારની માહિતી સાફ કરવા માટે <ph name="BEGIN_LINK2" />મારી Google પ્રવૃત્તિ<ph name="END_LINK2" />ની મુલાકાત લો</translation>
 <translation id="6005538289190791541">સૂચવેલ પાસવર્ડ</translation>
 <translation id="6032091552407840792">આ અજમાયશ માત્ર <ph name="BEGIN_LINK" />કેટલાક પ્રદેશો<ph name="END_LINK" />માં સક્રિય છે.</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />પ્રાઇવસી સૅન્ડબૉક્સ<ph name="END_LINK" /> વડે, Chrome નવી ટેક્નોલોજીનો વિકાસ કરી રહ્યું છે, જે ખુલ્લી વેબ પર સુરક્ષિત રાખીને, ક્રોસ-સાઇટ ટ્રૅકિંગ સામે તમારું સંરક્ષણ કરે છે.
@@ -852,6 +850,7 @@
 <translation id="6441734959916820584">નામ ખૂબ લાંબું છે</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# છબી}one{# છબીઓ}other{# છબીઓ}}</translation>
 <translation id="6447558397796644647">તે બુકમાર્ક શોધી શકતા નથી. તમારી જોડણી ચેક કરો અથવા નવું બુકમાર્ક ઉમેરો.</translation>
+<translation id="6459045781120991510">સર્વેક્ષણો</translation>
 <translation id="6461962085415701688">ફાઇલ ખોલી શકતાં નથી</translation>
 <translation id="6464977750820128603">તમે Chromeમાં મુલાકાત લીધેલી સાઇટ જોઈ શકશો અને તેના માટે ટાઇમર પણ સેટ કરી શકશો.\n\nતમે જે સાઇટ માટે ટાઇમર સેટ કરો છો અને કેટલા સમય માટે તેની મુલાકાત લો છો, તે માહિતી Google મેળવે છે. આ માહિતી ડિજિટલ લાઇફસ્ટાઇલને બહેતર બનાવવા માટે ઉપયોગમાં લેવામાં આવે છે.</translation>
 <translation id="6475951671322991020">વીડિયો ડાઉનલોડ કરો</translation>
@@ -884,7 +883,6 @@
 <translation id="661266467055912436">વેબ પર તમારા માટે તેમજ પ્રત્યેક માટે સુરક્ષાને બહેતર બનાવે છે.</translation>
 <translation id="6618554661997243500">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ અને સ્ટોરી જોવા માટે હોમ બટન પર ટૅપ કરો</translation>
 <translation id="6627583120233659107">ફોલ્ડરમાં ફેરફાર કરો</translation>
-<translation id="6635718764393004944">તમારું શોધ એન્જિન <ph name="DSE" /> છે. જો લાગુ પડતું હોય, તો તમારો શોધનો ઇતિહાસ ડિલીટ કરવા માટે શોધ એન્જિનની સૂચનાઓ જુઓ.</translation>
 <translation id="663674369910034433">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK1" />સિંક<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Googleની સેવાઓ<ph name="END_LINK2" /> જુઓ</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6643649862576733715">બચાવાયેલ ડેટાના પ્રમાણ અનુસાર સૉર્ટ કરો</translation>
@@ -968,6 +966,7 @@
 <translation id="7242755609445462077">સ્ટાઇલિશ હાઇલાઇટ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">ખાતરી કરો કે <ph name="TARGET_DEVICE_NAME" />માં Chromeમાં સિંક ચાલુ કરેલું છે</translation>
 <translation id="7252076891734325316">તમારા ફોનને કમ્પ્યુટરની નજીક રાખો</translation>
+<translation id="727288900855680735"><ph name="ONE_TIME_CODE" />ને <ph name="ORIGIN" /> પર સબમિટ કરીએ?</translation>
 <translation id="7274013316676448362">અવરોધિત સાઇટ</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> બદલીએ?</translation>
 <translation id="7290209999329137901">નામ બદલવું ઉપલબ્ધ નથી</translation>

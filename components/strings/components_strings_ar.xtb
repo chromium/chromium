@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">الميزات المتوقفة</translation>
 <translation id="131405271941274527">‏يريد <ph name="URL" /> إرسال المعلومات وتلقّيها عند النقر على جهاز NFC الظاهر على هاتفك.</translation>
 <translation id="1314509827145471431">التجليد من الناحية اليمنى</translation>
+<translation id="1319245136674974084">عدم السؤال مرة أخرى عند استخدام هذا التطبيق</translation>
 <translation id="1320233736580025032">‏Prc1 (مغلف)</translation>
 <translation id="132301787627749051">البحث عن صورة الحافظة</translation>
 <translation id="1323433172918577554">إظهار مزيد من الأقسام</translation>
@@ -744,6 +745,7 @@
 <translation id="3655670868607891010">إذا تكرّر هذا الأمر، ننصحك بالاطّلاع على هذه <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">التعديل</translation>
 <translation id="3664782872746246217">الكلمات الرئيسية:</translation>
+<translation id="3671540257457995106">هل تريد السماح بتغيير الحجم؟</translation>
 <translation id="3676592649209844519">معرِّف الجهاز:</translation>
 <translation id="3677008721441257057">‏هل كنت تقصد &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;؟</translation>
 <translation id="3678029195006412963">تعذر توقيع الطلب</translation>
@@ -1104,6 +1106,7 @@
 <translation id="4953689047182316270">الاستجابة لأحداث إمكانية الوصول</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">توسيع القائمة</translation>
+<translation id="4968522289500246572">هذا التطبيق مصمّم للعمل مع الأجهزة الجوّالة وقد يتعذّر تغيير حجمه بشكل مناسب. من الممكن أن يواجه التطبيق بعض المشاكل أو يتعرّض لإعادة التشغيل.</translation>
 <translation id="4973922308112707173">عمل ثقبَين بالأعلى</translation>
 <translation id="4974590756084640048">إعادة تفعيل التحذيرات</translation>
 <translation id="4984088539114770594">هل تريد استخدام الميكروفون؟</translation>
@@ -1152,6 +1155,7 @@
 <translation id="5123063207673082822">نهاية الأسبوع</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">التحقق من بطاقتك</translation>
+<translation id="512670116361803001">قد لا يتم تغيير حجم التطبيق <ph name="APP_NAME" /> بشكل مناسب. استخدِم أحجام النوافذ المُعَدّة مسبقًا لمنع حدوث مشاكل أثناء استخدام التطبيق.</translation>
 <translation id="5135404736266831032">إدارة العناوين...</translation>
 <translation id="5138014172396933048">البطاقة الافتراضية غير متوفّرة حاليًا. يُرجى التواصل مع المصرف.</translation>
 <translation id="5138227688689900538">عرض أقل</translation>
@@ -1518,6 +1522,7 @@
 <translation id="647261751007945333">سياسات الأجهزة</translation>
 <translation id="6476284679642588870">إدارة طرق الدفع</translation>
 <translation id="6489534406876378309">بدء تحميل الأعطال</translation>
+<translation id="6493924760403974580">لا يمكن عرض هذا التطبيق إلا بهذا الحجم.</translation>
 <translation id="6499038740797743453">هل تريد إعادة ضبط كلمة المرور؟</translation>
 <translation id="6502991525169604759">بدون التغييرات التي أجريتها</translation>
 <translation id="6508722015517270189">‏إعادة تشغيل Chrome</translation>
@@ -2173,6 +2178,7 @@
 <translation id="8975263830901772334">أسماء الملفات التي طبعتها</translation>
 <translation id="8978053250194585037">‏رصد التصفح الآمن من Google عن وجود‬ <ph name="BEGIN_LINK" />تصيّد احتيالي<ph name="END_LINK" /> مؤخرًا على موقع <ph name="SITE" />، إذ تتظاهر مواقع التصيد الاحتيالي بكونها مواقع إلكترونية أخرى لخداعك.</translation>
 <translation id="8983003182662520383">‏طرق الدفع والعناوين باستخدام Google Pay</translation>
+<translation id="8983369100812962543">يمكنك الآن تغيير حجم التطبيق.</translation>
 <translation id="8987927404178983737">شهر</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" />‏ [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">يريد الموقع الإلكتروني <ph name="URL" /> رصد استخدامك النشط لهذا الجهاز.</translation>

@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> buton</translation>
 <translation id="2000419248597011803">Dërgon disa kuki dhe kërkime nga shiriti i adresës dhe kutia e kërkimit te motori yt i parazgjedhur i kërkimit</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# skedar}other{# skedarë}}</translation>
-<translation id="2017836877785168846">Pastron historikun dhe plotësimet automatike në shiritin e adresës.</translation>
 <translation id="2021896219286479412">Kontrollet e sajtit në ekranin e plotë</translation>
 <translation id="2038563949887743358">Aktivizo "Kërko sajtin për desktop"</translation>
 <translation id="2039379262107991683">Shto faqe në listën tënde të leximit për të marrë një alarm rikujtues</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="4183868528246477015">Kërko me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4198423547019359126">Nuk ka vendndodhje shkarkimi</translation>
-<translation id="4206707945726604465">Për të pastruar format e tjera të historikut, vizito <ph name="BEGIN_LINK1" />Aktivitetin tim në Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Për të marrë përmbajtje të personalizuar të sugjeruar nga Google, aktivizo sinkronizimin</translation>
 <translation id="4225895483398857530">Shkurtorja e shiritit të veglave</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="4402611456429872546"><ph name="LANG" /> - Po shkarkohet…</translation>
 <translation id="4404568932422911380">Nuk ka faqeshënues</translation>
 <translation id="4405224443901389797">Zhvendos te…</translation>
+<translation id="4409271659088619928">Motori yt i kërkimit është <ph name="DSE" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="4411535500181276704">Modaliteti i lehtë</translation>
 <translation id="4415276339145661267">Menaxho "Llogarinë tënde të Google"</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
@@ -773,7 +772,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
 <translation id="6000066717592683814">Mbaj Google</translation>
 <translation id="6000203700195075278">Ndiqe përsëri</translation>
-<translation id="6002623704405939939">Për të pastruar <ph name="BEGIN_LINK1" />kërkimin<ph name="END_LINK1" /> ose forma të tjera të historikut, vizito <ph name="BEGIN_LINK2" />Aktivitetin tim në Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Fjalëkalimi i sugjeruar</translation>
 <translation id="6032091552407840792">Kjo provë është aktive vetëm në <ph name="BEGIN_LINK" />disa rajone<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Me <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome po zhvillon teknologji të reja për të të mbrojtur nga gjurmimi nëpër sajtet e uebit, ndërkohë që vazhdon të ruajë uebin e hapur.
@@ -885,7 +883,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="661266467055912436">Përmirëson sigurinë për ty dhe këdo në ueb.</translation>
 <translation id="6618554661997243500">Për të parë sajtet kryesore dhe historitë për ty, trokit te butoni "Kreu"</translation>
 <translation id="6627583120233659107">Modifiko dosjen</translation>
-<translation id="6635718764393004944">Motori yt i kërkimit është <ph name="DSE" />. Nëse zbatohet, shiko udhëzimet për të fshirë historikun tënd të kërkimit.</translation>
 <translation id="663674369910034433">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK1" />Shinkronizimi <ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Shërbimet e Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6643649862576733715">Rendit sipas sasisë së të dhënave të ruajtura</translation>

@@ -793,7 +793,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8806823403540278281">La teva organització requereix que naveguis de manera privada. Les pestanyes no es desen en mode d'incògnit.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
-<translation id="8840513115188359703">No se us tancarà la sessió del compte de Google.</translation>
+<translation id="8840513115188359703">No se't tancarà la sessió del Compte de Google.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} pestanya}other{{count} pestanyes}}</translation>
 <translation id="8870413625673593573">Tancades recentment</translation>
 <translation id="8876882697946675716">Mantén els dispositius sincronitzats</translation>

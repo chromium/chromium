@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" />，<ph name="LINK_NAME" />按鈕</translation>
 <translation id="2000419248597011803">將部分 Cookie，以及網址列和搜尋框中的搜尋內容傳送至預設搜尋引擎</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
-<translation id="2017836877785168846">清除網址列中的記錄和自動完成資料。</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
 <translation id="2038563949887743358">開啟「切換為電腦版網站」</translation>
 <translation id="2039379262107991683">將網頁新增至閱讀清單，即可在之後收到閱讀提醒</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4183868528246477015">使用「Google 智能鏡頭」的搜尋功能<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
-<translation id="4206707945726604465">如要清除其他形式的記錄，請前往「<ph name="BEGIN_LINK1" />我的 Google 活動<ph name="END_LINK1" />」</translation>
 <translation id="4209895695669353772">如要接收 Google 建議的個人化內容，請開啟同步處理功能</translation>
 <translation id="4225895483398857530">工具列捷徑</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4402611456429872546"><ph name="LANG" /> - 下載中…</translation>
 <translation id="4404568932422911380">沒有書籤</translation>
 <translation id="4405224443901389797">移至…</translation>
+<translation id="4409271659088619928">您的搜尋引擎是「<ph name="DSE" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="4411535500181276704">精簡模式</translation>
 <translation id="4415276339145661267">管理您的 Google 帳戶</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
@@ -773,7 +772,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6000203700195075278">重新追蹤</translation>
-<translation id="6002623704405939939">如要清除<ph name="BEGIN_LINK1" />搜尋<ph name="END_LINK1" />或其他類型的記錄，請前往<ph name="BEGIN_LINK2" />我的 Google 活動<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">建議的密碼</translation>
 <translation id="6032091552407840792">此試用功能只會在<ph name="BEGIN_LINK" />部分地區<ph name="END_LINK" />啟用。</translation>
 <translation id="6033245666633565791">Chrome 透過「<ph name="BEGIN_LINK" />私隱沙箱<ph name="END_LINK" />」開發新的技術，防止有心人士透過跨網站追蹤機制取得您的資料，同時保護開放網絡。
@@ -885,7 +883,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6618554661997243500">㩒「主按鈕」就可以睇下熱門網站同報導</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
-<translation id="6635718764393004944">您的搜尋引擎是 <ph name="DSE" />。請查看搜尋引擎的指示 (如有) 以便刪除搜尋記錄。</translation>
 <translation id="663674369910034433">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK1" />同步處理<ph name="END_LINK1" />和 <ph name="BEGIN_LINK2" />Google 服務<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6643649862576733715">依節省數據量排序</translation>

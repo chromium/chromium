@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" />, кнопка "<ph name="LINK_NAME" />"</translation>
 <translation id="2000419248597011803">Адпраўляе вашай стандартнай пошукавай сістэме некаторыя файлы cookie, а таксама пошукавыя запыты, уведзеныя ў адрасным радку і полі пошуку</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
-<translation id="2017836877785168846">Ачышчае гісторыю і гісторыю аўтазапаўнення ў адрасным радку.</translation>
 <translation id="2021896219286479412">Кіраванне сайтам на ўвесь экран</translation>
 <translation id="2038563949887743358">Уключыць запытванне версіі для настольнага камп'ютара</translation>
 <translation id="2039379262107991683">Дадавайце старонкі ў Спіс на прагляд, каб атрымліваць пра іх напаміны</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4183868528246477015">Пошук праз Google Аб'ектыў <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4198423547019359126">Няма месца для спампоўкі</translation>
-<translation id="4206707945726604465">Каб выдаліць гісторыю іншых дзеянняў, перайдзіце на старонку <ph name="BEGIN_LINK1" />Мае дзеянні ў Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Каб атрымліваць прапановы персаналізаванага змесціва ад Google, уключыце сінхранізацыю</translation>
 <translation id="4225895483398857530">Кнопка-ярлык на панэлі інструментаў</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4402611456429872546"><ph name="LANG" /> – ідзе спампоўванне…</translation>
 <translation id="4404568932422911380">Няма закладак</translation>
 <translation id="4405224443901389797">Перамясціць у…</translation>
+<translation id="4409271659088619928">Ваша пошукавая сістэма – <ph name="DSE" />. Каб выдаліць гісторыю пошуку, выканайце інструкцыі гэтай сістэмы (калі яны даступныя).</translation>
 <translation id="4411535500181276704">Спрошчаны рэжым</translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
 <translation id="4427306783828095590">Функцыя палепшанай абароны яшчэ надзейней блакіруе фішынг і шкодныя праграмы</translation>
@@ -773,7 +772,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5979084224081478209">Праверыць паролі</translation>
 <translation id="6000066717592683814">Пакінуць Google</translation>
 <translation id="6000203700195075278">Падпісацца зноў</translation>
-<translation id="6002623704405939939">Каб выдаліць гісторыю <ph name="BEGIN_LINK1" />пошуку<ph name="END_LINK1" /> або іншых дзеянняў, перайдзіце ў <ph name="BEGIN_LINK2" />Мае дзеянні ў Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Прапанаваны пароль</translation>
 <translation id="6032091552407840792">Гэта пробная функцыя дзейнічае толькі ў <ph name="BEGIN_LINK" />некаторых рэгіёнах<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">З дапамогай <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome падтрымлівае адкрытасць інтэрнэту, распрацоўваючы новыя тэхналогіі для абароны вас ад механізмаў адсочвання паводзін на розных сайтах.
@@ -885,7 +883,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="661266467055912436">Павышае бяспеку для вас і іншых карыстальнікаў у інтэрнэце.</translation>
 <translation id="6618554661997243500">Каб прагледзець папулярныя сайты і падабраныя для вас артыкулы, націсніце кнопку "Галоўная старонка"</translation>
 <translation id="6627583120233659107">Рэдагаваць папку</translation>
-<translation id="6635718764393004944">Ваша пошукавая сістэма – <ph name="DSE" />. Каб выдаліць гісторыю пошуку, выканайце адпаведныя інструкцыі для гэтай сістэмы (калі яны даступныя).</translation>
 <translation id="663674369910034433">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце ў раздзелах <ph name="BEGIN_LINK1" />Сінхранізацыя<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />сэрвісы Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6643649862576733715">Сартаваць па аб'ёме сэканомленага трафіка</translation>

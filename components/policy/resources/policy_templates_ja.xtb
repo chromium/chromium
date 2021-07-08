@@ -4331,26 +4331,6 @@
 
           注: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> が指定されている場合はこのポリシーより優先されます。</translation>
 <translation id="6833988859168635883">起動ページ、ホームページ、新しいタブページ</translation>
-<translation id="6834298774555537368">このポリシーでは、Chrome と ARC アプリのプロキシ設定を行います。いずれもコマンドラインで指定されたプロキシ関連の設定はすべて無視されます。
-
-       このポリシーを未設定のままにした場合、ユーザーはプロキシ設定を選択できます。
-
-       <ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを設定すると、次のフィールドを受け取れるようになります。
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Chrome で使用するプロキシ サーバーを指定して、ユーザーがプロキシ設定を変更できないようにします
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: プロキシ .pac ファイルへの URL
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: プロキシ サーバーの URL
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: プロキシを使用しないホストのリスト
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> フィールドは非推奨となりました。代わりに <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> フィールドを使用してください。
-
-        <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> については、以下のいずれかの値を指定します。
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />: プロキシは一切使用せず、他のフィールドをすべて無視します。
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: システムのプロキシを使用して、他のフィールドをすべて無視します。
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: 他のフィールドをすべて無視します。
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
-
-      注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
 <translation id="6835883744948188639">再起動が推奨されることを示すメッセージをユーザーに繰り返し表示する</translation>
 <translation id="683688607121170501">ユーザーが <ph name="PRODUCT_OS_NAME" /> デバイスにログインした後に、ブラウザ ウィンドウのコンテンツ領域内や Android アプリケーションで Google アカウントを切り替えることができるかどうかを制御します。
 

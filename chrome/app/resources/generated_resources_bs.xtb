@@ -4393,6 +4393,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5794700615121138172">Dijeljeni folderi na Linuxu</translation>
 <translation id="5794786537412027208">Napusti sve Chromeove aplikacije</translation>
 <translation id="5797070761912323120">Google može koristiti vašu historiju za personalizaciju Pretraživanja, oglasa i drugih Googleovih usluga</translation>
+<translation id="5797521893972859201">Briše povijest, uključujući u okviru za pretraživanje</translation>
 <translation id="5798079537501238810">Web lokacije mogu instalirati obrađivače plaćanja</translation>
 <translation id="579907812742603813">zaštićeni sadržaj</translation>
 <translation id="579915268381781820">Vaš sigurnosni ključ je uklonjen.</translation>
@@ -4476,6 +4477,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5900302528761731119">Fotografija Google profila</translation>
 <translation id="590036993063074298">Detalji o kvalitetu preslikavanja</translation>
 <translation id="5901069264981746702">Vaši podaci otiska prsta su sigurno pohranjeni i nikada ne napuštaju uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Prijeđi na snimanje kartice</translation>
 <translation id="5901494423252125310">Otvoren je poklopac štampača</translation>
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5904614460720589786">Postavljanje aplikacije <ph name="APP_NAME" /> nije uspjelo zbog problema s konfiguracijom. Kontaktirajte administratora. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
@@ -4748,6 +4750,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6196854373336333322">Ekstenzija "<ph name="EXTENSION_NAME" />" je preuzela kontrolu nad postavkama vašeg proksi servera, što znači da može promijeniti, prekinuti ili prisluškivati sve što radite na mreži. Ako niste sigurni zašto je došlo do ove promjene, vjerovatno je i ne želite.</translation>
 <translation id="6198102561359457428">Odjavite se i ponovo se prijavite…</translation>
 <translation id="6198252989419008588">Promijeni PIN</translation>
+<translation id="6200047250927636406">Odbaci datoteku</translation>
 <translation id="6202304368170870640">Možete koristiti PIN za prijavu ili otključavanje uređaja.</translation>
 <translation id="6206311232642889873">Kop&amp;iraj sliku</translation>
 <translation id="6207200176136643843">Vraćanje na zadani nivo zumiranja</translation>
@@ -5316,6 +5319,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6833479554815567477">Kartica je uklonjena iz grupe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Prijeđite na pametan i siguran preglednik</translation>
+<translation id="6834652994408928492">Tamni način rada uključit će se automatski kad sunce zađe</translation>
 <translation id="683540480453879381">otvara <ph name="FILE_EXTENSIONS" /> fajlove</translation>
 <translation id="6835762382653651563">Povežite se na internet da ažurirate uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Traži odobrenje kada web lokacija želi otvarati i postavljati prozore na ekranima (preporučeno)</translation>
@@ -6028,6 +6032,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7622114377921274169">Punjenje.</translation>
 <translation id="7622768823216805500">Web lokacije obično instaliraju obrađivače plaćanja za funkcije kupovine, naprimjer, za lakše plaćanje</translation>
 <translation id="7622903810087708234">Detalji o lozinci</translation>
+<translation id="7622966771025050155">Prijeđi na snimljenu karticu</translation>
 <translation id="7624337243375417909">velika slova su isključena</translation>
 <translation id="7625568159987162309">Pregledajte dopuštenja i podatke pohranjene na web-lokacijama</translation>
 <translation id="7628201176665550262">Brzina osvježavanja</translation>
@@ -6194,6 +6199,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7784067724422331729">Sigurnosne postavke na vašem računalu blokirale su ovu datoteku.</translation>
 <translation id="7784796923038949829">Nije moguće čitati ili mijenjati podatke web lokacije</translation>
 <translation id="778480864305029524">Za korištenje Trenutnog povezivanja putem mobitela, uključite obavještenja za Google Play usluge.</translation>
+<translation id="7785471469930192436">Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povijest pretraživanja, ako je primjenjivo</translation>
 <translation id="7786889348652477777">&amp;Ponovo učitaj stranicu</translation>
 <translation id="7787308148023287649">Prikaz na drugom ekranu</translation>
 <translation id="7788298548579301890">Drugi program na vašem računaru je dodao aplikaciju koja može promijeniti način na koji Chrome radi.
@@ -6806,6 +6812,7 @@ Pritisnite dodijeljeni prekidač da uklonite dodjeljivanje</translation>
 <translation id="8438566539970814960">Poboljšajte pretraživanje i pregledanje</translation>
 <translation id="8439506636278576865">Ponudi prijevod stranica na ovom jeziku</translation>
 <translation id="8440630305826533614">Linux aplikacije</translation>
+<translation id="8446225304314102060">Prijeđi na karticu <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8447409163267621480">Uključite Ctrl ili Alt</translation>
 <translation id="8448729345478502352">Smanjite ili povećajte stavke na ekranu</translation>
@@ -7469,6 +7476,7 @@ Ovoj radnji možete dodijeliti više prekidača</translation>
 <translation id="9148058034647219655">Izađi</translation>
 <translation id="9148126808321036104">Prijavi se ponovo</translation>
 <translation id="9148963623915467028">Ova web lokacija može pristupiti vašoj lokaciji.</translation>
+<translation id="9149529198050266366">Tamni način rada isključit će se automatski kad sunce izađe</translation>
 <translation id="9149866541089851383">Uredi…</translation>
 <translation id="9150045010208374699">Korištenje kamere</translation>
 <translation id="9150079578948279438">Uklanjanje profila nije uspjelo. Pokušajte ponovo ili kontaktirajte svog mobilnog operatora za tehničku podršku.</translation>

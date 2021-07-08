@@ -366,7 +366,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> prova a rilevare se un server è presente sulla Intranet. Solo allora risponderà alle richieste IWA. Se viene rilevato un server su Internet, <ph name="PRODUCT_NAME" /> ignora le richieste IWA provenienti da tale server.
 
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
-<translation id="1495817006535797003">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita nel proprio processo e le origini denominate da sottodomini vengono isolate. Ad esempio, se si specifica https://example.com/, l'origine https://foo.example.com/ viene isolata in quanto parte del sito https://example.com/.  Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> versione 77 e il criterio si estende a questa modalità per isolare origini aggiuntive specifiche.
+<translation id="1495817006535797003">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita nel proprio processo e le origini denominate da sottodomini vengono isolate. Ad esempio, se si specifica https://example.com/, l'origine https://foo.example.com/ viene isolata in quanto parte del sito https://example.com/.  Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> versione 77 e il criterio estende questa modalità per isolare origini aggiuntive specifiche.
 
       Se il criterio viene impostato su Disattivato, vengono disattivati tutti i tipi di isolamento dei siti, inclusi quelli di siti sensibili, prove sul campo di IsolateOriginsAndroid, SitePerProcessAndroid e altre modalità di isolamento dei siti. Gli utenti possono comunque attivare IsolateOrigins manualmente usando il flag della riga di comando.
 
@@ -4455,26 +4455,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
           Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> sostituisce questo criterio.</translation>
 <translation id="6833988859168635883">Avvio, pagina iniziale e pagina Nuova scheda</translation>
-<translation id="6834298774555537368">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
-
-       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
-
-       L'impostazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e impedisce agli utenti di modificare le impostazioni del proxy
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, un URL a un file proxy .pac
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, un URL a un server proxy
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, un elenco di host per i quali il proxy verrà bypassato
-
-       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Nota: per esempi più dettagliati, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="6835883744948188639">Mostra all'utente un messaggio ricorrente che indica che è consigliato eseguire un riavvio</translation>
 <translation id="683688607121170501">Questa impostazione consente agli utenti di passare da un Account Google a un altro all'interno dell'area dei contenuti della finestra del browser e nelle applicazioni Android, dopo avere eseguito l'accesso al dispositivo <ph name="PRODUCT_OS_NAME" />.
 
@@ -5204,7 +5184,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7680437377926096177">Impedisci la visualizzazione della finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
-<translation id="7681958144280390173">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati (ogni sito viene eseguito nel proprio processo). Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> versione 77 e il criterio si estende a questa modalità di isolamento dei siti predefinita affinché venga applicata a tutti i siti.
+<translation id="7681958144280390173">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati (ogni sito viene eseguito nel proprio processo). Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> versione 77 e il criterio estende questa modalità di isolamento dei siti predefinita affinché venga applicata a tutti i siti.
 
       Se il criterio viene impostato su Disattivato, vengono disattivati tutti i tipi di isolamento dei siti, inclusi quelli di siti sensibili, prove sul campo di IsolateOriginsAndroid, SitePerProcessAndroid e altre modalità di isolamento dei siti. Gli utenti possono comunque attivare il criterio manualmente.
 

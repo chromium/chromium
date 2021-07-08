@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> inkinobho</translation>
 <translation id="2000419248597011803">Ithumela amakhukhi nosesho kusukela kubha yekheli nebhokisi losesho kunjini yakho yosesho ezenzakalelayo</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Ifayela}one{# Amafayela}other{# Amafayela}}</translation>
-<translation id="2017836877785168846">Sula umlando nokuqedela ngokuzenzakalela kwibha lekheli.</translation>
 <translation id="2021896219286479412">Izilawuli zesayithi zesikrini esiphelele</translation>
 <translation id="2038563949887743358">Vula ukucela isayithi yedeskithophu</translation>
 <translation id="2039379262107991683">Engeza amakhasi Ohlwini lwakho Lokufunda ukuze uthole isikhumbuzo</translation>
@@ -490,7 +489,6 @@ I-Privacy Sandbox isasungulwa futhi itholakala ezifundeni ezithile. Okwamanje, a
 <translation id="4183868528246477015">Sesha ngelensi yeGoogle<ph name="BEGIN_NEW" />Okusha<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Vula kuthebhu entsha</translation>
 <translation id="4198423547019359126">Azikho izindawo ezitholakalayo zokulanda</translation>
-<translation id="4206707945726604465">Ukuze usule amanye amafomu omlando, vakashela <ph name="BEGIN_LINK1" />Umsebenzi Wami we-Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Ukuze uthole okuqukethwe okwenziwe kwaba ngokwakho i-Google, vula ukuvumelanisa</translation>
 <translation id="4225895483398857530">Isinqamuleli sebha yamathuluzi</translation>
 <translation id="4242533952199664413">Vula izilungiselelo</translation>
@@ -514,6 +512,7 @@ I-Privacy Sandbox isasungulwa futhi itholakala ezifundeni ezithile. Okwamanje, a
 <translation id="4402611456429872546"><ph name="LANG" /> - Iyadawuniloda…</translation>
 <translation id="4404568932422911380">Awekho amabhukimakhi</translation>
 <translation id="4405224443901389797">Hambisa ku…</translation>
+<translation id="4409271659088619928">Injini yakho yokusesha iyi-<ph name="DSE" />. Bona imiyalelo yabo yokusula umlando wakho wosesho, uma kusebenza.</translation>
 <translation id="4411535500181276704">Imodi elula</translation>
 <translation id="4415276339145661267">Lawula i-akhawunti yakho ye-Google</translation>
 <translation id="4427306783828095590">Isivikelo esithuthukisiwe senza okuningi ukuvimba ubugebengu bokweba imininingwane ebucayi kanye uhlelo olungayilungele ikhompyutha</translation>
@@ -773,7 +772,6 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5979084224081478209">Hlola amaphasiwedi</translation>
 <translation id="6000066717592683814">Gcina i-Google</translation>
 <translation id="6000203700195075278">Phinda ulandele</translation>
-<translation id="6002623704405939939">Ukuze usule <ph name="BEGIN_LINK1" />usesho<ph name="END_LINK1" /> noma ezinye izinhlobo zomlando, vakashela <ph name="BEGIN_LINK2" />Umsebenzi Wami we-Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Iphasiwedi ephakanyisiwe</translation>
 <translation id="6032091552407840792">Lo mzamo usebenza <ph name="BEGIN_LINK" />ezifundeni ezithile<ph name="END_LINK" /> kuphela.</translation>
 <translation id="6033245666633565791">Nge-<ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, i-Chrome ithuthukisa ubuchwepheshe obusha bokukuvikela ekulandeleni kwendawo ephambene lapho ugcina khona iwebhu evulekile.
@@ -885,7 +883,6 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="661266467055912436">Kuthuthukisa ukuvikeleka kwakho nawo wonke umuntu okuwebhu.</translation>
 <translation id="6618554661997243500">Ukuze ubone amasayithi aphezulu nezindaba zakho, thepha inkinobho Yasekhaya</translation>
 <translation id="6627583120233659107">Hlela ifolda</translation>
-<translation id="6635718764393004944">Injini yakho yokusesha iyi-<ph name="DSE" />. Uma kufaneleka, bona imiyalelo yayo ukuze usule umlando wakho wosesho.</translation>
 <translation id="663674369910034433">Ukuze uthole amanye amasethingi ahambisana nobumfihlo, ukuvikeleka, nokuqoqwa kwedatha, bona okuthi <ph name="BEGIN_LINK1" />Ukuvumelanisa<ph name="END_LINK1" /> nokuthi <ph name="BEGIN_LINK2" />Amasevisi we-Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Sula</translation>
 <translation id="6643649862576733715">Hlunga ngenani ledatha elondoloziwe</translation>

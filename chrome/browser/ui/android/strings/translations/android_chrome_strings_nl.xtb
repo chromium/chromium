@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-knop</translation>
 <translation id="2000419248597011803">Hiermee worden bepaalde cookies en de zoekopdrachten in de adresbalk en in het zoekvak verzonden naar je standaard zoekmachine</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# bestand}other{# bestanden}}</translation>
-<translation id="2017836877785168846">Wist de geschiedenis en automatische aanvullingen in de adresbalk.</translation>
 <translation id="2021896219286479412">Siteopties op volledig scherm</translation>
 <translation id="2038563949887743358">'Desktopsite aanvragen' aanzetten</translation>
 <translation id="2039379262107991683">Voeg pagina's aan je leeslijst toe om een herinnering te krijgen</translation>
@@ -489,8 +488,8 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="4181841719683918333">Talen</translation>
 <translation id="4183868528246477015">Zoeken met Google Lens <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
+<translation id="4196597275619698563">Kaart maken</translation>
 <translation id="4198423547019359126">Geen beschikbare downloadlocaties</translation>
-<translation id="4206707945726604465">Als je andere soorten geschiedenis wilt wissen, ga je naar <ph name="BEGIN_LINK1" />Mijn Google-activiteit<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Zet de synchronisatie aan om suggesties voor gepersonaliseerde content van Google te ontvangen</translation>
 <translation id="4225895483398857530">Snelkoppeling voor werkbalk</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
@@ -514,6 +513,7 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="4402611456429872546"><ph name="LANG" /> - Downloaden…</translation>
 <translation id="4404568932422911380">Geen bookmarks</translation>
 <translation id="4405224443901389797">Verplaatsen naar…</translation>
+<translation id="4409271659088619928">Je zoekmachine is <ph name="DSE" />. Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="4411535500181276704">Lite-versie</translation>
 <translation id="4415276339145661267">Je Google-account beheren</translation>
 <translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
@@ -773,7 +773,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
 <translation id="6000066717592683814">Google blijven gebruiken</translation>
 <translation id="6000203700195075278">Opnieuw volgen</translation>
-<translation id="6002623704405939939">Als je je <ph name="BEGIN_LINK1" />zoekgeschiedenis<ph name="END_LINK1" /> of andere geschiedenis wilt wissen, ga je naar <ph name="BEGIN_LINK2" />Mijn Google-activiteit<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Voorgesteld wachtwoord</translation>
 <translation id="6032091552407840792">Deze proef is alleen actief in <ph name="BEGIN_LINK" />bepaalde regio's<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Met <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> ontwikkelt Chrome nieuwe technologieën om je te beschermen tegen tracking op verschillende sites terwijl het open web behouden blijft.
@@ -885,7 +884,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="661266467055912436">Verbetert de beveiliging voor jou en alle andere internetgebruikers.</translation>
 <translation id="6618554661997243500">Tik op de startknop om je populaire sites en recente artikelen te bekijken</translation>
 <translation id="6627583120233659107">Map bewerken</translation>
-<translation id="6635718764393004944">Je zoekmachine is <ph name="DSE" />. Bekijk indien van toepassing de bijbehorende instructies om je zoekgeschiedenis te verwijderen.</translation>
 <translation id="663674369910034433">Bekijk <ph name="BEGIN_LINK1" />Synchronisatie<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google-services<ph name="END_LINK2" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6643649862576733715">Sorteren op hoeveelheid bespaarde data</translation>
@@ -1049,6 +1047,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="7704317875155739195">Zoekopdrachten en URL's automatisch aanvullen</translation>
 <translation id="7707922173985738739">Mobiele data gebruiken</translation>
 <translation id="7725024127233776428">Hier zie je pagina's waaraan je een bookmark toevoegt</translation>
+<translation id="7731260005404856143">Er kunnen <ph name="BEGIN_LINK1" />andere vormen van activiteit<ph name="END_LINK1" /> worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze verwijderen wanneer je wilt.</translation>
 <translation id="7757787379047923882">Tekst gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Datum en tijd kiezen</translation>
 <translation id="7762668264895820836">SD-kaart <ph name="SD_CARD_NUMBER" /></translation>
@@ -1239,6 +1238,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="8854223127042600341">Je offline bestanden bekijken</translation>
 <translation id="8856607253650333758">Beschrijvingen ophalen</translation>
 <translation id="8873817150012960745">Tik hier om te beginnen</translation>
+<translation id="8881973373982641723">Hiermee wis je de geschiedenis, waaronder die in het zoekvak.</translation>
 <translation id="889338405075704026">Naar Chrome-instellingen</translation>
 <translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>
 <translation id="8909135823018751308">Delen</translation>
@@ -1292,6 +1292,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="9209888181064652401">Kan niet bellen</translation>
 <translation id="9212845824145208577">Kan niet verder omlaag gaan. Probeer lager op de pagina te beginnen.</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Zoekgeschiedenis<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />andere vormen van activiteit<ph name="END_LINK2" /> kunnen worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze verwijderen wanneer je wilt.</translation>
 <translation id="926205370408745186">Je Chrome-activiteit verwijderen uit Digitaal welzijn</translation>
 <translation id="927968626442779827">Lite-versie van Google Chrome gebruiken</translation>
 <translation id="932327136139879170">Homepage</translation>

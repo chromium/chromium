@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> – Schaltfläche "<ph name="LINK_NAME" />"</translation>
 <translation id="2000419248597011803">Suchanfragen, die in die Adressleiste und das Suchfeld eingegeben wurden, sowie einige Cookies werden an Ihre Standardsuchmaschine gesendet</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Datei}other{# Dateien}}</translation>
-<translation id="2017836877785168846">Löscht den Verlauf sowie Autovervollständigungen in der Adressleiste.</translation>
 <translation id="2021896219286479412">Vollbild-Steuerelemente</translation>
 <translation id="2038563949887743358">"Desktopversion ansehen" aktivieren</translation>
 <translation id="2039379262107991683">Sie können Ihrer Leseliste Seiten hinzufügen, um eine Erinnerung zu erhalten</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4183868528246477015">Mit Google Lens suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4198423547019359126">Keine verfügbaren Speicherorte für Downloads</translation>
-<translation id="4206707945726604465">Unter <ph name="BEGIN_LINK1" />Meine Google-Aktivitäten<ph name="END_LINK1" /> können Sie andere Verläufe löschen</translation>
 <translation id="4209895695669353772">Aktivieren Sie die Synchronisierung, um personalisierte, von Google vorgeschlagene Inhalte zu erhalten</translation>
 <translation id="4225895483398857530">Tastenkürzel in Symbolleiste</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4402611456429872546"><ph name="LANG" /> – wird heruntergeladen…</translation>
 <translation id="4404568932422911380">Keine Lesezeichen</translation>
 <translation id="4405224443901389797">Verschieben nach…</translation>
+<translation id="4409271659088619928">Sie haben <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen Ihres Suchverlaufs finden Sie in der zugehörigen Anleitung.</translation>
 <translation id="4411535500181276704">Lite-Modus</translation>
 <translation id="4415276339145661267">Google-Konto verwalten</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
@@ -773,7 +772,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5979084224081478209">Passwörter prüfen</translation>
 <translation id="6000066717592683814">Google beibehalten</translation>
 <translation id="6000203700195075278">Wieder folgen</translation>
-<translation id="6002623704405939939">Unter <ph name="BEGIN_LINK2" />Meine Google-Aktivitäten<ph name="END_LINK2" /> können Sie Verläufe wie den <ph name="BEGIN_LINK1" />Suchverlauf<ph name="END_LINK1" /> löschen</translation>
 <translation id="6005538289190791541">Vorgeschlagenes Passwort</translation>
 <translation id="6032091552407840792">Diese Testversion ist probeweise nur in <ph name="BEGIN_LINK" />ausgewählten Regionen verfügbar<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Im Rahmen der Initiative <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> werden neue Technologien entwickelt, die zum Schutz vor websiteübergreifenden Tracking-Mechanismen und zum Erhalt des offenen Webs beitragen.
@@ -885,7 +883,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="661266467055912436">Verbessert die Sicherheit für Sie und alle im Internet.</translation>
 <translation id="6618554661997243500">Auf die Schaltfläche "Startseite" tippen, um Ihre Top-Websites und Meldungen aufzurufen</translation>
 <translation id="6627583120233659107">Ordner bearbeiten</translation>
-<translation id="6635718764393004944">Sie haben <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen Ihres Suchverlaufs finden Sie ggf. in der Anleitung der Suchmaschine.</translation>
 <translation id="663674369910034433">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK1" />Synchronisierung<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />Google-Dienste<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6643649862576733715">Nach Menge der gespeicherten Daten sortieren</translation>

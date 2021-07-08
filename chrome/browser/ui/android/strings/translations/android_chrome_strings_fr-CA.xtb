@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Bouton <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Envoie des témoins et des recherches à partir de la barre d'adresse et du champ de recherche à votre moteur de recherche par défaut</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fichier}one{# fichier}other{# fichiers}}</translation>
-<translation id="2017836877785168846">Efface l'historique et la saisie semi-automatique de la barre d'adresse.</translation>
 <translation id="2021896219286479412">Contrôles du site en plein écran</translation>
 <translation id="2038563949887743358">Activer l’option Demander site pour ordinateurs de bureau</translation>
 <translation id="2039379262107991683">Ajoutez des pages à votre liste de lecture pour recevoir un rappel</translation>
@@ -490,7 +489,6 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4183868528246477015"><ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /> Rech. avec Lentille Google</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4198423547019359126">Aucun dossier de téléchargement n'est disponible</translation>
-<translation id="4206707945726604465">Pour effacer d'autres historiques, visitez la page <ph name="BEGIN_LINK1" />Mon activité Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Pour obtenir du contenu personnalisé suggéré par Google, activez la synchronisation</translation>
 <translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -514,6 +512,7 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4402611456429872546">Téléchargement de la langue <ph name="LANG" /> en cours…</translation>
 <translation id="4404568932422911380">Aucun favori</translation>
 <translation id="4405224443901389797">Déplacer dans…</translation>
+<translation id="4409271659088619928">Vous utilisez <ph name="DSE" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="4411535500181276704">Mode simplifié</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
@@ -773,7 +772,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6000203700195075278">Se réabonner</translation>
-<translation id="6002623704405939939">Pour effacer vos <ph name="BEGIN_LINK1" />recherches<ph name="END_LINK1" /> ou d'autres types d'historiques, visitez la page<ph name="BEGIN_LINK2" />Mon activité Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
 <translation id="6032091552407840792">Cette version d'essai est uniquement active dans <ph name="BEGIN_LINK" />certaines régions<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Grâce au <ph name="BEGIN_LINK" />bac à sable de confidentialité<ph name="END_LINK" />, Chrome développe de nouvelles technologies pour vous protéger du suivi intersites, tout en préservant le caractère ouvert du Web.
@@ -885,7 +883,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6618554661997243500">Pour consulter les sites les plus fréquentés et des articles sélectionnés pour vous, touchez le bouton Accueil</translation>
 <translation id="6627583120233659107">Modifier le dossier</translation>
-<translation id="6635718764393004944">Vous utilisez <ph name="DSE" /> comme moteur de recherche. Le cas échéant, consultez ses instructions pour apprendre comment supprimer votre historique de recherche.</translation>
 <translation id="663674369910034433">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, reportez-vous aux rubriques <ph name="BEGIN_LINK1" />Synchronisation<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />Services Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6643649862576733715">Trier par quantité de données enregistrées</translation>

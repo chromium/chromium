@@ -4396,6 +4396,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5794700615121138172">Linux- gedeelde lêers</translation>
 <translation id="5794786537412027208">Beëindig alle Chrome-programme</translation>
 <translation id="5797070761912323120">Google kan jou geskiedenis gebruik om Search, advertensies en ander Google-dienste te personaliseer</translation>
+<translation id="5797521893972859201">Vee geskiedenis uit, ook in die soekkassie</translation>
 <translation id="5798079537501238810">Werwe kan betalinghanteerders installeer</translation>
 <translation id="579907812742603813">beskermde inhoud</translation>
 <translation id="579915268381781820">Jou sekuriteitsleutel is verwyder.</translation>
@@ -4479,6 +4480,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5900302528761731119">Google-profielfoto</translation>
 <translation id="590036993063074298">Besonderhede van weerspieëlinggehalte</translation>
 <translation id="5901069264981746702">Jou vingerafdrukdata word veilig geberg en verlaat nooit jou <ph name="DEVICE_TYPE" /> nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Skakel oor na oortjie wat tans vasvang</translation>
 <translation id="5901494423252125310">Drukkerdeur is oop</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5904614460720589786">Kon nie <ph name="APP_NAME" /> opstel nie weens 'n opstellingprobleem. Kontak jou administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
@@ -4751,6 +4753,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6196854373336333322">Die uitbreiding "<ph name="EXTENSION_NAME" />" het beheer oor jou instaanbedienerinstellings oorgeneem, wat beteken dat dit enigiets wat jy aanlyn doen, kan verander of breek of daarop kan inluister. As jy nie seker is hoekom hierdie verandering plaasgevind het nie, wil jy dit waarskynlik nie hê nie.</translation>
 <translation id="6198102561359457428">Meld af en meld dan weer aan …</translation>
 <translation id="6198252989419008588">Verander PIN</translation>
+<translation id="6200047250927636406">Gooi lêer weg</translation>
 <translation id="6202304368170870640">Jy kan jou PIN gebruik om aan te meld of jou toestel te ontsluit.</translation>
 <translation id="6206311232642889873">Kopieer prent</translation>
 <translation id="6207200176136643843">Stel terug na verstek-zoemvlak</translation>
@@ -5319,6 +5322,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6831043979455480757">Vertaal</translation>
 <translation id="6833479554815567477">Oortjie is verwyder uit groep <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Wissel na 'n slim en veilige blaaier</translation>
+<translation id="6834652994408928492">Donkermodus sal outomaties met sonsondergang aanskakel</translation>
 <translation id="683540480453879381">Maak <ph name="FILE_EXTENSIONS" />-lêers oop</translation>
 <translation id="6835762382653651563">Koppel aan die internet om jou <ph name="DEVICE_TYPE" /> op te dateer.</translation>
 <translation id="6838034009068684089">Vra wanneer 'n werf vensters op jou skerms wil oopmaak en plaas (aanbeveel)</translation>
@@ -6031,6 +6035,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7622114377921274169">Laai tans.</translation>
 <translation id="7622768823216805500">Werwe installeer gewoonlik betalinghanteerders vir inkopiekenmerke soos makliker betaalpunte</translation>
 <translation id="7622903810087708234">Wagwoordbesonderhede</translation>
+<translation id="7622966771025050155">Skakel oor na oortjie wat vasgevang is</translation>
 <translation id="7624337243375417909">caps lock is af</translation>
 <translation id="7625568159987162309">Bekyk toestemmings en data wat oor werwe heen geberg is</translation>
 <translation id="7628201176665550262">Herlaaitempo</translation>
@@ -6197,6 +6202,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7784067724422331729">Sekuriteitsinstellings op jou rekenaar het hierdie lêer geblokkeer.</translation>
 <translation id="7784796923038949829">Kan nie werf se data lees of verander nie</translation>
 <translation id="778480864305029524">Om kitsverbinding te gebruik, skakel kennisgewings vir Google Play Dienste aan.</translation>
+<translation id="7785471469930192436">Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien toepaslik</translation>
 <translation id="7786889348652477777">Herlaai program</translation>
 <translation id="7787308148023287649">Wys op 'n ander skerm</translation>
 <translation id="7788298548579301890">'n Ander program op jou rekenaar het 'n program bygevoeg wat dalk die manier sal verander waarop Chrome werk.
@@ -6808,6 +6814,7 @@ Druk 'n toegewese skakelaar om toewysing te verwyder</translation>
 <translation id="8438566539970814960">Maak soektogte en blaai-ervaring beter</translation>
 <translation id="8439506636278576865">Bied aan om bladsye in hierdie taal te vertaal</translation>
 <translation id="8440630305826533614">Linux-programme</translation>
+<translation id="8446225304314102060">Wissel na oortjie <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Kom meer te wete</translation>
 <translation id="8447409163267621480">Sluit óf Ctrl óf Alt in</translation>
 <translation id="8448729345478502352">Maak items op jou skerm kleiner of groter</translation>
@@ -7469,6 +7476,7 @@ Jy kan verskeie skakelaars aan hierdie handeling toewys</translation>
 <translation id="9148058034647219655">Gaan uit</translation>
 <translation id="9148126808321036104">Meld weer aan …</translation>
 <translation id="9148963623915467028">Hierdie werf het toegang tot jou ligging.</translation>
+<translation id="9149529198050266366">Donkermodus sal outomaties met sonsopkoms afskakel</translation>
 <translation id="9149866541089851383">Wysig …</translation>
 <translation id="9150045010208374699">Gebruik jou kamera</translation>
 <translation id="9150079578948279438">Profiel kon nie verwyder word nie. Probeer weer of kontak jou diensverskaffer vir tegniese steundiens.</translation>

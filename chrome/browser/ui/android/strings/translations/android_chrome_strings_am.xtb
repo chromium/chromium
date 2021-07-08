@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> አዝራር</translation>
 <translation id="2000419248597011803">ፍለጋዎችን ከአድራሻ አሞሌው እና ከፍለጋ ሳጥኑ እና አንዳንድ ኩኪዎችን ወደ ነባሪው የፍለጋ ፕሮግራምዎ ይልካል</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ፋይል}one{# ፋይሎች}other{# ፋይሎች}}</translation>
-<translation id="2017836877785168846">በአድራሻ አሞሌው ውስጥ ታሪክን እና ራስ-ሰር ማጠናቀቆችን ያጸዳል።</translation>
 <translation id="2021896219286479412">የሙሉ ማያ ገጽ ጣቢያ መቆጣጠሪያዎች</translation>
 <translation id="2038563949887743358">የዴስክቶፕ ጣቢያን ጠይቅን አብራ</translation>
 <translation id="2039379262107991683">አስታዋሽ ለማግኘት ገጾችን ወደ ንባብ ዝርዝርዎ ያክሉ</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">በGoogle Lens ይፈልጉ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4198423547019359126">ምንም የማውረጃ አካባቢዎች የሉም</translation>
-<translation id="4206707945726604465">ሌሎች የታሪክ ዓይነቶችን ለማጽዳት <ph name="BEGIN_LINK1" />የእኔ የGoogle እንቅስቃሴ<ph name="END_LINK1" />ን ይጎብኙ</translation>
 <translation id="4209895695669353772">በGoogle የተጠቆመ ግላዊነት የተላበሰ ይዘትን ስምረትን ማብራት ለማግኘት</translation>
 <translation id="4225895483398857530">የመሣሪያ አሞሌ አቋራጭ</translation>
 <translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - በማውረድ ላይ…</translation>
 <translation id="4404568932422911380">ምንም ዕልባቶች የሉም</translation>
 <translation id="4405224443901389797">ውሰድ ወደ…</translation>
+<translation id="4409271659088619928">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="4411535500181276704">ቀላል ሁነታ</translation>
 <translation id="4415276339145661267">የGoogle መለያዎን ያቀናብሩ</translation>
 <translation id="4427306783828095590">የተሻሻለ ጥበቃ ማስገር እና ተንኮል-አዘል ዌር ለማገድ የበለጠ ይሠራል</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">የይለፍ ቃላትዎን ይፈትሹ</translation>
 <translation id="6000066717592683814">Googleን አቆየው</translation>
 <translation id="6000203700195075278">እንደገና ይከተሉ</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />ፍለጋ<ph name="END_LINK1" />ን ወይም ሌሎች የታሪክ ቅርጾችን ለማጽዳት <ph name="BEGIN_LINK2" />የእኔ የGoogle እንቅስቃሴ<ph name="END_LINK2" />ን ይጎብኙ</translation>
 <translation id="6005538289190791541">የተጠቆመ የይለፍ ቃል</translation>
 <translation id="6032091552407840792">ይህ ሙከራ ንቁ የሆነው <ph name="BEGIN_LINK" />በአንዳንድ ክልሎች<ph name="END_LINK" /> ውስጥ ብቻ ነው።</translation>
 <translation id="6033245666633565791">በ<ph name="BEGIN_LINK" />የግላዊነት Sandbox<ph name="END_LINK" /> አማካኝነት Chrome ክፍት ድርን በሚጠብቁበት ጊዜ እርስዎን ከጣቢያ-ተሻጋሪ መከታተያ ለመጠበቅ አዲስ ቴክኖሎጂዎችን እየገነባ ነው።
@@ -885,7 +883,6 @@
 <translation id="661266467055912436">ለእርስዎ እና ለማናቸውም በድር ላይ ያለ ሁሉም ሰው ደህንነትን ያሻሽላል።</translation>
 <translation id="6618554661997243500">ለእርስዎ የሚሆኑ ከፍተኛዎቹን ጣቢያዎች እና ዘገባዎች ለማየት የመነሻ አዝራሩን መታ ያድርጉ</translation>
 <translation id="6627583120233659107">አቃፊ አርትዕ</translation>
-<translation id="6635718764393004944">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="663674369910034433">ከግላዊነት፣ ደህንነት እና የውሂብ ስብስብ ጋር ለሚዛመዱ ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK1" />ስምረት<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle አገልግሎቶች<ph name="END_LINK2" />ን ይመልከቱ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6643649862576733715">በተቆጠበው የውሂብ መጠን ደርድር</translation>

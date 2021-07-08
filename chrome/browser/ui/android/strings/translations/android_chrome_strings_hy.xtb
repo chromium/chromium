@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Ձեր կանխադրված որոնիչին է ուղարկում հասցեագոտու և որոնման դաշտի հարցումները, ինչպես նաև որոշ քուքիներ</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
-<translation id="2017836877785168846">Մաքրում է պատմությունն ու հասցեագոտու ինքնալրացումները:</translation>
 <translation id="2021896219286479412">Լիաէկրան ռեժիմի կարգավորումներ</translation>
 <translation id="2038563949887743358">Միացնել կայքի ամբողջական տարբերակը</translation>
 <translation id="2039379262107991683">Դուք կարող եք ձեր Ընթերցանության ցանկում ավելացնել էջեր՝ հիշեցումներ ստանալու համար</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4183868528246477015">Որոնել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4198423547019359126">Ներբեռնումների պանակներ չկան</translation>
-<translation id="4206707945726604465">Պատմությունից այլ տվյալներ ջնջելու համար այցելեք <ph name="BEGIN_LINK1" />Իմ գործողությունները Google-ում<ph name="END_LINK1" /> էջ</translation>
 <translation id="4209895695669353772">Google-ից անհատականացված բովանդակություն ստանալու համար միացրեք համաժամացումը</translation>
 <translation id="4225895483398857530">Գործիքագոտու դյուրանցում</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4402611456429872546">Ներբեռնվում է <ph name="LANG" /> լեզվի փաթեթը…</translation>
 <translation id="4404568932422911380">Էջանիշներ չկան</translation>
 <translation id="4405224443901389797">Տեղափոխել…</translation>
+<translation id="4409271659088619928">Դուք օգտագործում եք <ph name="DSE" /> որոնողական համակարգը։ Որոնումների պատմությունը ջնջելու համար կարդացեք համապատասխան ցուցումները։</translation>
 <translation id="4411535500181276704">Lite ռեժիմ</translation>
 <translation id="4415276339145661267">Կառավարել Google հաշիվը</translation>
 <translation id="4427306783828095590">Լրացուցիչ պաշտպանությունն օգնում է խուսափել ֆիշինգից և արգելափակել վնասաբեր ծրագրերը</translation>
@@ -773,7 +772,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5979084224081478209">Ստուգել գաղտնաբառերը</translation>
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
 <translation id="6000203700195075278">Նորից բաժանորդագրվել</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />Որոնման հարցումները<ph name="END_LINK1" /> կամ ձեր գործողությունների հետ կապված այլ տվյալներ ջնջելու համար անցեք <ph name="BEGIN_LINK2" />«Իմ գործողությունները Google-ում»<ph name="END_LINK2" /> էջ։</translation>
 <translation id="6005538289190791541">Առաջարկվող գաղտնաբառ</translation>
 <translation id="6032091552407840792">Այս փորձնական գործառույթը հասանելի է միայն <ph name="BEGIN_LINK" />որոշ տարածաշրջաններում<ph name="END_LINK" />։</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />-ի օգնությամբ Chrome-ը մշակում է նոր տեխնոլոգիաներ, որոնք պաշտպանում են ձեզ գործողությունների միջկայքային հետագծման մեխանիզմներից։
@@ -885,7 +883,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="661266467055912436">Համացանցը դարձնում է ավելի անվտանգ ձեր և մյուս օգտատերերի համար։</translation>
 <translation id="6618554661997243500">Ձեր թոփ կայքերն ու հոդվածները տեսնելու համար սեղմեք գլխավոր էկրանի կոճակը</translation>
 <translation id="6627583120233659107">Փոփոխել պանակը</translation>
-<translation id="6635718764393004944">Դուք օգտագործում եք <ph name="DSE" /> որոնման համակարգը։ Անհրաժեշտության դեպքում դիտեք, թե ինչպես համակարգի ցուցումներում ջնջել որոնումների պատմությունը։</translation>
 <translation id="663674369910034433">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK1" />Համաժամացում<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google-ի ծառայություններ<ph name="END_LINK2" /> բաժիններում։</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6643649862576733715">Դասավորել ըստ պահված տվյալների ծավալի</translation>

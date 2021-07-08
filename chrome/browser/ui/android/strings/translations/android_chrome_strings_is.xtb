@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> hnappur</translation>
 <translation id="2000419248597011803">Sendir sum fótspor og sumar leitir úr veffangastikunni og leitarreitnum í sjálfgefnu leitarvélina þína</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# skrá}one{# skrá}other{# skrár}}</translation>
-<translation id="2017836877785168846">Hreinsar ferilinn og sjálfvirka útfyllingu í veffangastiku.</translation>
 <translation id="2021896219286479412">Stýringar vefsvæðis á öllum skjá</translation>
 <translation id="2038563949887743358">Kveikja á beiðni um vefsvæði fyrir tölvur</translation>
 <translation id="2039379262107991683">Bættu síðum við leslistann þinn til að fá áminningu</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="4183868528246477015">Leita með Google linsu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4198423547019359126">Engar tiltækar niðurhalsstaðsetningar</translation>
-<translation id="4206707945726604465">Farðu í <ph name="BEGIN_LINK1" />Google virkni mín<ph name="END_LINK1" /> til að hreinsa aðra ferla</translation>
 <translation id="4209895695669353772">Kveiktu á samstillingu til að fá sérsniðið efni sem Google stingur upp á</translation>
 <translation id="4225895483398857530">Flýtileið á tækjastiku</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="4402611456429872546"><ph name="LANG" /> - Sækir…</translation>
 <translation id="4404568932422911380">Engin bókamerki</translation>
 <translation id="4405224443901389797">Færa í…</translation>
+<translation id="4409271659088619928">Leitarvélin þín er <ph name="DSE" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="4411535500181276704">Léttútgáfa</translation>
 <translation id="4415276339145661267">Stjórna Google reikningnum</translation>
 <translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
@@ -773,7 +772,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5979084224081478209">Yfirfara aðgangsorð</translation>
 <translation id="6000066717592683814">Nota Google áfram</translation>
 <translation id="6000203700195075278">Fylgja aftur</translation>
-<translation id="6002623704405939939">Til að hreinsa <ph name="BEGIN_LINK1" />leit<ph name="END_LINK1" /> eða aðra ferla skaltu fara í <ph name="BEGIN_LINK2" />Google virkni mín<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Útbúið aðgangsorð</translation>
 <translation id="6032091552407840792">Þessi prufuútgáfa er aðeins virk á <ph name="BEGIN_LINK" />sumum svæðum<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Chrome notar <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> til að þróa nýja tækni sem verndar þig fyrir rakningartækni en varðveitir á sama tíma opna vefinn.
@@ -885,7 +883,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="661266467055912436">Eykur öryggi þitt og allra á vefnum.</translation>
 <translation id="6618554661997243500">Ýttu á heimahnappinn til að sjá mest sóttu vefsvæðin og sögur fyrir þig</translation>
 <translation id="6627583120233659107">Breyta möppu</translation>
-<translation id="6635718764393004944">Leitarvélin þín er <ph name="DSE" />. Skoðaðu leiðbeiningar hennar til að eyða leitarferlinum þínum, ef slíkt á við.</translation>
 <translation id="663674369910034433">Frekari upplýsingar sem tengjast persónuvernd, öryggi og gagnasöfnun má finna í <ph name="BEGIN_LINK1" />Samstilling<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />Google þjónustur<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6643649862576733715">Raða eftir gagnasparnaði</translation>

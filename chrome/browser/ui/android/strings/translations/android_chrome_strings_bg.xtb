@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> бутон „<ph name="LINK_NAME" />“</translation>
 <translation id="2000419248597011803">Изпраща някои „бисквитки“ и заявките за търсене от адресната лента и полето за търсене до стандартната ви търсеща машина</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файла}}</translation>
-<translation id="2017836877785168846">Изчиства историята и автоматичните довършвания в адресната лента.</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
 <translation id="2038563949887743358">Включване на функцията за заявяване на настолни сайтове</translation>
 <translation id="2039379262107991683">Добавете страници към списъка си за четене, за да получите напомняне</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4183868528246477015">Търсене с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4198423547019359126">Няма местоположения за изтегляне</translation>
-<translation id="4206707945726604465">За да изчистите другите видове история, посетете <ph name="BEGIN_LINK1" />Моята активност в Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Включете синхронизирането, за да получавате персонализирано съдържание, предлагано от Google</translation>
 <translation id="4225895483398857530">Пряк път в лентата с инструменти</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4402611456429872546"><ph name="LANG" /> – изтегля се…</translation>
 <translation id="4404568932422911380">Няма отметки</translation>
 <translation id="4405224443901389797">Преместване във…</translation>
+<translation id="4409271659088619928">Търсещата ви машина е <ph name="DSE" />. Вижте инструкциите ѝ относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
 <translation id="4411535500181276704">Олекотен режим</translation>
 <translation id="4415276339145661267">Управление на профила ви в Google</translation>
 <translation id="4427306783828095590">Режимът за подобрена защита предприема повече действия за блокиране на фишинг атаки и злонамерен софтуер</translation>
@@ -773,7 +772,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5979084224081478209">Проверка на паролите</translation>
 <translation id="6000066717592683814">Запазване на Google</translation>
 <translation id="6000203700195075278">Повторно следене</translation>
-<translation id="6002623704405939939">За да изчистите историята на <ph name="BEGIN_LINK1" />търсенията<ph name="END_LINK1" /> или друг вид история, посетете <ph name="BEGIN_LINK2" />Моята активност в Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Предложена парола</translation>
 <translation id="6032091552407840792">Този експеримент е активен само в <ph name="BEGIN_LINK" />някои региони<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Чрез <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome разработва нови технологии, за да ви предпазва от проследяване в различни сайтове, съхранявайки отворената мрежа.
@@ -885,7 +883,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="661266467055912436">Подобрява сигурността за вас и всички потребители в мрежата.</translation>
 <translation id="6618554661997243500">За да видите водещите сайтове и материали за вас, докоснете бутона „Начало“</translation>
 <translation id="6627583120233659107">Редактиране на папката</translation>
-<translation id="6635718764393004944">Търсещата ви машина е <ph name="DSE" />. Ако е приложимо, вижте съответните инструкции, за да изтриете историята на търсенията си.</translation>
 <translation id="663674369910034433">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK1" />Синхронизиране<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />услуги на Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6643649862576733715">Сортирайте по количество спестени данни</translation>

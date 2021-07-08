@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Отправлять некоторые файлы cookie и поисковые запросы из адресной строки в поисковую систему по умолчанию</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
-<translation id="2017836877785168846">Будет удалена история и варианты автозаполнения в адресной строке.</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
 <translation id="2039379262107991683">Добавляйте страницы в список для чтения и получайте напоминания, чтобы не забыть к ним вернуться</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4198423547019359126">Нет доступных мест для скачивания</translation>
-<translation id="4206707945726604465">Чтобы удалить другие данные из истории, перейдите на страницу <ph name="BEGIN_LINK1" />Мои действия в Google<ph name="END_LINK1" />.</translation>
 <translation id="4209895695669353772">Чтобы мы могли рекомендовать вам интересный контент, включите синхронизацию.</translation>
 <translation id="4225895483398857530">Кнопка на панели инструментов</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> – скачивание…</translation>
 <translation id="4404568932422911380">Нет закладок</translation>
 <translation id="4405224443901389797">Переместить в…</translation>
+<translation id="4409271659088619928">Ваша поисковая система – <ph name="DSE" />. Изучите инструкции по удалению истории поиска в справочных материалах указанной поисковой системы.</translation>
 <translation id="4411535500181276704">Упрощенный режим</translation>
 <translation id="4415276339145661267">Перейти в настройки аккаунта Google</translation>
 <translation id="4427306783828095590">В режиме "Улучшенная защита" фишинговые атаки и вредоносное ПО блокируются ещё эффективнее.</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">Проверить пароли</translation>
 <translation id="6000066717592683814">Использовать Google</translation>
 <translation id="6000203700195075278">Снова подписаться</translation>
-<translation id="6002623704405939939">Чтобы удалить <ph name="BEGIN_LINK1" />поисковые запросы<ph name="END_LINK1" /> или другие данные о вашей активности, перейдите на страницу <ph name="BEGIN_LINK2" />Мои действия в Google<ph name="END_LINK2" />.</translation>
 <translation id="6005538289190791541">Предложенный пароль</translation>
 <translation id="6032091552407840792">Эта пробная функция доступна только в <ph name="BEGIN_LINK" />некоторых регионах<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> – инициатива Chrome по разработке новых технологий, которые позволят защитить пользователей от межсайтового отслеживания и при этом сохранить интернет открытым.
@@ -885,7 +883,6 @@
 <translation id="661266467055912436">Делает Интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6618554661997243500">Нажмите эту кнопку, чтобы увидеть интересные вам сайты и новости</translation>
 <translation id="6627583120233659107">Изменить папку</translation>
-<translation id="6635718764393004944">Ваша поисковая система – <ph name="DSE" />. Если возможно, следуйте инструкциям по удалению истории поиска для этой системы.</translation>
 <translation id="663674369910034433">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделах <ph name="BEGIN_LINK1" />Синхронизация<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Сервисы Google<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6643649862576733715">Сортировать по объему сохраненного трафика</translation>

@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Manzillar qatori va qidiruv oynasida kiritilgan so‘rovlar va ba’zi cookie ma’lumotlarni standart qidiruv tizimiga yuboradi</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ta fayl}other{# ta fayl}}</translation>
-<translation id="2017836877785168846">Manzil qatoridan tarix va avtoto‘ldirishlarni tozalaydi.</translation>
 <translation id="2021896219286479412">To‘liq ekranli rejim sozlamalari</translation>
 <translation id="2038563949887743358">Saytning to‘liq versiyasini ko‘rish</translation>
 <translation id="2039379262107991683">Keyinroq eslatma olish uchun sahifalarni Saqlab oling.</translation>
@@ -489,8 +488,8 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="4181841719683918333">Tillar</translation>
 <translation id="4183868528246477015"><ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /> Google Lens bilan qidiring</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
+<translation id="4196597275619698563">Karta yaratish</translation>
 <translation id="4198423547019359126">Yuklab olish uchun bo‘sh joy mavjud emas</translation>
-<translation id="4206707945726604465">Boshqa tarix qaydlarini tozalash uchun <ph name="BEGIN_LINK1" />Google xizmatidagi harakatlarim<ph name="END_LINK1" /> sahifasini oching</translation>
 <translation id="4209895695669353772">Bildirgilar Google tomonidan faqat sizning qiziqishlaringiz bo‘yicha taklif qilinishi uchun sinxronizatsiyani yoqing</translation>
 <translation id="4225895483398857530">Asboblar paneli yorligʻi</translation>
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
@@ -514,6 +513,7 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="4402611456429872546"><ph name="LANG" /> – Yuklab olinmoqda…</translation>
 <translation id="4404568932422911380">Hech qanday xatcho‘p yo‘q</translation>
 <translation id="4405224443901389797">Boshqa joyga olish…</translation>
+<translation id="4409271659088619928">Qidiruv tizimingiz: <ph name="DSE" />. Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi koʻrsatmalarni oching.</translation>
 <translation id="4411535500181276704">Lite rejimi</translation>
 <translation id="4415276339145661267">Google hisobingizni boshqaring</translation>
 <translation id="4427306783828095590">Kengaytirilgan himoya fishing va zararli dasturlarni bloklaydi</translation>
@@ -773,7 +773,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5979084224081478209">Parollarni tekshiring</translation>
 <translation id="6000066717592683814">Google qolaversin</translation>
 <translation id="6000203700195075278">Qayta obuna</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />Qidiruv<ph name="END_LINK1" /> soʻrovlari yoki boshqa tarix qaydlarini tozalash uchun <ph name="BEGIN_LINK2" />Google xizmatidagi harakatlarim<ph name="END_LINK2" /> sahifasini oching</translation>
 <translation id="6005538289190791541">Taklif qilingan parol</translation>
 <translation id="6032091552407840792">Bu tajribaviy funksiya faqatgina <ph name="BEGIN_LINK" />ayrim mamlakatlarda<ph name="END_LINK" /> ishlaydi.</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> yordamida Chrome ochiq internetni rivojlantirishni qoʻllab-quvvatlovchi va foydalanuvchilarni kuzatuv mexanizmlaridan himoya qiladigan texnologiyalarni ishlab chiqadi.
@@ -885,7 +884,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="661266467055912436">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi.</translation>
 <translation id="6618554661997243500">Eng sara saytlar va maqolalarni koʻrish uchun bosh sahifa tugmasini bosing</translation>
 <translation id="6627583120233659107">Jildni tahrirlash</translation>
-<translation id="6635718764393004944">Qidiruv tizimingiz: <ph name="DSE" />. Imkon bo'lsa, qidiruv tarixini qanday tozalash mumkinligini ochish.</translation>
 <translation id="663674369910034433">Maxfiylik, xavfsizlik va axborotlar jamlanishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK1" />Sinxronlash<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />Google xizmatlari<ph name="END_LINK2" /> bilan tanishing</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6643649862576733715">Tejalgan trafik asosida saralash</translation>
@@ -1049,6 +1047,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7704317875155739195">Qidiruv va URL manzillarning avtomatik kiritilishi</translation>
 <translation id="7707922173985738739">Mobil internetdan foydalanish</translation>
 <translation id="7725024127233776428">Xatchoʻplarga saqlanadigan sahifalar shu yerda chiqadi</translation>
+<translation id="7731260005404856143">Google hisobingizga kirganingizda <ph name="BEGIN_LINK1" />boshqa shakldagi harakatlaringiz<ph name="END_LINK1" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> qurilmasidan ulashilgan matn</translation>
 <translation id="7761849928583394409">Sana va vaqtni tanlang</translation>
 <translation id="7762668264895820836">SD karta <ph name="SD_CARD_NUMBER" /></translation>
@@ -1239,6 +1238,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8854223127042600341">Oflayn fayllarni ochish</translation>
 <translation id="8856607253650333758">Tavsiflarini yuklash</translation>
 <translation id="8873817150012960745">Boshlash uchun bu yerga bosing</translation>
+<translation id="8881973373982641723">Qidiruv maydonchasidagi tarixni tozalaydi.</translation>
 <translation id="889338405075704026">Chrome sozlamalarini ochish</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
@@ -1292,6 +1292,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="9209888181064652401">Telefon qilinmaydi</translation>
 <translation id="9212845824145208577">Bundan pasti olinmaydi. Sahifaning quyi qismidan qayta boshlang.</translation>
 <translation id="9219103736887031265">Rasmlar</translation>
+<translation id="923957533152125119">Google hisobingizga kirganingizda <ph name="BEGIN_LINK1" />Qidiruv tarixi<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />boshqa shakldagi harakatlaringiz<ph name="END_LINK2" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.</translation>
 <translation id="926205370408745186">Chrome amallarini Raqamli qulaylikdan olib tashlash</translation>
 <translation id="927968626442779827">Google Chrome brauzerida Lite rejimidan foydalanish</translation>
 <translation id="932327136139879170">Bosh sahifa</translation>

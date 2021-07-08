@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Print</translation>
 <translation id="1449835205994625556">Hide password</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
+<translation id="149095475893949513">This website is trying to download a configuration profile.</translation>
 <translation id="1491277525950327607">Double tap to toggle setting</translation>
 <translation id="1492417797159476138">You already saved this username for this site</translation>
 <translation id="1509486075633541495">Sign in to website</translation>
@@ -271,6 +272,7 @@ Follow the steps below:</translation>
 <translation id="3607167657931203000">Auto-fill Data</translation>
 <translation id="3609785682760573515">Syncing...</translation>
 <translation id="3638472932233958418">Pre-load Web Pages</translation>
+<translation id="3661160521073045932">Configuration profile available</translation>
 <translation id="3670030362669914947">Number</translation>
 <translation id="3691593122358196899">Bookmarked to <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Mark as unread</translation>

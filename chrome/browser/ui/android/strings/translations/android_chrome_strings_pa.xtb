@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> ਬਟਨ</translation>
 <translation id="2000419248597011803">ਪਤਾ ਬਾਰ ਅਤੇ ਖੋਜ ਬਾਕਸ ਤੋਂ ਕੁਝ ਕੁਕੀਜ਼ ਅਤੇ ਖੋਜਾਂ ਤੁਹਾਡੇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ ਨੂੰ ਭੇਜਦੀ ਹੈ</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
-<translation id="2017836877785168846">ਪਤਾ ਪੱਟੀ ਵਿੱਚੋਂ ਇਤਿਹਾਸ ਅਤੇ ਸਵੈ-ਪੂਰਨਤਾਵਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰਦੀ ਹੈ।</translation>
 <translation id="2021896219286479412">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦੇ ਸਾਈਟ ਕੰਟਰੋਲ</translation>
 <translation id="2038563949887743358">ਬੇਨਤੀ ਡੈਸਕਟਾਪ ਸਾਈਟ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2039379262107991683">ਰਿਮਾਈਂਡਰ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਪੰਨਿਆਂ ਨੂੰ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">'Google ਲੈਂਜ਼' ਨਾਲ ਖੋਜੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="4198423547019359126">ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਕੋਈ ਟਿਕਾਣਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
-<translation id="4206707945726604465">ਹੋਰ ਕਿਸਮਾਂ ਦੇ ਇਤਿਹਾਸ ਨੂੰ ਕਲੀਅਰ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK1" />ਮੇਰੀ Google ਸਰਗਰਮੀ<ph name="END_LINK1" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="4209895695669353772">Google ਵੱਲੋਂ ਸੁਝਾਈ ਵਿਅਕਤੀਗਤ ਬਣਾਈ ਗਈ ਸਮੱਗਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4225895483398857530">ਟੂਲਬਾਰ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="4242533952199664413">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="4404568932422911380">ਕੋਈ ਬੁੱਕਮਾਰਕ ਨਹੀਂ</translation>
 <translation id="4405224443901389797">ਇਸ ਵਿੱਚ ਲਿਜਾਓ…</translation>
+<translation id="4409271659088619928">ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ <ph name="DSE" /> ਹੈ। ਲਾਗੂ ਹੋਣ 'ਤੇ, ਆਪਣਾ ਖੋਜ ਇਤਿਹਾਸ ਮਿਟਾਉਣ ਲਈ ਉਹਨਾਂ ਦੀਆਂ ਹਿਦਾਇਤਾਂ ਦੇਖੋ।</translation>
 <translation id="4411535500181276704">ਲਾਈਟ ਮੋਡ</translation>
 <translation id="4415276339145661267">ਆਪਣੇ Google ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4427306783828095590">ਧੋਖਾਧੜੀ ਅਤੇ ਮਾਲਵੇਅਰ ਨੂੰ ਬਲਾਕ ਕਰਨ ਵਾਸਤੇ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਹੋਰ ਵੱਧ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="6000066717592683814">Google ਰੱਖੋ</translation>
 <translation id="6000203700195075278">ਮੁੜ-ਅਨੁਸਰਣ ਕਰੋ</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />ਖੋਜ<ph name="END_LINK1" /> ਜਾਂ ਹੋਰ ਕਿਸਮ ਦੇ ਇਤਿਹਾਸ ਨੂੰ ਕਲੀਅਰ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK2" />ਮੇਰੀ Google ਸਰਗਰਮੀ<ph name="END_LINK2" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="6005538289190791541">ਸੁਝਾਇਆ ਗਿਆ ਪਾਸਵਰਡ</translation>
 <translation id="6032091552407840792">ਇਹ ਪਰਖ ਸਿਰਫ਼ <ph name="BEGIN_LINK" />ਕੁਝ ਖੇਤਰਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਹੀ ਕਿਰਿਆਸ਼ੀਲ ਹੈ।</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ<ph name="END_LINK" /> ਦੇ ਨਾਲ, Chrome ਨਵੀਆਂ ਤਕਨਾਲੋਜੀਆਂ ਦਾ ਵਿਕਾਸ ਕਰ ਰਿਹਾ ਹੈ, ਤਾਂਕਿ ਖੁੱਲੇ ਵੈੱਬ ਨੂੰ ਸੰਭਾਲ ਕੇ ਰੱਖਣ ਦੇ ਨਾਲ-ਨਾਲ ਤੁਹਾਨੂੰ ਕ੍ਰਾਸ-ਸਾਈਟ ਟਰੈਕਿੰਗ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾ ਸਕੇ।
@@ -852,6 +850,7 @@
 <translation id="6441734959916820584">ਨਾਮ ਬਹੁਤ ਲੰਬਾ ਹੈ</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# ਚਿੱਤਰ}one{# ਚਿੱਤਰ}other{# ਚਿੱਤਰ}}</translation>
 <translation id="6447558397796644647">ਬੁੱਕਮਾਰਕ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਆਪਣੇ ਸ਼ਬਦ-ਜੋੜਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ ਕੋਈ ਨਵਾਂ ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕਰੋ।</translation>
+<translation id="6459045781120991510">ਸਰਵੇਖਣ</translation>
 <translation id="6461962085415701688">ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="6464977750820128603">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ Chrome ਵਿੱਚ ਜਾਂਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਲਈ ਟਾਈਮਰ ਸੈੱਟ ਕਰ ਸਕਦੇ ਹੋ।\n\nGoogle ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਲਈ ਤੁਸੀਂ ਟਾਈਮਰ ਸੈੱਟ ਕੀਤਾ ਹੁੰਦਾ ਹੈ ਅਤੇ ਨਾਲ ਹੀ ਇਹ ਜਾਣਕਾਰੀ ਵੀ ਪ੍ਰਾਪਤ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਕਿੰਨੀ ਦੇਰ ਤੱਕ ਦੇਖਦੇ ਰਹੇ ਹੋ। ਇਹ ਜਾਣਕਾਰੀ ਡਿਜੀਟਲ ਜੀਵਨਸ਼ੈਲੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="6475951671322991020">ਵੀਡੀਓ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -884,7 +883,6 @@
 <translation id="661266467055912436">ਵੈੱਬ 'ਤੇ ਤੁਹਾਡੇ ਅਤੇ ਹਰ ਕਿਸੇ ਲਈ ਸੁਰੱਖਿਆ ਨੂੰ ਬਿਹਤਰ ਬਣਾਇਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="6618554661997243500">ਤੁਹਾਡੇ ਲਈ ਪ੍ਰਮੁੱਖ ਸਾਈਟਾਂ ਅਤੇ ਕਹਾਣੀਆਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਹੋਮ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="6627583120233659107">ਫੋਲਡਰ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
-<translation id="6635718764393004944">ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ <ph name="DSE" /> ਹੈ। ਲਾਗੂ ਹੋਣ 'ਤੇ, ਆਪਣੇ ਖੋਜ ਇਤਿਹਾਸ ਨੂੰ ਮਿਟਾਉਣ ਲਈ ਉਹਨਾਂ ਦੀਆਂ ਹਿਦਾਇਤਾਂ ਦੇਖੋ।</translation>
 <translation id="663674369910034433">ਪਰਦੇਦਾਰੀ, ਸੁਰੱਖਿਆ ਅਤੇ ਡਾਟਾ ਸੰਗ੍ਰਹਿ ਨਾਲ ਸੰਬੰਧਿਤ ਹੋਰ ਸੈਟਿੰਗਾਂ ਲਈ, <ph name="BEGIN_LINK1" />ਸਮਕਾਲੀਕਰਨ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Google ਸੇਵਾਵਾਂ<ph name="END_LINK2" /> ਦੇਖੋ</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
 <translation id="6643649862576733715">ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਡਾਟੇ ਦੀ ਮਾਤਰਾ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
@@ -968,6 +966,7 @@
 <translation id="7242755609445462077">ਸਟਾਈਲਬੱਧ ਹਾਈਲਾਈਟ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">ਪੱਕਾ ਕਰੋ ਕਿ <ph name="TARGET_DEVICE_NAME" /> ਦੇ Chrome ਵਿੱਚ ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਹੋਵੇ</translation>
 <translation id="7252076891734325316">ਆਪਣਾ ਫ਼ੋਨ ਕੰਪਿਊਟਰ ਦੇ ਨੇੜੇ ਰੱਖੋ</translation>
+<translation id="727288900855680735">ਕੀ <ph name="ORIGIN" /> ਵਿੱਚ <ph name="ONE_TIME_CODE" /> ਨੂੰ ਸਪੁਰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7274013316676448362">ਬਲਾਕ ਕੀਤੀ ਸਾਈਟ</translation>
 <translation id="7286572596625053347">ਕੀ <ph name="LANGUAGE" /> ਬਦਲਣੀ ਹੈ?</translation>
 <translation id="7290209999329137901">ਨਾਮ ਬਦਲਣਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>

@@ -6867,7 +6867,7 @@ Pritisnite dodeljeno stikalo, če želite odstraniti dodelitev.</translation>
 <translation id="850875081535031620">Najdena ni bila nobena škodljiva programska oprema</translation>
 <translation id="8509177919508253835">Ponastavitev varnostnih ključev in ustvarjanje kod PIN</translation>
 <translation id="8509646642152301857">Prenos slovarja za preverjanje črkovanja ni uspel.</translation>
-<translation id="8509967119010808787">Če želite iskati zavihke, kliknite tu</translation>
+<translation id="8509967119010808787">Če želite iskati zavihke, kliknite tu.</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Najdeno ni bilo nobeno šibko geslo.}=1{Najdeno je bilo {COUNT} šibko geslo.}one{Najdeno je bilo {COUNT} šibko geslo.}two{Najdeni sta bili {COUNT} šibki gesli.}few{Najdena so bila {COUNT} šibka gesla.}other{Najdenih je bilo {COUNT} šibkih gesel.}}</translation>
 <translation id="8512476990829870887">Končaj proces</translation>
 <translation id="851263357009351303">Vedno dovoli mestu <ph name="HOST" />, da pokaže slike</translation>

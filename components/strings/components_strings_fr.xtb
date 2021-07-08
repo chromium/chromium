@@ -103,6 +103,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1307966114820526988">Fonctionnalités obsolètes</translation>
 <translation id="131405271941274527"><ph name="URL" /> souhaite envoyer et recevoir des informations lorsque votre téléphone entre en contact avec un appareil NFC</translation>
 <translation id="1314509827145471431">Reliure à droite</translation>
+<translation id="1319245136674974084">Ne plus me demander pour cette appli</translation>
 <translation id="1320233736580025032">Prc1 (enveloppe)</translation>
 <translation id="132301787627749051">Rechercher l'image du presse-papier</translation>
 <translation id="1323433172918577554">Afficher plus</translation>
@@ -744,6 +745,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3655670868607891010">Si ce message s'affiche régulièrement, essayez ces <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Révision</translation>
 <translation id="3664782872746246217">Mots-clés :</translation>
+<translation id="3671540257457995106">Autoriser le redimensionnement ?</translation>
 <translation id="3676592649209844519">ID de l'appareil :</translation>
 <translation id="3677008721441257057">Vouliez-vous accéder à &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ?</translation>
 <translation id="3678029195006412963">Impossible de signer la demande</translation>
@@ -1104,6 +1106,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4953689047182316270">Répondre aux événements d'accessibilité</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Développer la liste</translation>
+<translation id="4968522289500246572">Cette appli est conçue pour les mobiles et ne sera peut-être pas bien redimensionnée. Elle pourrait rencontrer des problèmes ou redémarrer.</translation>
 <translation id="4973922308112707173">Double perforation en haut</translation>
 <translation id="4974590756084640048">Réactiver les avertissements</translation>
 <translation id="4984088539114770594">Utiliser le micro ?</translation>
@@ -1152,6 +1155,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5123063207673082822">Week-end</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Valider votre carte</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> ne sera peut-être pas bien redimensionnée. Pour que l'appli fonctionne correctement, utilisez des tailles de fenêtre prédéfinies.</translation>
 <translation id="5135404736266831032">Gérer les adresses…</translation>
 <translation id="5138014172396933048">La carte virtuelle n'est pas disponible pour le moment. Veuillez contacter votre banque.</translation>
 <translation id="5138227688689900538">Afficher moins</translation>
@@ -1518,6 +1522,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="647261751007945333">Règles relatives aux appareils</translation>
 <translation id="6476284679642588870">Gérer les modes de paiement</translation>
 <translation id="6489534406876378309">Lancer l'importation des plantages</translation>
+<translation id="6493924760403974580">Cette appli n'est compatible qu'avec cette taille.</translation>
 <translation id="6499038740797743453">Réinitialiser le mot de passe ?</translation>
 <translation id="6502991525169604759">Sans vos modifications</translation>
 <translation id="6508722015517270189">Relancez Chrome</translation>
@@ -2173,6 +2178,7 @@ Informations supplémentaires :
 <translation id="8975263830901772334">Noms des fichiers que vous imprimez</translation>
 <translation id="8978053250194585037">La fonctionnalité de navigation sécurisée Google a récemment permis de <ph name="BEGIN_LINK" />détecter une tentative d'hameçonnage<ph name="END_LINK" /> sur le site <ph name="SITE" />. Un site d'hameçonnage se présente comme un site légitime dans le but de vous tromper.</translation>
 <translation id="8983003182662520383">Modes de paiement et adresses utilisés dans Google Pay</translation>
+<translation id="8983369100812962543">Vous pouvez désormais redimensionner l'appli</translation>
 <translation id="8987927404178983737">Mois</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> souhaite savoir si vous utilisez activement cet appareil</translation>

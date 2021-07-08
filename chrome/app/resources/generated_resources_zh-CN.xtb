@@ -463,6 +463,7 @@
 <translation id="1507246803636407672">舍弃(&amp;D)</translation>
 <translation id="1508491105858779599">请将手指放在指纹传感器上以解锁设备。</translation>
 <translation id="1508575541972276599">当前所用版本为 Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">恢复组(&amp;R)</translation>
 <translation id="1509281256533087115">通过 USB 访问任何<ph name="DEVICE_NAME_AND_VENDOR" /></translation>
 <translation id="1509960214886564027">很多网站上的功能可能会无法正常运作</translation>
 <translation id="1510238584712386396">启动器</translation>
@@ -582,6 +583,7 @@
 <translation id="1627408615528139100">已下载</translation>
 <translation id="1628948239858170093">打开前，先扫描文件？</translation>
 <translation id="1629314197035607094">密码已过期</translation>
+<translation id="1629451755632656601">让 Google 查找您购物车中商品的个性化折扣信息？</translation>
 <translation id="1630300831289687074">您很快就能使用 Chromebook 了。</translation>
 <translation id="163072119192489970">允许完成数据收发操作</translation>
 <translation id="1630768113285622200">重启并继续</translation>
@@ -1287,6 +1289,7 @@
 <translation id="236117173274098341">优化</translation>
 <translation id="2361340419970998028">正在发送反馈…</translation>
 <translation id="236141728043665931">始终禁止使用麦克风</translation>
+<translation id="2363744066037724557">恢复窗口(&amp;R)</translation>
 <translation id="2364498172489649528">通过</translation>
 <translation id="2365507699358342471">此页面可以查看复制到剪贴板的文字和图片。</translation>
 <translation id="2367972762794486313">显示应用</translation>
@@ -2669,6 +2672,7 @@
 <translation id="3857807444929313943">移开手指，然后再次触摸传感器</translation>
 <translation id="3861638017150647085">用户名“<ph name="USERNAME" />”不可用</translation>
 <translation id="3861977424605124250">在 Chrome 启动时显示</translation>
+<translation id="386239283124269513">恢复组(&amp;R)</translation>
 <translation id="3862788408946266506">具有“kiosk_only”这项清单属性的应用必须在 Chrome 操作系统自助服务终端模式下进行安装</translation>
 <translation id="3865414814144988605">分辨率</translation>
 <translation id="3866249974567520381">说明</translation>
@@ -5643,6 +5647,7 @@
 <translation id="7225179976675429563">缺少网络类型</translation>
 <translation id="7228479291753472782">管理用于指定网站可否使用地理位置信息、麦克风、摄像头等功能的设置</translation>
 <translation id="7228523857728654909">屏幕锁定和登录</translation>
+<translation id="7230222852462421043">恢复窗口(&amp;R)</translation>
 <translation id="7230787553283372882">自定义文字大小</translation>
 <translation id="7232750842195536390">重命名失败</translation>
 <translation id="7234010996000898150">正在取消 Linux 恢复</translation>
@@ -6252,12 +6257,14 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
 <translation id="7857093393627376423">文字建议</translation>
+<translation id="7857675386615530425">使用 Google 智能镜头搜索网页的某个部分</translation>
 <translation id="7857949311770343000">这是您想要的新标签页吗？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">服务：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下载内容(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帐号语言</translation>
 <translation id="7864539943188674973">停用蓝牙</translation>
+<translation id="7866230141401327032">使用 Google 智能镜头搜索网页的某个部分</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配对</translation>
 <translation id="7870730066603611552">完成设置后查看同步选项</translation>
 <translation id="7870790288828963061">找不到自助服务终端应用的更高版本，因此没有要更新的内容。请拔下 U 盘。</translation>
@@ -6833,6 +6840,7 @@
 <translation id="850875081535031620">未发现任何有害软件</translation>
 <translation id="8509177919508253835">重置安全密钥并创建 PIN 码</translation>
 <translation id="8509646642152301857">拼写检查字典下载失败。</translation>
+<translation id="8509967119010808787">如要搜索您的标签页，请点击此处</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{未发现任何安全系数低的密码}=1{发现了 {COUNT} 个安全系数低的密码}other{发现了 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="8512476990829870887">结束进程</translation>
 <translation id="851263357009351303">始终允许 <ph name="HOST" /> 显示图片</translation>

@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> לחצן <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">‏שליחה של חלק מקובצי ה-Cookie והחיפושים משורת כתובת האתר ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{קובץ אחד (#)}two{# קבצים}many{# קבצים}other{# קבצים}}</translation>
-<translation id="2017836877785168846">ניקוי של ההיסטוריה וההשלמות האוטומטיות בסרגל הכתובות</translation>
 <translation id="2021896219286479412">פקדי אתר במסך מלא</translation>
 <translation id="2038563949887743358">הפעלה של 'בקשת אתר עבור מחשב שולחני'</translation>
 <translation id="2039379262107991683">יש להוסיף דפים לרשימת הקריאה כדי לקבל תזכורת</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">‏חיפוש בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
-<translation id="4206707945726604465">‏יש לך אפשרות למחוק היסטוריה מסוגים אחרים בדף <ph name="BEGIN_LINK1" />הפעילות שלי ב-Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">‏כדי לקבל מ-Google הצעות לתוכן מותאם אישית, יש להפעיל את הסנכרון</translation>
 <translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - ההורדה מתבצעת…</translation>
 <translation id="4404568932422911380">ללא סימניות</translation>
 <translation id="4405224443901389797">העברה אל…</translation>
+<translation id="4409271659088619928">מנוע החיפוש שלך הוא <ph name="DSE" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="4411535500181276704">מצב טעינה מהירה</translation>
 <translation id="4415276339145661267">‏ניהול חשבון Google שלך</translation>
 <translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">בדיקת הסיסמאות</translation>
 <translation id="6000066717592683814">‏להמשיך להשתמש ב-Google</translation>
 <translation id="6000203700195075278">מעקב מחודש</translation>
-<translation id="6002623704405939939">‏כדי לנקות את <ph name="BEGIN_LINK1" />החיפוש<ph name="END_LINK1" /> או היסטוריה מסוגים אחרים, יש לעבור אל <ph name="BEGIN_LINK2" />הפעילות שלי ב-Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">הצעה לסיסמה</translation>
 <translation id="6032091552407840792">תקופת הניסיון הזו פעילה רק ב<ph name="BEGIN_LINK" />אזורים מסוימים<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">‏באמצעות <ph name="BEGIN_LINK" />ארגז חול לפרטיות<ph name="END_LINK" />, מפתחים ב-Chrome טכנולוגיות חדשות שמגינות עליך מפני מעקב באתרים שונים תוך שמירה על האופי הפתוח של רשת האינטרנט.
@@ -885,7 +883,6 @@
 <translation id="661266467055912436">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט.</translation>
 <translation id="6618554661997243500">להצגת הכתבות והאתרים המובילים שלך, יש להקיש על הלחצן הראשי</translation>
 <translation id="6627583120233659107">עריכת התיקייה</translation>
-<translation id="6635718764393004944">מנוע החיפוש שלך הוא <ph name="DSE" />. אם יש הוראות לגביו, יש לעיין בהן כדי למחוק את היסטוריית החיפושים.</translation>
 <translation id="663674369910034433">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדפים <ph name="BEGIN_LINK1" />סנכרון<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />שירותי Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6643649862576733715">מיון לפי כמות הנתונים שנחסכו</translation>

@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> బటన్</translation>
 <translation id="2000419248597011803">అడ్రస్ బార్, సెర్చ్ బాక్స్‌లలో చేసే సెర్చ్‌లు, కొన్ని కుక్కీలను మీరు ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేసిన సెర్చ్ ఇంజిన్‌కు పంపుతుంది</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ఫైల్}other{# ఫైల్‌లు}}</translation>
-<translation id="2017836877785168846">చిరునామా బార్‌లో చరిత్రను మరియు స్వీయ పూరణలను క్లియర్ చేస్తుంది.</translation>
 <translation id="2021896219286479412">పూర్తి స్క్రీన్ సైట్ నియంత్రణలు</translation>
 <translation id="2038563949887743358">డెస్క్‌టాప్ సైట్ అభ్యర్థనను ఆన్ చేయండి</translation>
 <translation id="2039379262107991683">రిమైండర్ పొందటానికి పేజీలను మీ చదవాల్సిన లిస్ట్‌కు జోడించండి</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">Google లెన్స్‌తో శోధన <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="4198423547019359126">డౌన్‌లోడ్ స్థానాలు అందుబాటులో లేవు</translation>
-<translation id="4206707945726604465">ఇతర రకాల హిస్టరీని క్లియర్ చేయడానికి, <ph name="BEGIN_LINK1" />నా Google యాక్టివిటీ<ph name="END_LINK1" />ని సందర్శించండి</translation>
 <translation id="4209895695669353772">Google ద్వారా మీ అభిరుచికి తగిన కంటెంట్‌ను సిఫార్సుల రూపంలో పొందాలనుకుంటే, సమకాలీకరణ ఎంపికను ఆన్ చేయాలి</translation>
 <translation id="4225895483398857530">Toolbar షార్ట్‌కట్</translation>
 <translation id="4242533952199664413">సెట్టింగ్‌లను తెరువు</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - డౌన్‌లోడ్ చేస్తోంది…</translation>
 <translation id="4404568932422911380">బుక్‌మార్క్‌లు లేవు</translation>
 <translation id="4405224443901389797">ఇక్కడికి తరలించండి…</translation>
+<translation id="4409271659088619928">మీ సెర్చ్ ఇంజిన్ <ph name="DSE" />. వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి దాని సూచనలను చూడండి.</translation>
 <translation id="4411535500181276704">లైట్ మోడ్</translation>
 <translation id="4415276339145661267">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>
 <translation id="4427306783828095590">ఫిషింగ్, అలాగే మాల్‌వేర్‌ను బ్లాక్ చేయడానికి మెరుగుపరచిన రక్షణ మరింత చేయగలదు</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="6000066717592683814">Googleని ఉంచు</translation>
 <translation id="6000203700195075278">మళ్లీ ఫాలో చేయి</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />సెర్చ్<ph name="END_LINK1" />ను, లేదా ఇతర రకాల హిస్టరీని క్లియర్ చేయడానికి, <ph name="BEGIN_LINK2" />నా Google యాక్టివిటీ<ph name="END_LINK2" />ని సందర్శించండి</translation>
 <translation id="6005538289190791541">సూచించబడిన పాస్‌వర్డ్‌</translation>
 <translation id="6032091552407840792">ఈ ట్రయల్ <ph name="BEGIN_LINK" />కొన్ని ప్రాంతాలలో<ph name="END_LINK" /> మాత్రమే యాక్టివ్‌గా ఉంది.</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్<ph name="END_LINK" />‌తో, Chrome మిమ్మల్ని వెబ్‌ను సంరక్షించేటప్పుడు క్రాస్-సైట్ ట్రాకింగ్ నుండి రక్షించడానికి కొత్త టెక్నాలజీలను డెవలప్ చేస్తుంది.
@@ -885,7 +883,6 @@
 <translation id="661266467055912436">మీకు, వెబ్‌లోని ప్రతి ఒక్కరికీ సెక్యూరిటీని మెరుగుపరుస్తుంది.</translation>
 <translation id="6618554661997243500">మీ కోసం టాప్ సైట్‌లు, అలాగే కథనాలను చూడటానికి హోమ్ బటన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="6627583120233659107">ఫోల్డర్‌ను సవరించు</translation>
-<translation id="6635718764393004944">మీ సెర్చ్ ఇంజిన్ <ph name="DSE" />. వర్తించినట్లయితే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి దాని సూచనలను చూడండి.</translation>
 <translation id="663674369910034433">గోప్యత, భద్రత అలాగే డేటా సేకరణకు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK1" />సింక్<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google సర్వీస్‌ల<ph name="END_LINK2" />ను చూడండి</translation>
 <translation id="6643016212128521049">క్లియర్ చేయి</translation>
 <translation id="6643649862576733715">సేవ్ చేసిన డేటా పరిమాణం ద్వారా క్రమీకరించు</translation>

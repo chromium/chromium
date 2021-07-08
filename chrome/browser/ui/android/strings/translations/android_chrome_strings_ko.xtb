@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> 버튼</translation>
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{파일 #개}other{파일 #개}}</translation>
-<translation id="2017836877785168846">검색주소창의 검색 기록 및 자동 완성 항목을 삭제합니다.</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
 <translation id="2039379262107991683">알림을 받으려면 읽기 목록에 페이지를 추가하세요.</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">Google 렌즈로 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4198423547019359126">사용할 수 있는 다운로드 위치가 없음</translation>
-<translation id="4206707945726604465">다른 형식의 기록을 삭제하려면 <ph name="BEGIN_LINK1" />내 Google 활동<ph name="END_LINK1" />으로 이동하세요.</translation>
 <translation id="4209895695669353772">Google에서 추천하는 맞춤 콘텐츠를 보려면 동기화를 사용 설정하세요.</translation>
 <translation id="4225895483398857530">툴바 바로가기</translation>
 <translation id="4242533952199664413">설정 열기</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" />: 다운로드 중입니다…</translation>
 <translation id="4404568932422911380">북마크 없음</translation>
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
+<translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4411535500181276704">라이트 모드</translation>
 <translation id="4415276339145661267">Google 계정 관리</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">비밀번호 확인</translation>
 <translation id="6000066717592683814">계속 Google 사용</translation>
 <translation id="6000203700195075278">다시 팔로우</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />검색<ph name="END_LINK1" /> 또는 다른 형태의 기록을 삭제하려면 <ph name="BEGIN_LINK2" />내 Google 활동<ph name="END_LINK2" />으로 이동하세요.</translation>
 <translation id="6005538289190791541">추천 비밀번호</translation>
 <translation id="6032091552407840792">이 무료 체험은 <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />개인 정보 보호 샌드박스<ph name="END_LINK" />를 통해 Chrome은 오픈 웹의 장점을 유지하면서 크로스 사이트 추적으로부터 사용자를 보호하는 새로운 기술을 개발하고 있습니다.
@@ -885,7 +883,6 @@
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6618554661997243500">맞춤 인기 사이트 및 뉴스를 보려면 홈 버튼 탭하기</translation>
 <translation id="6627583120233659107">폴더 수정</translation>
-<translation id="6635718764393004944">기본 검색엔진은 <ph name="DSE" />입니다. 해당하는 경우, 검색엔진에서 방문 기록을 삭제하는 방법을 확인하세요.</translation>
 <translation id="663674369910034433">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK1" />동기화<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Google 서비스<ph name="END_LINK2" />를 참고하세요.</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6643649862576733715">저장된 데이터 양에 따라 정렬</translation>

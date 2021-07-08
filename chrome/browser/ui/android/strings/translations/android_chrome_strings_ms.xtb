@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Butang <ph name="LINK_NAME" /> <ph name="MESSAGE" /></translation>
 <translation id="2000419248597011803">Menghantar beberapa kuki dan carian daripada bar alamat dan kotak carian ke enjin carian lalai anda</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Fail}other{# Fail}}</translation>
-<translation id="2017836877785168846">Kosongkan sejarah dan pelengkapan automatik dalam bar alamat.</translation>
 <translation id="2021896219286479412">Kawalan tapak skrin penuh</translation>
 <translation id="2038563949887743358">Hidupkan Minta tapak desktop</translation>
 <translation id="2039379262107991683">Tambahkan halaman pada Senarai Bacaan anda untuk mendapatkan peringatan</translation>
@@ -490,7 +489,6 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="4183868528246477015">Cari dengan Google Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
 <translation id="4198423547019359126">Tiada lokasi muat turun tersedia</translation>
-<translation id="4206707945726604465">Untuk mengosongkan bentuk sejarah lain, lawati <ph name="BEGIN_LINK1" />Aktiviti Google Saya<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Hidupkan penyegerakan untuk mendapatkan kandungan diperibadikan yang dicadangkan oleh Google</translation>
 <translation id="4225895483398857530">Pintasan bar alat</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
@@ -514,6 +512,7 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="4402611456429872546"><ph name="LANG" /> - Memuat turun…</translation>
 <translation id="4404568932422911380">Tiada penanda halaman</translation>
 <translation id="4405224443901389797">Alihkan ke…</translation>
+<translation id="4409271659088619928">Enjin carian anda ialah <ph name="DSE" />. Lihat arahan enjin carian itu untuk memadamkan sejarah carian anda, jika berkenaan.</translation>
 <translation id="4411535500181276704">Mod Ringkas</translation>
 <translation id="4415276339145661267">Urus Akaun Google anda</translation>
 <translation id="4427306783828095590">Perlindungan yang dipertingkatkan melakukan pelbagai lagi perkara untuk menyekat pancingan data dan perisian hasad</translation>
@@ -773,7 +772,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5979084224081478209">Semak kata laluan</translation>
 <translation id="6000066717592683814">Kekalkan Google</translation>
 <translation id="6000203700195075278">Ikuti semula</translation>
-<translation id="6002623704405939939">Untuk mengosongkan <ph name="BEGIN_LINK1" />carian<ph name="END_LINK1" /> atau bentuk sejarah lain, lawati <ph name="BEGIN_LINK2" />Aktiviti Google Saya<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Kata laluan yang disyorkan</translation>
 <translation id="6032091552407840792">Percubaan ini hanya aktif di <ph name="BEGIN_LINK" />sesetengah rantau<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Dengan <ph name="BEGIN_LINK" />Kotak Pasir Privasi<ph name="END_LINK" />, Chrome membangunkan teknologi baharu untuk melindungi anda daripada penjejakan rentas laman sambil memelihara web terbuka.
@@ -885,7 +883,6 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="661266467055912436">Meningkatkan keselamatan untuk anda dan semua orang yang melayari web.</translation>
 <translation id="6618554661997243500">Untuk melihat tapak web dan cerita yang paling kerap anda lawati, ketik butang Skrin Utama</translation>
 <translation id="6627583120233659107">Edit folder</translation>
-<translation id="6635718764393004944">Enjin carian anda ialah <ph name="DSE" />. Jika berkenaan, lihat arahan enjin carian itu untuk memadamkan sejarah carian anda.</translation>
 <translation id="663674369910034433">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK1" />Penyegerakan<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />perkhidmatan Google<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6643649862576733715">Isih mengikut jumlah penjimatan data</translation>

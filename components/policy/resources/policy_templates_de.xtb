@@ -4461,26 +4461,6 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
 
           Hinweis: Sofern konfiguriert, überschreibt "<ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />" diese Richtlinie.</translation>
 <translation id="6833988859168635883">Start, Startseite und Seite "Neuer Tab"</translation>
-<translation id="6834298774555537368">Durch Festlegen der Richtlinie werden die Proxyeinstellungen für Chrome- und ARC-Apps so konfiguriert, dass alle Proxyoptionen, die über die Befehlszeile eingegeben werden, ignoriert werden.
-
-       Wird die Richtlinie nicht konfiguriert, können Nutzer die Proxyeinstellungen auswählen.
-
-       Durch Festlegen der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ werden die folgenden Felder übernommen:
-         * „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ legt fest, welcher Proxyserver von Chrome verwendet werden soll, und verhindert, dass Nutzer die Proxyeinstellungen ändern
-         * „<ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />“, die URL zu einer PAC-Proxydatei
-         * „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“, die URL des Proxyservers
-         * „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“, eine Liste mit Hosts, für die der Proxy umgangen wird
-
-       Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zugunsten des Felds „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ eingestellt.
-
-        Für „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ können folgende Werte festgelegt werden:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" /> – kein Proxy wird verwendet und alle anderen Felder werden ignoriert.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> – der Proxy des Systems wird verwendet und alle anderen Felder werden ignoriert.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> – alle anderen Felder werden ignoriert.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> – die Felder „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> – die Felder „<ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
-
-      Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten unter https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="6835883744948188639">Dem Nutzer eine wiederkehrende Aufforderung anzeigen, dass ein Neustart empfohlen wird</translation>
 <translation id="683688607121170501">Mit dieser Einstellung können Nutzer nach der Anmeldung auf ihrem <ph name="PRODUCT_OS_NAME" />-Gerät im Inhaltsbereich des Browserfensters und in Android-Apps zwischen Google-Konten wechseln.
 
@@ -5213,7 +5193,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer diese Einstellung ändern.
 
-      Hinweis: Die Unterstützung der Isolierung jeder Website unter Android wird weiter verbessert. Derzeit kann sie aber Leistungsprobleme verursachen, vor allem auf leistungsschwächeren Geräten. Diese Richtlinie ist nur für Chrome unter Android auf Geräten mit mehr als 1 GB RAM gültig. Wenn Sie bestimmte Websites isolieren und die Leistungseinbußen dabei so gering wie möglich halten möchten, verwenden Sie <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> mit einer Liste der Websites, die isoliert werden sollen.  Möchten Sie die Richtlinie auf anderen Plattformen als Android nutzen, verwenden Sie dafür <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
+      Hinweis: Die Unterstützung der Isolierung jeder Website unter Android wird weiter verbessert. Derzeit kann sie aber Leistungsprobleme verursachen, vor allem auf leistungsschwächeren Geräten. Diese Richtlinie ist nur für Chrome unter Android auf Geräten mit mehr als 1 GB RAM gültig. Wenn Sie bestimmte Websites isolieren und die Leistungseinbußen dabei so gering wie möglich halten möchten, verwenden Sie <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> für eine Liste der Websites, die isoliert werden sollen.  Möchten Sie die Richtlinie auf anderen Plattformen als Android nutzen, verwenden Sie dafür <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="7683777542468165012">Dynamische Richtlinienaktualisierung</translation>
 <translation id="7687943045976362719">Wenn diese Richtlinie konfiguriert ist, wird für alle angegebenen Inhaltstypen <ph name="PRODUCT_FRAME_NAME" /> verwendet.
 

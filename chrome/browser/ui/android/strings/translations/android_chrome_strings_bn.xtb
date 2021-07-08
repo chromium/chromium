@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> বোতাম</translation>
 <translation id="2000419248597011803">অ্যাড্রেস বার এবং সার্চ বক্স থেকে সার্চের তথ্য এবং কিছু কুকি আপনার ডিফল্ট সার্চ ইঞ্জিনে পাঠায়</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
-<translation id="2017836877785168846">অ্যাড্রেস বার থেকে ইতিহাস ও অটোকমপ্লিট মুছে ফেলে।</translation>
 <translation id="2021896219286479412">পূর্ণ স্ক্রিন সাইট নিয়ন্ত্রণ</translation>
 <translation id="2038563949887743358">ডেস্কটপ সাইটের অনুরোধ চালু করুন</translation>
 <translation id="2039379262107991683">রিমাইন্ডার পাওয়ার জন্য আপনার পড়ার তালিকায় পৃষ্ঠা যোগ করুন</translation>
@@ -492,7 +491,6 @@
 <translation id="4183868528246477015">Google Lens-এর <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> ভার্সন দিয়ে খুুঁজুন</translation>
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
 <translation id="4198423547019359126">ডাউনলোড করার জন্য লোকেশন উপলভ্য নেই</translation>
-<translation id="4206707945726604465">অন্যান্য ধরনের ইতিহাস মুছতে, <ph name="BEGIN_LINK1" />আমার Google অ্যাক্টিভিটি<ph name="END_LINK1" /> দেখুন</translation>
 <translation id="4209895695669353772">Google-এর প্রস্তাবিত ব্যক্তিগতকৃত কন্টেন্ট পেতে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="4225895483398857530">টুলবারের শর্টকার্ট</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
@@ -516,6 +514,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - ডাউনলোড করা হচ্ছে…</translation>
 <translation id="4404568932422911380">কোনও বুকমার্ক নেই</translation>
 <translation id="4405224443901389797">এই ফোল্ডারে সরান…</translation>
+<translation id="4409271659088619928">আপনার সার্চ ইঞ্জিনের নাম হল, <ph name="DSE" />। এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মোছার জন্য সেটির নির্দেশাবলী দেখুন।</translation>
 <translation id="4411535500181276704">লাইট মোড</translation>
 <translation id="4415276339145661267">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4427306783828095590">ফিশিং ও ম্যালওয়্যার ব্লক করার ব্যাপারে উন্নত সুরক্ষা আরও সাহায্য করে</translation>
@@ -775,7 +774,6 @@
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
 <translation id="6000066717592683814">Google কে রাখুন</translation>
 <translation id="6000203700195075278">আবার ফলো করুন</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />সার্চ<ph name="END_LINK1" /> বা অন্যান্য ধরনের অ্যাক্টিভিটির ইতিহাস মুছে দিতে হলে, <ph name="BEGIN_LINK2" />আমার Google অ্যাক্টিভিটি<ph name="END_LINK2" /> দেখুন</translation>
 <translation id="6005538289190791541">প্রস্তাবিত পাসওয়ার্ড</translation>
 <translation id="6032091552407840792">এই ট্রায়াল শুধুমাত্র <ph name="BEGIN_LINK" />কিছু অঞ্চলে<ph name="END_LINK" /> অ্যাক্টিভ আছে।</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />প্রাইভেসি স্যান্ডবক্স<ph name="END_LINK" />-এর সাহায্যে 'Chrome' এক নতুন প্রযুক্তি তৈরি করছে। এটি ওপেন ওয়েব সুরক্ষিত করার মাধ্যমে আপনাকে ক্রস-সাইট ট্র্যাক করা থেকে রক্ষা করে।
@@ -854,6 +852,7 @@
 <translation id="6441734959916820584">নামটি অত্যন্ত দীর্ঘ</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{#টি ছবি}one{#টি ছবি}other{#টি ছবি}}</translation>
 <translation id="6447558397796644647">এই বুকমার্কটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন অথবা একটি নতুন বুকমার্ক যোগ করুন।</translation>
+<translation id="6459045781120991510">সমীক্ষা</translation>
 <translation id="6461962085415701688">ফাইল খোলা যাচ্ছে না</translation>
 <translation id="6464977750820128603">Chrome-এ দেখা সাইটগুলি আপনি দেখতে পাবেন এবং সাইটগুলিতে টাইমার সেট করতে পারবেন।\n\nযে সমস্ত সাইটে টাইমার সেট করেছেন বা কত সময় ধরে সাইটটি দেখেছেন তার সমস্ত তথ্য Google-এর কাছে যায়। ডিজিটাল ওয়েলবিং-কে আরও উন্নত করতে এই তথ্য ব্যবহার করা হয়।</translation>
 <translation id="6475951671322991020">ভিডিও ডাউনলোড করুন</translation>
@@ -886,7 +885,6 @@
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>
 <translation id="6618554661997243500">আপনার জন্য বেছে নেওয়া সেরা সাইট ও খবর দেখতে 'হোম' বোতাম টিপুন</translation>
 <translation id="6627583120233659107">ফোল্ডার সম্পাদনা করুন</translation>
-<translation id="6635718764393004944">আপনার সার্চ ইঞ্জিন হল, <ph name="DSE" />। এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মুছে ফেলতে তাদের নির্দেশাবলী দেখুন।</translation>
 <translation id="663674369910034433">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK1" />সিঙ্ক<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google পরিষেবা<ph name="END_LINK2" /> দেখুন</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6643649862576733715">সেভ করা ডেটার পরিমাণ অনুযায়ী সাজান</translation>
@@ -970,6 +968,7 @@
 <translation id="7242755609445462077">স্টাইলযুক্ত হাইলাইট <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chrome-এ <ph name="TARGET_DEVICE_NAME" /> সিঙ্ক করার ফিচার চালু করে রেখেছেন কিনা দেখে নিন।</translation>
 <translation id="7252076891734325316">ফোনকে কম্পিউটারের কাছাকাছি নিয়ে আসুন</translation>
+<translation id="727288900855680735"><ph name="ORIGIN" />-এ <ph name="ONE_TIME_CODE" /> জমা করতে চান?</translation>
 <translation id="7274013316676448362">অবরুদ্ধ সাইট</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> পরিবর্তন করবেন?</translation>
 <translation id="7290209999329137901">আবার নামকরণের বিকল্পটি উপলভ্য নেই</translation>

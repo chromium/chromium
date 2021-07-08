@@ -4424,26 +4424,6 @@
 
           หมายเหตุ: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> จะลบล้างนโยบายนี้หากระบุนโยบายเดิมไว้</translation>
 <translation id="6833988859168635883">เริ่มต้นใช้งาน หน้าแรก และหน้าแท็บใหม่</translation>
-<translation id="6834298774555537368">การตั้งค่านโยบายนี้จะกำหนดค่าพร็อกซีสำหรับ Chrome และแอป ARC โดยไม่พิจารณาตัวเลือกเกี่ยวกับพร็อกซีทั้งหมดที่ระบุจากบรรทัดคำสั่ง
-
-       การไม่ตั้งค่านโยบายนี้จะทำให้ผู้ใช้เลือกการตั้งค่าพร็อกซีได้
-
-       การตั้งค่านโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> จะยอมรับช่องต่อไปนี้
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> ซึ่งช่วยให้คุณระบุพร็อกซีเซิร์ฟเวอร์ที่ Chrome จะใช้ได้ และป้องกันไม่ให้ผู้ใช้เปลี่ยนการตั้งค่าพร็อกซี
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> URL ไปยังไฟล์ .pac ของพร็อกซี
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> URL ของพร็อกซีเซิร์ฟเวอร์
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> รายการโฮสต์ที่จะข้ามพร็อกซี
-
-       ช่อง <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> เลิกใช้งานแล้วเพื่อใช้ช่อง <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> แทน
-
-        สำหรับ <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> หากคุณเลือกค่าต่อไปนี้
-          * <ph name="PROXY_MODE_ENUM_DIRECT" /> ระบบจะไม่ใช้พร็อกซีและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> ระบบจะใช้พร็อกซีของระบบและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> ระบบจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ระบบจะใช้ช่อง <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> ระบบจะใช้ช่อง <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
-
-      หมายเหตุ: ดูตัวอย่างโดยละเอียดเพิ่มเติมได้ที่ The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )</translation>
 <translation id="6835883744948188639">แสดงข้อความแจ้งที่ปรากฏขึ้นซ้ำๆ แก่ผู้ใช้เพื่อแจ้งว่าควรเปิดเบราว์เซอร์ขึ้นมาใหม่</translation>
 <translation id="683688607121170501">การตั้งค่านี้ทำให้ผู้ใช้สลับการใช้งานระหว่างบัญชี Google ได้ภายในพื้นที่เนื้อหาของหน้าต่างเบราว์เซอร์และในแอปพลิเคชันของ Android หลังจากที่ลงชื่อเข้าใช้อุปกรณ์ <ph name="PRODUCT_OS_NAME" />
 

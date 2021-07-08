@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> Botón <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas desde la barra de direcciones y el cuadro de búsqueda a tu buscador predeterminado</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# archivo}other{# archivos}}</translation>
-<translation id="2017836877785168846">Borra el historial y los autocompletados de la barra de direcciones.</translation>
 <translation id="2021896219286479412">Controles de pantalla completa</translation>
 <translation id="2038563949887743358">Activar opción para ver como ordenador</translation>
 <translation id="2039379262107991683">Añade páginas a tu lista de lectura para recibir recordatorios</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="4183868528246477015">Buscar con Google Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4198423547019359126">No hay ubicaciones de descarga disponibles</translation>
-<translation id="4206707945726604465">Para borrar otros tipos de historial, visita <ph name="BEGIN_LINK1" />Mi Actividad en Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Para obtener contenido personalizado sugerido por Google, activa la sincronización</translation>
 <translation id="4225895483398857530">Acceso directo en la barra de herramientas</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="4402611456429872546"><ph name="LANG" />: descargando…</translation>
 <translation id="4404568932422911380">No hay marcadores</translation>
 <translation id="4405224443901389797">Mover a…</translation>
+<translation id="4409271659088619928">Usas el buscador <ph name="DSE" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="4411535500181276704">Modo básico</translation>
 <translation id="4415276339145661267">Gestionar tu cuenta de Google</translation>
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y software malicioso.</translation>
@@ -773,7 +772,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5979084224081478209">Comprobar contraseñas</translation>
 <translation id="6000066717592683814">Mantener Google como motor de búsqueda predeterminado</translation>
 <translation id="6000203700195075278">Volver a seguir</translation>
-<translation id="6002623704405939939">Para borrar la <ph name="BEGIN_LINK1" />búsqueda<ph name="END_LINK1" /> u otros tipos de historial, visita <ph name="BEGIN_LINK2" />Mi Actividad en Google<ph name="END_LINK2" />.</translation>
 <translation id="6005538289190791541">Contraseña sugerida</translation>
 <translation id="6032091552407840792">Esta prueba solo está activa en <ph name="BEGIN_LINK" />algunas regiones<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome desarrolla nuevas tecnologías que te protegerán de mecanismos de seguimiento entre sitios y, a la vez, preservarán la Web abierta.
@@ -885,7 +883,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="661266467055912436">Mejora tu seguridad y la de todo el mundo en la Web.</translation>
 <translation id="6618554661997243500">Para ver tus sitios favoritos e historias, toca el botón de inicio</translation>
 <translation id="6627583120233659107">Editar carpeta</translation>
-<translation id="6635718764393004944">Usas el buscador <ph name="DSE" />. Si procede, consulta sus instrucciones sobre cómo eliminar tu historial de búsqueda.</translation>
 <translation id="663674369910034433">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK1" />Sincronización<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />Servicios de Google<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6643649862576733715">Ordenar por cantidad de datos ahorrados</translation>

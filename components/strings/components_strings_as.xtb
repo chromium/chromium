@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">অপ্ৰচলিত সুবিধাসমূহ</translation>
 <translation id="131405271941274527">আপুনি নিজৰ ফ’নটো কোনো NFC ডিভাইচত লগালে <ph name="URL" />এ তথ্য পঠিয়াব আৰু গ্ৰহণ কৰিবলৈ বিচাৰে</translation>
 <translation id="1314509827145471431">সোঁফালে সংযুক্ত কৰক</translation>
+<translation id="1319245136674974084">এই এপ্‌টোৰ বাবে পুনৰাই নুসুধিব</translation>
 <translation id="1320233736580025032">Prc1 (লেফাফা)</translation>
 <translation id="132301787627749051">ক্লিপব'ৰ্ডৰ প্ৰতিচ্ছবিৰ সন্ধান কৰক</translation>
 <translation id="1323433172918577554">অধিক দেখুৱাওক</translation>
@@ -741,6 +742,7 @@
 <translation id="3655670868607891010">আপুনি যদি এইটো সঘনাই দেখি আছে, <ph name="HELP_LINK" />লৈ যাওক।</translation>
 <translation id="3658742229777143148">পুনৰীক্ষণ</translation>
 <translation id="3664782872746246217">মূল শব্দ:</translation>
+<translation id="3671540257457995106">আকাৰ সলনি কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="3676592649209844519">ডিভাইচ আইডি:</translation>
 <translation id="3677008721441257057">আপুনি &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;ৰ কথা কৈছে নেকি?</translation>
 <translation id="3678029195006412963">অনুৰোধ ছাইন কৰিব পৰা নগ’ল</translation>
@@ -1099,6 +1101,7 @@
 <translation id="4953689047182316270">সাধ্যসুবিধাৰ অনুষ্ঠানলৈ সঁহাৰি জনাওক</translation>
 <translation id="4955242332710481440">A5-অতিৰিক্ত</translation>
 <translation id="4958444002117714549">তালিকা প্ৰসাৰিত কৰক</translation>
+<translation id="4968522289500246572">এই এপ্‌টো ম’বাইলৰ বাবে ডিজাইন কৰা হৈছে আৰু ইয়াৰ আকাৰ ভালদৰে সলনি নহ’ব পাৰে। এপ্‌টো সমস্যাৰ সন্মুখীন অথবা ৰিষ্টাৰ্ট হ’ব পাৰে।</translation>
 <translation id="4973922308112707173">ওপৰৰ অংশত দুবাৰ পাঞ্চ কৰক</translation>
 <translation id="4974590756084640048">সতর্কবার্তাসমূহ পুনৰ সক্ষম কৰক</translation>
 <translation id="4984088539114770594">মাইক্র’ফ’ন ব্যৱহাৰ কৰিবনে?</translation>
@@ -1147,6 +1150,7 @@
 <translation id="5123063207673082822">সপ্তাহৰ অন্ত</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">আপোনাৰ কাৰ্ডখন সত্যাপন কৰক</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" />ৰ আকাৰ ভালদৰে সলনি নহ’ব পাৰে। এপ্‌টো সমস্যাৰ সন্মুখীন হোৱাত বাধা দিবলৈ পূৰ্বে ছেট কৰি থোৱা ৱিণ্ড’ৰ আকাৰ ব্যৱহাৰ কৰক।</translation>
 <translation id="5135404736266831032">ঠিকনাসমূহ পৰিচালনা কৰক...</translation>
 <translation id="5138014172396933048">এই মুহূৰ্তত ভাৰ্চুৱেল কাৰ্ডখন উপলব্ধ নহয়, অনুগ্ৰহ কৰি আপোনাৰ বেংকৰ সৈতে যোগাযোগ কৰক</translation>
 <translation id="5138227688689900538">কমকৈ দেখুৱাওক</translation>
@@ -1511,6 +1515,7 @@
 <translation id="647261751007945333">ডিভাইচৰ নীতি</translation>
 <translation id="6476284679642588870">পৰিশোধ পদ্ধতিসমূহ পৰিচালনা কৰক</translation>
 <translation id="6489534406876378309">ক্ৰেশ্ব আপল’ড কৰা আৰম্ভ কৰক</translation>
+<translation id="6493924760403974580">এই এপ্‌টোৱে কেৱল এইটো আকাৰ সমৰ্থন কৰে।</translation>
 <translation id="6499038740797743453">পাছৱৰ্ড ৰিছেট কৰিবনে?</translation>
 <translation id="6502991525169604759">আপোনাৰ সালসলনিসমূহ অবিহনে</translation>
 <translation id="6508722015517270189">Chrome ৰিষ্টাৰ্ট কৰক</translation>
@@ -2162,6 +2167,7 @@
 <translation id="8975263830901772334">আপুনি প্ৰিণ্ট কৰা ফাইলসমূহৰ নাম</translation>
 <translation id="8978053250194585037">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ <ph name="SITE" />ত <ph name="BEGIN_LINK" />ফিশ্বিং চিনাক্ত কৰিছে<ph name="END_LINK" />। ফিশ্বিং ছাইটে অন্য কোনো ছাইটৰ ৰূপ লৈ আপোনাক সমস্যাত পেলাব পাৰে।</translation>
 <translation id="8983003182662520383">Google Pay ব্যৱহাৰ কৰি থকা পৰিশোধৰ পদ্ধতি আৰু ঠিকনা</translation>
+<translation id="8983369100812962543">আপুনি এতিয়া এপ্‌টোৰ আকাৰ সলনি কৰিব পাৰে</translation>
 <translation id="8987927404178983737">মাহ</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে <ph name="URL" />এ জানিব বিচাৰে</translation>

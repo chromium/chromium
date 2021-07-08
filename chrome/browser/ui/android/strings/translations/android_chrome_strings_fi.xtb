@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-painike</translation>
 <translation id="2000419248597011803">Lähettää joitakin osoitekentän ja hakukentän kautta tehtyjä hakuja sekä joitakin evästeitä oletushakukoneellesi</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# tiedosto}other{# tiedostoa}}</translation>
-<translation id="2017836877785168846">Tyhjentää historian ja osoitepalkin automaattiset täydennykset.</translation>
 <translation id="2021896219286479412">Ohjaimet koko näytön tilassa</translation>
 <translation id="2038563949887743358">Ota käyttöön Käytä tietokoneversiota</translation>
 <translation id="2039379262107991683">Lisää lukulistalle sivuja, joista saat muistutuksen</translation>
@@ -490,7 +489,6 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4183868528246477015">Hae Google Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4198423547019359126">Tallennussijainteja ei ole saatavilla</translation>
-<translation id="4206707945726604465">Voit tyhjentää muita historiatietoja <ph name="BEGIN_LINK1" />Google-toimintani<ph name="END_LINK1" /> ‑kohdassa.</translation>
 <translation id="4209895695669353772">Ota synkronointi käyttöön, niin näet Googlen suosittelemaa yksilöllistä sisältöä</translation>
 <translation id="4225895483398857530">Työkalupalkin pikakuvake</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
@@ -514,6 +512,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4402611456429872546"><ph name="LANG" /> – Ladataan…</translation>
 <translation id="4404568932422911380">Ei kirjanmerkkejä</translation>
 <translation id="4405224443901389797">Siirrä…</translation>
+<translation id="4409271659088619928">Hakukoneesi on <ph name="DSE" />. Katso tarvittaessa hakukoneen ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4411535500181276704">Yksinkertaistettu tila</translation>
 <translation id="4415276339145661267">Ylläpidä Google-tiliäsi</translation>
 <translation id="4427306783828095590">Parannettu suojaus torjuu tietojenkalastelua ja haittaohjelmia entistä tehokkaammin</translation>
@@ -773,7 +772,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5979084224081478209">Tarkista salasanat</translation>
 <translation id="6000066717592683814">Käytä Googlea</translation>
 <translation id="6000203700195075278">Seuraa uudelleen</translation>
-<translation id="6002623704405939939">Voit tyhjentää <ph name="BEGIN_LINK1" />haun<ph name="END_LINK1" /> tai muita historiatietoja <ph name="BEGIN_LINK2" />Google-toimintani<ph name="END_LINK2" />-kohdassa.</translation>
 <translation id="6005538289190791541">Salasanaehdotus</translation>
 <translation id="6032091552407840792">Tämä kokeilu on aktiivinen vain <ph name="BEGIN_LINK" />tietyillä alueilla<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Chrome kehittää <ph name="BEGIN_LINK" />Privacy Sandboxin<ph name="END_LINK" /> avulla uusia tekniikoita, joiden avulla sinua voidaan suojata sivustojen väliseltä seurannalta verkon pysyessä avoimena.
@@ -885,7 +883,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="661266467055912436">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>
 <translation id="6618554661997243500">Katso suositut sivustosi ja sinulle valitut jutut napauttamalla Etusivu-painiketta</translation>
 <translation id="6627583120233659107">Muokkaa kansiota</translation>
-<translation id="6635718764393004944">Hakukoneesi on <ph name="DSE" />. Katso sen mahdolliset ohjeet hakuhistorian tyhjentämiseen.</translation>
 <translation id="663674369910034433">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia kohdista <ph name="BEGIN_LINK1" />Synkronointi<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Googlen palvelut<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6643649862576733715">Lajittele säästetyn datan määrän mukaan</translation>

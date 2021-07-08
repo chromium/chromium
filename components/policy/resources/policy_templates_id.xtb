@@ -4507,26 +4507,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
           Catatan: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> akan mengganti kebijakan ini jika kebijakan tersebut ditentukan.</translation>
 <translation id="6833988859168635883">Halaman Awal, Halaman Beranda, dan halaman Tab Baru</translation>
-<translation id="6834298774555537368">Menyetel kebijakan akan mengonfigurasi setelan proxy untuk Chrome dan aplikasi ARC, yang mengabaikan semua opsi terkait proxy yang ditentukan dari command line.
-
-       Jika kebijakan tidak disetel, pengguna dapat memilih setelan proxy mereka.
-
-       Menyetel kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> akan menyetujui kolom berikut:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, yang memungkinkan Anda menentukan server proxy yang digunakan oleh Chrome dan mencegah pengguna mengubah setelan proxy
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, URL ke file .pac proxy
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, URL server proxy
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, daftar host proxy yang diabaikan
-
-       Kolom <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> tidak digunakan lagi dan digantikan dengan kolom <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Untuk <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, jika Anda memilih nilai:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy tidak akan pernah digunakan dan semua kolom lainnya akan diabaikan.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, proxy sistem akan digunakan dan semua kolom lainnya akan diabaikan.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, semua kolom lainnya akan diabaikan.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, kolom <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, kolom <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
-
-      Catatan: Untuk contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="6835883744948188639">Tampilkan permintaan berulang kepada pengguna yang menunjukkan bahwa peluncuran ulang direkomendasikan</translation>
 <translation id="683688607121170501">Setelan ini memungkinkan pengguna beralih ke Akun Google lain di dalam area konten jendela browser dan aplikasi Android setelah mereka login ke perangkat <ph name="PRODUCT_OS_NAME" />.
 

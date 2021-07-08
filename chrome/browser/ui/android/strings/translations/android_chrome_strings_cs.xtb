@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> tlačítko <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Odesílá soubory cookie a vyhledávací dotazy z adresního řádku a vyhledávacího pole a několik souborů cookie vašemu výchozímu vyhledávači</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
-<translation id="2017836877785168846">Vymaže historii a automatická dokončení v adresním řádku.</translation>
 <translation id="2021896219286479412">Ovládání webu na celé obrazovce</translation>
 <translation id="2038563949887743358">Zapnout funkci Verze webu pro PC</translation>
 <translation id="2039379262107991683">Chcete-li dostat připomenutí, přidejte si stránky na Seznam četby</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox se stále aktivně vyvíjí a je dostupný jen ve vybraných ob
 <translation id="4183868528246477015">Hledat pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
 <translation id="4198423547019359126">Nejsou k dispozici žádná umístění stažených souborů</translation>
-<translation id="4206707945726604465">Pokud chcete vymazat jiné formy historie, navštivte <ph name="BEGIN_LINK1" />Moji aktivitu na Googlu<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Chcete-li od Googlu získat personalizované návrhy obsahu, zapněte synchronizaci</translation>
 <translation id="4225895483398857530">Zkratka lišty</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox se stále aktivně vyvíjí a je dostupný jen ve vybraných ob
 <translation id="4402611456429872546"><ph name="LANG" /> – Stahování…</translation>
 <translation id="4404568932422911380">Žádné záložky</translation>
 <translation id="4405224443901389797">Přesunout do…</translation>
+<translation id="4409271659088619928">Váš vyhledávač je <ph name="DSE" />. Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
 <translation id="4411535500181276704">Zjednodušený režim</translation>
 <translation id="4415276339145661267">Spravovat účet Google</translation>
 <translation id="4427306783828095590">Vylepšená ochrana vás lépe ochrání před phishingem a malwarem</translation>
@@ -773,7 +772,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5979084224081478209">Zkontrolovat hesla</translation>
 <translation id="6000066717592683814">Ponechat Google</translation>
 <translation id="6000203700195075278">Znovu sledovat</translation>
-<translation id="6002623704405939939">Pokud chcete vymazat <ph name="BEGIN_LINK1" />vyhledávání<ph name="END_LINK1" /> nebo jiné formy historie, přejděte na stránku <ph name="BEGIN_LINK2" />Moje aktivita na Googlu<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Navrhované heslo</translation>
 <translation id="6032091552407840792">Tato zkušební funkce je k dispozici pouze v <ph name="BEGIN_LINK" />některých oblastech<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">V rámci sady <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> vyvíjí tým Chrome nové technologie, které uživatele chrání před sledováním mezi weby a přitom zachovávají otevřenost webu.
@@ -885,7 +883,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="661266467055912436">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu.</translation>
 <translation id="6618554661997243500">Chcete-li zobrazit své top weby a příběhy, klepněte na tlačítko domovské stránky</translation>
 <translation id="6627583120233659107">Upravit složku</translation>
-<translation id="6635718764393004944">Váš vyhledávač je <ph name="DSE" />. Prostudujte si pokyny k vymazání historie vyhledávání v příslušném vyhledávači.</translation>
 <translation id="663674369910034433">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v částech <ph name="BEGIN_LINK1" />Synchronizace<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />Služby Google<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6643649862576733715">Seřadit podle množství uspořených dat</translation>

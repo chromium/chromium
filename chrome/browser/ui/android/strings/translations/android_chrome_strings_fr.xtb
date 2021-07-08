@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Bouton <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Envoie des cookies et des recherches effectuées à partir de la barre d'adresse et du champ de recherche à votre moteur de recherche par défaut</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fichier}one{# fichier}other{# fichiers}}</translation>
-<translation id="2017836877785168846">Efface l'historique et les saisies semi-automatiques dans la barre d'adresse.</translation>
 <translation id="2021896219286479412">Commandes du site en plein écran</translation>
 <translation id="2038563949887743358">Activer "Voir version ordinateur"</translation>
 <translation id="2039379262107991683">Ajoutez des pages à votre liste de lecture pour recevoir un rappel</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4183868528246477015">Utiliser Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4198423547019359126">Aucun emplacement de téléchargements disponible</translation>
-<translation id="4206707945726604465">Pour effacer d'autres historiques, consultez <ph name="BEGIN_LINK1" />Mon activité Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Activez la synchronisation pour obtenir des suggestions de contenu personnalisées de la part de Google</translation>
 <translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4402611456429872546"><ph name="LANG" /> - Téléchargement…</translation>
 <translation id="4404568932422911380">Aucun favori</translation>
 <translation id="4405224443901389797">Déplacer vers…</translation>
+<translation id="4409271659088619928">Votre moteur de recherche est <ph name="DSE" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="4411535500181276704">Mode simplifié</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4427306783828095590">La protection renforcée assure une meilleure protection contre l'hameçonnage et les logiciels malveillants</translation>
@@ -773,7 +772,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6000203700195075278">Se réabonner</translation>
-<translation id="6002623704405939939">Pour effacer l'<ph name="BEGIN_LINK1" />historique des recherches<ph name="END_LINK1" /> ou d'autres historiques, consultez <ph name="BEGIN_LINK2" />Mon activité Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
 <translation id="6032091552407840792">Cet essai n'est actif que dans <ph name="BEGIN_LINK" />certaines régions<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Avec <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome développe de nouvelles technologies pour vous protéger contre le suivi intersite tout en préservant le Web ouvert.
@@ -852,6 +850,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6441734959916820584">Nom trop long</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# image}one{# image}other{# images}}</translation>
 <translation id="6447558397796644647">Impossible de localiser ce favori. Vérifiez l'orthographe ou ajoutez-en un autre.</translation>
+<translation id="6459045781120991510">Enquêtes</translation>
 <translation id="6461962085415701688">Impossible d'ouvrir le fichier</translation>
 <translation id="6464977750820128603">Vous pouvez voir les sites que vous avez consultés dans Chrome et définir des minuteurs pour ceux-ci.\n\nGoogle obtient des informations sur les sites pour lesquels vous définissez des minuteurs et peut déterminer le temps que vous passez sur ces derniers. Ces informations sont utilisées pour améliorer Bien-être numérique.</translation>
 <translation id="6475951671322991020">Télécharger la vidéo</translation>
@@ -884,7 +883,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6618554661997243500">Appuyez sur le bouton d'accueil pour retrouver les meilleurs sites et articles pour vous.</translation>
 <translation id="6627583120233659107">Modifier le dossier</translation>
-<translation id="6635718764393004944">Votre moteur de recherche est <ph name="DSE" />. Le cas échéant, consultez ses instructions pour supprimer votre historique des recherches.</translation>
 <translation id="663674369910034433">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez les pages <ph name="BEGIN_LINK1" />Synchronisation<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />Services Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6643649862576733715">Trier en fonction de la quantité de données économisées</translation>
@@ -968,6 +966,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7242755609445462077">En surbrillance et stylisé, <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation est activée sur votre <ph name="TARGET_DEVICE_NAME" /> dans Chrome</translation>
 <translation id="7252076891734325316">Posez le téléphone près de l'ordinateur</translation>
+<translation id="727288900855680735">Envoyer <ph name="ONE_TIME_CODE" /> à <ph name="ORIGIN" /> ?</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
 <translation id="7286572596625053347">Modifier <ph name="LANGUAGE" /> ?</translation>
 <translation id="7290209999329137901">Option de changement de nom indisponible</translation>

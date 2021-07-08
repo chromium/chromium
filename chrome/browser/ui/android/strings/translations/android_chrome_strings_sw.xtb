@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Kitufe cha <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Hutuma baadhi ya vidakuzi na utafutaji kutoka kwenye sehemu ya anwani na kisanduku cha kutafutia kwenye mtambo wako chaguomsingi wa kutafuta</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{Faili #}other{Faili #}}</translation>
-<translation id="2017836877785168846">Hufuta historia na ujazaji kiotomatiki katika sehemu ya anwani.</translation>
 <translation id="2021896219286479412">Vidhibiti vya tovuti vya skrini nzima</translation>
 <translation id="2038563949887743358">Washa Omba Tovuti ya Eneo-kazi</translation>
 <translation id="2039379262107991683">Weka kurasa kwenye Orodha yako ya Kusoma ili upate kikumbusho</translation>
@@ -490,7 +489,6 @@ Teknolojia ya Utaratibu wa kuwekea vikwazo vya faragha bado inaendelea kutengene
 <translation id="4183868528246477015">Tafuta na Lenzi ya Google <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Fungua katika kichupo kipya</translation>
 <translation id="4198423547019359126">Hakuna maeneno ya upakuaji</translation>
-<translation id="4206707945726604465">Ili uweze kufuta historia ya aina nyingine, tembelea <ph name="BEGIN_LINK1" />Shughuli Zangu Kwenye Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Washa kipengele cha usawazishaji ili Google ikupendekezee maudhui yanayokufaa</translation>
 <translation id="4225895483398857530">Njia ya mkato ya upau wa vidhibiti</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
@@ -514,6 +512,7 @@ Teknolojia ya Utaratibu wa kuwekea vikwazo vya faragha bado inaendelea kutengene
 <translation id="4402611456429872546"><ph name="LANG" /> - Inapakuliwa…</translation>
 <translation id="4404568932422911380">Hakuna alamisho</translation>
 <translation id="4405224443901389797">Hamishia kwenye…</translation>
+<translation id="4409271659088619928">Mtambo wako wa kutafuta ni <ph name="DSE" />. Angalia maagizo ya mtambo huo wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="4411535500181276704">Hali nyepesi</translation>
 <translation id="4415276339145661267">Dhibiti Akaunti yako ya Google</translation>
 <translation id="4427306783828095590">Kipengele cha ulinzi wa hali ya juu hufanya mengi zaidi ili kuzuia programu hasidi na wizi wa data binafsi</translation>
@@ -773,7 +772,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5979084224081478209">Kagua manenosiri</translation>
 <translation id="6000066717592683814">Endelea Kutumia Google</translation>
 <translation id="6000203700195075278">Fuatilia tena</translation>
-<translation id="6002623704405939939">Ili ufute historia ya <ph name="BEGIN_LINK1" />utafutaji<ph name="END_LINK1" /> au historia nyingine, tembelea <ph name="BEGIN_LINK2" />Shughuli Zangu Kwenye Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Nenosiri linalopendekezwa</translation>
 <translation id="6032091552407840792">Jaribio hili linatumika katika <ph name="BEGIN_LINK" />baadhi ya maeneo<ph name="END_LINK" /> pekee.</translation>
 <translation id="6033245666633565791">Kwa kutumia <ph name="BEGIN_LINK" />Utaratibu wa kuwekea vikwazo vya faragha<ph name="END_LINK" />, Chrome inakuza teknolojia mpya zitakazokulinda dhidi ya ufuatiliaji wa data kwenye tovuti nyingi huku zikidumisha wavuti huria.
@@ -885,7 +883,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="661266467055912436">Huboresha usalama wako na wa kila mtu kwenye wavuti.</translation>
 <translation id="6618554661997243500">Ili uone tovuti na taarifa maarufu unazopendekezewa, gusa kitufe cha Ukurasa wa mwanzo</translation>
 <translation id="6627583120233659107">Badilisha folda</translation>
-<translation id="6635718764393004944">Mtambo wako wa kutafuta ni <ph name="DSE" />. Ikiwa yapo, angalia maagizo yake ya kufuta historia ya mambo uliyoyafuta.</translation>
 <translation id="663674369910034433">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK1" />Usawazishaji<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />huduma za Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Futa</translation>
 <translation id="6643649862576733715">Panga kulingana na kiasi cha data kilichookolewa</translation>

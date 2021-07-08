@@ -38,9 +38,9 @@
 <translation id="1291603679744561561">சிம் பூட்டப்பட்டுள்ளது</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google இயக்ககம் இப்போது கிடைக்கவில்லை. Google இயக்ககம் இணைப்பு கிடைத்தவுடன் பதிவேற்றம் தானாகவே மறுதொடக்கம் செய்யப்படும்.</translation>
-<translation id="1307931752636661898">Linux கோப்புகளைப் பார்க்க முடியவில்லை</translation>
+<translation id="1307931752636661898">Linux ஃபைல்களைப் பார்க்க முடியவில்லை</translation>
 <translation id="1313405956111467313">தானியங்கு ப்ராக்ஸி உள்ளமைவு</translation>
-<translation id="1351692861129622852"><ph name="FILE_COUNT" /> கோப்புகளைப் பதிவிறக்குகிறது...</translation>
+<translation id="1351692861129622852"><ph name="FILE_COUNT" /> ஃபைல்களைப் பதிவிறக்குகிறது...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">கோப்பு அல்லது கோப்பகம் உபயோகிக்கக்கூடியதில்லை.</translation>
 <translation id="1363028406613469049">டிராக் எண்</translation>
@@ -71,7 +71,7 @@
 <translation id="162175252992296058">போர்ச்சுகீஸ் - யூஎஸ் சர்வதேசக் கீபோர்டு</translation>
 <translation id="1629521517399325891">நெட்வொர்க் அங்கீகாரத்திற்குப் பயனர் சான்றிதழ் கிடைக்கவில்லை.</translation>
 <translation id="1641780993263690097">சீனம் (பின்யின்)</translation>
-<translation id="1646019627374511909">ஆஃப்லைனில் பயன்படுத்த <ph name="NUMBER_OF_ITEMS" /> கோப்புகளைப் பதிவிறக்குகிறது</translation>
+<translation id="1646019627374511909">ஆஃப்லைனில் பயன்படுத்த <ph name="NUMBER_OF_ITEMS" /> ஃபைல்களைப் பதிவிறக்குகிறது</translation>
 <translation id="164969095109328410">Chrome சாதனம்</translation>
 <translation id="1661867754829461514">PIN இல்லை</translation>
 <translation id="166439687370499867">பகிர்ந்த நெட்வொர்க் உள்ளமைவுகளை மாற்றுவதற்கு அனுமதியில்லை</translation>
@@ -482,7 +482,7 @@
     Google இயக்ககத்தில் உள்ள கோப்புகள் சமீபத்திய மாற்றங்களுடன் இருக்கும், அவற்றை எந்தச் சாதனத்திலிருந்தும் அணுகலாம்.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />உங்கள் கோப்புகள் பாதுகாப்பாக இருக்கும்.<ph name="MARKUP_5" />
     சாதனத்திற்கு எந்தவிதப் பாதிப்பு ஏற்பட்டாலும், உங்கள் கோப்புகள் Google இயக்ககத்தில் பாதுகாப்பாகச் சேமிக்கப்பட்டிருக்கும்.<ph name="MARKUP_6" />
-    <ph name="MARKUP_7" />ஒரே இடத்தில் கோப்புகளைப் பகிரலாம், உருவாக்கலாம்,<ph name="MARKUP_8" />
+    <ph name="MARKUP_7" />ஒரே இடத்தில் ஃபைல்களைப் பகிரலாம், உருவாக்கலாம்,<ph name="MARKUP_8" />
      மேலும் பிறருடன் இணைந்து திருத்தலாம்.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google இயக்கத்திலிருந்து மீட்கப்பட்ட கோப்புகள்</translation>
 <translation id="5288441970121584418">பர்கர்</translation>
@@ -529,7 +529,7 @@
    <ph name="LINE_BREAKS" />
    காப்பகம் அல்லது விர்ச்சுவல் வட்டிலுள்ள எல்லாக் கோப்புகளையும் மூடி, மீண்டும் முயலவும்.</translation>
 <translation id="5691596662111998220">அடடா, <ph name="FILE_NAME" /> இல்லை.</translation>
-<translation id="5698411045597658393"><ph name="NETWORK_NAME" />, திறக்கும்</translation>
+<translation id="5698411045597658393"><ph name="NETWORK_NAME" />, அனலாக் செய்யும்</translation>
 <translation id="5700087501958648444">ஆடியோ தகவல்</translation>
 <translation id="5724172041621205163">தாய் - பட்டாச்சோட் கீபோர்டு</translation>
 <translation id="5731409020711461763">1 புதிய படம்</translation>
@@ -771,7 +771,7 @@
     குறைவான படங்களைத் தேர்ந்தெடுத்து முயலவும்.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> டெ.பை.</translation>
 <translation id="7831491651892296503">நெட்வொர்க்கை உள்ளமைப்பதில் பிழை</translation>
-<translation id="7839804798877833423">இந்த கோப்புகளைப் பெற்றால், மொபைல் டேட்டாவில் தோராயமாக <ph name="FILE_SIZE" /> ஐப் பயன்படுத்தும்.</translation>
+<translation id="7839804798877833423">இந்த ஃபைல்களைப் பெற்றால், மொபைல் டேட்டாவில் தோராயமாக <ph name="FILE_SIZE" /> ஐப் பயன்படுத்தும்.</translation>
 <translation id="7846076177841592234">தேர்வை ரத்துசெய்</translation>
 <translation id="7847617962681804761">மொபைல் டேட்டாவைப் பயன்படுத்த பின் (PIN) தேவை</translation>
 <translation id="7853966320808728790">ஃபிரஞ்ச் பீபோ</translation>

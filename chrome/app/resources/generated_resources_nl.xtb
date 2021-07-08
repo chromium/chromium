@@ -4376,6 +4376,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5794700615121138172">Gedeelde mappen voor Linux</translation>
 <translation id="5794786537412027208">Alle Chrome-apps sluiten</translation>
 <translation id="5797070761912323120">Google kan je geschiedenis gebruiken om Google Zoeken, advertenties en andere Google-services te personaliseren</translation>
+<translation id="5797521893972859201">Hiermee wis je de geschiedenis, waaronder die in het zoekvak</translation>
 <translation id="5798079537501238810">Sites kunnen betalingshandlers installeren</translation>
 <translation id="579907812742603813">beschermde content</translation>
 <translation id="579915268381781820">Je beveiligingssleutel is verwijderd.</translation>
@@ -4459,6 +4460,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5900302528761731119">Google-profielfoto</translation>
 <translation id="590036993063074298">Informatie over kwaliteit van mirroring</translation>
 <translation id="5901069264981746702">Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Overschakelen naar tabblad vastleggen</translation>
 <translation id="5901494423252125310">Printerklep is open</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5904614460720589786">Kan <ph name="APP_NAME" /> niet instellen vanwege een configuratieprobleem. Neem contact op met je beheerder. Foutcode: <ph name="ERROR_CODE" />.</translation>
@@ -4731,6 +4733,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6196854373336333322">De extensie '<ph name="EXTENSION_NAME" />' heeft het beheer van je proxyinstellingen overgenomen. Dit betekent dat de extensie alles wat je online doet, kan wijzigen, beschadigen of bekijken. Als je niet zeker weet waarom deze wijziging heeft plaatsgevonden, is het waarschijnlijk een ongewenste wijziging.</translation>
 <translation id="6198102561359457428">Log uit en log daarna weer in...</translation>
 <translation id="6198252989419008588">Pincode wijzigen</translation>
+<translation id="6200047250927636406">Bestand weggooien</translation>
 <translation id="6202304368170870640">Je kunt je pincode gebruiken om in te loggen of je apparaat te ontgrendelen.</translation>
 <translation id="6206311232642889873">A&amp;fbeelding kopiëren</translation>
 <translation id="6207200176136643843">Standaardzoomniveau resetten</translation>
@@ -5299,6 +5302,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="6831043979455480757">Vertalen</translation>
 <translation id="6833479554815567477">Tabblad verwijderd uit groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Overschakelen naar een slimme, beveiligde browser</translation>
+<translation id="6834652994408928492">De donkere modus wordt automatisch aangezet bij zonsondergang</translation>
 <translation id="683540480453879381"><ph name="FILE_EXTENSIONS" />-bestanden openen</translation>
 <translation id="6835762382653651563">Maak verbinding met internet om je <ph name="DEVICE_TYPE" /> te updaten.</translation>
 <translation id="6838034009068684089">Vragen als een site vensters op je schermen wil openen en plaatsen (aanbevolen)</translation>
@@ -6011,6 +6015,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7622114377921274169">Opladen.</translation>
 <translation id="7622768823216805500">Sites installeren betalingshandlers meestal voor winkelfuncties zoals gemakkelijk betalen</translation>
 <translation id="7622903810087708234">Wachtwoordgegevens</translation>
+<translation id="7622966771025050155">Overschakelen naar vastgelegd tabblad</translation>
 <translation id="7624337243375417909">Caps Lock uit</translation>
 <translation id="7625568159987162309">Rechten en op sites opgeslagen gegevens bekijken</translation>
 <translation id="7628201176665550262">Vernieuwingssnelheid</translation>
@@ -6177,6 +6182,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7784067724422331729">Beveiligingsinstellingen op je computer hebben dit bestand geblokkeerd.</translation>
 <translation id="7784796923038949829">Kan sitegegevens niet lezen of wijzigen</translation>
 <translation id="778480864305029524">Zet meldingen voor Google Play-services aan om instant-tethering te gebruiken.</translation>
+<translation id="7785471469930192436">Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing)</translation>
 <translation id="7786889348652477777">App opnieuw &amp;laden</translation>
 <translation id="7787308148023287649">Weergeven op een ander scherm</translation>
 <translation id="7788298548579301890">Een ander programma op je computer heeft een app toegevoegd die de manier kan wijzigen waarop Chrome werkt.
@@ -6787,6 +6793,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8438566539970814960">Zoekopdrachten en browsefunctionaliteit verbeteren</translation>
 <translation id="8439506636278576865">Aanbieden pagina's te vertalen in deze taal</translation>
 <translation id="8440630305826533614">Linux-apps</translation>
+<translation id="8446225304314102060">Overschakelen naar tabblad <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Meer informatie</translation>
 <translation id="8447409163267621480">Neem Ctrl of Alt op</translation>
 <translation id="8448729345478502352">Items op het scherm kleiner of groter maken</translation>
@@ -7449,6 +7456,7 @@ Je kunt meerdere schakelaars aan deze actie toewijzen</translation>
 <translation id="9148058034647219655">Sluiten</translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
 <translation id="9148963623915467028">Deze site heeft toegang tot je locatie.</translation>
+<translation id="9149529198050266366">De donkere modus wordt automatisch uitgezet bij zonsopgang</translation>
 <translation id="9149866541089851383">Bewerken...</translation>
 <translation id="9150045010208374699">Je camera gebruiken</translation>
 <translation id="9150079578948279438">Kan profiel niet verwijderen. Probeer het opnieuw of neem contact op met je provider voor technische support.</translation>

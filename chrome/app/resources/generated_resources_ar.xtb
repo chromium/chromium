@@ -467,6 +467,7 @@
 <translation id="1507246803636407672">إل&amp;غاء</translation>
 <translation id="1508491105858779599">ضع إصبعك على جهاز جهاز استشعار بصمات الإصبع لإلغاء قفل الجهاز.</translation>
 <translation id="1508575541972276599">‏الإصدار الحالي هو Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">استعادة المجموعة</translation>
 <translation id="1509281256533087115">‏الوصول إلى أي <ph name="DEVICE_NAME_AND_VENDOR" /> عبر USB</translation>
 <translation id="1509960214886564027">قد تتوقف الميزات عن العمل في العديد من المواقع الإلكترونية.</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
@@ -589,6 +590,7 @@
 <translation id="1627408615528139100">تم التنزيل من قبل</translation>
 <translation id="1628948239858170093">هل تريد فحص الملف قبل فتحه؟</translation>
 <translation id="1629314197035607094">انتهت صلاحية كلمة المرور.</translation>
+<translation id="1629451755632656601">‏هل تسمح لمحرك البحث Google بالبحث عن خصومات مناسبة على السلع والمنتجات التي تضيفها إلى سلات التسوّق الخاصة بك؟</translation>
 <translation id="1630300831289687074">‏ستتمكّن من استخدام جهاز Chromebook قريبًا.</translation>
 <translation id="163072119192489970">المواقع الإلكترونية التي يُسمح لها بإنهاء إرسال البيانات أو استلامها</translation>
 <translation id="1630768113285622200">إعادة التشغيل والمواصلة</translation>
@@ -1294,6 +1296,7 @@
 <translation id="236117173274098341">تحسين</translation>
 <translation id="2361340419970998028">جارٍ إرسال الملاحظات...</translation>
 <translation id="236141728043665931">حظر الدخول إلى الميكروفون دومًا</translation>
+<translation id="2363744066037724557">استعادة النافذة</translation>
 <translation id="2364498172489649528">تم الاجتياز.</translation>
 <translation id="2365507699358342471">يمكن لهذا الموقع الاطلاع على النصوص والصور التي تم نسخها إلى الحافظة.</translation>
 <translation id="2367972762794486313">إظهار التطبيقات</translation>
@@ -2679,6 +2682,7 @@
 <translation id="3857807444929313943">رفع الإصبع، ثم اللمس مرة أخرى</translation>
 <translation id="3861638017150647085">اسم المستخدم "<ph name="USERNAME" />" غير متوفر.</translation>
 <translation id="3861977424605124250">إظهار عند بدء التشغيل</translation>
+<translation id="386239283124269513">استعادة المجموعة</translation>
 <translation id="3862788408946266506">‏يجب تثبيت التطبيق الذي يحمل سمة البيان "kiosk_only" في وضع الكشك على نظام تشغيل Chrome.</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
 <translation id="3866249974567520381">الوصف</translation>
@@ -5651,6 +5655,7 @@
 <translation id="7225179976675429563">نوع الشبكة مفقود</translation>
 <translation id="7228479291753472782">معالجة الإعدادات التي تحدد ما إذا كان بإمكان المواقع الإلكترونية استخدام ميزات مثل المواقع الجغرافية والميكروفون والكاميرا، وغيرها</translation>
 <translation id="7228523857728654909">قفل الشاشة وتسجيل الدخول</translation>
+<translation id="7230222852462421043">استعادة النافذة</translation>
 <translation id="7230787553283372882">تخصيص حجم النَّص</translation>
 <translation id="7232750842195536390">تعذّرت إعادة التسمية</translation>
 <translation id="7234010996000898150">‏جارٍ إلغاء عملية الاسترداد من Linux</translation>
@@ -6260,12 +6265,14 @@
 <translation id="7853747251428735">المزيد من الأد&amp;وات</translation>
 <translation id="7855678561139483478">نقل علامة التبويب إلى نافذة جديدة</translation>
 <translation id="7857093393627376423">اقتراحات نصية</translation>
+<translation id="7857675386615530425">‏البحث في جزء من الصفحة باستخدام "عدسة Google"</translation>
 <translation id="7857949311770343000">هل هذه هي صفحة علامة التبويب الجديدة التي كنت تتوقع ظهورها؟</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">الخدمة: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ال&amp;تنزيلات</translation>
 <translation id="7861846108263890455">‏لغة حساب Google</translation>
 <translation id="7864539943188674973">إيقاف البلوتوث</translation>
+<translation id="7866230141401327032">‏البحث في جزء من الصفحة باستخدام "عدسة Google"</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - تم الإقران</translation>
 <translation id="7870730066603611552">مراجعة خيارات المزامنة بعد الإعداد</translation>
 <translation id="7870790288828963061">‏لا توجد إصدارات أحدث لتطبيق Kiosk. لا يوجد شيء لتحديثه. يُرجى إزالة جهاز USB.</translation>
@@ -6842,6 +6849,7 @@
 <translation id="850875081535031620">لم يتم العثور على أي برامج ضارة</translation>
 <translation id="8509177919508253835">إعادة ضبط مفاتيح الأمان وإنشاء أرقام التعريف الشخصية</translation>
 <translation id="8509646642152301857">تعذّر تنزيل قاموس التدقيق الإملائي.</translation>
+<translation id="8509967119010808787">للبحث في علامات التبويب، انقر هنا.</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{لم يتم العثور على أي كلمات مرور ضعيفة.}=1{تم العثور على كلمة مرور واحدة ({COUNT}) ضعيفة.}two{تم العثور على كلمتَي مرور ({COUNT}) ضعيفتَين.}few{تم العثور على {COUNT} كلمات مرور ضعيفة.}many{تم العثور على {COUNT} كلمة مرور ضعيفة.}other{تم العثور على {COUNT} كلمة مرور ضعيفة.}}</translation>
 <translation id="8512476990829870887">إنهاء العملية</translation>
 <translation id="851263357009351303">السماح للموقع <ph name="HOST" /> بعرض الصور دومًا</translation>

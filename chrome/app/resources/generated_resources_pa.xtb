@@ -467,6 +467,7 @@
 <translation id="1507246803636407672">&amp;ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
 <translation id="1508491105858779599">ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਆਪਣੀ ਉਂਗਲ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ 'ਤੇ ਰੱਖੋ।</translation>
 <translation id="1508575541972276599">ਮੌਜੂਦਾ ਵਰਜਨ Debian 9 (Stretch) ਹੈ</translation>
+<translation id="1509163368529404530">&amp;ਗਰੁੱਪ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="1509281256533087115">USB ਰਾਹੀਂ ਕਿਸੇ ਵੀ <ph name="DEVICE_NAME_AND_VENDOR" /> ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1509960214886564027">ਸ਼ਾਇਦ ਕਈ ਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਠੀਕ ਤਰੀਕੇ ਨਾਲ ਕੰਮ ਨਾ ਕਰਨ</translation>
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
@@ -589,6 +590,7 @@
 <translation id="1627408615528139100">ਪਹਿਲਾਂ ਤੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀ ਗਈ</translation>
 <translation id="1628948239858170093">ਕੀ ਖੋਲ੍ਹਣ ਤੋਂ ਪਹਿਲਾਂ ਫ਼ਾਈਲ ਨੂੰ ਸਕੈਨ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1629314197035607094">ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ ਮੁੱਕ ਗਈ</translation>
+<translation id="1629451755632656601">ਕੀ Google ਨੂੰ ਤੁਹਾਡੇ ਕਾਰਟਾਂ 'ਤੇ ਵਿਅਕਤੀਗਤ ਬਣਾਈਆਂ ਛੋਟਾਂ ਨੂੰ ਲੱਭਣ ਦੇਣਾ ਹੈ?</translation>
 <translation id="1630300831289687074">ਤੁਸੀਂ ਜਲਦ ਹੀ ਆਪਣੀ Chromebook ਵਰਤ ਸਕੋਗੇ।</translation>
 <translation id="163072119192489970">ਡਾਟਾ ਭੇਜਣ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਪੂਰਾ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1630768113285622200">ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਜਾਰੀ ਰੱਖੋ</translation>
@@ -1306,6 +1308,7 @@
 <translation id="236117173274098341">ਸੁਯੋਗ ਬਣਾਓ</translation>
 <translation id="2361340419970998028">ਵਿਚਾਰ ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="236141728043665931">ਹਮੇਸ਼ਾਂ ਮਾਈਕ੍ਰੋਫੋਨ ਪਹੁੰਚ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
+<translation id="2363744066037724557">&amp;ਵਿੰਡੋ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="2364498172489649528">ਪਾਸ ਕੀਤਾ</translation>
 <translation id="2365507699358342471">ਇਹ ਸਾਈਟ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ।</translation>
 <translation id="2367972762794486313">ਐਪਸ ਦਿਖਾਓ</translation>
@@ -2688,6 +2691,7 @@
 <translation id="3857807444929313943">ਚੁੱਕੋ, ਫਿਰ ਦੁਬਾਰਾ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="3861638017150647085">ਵਰਤੋਂਕਾਰ ਨਾਮ "<ph name="USERNAME" />" ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="3861977424605124250">ਸ਼ੁਰੂਆਤ ਵੇਲੇ ਦਿਖਾਓ</translation>
+<translation id="386239283124269513">&amp;ਗਰੁੱਪ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="3862788408946266506">'kiosk_only' ਮੈਨੀਫ਼ੈਸਟ ਵਿਸ਼ੇਸ਼ਤਾ ਵਾਲੀ ਐਪ Chrome OS ਕਿਓਸਕ ਮੋਡ ਵਿੱਚ ਲਾਜ਼ਮੀ ਤੌਰ 'ਤੇ ਸਥਾਪਤ ਕੀਤੀ ਜਾਣੀ ਚਾਹੀਦੀ ਹੈ</translation>
 <translation id="3865414814144988605">ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="3866249974567520381">ਵਰਣਨ</translation>
@@ -5664,6 +5668,7 @@
 <translation id="7225179976675429563">ਨੈੱਟਵਰਕ ਪ੍ਰਕਾਰ ਲੁਪਤ</translation>
 <translation id="7228479291753472782">ਉਹਨਾਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੋਧੋ ਜੋ ਇਹ ਨਿਰਧਾਰਿਤ ਕਰਦੀਆਂ ਹਨ ਕਿ ਕੀ ਵੈੱਬਸਾਈਟਾਂ ਭੂਗੋਲਿਕ ਟਿਕਾਣੇ, ਮਾਈਕ੍ਰੋਫ਼ੋਨ, ਕੈਮਰਾ, ਆਦਿ ਵਰਗੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="7228523857728654909">ਸਕ੍ਰੀਨ ਲਾਕ ਅਤੇ ਸਾਈਨ-ਇਨ</translation>
+<translation id="7230222852462421043">&amp;ਵਿੰਡੋ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="7230787553283372882">ਆਪਣੀ ਲਿਖਤ ਦੇ ਆਕਾਰ ਨੂੰ ਵਿਸ਼ੇਸ਼-ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7232750842195536390">ਨਾਮ ਬਦਲਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="7234010996000898150">Linux ਮੁੜ-ਬਹਾਲੀ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
@@ -6272,12 +6277,14 @@
 <translation id="7853747251428735">ਹੋਰ ਟੂ&amp;ਲਸ</translation>
 <translation id="7855678561139483478">ਟੈਬ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="7857093393627376423">ਲਿਖਤ ਸੁਝਾਅ</translation>
+<translation id="7857675386615530425">Google Lens ਨਾਲ ਪੰਨੇ ਦਾ ਹਿੱਸਾ ਖੋਜਣਾ</translation>
 <translation id="7857949311770343000">ਕੀ ਇਹ ਉਹੀ ਨਵੀਂ ਟੈਬ ਪੰਨਾ ਹੈ ਜਿਸਦੀ ਤੁਸੀਂ ਆਸ ਕਰ ਰਹੇ ਸੀ?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">ਸੇਵਾ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ਡਾਊਨਲੋਡਸ</translation>
 <translation id="7861846108263890455">Google ਖਾਤੇ ਦੀ ਭਾਸ਼ਾ</translation>
 <translation id="7864539943188674973">Bluetooth ਨੂੰ ਅਸਮਰੱਥ ਬਣਾਓ</translation>
+<translation id="7866230141401327032">Google Lens ਨਾਲ ਪੰਨੇ ਦਾ ਹਿੱਸਾ ਖੋਜਣਾ</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ਜੋੜਾਬੱਧ ਕੀਤੀ ਗਈ</translation>
 <translation id="7870730066603611552">ਸੈੱਟਅੱਪ ਦੇ ਬਾਅਦ ਸਮਕਾਲੀਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="7870790288828963061">ਨਵੇਂ ਵਰਜਨ ਵਾਲੀਆਂ ਕੋਈ ਕਿਓਸਕ ਐਪਾਂ ਨਹੀਂ ਮਿਲਿਆਂ। ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਕੁਝ ਨਹੀਂ। ਕਿਰਪਾ ਕਰਕੇ USB ਸਟਿੱਕ ਹਟਾਓ।</translation>
@@ -6853,6 +6860,7 @@
 <translation id="850875081535031620">ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫਟਵੇਅਰ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="8509177919508253835">ਸੁਰੱਖਿਆ ਕੁੰਜੀਆਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਕੇ ਪਿੰਨ ਬਣਾਓ</translation>
 <translation id="8509646642152301857">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਸ਼ਬਦਕੋਸ਼ ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ।</translation>
+<translation id="8509967119010808787">ਆਪਣੇ ਟੈਬਾਂ ਦੀ ਖੋਜ ਕਰਨ ਲਈ, ਇੱਥੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{ਕੋਈ ਕਮਜ਼ੋਰ ਪਾਸਵਰਡ ਨਹੀਂ ਮਿਲਿਆ}=1{{COUNT} ਕਮਜ਼ੋਰ ਪਾਸਵਰਡ ਮਿਲਿਆ}other{{COUNT} ਕਮਜ਼ੋਰ ਪਾਸਵਰਡ ਮਿਲੇ}}</translation>
 <translation id="8512476990829870887">ਪ੍ਰਕਿਰਿਆ ਖ਼ਤਮ ਕਰੋ</translation>
 <translation id="851263357009351303"><ph name="HOST" /> ਨੂੰ ਹਮੇਸ਼ਾਂ ਚਿੱਤਰ ਦਿਖਾਉਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>

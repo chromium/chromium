@@ -4382,6 +4382,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5794700615121138172">Linux umumiy jildlari</translation>
 <translation id="5794786537412027208">Barcha Chrome ilovalarini yopish</translation>
 <translation id="5797070761912323120">Qidiruv, rekama va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin</translation>
+<translation id="5797521893972859201">Qidiruv maydonchasidagi tarixni tozalaydi</translation>
 <translation id="5798079537501238810">Saytlar toʻlov vositalarini oʻrnatishi mumkin</translation>
 <translation id="579907812742603813">himoyalangan kontent</translation>
 <translation id="579915268381781820">Elektron kalitingiz chiqarib olindi.</translation>
@@ -4465,6 +4466,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5900302528761731119">Google profili rasmi</translation>
 <translation id="590036993063074298">Translatsiya sifati tafsilotlari</translation>
 <translation id="5901069264981746702">Barmoq izlaringiz yaxshi himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmangizda saqlanadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Yozib olinayotgan varaq</translation>
 <translation id="5901494423252125310">Printer eshikchasi ochiq</translation>
 <translation id="5901630391730855834">Sariq</translation>
 <translation id="5904614460720589786">Sozlashda muammo yuz bergani uchun <ph name="APP_NAME" /> sozlanmadi Administratorga murojaat qiling. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
@@ -4737,6 +4739,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />” kengaytmasi proksi-server sozlamalarini nazorat qiladi. U internetda bajargan ishlaringizni o‘zgartirishi, buzishi yoki bildirmasdan eshitishi mumkin. Agar bu haqda eshitmagan bo‘lsangiz, uni o‘chirib qo‘yganingiz yaxshi.</translation>
 <translation id="6198102561359457428">Chiqish va qaytadan kirish...</translation>
 <translation id="6198252989419008588">PIN-kodni o‘zgartirish</translation>
+<translation id="6200047250927636406">Faylni yopish</translation>
 <translation id="6202304368170870640">Hisobingizga kirish yoki qurilmani ochish uchun PIN koddan foydalanishingiz mumkin.</translation>
 <translation id="6206311232642889873">Tasvirni &amp;nusxalash</translation>
 <translation id="6207200176136643843">Standart masshtab</translation>
@@ -5306,6 +5309,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="6833479554815567477">Varaq <ph name="GROUP_NAME" /> guruhidan olib tashlandi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Qulay va xavfsiz brauzerdan foydalaning</translation>
+<translation id="6834652994408928492">Tungi rejim quyosh botishi bilan avtomatik yoqiladi</translation>
 <translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> fayllarini ochish</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> qurilmasini yangilash uchun Internetga ulaning.</translation>
 <translation id="6838034009068684089">Saytlar ekranlarda oynalar ochish va joylashtirishdan oldin ruxsat olsin (tavsiya etiladi)</translation>
@@ -6018,6 +6022,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7622114377921274169">Quvvat olmoqda.</translation>
 <translation id="7622768823216805500">Saytlar odatda xaridlar vaqtida hisob-kitobni osonlashtirish uchun toʻlov vositalarini oʻrnatadi</translation>
 <translation id="7622903810087708234">Parol tafsilotlari</translation>
+<translation id="7622966771025050155">Yozib olingan varaq</translation>
 <translation id="7624337243375417909">caps lock o‘chiq</translation>
 <translation id="7625568159987162309">Saytlardagi rusatnoma va saytlarning saqlangan ma’lumotlarini ko‘rish</translation>
 <translation id="7628201176665550262">Yangilash chastotasi</translation>
@@ -6184,6 +6189,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7784067724422331729">Bu fayl kompyuter havfsizlik sozlamasi tomonidan bloklandi.</translation>
 <translation id="7784796923038949829">Sayt axborotini ochish yoki tahrirlash imkonsiz</translation>
 <translation id="778480864305029524">Tezkor modem rejimidan foydalanish uchun Google Play xizmatlari bildirishnomalarini yoqing.</translation>
+<translation id="7785471469930192436">Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsatmalarini oching</translation>
 <translation id="7786889348652477777">&amp;Ilovani qayta yuklash</translation>
 <translation id="7787308148023287649">Boshqa ekranda ko‘rsatish</translation>
 <translation id="7788298548579301890">Kompyuteringizdagi boshqa dastur brauzeringizga bitta ilova o‘rnatdi. U Chrome brauzerining ishlash usulini o‘zgartirishi mumkin.
@@ -6794,6 +6800,7 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="8438566539970814960">Sahifalarni kezish va qidiruvni yaxshilash</translation>
 <translation id="8439506636278576865">Bu tildagi sahifalarni tarjima qilish taklif qilinsin</translation>
 <translation id="8440630305826533614">Linux ilovalari</translation>
+<translation id="8446225304314102060">Varaqqa oʻtish: <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Batafsil</translation>
 <translation id="8447409163267621480">Tugmalar birikmasi Ctrl yoki Alt tugmasi bilan boshlanishi lozim</translation>
 <translation id="8448729345478502352">Ekrandagi elementlarni kichiklashtirish yoki kattalashtirish</translation>
@@ -7455,6 +7462,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin</translation>
 <translation id="9148058034647219655">To‘liq ekran rejimidan chiqish</translation>
 <translation id="9148126808321036104">Qaytadan kiring</translation>
 <translation id="9148963623915467028">Bu sayt joylashuvingiz axborotidan foydalanishi mumkin.</translation>
+<translation id="9149529198050266366">Tungi rejim quyosh chiqishi bilan avtomatik faolsizlantiriladi</translation>
 <translation id="9149866541089851383">O‘zgartirish...</translation>
 <translation id="9150045010208374699">Kameradan foydalanish</translation>
 <translation id="9150079578948279438">Profil olib tashlanmadi. Qayta urining yoki texnik yordam olish uchun aloqa operatoriga murojaat qiling.</translation>

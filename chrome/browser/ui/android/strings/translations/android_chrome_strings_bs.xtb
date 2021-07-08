@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Dugme <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Šalje neke kolačiće i pretraživanja s trake za adresu i iz okvira za pretraživanje vašem zadanom pretraživaču</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
-<translation id="2017836877785168846">Briše historiju i automatsko dovršavanje na traci za adresu.</translation>
 <translation id="2021896219286479412">Kontr. web lok. na cijelom ekr.</translation>
 <translation id="2038563949887743358">Uključivanje zahtjeva za verziju web lokacije za računar</translation>
 <translation id="2039379262107991683">Dodajte stranice na Listu za čitanje da primite podsjetnik</translation>
@@ -489,8 +488,8 @@ Okruženje zaštićene privatnosti i dalje je u fazi aktivnog razvoja i dostupno
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4183868528246477015">Pretraživanje uz Google Objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
+<translation id="4196597275619698563">Izradi karticu</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanje</translation>
-<translation id="4206707945726604465">Da obrišete druge oblike historije, posjetite <ph name="BEGIN_LINK1" />Moje aktivnosti na Googleu<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Uključite sinhronizaciju da dobijete prilagođeni sadržaj koji predlaže Google</translation>
 <translation id="4225895483398857530">Prečica za alatnu traku</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
@@ -514,6 +513,7 @@ Okruženje zaštićene privatnosti i dalje je u fazi aktivnog razvoja i dostupno
 <translation id="4402611456429872546"><ph name="LANG" /> – Preuzimanje…</translation>
 <translation id="4404568932422911380">Nema oznaka</translation>
 <translation id="4405224443901389797">Premjesti u…</translation>
+<translation id="4409271659088619928">Vaš pretraživač je <ph name="DSE" />. Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati historiju pretraživanja.</translation>
 <translation id="4411535500181276704">Jednostavni način rada</translation>
 <translation id="4415276339145661267">Upravljajte Google računom</translation>
 <translation id="4427306783828095590">Poboljšana zaštita vas još bolje čuva od krađe identiteta i zlonamjernog softvera</translation>
@@ -773,7 +773,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5979084224081478209">Provjeri lozinke</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
 <translation id="6000203700195075278">Prati ponovo</translation>
-<translation id="6002623704405939939">Da obrišete <ph name="BEGIN_LINK1" />pretraživanje<ph name="END_LINK1" /> ili druge oblike historije, posjetite <ph name="BEGIN_LINK2" />Moju aktivnost na Googleu<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Prijedlog za lozinku</translation>
 <translation id="6032091552407840792">Ovaj probni period je aktivan samo u <ph name="BEGIN_LINK" />određenim regijama<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Pomoću <ph name="BEGIN_LINK" />Okruženja zaštićene privatnosti<ph name="END_LINK" />, Chrome razvija nove tehnologije da vas zaštiti od praćenja između web lokacija, a pri tome će očuvati otvoreni web.
@@ -885,7 +884,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="661266467055912436">Poboljšava vašu i svačiju sigurnost na webu.</translation>
 <translation id="6618554661997243500">Da pogledate najpopularnije web lokacije i priče prilagođene vama, dodirnite dugme za početni ekran</translation>
 <translation id="6627583120233659107">Uredi folder</translation>
-<translation id="6635718764393004944">Vaš pretraživač je <ph name="DSE" />. Ako je primjenjivo, pogledajte upute pretraživača da izbrišete historiju pretraživanja.</translation>
 <translation id="663674369910034433">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka možete pronaći u odjeljcima <ph name="BEGIN_LINK1" />Sinhronizacija<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Googleove usluge<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6643649862576733715">Sortiraj po iznosu sačuvanih podataka</translation>
@@ -1049,6 +1047,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7704317875155739195">Automatsko dovršavanje pretraživanja i URL-ova</translation>
 <translation id="7707922173985738739">Koristi prijenos podataka na mobilnoj mreži</translation>
 <translation id="7725024127233776428">Stranice koje označite će se pojaviti ovdje</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Ostali oblici aktivnosti<ph name="END_LINK1" /> mogu se spremati na vaš Google račun kad ste prijavljeni. Možete ih izbrisati kad god želite.</translation>
 <translation id="7757787379047923882">Tekst je podijeljen s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Odaberite datum i vrijeme</translation>
 <translation id="7762668264895820836">SD kartica <ph name="SD_CARD_NUMBER" /></translation>
@@ -1239,6 +1238,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8854223127042600341">Pregledajte fajlove van mreže</translation>
 <translation id="8856607253650333758">Preuzmi opise</translation>
 <translation id="8873817150012960745">Dodirnite ovdje da započnete</translation>
+<translation id="8881973373982641723">Briše povijest, uključujući u okviru za pretraživanje.</translation>
 <translation id="889338405075704026">Idi u postavke Chromea</translation>
 <translation id="8898822736010347272">Šalje Googleu URL-ove nekih stranica koje posjetite, ograničene informacije sistema i sadržaj nekih stranica radi lakšeg otkrivanja novih prijetnji te zaštite svakoga na webu.</translation>
 <translation id="8909135823018751308">Dijeljenje…</translation>
@@ -1292,6 +1292,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="9209888181064652401">Upućivanje poziva nije moguće</translation>
 <translation id="9212845824145208577">Nije moguće pomjeriti niže. Pokušajte započeti na nižem mjestu na stranici.</translation>
 <translation id="9219103736887031265">Slike</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Povijest pretraživanja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />drugi oblici aktivnosti<ph name="END_LINK2" /> mogu se spremati na vaš Google račun kad ste prijavljeni. Možete ih izbrisati kad god želite.</translation>
 <translation id="926205370408745186">Uklonite aktivnosti Chromea iz Digitalnog blagostanja</translation>
 <translation id="927968626442779827">Koristite Jednostavni način rada na Google Chromeu</translation>
 <translation id="932327136139879170">Dom</translation>

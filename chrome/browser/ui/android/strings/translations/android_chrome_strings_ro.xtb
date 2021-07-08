@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> Butonul <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Trimite anumite cookie-uri și căutări din bara de adrese și din caseta de căutare în motorul de căutare prestabilit</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
-<translation id="2017836877785168846">Șterge istoricul și completările automate din bara de adrese.</translation>
 <translation id="2021896219286479412">Comenzi site în ecran complet</translation>
 <translation id="2038563949887743358">Activează opțiunea Versiune site pentru desktop</translation>
 <translation id="2039379262107991683">Adaugă pagini în Lista de lecturi pentru a primi un memento</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="4183868528246477015">Caută folosind Google Lens <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4198423547019359126">Nu există locații de descărcare disponibile</translation>
-<translation id="4206707945726604465">Pentru a șterge alte tipuri de istoric, accesează <ph name="BEGIN_LINK1" />Activitatea mea de pe Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Pentru a obține sugestii de conținut personalizat de la Google, activează sincronizarea</translation>
 <translation id="4225895483398857530">Comanda rapidă spre bara de instrumente</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="4402611456429872546"><ph name="LANG" /> – Se descarcă…</translation>
 <translation id="4404568932422911380">Niciun marcaj</translation>
 <translation id="4405224443901389797">Mută în…</translation>
+<translation id="4409271659088619928">Motorul tău de căutare este <ph name="DSE" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="4411535500181276704">Modul Lite</translation>
 <translation id="4415276339145661267">Gestionează-ți Contul Google</translation>
 <translation id="4427306783828095590">Protecția îmbunătățită face mai multe pentru blocarea phishingului și a programelor malware</translation>
@@ -773,7 +772,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5979084224081478209">Verifică parolele</translation>
 <translation id="6000066717592683814">Păstrează Google</translation>
 <translation id="6000203700195075278">Urmărește din nou</translation>
-<translation id="6002623704405939939">Pentru a șterge istoricul <ph name="BEGIN_LINK1" />căutărilor<ph name="END_LINK1" /> sau alte tipuri de istoric, accesează <ph name="BEGIN_LINK2" />Activitatea mea de pe Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Parola sugerată</translation>
 <translation id="6032091552407840792">Această versiune de încercare este activă numai în <ph name="BEGIN_LINK" />anumite regiuni<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Cu <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome dezvoltă noi tehnologii care te apără de mecanismele de urmărire de pe mai multe site-uri, păstrând un web deschis.
@@ -885,7 +883,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="661266467055912436">Îmbunătățește securitatea pe web pentru tine și toți ceilalți.</translation>
 <translation id="6618554661997243500">Pentru a vedea principalele site-uri și subiecte pentru tine, atinge butonul ecran de pornire</translation>
 <translation id="6627583120233659107">Editați dosarul</translation>
-<translation id="6635718764393004944">Motorul tău de căutare este <ph name="DSE" />. Dacă este cazul, consultă instrucțiunile pentru a șterge istoricul căutărilor.</translation>
 <translation id="663674369910034433">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK1" />Sincronizarea<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />Serviciile Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6643649862576733715">Sortează după volumul de date salvate</translation>

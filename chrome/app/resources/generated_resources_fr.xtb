@@ -464,6 +464,7 @@
 <translation id="1507246803636407672">&amp;Supprimer</translation>
 <translation id="1508491105858779599">Placez votre doigt sur le lecteur d'empreinte digitale pour déverrouiller l'appareil.</translation>
 <translation id="1508575541972276599">Version actuelle : Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Restaurer le groupe</translation>
 <translation id="1509281256533087115">Accéder à n'importe quel appareil <ph name="DEVICE_NAME_AND_VENDOR" /> via USB</translation>
 <translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
 <translation id="1510238584712386396">Lanceur d'applications</translation>
@@ -586,6 +587,7 @@
 <translation id="1627408615528139100">Déjà téléchargé</translation>
 <translation id="1628948239858170093">Analyser le fichier avant de l'ouvrir ?</translation>
 <translation id="1629314197035607094">Le mot de passe est arrivé à expiration</translation>
+<translation id="1629451755632656601">Autoriser Google à vous proposer des remises personnalisées sur vos paniers ?</translation>
 <translation id="1630300831289687074">Vous allez pouvoir utiliser votre Chromebook sous peu.</translation>
 <translation id="163072119192489970">Autorisé à terminer l'envoi et la réception de données</translation>
 <translation id="1630768113285622200">Redémarrer et continuer</translation>
@@ -1291,6 +1293,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="236117173274098341">Optimiser</translation>
 <translation id="2361340419970998028">Envoi des commentaires…</translation>
 <translation id="236141728043665931">Toujours bloquer l'accès au micro</translation>
+<translation id="2363744066037724557">&amp;Restaurer la fenêtre</translation>
 <translation id="2364498172489649528">Réussi</translation>
 <translation id="2365507699358342471">Ce site peut voir le texte et les images copiés dans le presse-papiers.</translation>
 <translation id="2367972762794486313">Afficher les applications</translation>
@@ -2674,6 +2677,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3857807444929313943">Levez le doigt, puis reposez-le</translation>
 <translation id="3861638017150647085">Nom d'utilisateur "<ph name="USERNAME" />" non disponible</translation>
 <translation id="3861977424605124250">Afficher au démarrage</translation>
+<translation id="386239283124269513">&amp;Restaurer le groupe</translation>
 <translation id="3862788408946266506">L'application dont le fichier manifeste comporte un attribut "kiosk_only" doit être installée en mode Kiosque pour Chrome OS</translation>
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="3866249974567520381">Description</translation>
@@ -5650,6 +5654,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7225179976675429563">Type de réseau manquant.</translation>
 <translation id="7228479291753472782">Manipule des paramètres qui déterminent si les sites Web peuvent utiliser des fonctionnalités telles que la géolocalisation, le microphone, l'appareil photo, etc.</translation>
 <translation id="7228523857728654909">Verrouillage de l'écran et connexion</translation>
+<translation id="7230222852462421043">&amp;Restaurer la fenêtre</translation>
 <translation id="7230787553283372882">Personnaliser la taille du texte</translation>
 <translation id="7232750842195536390">Échec du changement de nom</translation>
 <translation id="7234010996000898150">Annulation de la restauration de Linux…</translation>
@@ -6259,12 +6264,14 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7853747251428735">Plus d'outi&amp;ls</translation>
 <translation id="7855678561139483478">Déplacer l'onglet vers une nouvelle fenêtre</translation>
 <translation id="7857093393627376423">Suggestions écrites</translation>
+<translation id="7857675386615530425">Rechercher sur une partie de la page avec Google Lens</translation>
 <translation id="7857949311770343000">Est-ce la page Nouvel onglet que vous attendiez ?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Service : <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Téléchargements</translation>
 <translation id="7861846108263890455">Langue du compte Google</translation>
 <translation id="7864539943188674973">Désactiver le Bluetooth</translation>
+<translation id="7866230141401327032">Rechercher sur une partie de la page avec Google Lens</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> associé</translation>
 <translation id="7870730066603611552">Vérifier les options de synchronisation après la configuration</translation>
 <translation id="7870790288828963061">Aucune nouvelle version d'une application kiosque n'a été trouvée. Aucune mise à jour n'est disponible. Veuillez débrancher la clé USB.</translation>
@@ -6841,6 +6848,7 @@ Appuyez sur un contacteur attribué pour supprimer l'association</translation>
 <translation id="850875081535031620">Aucun logiciel malveillant détecté</translation>
 <translation id="8509177919508253835">Réinitialiser les clés de sécurité et créer des codes</translation>
 <translation id="8509646642152301857">Échec du téléchargement du dictionnaire du correcteur orthographique.</translation>
+<translation id="8509967119010808787">Cliquez ici pour rechercher dans vos onglets</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Aucun mot de passe peu sécurisé trouvé}=1{{COUNT} mot de passe peu sécurisé trouvé}one{{COUNT} mot de passe peu sécurisé trouvé}other{{COUNT} mots de passe peu sécurisés trouvés}}</translation>
 <translation id="8512476990829870887">Arrêter le processus</translation>
 <translation id="851263357009351303">Toujours autoriser <ph name="HOST" /> à afficher les images</translation>

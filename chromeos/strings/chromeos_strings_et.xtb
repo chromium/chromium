@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Interneti-ühendus puudub</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveerimise olek</translation>
+<translation id="2294675138977897428">Etherneti-ühendust ei õnnestunud tuvastada</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Lülitage Bluetooth sisse, et läheduses olevaid seadmeid avastada</translation>
 <translation id="2364498172489649528">Läbitud</translation>
@@ -278,6 +279,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6527081081771465939">Tundmatu WiFi-turvaprotokoll</translation>
 <translation id="65587193855025101">Tasaskanner</translation>
 <translation id="6564646048574748301">Ebaõnnestus – printeriga ei saa ühendust</translation>
+<translation id="6603230386432466813">Kas teil on ühenduse loomisega probleeme?</translation>
 <translation id="6618744767048954150">Pooleli</translation>
 <translation id="6620487321149975369">Prinditööd kuvatakse ajaloos, kui neid käsitsi ei eemaldata</translation>
 <translation id="6643016212128521049">Tühjenda</translation>

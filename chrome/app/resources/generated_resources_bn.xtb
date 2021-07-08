@@ -467,6 +467,7 @@
 <translation id="1507246803636407672">এবং পরিত্যাগ</translation>
 <translation id="1508491105858779599">ডিভাইসটি আনলক করতে আঙ্গুলের ছাপ নেওয়ার সেন্সরে আপনার আঙ্গুল রাখুন।</translation>
 <translation id="1508575541972276599">বর্তমান ভার্সন হল Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;গ্রুপ আবার আগের অবস্থায় ফিরিয়ে আনুন</translation>
 <translation id="1509281256533087115">USB এর মাধ্যমে যেকোনো <ph name="DEVICE_NAME_AND_VENDOR" /> অ্যাক্সেস করুন</translation>
 <translation id="1509960214886564027">একাধিক সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
@@ -589,6 +590,7 @@
 <translation id="1627408615528139100">আগে থেকেই ডাউনলোড করা আছে</translation>
 <translation id="1628948239858170093">খোলার আগে ফাইল স্ক্যান করতে চান?</translation>
 <translation id="1629314197035607094">পাসওয়ার্ডের মেয়াদ শেষ হয়ে গেছে</translation>
+<translation id="1629451755632656601">Google-কে কি আপনি কার্টে যোগ করা আইটেমে কোনও ছাড় পাবেন কিনা তা খুঁজে দেখতে অনুমতি দিতে চান ?</translation>
 <translation id="1630300831289687074">শীঘ্রই আপনার Chromebook ব্যবহার করতে পারবেন।</translation>
 <translation id="163072119192489970">ডেটা পাওয়া বা পাঠানো শেষ করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1630768113285622200">রিস্টার্ট করুন ও চালিয়ে যান</translation>
@@ -1306,6 +1308,7 @@
 <translation id="236117173274098341">Optimize</translation>
 <translation id="2361340419970998028">মতামত পাঠানো হচ্ছে…</translation>
 <translation id="236141728043665931">মাইক্রোফোনের অ্যাক্সেস সর্বদা অবরুদ্ধ রাখুন</translation>
+<translation id="2363744066037724557">&amp;উইন্ডো আবার আগের অবস্থায় ফিরিয়ে আনুন</translation>
 <translation id="2364498172489649528">পাস করেছে</translation>
 <translation id="2365507699358342471">এই সাইটটি ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি দেখতে পায়।</translation>
 <translation id="2367972762794486313">অ্যাপ্লিকেশানগুলি দেখান</translation>
@@ -2688,6 +2691,7 @@
 <translation id="3857807444929313943">আঙ্গুল লিফ্ট করে আবার টাচ করুন</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" ইউজারনেমটি পাওয়া যাচ্ছে না</translation>
 <translation id="3861977424605124250">স্টার্টআপে দেখুন</translation>
+<translation id="386239283124269513">&amp;গ্রুপ আবার আগের অবস্থায় ফিরিয়ে আনুন</translation>
 <translation id="3862788408946266506">'Kiosk_only' ম্যানিফেস্ট অ্যাট্রিবিউটের সাথে অ্যাপকে অবশ্যই Chrome OS কিয়স্ক মোডে ইনস্টল করতে হবে</translation>
 <translation id="3865414814144988605">রেজোলিউশন</translation>
 <translation id="3866249974567520381">বর্ণনা</translation>
@@ -5664,6 +5668,7 @@
 <translation id="7225179976675429563">নেটওয়ার্কের প্রকার হারিয়ে গেছে</translation>
 <translation id="7228479291753472782">ভৌগোলিক লোকেশন, মাইক্রোফোন, ক্যামেরা, ইত্যাদির মতো বৈশিষ্ট্যগুলিকে ওয়েবসাইটগুলি ব্যবহার করতে পারবে কিনা তা নির্দিষ্ট করতে সেটিংস নিয়ন্ত্রণ করে।</translation>
 <translation id="7228523857728654909">স্ক্রিন লক এবং সাইন-ইন করুন</translation>
+<translation id="7230222852462421043">&amp;উইন্ডো আবার আগের অবস্থায় ফিরিয়ে আনুন</translation>
 <translation id="7230787553283372882">আপনার পাঠ্যের আকার কাস্টমাইজ করুন</translation>
 <translation id="7232750842195536390">নাম পরিবর্তন করা যায়নি</translation>
 <translation id="7234010996000898150">Linux ফিরিয়ে আনা বাতিল করা হচ্ছে</translation>
@@ -6272,12 +6277,14 @@
 <translation id="7853747251428735">আরও সর&amp;ঞ্জাম</translation>
 <translation id="7855678561139483478">ট্যাবটি নতুন উইন্ডোতে খুলুন</translation>
 <translation id="7857093393627376423">টেক্সট সংক্রান্ত সাজেশন</translation>
+<translation id="7857675386615530425">Google Lens ব্যবহার করে পৃষ্ঠার অংশ সার্চ করুন</translation>
 <translation id="7857949311770343000">আপনি কি এই পৃষ্ঠাটিকে নতুন ট্যাব পৃষ্ঠা হিসাবে আশা করছিলেন?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">পরিষেবা: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ডাউনলোড করা</translation>
 <translation id="7861846108263890455">Google অ্যাকাউন্টের ভাষা</translation>
 <translation id="7864539943188674973">ব্লুটুথ অক্ষম করুন</translation>
+<translation id="7866230141401327032">Google Lens ব্যবহার করে পৃষ্ঠার অংশ সার্চ করুন</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - যুক্ত করা হয়েছে</translation>
 <translation id="7870730066603611552">সেট-আপের পর সিঙ্কের বিকল্পগুলির রিভিউ</translation>
 <translation id="7870790288828963061">এর থেকে আরও নতুন ভার্সনের কোনও কিয়স্ক অ্যাপ্লিকেশন পাওয়া যায়নি৷ USB স্টিক সরান৷</translation>
@@ -6854,6 +6861,7 @@
 <translation id="850875081535031620">কোনও ক্ষতিকর সফ্টওয়্যার খুঁজে পাওয়া যায়নি</translation>
 <translation id="8509177919508253835">নিরাপত্তা কী ডিভাইস রিসেট করে পিন তৈরি করুন</translation>
 <translation id="8509646642152301857">বানান পরীক্ষক অভিধান ডাউনলোড করা যায়নি৷</translation>
+<translation id="8509967119010808787">আপনার ট্যাব সার্চ করতে, এখানে ক্লিক করুন</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{কোনও দুর্বল পাসওয়ার্ড পাওয়া যায়নি}=1{{COUNT}টি দুর্বল পাসওয়ার্ড পাওয়া গেছে}one{{COUNT}টি দুর্বল পাসওয়ার্ড পাওয়া গেছে}other{{COUNT}টি দুর্বল পাসওয়ার্ড পাওয়া গেছে}}</translation>
 <translation id="8512476990829870887">প্রক্রিয়া সমাপ্ত করুন</translation>
 <translation id="851263357009351303">ছবিগুলি দেখানোর জন্য সর্বদা <ph name="HOST" />-কে অনুমতি দিন </translation>

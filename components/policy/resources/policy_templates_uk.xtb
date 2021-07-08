@@ -4502,26 +4502,6 @@
 
           Примітка: якщо вказано правило <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />, воно замінює це правило.</translation>
 <translation id="6833988859168635883">Стартова й домашня сторінки та сторінка нової вкладки</translation>
-<translation id="6834298774555537368">За допомогою налаштувань цього правила можна вибрати параметри проксі для Chrome і додатків ARC, які ігнорують усі опції проксі, указані в командному рядку.
-
-       Якщо не налаштувати це правило, користувачі зможуть самостійно вибирати параметри проксі.
-
-       Якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> налаштовано, буде прийнято ці поля:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> визначає проксі-сервер для Chrome і забороняє користувачам змінювати ці налаштування;
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> – URL-адреса файлу .pac проксі-сервера;
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> – URL-адреса проксі-сервера;
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> – список хостів, які працюватимуть в обхід проксі-сервера.
-
-       Поле <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> застаріле. Замість нього використовується поле <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Якщо для параметра <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> вибрати значення:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, проксі ніколи не використовуватиметься, а всі інші поля ігноруватимуться;
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, використовуватимуться проксі системи, а всі інші поля ігноруватимуться;
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, усі інші поля ігноруватимуться;
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, використовуватимуться поля <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> і <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />;
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, використовуватимуться поля <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> і <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Примітка: щоб переглянути детальніші приклади, відвідайте веб-сайт проектів Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="6835883744948188639">Показувати користувачеві повторюваний запит із рекомендацією перезапуску</translation>
 <translation id="683688607121170501">Це налаштування дає змогу користувачам переходити в інші облікові записи Google у вікні контенту веб-переглядача та в додатках Android, якщо вони ввійшли на пристрої з <ph name="PRODUCT_OS_NAME" />.
 

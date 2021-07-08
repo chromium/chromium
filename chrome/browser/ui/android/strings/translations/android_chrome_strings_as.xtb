@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> বুটাম</translation>
 <translation id="2000419248597011803">আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিনলৈ ঠিকনা বাৰ আৰু সন্ধান বাকছৰ পৰা কিছুমান কুকি আৰু সন্ধান পঠিয়ায়</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#টা ফাইল}one{#টা ফাইল}other{#টা ফাইল}}</translation>
-<translation id="2017836877785168846">ঠিকনাৰ বাৰত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পুৰ হোৱা তথ্য মচে।</translation>
 <translation id="2021896219286479412">সম্পূর্ণ স্ক্ৰীণ ছাইটৰ নিয়ন্ত্ৰণ</translation>
 <translation id="2038563949887743358">ডেস্কটপ ছাইট অনুৰোধ কৰা সুবিধাটো অন কৰক</translation>
 <translation id="2039379262107991683">ৰিমাইণ্ডাৰ পাবলৈ আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠা যোগ দিয়ক</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">Google Lensৰে সন্ধান কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">নতুন টেবত খোলক</translation>
 <translation id="4198423547019359126">ডাউনল’ড কৰিবলৈ কোনো অৱস্থান নাই</translation>
-<translation id="4206707945726604465">সকলো প্ৰকাৰৰ ইতিহাস মচিবলৈ, <ph name="BEGIN_LINK1" />মই Googleত কৰা কাৰ্যকলাপ<ph name="END_LINK1" />লৈ যাওক</translation>
 <translation id="4209895695669353772">Googleএ চুপাৰিছ কৰা ব্যক্তিগতকৰণ কৰা সমল পাবলৈ ছিংক অন কৰক</translation>
 <translation id="4225895483398857530">টুলবাৰৰ শ্বৰ্টকাট</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - ডাউনল’ড কৰি থকা হৈছে…</translation>
 <translation id="4404568932422911380">কোনো বুকমাৰ্ক নাই</translation>
 <translation id="4405224443901389797">ইয়ালৈ স্থানান্তৰ কৰক…</translation>
+<translation id="4409271659088619928">আপোনাৰ সন্ধানৰ ইঞ্জিনটো হৈছে <ph name="DSE" />। যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ আপোনাৰ সন্ধানৰ ইঞ্জিনৰ নিৰ্দেশাৱলী চাওক।</translation>
 <translation id="4411535500181276704">লাইট ম’ড</translation>
 <translation id="4415276339145661267">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="4427306783828095590">বৰ্ধিত সুৰক্ষাৰ সুবিধাটোৱে ফিশ্বিং আৰু মালৱেৰ অৱৰোধ কৰিবলৈ অধিক কাৰ্য কৰে</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">পাছৱৰ্ডবোৰ পৰীক্ষা কৰক</translation>
 <translation id="6000066717592683814">Google ৰাখক</translation>
 <translation id="6000203700195075278">পুনৰ ফ’ল’ কৰক</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />সন্ধান<ph name="END_LINK1" /> অথবা অন্য ধৰণৰ ইতিহাস মচিবলৈ <ph name="BEGIN_LINK2" />মই Googleত কৰা কাৰ্যকলাপ<ph name="END_LINK2" />লৈ যাওক</translation>
 <translation id="6005538289190791541">পৰামর্শ হিচাপে পোৱা পাছৱর্ড</translation>
 <translation id="6032091552407840792">এই ট্ৰায়েলটো কেৱল <ph name="BEGIN_LINK" />কিছুমান অঞ্চল<ph name="END_LINK" />ত সক্ৰিয়।</translation>
 <translation id="6033245666633565791">Chromeএ <ph name="BEGIN_LINK" />গোপনীয়তা বিষয়ক ছেণ্ডবক্স<ph name="END_LINK" />ৰ জৰিয়তে, আপোনাক মুক্ত ৱেবক সুৰক্ষিত কৰি ৰাখি ক্ৰছ-ছাইট ট্ৰেকিঙৰ পৰা আপোনাক সুৰক্ষা প্ৰদান কৰিবলৈ নতুন প্ৰযুক্তি বিকাশ কৰি আছে।
@@ -852,6 +850,7 @@
 <translation id="6441734959916820584">নামটো যথেষ্ট দীঘল</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# খন ছবি}one{# খন ছবি}other{# খন ছবি}}</translation>
 <translation id="6447558397796644647">সেই বুকমাৰ্কটো বিচাৰি পোৱা নাই। আপোনাৰ বানান পৰীক্ষা কৰক অথবা এটা নতুন বুকমার্ক যোগ কৰক।</translation>
+<translation id="6459045781120991510">সমীক্ষা</translation>
 <translation id="6461962085415701688">ফাইল খুলিব পৰা নাই</translation>
 <translation id="6464977750820128603">আপুনি Chromeত চোৱা ছাইটসমূহ চাব পাৰে আৰু সেইবোৰৰ বাবে টাইমাৰ ছেট কৰিব পাৰে।\n\nআপুনি টাইমাৰ ছেট কৰি থোৱা ছাইটসমূহ আৰু লগতে আপুনি কিমান সময় ধৰি সেইসমূহ চায়, Googleএ তাৰ তথ্য লাভ কৰে। এই তথ্যখিনি ডিজিটেল ৱেলবিইঙ-ক উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হয়।</translation>
 <translation id="6475951671322991020">ভিডিঅ’ ডাউনল’ড কৰক</translation>
@@ -884,7 +883,6 @@
 <translation id="661266467055912436">আপোনাৰ লগতে ৱেবত থকা প্ৰত্যেকজনৰ বাবে সুৰক্ষা উন্নত কৰে।</translation>
 <translation id="6618554661997243500">আপোনাৰ বাবে থকা শীৰ্ষ ছাইটসমূহ আৰু কাহিনীবোৰ চাবলৈ গৃহপৃষ্ঠাৰ বুটামটো টিপক</translation>
 <translation id="6627583120233659107">ফ’ল্ডাৰ সম্পাদনা কৰক</translation>
-<translation id="6635718764393004944">আপোনাৰ সন্ধানৰ ইঞ্জিনটো হৈছে <ph name="DSE" />। যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ সেইবোৰৰ নিৰ্দেশাৱলী চাওক।</translation>
 <translation id="663674369910034433">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পৰ্কীয় অধিক ছেটিংসমূহৰ বাবে <ph name="BEGIN_LINK1" />ছিংক কৰক<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google সেৱাসমূহ<ph name="END_LINK2" /> চাওক</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6643649862576733715">ছেভ কৰা ডেটাৰ পৰিমাণ অনুসৰি সজাওক</translation>
@@ -967,6 +965,7 @@
 <translation id="7242755609445462077">শৈলীকৰণ কৰা হাইলাইট <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">নিশ্চিত হৈ লওক যে Chromeত <ph name="TARGET_DEVICE_NAME" />ৰ ছিংক অন কৰা আছে</translation>
 <translation id="7252076891734325316">আপোনাৰ ফ'নটো কম্পিউটাৰটোৰ ওচৰত ৰাখক</translation>
+<translation id="727288900855680735"><ph name="ORIGIN" />ত <ph name="ONE_TIME_CODE" /> দাখিল কৰিবনে?</translation>
 <translation id="7274013316676448362">অৱৰোধ কৰা ছাইট</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> সলনি কৰিবনে?</translation>
 <translation id="7290209999329137901">নতুন নাম দিয়াৰ সুবিধা উপলব্ধ নহয়</translation>

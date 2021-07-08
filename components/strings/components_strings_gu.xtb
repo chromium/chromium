@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">નાપસંદ કરેલી સુવિધાઓ</translation>
 <translation id="131405271941274527">જ્યારે તમે NFC ડિવાઇસ પર તમારા ફોન પર ટૅપ કરો, ત્યારે <ph name="URL" /> માહિતી મોકલવા અને પ્રાપ્ત કરવા માગે છે</translation>
 <translation id="1314509827145471431">જમણી બાજુએ જોડો</translation>
+<translation id="1319245136674974084">આ ઍપ માટે ફરીથી પૂછશો નહીં</translation>
 <translation id="1320233736580025032">Prc1 (એન્વલપ)</translation>
 <translation id="132301787627749051">ક્લિપબોર્ડ છબી શોધો</translation>
 <translation id="1323433172918577554">વધુ બતાવો</translation>
@@ -743,6 +744,7 @@
 <translation id="3655670868607891010">જો તમે આ વારંવાર જોઈ રહ્યાં છો, તો આ <ph name="HELP_LINK" /> અજમાવી જુઓ.</translation>
 <translation id="3658742229777143148">પુનરાવર્તન</translation>
 <translation id="3664782872746246217">કીવર્ડ:</translation>
+<translation id="3671540257457995106">કદ બદલવાની મંજૂરી આપીએ?</translation>
 <translation id="3676592649209844519">ડિવાઇસ ID:</translation>
 <translation id="3677008721441257057">શું તમારો અર્થ &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; હતો?</translation>
 <translation id="3678029195006412963">વિનંતી પર સહી કરી શક્યાં નથી</translation>
@@ -1103,6 +1105,7 @@
 <translation id="4953689047182316270">ઍક્સેસિબિલિટી ઇવેન્ટનો જવાબ આપો</translation>
 <translation id="4955242332710481440">A5-અતિરિક્ત</translation>
 <translation id="4958444002117714549">સૂચિ વિસ્તૃત કરો</translation>
+<translation id="4968522289500246572">આ ઍપ મોબાઇલ માટે બનાવવામાં આવી છે અને કદાચ તે યોગ્ય રીતે કદ બદલી શકશે નહીં. ઍપમાં સમસ્યાઓ આવી શકે છે અથવા તે ફરી શરૂ થઈ શકે છે.</translation>
 <translation id="4973922308112707173">ઉપરની બાજુએ બે કાણાં પાડો</translation>
 <translation id="4974590756084640048">ચેતવણીઓ ફરીથી ચાલુ કરો</translation>
 <translation id="4984088539114770594">માઇક્રોફોનનો ઉપયોગ કરીએ?</translation>
@@ -1151,6 +1154,7 @@
 <translation id="5123063207673082822">વીકએન્ડ</translation>
 <translation id="5125394840236832993">B-પ્લસ</translation>
 <translation id="5126510351761255129">તમારું કાર્ડ ચકાસો</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> કદાચ યોગ્ય રીતે કદ બદલી શકશે નહીં. ઍપમાં અનુભવાતી સમસ્યા અટકાવવા માટે, વિન્ડોના પ્રીસેટ કરેલા કદનો ઉપયોગ કરો.</translation>
 <translation id="5135404736266831032">સરનામા મેનેજ કરો…</translation>
 <translation id="5138014172396933048">હમણાં વર્ચ્યુઅલ કાર્ડ ઉપલબ્ધ નથી, કૃપા કરીને તમારી બેંકનો સંપર્ક કરો</translation>
 <translation id="5138227688689900538">ઓછું બતાવો</translation>
@@ -1517,6 +1521,7 @@
 <translation id="647261751007945333">ડિવાઇસ પૉલિસીઓ</translation>
 <translation id="6476284679642588870">ચુકવણી પદ્ધતિઓ મેનેજ કરો</translation>
 <translation id="6489534406876378309">ક્રેશ અપલોડ કરવાનું શરૂ કરો</translation>
+<translation id="6493924760403974580">આ ઍપ માત્ર આ કદને સપોર્ટ કરે છે.</translation>
 <translation id="6499038740797743453">પાસવર્ડ રીસેટ કરીએ?</translation>
 <translation id="6502991525169604759">તમારા ફેરફારો વિના</translation>
 <translation id="6508722015517270189">Chrome ને પુનઃપ્રારંભ કરો</translation>
@@ -2171,6 +2176,7 @@
 <translation id="8975263830901772334">તમે પ્રિન્ટ કરો તે ફાઇલોના નામ</translation>
 <translation id="8978053250194585037">Google Safe Browsingને <ph name="SITE" /> પર તાજેતરમાં <ph name="BEGIN_LINK" />ફિશિંગ થયાનું જાણવા મળ્યું છે<ph name="END_LINK" />. ફિશિંગ વેબસાઇટ તમને છેતરવા માટે અન્ય વેબસાઇટ હોવાનો ઢોંગ કરે છે.</translation>
 <translation id="8983003182662520383">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ</translation>
+<translation id="8983369100812962543">તમે હવે ઍપનું કદ બદલી શકો છો</translation>
 <translation id="8987927404178983737">મહિનો</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> જાણવા માગે છે કે તમે સક્રિય રૂપે આ ડિવાઇસનો ઉપયોગ ક્યારે કરો છો</translation>

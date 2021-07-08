@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> ಬಟನ್</translation>
 <translation id="2000419248597011803">ಕೆಲವು ಕುಕೀಗಳನ್ನು ಹಾಗೂ ವಿಳಾಸ ಪಟ್ಟಿ ಮತ್ತು ಹುಡುಕಾಟ ಬಾಕ್ಸ್‌ನಿಂದ ಹುಡುಕಾಟಗಳನ್ನು, ನಿಮ್ಮ ಡಿಫಾಲ್ಟ್ ಹುಡುಕಾಟದ ಎಂಜಿನ್‌ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
-<translation id="2017836877785168846">ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಿ ಮತ್ತು ವಿಳಾಸಪಟ್ಟಿಯಲ್ಲಿರುವುದನ್ನು ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸಿ.</translation>
 <translation id="2021896219286479412">ಪೂರ್ಣ ಪರದೆ ಸೈಟ್ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="2038563949887743358">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್ ವಿನಂತಿಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2039379262107991683">ಜ್ಞಾಪನೆಯನ್ನು ಪಡೆಯುವುದಕ್ಕಾಗಿ, ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟಗಳನ್ನು ಸೇರಿಸಿ</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">Google ಲೆನ್ಸ್ ಮೂಲಕ ಹುಡುಕಿ<ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4198423547019359126">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
-<translation id="4206707945726604465">ಇತರೆ ರೀತಿಯ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, <ph name="BEGIN_LINK1" />ನನ್ನ Google ಚಟುವಟಿಕೆ<ph name="END_LINK1" /> ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="4209895695669353772">Google ಸಲಹೆ ನೀಡಿದ ವೈಯಕ್ತೀಕರಿಸಲಾದ ವಿಷಯವನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="4225895483398857530">Toolbar ಶಾರ್ಟ್‌ಕಟ್</translation>
 <translation id="4242533952199664413">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆ</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ…</translation>
 <translation id="4404568932422911380">ಯಾವುದೇ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4405224443901389797">ಇದಕ್ಕೆ ಸರಿಸಿ…</translation>
+<translation id="4409271659088619928">ನಿಮ್ಮ ಹುಡುಕಾಟದ ಎಂಜಿನ್ <ph name="DSE" /> ಆಗಿದೆ. ಅನ್ವಯವಾದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇತಿಹಾಸವನ್ನು ಅಳಿಸುವುದಕ್ಕಾಗಿ ಅವರ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="4411535500181276704">ಲೈಟ್ ಮೋಡ್</translation>
 <translation id="4415276339145661267">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4427306783828095590">ಫಿಶಿಂಗ್ ಮತ್ತು ಮಾಲ್‌ವೇರ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲು ವರ್ಧಿತ ಸುರಕ್ಷತೆ ಹೆಚ್ಚಿನ ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
@@ -772,7 +771,6 @@
 <translation id="5979084224081478209">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6000066717592683814">Google ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6000203700195075278">ಮರು ಅನುಸರಿಸಿ</translation>
-<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />ಹುಡುಕಾಟ<ph name="END_LINK1" /> ಅಥವಾ ಇತರೆ ಫಾರ್ಮ್‌ಗಳ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, <ph name="BEGIN_LINK2" />ನನ್ನ Google ಚಟುವಟಿಕೆ<ph name="END_LINK2" /> ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="6005538289190791541">ಸೂಚಿಸಿದ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="6032091552407840792"><ph name="BEGIN_LINK" />ಕೆಲವು ಪ್ರದೇಶಗಳಲ್ಲಿ<ph name="END_LINK" /> ಮಾತ್ರ ಈ ಪ್ರಯೋಗವು ಸಕ್ರಿಯವಾಗಿರುತ್ತದೆ.</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />ಪ್ರೈವೆಸಿ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್<ph name="END_LINK" /> ನೊಂದಿಗೆ, ತೆರೆದ ವೆಬ್ ಅನ್ನು ಸಂರಕ್ಷಿಸುವುದರ ಜೊತೆಗೆ, ಕ್ರಾಸ್-ಸೈಟ್ ಟ್ರ್ಯಾಕಿಂಗ್‌ನಿಂದ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Chrome ಹೊಸ ತಂತ್ರಜ್ಞಾನಗಳನ್ನು ಅಭಿವೃದ್ಧಿಪಡಿಸುತ್ತಿದೆ.
@@ -884,7 +882,6 @@
 <translation id="661266467055912436">ನಿಮಗಾಗಿ ಹಾಗೂ ವೆಬ್‌ನಲ್ಲಿರುವ ಎಲ್ಲರಿಗಾಗಿ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ.</translation>
 <translation id="6618554661997243500">ನಿಮಗಾಗಿ ಪ್ರಮುಖ ಸೈಟ್‌ಗಳು ಮತ್ತು ಸ್ಟೋರಿಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ಹೋಮ್ ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="6627583120233659107">ಫೋಲ್ಡರ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
-<translation id="6635718764393004944">ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್ <ph name="DSE" /> ಆಗಿದೆ. ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ಅವರ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="663674369910034433">ಗೌಪ್ಯತೆ, ಸುರಕ್ಷತೆ ಮತ್ತು ಡೇಟಾ ಸಂಗ್ರಹಣೆಗೆ ಸಂಬಂಧಿಸಿದ ಹೆಚ್ಚಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗಾಗಿ <ph name="BEGIN_LINK1" />ಸಿಂಕ್<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />Google ಸೇವೆಗಳನ್ನು<ph name="END_LINK2" /> ನೋಡಿ.</translation>
 <translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6643649862576733715">ಉಳಿಸಿದ ಡೇಟಾ ಪ್ರಮಾಣದ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>

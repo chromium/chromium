@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> (botó <ph name="LINK_NAME" />)</translation>
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxer}other{# fitxers}}</translation>
-<translation id="2017836877785168846">Esborra l'historial i les complecions automàtiques a la barra d'adreces.</translation>
 <translation id="2021896219286479412">Controls de pantalla completa</translation>
 <translation id="2038563949887743358">Activa Mostra com a ordinador</translation>
 <translation id="2039379262107991683">Afegeix pàgines a la teva llista de lectura per rebre un recordatori</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4183868528246477015">Cerca amb Google Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4198423547019359126">No hi ha cap ubicació de baixada disponible</translation>
-<translation id="4206707945726604465">Per suprimir altres formes de l'historial, visita <ph name="BEGIN_LINK1" />La meva activitat a Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Perquè Google et suggereixi contingut personalitzat, activa la sincronització</translation>
 <translation id="4225895483398857530">Drecera de la barra d'eines</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4402611456429872546"><ph name="LANG" />: s'està baixant…</translation>
 <translation id="4404568932422911380">Cap adreça d'interès</translation>
 <translation id="4405224443901389797">Mou a…</translation>
+<translation id="4409271659088619928">El teu motor de cerca és <ph name="DSE" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="4411535500181276704">Mode bàsic</translation>
 <translation id="4415276339145661267">Gestiona el teu Compte de Google</translation>
 <translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
@@ -773,7 +772,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
 <translation id="6000066717592683814">Continua amb Google</translation>
 <translation id="6000203700195075278">Torna a seguir</translation>
-<translation id="6002623704405939939">Per esborrar la <ph name="BEGIN_LINK1" />cerca<ph name="END_LINK1" /> o altres formes de l'historial, visita <ph name="BEGIN_LINK2" />La meva activitat a Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Contrasenya suggerida</translation>
 <translation id="6032091552407840792">Aquesta prova només està activa en <ph name="BEGIN_LINK" />algunes regions<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Amb <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome està desenvolupant noves tecnologies per protegir-te dels mecanismes de seguiment entre llocs web, alhora que preserva el web obert.
@@ -885,7 +883,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="661266467055912436">Millora la seguretat per a tu i per a tots els usuaris del web.</translation>
 <translation id="6618554661997243500">Per consultar els llocs web i les històries que més visites, toca el botó d'inici</translation>
 <translation id="6627583120233659107">Edita la carpeta</translation>
-<translation id="6635718764393004944">El teu motor de cerca és <ph name="DSE" />. Si és necessari, consulta les seves instruccions per suprimir l'historial de cerques.</translation>
 <translation id="663674369910034433">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK1" />Sincronització<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />serveis de Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6643649862576733715">Ordena per quantitat de dades estalviades</translation>

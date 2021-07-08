@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">زر <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">يُرسِل بعض ملفات تعريف الارتباط وعمليات البحث من شريط العناوين ومربّع البحث إلى محرِّك البحث التلقائي.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{ملف واحد (#)}zero{# ملف}two{ملفان (#)}few{# ملفات}many{# ملفًا}other{# ملف}}</translation>
-<translation id="2017836877785168846">محو السجلّ وعمليات الإكمال التلقائي في شريط العناوين.</translation>
 <translation id="2021896219286479412">عناصر التحكم لموقع في وضع ملء الشاشة</translation>
 <translation id="2038563949887743358">تفعيل طلب الموقع الإلكتروني لسطح المكتب</translation>
 <translation id="2039379262107991683">يمكنك إضافة صفحات إلى "قائمة القراءة" لتلقّي تذكير.</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">‏البحث باستخدام "عدسة Google" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
 <translation id="4198423547019359126">ما من مواقع تنزيل متاحة</translation>
-<translation id="4206707945726604465">‏لمحو أنواع السجلّات الأخرى، انتقِل إلى صفحة <ph name="BEGIN_LINK1" />نشاطي على Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">‏للحصول على محتوى مُخصَّص اقترحته Google، يُرجى تفعيل المزامنة.</translation>
 <translation id="4225895483398857530">اختصارات شريط الأدوات</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546">جارٍ تنزيل حزمة اللغة <ph name="LANG" />…</translation>
 <translation id="4404568932422911380">ليست هناك إشارات مرجعية</translation>
 <translation id="4405224443901389797">نقل إلى...</translation>
+<translation id="4409271659088619928">محرّك البحث المستخدَم لديك هو <ph name="DSE" />. يمكنك الاطّلاع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث إذا كان يوفّر هذه الميزة.</translation>
 <translation id="4411535500181276704">الوضع البسيط</translation>
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
 <translation id="4427306783828095590">يؤدي تفعيل إعداد "الحماية المُحسَّنة" إلى حظر التصيّد الاحتيالي والبرامج الضارّة.</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">التحقق من كلمات المرور</translation>
 <translation id="6000066717592683814">‏الاستمرار في استخدام محرك Google</translation>
 <translation id="6000203700195075278">المتابعة مجدّدًا</translation>
-<translation id="6002623704405939939">‏لمحو <ph name="BEGIN_LINK1" />سجلّ البحث<ph name="END_LINK1" /> أو غيره من السجلّات، انتقِل إلى صفحة <ph name="BEGIN_LINK2" />نشاطي على Google<ph name="END_LINK2" />.</translation>
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
 <translation id="6032091552407840792">لا يتوفّر هذا الإصدار التجريبي سوى في <ph name="BEGIN_LINK" />بعض المناطق<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">‏من خلال <ph name="BEGIN_LINK" />مبادرة حماية الخصوصية<ph name="END_LINK" />، نعمل في Chrome على تطوير تقنيات جديدة لحمايتك من آليات التتبُّع في جميع المواقع الإلكترونية مع الحفاظ على محتوى شبكة الإنترنت المفتوحة المتاحة للجميع.
@@ -852,6 +850,7 @@
 <translation id="6441734959916820584">الاسم طويل جدًا</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{صورة واحدة (#)}zero{# صورة}two{صورتان (#)}few{# صور}many{# صورةً}other{# صورة}}</translation>
 <translation id="6447558397796644647">تعذّر العثور على هذه الإشارة. تحقّق من الإملاء أو أضِف إشارة جديدة.</translation>
+<translation id="6459045781120991510">استطلاعات الرأي</translation>
 <translation id="6461962085415701688">يتعذر فتح الملف</translation>
 <translation id="6464977750820128603">‏يمكنك الاطِّلاع على المواقع الإلكترونية التي تزورها في Chrome وتحديد موقِّتات لها.\n\nتحصل Google على معلومات عن المواقع الإلكترونية التي ضبطت موقِّتات لها ومدة زيارتك لها. تُستخدم هذه المعلومات لتحسين الرفاهية الرقمية.</translation>
 <translation id="6475951671322991020">تنزيل الفيديو</translation>
@@ -884,7 +883,6 @@
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
 <translation id="6618554661997243500">للاطّلاع على أهم المواقع الإلكترونية والأخبار، انقر على زر "الشاشة الرئيسية".</translation>
 <translation id="6627583120233659107">تعديل مجلد</translation>
-<translation id="6635718764393004944">محرّك بحثك هو <ph name="DSE" />. يمكنك الاطّلاع على التعليمات التي يوفّرها محرّك البحث الذي تستخدمه حول حذف سجلّ بحثك، إن أمكن ذلك.</translation>
 <translation id="663674369910034433">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على <ph name="BEGIN_LINK1" />المزامنة<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />خدمات Google<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6643649862576733715">الترتيب حسب مقدار البيانات التي تم توفيرها</translation>
@@ -968,6 +966,7 @@
 <translation id="7242755609445462077">ملاحظة مميّزة تم تنميطها بتاريخ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">‏يُرجى التأكّد من تفعيل مزامنة <ph name="TARGET_DEVICE_NAME" /> في Chrome.</translation>
 <translation id="7252076891734325316">قرِّب هاتفك من الكمبيوتر</translation>
+<translation id="727288900855680735">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="ORIGIN" />؟</translation>
 <translation id="7274013316676448362">الموقع المحظور</translation>
 <translation id="7286572596625053347">هل تريد تغيير اللغة <ph name="LANGUAGE" />؟</translation>
 <translation id="7290209999329137901">إعادة التسمية غير متوفرة</translation>

@@ -63,11 +63,11 @@
 <translation id="1341651618736211726">கூடுதல் விருப்பங்கள்</translation>
 <translation id="1346748346194534595">வலது</translation>
 <translation id="1351937230027495976">மெனுவைச் சுருக்கு</translation>
-<translation id="1383597849754832576">உடனடி வசனத்தின் கோப்புகளைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும்.</translation>
+<translation id="1383597849754832576">உடனடி வசனத்தின் ஃபைல்களைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">இயக்கப்பட்டுள்ளது</translation>
 <translation id="1407069428457324124">டார்க் தீம்</translation>
-<translation id="1419738280318246476">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தைத் திறங்கள்</translation>
+<translation id="1419738280318246476">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை அன்லாக் செய்யுங்கள்</translation>
 <translation id="1420408895951708260">நைட் லைட்டை ஆன்/ஆஃப் செய்யும். <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">ஆம்</translation>
 <translation id="144853431011121127">உங்கள் மொபைலுக்கு வரும் அறிவிப்புகளை <ph name="DEVICE_TYPE" /> இல் பெறலாம்</translation>
@@ -119,7 +119,7 @@
 <translation id="1864454756846565995">USB-C சாதனம் (பின்பக்கப் போர்ட்)</translation>
 <translation id="1882814835921407042">மொபைலில் நெட்வொர்க் இல்லை</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ஐப் பிரதிபலிக்கிறது</translation>
-<translation id="1885785240814121742">கைரேகை மூலம் திறக்கலாம்</translation>
+<translation id="1885785240814121742">கைரேகை மூலம் அன்லாக் செய்யலாம்</translation>
 <translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) என்பதற்கு மாற்றப்பட்டது. மாற்றங்களை வைத்திருக்க ‘உறுதிசெய்’ என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="1919743966458266018">செயல் நிர்வாகியைத் திறப்பதற்கான ஷார்ட்கட் மாற்றப்பட்டது. <ph name="OLD_SHORTCUT" /> க்குப் பதிலாக <ph name="NEW_SHORTCUT" /> ஐப் பயன்படுத்தவும்.</translation>
 <translation id="1923539912171292317">தன்னியக்க கிளிக்குகள்</translation>
@@ -346,6 +346,7 @@
 <translation id="370665806235115550">ஏற்றுகிறது…</translation>
 <translation id="3712407551474845318">பகுதியைப் படமெடு</translation>
 <translation id="371370241367527062">முன்பக்க மைக்ரோஃபோன்</translation>
+<translation id="3713734891607377840">பதிவிறக்கியதும் திற</translation>
 <translation id="3742055079367172538">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
 <translation id="3771549900096082774">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" />க்கு, பல உள்நுழைவை நிர்வாகி அனுமதிக்கவில்லை. தொடர, எல்லாப் பயனர்களும் வெளியேற வேண்டும்.</translation>
@@ -444,7 +445,7 @@
 <translation id="4451374464530248585">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Alt + கீழ்நோக்கிய அம்புக்குறி. Page Down பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + கீழ்நோக்கிய அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
 <translation id="445864333228800152">மாலை வணக்கம்,</translation>
 <translation id="4458688154122353284">ஸ்கிரீனை ரெக்கார்டு செய்வதை நிறுத்து</translation>
-<translation id="4471354919263203780">பேச்சு அறிதலுக்கான கோப்புகளைப் பதிவிறக்குகிறது... <ph name="PERCENT" />%</translation>
+<translation id="4471354919263203780">பேச்சு அறிதலுக்கான ஃபைல்களைப் பதிவிறக்குகிறது... <ph name="PERCENT" />%</translation>
 <translation id="4472575034687746823">தொடங்குக</translation>
 <translation id="4477350412780666475">அடுத்த டிராக்</translation>
 <translation id="4477892968187500306">Googleளால் சரிபார்க்கப்படாத ஆப்ஸ் இந்தச் சாதனத்தில் இருக்கக்கூடும்.</translation>
@@ -477,7 +478,7 @@
 <translation id="4642092649622328492">பகுதியளவு ஸ்கிரீன்ஷாட்டை எடுக்கும்</translation>
 <translation id="4659419629803378708">ChromeVox இயக்கப்பட்டது</translation>
 <translation id="4665114317261903604">'தொந்தரவு செய்ய வேண்டாம்' அம்சத்தை ஆன்/ஆஃப் செய்யும். <ph name="STATE_TEXT" /></translation>
-<translation id="4696813013609194136">பெற்றோர் குறியீட்டின் மூலம் சாதனத்தை திறத்தல்</translation>
+<translation id="4696813013609194136">பெற்றோர் குறியீட்டின் மூலம் சாதனத்தை அன்லாக் செய்தல்</translation>
 <translation id="4702647871202761252">தனிப்பட்ட திரை முடக்கப்பட்டுள்ளது</translation>
 <translation id="4705716602320768426">கருத்தைப் பதிவுசெய்க</translation>
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
@@ -1013,7 +1014,7 @@
 <translation id="8982906748181120328">‘அருகில் பகிர்தல்’ தெரிவுநிலை</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> பயன்படுத்தப்படுகிறது</translation>
-<translation id="899350903320462459">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை <ph name="LOGIN_ID" /> ஆகத் திறக்கவும்</translation>
+<translation id="899350903320462459">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை <ph name="LOGIN_ID" /> ஆக அன்லாக் செய்யவும்</translation>
 <translation id="9017320285115481645">Family Link பெற்றோர் அணுகல் குறியீட்டை உள்ளிடவும்.</translation>
 <translation id="9024331582947483881">முழுத்திரை</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />க்கான அமைப்புகளைத் திறக்கும்</translation>

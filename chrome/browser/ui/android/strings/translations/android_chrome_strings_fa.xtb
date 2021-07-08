@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> دکمه <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">برخی کوکی‌ها و جستجوها را از نوار نشانی و جعبه جستجو به موتور جستجوی پیش‌فرض ارسال می‌کند</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# فایل}one{# فایل}other{# فایل}}</translation>
-<translation id="2017836877785168846">سابقه و تکمیل خودکار را در نوار نشانی پاک می‌کند.</translation>
 <translation id="2021896219286479412">کنترل‌های سایت تمام‌صفحه</translation>
 <translation id="2038563949887743358">روشن کردن درخواست سایت رایانه‌ای</translation>
 <translation id="2039379262107991683">برای دریافت یادآوری، صفحه‌هایتان را به «فهرست خواندن» اضافه کنید</translation>
@@ -490,7 +489,6 @@
 <translation id="4183868528246477015">‏جستجو با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4198423547019359126">مکانی برای بارگیری دردسترس نیست</translation>
-<translation id="4206707945726604465">‏برای پاک کردن انواع دیگر سابقه، به <ph name="BEGIN_LINK1" />فعالیت Google من<ph name="END_LINK1" /> بروید</translation>
 <translation id="4209895695669353772">‏برای اینکه Google محتوای شخصی‌شده به شما پیشنهاد دهد، همگام‌سازی را روشن کنید</translation>
 <translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
@@ -514,6 +512,7 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - درحال بارگیری…</translation>
 <translation id="4404568932422911380">هیچ نشانکی موجود نیست</translation>
 <translation id="4405224443901389797">انتقال به…</translation>
+<translation id="4409271659088619928">موتور جستجوی شما <ph name="DSE" /> است. برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، دستورالعمل‌های آن موتور جستجو را ببینید.</translation>
 <translation id="4411535500181276704">حالت ساده</translation>
 <translation id="4415276339145661267">‏مدیریت «حساب Google»</translation>
 <translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
@@ -773,7 +772,6 @@
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
 <translation id="6000066717592683814">‏حفظ Google</translation>
 <translation id="6000203700195075278">دنبال کردن مجدد</translation>
-<translation id="6002623704405939939">‏برای پاک کردن سابقه <ph name="BEGIN_LINK1" />جستجو<ph name="END_LINK1" /> یا دیگر انواع سابقه، به <ph name="BEGIN_LINK2" />فعالیت من در Google<ph name="END_LINK2" /> بروید</translation>
 <translation id="6005538289190791541">گذرواژه پیشنهادی</translation>
 <translation id="6032091552407840792">این دوره آزمایشی فقط در <ph name="BEGIN_LINK" />برخی مناطق<ph name="END_LINK" /> فعال است.</translation>
 <translation id="6033245666633565791">‏Chrome بااستفاده از <ph name="BEGIN_LINK" />جعبه ایمنی حریم‌خصوصی<ph name="END_LINK" /> درحال توسعه فناوری‌های جدیدی است که ضمن حفظ وبِ باز، از شما در برابر ردیابی بین‌سایتی محافظت می‌کند.
@@ -885,7 +883,6 @@
 <translation id="661266467055912436">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد.</translation>
 <translation id="6618554661997243500">برای دیدن سایت‌ها و داستان‌های برتر ویژه شما، روی دکمه «صفحه اصلی» ضربه بزنید</translation>
 <translation id="6627583120233659107">ویرایش پوشه</translation>
-<translation id="6635718764393004944">موتور جستجوی شما <ph name="DSE" /> است. درصورت وجود، دستورالعمل‌های حذف سابقه جستجو را ببینید.</translation>
 <translation id="663674369910034433">‏برای تنظیمات بیشتر مرتبط با حریم‌خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK1" />همگام‌سازی<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />سرویس‌های Google<ph name="END_LINK2" /> را ببینید.</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6643649862576733715">به‌ترتیب مقدار داده صرفه‌جویی‌شده</translation>

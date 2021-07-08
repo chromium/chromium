@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Botão <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para o motor de pesquisa predefinido.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
-<translation id="2017836877785168846">Limpa o histórico e os preenchimentos automáticos da barra de endereço.</translation>
 <translation id="2021896219286479412">Controlos de site em ecrã int.</translation>
 <translation id="2038563949887743358">Ativar Pedir site para computador</translation>
 <translation id="2039379262107991683">Adicione páginas à sua Lista de leitura para receber um lembrete</translation>
@@ -490,7 +489,6 @@ A Privacy Sandbox está em desenvolvimento e está disponível em regiões selec
 <translation id="4183868528246477015">Pesquisar com Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4198423547019359126">Não existem localizações de transferência disponíveis.</translation>
-<translation id="4206707945726604465">Para limpar outras formas do histórico, visite <ph name="BEGIN_LINK1" />A minha atividade Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Para obter conteúdo personalizado sugerido pelo Google, ative a sincronização.</translation>
 <translation id="4225895483398857530">Atalho da barra de ferramentas</translation>
 <translation id="4242533952199664413">Abrir definições</translation>
@@ -514,6 +512,7 @@ A Privacy Sandbox está em desenvolvimento e está disponível em regiões selec
 <translation id="4402611456429872546"><ph name="LANG" /> – A transferir…</translation>
 <translation id="4404568932422911380">Sem marcadores</translation>
 <translation id="4405224443901389797">Mover para…</translation>
+<translation id="4409271659088619928">O seu motor de pesquisa é o <ph name="DSE" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas.</translation>
 <translation id="4411535500181276704">Modo Lite</translation>
 <translation id="4415276339145661267">Gerir a sua Conta Google</translation>
 <translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o software malicioso.</translation>
@@ -773,7 +772,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5979084224081478209">Verificar palavras-passe</translation>
 <translation id="6000066717592683814">Manter o Google</translation>
 <translation id="6000203700195075278">Voltar a seguir</translation>
-<translation id="6002623704405939939">Para limpar a <ph name="BEGIN_LINK1" />pesquisa<ph name="END_LINK1" /> ou outras formas do histórico, visite <ph name="BEGIN_LINK2" />A minha atividade Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Palavra-passe sugerida</translation>
 <translation id="6032091552407840792">Esta avaliação está ativa apenas em <ph name="BEGIN_LINK" />algumas regiões<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Com a <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, o Chrome está a desenvolver novas tecnologias que protegem da monitorização entre sites, ao mesmo tempo que preservam a Web aberta.
@@ -885,7 +883,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="661266467055912436">Melhora a segurança para si e todas as pessoas na Web.</translation>
 <translation id="6618554661997243500">Para ver os sites e as notícias principais para si, toque no botão página inicial.</translation>
 <translation id="6627583120233659107">Editar pasta</translation>
-<translation id="6635718764393004944">O seu motor de pesquisa é o <ph name="DSE" />. Se aplicável, veja as respetivas instruções para eliminar o seu histórico de pesquisas.</translation>
 <translation id="663674369910034433">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK1" />Sincronização<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />Serviços Google<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6643649862576733715">Ordenar por quantidade de dados poupados</translation>

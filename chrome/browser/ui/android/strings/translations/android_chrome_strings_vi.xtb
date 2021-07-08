@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Nút <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Gửi một số cookie và nội dung tìm kiếm từ thanh địa chỉ cũng như hộp tìm kiếm tới công cụ tìm kiếm mặc định</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# tệp}other{# tệp}}</translation>
-<translation id="2017836877785168846">Xóa lịch sử duyệt web và nội dung tự động hoàn thành trong thanh địa chỉ.</translation>
 <translation id="2021896219286479412">Kiểm soát trang toàn màn hình</translation>
 <translation id="2038563949887743358">Bật Yêu cầu trang web cho máy tính</translation>
 <translation id="2039379262107991683">Thêm trang vào Danh sách đọc để nhận lời nhắc</translation>
@@ -490,7 +489,6 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="4183868528246477015">Tìm bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
 <translation id="4198423547019359126">Không có vị trí tải xuống</translation>
-<translation id="4206707945726604465">Để xóa các dạng nhật ký khác, hãy truy cập trang <ph name="BEGIN_LINK1" />Hoạt động của tôi trên Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Để nhận nội dung do Google đề xuất riêng cho bạn, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="4225895483398857530">Lối tắt trên thanh công cụ</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
@@ -514,6 +512,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="4402611456429872546"><ph name="LANG" /> – Đang tải xuống…</translation>
 <translation id="4404568932422911380">Không có dấu trang nào</translation>
 <translation id="4405224443901389797">Chuyển tới...</translation>
+<translation id="4409271659088619928">Bạn đang dùng công cụ tìm kiếm <ph name="DSE" />. Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm đó.</translation>
 <translation id="4411535500181276704">Chế độ thu gọn</translation>
 <translation id="4415276339145661267">Quản lý Tài khoản Google của bạn</translation>
 <translation id="4427306783828095590">Chế độ bảo vệ tăng cường giúp chặn phần mềm độc hại và hành vi lừa đảo hiệu quả hơn</translation>
@@ -773,7 +772,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5979084224081478209">Kiểm tra mật khẩu</translation>
 <translation id="6000066717592683814">Giữ Google làm công cụ tìm kiếm mặc định</translation>
 <translation id="6000203700195075278">Theo dõi lại</translation>
-<translation id="6002623704405939939">Để xóa <ph name="BEGIN_LINK1" />nội dung tìm kiếm<ph name="END_LINK1" /> hoặc các dạng nhật ký khác, hãy truy cập vào trang <ph name="BEGIN_LINK2" />Hoạt động của tôi trên Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Mật khẩu đề xuất</translation>
 <translation id="6032091552407840792">Chế độ dùng thử này chỉ hoạt động ở <ph name="BEGIN_LINK" />một số khu vực<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Với <ph name="BEGIN_LINK" />Hộp cát về quyền riêng tư<ph name="END_LINK" />, Chrome sẽ phát triển các công nghệ mới để giúp bạn không bị theo dõi trên nhiều trang web trong khi vẫn duy trì môi trường web mở.
@@ -885,7 +883,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="661266467055912436">Tăng độ bảo mật cho bạn và mọi người trên web.</translation>
 <translation id="6618554661997243500">Để xem các trang web hàng đầu và tin nổi bật dành cho bạn, hãy nhấn vào nút Trang chủ</translation>
 <translation id="6627583120233659107">Chỉnh sửa thư mục</translation>
-<translation id="6635718764393004944">Bạn đang dùng công cụ tìm kiếm <ph name="DSE" />. Nếu có thể, hãy xem hướng dẫn của công cụ này về cách xóa nhật ký tìm kiếm.</translation>
 <translation id="663674369910034433">Bạn có thể xem thêm các tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK1" />Đồng bộ hóa<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />Các dịch vụ của Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6643649862576733715">Sắp xếp theo lượng dữ liệu tiết kiệm được</translation>

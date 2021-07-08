@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> button</translation>
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
-<translation id="2017836877785168846">Clears history and autocompletions in the address bar.</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
 <translation id="2039379262107991683">Add pages to your reading list to get a reminder</translation>
@@ -397,6 +396,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3518985090088779359">Accept &amp; continue</translation>
 <translation id="3522247891732774234">Update available. More options</translation>
 <translation id="3524138585025253783">Developer UI</translation>
+<translation id="3524334353996115845">Let <ph name="ORIGIN" /> verify that it's you</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB available</translation>
 <translation id="3549657413697417275">Search your history</translation>
@@ -489,7 +489,6 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4183868528246477015">Search with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4198423547019359126">No available download locations</translation>
-<translation id="4206707945726604465">To clear other forms of history, visit <ph name="BEGIN_LINK1" />My Google activity<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">To get personalised content suggested by Google, turn on sync</translation>
 <translation id="4225895483398857530">Toolbar shortcut</translation>
 <translation id="4242533952199664413">Open settings</translation>
@@ -513,6 +512,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4402611456429872546"><ph name="LANG" /> – Downloading…</translation>
 <translation id="4404568932422911380">No bookmarks</translation>
 <translation id="4405224443901389797">Move to…</translation>
+<translation id="4409271659088619928">Your search engine is <ph name="DSE" />. See their instructions for deleting your search history, if applicable.</translation>
 <translation id="4411535500181276704">Lite mode</translation>
 <translation id="4415276339145661267">Manage your Google Account</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
@@ -668,6 +668,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> open tab, tap to switch tabs}other{<ph name="OPEN_TABS_MANY" /> open tabs, tap to switch tabs}}</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Only allow certain sites</translation>
+<translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifying…</translation>
 <translation id="5423934151118863508">Your most visited pages will appear here</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB available</translation>
@@ -771,7 +772,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6000203700195075278">Refollow</translation>
-<translation id="6002623704405939939">To clear <ph name="BEGIN_LINK1" />search<ph name="END_LINK1" /> or other forms of history, visit <ph name="BEGIN_LINK2" />My Google activity<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Suggested password</translation>
 <translation id="6032091552407840792">This trial is active only in <ph name="BEGIN_LINK" />some regions<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">With <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome is developing new technologies to safeguard you from cross-site tracking while preserving the open web.
@@ -883,7 +883,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6618554661997243500">To see top sites and stories for you, tap the Home button</translation>
 <translation id="6627583120233659107">Edit folder</translation>
-<translation id="6635718764393004944">Your search engine is <ph name="DSE" />. If applicable, see their instructions to delete your search history.</translation>
 <translation id="663674369910034433">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK1" />Sync<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Google services<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6643649862576733715">Sort by amount of data saved</translation>
@@ -1026,6 +1025,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7583262514280211622">You’ll find your reading list here</translation>
 <translation id="7588219262685291874">Turn on dark theme when your device's Battery Saver is on</translation>
 <translation id="7593557518625677601">Open Android settings and re-enable Android system sync to start Chrome sync</translation>
+<translation id="7594687499944811403">Let <ph name="EMBEDDED_ORIGIN" /> verify that it's you for <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operating system</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
 <translation id="7606077192958116810">Lite mode is on. Manage it in Settings.</translation>

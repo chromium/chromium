@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-knapp</translation>
 <translation id="2000419248597011803">Sender noen informasjonskapsler og søk fra adressefeltet og søkefeltet samt noen informasjonskapsler til standardsøkemotoren din</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
-<translation id="2017836877785168846">Tømmer loggen og fjerner automatiske fullføringer fra adressefeltet.</translation>
 <translation id="2021896219286479412">Navigering i full skjerm</translation>
 <translation id="2038563949887743358">Slå på Bruk skrivebordsversjon</translation>
 <translation id="2039379262107991683">Legg til sider på leselisten for å få påminnelser</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="4183868528246477015">Søk med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Åpne i ny fane</translation>
 <translation id="4198423547019359126">Ingen tilgjengelige nedlastingssteder</translation>
-<translation id="4206707945726604465">For å slette andre former for logg, besøk <ph name="BEGIN_LINK1" />Min Google-aktivitet<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">For å få forslag om personlig tilpasset innhold fra Google, slå på synkronisering</translation>
 <translation id="4225895483398857530">Verktøylinje-snarvei</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="4402611456429872546"><ph name="LANG" /> – Laster ned …</translation>
 <translation id="4404568932422911380">Ingen bokmerker</translation>
 <translation id="4405224443901389797">Flytt til …</translation>
+<translation id="4409271659088619928">Søkemotoren din er <ph name="DSE" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="4411535500181276704">Forenklet modus</translation>
 <translation id="4415276339145661267">Administrer Google-kontoen din</translation>
 <translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
@@ -773,7 +772,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5979084224081478209">Kontrollér passordene</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6000203700195075278">Følg på nytt</translation>
-<translation id="6002623704405939939">For å tømme <ph name="BEGIN_LINK1" />søkeloggen<ph name="END_LINK1" /> eller andre logger, besøk <ph name="BEGIN_LINK2" />Min Google-aktivitet<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Foreslått passord</translation>
 <translation id="6032091552407840792">Denne utprøvingen er kun aktiv i <ph name="BEGIN_LINK" />enkelte regioner<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Med <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />utvikler Chrome nye teknologier for å sikre deg fra sporing på tvers av sider samtidig som det åpne nettet ivaretas.
@@ -885,7 +883,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
 <translation id="6618554661997243500">For å se anbefalte nettsteder og nyhetssaker for deg, trykk på knappen Gå til startsiden</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
-<translation id="6635718764393004944">Søkemotoren din er <ph name="DSE" />. Se eventuelt instruksjonene deres for hvordan du sletter søkeloggen din.</translation>
 <translation id="663674369910034433">Se <ph name="BEGIN_LINK1" />Synkronisering<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />Google-tjenester<ph name="END_LINK2" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6643649862576733715">Sortér etter mengden data som er spart</translation>

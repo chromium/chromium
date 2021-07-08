@@ -32,6 +32,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> এই ব্যবহারকারীকে ম্যানেজ করে এবং তার ফলে এটি হয়ত অন্য জায়গা থেকে সেটিংস ম্যানেজ করতে এবং ব্যবহারকারীর অ্যাক্টিভিটির উপর নজর রাখতে পারে।</translation>
 <translation id="150962533380566081">ভুল PUK।</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
+<translation id="1600964289716072707">পৃষ্ঠা যোগ করতে স্ক্যানারে আপনার ডকুমেন্ট রেখে 'স্ক্যান করুন' বিকল্পটি বেছে নিন।</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
 <translation id="1641857168437328880">ডকুমেন্ট ফিডার (এক পিঠের)</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
@@ -286,6 +287,7 @@
 <translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
 <translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
 <translation id="6853312040151791195">ডিসচার্জ হওয়ার রেট</translation>
+<translation id="6905724422583748843"><ph name="PAGE_NAME" /> এ ফিরুন</translation>
 <translation id="6910312834584889076">স্ক্যানারের কভার খোলা আছে। কভার বন্ধ করে আবার চেষ্টা করুন।</translation>
 <translation id="6911383237894364323">মিডিয়া সার্ভারে কানেক্ট করা যায়নি</translation>
 <translation id="6957231940976260713">পরিষেবার নাম</translation>
@@ -330,6 +332,7 @@
 <translation id="7769672763586021400">মডেল আইডি</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7819857487979277519">PSK (WPA বা RSN)</translation>
+<translation id="7835501727204647447">CloudReady ইনস্টল করুন</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">পরিষেবা প্রদানকারীর ধরন</translation>
 <translation id="7936303884198020182">ডোমেন নেম সার্ভার খুঁজে পাওয়া যায়নি</translation>

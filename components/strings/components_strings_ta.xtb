@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">நிறுத்தப்பட்ட அம்சங்கள்</translation>
 <translation id="131405271941274527">NFC சாதனத்தில் உங்கள் மொபைலைத் தட்டும்போது தகவலை அனுப்புவதற்கும் பெறுவதற்குமான அனுமதி <ph name="URL" />க்குத் தேவை</translation>
 <translation id="1314509827145471431">பைண்டு ரைட்</translation>
+<translation id="1319245136674974084">இந்த ஆப்ஸில் மீண்டும் கேட்காதே</translation>
 <translation id="1320233736580025032">Prc1 (என்வலப்)</translation>
 <translation id="132301787627749051">கிளிப்-போர்டு படத்தைத் தேடும்</translation>
 <translation id="1323433172918577554">மேலும் காட்டு</translation>
@@ -736,6 +737,7 @@
 <translation id="3655670868607891010">இதை அடிக்கடி காண்கிறீர்கள் எனில், <ph name="HELP_LINK" /> ஐ முயற்சிக்கவும்.</translation>
 <translation id="3658742229777143148">மீள்திருத்தங்கள்</translation>
 <translation id="3664782872746246217">தேடல் குறிப்புகள்:</translation>
+<translation id="3671540257457995106">அளவை மாற்ற அனுமதிக்கவா?</translation>
 <translation id="3676592649209844519">சாதன ஐடி:</translation>
 <translation id="3677008721441257057">இதைக் குறிப்பிட்டீர்களா: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">கோரிக்கையில் கையொப்பமிட முடியவில்லை</translation>
@@ -1096,6 +1098,7 @@
 <translation id="4953689047182316270">அணுகல்தன்மை நிகழ்வுகளுக்குப் பதிலளித்தல்</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">பட்டியலை விரி</translation>
+<translation id="4968522289500246572">மொபைல் சாதனங்களுக்காக இந்த ஆப்ஸ் வடிவமைக்கப்பட்டுள்ளதால் இதன் அளவைச் சரியாக மாற்ற முடியாமல் போகலாம். அத்துடன் இதில் சிக்கல்கள் ஏற்படலாம் அல்லது இது மீண்டும் தொடங்கலாம்.</translation>
 <translation id="4973922308112707173">டூயல் பஞ்ச் டாப்</translation>
 <translation id="4974590756084640048">எச்சரிக்கைகளை மீண்டும் இயக்கு</translation>
 <translation id="4984088539114770594">மைக்ரோஃபோனைப் பயன்படுத்தவா?</translation>
@@ -1144,6 +1147,7 @@
 <translation id="5123063207673082822">வாரயிறுதி</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">உங்கள் கார்டு விவரங்களைச் சரிபார்த்தல்</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> அளவைச் சரியாக மாற்ற முடியாமல் போகலாம். ஆப்ஸில் சிக்கல்கள் ஏற்படுவதைத் தடுக்க, ஏற்கெனவே அமைத்த சாளர அளவுகளைப் பயன்படுத்தவும்.</translation>
 <translation id="5135404736266831032">முகவரிகளை நிர்வகி...</translation>
 <translation id="5138227688689900538">குறைவாகக் காட்டு</translation>
 <translation id="514010763713772514">அடுத்த முறை விரைவாகச் செக்-அவுட் செய்யுங்கள்</translation>
@@ -1507,6 +1511,7 @@
 <translation id="647261751007945333">சாதனக் கொள்கைகள்</translation>
 <translation id="6476284679642588870">கட்டண முறைகளை நிர்வகி</translation>
 <translation id="6489534406876378309">சிதைவுகளைப் பதிவேற்றுவதைத் தொடங்கு</translation>
+<translation id="6493924760403974580">இந்த அளவில் மட்டுமே இந்த ஆப்ஸை மாற்ற முடியும்.</translation>
 <translation id="6499038740797743453">கடவுச்சொல்லை மீட்டமைக்கவா?</translation>
 <translation id="6502991525169604759">அசல் ஆவணத்தைப் பதிவிறக்கு</translation>
 <translation id="6508722015517270189">Chromeஐ மீண்டும் தொடங்கவும்</translation>
@@ -2158,6 +2163,7 @@
 <translation id="8975263830901772334">நீங்கள் அச்சிடும் கோப்புகளின் பெயர்கள்</translation>
 <translation id="8978053250194585037">சமீபத்தில் Google பாதுகாப்பான உலாவலானது <ph name="SITE" /> தளத்தில் <ph name="BEGIN_LINK" />ஃபிஷிங்கைக் கண்டறிந்தது<ph name="END_LINK" />. ஃபிஷிங் தளங்கள் பிற இணையதளங்களைப் போல் காண்பித்து, உங்களை ஏமாற்ற முயற்சிக்கக்கூடும்.</translation>
 <translation id="8983003182662520383">Google Payவைப் பயன்படுத்தும் கட்டண முறைகளும் முகவரிகளும்</translation>
+<translation id="8983369100812962543">இனி நீங்கள் ஆப்ஸின் அளவை மாற்றலாம்</translation>
 <translation id="8987927404178983737">மாதம்</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">இந்தச் சாதனத்தில் நீங்கள் செயலில் இருப்பது குறித்து <ph name="URL" /> அறிந்துகொள்ள விரும்புகிறது</translation>

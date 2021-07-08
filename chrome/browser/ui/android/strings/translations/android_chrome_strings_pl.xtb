@@ -146,7 +146,6 @@
 <translation id="1987739130650180037">Przycisk <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# plik}few{# pliki}many{# plików}other{# pliku}}</translation>
-<translation id="2017836877785168846">Usuwa historię i wpisy autouzupełniania w pasku adresu.</translation>
 <translation id="2021896219286479412">Elementy sterowania stroną na pełnym ekranie</translation>
 <translation id="2038563949887743358">Włącz opcję „Wersja na komputer”</translation>
 <translation id="2039379262107991683">Aby otrzymać przypomnienie, dodaj strony do listy Do przeczytania</translation>
@@ -490,7 +489,6 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4183868528246477015">Szukaj z Obiektywem Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4198423547019359126">Brak dostępnych miejsc zapisu pobieranych plików</translation>
-<translation id="4206707945726604465">Aby wyczyścić inne rodzaje historii, otwórz <ph name="BEGIN_LINK1" />Moją aktywność w Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Aby uzyskać dostęp do spersonalizowanej treści proponowanej przez Google, włącz synchronizację</translation>
 <translation id="4225895483398857530">Skrót na pasku narzędzi</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
@@ -514,6 +512,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4402611456429872546"><ph name="LANG" /> – pobieram…</translation>
 <translation id="4404568932422911380">Brak zakładek</translation>
 <translation id="4405224443901389797">Przenieś do…</translation>
+<translation id="4409271659088619928">Twoja wyszukiwarka to <ph name="DSE" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="4411535500181276704">Wersja uproszczona</translation>
 <translation id="4415276339145661267">Zarządzaj kontem Google</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
@@ -773,7 +772,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5979084224081478209">Sprawdź hasła</translation>
 <translation id="6000066717592683814">Zachowaj Google</translation>
 <translation id="6000203700195075278">Ponownie dodaj do obserwowanych</translation>
-<translation id="6002623704405939939">Aby wyczyścić historię <ph name="BEGIN_LINK1" />wyszukiwania<ph name="END_LINK1" /> lub innych zdarzeń, otwórz <ph name="BEGIN_LINK2" />Moją aktywność w Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Proponowane hasło</translation>
 <translation id="6032091552407840792">Wersja próbna jest dostępna tylko w <ph name="BEGIN_LINK" />niektórych regionach<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">W ramach <ph name="BEGIN_LINK" />Piaskownicy prywatności<ph name="END_LINK" /> Chrome rozwija nowe technologie chroniące przed śledzeniem w różnych witrynach przy zachowaniu otwartego charakteru internetu.
@@ -885,7 +883,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="661266467055912436">Zwiększa bezpieczeństwo Twoje i pozostałych użytkowników internetu.</translation>
 <translation id="6618554661997243500">Aby zobaczyć najciekawsze strony i artykuły dla Ciebie, naciśnij przycisk strony głównej</translation>
 <translation id="6627583120233659107">Edytuj folder</translation>
-<translation id="6635718764393004944">Twoja wyszukiwarka to <ph name="DSE" />. Jeśli chcesz usunąć historię wyszukiwania, w razie potrzeby zajrzyj do instrukcji tej usługi.</translation>
 <translation id="663674369910034433">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcjach <ph name="BEGIN_LINK1" />Synchronizacja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Usługi Google<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6643649862576733715">Sortuj według ilości zaoszczędzonych danych</translation>

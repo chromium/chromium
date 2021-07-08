@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> gomb</translation>
 <translation id="2000419248597011803">Bizonyos cookie-kat és kereséseket küld a címsávból és a keresőmezőből az alapértelmezett keresőmotornak</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fájl}other{# fájl}}</translation>
-<translation id="2017836877785168846">Törli a címsávban található előzményeket és automatikus kiegészítéseket.</translation>
 <translation id="2021896219286479412">Teljes képernyős oldal vezérlői</translation>
 <translation id="2038563949887743358">Kapcsolja be az Asztali webhely kérése funkciót</translation>
 <translation id="2039379262107991683">Ha értesítést szeretne kapni, adja hozzá az oldalakat az Olvasólistához</translation>
@@ -490,7 +489,6 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4183868528246477015">Keresés a Google Lensszel <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4198423547019359126">Nem áll rendelkezésre letöltési hely</translation>
-<translation id="4206707945726604465">További előzményfajták törléséhez keresse fel a <ph name="BEGIN_LINK1" />Saját Google-tevékenységek<ph name="END_LINK1" /> oldalát.</translation>
 <translation id="4209895695669353772">A Google által javasolt, személyre szabott tartalmak fogadásához kapcsolja be a szinkronizálást</translation>
 <translation id="4225895483398857530">Eszköztár gyorsparancs</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
@@ -514,6 +512,7 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4402611456429872546"><ph name="LANG" /> – Letöltés…</translation>
 <translation id="4404568932422911380">Nincsenek könyvjelzők</translation>
 <translation id="4405224443901389797">Áthelyezés…</translation>
+<translation id="4409271659088619928">Az Ön keresőmotorja a következő: <ph name="DSE" />. A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
 <translation id="4411535500181276704">Egyszerűsített mód</translation>
 <translation id="4415276339145661267">Google-fiók kezelése</translation>
 <translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
@@ -773,7 +772,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5979084224081478209">Jelszavak ellenőrzése</translation>
 <translation id="6000066717592683814">A Google megtartása</translation>
 <translation id="6000203700195075278">Újrakövetés</translation>
-<translation id="6002623704405939939">A <ph name="BEGIN_LINK1" />keresések<ph name="END_LINK1" /> vagy más előzmények törléséhez keresse fel a <ph name="BEGIN_LINK2" />Saját Google-tevékenységek<ph name="END_LINK2" /> oldalt</translation>
 <translation id="6005538289190791541">Javasolt jelszó</translation>
 <translation id="6032091552407840792">Ez a próbaverzió csak <ph name="BEGIN_LINK" />egyes régiókban áll rendelkezésre<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">A <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> révén a Chrome olyan új technológiákat fejlesztünk, melyek megvédik Önt a nyomon követési mechanizmusoktól, miközben megőrzik a web nyitottságát.
@@ -885,7 +883,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="661266467055912436">Javítja az Ön és mindenki más biztonságát az interneten.</translation>
 <translation id="6618554661997243500">Ha szeretné megtekinteni a legkedveltebb webhelyeit és a legfrissebb híreket, koppintson a Kezdőképernyő gombra</translation>
 <translation id="6627583120233659107">Mappa szerkesztése</translation>
-<translation id="6635718764393004944">Az Ön keresőmotorja a következő: <ph name="DSE" />. Adott esetben tekintse meg az utasításokat a keresési előzmények törléséhez.</translation>
 <translation id="663674369910034433">A <ph name="BEGIN_LINK1" />Szinkronizálás<ph name="END_LINK1" /> és a <ph name="BEGIN_LINK2" />Google-szolgáltatások<ph name="END_LINK2" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan.</translation>
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6643649862576733715">Rendezés a megtakarított adatmennyiség szerint</translation>

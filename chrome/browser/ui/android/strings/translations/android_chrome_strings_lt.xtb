@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> mygtukas</translation>
 <translation id="2000419248597011803">Numatytajam paieškos varikliui siunčiami kai kurie slapukai ir į adreso juostą bei paieškos laukelį įvestos paieškos</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
-<translation id="2017836877785168846">Išvaloma istorija ir automatiniai užbaigimai adreso juostoje.</translation>
 <translation id="2021896219286479412">Viso ekrano svetainės valdikliai</translation>
 <translation id="2038563949887743358">Įjungti stalinio kompiuterio svetainės užklausą</translation>
 <translation id="2039379262107991683">Pridėkite puslapių prie skaitymo sąrašo, kad gautumėte priminimą</translation>
@@ -490,7 +489,6 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="4183868528246477015">Ieškoti su „Google Lens“ <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
 <translation id="4198423547019359126">Nėra pasiekiamų atsisiuntimo vietų</translation>
-<translation id="4206707945726604465">Jei norite išvalyti kitų formų istoriją, apsilankykite skiltyje <ph name="BEGIN_LINK1" />„Mano „Google“ veikla“<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Jei norite gauti „Google“ siūlomo suasmeninto turinio, įjunkite sinchronizavimą</translation>
 <translation id="4225895483398857530">Įrankių juostos spartusis klavišas</translation>
 <translation id="4242533952199664413">Atidaryti nustatymus</translation>
@@ -514,6 +512,7 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="4402611456429872546"><ph name="LANG" /> – atsisiunčiama…</translation>
 <translation id="4404568932422911380">Nėra jokių žymių</translation>
 <translation id="4405224443901389797">Perkelti į…</translation>
+<translation id="4409271659088619928">Jūsų paieškos variklis yra „<ph name="DSE" />“. Peržiūrėkite jo instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="4411535500181276704">Supaprastintasis režimas</translation>
 <translation id="4415276339145661267">„Google“ paskyros tvarkymas</translation>
 <translation id="4427306783828095590">Naudojant sustiprintą apsaugą pasitelkiama papildomų priemonių sukčiavimui ir kenkėjiškoms programoms užblokuoti</translation>
@@ -773,7 +772,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5979084224081478209">Patikrinti slaptažodžius</translation>
 <translation id="6000066717592683814">Palikti „Google“</translation>
 <translation id="6000203700195075278">Stebėti iš naujo</translation>
-<translation id="6002623704405939939">Norėdami išvalyti <ph name="BEGIN_LINK1" />paieškos<ph name="END_LINK1" /> ar kitos veiklos istoriją, apsilankykite puslapyje <ph name="BEGIN_LINK2" />„Mano „Google“ veikla“<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Siūlomas slaptažodis</translation>
 <translation id="6032091552407840792">Ši bandomoji versija aktyvi tik <ph name="BEGIN_LINK" />kai kuriuose regionuose<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Naudodama <ph name="BEGIN_LINK" />privatumo „sandbox“ (smėlio dėžę)<ph name="END_LINK" /> „Chrome“ kuria naujas technologijas, kad apsaugotų jus nuo veiklos skirtingose svetainėse stebėjimo, išlaikydama atvirą žiniatinklį.
@@ -885,7 +883,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="661266467055912436">Sustiprina jūsų ir visų žiniatinklio naudotojų saugą.</translation>
 <translation id="6618554661997243500">Norėdami peržiūrėti populiariausias svetaines ir jums skirtus pasakojimus palieskite pagrindinio ekrano mygtuką</translation>
 <translation id="6627583120233659107">Redaguoti aplanką</translation>
-<translation id="6635718764393004944">Jūsų paieškos variklis yra „<ph name="DSE" />“. Jei yra, peržiūrėkite jo instrukcijas, kaip ištrinti paieškos istoriją.</translation>
 <translation id="663674369910034433">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyse <ph name="BEGIN_LINK1" />„Sinchronizavimas“<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />„Google“ paslaugos“<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6643649862576733715">Rūšiuoti pagal išsaugotų duomenų kiekį</translation>

@@ -464,6 +464,7 @@
 <translation id="1507246803636407672">&amp;છોડી દો</translation>
 <translation id="1508491105858779599">ઉપકરણને અનલૉક કરવા માટે તમારી આંગળીને ફિંગરપ્રિન્ટ સેન્સર પર મૂકો.</translation>
 <translation id="1508575541972276599">હાલનું વર્ઝન Debian 9 (Stretch) છે</translation>
+<translation id="1509163368529404530">&amp;ગ્રૂપ રિસ્ટોર કરો</translation>
 <translation id="1509281256533087115">USB મારફત કોઇપણ <ph name="DEVICE_NAME_AND_VENDOR" /> ઍક્સેસ કરો</translation>
 <translation id="1509960214886564027">ઘણી સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
@@ -582,6 +583,7 @@
 <translation id="1627408615528139100">પહેલેથી જ ડાઉનલોડ કરેલ છે</translation>
 <translation id="1628948239858170093">ખોલતા પહેલાં ફાઇલને સ્કૅન કરીએ?</translation>
 <translation id="1629314197035607094">પાસવર્ડની સમયસીમા સમાપ્ત થઈ</translation>
+<translation id="1629451755632656601">Googleને તમારા કાર્ટમાં ઉમેરેલી આઇટમ પર મનગમતા બનાવેલા ડિસ્કાઉન્ટ શોધવાની મંજૂરી આપીએ?</translation>
 <translation id="1630300831289687074">તમે ટૂંક સમયમાં તમારી Chromebookનો ઉપયોગ કરી શકશો.</translation>
 <translation id="163072119192489970">ડેટા મોકલવાનું અને પ્રાપ્ત કરવાનું સમાપ્ત કરવાની મંજૂરી છે</translation>
 <translation id="1630768113285622200">ફરી શરૂ કરો અને ચાલુ રાખો</translation>
@@ -1288,6 +1290,7 @@
 <translation id="236117173274098341">Optimize</translation>
 <translation id="2361340419970998028">પ્રતિસાદ મોકલી રહ્યું છીએ...</translation>
 <translation id="236141728043665931">માઇક્રોફોનની ઍક્સેસને હંમેશા અવરોધિત કરો</translation>
+<translation id="2363744066037724557">&amp;વિન્ડો રિસ્ટોર કરો</translation>
 <translation id="2364498172489649528">તપાસ પાર કરી</translation>
 <translation id="2365507699358342471">આ સાઇટ ક્લિપબોર્ડ પર કૉપિ કરેલ ટેક્સ્ટ અને છબીઓ જોઈ શકે છે.</translation>
 <translation id="2367972762794486313">ઍપ્લિકેશનો બતાવો</translation>
@@ -2671,6 +2674,7 @@
 <translation id="3857807444929313943">ઉપાડો, પછી ફરી સ્પર્શ કરો</translation>
 <translation id="3861638017150647085">વપરાશકર્તાનું "<ph name="USERNAME" />" નામ ઉપલબ્ધ નથી</translation>
 <translation id="3861977424605124250">સ્ટાર્ટઅપ કરતી વખતે બતાવો</translation>
+<translation id="386239283124269513">&amp;ગ્રૂપ રિસ્ટોર કરો</translation>
 <translation id="3862788408946266506">'Kiosk_only' મેનિફેસ્ટ વિશેષતાવાળી ઍપ Chrome OS કિઓસ્ક મોડમાં ઇન્સ્ટૉલ કરેલી હોવી જરૂરી છે</translation>
 <translation id="3865414814144988605">રિઝોલ્યુશન</translation>
 <translation id="3866249974567520381">વર્ણન</translation>
@@ -5648,6 +5652,7 @@ USB ડિવાઇસ</translation>
 <translation id="7225179976675429563">નેટવર્ક પ્રકાર ખૂટે છે</translation>
 <translation id="7228479291753472782">વેબસાઇટ્સ ભૌગોલિક સ્થાન, માઇક્રોફોન, કૅમેરા, વગેરે જેવી સુવિધાઓને ઉપયોગમાં લઈ શકે છે કે કેમ તેનો ઉલ્લેખ કરતી સેટિંગ્સમાં ફેરફારો કરો.</translation>
 <translation id="7228523857728654909">સ્ક્રીન લૉક અને સાઇન ઇન</translation>
+<translation id="7230222852462421043">&amp;વિન્ડો રિસ્ટોર કરો</translation>
 <translation id="7230787553283372882">તમારી ટેક્સ્ટના કદને કસ્ટમાઇઝ કરો</translation>
 <translation id="7232750842195536390">નામ બદલવામાં નિષ્ફળ થયાં</translation>
 <translation id="7234010996000898150">Linux પાછું મેળવવાનું રદ કરી રહ્યાં છીએ</translation>
@@ -6256,12 +6261,14 @@ USB ડિવાઇસ</translation>
 <translation id="7853747251428735">વધુ સા&amp;ધનો</translation>
 <translation id="7855678561139483478">ટૅબને નવી વિંડોમાં ખસેડો</translation>
 <translation id="7857093393627376423">ટેક્સ્ટ સૂચનો</translation>
+<translation id="7857675386615530425">Google Lens વડે પેજનો ભાગ શોધો</translation>
 <translation id="7857949311770343000">શું આ તમારી અપેક્ષા મુજબનું નવું ટેબ પૃષ્ઠ છે?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">સેવા: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ડાઉનલોડ્સ</translation>
 <translation id="7861846108263890455">Google એકાઉન્ટની ભાષા</translation>
 <translation id="7864539943188674973">Bluetooth અક્ષમ કરો</translation>
+<translation id="7866230141401327032">Google Lens વડે પેજનો ભાગ શોધો</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - જોડી કરેલ</translation>
 <translation id="7870730066603611552">સેટઅપ કર્યા પછી સિંક વિકલ્પો રિવ્યૂ કરો</translation>
 <translation id="7870790288828963061">નવા વર્ઝન સાથેની કોઈ કિઓસ્ક ઍપ્લિકેશન મળી નથી. અપડેટ કરવા માટે કંઈ નથી. કૃપા કરીને USB સ્ટીક દૂર કરો.</translation>
@@ -6833,6 +6840,7 @@ USB ડિવાઇસ</translation>
 <translation id="850875081535031620">કોઈ નુકસાનકારક સૉફ્ટવેર મળ્યું નથી</translation>
 <translation id="8509177919508253835">સુરક્ષા કોડ રીસેટ કરો અને પિન બનાવો</translation>
 <translation id="8509646642152301857">જોડણીની તપાસ ડાઉનલોડ કરવામાં નિષ્ફળ.</translation>
+<translation id="8509967119010808787">તમારી ટૅબ શોધવા માટે, અહીં ક્લિક કરો</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{કોઈ નબળો પાસવર્ડ મળ્યો નથી}=1{{COUNT} નબળો પાસવર્ડ મળ્યો}one{{COUNT} નબળો પાસવર્ડ મળ્યો}other{{COUNT} નબળા પાસવર્ડ મળ્યા}}</translation>
 <translation id="8512476990829870887">પ્રક્રિયાનો અંત કરો</translation>
 <translation id="851263357009351303"><ph name="HOST" /> ને હંમેશા છબી બતાવવાની મંજૂરી આપો</translation>

@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">শীঘ্রই বন্ধ করা হবে এমন ফিচার</translation>
 <translation id="131405271941274527">NFC ডিভাইসে আপনার ফোন ট্যাপ করলে <ph name="URL" /> তথ্য পাঠাতে এবং পেতে চায়</translation>
 <translation id="1314509827145471431">ডানদিকে বাঁধাই করুন</translation>
+<translation id="1319245136674974084">এই অ্যাপের জন্য আর জিজ্ঞাসা করবেন না</translation>
 <translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="132301787627749051">ক্লিপবোর্ডে ছবির জন্য সার্চ করুন</translation>
 <translation id="1323433172918577554">আরও দেখুন</translation>
@@ -745,6 +746,7 @@
 <translation id="3655670868607891010">আপনি যদি এটি প্রায়শই দেখতে পান, তাহলে <ph name="HELP_LINK" /> চেষ্টা করে দেখুন৷</translation>
 <translation id="3658742229777143148">পুনর্বিবেচনা</translation>
 <translation id="3664782872746246217">কীওয়ার্ড:</translation>
+<translation id="3671540257457995106">ছোট বড় করতে অনুমতি দেবেন?</translation>
 <translation id="3676592649209844519">ডিভাইস আইডি:</translation>
 <translation id="3677008721441257057">আপনি কি &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; বোঝাতে চাইছেন?</translation>
 <translation id="3678029195006412963">অনুরোধটি স্বাক্ষরিত করা যায়নি</translation>
@@ -1105,6 +1107,7 @@
 <translation id="4953689047182316270">ব্যবহারযোগ্যতা সংক্রান্ত ইভেন্টে প্রতিবার্তা দিতে চায়</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">তালিকা প্রসারিত করুন</translation>
+<translation id="4968522289500246572">এই অ্যাপটি মোবাইল ডিভাইসের জন্য তৈরি করা হয়েছে এবং সঠিকভাবে ছোট বড় করা নাও যেতে পারে। এই অ্যাপ ব্যবহার করতে হয়ত সমস্যা হতে পারে বা এটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="4973922308112707173">উপরে ডুয়াল পাঞ্চ</translation>
 <translation id="4974590756084640048">সতর্কবার্তাগুলি পুনঃসক্ষম করুন</translation>
 <translation id="4984088539114770594">মাইক্রোফোন ব্যবহার করবেন?</translation>
@@ -1153,6 +1156,7 @@
 <translation id="5123063207673082822">সপ্তাহান্ত</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">আপনার কার্ডটি যাচাই করুন</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> সঠিকভাবে ছোট বড় করা নাও যেতে পারে। অ্যাপটি ব্যবহার করতে সমস্যা এড়াতে প্রিসেট উইন্ডো সাইজ ব্যবহার করুন।</translation>
 <translation id="5135404736266831032">ঠিকানাগুলি পরিচালনা করুন...</translation>
 <translation id="5138014172396933048">ভার্চুয়াল কার্ড এই মুহূর্তে উপলভ্য নেই, আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন</translation>
 <translation id="5138227688689900538">কম দেখুন</translation>
@@ -1518,6 +1522,7 @@
 <translation id="647261751007945333">ডিভাইস নীতিগুলি</translation>
 <translation id="6476284679642588870">পেমেন্টের পদ্ধতি ম্যানেজ করুন</translation>
 <translation id="6489534406876378309">ক্র্যাশগুলি আপলোড করা শুরু করুন</translation>
+<translation id="6493924760403974580">অ্যাপটি এই সাইজেই কাজ করে।</translation>
 <translation id="6499038740797743453">পাসওয়ার্ড রিসেট করবেন?</translation>
 <translation id="6502991525169604759">আপনার করা এডিট ছাড়া</translation>
 <translation id="6508722015517270189">Chrome পুনরায় চালু করুন</translation>
@@ -2172,6 +2177,7 @@
 <translation id="8975263830901772334">আপনার প্রিন্ট করা ফাইলগুলির নাম</translation>
 <translation id="8978053250194585037">Google Safe Browsing সম্প্রতি <ph name="SITE" /> এ <ph name="BEGIN_LINK" />ফিশিং শনাক্ত করেছে<ph name="END_LINK" />। ফিশিং সাইটগুলি আপনাকে প্রতারিত করার জন্য অন্যান্য সাইট যেমন হয় সেইরকম ভান করে।</translation>
 <translation id="8983003182662520383">Google Pay ব্যবহার করে এমন পেমেন্টের পদ্ধতি এবং ঠিকানা</translation>
+<translation id="8983369100812962543">আপনি এখন অ্যাপ ছোট বড় করতে পারবেন</translation>
 <translation id="8987927404178983737">মাস</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> জানতে চায় আপনি সক্রিয়ভাবে কখন এই ডিভাইস ব্যবহার করেন</translation>

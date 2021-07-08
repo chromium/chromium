@@ -146,7 +146,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> pulsante <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Invia al tuo motore di ricerca predefinito alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca, nonché alcuni cookie</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# file}other{# file}}</translation>
-<translation id="2017836877785168846">Consente di cancellare la cronologia e i completamenti automatici nella barra degli indirizzi.</translation>
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
 <translation id="2038563949887743358">Attiva Richiedi sito desktop</translation>
 <translation id="2039379262107991683">Aggiungi pagine al tuo Elenco di lettura per ricevere un promemoria</translation>
@@ -490,7 +489,6 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="4183868528246477015">Cerca con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
 <translation id="4198423547019359126">Nessun percorso di download disponibile</translation>
-<translation id="4206707945726604465">Per cancellare altri tipi di cronologia, visita <ph name="BEGIN_LINK1" />Le mie attività Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Per ricevere contenuti suggeriti appositamente per te da Google, attiva la sincronizzazione</translation>
 <translation id="4225895483398857530">Scorciatoia per la barra degli strumenti</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
@@ -514,6 +512,7 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="4402611456429872546"><ph name="LANG" />: download in corso…</translation>
 <translation id="4404568932422911380">Nessun preferito</translation>
 <translation id="4405224443901389797">Sposta in…</translation>
+<translation id="4409271659088619928">Il tuo motore di ricerca è <ph name="DSE" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
 <translation id="4411535500181276704">Modalità Lite</translation>
 <translation id="4415276339145661267">Gestisci il tuo Account Google</translation>
 <translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
@@ -773,7 +772,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5979084224081478209">Controlla password</translation>
 <translation id="6000066717592683814">Mantieni Google</translation>
 <translation id="6000203700195075278">Segui di nuovo</translation>
-<translation id="6002623704405939939">Per cancellare la cronologia delle <ph name="BEGIN_LINK1" />ricerche<ph name="END_LINK1" /> o altri tipi di cronologia, visita la pagina <ph name="BEGIN_LINK2" />Le mie attività Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Password consigliata</translation>
 <translation id="6032091552407840792">Questa prova è attiva soltanto in <ph name="BEGIN_LINK" />alcune aree geografiche<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome sviluppa nuove tecnologie che ti tutelano dai meccanismi di tracciamento tra siti salvaguardando al contempo il Web aperto.
@@ -885,7 +883,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul Web.</translation>
 <translation id="6618554661997243500">Per vedere notizie e siti principali personalizzati, tocca il pulsante Home</translation>
 <translation id="6627583120233659107">Modifica cartella</translation>
-<translation id="6635718764393004944">Il tuo motore di ricerca è <ph name="DSE" />. Se pertinente, leggi le relative istruzioni per eliminare la cronologia delle ricerche.</translation>
 <translation id="663674369910034433">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta le sezioni <ph name="BEGIN_LINK1" />Sincronizzazione<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />Servizi Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6643649862576733715">Ordina per quantità di dati risparmiati</translation>
