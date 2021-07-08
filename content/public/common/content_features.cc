@@ -124,7 +124,7 @@ const base::Feature kBlockInsecurePrivateNetworkRequests{
 // make use of the trial must additionally serve a valid origin trial token.
 const base::Feature kBlockInsecurePrivateNetworkRequestsDeprecationTrial{
     "BlockInsecurePrivateNetworkRequestsDeprecationTrial",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When both kBlockInsecurePrivateNetworkRequestsForNavigations and
 // kBlockInsecurePrivateNetworkRequests are enabled, navigations initiated

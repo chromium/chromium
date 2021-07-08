@@ -5247,6 +5247,9 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
 
   if (base::FeatureList::IsEnabled(
           features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial) &&
+      // If there is no response or no headers in the response, there are
+      // definitely no trial token headers.
+      response_head_ && response_head_->headers &&
       blink::TrialTokenValidator().RequestEnablesFeature(
           common_params_->url, response_head_->headers.get(),
           "PrivateNetworkAccessNonSecureContextsAllowed", base::Time::Now())) {

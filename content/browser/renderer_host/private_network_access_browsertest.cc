@@ -2340,20 +2340,21 @@ class OriginTrialURLLoaderInterceptor {
 };
 
 // Test with insecure private network requests blocked, excluding navigations.
-class PrivateNetworkAccessDeprecationTrialBrowserTest
+class PrivateNetworkAccessDeprecationTrialDisabledBrowserTest
     : public PrivateNetworkAccessBrowserTestBase {
  public:
-  PrivateNetworkAccessDeprecationTrialBrowserTest()
+  PrivateNetworkAccessDeprecationTrialDisabledBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
-                features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
             },
-            {}) {}
+            {
+                features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
+            }) {}
 };
 
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       DeprecationTrialDisabled) {
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessDeprecationTrialDisabledBrowserTest,
+                       OriginEnabledDoesNothing) {
   OriginTrialURLLoaderInterceptor interceptor;
 
   EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
@@ -2366,8 +2367,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
             network::mojom::PrivateNetworkRequestPolicy::kBlock);
 }
 
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessDeprecationTrialBrowserTest,
-                       OriginEnabled) {
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, OriginEnabled) {
   OriginTrialURLLoaderInterceptor interceptor;
 
   EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
@@ -2382,8 +2382,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessDeprecationTrialBrowserTest,
             network::mojom::PrivateNetworkRequestPolicy::kBlock);
 }
 
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessDeprecationTrialBrowserTest,
-                       OriginDisabled) {
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, OriginDisabled) {
   OriginTrialURLLoaderInterceptor interceptor;
 
   EXPECT_TRUE(NavigateToURL(shell(), interceptor.DisabledUrl()));
