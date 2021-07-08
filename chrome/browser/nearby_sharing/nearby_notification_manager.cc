@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -19,6 +20,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -972,8 +975,16 @@ void NearbyNotificationManager::AcceptTransfer() {
 
 void NearbyNotificationManager::OnOnboardingClicked() {
   CloseOnboarding();
-  // TODO(crbug.com/1102348): Start user onboarding or high visibility if user
-  // has been onboarded already.
+
+  if (base::FeatureList::IsEnabled(
+          features::kNearbySharingBackgroundScanning)) {
+    std::string timestamp_string = base::NumberToString(
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    std::string sub_page =
+        "multidevice/nearbyshare?receive&timeout=300&time=" + timestamp_string;
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile_,
+                                                                 sub_page);
+  }
 }
 
 void NearbyNotificationManager::OnOnboardingDismissed() {

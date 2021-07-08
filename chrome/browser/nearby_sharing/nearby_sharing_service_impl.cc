@@ -1285,36 +1285,40 @@ void NearbySharingServiceImpl::OnSessionStarted(
     device::BluetoothLowEnergyScanSession* scan_session,
     absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
         error_code) {
-  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
-  // This is not invoked unless the background scanning feature flag is enabled.
   if (error_code) {
-    NS_LOG(INFO) << __func__ << ": Error!";
-  } else {
-    NS_LOG(INFO) << __func__ << ": Success!";
+    NS_LOG(WARNING) << __func__ << ": Error";
+    StopBackgroundScanning();
+    return;
   }
+
+  NS_LOG(VERBOSE) << __func__ << ": Success";
 }
 
 void NearbySharingServiceImpl::OnDeviceFound(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
-  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
-  // This is not invoked unless the background scanning feature flag is enabled.
-  NS_LOG(INFO) << __func__;
+  NS_LOG(VERBOSE) << __func__;
+
+  // This shows a notification indicating that a device nearby is attempting to
+  // share. When the notification is clicked it will take the user through the
+  // onboarding flow if needed and then enable high visibility mode.
+  nearby_notification_manager_->ShowOnboarding();
 }
 
 void NearbySharingServiceImpl::OnDeviceLost(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
-  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
-  // This is not invoked unless the background scanning feature flag is enabled.
-  NS_LOG(INFO) << __func__;
+  NS_LOG(VERBOSE) << __func__;
+
+  // This will just dismiss the "onboarding" notification, it does not have any
+  // effect on the actual onboarding or high visibility UI.
+  nearby_notification_manager_->CloseOnboarding();
 }
 
 void NearbySharingServiceImpl::OnSessionInvalidated(
     device::BluetoothLowEnergyScanSession* scan_session) {
-  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
-  // This is not invoked unless the background scanning feature flag is enabled.
   NS_LOG(INFO) << __func__;
+  StopBackgroundScanning();
 }
 
 base::ObserverList<TransferUpdateCallback>&
@@ -2174,6 +2178,14 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
                     << ": Stopping background scanning because no high power "
                        "receive surface "
                        "is registered and device is visible to NO_ONE.";
+    StopBackgroundScanning();
+    return;
+  }
+
+  if (advertising_power_level_ == PowerLevel::kHighPower) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because we're already "
+                       "in high visibility mode.";
     StopBackgroundScanning();
     return;
   }
