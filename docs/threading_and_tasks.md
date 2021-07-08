@@ -18,7 +18,10 @@ This means offloading any blocking I/O or other expensive operations to other
 threads. Our approach is to use message passing as the way of communicating
 between threads. We discourage locking and thread-safe objects. Instead, objects
 live on only one (often virtual -- we'll get to that later!) thread and we pass
-messages between those threads for communication.
+messages between those threads for communication. Absent external requirements
+about latency or workload, Chrome attempts to be a [highly concurrent, but not
+necessarily parallel](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism#:~:text=Concurrency%20is%20when%20two%20or,e.g.%2C%20on%20a%20multicore%20processor.)
+, system.
 
 This documentation assumes familiarity with computer science
 [threading concepts](https://en.wikipedia.org/wiki/Thread_(computing)).
@@ -85,8 +88,8 @@ necessary.
    Note that `base::SingleThreadTaskRunner` is-a `base::SequencedTaskRunner` so
    thread-affine is a subset of thread-unsafe. Thread-affine is also sometimes
    referred to as **thread-hostile**.
- * **Thread-safe**: Such types/methods can be safely accessed concurrently.
- * **Thread-compatible**: Such types provide safe concurrent access to const
+ * **Thread-safe**: Such types/methods can be safely accessed in parallel.
+ * **Thread-compatible**: Such types provide safe parallel access to const
    methods but require synchronization for non-const (or mixed const/non-const
    access). Chrome doesn't expose reader-writer locks; as such, the only use
    case for this is objects (typically globals) which are initialized once in a
@@ -632,7 +635,7 @@ cancelable_task_tracker.TryCancelAll();
 
 The [`base::PostJob`](https://cs.chromium.org/chromium/src/base/task/post_job.h)
 is a power user API to be able to schedule a single base::RepeatingCallback
-worker task and request that ThreadPool workers invoke it concurrently.
+worker task and request that ThreadPool workers invoke it in parallel.
 This avoids degenerate cases:
 * Calling `PostTask()` for each work item, causing significant overhead.
 * Fixed number of `PostTask()` calls that split the work and might run for a
@@ -678,7 +681,7 @@ all cores but get out of the way when a user-blocking task comes in.
 ### Adding additional work to a running job.
 
 When new work items are added and the API user wants additional threads to
-invoke the worker task concurrently,
+invoke the worker task in parallel,
 `JobHandle/JobDelegate::NotifyConcurrencyIncrease()` *must* be invoked shortly
 after max concurrency increases.
 
