@@ -322,7 +322,7 @@ export class TabSearchAppElement extends PolymerElement {
     this.updateFilteredTabs_();
     // Reset the selected item whenever a search query is provided.
     /** @type {!InfiniteList} */ (this.$.tabsList).selected =
-        this.filteredItems_.length > 0 ? 0 : NO_SELECTION;
+        this.selectableItemCount_() > 0 ? 0 : NO_SELECTION;
 
     this.$.searchField.announce(this.getA11ySearchResultText_());
   }
@@ -336,10 +336,7 @@ export class TabSearchAppElement extends PolymerElement {
     // not match as it counts the title items too. Investigate how to
     // programmatically control announcements to avoid this.
 
-    // The number of list items excluding any section title items.
-    const itemCount = this.filteredItems_.reduce((acc, item) => {
-      return acc + (!(item instanceof TitleItem) ? 1 : 0);
-    }, 0);
+    const itemCount = this.selectableItemCount_();
     let text;
     if (this.searchText_.length > 0) {
       text = loadTimeData.getStringF(
@@ -350,6 +347,17 @@ export class TabSearchAppElement extends PolymerElement {
           itemCount == 1 ? 'a11yFoundTab' : 'a11yFoundTabs', itemCount);
     }
     return text;
+  }
+
+  /**
+   * @returns {number} The number of selectable list items, excludes non
+   *     selectable items such as section title items.
+   * @private
+   */
+  selectableItemCount_() {
+    return this.filteredItems_.reduce((acc, item) => {
+      return acc + (item instanceof TitleItem ? 0 : 1);
+    }, 0);
   }
 
   /**
@@ -453,7 +461,7 @@ export class TabSearchAppElement extends PolymerElement {
     // If there are no matching results, set the selected index value to none.
     const tabsList = /** @type {!InfiniteList} */ (this.$.tabsList);
     tabsList.selected = Math.min(
-        Math.max(this.getSelectedIndex(), 0), this.filteredItems_.length - 1);
+        Math.max(this.getSelectedIndex(), 0), this.selectableItemCount_() - 1);
   }
 
   /**
@@ -470,7 +478,7 @@ export class TabSearchAppElement extends PolymerElement {
   /** @private */
   onSearchFocus_() {
     const tabsList = /** @type {!InfiniteList} */ (this.$.tabsList);
-    if (tabsList.selected === NO_SELECTION && this.filteredItems_.length > 0) {
+    if (tabsList.selected === NO_SELECTION && this.selectableItemCount_() > 0) {
       tabsList.selected = 0;
     }
   }

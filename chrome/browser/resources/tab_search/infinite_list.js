@@ -622,7 +622,9 @@ export class InfiniteList extends PolymerElement {
 
     const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
     if (index !== selector.selected) {
-      assert(index < this.selectableIndexToItemIndex_.size());
+      assert(
+          index < this.selectableIndexToItemIndex_.size(),
+          'Selection index is out of range.');
       this.ensureSelectableDomItemAvailable_(index);
       selector.selected = index;
     }
