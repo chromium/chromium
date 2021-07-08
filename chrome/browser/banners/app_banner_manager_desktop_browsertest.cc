@@ -144,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
         base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
                                        web_app::InstallResultCode code) {
           EXPECT_EQ(web_app::InstallResultCode::kSuccessNewInstall, code);
-          EXPECT_EQ(installed_app_id, web_app::GenerateAppIdFromURL(url));
+          EXPECT_EQ(installed_app_id,
+                    web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, url));
           callback_called = true;
         }));
 

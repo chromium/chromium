@@ -22,7 +22,7 @@ namespace web_app {
 
 // static
 AppId TestInstallFinalizer::GetAppIdForUrl(const GURL& url) {
-  return GenerateAppIdFromURL(url);
+  return GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 }
 
 TestInstallFinalizer::TestInstallFinalizer() = default;

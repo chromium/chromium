@@ -72,7 +72,7 @@ void TestWebAppRegistryController::ApplySyncChanges_AddApps(
   syncer::EntityChangeList entity_changes;
 
   for (const GURL& app_url : apps_to_add) {
-    const AppId app_id = GenerateAppIdFromURL(app_url);
+    const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
 
     auto web_app_server_data = std::make_unique<WebApp>(app_id);
     web_app_server_data->SetName("WebApp name");

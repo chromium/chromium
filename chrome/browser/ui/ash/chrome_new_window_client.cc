@@ -752,7 +752,8 @@ void ChromeNewWindowClient::OpenAppWithIntent(
   if (!profile)
     return;
 
-  web_app::AppId app_id = web_app::GenerateAppIdFromURL(start_url);
+  web_app::AppId app_id =
+      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   bool app_installed = false;
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);

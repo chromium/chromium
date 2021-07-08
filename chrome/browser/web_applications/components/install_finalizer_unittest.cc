@@ -117,7 +117,8 @@ TEST_F(InstallFinalizerUnitTest, BasicInstallSucceeds) {
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-  EXPECT_EQ(result.installed_app_id, GenerateAppIdFromURL(info->start_url));
+  EXPECT_EQ(result.installed_app_id,
+            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
 }
 
 TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
@@ -143,7 +144,9 @@ TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                        InstallResultCode code) {
           EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
-          EXPECT_EQ(installed_app_id, GenerateAppIdFromURL(info1->start_url));
+          EXPECT_EQ(
+              installed_app_id,
+              GenerateAppId(/*manifest_id=*/absl::nullopt, info1->start_url));
           callback1_called = true;
           if (callback2_called)
             run_loop.Quit();
@@ -157,7 +160,9 @@ TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                        InstallResultCode code) {
           EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
-          EXPECT_EQ(installed_app_id, GenerateAppIdFromURL(info2->start_url));
+          EXPECT_EQ(
+              installed_app_id,
+              GenerateAppId(/*manifest_id=*/absl::nullopt, info2->start_url));
           callback2_called = true;
           if (callback1_called)
             run_loop.Quit();

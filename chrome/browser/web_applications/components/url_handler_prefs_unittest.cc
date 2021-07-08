@@ -77,7 +77,8 @@ class UrlHandlerPrefsTest : public ::testing::Test {
   std::unique_ptr<WebApp> WebAppWithUrlHandlers(
       const GURL& app_url,
       const apps::UrlHandlers& url_handlers) {
-    auto web_app = std::make_unique<WebApp>(GenerateAppIdFromURL(app_url));
+    auto web_app = std::make_unique<WebApp>(
+        GenerateAppId(/*manifest_id=*/absl::nullopt, app_url));
     web_app->SetName("AppName");
     web_app->SetDisplayMode(DisplayMode::kStandalone);
     web_app->SetStartUrl(app_url);

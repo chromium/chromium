@@ -80,7 +80,9 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
     return embedded_test_server()->GetURL(kWebAppPath);
   }
 
-  AppId GetWebAppId() const { return GenerateAppIdFromURL(GetWebAppUrl()); }
+  AppId GetWebAppId() const {
+    return GenerateAppId(/*manifest_id=*/absl::nullopt, GetWebAppUrl());
+  }
 
   // InProcessBrowserTest:
   void SetUp() override {

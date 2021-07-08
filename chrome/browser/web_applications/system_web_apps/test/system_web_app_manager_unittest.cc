@@ -225,13 +225,14 @@ class SystemWebAppManagerTest : public WebAppTest {
 
   bool IsInstalled(const GURL& install_url) {
     return controller().registrar().IsInstalled(
-        GenerateAppIdFromURL(install_url));
+        GenerateAppId(/*manifest_id=*/absl::nullopt, install_url));
   }
 
   std::unique_ptr<WebApp> CreateWebApp(
       const GURL& start_url,
       Source::Type source_type = Source::kDefault) {
-    const AppId app_id = GenerateAppIdFromURL(start_url);
+    const AppId app_id =
+        GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
     auto web_app = std::make_unique<WebApp>(app_id);
     web_app->SetStartUrl(start_url);
@@ -263,7 +264,8 @@ class SystemWebAppManagerTest : public WebAppTest {
       registry.emplace(app_id, std::move(web_app));
 
       externally_installed_app_prefs().Insert(
-          data.url, GenerateAppIdFromURL(data.url), data.source);
+          data.url, GenerateAppId(/*manifest_id=*/absl::nullopt, data.url),
+          data.source);
     }
     InitRegistrarWithRegistry(registry);
   }
@@ -1020,8 +1022,8 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
   }
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
   StartAndWaitForAppsToSynchronize();
-  EXPECT_TRUE(
-      system_web_app_manager().IsSystemWebApp(GenerateAppIdFromURL(AppUrl1())));
+  EXPECT_TRUE(system_web_app_manager().IsSystemWebApp(
+      GenerateAppId(/*manifest_id=*/absl::nullopt, AppUrl1())));
 
   auto unsynced_system_web_app_manager =
       std::make_unique<TestSystemWebAppManager>(profile());
@@ -1041,7 +1043,7 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
   }
 
   EXPECT_TRUE(unsynced_system_web_app_manager->IsSystemWebApp(
-      GenerateAppIdFromURL(AppUrl1())));
+      GenerateAppId(/*manifest_id=*/absl::nullopt, AppUrl1())));
 }
 
 class TimerSystemAppDelegate : public UnittestingSystemAppDelegate {

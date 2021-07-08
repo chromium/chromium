@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMoverPrefixBrowsertest, DISABLED_TestMigration) {
   }
   ASSERT_EQ(GetProvider().registrar().GetAppIds().size(), 1ul);
   EXPECT_EQ(GetProvider().registrar().GetAppIds().front(),
-            GenerateAppIdFromURL(GetMigratingToApp()));
+            GenerateAppId(/*manifest_id=*/absl::nullopt, GetMigratingToApp()));
 }
 
 class WebAppMoverPatternBrowsertest : public WebAppMoverBrowsertestBase {
@@ -171,10 +171,12 @@ IN_PROC_BROWSER_TEST_F(WebAppMoverPatternBrowsertest, TestMigration) {
     completed_callback_ = run_loop.QuitClosure();
     run_loop.Run();
   }
-  EXPECT_THAT(GetProvider().registrar().GetAppIds(),
-              testing::UnorderedElementsAre(
-                  GenerateAppIdFromURL(GetMigratingToApp()),
-                  GenerateAppIdFromURL(GetMigratingFromAppB())));
+  EXPECT_THAT(
+      GetProvider().registrar().GetAppIds(),
+      testing::UnorderedElementsAre(
+          GenerateAppId(/*manifest_id=*/absl::nullopt, GetMigratingToApp()),
+          GenerateAppId(/*manifest_id=*/absl::nullopt,
+                        GetMigratingFromAppB())));
 }
 
 // The WebAppMover requires a full match. This tests that a partial match
@@ -215,11 +217,13 @@ IN_PROC_BROWSER_TEST_F(WebAppMoverBadPatternBrowsertest, TestMigration) {
   }
   EXPECT_EQ(GetProvider().registrar().GetAppIds().size(), 3ul);
 
-  EXPECT_THAT(GetProvider().registrar().GetAppIds(),
-              testing::UnorderedElementsAre(
-                  GenerateAppIdFromURL(GetMigratingFromAppA()),
-                  GenerateAppIdFromURL(GetMigratingFromAppB()),
-                  GenerateAppIdFromURL(GetMigratingFromAppC())));
+  EXPECT_THAT(
+      GetProvider().registrar().GetAppIds(),
+      testing::UnorderedElementsAre(
+          GenerateAppId(/*manifest_id=*/absl::nullopt, GetMigratingFromAppA()),
+          GenerateAppId(/*manifest_id=*/absl::nullopt, GetMigratingFromAppB()),
+          GenerateAppId(/*manifest_id=*/absl::nullopt,
+                        GetMigratingFromAppC())));
 }
 
 }  // namespace

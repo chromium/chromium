@@ -64,7 +64,7 @@ void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
 AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
                          const GURL& start_url) {
-  const AppId app_id = GenerateAppIdFromURL(start_url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   WebApplicationInfo web_app_info;
 
   web_app_info.start_url = start_url;

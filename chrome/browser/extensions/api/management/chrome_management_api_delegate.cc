@@ -536,7 +536,9 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
   // Launch the app if web_app_url happens to match start_url. If not, the app
   // could still be installed with different start_url.
   if (provider->registrar().IsLocallyInstalled(web_app_url)) {
-    LaunchWebApp(web_app::GenerateAppIdFromURL(web_app_url), profile);
+    LaunchWebApp(
+        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, web_app_url),
+        profile);
     std::move(callback).Run(InstallOrLaunchWebAppResult::kSuccess);
     return;
   }

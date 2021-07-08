@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                                       ->GetActiveWebContents()
                                       ->GetBrowserContext())
           ->GetPrefs();
-  web_app::AppId app_id = web_app::GenerateAppIdFromURL(start_url);
+  web_app::AppId app_id =
+      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   EXPECT_EQ(
       web_app::GetIntWebAppPref(pref_service, app_id, web_app::kIphIgnoreCount)
           .value(),
@@ -143,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                        AcceptDialogResetIphCounters) {
   auto app_info = GetAppInfo();
   GURL start_url = app_info->start_url;
-  web_app::AppId app_id = web_app::GenerateAppIdFromURL(start_url);
+  web_app::AppId app_id =
+      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   PrefService* pref_service =
       Profile::FromBrowserContext(browser()
                                       ->tab_strip_model()

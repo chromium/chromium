@@ -208,7 +208,7 @@ TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
 
 TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   const GURL start_url{"https://example.com/"};
-  const AppId app_id = GenerateAppIdFromURL(start_url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   const std::string name = "App Name";
   const auto user_display_mode = DisplayMode::kBrowser;
   const bool is_locally_installed = true;
@@ -272,7 +272,8 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   controller().Init();
 
   const auto start_url = GURL("https://example.com/");
-  const AppId app_id = GenerateAppIdFromURL(GURL(start_url));
+  const AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(start_url));
   const std::string name = "Name";
   const auto user_display_mode = DisplayMode::kBrowser;
 

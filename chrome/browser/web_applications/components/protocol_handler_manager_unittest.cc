@@ -30,7 +30,7 @@ class ProtocolHandlerManagerTest : public WebAppTest {
 
   std::unique_ptr<WebApp> CreateWebApp() {
     const GURL app_url = GURL("https://example.com/path");
-    const AppId app_id = GenerateAppIdFromURL(app_url);
+    const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
 
     auto web_app = std::make_unique<WebApp>(app_id);
     web_app->AddSource(Source::kSync);

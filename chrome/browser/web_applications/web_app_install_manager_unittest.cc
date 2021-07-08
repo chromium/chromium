@@ -234,7 +234,8 @@ class WebAppInstallManagerTest
   std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
                                        Source::Type source,
                                        DisplayMode user_display_mode) {
-    const AppId app_id = GenerateAppIdFromURL(start_url);
+    const AppId app_id =
+        GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
     auto web_app = std::make_unique<WebApp>(app_id);
     web_app->SetStartUrl(start_url);
@@ -470,10 +471,10 @@ TEST_P(WebAppInstallManagerTest,
                                          WebAppUrlLoader::Result::kUrlLoaded});
 
   const GURL url1{"https://example.com/path"};
-  const AppId app1_id = GenerateAppIdFromURL(url1);
+  const AppId app1_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url1);
 
   const GURL url2{"https://example.org/path"};
-  const AppId app2_id = GenerateAppIdFromURL(url2);
+  const AppId app2_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url2);
   {
     std::unique_ptr<WebApp> app1 = CreateWebAppInSyncInstall(
         url1, "Name1 from sync", DisplayMode::kStandalone, SK_ColorRED,
@@ -620,7 +621,7 @@ TEST_P(WebAppInstallManagerTest,
   }
 
   const GURL start_url{"https://example.com/path"};
-  const AppId app_id = GenerateAppIdFromURL(start_url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   {
     std::unique_ptr<WebApp> app_in_sync_install = CreateWebAppInSyncInstall(
@@ -961,7 +962,8 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   InitEmptyRegistrar();
 
   const GURL url("https://example.com/path");
-  const AppId expected_app_id = GenerateAppIdFromURL(url);
+  const AppId expected_app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   auto server_web_app_info = std::make_unique<WebApplicationInfo>();
   server_web_app_info->start_url = url;
@@ -1032,7 +1034,7 @@ TEST_P(WebAppInstallManagerTest,
   }
 
   const GURL start_url{"https://example.com/path"};
-  const AppId app_id = GenerateAppIdFromURL(start_url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   {
     std::unique_ptr<WebApp> app_in_sync_install = CreateWebAppInSyncInstall(

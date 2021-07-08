@@ -51,10 +51,6 @@ static std::string GenerateAppHashFromURL(const GURL& url) {
   return crypto::SHA256HashString(url.spec());
 }
 
-AppId GenerateAppIdFromURL(const GURL& url) {
-  return crx_file::id_util::GenerateId(GenerateAppHashFromURL(url));
-}
-
 std::string GenerateAppIdUnhashed(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url) {

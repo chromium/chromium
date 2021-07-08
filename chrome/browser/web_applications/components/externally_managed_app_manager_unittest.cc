@@ -43,13 +43,14 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
             [this](const ExternalInstallOptions& install_options)
                 -> ExternallyManagedAppManager::InstallResult {
               const GURL& install_url = install_options.install_url;
-              if (!app_registrar().GetAppById(
-                      GenerateAppIdFromURL(install_url))) {
+              if (!app_registrar().GetAppById(GenerateAppId(
+                      /*manifest_id=*/absl::nullopt, install_url))) {
                 std::unique_ptr<WebApp> web_app = CreateWebApp(install_url);
                 controller().RegisterApp(std::move(web_app));
 
                 externally_installed_app_prefs().Insert(
-                    install_url, GenerateAppIdFromURL(install_url),
+                    install_url,
+                    GenerateAppId(/*manifest_id=*/absl::nullopt, install_url),
                     install_options.install_source);
                 ++deduped_install_count_;
               }
@@ -119,7 +120,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
   }
 
   std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
-    const AppId app_id = GenerateAppIdFromURL(start_url);
+    const AppId app_id =
+        GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
     auto web_app = std::make_unique<WebApp>(app_id);
     web_app->SetStartUrl(start_url);

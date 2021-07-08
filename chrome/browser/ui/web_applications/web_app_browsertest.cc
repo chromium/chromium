@@ -1470,9 +1470,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, NoManifestId) {
   auto* provider = WebAppProviderBase::GetProviderBase(profile());
   auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
 
-  EXPECT_EQ(web_app::GenerateAppIdFromURL(
-                provider->registrar().GetAppStartUrl(app_id)),
-            app_id);
+  EXPECT_EQ(
+      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
+                             provider->registrar().GetAppStartUrl(app_id)),
+      app_id);
   EXPECT_EQ(app->start_url().spec().substr(
                 app->start_url().GetOrigin().spec().size()),
             app->manifest_id());
@@ -1490,6 +1491,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
 
   EXPECT_EQ(web_app::GenerateAppId(app->manifest_id(), app->start_url()),
             app_id);
-  EXPECT_NE(web_app::GenerateAppIdFromURL(app->start_url()), app_id);
+  EXPECT_NE(
+      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, app->start_url()),
+      app_id);
 }
 }  // namespace web_app

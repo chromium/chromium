@@ -237,13 +237,15 @@ class PreinstalledAppsMigrationBrowserTest
   // Returns true if the web app is currently installed in this profile (even if
   // it was installed from a previous run).
   bool IsWebAppCurrentlyInstalled() {
-    const web_app::AppId app_id = web_app::GenerateAppIdFromURL(GetAppUrl());
+    const web_app::AppId app_id =
+        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
     return web_app::WebAppProvider::Get(profile())->registrar().IsInstalled(
         app_id);
   }
 
   bool CanWebAppAlwaysUpdateIdentity() {
-    const web_app::AppId app_id = web_app::GenerateAppIdFromURL(GetAppUrl());
+    const web_app::AppId app_id =
+        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
     const web_app::WebApp* web_app = web_app::WebAppProvider::Get(profile())
                                          ->registrar()
                                          .AsWebAppRegistrar()

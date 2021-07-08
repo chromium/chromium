@@ -42,9 +42,6 @@ AppId GetAppIdFromApplicationName(const std::string& app_name);
 //
 // App ID and App Key match Extension ID and Extension Key for migration.
 
-// Deprecated. Please use GenerateAppId instead.
-AppId GenerateAppIdFromURL(const GURL& url);
-
 // Generate App id using manfiest_id, if null, use start_url instead.
 AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
                     const GURL& start_url);

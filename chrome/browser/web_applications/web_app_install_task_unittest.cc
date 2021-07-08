@@ -404,7 +404,7 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
   const GURL scope = GURL("https://example.com/scope");
   const absl::optional<SkColor> theme_color = 0xFFAABBCC;
 
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   CreateRendererAppInfo(url, "Renderer Name", description, /*scope*/ GURL{},
                         theme_color,
@@ -451,7 +451,7 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
 TEST_F(WebAppInstallTaskTest, ForceReinstall) {
   const GURL url = GURL("https://example.com/path");
 
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   CreateDefaultDataToRetrieve(url);
   CreateRendererAppInfo(url, "Renderer Name", "Renderer Description");
@@ -554,7 +554,8 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
       GURL("https://renderer.com/scope"), 0x00, /*open_as_window*/ true);
 
   const GURL manifest_start_url = GURL("https://example.com/start");
-  const AppId app_id = GenerateAppIdFromURL(manifest_start_url);
+  const AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, manifest_start_url);
   const std::string manifest_name = "Name from Manifest";
   const GURL manifest_scope = GURL("https://example.com/scope");
   const absl::optional<SkColor> manifest_theme_color = 0xAABBCCDD;
@@ -817,7 +818,7 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDiskFailed) {
   EXPECT_TRUE(file_utils_->DirectoryExists(temp_dir));
   EXPECT_TRUE(file_utils_->IsDirectoryEmpty(temp_dir));
 
-  const AppId app_id = GenerateAppIdFromURL(start_url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   const base::FilePath app_dir =
       manifest_resources_directory.AppendASCII(app_id);
   EXPECT_FALSE(file_utils_->DirectoryExists(app_dir));
@@ -825,7 +826,7 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDiskFailed) {
 
 TEST_F(WebAppInstallTaskTest, UserInstallDeclined) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   CreateDefaultDataToRetrieve(url);
   CreateRendererAppInfo(url, "Name", "Description");
@@ -891,7 +892,7 @@ TEST_F(WebAppInstallTaskTest, FinalizerMethodsNotCalled) {
 
 TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_Success) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   auto manifest = std::make_unique<blink::Manifest>();
   manifest->start_url = url;
@@ -919,7 +920,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
   SetInstallFinalizerForTesting();
 
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = url;
@@ -1150,8 +1151,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_DisplayMode) {
 TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_ExpectAppId) {
   const auto url1 = GURL("https://example.com/");
   const auto url2 = GURL("https://example.org/");
-  const AppId app_id1 = GenerateAppIdFromURL(url1);
-  const AppId app_id2 = GenerateAppIdFromURL(url2);
+  const AppId app_id1 = GenerateAppId(/*manifest_id=*/absl::nullopt, url1);
+  const AppId app_id2 = GenerateAppId(/*manifest_id=*/absl::nullopt, url2);
   ASSERT_NE(app_id1, app_id2);
   {
     CreateDefaultDataToRetrieve(url1);
@@ -1174,7 +1175,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_ExpectAppId) {
 
 TEST_F(WebAppInstallTaskTest, LoadAndInstallWebAppFromManifestWithFallback) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
   {
     CreateDefaultDataToRetrieve(url);
     url_loader().SetNextLoadUrlResult(
@@ -1223,7 +1224,7 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebApplicationInfoWithIcons) {
   const GURL start_url = GURL("https://example.com/start");
   const std::string name = "Name";
   const std::string description = "Description";
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
   {
     CreateDefaultDataToRetrieve(url);
     url_loader().SetNextLoadUrlResult(
@@ -1283,7 +1284,8 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebApplicationInfoWithIcons) {
 
 TEST_F(WebAppInstallTaskTest, StorageIsolationFlagSaved) {
   const GURL manifest_start_url = GURL("https://example.com/start");
-  const AppId app_id = GenerateAppIdFromURL(manifest_start_url);
+  const AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, manifest_start_url);
 
   auto manifest = std::make_unique<blink::Manifest>();
   manifest->short_name = u"Short Name from Manifest";
@@ -1331,7 +1333,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
   const GURL scope = GURL("https://example.com/scope");
   const absl::optional<SkColor> theme_color = 0xFFAABBCC;
 
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   CreateDefaultDataToRetrieve(url, scope);
   CreateRendererAppInfo(url, name, description, /*scope=*/GURL{}, theme_color,
@@ -1378,7 +1380,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
   const GURL scope = GURL("https://example.com/scope");
   const absl::optional<SkColor> theme_color = 0xFFAABBCC;
 
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   CreateDefaultDataToRetrieve(url, scope);
   CreateRendererAppInfo(url, name, description, /*scope=*/GURL{}, theme_color,
@@ -1516,7 +1518,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
       SquareSizePx icon_size,
       GURL icon_src) {
     InstallResult result;
-    const AppId app_id = GenerateAppIdFromURL(url);
+    const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = url;
@@ -1601,7 +1603,7 @@ constexpr SkColor WebAppInstallTaskTestWithShortcutsMenu::kFinalThemeColor;
 TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
        InstallWebAppFromManifest_Success) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   InstallResult result = InstallWebAppWithShortcutsMenuValidateAndGetResults(
       url, kInitialThemeColor, "shortcut",
@@ -1614,7 +1616,7 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
 TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
        UpdateWebAppFromInfo_AddShortcutsMenu) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   // Install the app without a shortcuts menu.
   {
@@ -1639,7 +1641,7 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
 TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
        UpdateWebAppFromInfo_UpdateShortcutsMenu) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   // Install the app.
   {
@@ -1665,7 +1667,7 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
 TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
        UpdateWebAppFromInfo_ShortcutsMenuNotChanged) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   // Install the app.
   {
@@ -1787,7 +1789,7 @@ class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
 TEST_F(WebAppInstallTaskTestWithFileHandlers,
        InstallWebAppFromManifest_OsIntegrationEnabledForUserInstalledApps) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
   auto manifest = CreateManifest(url);
   AddFileHandler(&manifest->file_handlers);
 
@@ -1802,7 +1804,7 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 TEST_F(WebAppInstallTaskTestWithFileHandlers,
        InstallWebAppFromManifest_OsIntegrationDisabledForDefaultApps) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
   auto manifest = CreateManifest(url);
   AddFileHandler(&manifest->file_handlers);
 
@@ -1822,7 +1824,7 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 TEST_F(WebAppInstallTaskTestWithFileHandlers,
        UpdateWebAppFromInfo_OsIntegrationEnabledForUserInstalledApps) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   // Install the app.
   InstallResult install_result = InstallWebAppFromManifest(
@@ -1847,7 +1849,7 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 TEST_F(WebAppInstallTaskTestWithFileHandlers,
        UpdateWebAppFromInfo_OsIntegrationDisabledForDefaultApps) {
   const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
   // Install the app.
   InstallResult install_result = InstallWebAppFromManifest(

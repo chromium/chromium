@@ -26,7 +26,8 @@ base::Value WebAppToPlatformAgnosticJson(std::unique_ptr<WebApp> web_app) {
 }  // namespace
 
 TEST(WebAppTest, HasAnySources) {
-  WebApp app{GenerateAppIdFromURL(GURL("https://example.com"))};
+  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+                           GURL("https://example.com"))};
 
   EXPECT_FALSE(app.HasAnySources());
   for (int i = Source::kMinValue; i <= Source::kMaxValue; ++i) {
@@ -42,7 +43,8 @@ TEST(WebAppTest, HasAnySources) {
 }
 
 TEST(WebAppTest, HasOnlySource) {
-  WebApp app{GenerateAppIdFromURL(GURL("https://example.com"))};
+  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+                           GURL("https://example.com"))};
 
   for (int i = Source::kMinValue; i <= Source::kMaxValue; ++i) {
     auto source = static_cast<Source::Type>(i);
@@ -78,7 +80,8 @@ TEST(WebAppTest, HasOnlySource) {
 }
 
 TEST(WebAppTest, WasInstalledByUser) {
-  WebApp app{GenerateAppIdFromURL(GURL("https://example.com"))};
+  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+                           GURL("https://example.com"))};
 
   app.AddSource(Source::kSync);
   EXPECT_TRUE(app.WasInstalledByUser());
@@ -112,7 +115,8 @@ TEST(WebAppTest, WasInstalledByUser) {
 }
 
 TEST(WebAppTest, CanUserUninstallWebApp) {
-  WebApp app{GenerateAppIdFromURL(GURL("https://example.com"))};
+  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+                           GURL("https://example.com"))};
 
   app.AddSource(Source::kDefault);
   EXPECT_TRUE(app.IsPreinstalledApp());

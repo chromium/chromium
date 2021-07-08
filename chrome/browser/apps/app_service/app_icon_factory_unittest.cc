@@ -535,7 +535,8 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<web_app::WebApp> CreateWebApp() {
     const GURL app_url("https://example.com/path");
-    const std::string app_id = web_app::GenerateAppIdFromURL(app_url);
+    const std::string app_id =
+        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
 
     auto web_app = std::make_unique<web_app::WebApp>(app_id);
     web_app->AddSource(web_app::Source::kSync);

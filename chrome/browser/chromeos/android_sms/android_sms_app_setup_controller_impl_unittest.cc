@@ -144,7 +144,8 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
       if (base::Contains(url_to_pwa_map_, url))
         return;
 
-      url_to_pwa_map_[url] = web_app::GenerateAppIdFromURL(url);
+      url_to_pwa_map_[url] =
+          web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, url);
     }
 
     // AndroidSmsAppSetupControllerImpl::PwaDelegate:

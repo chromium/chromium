@@ -29,7 +29,8 @@ void AppRegistrar::SetSubsystems(OsIntegrationManager* os_integration_manager) {
 }
 
 bool AppRegistrar::IsLocallyInstalled(const GURL& start_url) const {
-  return IsLocallyInstalled(GenerateAppIdFromURL(start_url));
+  return IsLocallyInstalled(
+      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url));
 }
 
 bool AppRegistrar::IsPlaceholderApp(const AppId& app_id) const {

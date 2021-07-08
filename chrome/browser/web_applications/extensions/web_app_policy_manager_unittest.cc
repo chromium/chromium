@@ -225,7 +225,7 @@ ExternalInstallOptions GetFallbackAppNameInstallOptions() {
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
                                      Source::Type source_type) {
-  const AppId app_id = GenerateAppIdFromURL(start_url);
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
@@ -291,8 +291,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
             [this](const ExternalInstallOptions& install_options)
                 -> ExternallyManagedAppManager::InstallResult {
               const GURL& install_url = install_options.install_url;
-              if (!app_registrar()->GetAppById(
-                      GenerateAppIdFromURL(install_url))) {
+              if (!app_registrar()->GetAppById(GenerateAppId(
+                      /*manifest_id=*/absl::nullopt, install_url))) {
                 const auto install_source = install_options.install_source;
                 std::unique_ptr<WebApp> web_app = CreateWebApp(
                     install_url,
@@ -300,7 +300,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
                 RegisterApp(std::move(web_app));
 
                 externally_installed_app_prefs().Insert(
-                    install_url, GenerateAppIdFromURL(install_url),
+                    install_url,
+                    GenerateAppId(/*manifest_id=*/absl::nullopt, install_url),
                     install_source);
               }
               return {.code = install_result_code_};
@@ -326,8 +327,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
         url, ConvertExternalInstallSourceToSourceType(install_source));
     RegisterApp(std::move(web_app));
 
-    externally_installed_app_prefs().Insert(url, GenerateAppIdFromURL(url),
-                                            install_source);
+    externally_installed_app_prefs().Insert(
+        url, GenerateAppId(/*manifest_id=*/absl::nullopt, url), install_source);
   }
 
   void AwaitPolicyManagerAppsSynchronized() {

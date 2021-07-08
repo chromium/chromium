@@ -953,8 +953,10 @@ TEST_F(WebAppIconManagerTest, FindSmallest) {
 }
 
 TEST_F(WebAppIconManagerTest, DeleteData_Success) {
-  const AppId app1_id = GenerateAppIdFromURL(GURL("https://example.com/"));
-  const AppId app2_id = GenerateAppIdFromURL(GURL("https://example.org/"));
+  const AppId app1_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
+                                      GURL("https://example.com/"));
+  const AppId app2_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
+                                      GURL("https://example.org/"));
 
   const std::vector<int> sizes_px{icon_size::k128};
   const std::vector<SkColor> colors{SK_ColorMAGENTA};
@@ -997,7 +999,8 @@ TEST_F(WebAppIconManagerTest, DeleteData_Success) {
 }
 
 TEST_F(WebAppIconManagerTest, DeleteData_Failure) {
-  const AppId app_id = GenerateAppIdFromURL(GURL("https://example.com/"));
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
+                                     GURL("https://example.com/"));
 
   file_utils().SetNextDeleteFileRecursivelyResult(false);
 
