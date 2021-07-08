@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -10,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-shared.h"
@@ -115,6 +120,43 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
 
     EXPECT_EQ(rfh->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
+
+  void ExpectTitleChangeSuccess(const Extension& extension, const char* title) {
+    const std::string script = base::StringPrintf(R"(
+          chrome.tabs.executeScript({
+            code: "document.title='%s'"
+          });
+        )",
+                                                  title);
+    ExecuteScriptInBackgroundPageNoWait(extension.id(), script);
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::u16string title16(base::UTF8ToUTF16(title));
+    content::TitleWatcher title_watcher(web_contents, title16);
+    EXPECT_EQ(title16, title_watcher.WaitAndGetTitle());
+  }
+
+  void ExpectTitleChangeFail(const Extension& extension) {
+    constexpr char kScript[] =
+        R"(
+          chrome.tabs.executeScript({code: "document.title='fail'"},
+            () => {
+              if (chrome.runtime.lastError) {
+                window.domAutomationController.send(
+                  chrome.runtime.lastError.message);
+              } else {
+                window.domAutomationController.send("Unexpected success");
+              }
+            });
+        )";
+    EXPECT_EQ(manifest_errors::kCannotAccessPage,
+              ExecuteScriptInBackgroundPage(extension.id(), kScript));
+
+    std::u16string title;
+    ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &title));
+    EXPECT_NE(u"fail", title);
   }
 
  protected:
@@ -800,6 +842,46 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBlockedExtensionBrowserTest,
   // since there is a blocked feature flag with id
   // 'mockepjebcnmhmhcahfddgfcdgkdifnc'.
   delete_observer_rfh_a.WaitUntilDeleted();
+}
+
+// Test that ensures the origin restriction declared on the extension
+// manifest.json is properly respected even when BFCache is involved.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, TabsOrigin) {
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("correct_origin"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHostWrapper rfh_a(
+      ui_test_utils::NavigateToURL(browser(), url_a));
+
+  ExpectTitleChangeSuccess(*extension, "first nav");
+
+  // 2) Navigate to B.
+  ui_test_utils::NavigateToURL(browser(), url_b);
+
+  // Ensure that `rfh_a` is in the cache.
+  EXPECT_FALSE(rfh_a.IsDestroyed());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  ExpectTitleChangeFail(*extension);
+
+  // 3) Go back to A.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  std::u16string title;
+  ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &title));
+  ASSERT_EQ(title, u"first nav");
+  ExpectTitleChangeSuccess(*extension, "restore nav");
 }
 
 // Test that ensures the content scripts only execute once on a back/forward
