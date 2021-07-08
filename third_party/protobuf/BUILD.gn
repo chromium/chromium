@@ -259,6 +259,12 @@ static_library("protobuf_full") {
     # The root store tool is not part of Chrome itself, and needs to parse
     # human-readable protobufs.
     "//net/tools/root_store_tool:root_store_proto_full",
+
+    # The spirv-fuzz fuzzer tool needs protobuf_full and is not included in
+    # Chrome.
+    "//third_party/vulkan-deps/spirv-tools/src:spirv-fuzz",
+    "//third_party/vulkan-deps/spirv-tools/src:spvtools_fuzz",
+    "//third_party/vulkan-deps/spirv-tools/src:spvtools_fuzz_proto",
   ]
 
   sources = protobuf_lite_sources + [
