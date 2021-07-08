@@ -51,6 +51,9 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 
+// Needed for QueryUnbiasedInterruptTime and other Windows functions.
+#include <windows.h>
+
 using content::BrowserThread;
 
 namespace safe_browsing {

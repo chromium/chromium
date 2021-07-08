@@ -54,6 +54,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+// For ::GetTickCount()
+#include <windows.h>
+
 namespace component_updater {
 
 namespace {

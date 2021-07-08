@@ -21,6 +21,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include <windows.h>
+
 using base::win::RegKey;
 
 class TriggeredProfileResetterTest : public testing::Test {

@@ -40,6 +40,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+#include <windows.h>
+
 namespace {
 
 scoped_refptr<ModuleListFilter> CreateModuleListFilter(

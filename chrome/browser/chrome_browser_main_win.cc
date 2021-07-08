@@ -4,10 +4,12 @@
 
 #include "chrome/browser/chrome_browser_main_win.h"
 
+// windows.h must be included before shellapi.h
+#include <windows.h>
+
 #include <shellapi.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <algorithm>
 #include <utility>

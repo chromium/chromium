@@ -46,6 +46,10 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if defined(OS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 using content::PluginService;
 
 // PluginObserver -------------------------------------------------------------
