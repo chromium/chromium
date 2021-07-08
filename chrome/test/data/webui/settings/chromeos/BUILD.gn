@@ -42,6 +42,7 @@ js_modulizer("modulize") {
     "app_management/app_management_page_tests.js",
     "app_management/chrome_app_detail_view_test.js",
     "app_management/arc_detail_view_test.js",
+    "app_management/borealis_detail_view_test.js",
     "app_management/dom_switch_test.js",
     "app_management/main_view_test.js",
     "app_management/pwa_detail_view_test.js",

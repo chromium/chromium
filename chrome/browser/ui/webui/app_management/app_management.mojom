@@ -96,3 +96,7 @@ enum PluginVmPermissionType {
   CAMERA = 1,
   MICROPHONE = 2,
 };
+
+enum BorealisPermissionType {
+  MICROPHONE = 0,
+};

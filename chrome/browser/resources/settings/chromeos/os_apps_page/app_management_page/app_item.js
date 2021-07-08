@@ -54,6 +54,8 @@ Polymer({
         return AppManagementEntryPoint.MainViewWebApp;
       case AppType.kPluginVm:
         return AppManagementEntryPoint.MainViewPluginVm;
+      case AppType.kBorealis:
+        return AppManagementEntryPoint.MainViewBorealis;
       default:
         assertNotReached();
     }

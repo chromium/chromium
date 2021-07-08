@@ -343,6 +343,10 @@ void BorealisInstallerImpl::Start() {
     return;
   }
 
+  // Reset mic permission, we don't want it to persist across
+  // re-installation.
+  profile_->GetPrefs()->SetBoolean(prefs::kBorealisMicAllowed, false);
+
   auto install_info = std::make_unique<InstallInfo>();
   install_info->vm_name = "borealis";
   install_info->container_name = "penguin";

@@ -48,6 +48,9 @@
 
 /* #export */ const ArcPermissionType = appManagement.mojom.ArcPermissionType;
 
+/* #export */ const BorealisPermissionType =
+    appManagement.mojom.BorealisPermissionType;
+
 /* #export */ const AppType = apps.mojom.AppType;
 
 /* #export */ const PermissionValueType = apps.mojom.PermissionValueType;
@@ -83,6 +86,7 @@
   OsSettingsMainPage: 9,
   MainViewPluginVm: 10,
   DBusServicePluginVm: 11,
+  MainViewBorealis: 12,
 };
 
 /**

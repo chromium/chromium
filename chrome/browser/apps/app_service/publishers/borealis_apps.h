@@ -61,6 +61,8 @@ class BorealisApps
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info) override;
+  void SetPermission(const std::string& app_id,
+                     apps::mojom::PermissionPtr permission) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,

@@ -20,6 +20,8 @@ extern const char kBorealisAllowedForUser[];
 
 extern const char kEngagementPrefsPrefix[];
 
+extern const char kBorealisMicAllowed[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs

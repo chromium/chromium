@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -22,10 +23,31 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+struct PermissionInfo {
+  app_management::mojom::BorealisPermissionType permission;
+  const char* pref_name;
+};
+
+constexpr PermissionInfo permission_infos[] = {
+    {app_management::mojom::BorealisPermissionType::MICROPHONE,
+     borealis::prefs::kBorealisMicAllowed},
+};
+
+const char* PermissionToPrefName(
+    app_management::mojom::BorealisPermissionType permission) {
+  for (const PermissionInfo& info : permission_infos) {
+    if (info.permission == permission) {
+      return info.pref_name;
+    }
+  }
+  return nullptr;
+}
 
 void SetAppAllowed(apps::mojom::App* app, bool allowed) {
   app->readiness = allowed ? apps::mojom::Readiness::kReady
@@ -40,6 +62,7 @@ void SetAppAllowed(apps::mojom::App* app, bool allowed) {
   app->show_in_launcher = opt_allowed;
   app->show_in_shelf = opt_allowed;
   app->show_in_search = opt_allowed;
+  app->show_in_management = opt_allowed;
 }
 
 apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
@@ -56,6 +79,18 @@ apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
 
   SetAppAllowed(app.get(), allowed);
   return app;
+}
+
+void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
+  for (const PermissionInfo& info : permission_infos) {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_id = static_cast<uint32_t>(info.permission);
+    permission->value_type = apps::mojom::PermissionValueType::kBool;
+    permission->value =
+        static_cast<uint32_t>(profile->GetPrefs()->GetBoolean(info.pref_name));
+    permission->is_managed = false;
+    app->permissions.push_back(std::move(permission));
+  }
 }
 
 }  // namespace
@@ -127,6 +162,10 @@ apps::mojom::AppPtr BorealisApps::Convert(
   app->last_launch_time = registration.LastLaunchTime();
   app->install_time = registration.InstallTime();
 
+  if (registration.app_id() == borealis::kBorealisMainAppId) {
+    PopulatePermissions(app.get(), profile_);
+  }
+
   SetAppAllowed(app.get(), !registration.NoDisplay());
   return app;
 }
@@ -173,6 +212,17 @@ void BorealisApps::Launch(const std::string& app_id,
                           apps::mojom::WindowInfoPtr window_info) {
   borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
       app_id, base::DoNothing());
+}
+
+void BorealisApps::SetPermission(const std::string& app_id,
+                                 apps::mojom::PermissionPtr permission_ptr) {
+  auto permission = static_cast<app_management::mojom::BorealisPermissionType>(
+      permission_ptr->permission_id);
+  const char* pref_name = PermissionToPrefName(permission);
+  if (!pref_name) {
+    return;
+  }
+  profile_->GetPrefs()->SetBoolean(pref_name, permission_ptr->value);
 }
 
 void BorealisApps::Uninstall(const std::string& app_id,

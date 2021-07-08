@@ -1,0 +1,42 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../../../os_settings.gni")
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  closure_flags = os_settings_closure_flags
+  deps = [ ":borealis_detail_view.m" ]
+}
+
+js_library("borealis_detail_view.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/borealis_page/borealis_detail_view.m.js" ]
+  deps = [
+    "../:constants.m",
+    "../:permission_item.m",
+    "../:pin_to_shelf_item.m",
+    "../:store_client.m",
+    "../:util.m",
+    "../../..:os_route.m",
+    "../../../..:router",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":borealis_detail_view_module" ]
+}
+
+group("polymer3_elements") {
+  public_deps = [ ":borealis_detail_view_module" ]
+}
+
+polymer_modulizer("borealis_detail_view") {
+  js_file = "borealis_detail_view.js"
+  html_file = "borealis_detail_view.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}

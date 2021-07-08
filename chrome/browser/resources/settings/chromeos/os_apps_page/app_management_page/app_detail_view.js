@@ -94,6 +94,8 @@ Polymer({
         return 'arc-detail-view';
       case (AppType.kPluginVm):
         return 'plugin-vm-detail-view';
+      case (AppType.kBorealis):
+        return 'borealis-detail-view';
       default:
         assertNotReached();
     }

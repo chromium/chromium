@@ -276,6 +276,7 @@ TEST_F(
  ['AppManagementAppDetailView', 'app_detail_view_test.m.js'],
  ['AppManagementAppItem', 'app_item_test.m.js'],
  ['AppManagementArcDetailView', 'arc_detail_view_test.m.js'],
+ ['AppManagementBorealisDetailView', 'borealis_detail_view_test.m.js'],
  ['AppManagementChromeAppDetailView', 'chrome_app_detail_view_test.m.js'],
  ['AppManagementDomSwitch', 'dom_switch_test.m.js'],
  ['AppManagementMainView', 'main_view_test.m.js'],

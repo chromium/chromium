@@ -69,6 +69,7 @@ js_library("app_detail_view.m") {
     ":store_client.m",
     "../..:os_route.m",
     "../../..:router",
+    "./borealis_page:borealis_detail_view.m",
     "./plugin_vm_page:plugin_vm_detail_view.m",
     "//ui/webui/resources/js:assert.m",
   ]
