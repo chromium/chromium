@@ -26,7 +26,7 @@ const int kFileTypePopupTag = 1234;
 CFStringRef CreateUTIFromExtension(const base::FilePath::StringType& ext) {
   base::ScopedCFTypeRef<CFStringRef> ext_cf(base::SysUTF8ToCFStringRef(ext));
   return UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
-                                               ext_cf.get(), NULL);
+                                               ext_cf.get(), nullptr);
 }
 
 NSString* GetDescriptionFromExtension(const base::FilePath::StringType& ext) {
@@ -288,8 +288,9 @@ void SelectFileDialogBridge::Show(
       type_ != SelectFileDialogType::kUploadFolder &&
       type_ != SelectFileDialogType::kExistingFolder) {
     if (file_types) {
-      SetAccessoryView(std::move(file_types), file_type_index,
-                       default_extension);
+      SetAccessoryView(
+          std::move(file_types), file_type_index, default_extension,
+          /*is_save_panel=*/type_ == SelectFileDialogType::kSaveAsFile);
     } else {
       // If no type_ info is specified, anything goes.
       [dialog setAllowsOtherFileTypes:YES];
@@ -362,11 +363,11 @@ void SelectFileDialogBridge::Show(
 void SelectFileDialogBridge::SetAccessoryView(
     SelectFileTypeInfoPtr file_types,
     int file_type_index,
-    const base::FilePath::StringType& default_extension) {
+    const base::FilePath::StringType& default_extension,
+    bool is_save_panel) {
   DCHECK(file_types);
   base::scoped_nsobject<NSView> accessory_view = CreateAccessoryView();
   NSSavePanel* dialog = panel_.get();
-  [dialog setAccessoryView:accessory_view.get()];
 
   NSPopUpButton* popup = [accessory_view viewWithTag:kFileTypePopupTag];
   DCHECK(popup);
@@ -425,8 +426,13 @@ void SelectFileDialogBridge::SetAccessoryView(
   }
 
   if (file_types->include_all_files || file_types->extensions.empty()) {
-    [popup addItemWithTitle:l10n_util::GetNSString(IDS_APP_SAVEAS_ALL_FILES)];
-    [dialog setAllowsOtherFileTypes:YES];
+    dialog.allowsOtherFileTypes = YES;
+    // If "all files" is specified for a save panel, allow the user to add an
+    // alternate non-suggested extension, but don't add it to the popup. It
+    // makes no sense to save as an "all files" file type.
+    if (!is_save_panel) {
+      [popup addItemWithTitle:l10n_util::GetNSString(IDS_APP_SAVEAS_ALL_FILES)];
+    }
   }
 
   extension_dropdown_handler_.reset([[ExtensionDropdownHandler alloc]
@@ -454,6 +460,10 @@ void SelectFileDialogBridge::SetAccessoryView(
     [popup selectItemAtIndex:0];
     [extension_dropdown_handler_ popupAction:popup];
   }
+
+  // There's no need for a popup unless there are at least two choices.
+  if (popup.numberOfItems >= 2)
+    dialog.accessoryView = accessory_view.get();
 }
 
 void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
@@ -464,8 +474,9 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
   std::vector<base::FilePath> paths;
   if (!did_cancel) {
     if (type_ == SelectFileDialogType::kSaveAsFile) {
-      if ([[panel_ URL] isFileURL]) {
-        paths.push_back(base::mac::NSStringToFilePath([[panel_ URL] path]));
+      NSURL* url = [panel_ URL];
+      if ([url isFileURL]) {
+        paths.push_back(base::mac::NSStringToFilePath([url path]));
       }
 
       NSView* accessoryView = [panel_ accessoryView];
@@ -482,7 +493,7 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
       NSArray* urls = [static_cast<NSOpenPanel*>(panel_) URLs];
       for (NSURL* url in urls)
         if ([url isFileURL])
-          paths.push_back(base::FilePath(base::SysNSStringToUTF8([url path])));
+          paths.push_back(base::mac::NSStringToFilePath([url path]));
     }
   }
 
