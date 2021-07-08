@@ -336,8 +336,8 @@ Polymer({
     /** @private {boolean} */
     showMultiPageCheckbox_: {
       type: Boolean,
-      computed: 'computeShowMultiPageCheckbox_(appState_, selectedSource, ' +
-          'selectedFileType, scanAppMultiPageScanEnabled_)',
+      computed: 'computeShowMultiPageCheckbox_(showScanSettings_, ' +
+          'selectedSource, selectedFileType, scanAppMultiPageScanEnabled_)',
       reflectToAttribute: true,
     },
 
@@ -1029,9 +1029,8 @@ Polymer({
    * @private
    */
   computeShowMultiPageCheckbox_() {
-    return this.scanAppMultiPageScanEnabled_ &&
-        this.appState_ === AppState.READY && this.isPDFSelected_() &&
-        this.isFlatbedSelected_();
+    return this.scanAppMultiPageScanEnabled_ && this.showScanSettings_ &&
+        this.isPDFSelected_() && this.isFlatbedSelected_();
   },
 
   /**
@@ -1039,7 +1038,8 @@ Polymer({
    * @private
    */
   isPDFSelected_() {
-    return fileTypeFromString(this.selectedFileType) ===
+    return !!this.selectedFileType &&
+        fileTypeFromString(this.selectedFileType) ===
         ash.scanning.mojom.FileType.kPdf;
   },
 
@@ -1048,7 +1048,8 @@ Polymer({
    * @private
    */
   isFlatbedSelected_() {
-    return this.sourceTypeMap_.get(this.selectedSource) ===
+    return !!this.selectedSource &&
+        this.sourceTypeMap_.get(this.selectedSource) ===
         ash.scanning.mojom.SourceType.kFlatbed;
   },
 
