@@ -485,6 +485,7 @@ crbug.com/angleproject/4846 [ mac angle-metal passthrough ] conformance/uniforms
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/extensions/webgl-debug-shaders.html [ Failure ]
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/acos/acos_001_to_006.html [ Failure ]
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/asin/asin_001_to_006.html [ Failure ]
+crbug.com/1227129 [ mac angle-metal passthrough ] conformance/glsl/misc/ternary-operators-in-initializers.html [ Failure ]
 
 # Mac / Passthrough command decoder / Metal / Intel
 crbug.com/1144258 [ mac angle-metal passthrough intel-0x3e9b ] conformance/glsl/functions/glsl-function-atan-xy.html [ Failure ]
