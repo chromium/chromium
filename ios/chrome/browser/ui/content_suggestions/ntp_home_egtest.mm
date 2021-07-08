@@ -489,7 +489,15 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that when navigating back to the NTP while having the omnibox focused
 // and moved up, the scroll position restored is the position before the omnibox
 // is selected.
-- (void)testPositionRestoredWithOmniboxFocused {
+// TODO(crbug.com/1227139): Test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPositionRestoredWithOmniboxFocused \
+  DISABLED_testPositionRestoredWithOmniboxFocused
+#else
+#define MAYBE_testPositionRestoredWithOmniboxFocused \
+  testPositionRestoredWithOmniboxFocused
+#endif
+- (void)MAYBE_testPositionRestoredWithOmniboxFocused {
   [self addMostVisitedTile];
 
   // Add suggestions to be able to scroll on iPad.
