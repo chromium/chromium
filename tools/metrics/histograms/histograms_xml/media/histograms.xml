@@ -5117,15 +5117,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length.File" units="ms"
-    expires_after="2021-07-01">
-  <owner>rwkeane@google.com</owner>
+    expires_after="2022-07-01">
+  <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Total length of a Cast Streaming File mirror session.</summary>
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length.OffscreenTab"
-    units="ms" expires_after="2021-07-01">
-  <owner>rwkeane@google.com</owner>
+    units="ms" expires_after="2022-07-01">
+  <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Total length of a Cast Streaming Offscreen Tab mirror session.
@@ -5133,15 +5133,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length.Screen" units="ms"
-    expires_after="2021-07-01">
-  <owner>rwkeane@google.com</owner>
+    expires_after="2022-07-01">
+  <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Total length of a Cast Streaming Screen mirror session.</summary>
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length.Tab" units="ms"
-    expires_after="2021-07-01">
-  <owner>rwkeane@google.com</owner>
+    expires_after="2022-07-01">
+  <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Total length of a Cast Streaming mirror session of type Tab and NOT of types
@@ -5183,7 +5183,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MediaRouter.CastWebSenderExtensionLoaded"
     enum="BooleanEnabled" expires_after="2022-04-04">
-  <owner>rwkeane@chromium.org</owner>
+  <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Whenever a resource is loaded from the Media Router Component Extension,
