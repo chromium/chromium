@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
@@ -202,6 +203,12 @@ void AppServiceInstanceRegistryHelper::OnInstances(const std::string& app_id,
 
 void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(
     content::WebContents* contents) {
+  // Do not try to update window status on shutdown, because during the shutdown
+  // phase, we can't guaranteen the window destroy sequence, and it might cause
+  // crash.
+  if (browser_shutdown::HasShutdownStarted())
+    return;
+
   aura::Window* window = GetWindow(contents);
   if (!window || !window->GetToplevelWindow())
     return;
