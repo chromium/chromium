@@ -86,6 +86,7 @@ TEST_F(HelpAppSearchTagRegistryTest, AddAndGet) {
       /*title=*/u"Title 1",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Test tag", u"Tag 2"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   mojom::SearchConceptPtr new_concept_2 = mojom::SearchConcept::New(
@@ -93,6 +94,7 @@ TEST_F(HelpAppSearchTagRegistryTest, AddAndGet) {
       /*title=*/u"Title 2",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Another test tag"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   to_add.push_back(std::move(new_concept_1));
@@ -125,6 +127,7 @@ TEST_F(HelpAppSearchTagRegistryTest, MultipleUpdate) {
       /*title=*/u"Title 1",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Test tag", u"Tag 2"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   mojom::SearchConceptPtr new_concept_2 = mojom::SearchConcept::New(
@@ -132,6 +135,7 @@ TEST_F(HelpAppSearchTagRegistryTest, MultipleUpdate) {
       /*title=*/u"Title 2",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Another test tag"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   to_add.push_back(std::move(new_concept_1));
@@ -150,6 +154,7 @@ TEST_F(HelpAppSearchTagRegistryTest, MultipleUpdate) {
       /*title=*/u"Title 3",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Test tag"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   mojom::SearchConceptPtr new_concept_4 = mojom::SearchConcept::New(
@@ -157,6 +162,7 @@ TEST_F(HelpAppSearchTagRegistryTest, MultipleUpdate) {
       /*title=*/u"Title 4",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Another test tag"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   to_add_2.push_back(std::move(new_concept_3));

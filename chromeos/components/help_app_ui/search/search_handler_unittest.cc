@@ -73,6 +73,7 @@ TEST_F(HelpAppSearchHandlerTest, UpdateAndSearch) {
       /*title=*/u"Title 1",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Test tag", u"Tag 2"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   mojom::SearchConceptPtr new_concept_2 = mojom::SearchConcept::New(
@@ -80,6 +81,7 @@ TEST_F(HelpAppSearchHandlerTest, UpdateAndSearch) {
       /*title=*/u"Title 2",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Another test tag"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   search_concepts.push_back(std::move(new_concept_1));
@@ -121,6 +123,7 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultMetadata) {
       /*title=*/u"Title 1",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Test tag", u"Printing"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   search_concepts.push_back(std::move(new_concept_1));
@@ -151,6 +154,7 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultOrdering) {
       /*title=*/u"Title 1",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"less relevant concept"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   mojom::SearchConceptPtr new_concept_2 = mojom::SearchConcept::New(
@@ -158,6 +162,7 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultOrdering) {
       /*title=*/u"Title 2",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"more relevant tag", u"Tag"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   search_concepts.push_back(std::move(new_concept_1));
@@ -220,6 +225,7 @@ TEST_F(HelpAppSearchHandlerTest, SearchStatusReadyAndSuccess) {
       /*title=*/u"Title 1",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Test tag", u"Printing"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   search_concepts.push_back(std::move(new_concept_1));
@@ -269,6 +275,7 @@ TEST_F(HelpAppSearchHandlerTest, SearchStatusReadyAndOtherStatus) {
       /*title=*/u"Title 1",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"Test tag", u"Printing"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   search_concepts.push_back(std::move(new_concept_1));

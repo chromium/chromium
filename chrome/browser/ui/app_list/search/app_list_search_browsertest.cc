@@ -302,6 +302,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
       /*title=*/u"Fix connection problems",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"verycomplicatedsearchquery"},
+      /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help/id/test",
       /*locale=*/"");
   search_concepts.push_back(std::move(concept));

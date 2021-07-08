@@ -52,7 +52,9 @@ helpApp.SearchableItem.prototype.subcategoryNames;
  */
 helpApp.SearchableItem.prototype.subheadings;
 /**
- * The locale that this content is localized in.
+ * The locale that this content is localized in. Empty string means system
+ *     locale. The format is language[-country] (e.g., en-US) where the language
+ *     is the 2 or 3 letter code from ISO-639.
  * @type {string}
  */
 helpApp.SearchableItem.prototype.locale;
@@ -87,6 +89,12 @@ helpApp.LauncherSearchableItem.prototype.mainCategoryName;
  */
 helpApp.LauncherSearchableItem.prototype.tags;
 /**
+ * The locale of the tags. This could be different from the locale of the other
+ * fields. Empty string means system locale. Same format as the locale field.
+ * @type {string}
+ */
+helpApp.LauncherSearchableItem.prototype.tagLocale;
+/**
  * The URL path containing the relevant content, which may or may not contain
  *     URL parameters. For example, if the help content is at
  *     chrome://help-app/help/sub/3399763/id/1282338#install-user, then the
@@ -96,7 +104,8 @@ helpApp.LauncherSearchableItem.prototype.tags;
 helpApp.LauncherSearchableItem.prototype.urlPathWithParameters;
 /**
  * The locale that this content is localized in. Empty string means system
- *     locale.
+ *     locale. The format is language[-country] (e.g., en-US) where the language
+ *     is the 2 or 3 letter code from ISO-639.
  * @type {string}
  */
 helpApp.LauncherSearchableItem.prototype.locale;

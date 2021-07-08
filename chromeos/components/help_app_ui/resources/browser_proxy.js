@@ -244,15 +244,18 @@ guestMessagePipe.registerHandler(
       const dataFromApp =
           /** @type {!Array<!helpApp.LauncherSearchableItem>} */ (message);
       /** @type {!Array<!chromeos.helpApp.mojom.SearchConcept>} */
-      const dataToSend = dataFromApp.map(searchableItem => ({
-        id: truncate(searchableItem.id),
-        title: toString16(searchableItem.title),
-        mainCategory: toString16(searchableItem.mainCategoryName),
-        tags: searchableItem.tags.map(tag => toString16(tag))
-          .filter(tag => tag.data.length > 0),
-        urlPathWithParameters: truncate(searchableItem.urlPathWithParameters),
-        locale: truncate(searchableItem.locale),
-      }));
+      const dataToSend = dataFromApp.map(
+          searchableItem => ({
+            id: truncate(searchableItem.id),
+            title: toString16(searchableItem.title),
+            mainCategory: toString16(searchableItem.mainCategoryName),
+            tags: searchableItem.tags.map(tag => toString16(tag))
+                      .filter(tag => tag.data.length > 0),
+            tagLocale: searchableItem.tagLocale || '',
+            urlPathWithParameters:
+                truncate(searchableItem.urlPathWithParameters),
+            locale: truncate(searchableItem.locale),
+          }));
       // Filter out invalid items. No field can be empty except locale.
       const dataFiltered = dataToSend.filter(item => {
         const valid = item.id && item.title && item.mainCategory

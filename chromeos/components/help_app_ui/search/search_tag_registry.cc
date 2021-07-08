@@ -32,7 +32,8 @@ std::vector<local_search_service::Data> ConceptVectorToDataVector(
       ++tag_num;
     }
 
-    data_list.emplace_back(concept->id, std::move(content_list));
+    data_list.emplace_back(concept->id, std::move(content_list),
+                           concept->tag_locale);
   }
   return data_list;
 }

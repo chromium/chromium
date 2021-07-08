@@ -48,6 +48,11 @@ struct SearchConcept {
   // List of localized tags used to make the search concept searchable.
   array<mojo_base.mojom.String16> tags;
 
+  // The locale of the tags. This could be different from the locale of the
+  // other fields. Empty string means system locale. Same format as the locale
+  // field.
+  string tag_locale;
+
   // The URL path containing the relevant content, which may or may not contain
   // URL parameters. For example, if the help content is at
   // chrome://help-app/help/sub/3399763/id/1282338#install-user, then the field
@@ -55,7 +60,8 @@ struct SearchConcept {
   string url_path_with_parameters;
 
   // Locale code. Leave unset for the system configured locale. The format is
-  // language[-country] (e.g., en-US).
+  // language[-country] (e.g., en-US) where the language is the 2 or 3 letter
+  // code from ISO-639.
   string locale;
 };
 
