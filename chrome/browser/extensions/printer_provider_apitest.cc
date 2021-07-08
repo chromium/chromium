@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersInvalidPrinterValue) {
 
   run_loop.Run();
 
-  EXPECT_TRUE(printers.empty());
+  EXPECT_TRUE(printers.GetList().empty());
 }
 
 // These tests are separate out from the main test class because the USB api

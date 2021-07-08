@@ -169,7 +169,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
   if (file_browser_handler->HasKey(keys::kFileAccessList)) {
     if (!file_browser_handler->GetList(keys::kFileAccessList,
                                        &access_list_value) ||
-        access_list_value->empty()) {
+        access_list_value->GetList().empty()) {
       *error = base::ASCIIToUTF16(errors::kInvalidFileAccessList);
       return nullptr;
     }

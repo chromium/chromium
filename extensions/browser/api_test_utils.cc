@@ -158,7 +158,7 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
   // is no specified result.
   const base::ListValue* results = function->GetResultList();
   CHECK(results);
-  EXPECT_TRUE(results->empty()) << "Did not expect a result";
+  EXPECT_TRUE(results->GetList().empty()) << "Did not expect a result";
   CHECK(function->response_type());
   EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
   return function->GetError();

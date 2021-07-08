@@ -43,7 +43,7 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
       base::Owned(remote_devices.DeepCopy()), base::Passed(&callback));
 
   // Private TPM key is needed only when adding new keys.
-  if (remote_devices.empty() ||
+  if (remote_devices.GetList().empty() ||
       tpm_key_manager->PrepareTpmKey(/*check_private_key=*/false,
                                      do_refresh_keys)) {
     do_refresh_keys.Run();

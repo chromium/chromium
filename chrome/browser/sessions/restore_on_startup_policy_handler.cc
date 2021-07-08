@@ -58,7 +58,7 @@ bool RestoreOnStartupPolicyHandler::CheckPolicySettings(
             policies.GetValue(key::kCookiesSessionOnlyForUrls);
         const base::ListValue* cookies_value;
         if (cookies_policy && cookies_policy->GetAsList(&cookies_value) &&
-            !cookies_value->empty()) {
+            !cookies_value->GetList().empty()) {
           errors->AddError(key::kCookiesSessionOnlyForUrls,
                            IDS_POLICY_OVERRIDDEN,
                            key::kRestoreOnStartup);

@@ -1489,9 +1489,9 @@ TEST(ValuesTest, StringValue) {
 TEST(ValuesTest, ListDeletion) {
   ListValue list;
   list.Append(std::make_unique<Value>());
-  EXPECT_FALSE(list.empty());
+  EXPECT_FALSE(list.GetList().empty());
   list.Clear();
-  EXPECT_TRUE(list.empty());
+  EXPECT_TRUE(list.GetList().empty());
 }
 
 TEST(ValuesTest, DictionaryDeletion) {

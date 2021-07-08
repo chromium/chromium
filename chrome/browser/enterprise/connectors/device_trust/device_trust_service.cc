@@ -36,8 +36,10 @@ void DeviceTrustService::Shutdown() {
 }
 
 bool DeviceTrustService::IsEnabled() const {
-  return (prefs_->HasPrefPath(kContextAwareAccessSignalsAllowlistPref) &&
-          !prefs_->GetList(kContextAwareAccessSignalsAllowlistPref)->empty());
+  return prefs_->HasPrefPath(kContextAwareAccessSignalsAllowlistPref) &&
+         !prefs_->GetList(kContextAwareAccessSignalsAllowlistPref)
+              ->GetList()
+              .empty();
 }
 
 base::RepeatingCallback<bool()> DeviceTrustService::MakePolicyCheck() {

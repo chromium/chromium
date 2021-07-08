@@ -193,7 +193,7 @@ class CredentialProviderWebUIMessageHandler
     DCHECK(out_exit_code);
 
     const base::Value* dict_result = nullptr;
-    if (!args || args->empty() || !args->Get(0, &dict_result) ||
+    if (!args || args->GetList().empty() || !args->Get(0, &dict_result) ||
         !dict_result->is_dict()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
       return base::Value(base::Value::Type::DICTIONARY);

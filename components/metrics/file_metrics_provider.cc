@@ -930,7 +930,7 @@ bool FileMetricsProvider::SimulateIndependentMetrics() {
 
   ListPrefUpdate list_value(pref_service_,
                             metrics::prefs::kMetricsFileMetricsMetadata);
-  if (list_value->empty())
+  if (list_value->GetList().empty())
     return false;
 
   base::Value::ListView mutable_list = list_value->GetList();

@@ -97,7 +97,7 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
   {
     const base::ListValue* choices = nullptr;
     if (dict->GetList("choices", &choices)) {
-      DCHECK(!choices->empty());
+      DCHECK(!choices->GetList().empty());
       type_ = ArgumentType::CHOICES;
       choices_.reserve(choices->GetSize());
       for (const auto& choice : choices->GetList())

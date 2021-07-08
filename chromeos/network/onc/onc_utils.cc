@@ -1183,7 +1183,7 @@ base::Value ConvertProxyConfigToOncProxySettings(
         base::ListValue exclude_domains;
         for (const auto& rule : bypass_rules.rules())
           exclude_domains.AppendString(rule->ToString());
-        if (!exclude_domains.empty()) {
+        if (!exclude_domains.GetList().empty()) {
           proxy_settings.SetKey(::onc::proxy::kExcludeDomains,
                                 std::move(exclude_domains));
         }

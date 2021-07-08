@@ -205,7 +205,7 @@ bool LocalTestServer::AddCommandLineArguments(
     // Add arguments from a list.
     if (value.is_list()) {
       const base::ListValue* list = nullptr;
-      if (!value.GetAsList(&list) || !list || list->empty())
+      if (!value.GetAsList(&list) || !list || list->GetList().empty())
         return false;
       for (const auto& entry : list->GetList()) {
         if (!AppendArgumentFromJSONValue(key, entry, command_line))

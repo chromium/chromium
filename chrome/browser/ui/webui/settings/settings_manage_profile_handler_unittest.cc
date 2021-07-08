@@ -75,7 +75,7 @@ class ManageProfileHandlerTest : public testing::Test {
 
     // Expect a non-empty list of dictionaries containing non-empty strings for
     // profile avatar icon urls and labels.
-    EXPECT_FALSE(icons->empty());
+    EXPECT_FALSE(icons->GetList().empty());
     if (gaia_included) {
       VerifyGaiaAvatar(icons, gaia_selected);
     } else {

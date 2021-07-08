@@ -314,8 +314,8 @@ APIBinding::APIBinding(const std::string& api_name,
       std::string full_name =
           base::StringPrintf("%s.%s", api_name_.c_str(), name.c_str());
       const base::ListValue* filters = nullptr;
-      bool supports_filters =
-          event_dict->GetList("filters", &filters) && !filters->empty();
+      bool supports_filters = event_dict->GetList("filters", &filters) &&
+                              !filters->GetList().empty();
 
       std::vector<std::string> rule_actions;
       std::vector<std::string> rule_conditions;

@@ -41,7 +41,9 @@ DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(
   // TODO(b/183690432): Check if the browser or device is being managed
   // to create the throttle.
   if (!prefs_->HasPrefPath(kContextAwareAccessSignalsAllowlistPref) ||
-      prefs_->GetList(kContextAwareAccessSignalsAllowlistPref)->empty())
+      prefs_->GetList(kContextAwareAccessSignalsAllowlistPref)
+          ->GetList()
+          .empty())
     return nullptr;
 
   return std::make_unique<DeviceTrustNavigationThrottle>(navigation_handle);

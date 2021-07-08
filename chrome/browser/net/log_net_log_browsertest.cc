@@ -64,7 +64,7 @@ class LogNetLogTest : public InProcessBrowserTest,
     // Ensure it has an "events" property.
     base::ListValue* events;
     ASSERT_TRUE(main->GetList("events", &events));
-    ASSERT_FALSE(events->empty());
+    ASSERT_FALSE(events->GetList().empty());
 
     // Verify that cookies were stripped when the --net-log-capture-mode flag
     // was omitted, and not stripped when it was given a value of

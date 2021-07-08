@@ -167,7 +167,7 @@ void ImportDataHandler::HandleImportFromBookmarksFile(
   if (select_file_dialog_)
     return;
 
-  DCHECK(args && args->empty());
+  DCHECK(args && args->GetList().empty());
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));

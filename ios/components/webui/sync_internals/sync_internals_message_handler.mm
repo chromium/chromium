@@ -106,7 +106,7 @@ void SyncInternalsMessageHandler::RegisterMessages() {
 
 void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
     const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
 
   // is_registered_ flag protects us from double-registering.  This could
   // happen on a page refresh, where the JavaScript gets re-run but the
@@ -123,7 +123,7 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
 
 void SyncInternalsMessageHandler::HandleRequestListOfTypes(
     const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   base::DictionaryValue event_details;
   auto type_list = std::make_unique<base::ListValue>();
   syncer::ModelTypeSet protocol_types = syncer::ProtocolTypes();
@@ -136,7 +136,7 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
 
 void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
     const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
 
   base::DictionaryValue value;
   value.SetBoolean(syncer::sync_ui_util::kIncludeSpecifics,

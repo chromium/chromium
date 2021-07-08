@@ -320,7 +320,7 @@ void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
 static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(
     const base::ListValue* preferenceValue) {
   std::set<net::HostPortPair> targets;
-  if (!preferenceValue || preferenceValue->empty())
+  if (!preferenceValue || preferenceValue->GetList().empty())
     return targets;
   std::string address;
   for (size_t i = 0; i < preferenceValue->GetSize(); i++) {

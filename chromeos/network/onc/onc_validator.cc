@@ -453,7 +453,7 @@ bool Validator::FieldExistsAndIsEmpty(const base::DictionaryValue& object,
     if (!str.empty())
       return false;
   } else if (value->GetAsList(&list)) {
-    if (!list->empty())
+    if (!list->GetList().empty())
       return false;
   } else {
     NOTREACHED();

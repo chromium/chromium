@@ -147,7 +147,7 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
 }
 
 void SessionLogHandler::HandleInitialize(const base::ListValue* args) {
-  DCHECK(args && args->empty());
+  DCHECK(args && args->GetList().empty());
   AllowJavascript();
 }
 

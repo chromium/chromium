@@ -31,7 +31,7 @@ base::DictionaryValue Serialize(
     }
   }
 
-  if (!children_list->empty())
+  if (!children_list->GetList().empty())
     root->Set(child_key, std::move(children_list));
   return std::move(*root);
 }

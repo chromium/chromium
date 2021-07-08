@@ -636,7 +636,7 @@ class QuickUnlockPrivateUnitTest
     extensions::api_test_utils::RunFunction(func.get(), std::move(params),
                                             profile(), std::move(dispatcher),
                                             extensions::api_test_utils::NONE);
-    EXPECT_TRUE(func->GetResultList()->empty());
+    EXPECT_TRUE(func->GetResultList()->GetList().empty());
     base::RunLoop().RunUntilIdle();
     return func->GetError();
   }

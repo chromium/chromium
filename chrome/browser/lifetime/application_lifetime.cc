@@ -113,7 +113,7 @@ bool SetLocaleForNextStart(PrefService* local_state) {
   std::string login_screen_locale;
   if (cros_settings->GetList(chromeos::kDeviceLoginScreenLocales,
                              &login_screen_locales) &&
-      !login_screen_locales->empty() &&
+      !login_screen_locales->GetList().empty() &&
       login_screen_locales->GetString(0, &login_screen_locale)) {
     local_state->SetString(language::prefs::kApplicationLocale,
                            login_screen_locale);

@@ -323,7 +323,7 @@ void EnterprisePlatformKeysRemoveCertificateFunction::OnRemoveCertificate(
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysInternalGetTokensFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args_->empty());
+  EXTENSION_FUNCTION_VALIDATE(args_->GetList().empty());
 
   std::string error = ValidateCrosapi(KeystoreService::kGetKeyStoresMinVersion,
                                       browser_context());

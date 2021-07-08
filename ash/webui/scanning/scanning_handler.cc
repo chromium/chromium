@@ -116,7 +116,7 @@ void ScanningHandler::SetWebUIForTest(content::WebUI* web_ui) {
 }
 
 void ScanningHandler::HandleInitialize(const base::ListValue* args) {
-  DCHECK(args && args->empty());
+  DCHECK(args && args->GetList().empty());
   AllowJavascript();
 }
 

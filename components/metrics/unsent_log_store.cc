@@ -238,7 +238,7 @@ void UnsentLogStore::Purge() {
 }
 
 void UnsentLogStore::ReadLogsFromPrefList(const base::ListValue& list_value) {
-  if (list_value.empty()) {
+  if (list_value.GetList().empty()) {
     metrics_->RecordLogReadStatus(UnsentLogStoreMetrics::LIST_EMPTY);
     return;
   }

@@ -3189,7 +3189,7 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
     DCHECK(prefs);
     ListPrefUpdate update(prefs, prefs::kDesksNamesList);
     base::ListValue* pref_data = update.Get();
-    ASSERT_TRUE(pref_data->empty());
+    ASSERT_TRUE(pref_data->GetList().empty());
     for (auto desk_name : desk_names)
       pref_data->Append(desk_name);
   }

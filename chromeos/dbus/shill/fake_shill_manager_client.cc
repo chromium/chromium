@@ -1158,7 +1158,7 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
 }
 
 void FakeShillManagerClient::ClearProfiles() {
-  if (GetListProperty(shill::kProfilesProperty)->empty()) {
+  if (GetListProperty(shill::kProfilesProperty)->GetList().empty()) {
     return;
   }
   GetListProperty(shill::kProfilesProperty)->ClearList();

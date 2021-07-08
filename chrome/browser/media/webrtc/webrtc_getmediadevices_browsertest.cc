@@ -84,7 +84,7 @@ class WebRtcGetMediaDevicesBrowserTest
 
     base::ListValue* values;
     ASSERT_TRUE(parsed_json.value->GetAsList(&values));
-    ASSERT_FALSE(values->empty());
+    ASSERT_FALSE(values->GetList().empty());
     bool found_audio_input = false;
     bool found_video_input = false;
 

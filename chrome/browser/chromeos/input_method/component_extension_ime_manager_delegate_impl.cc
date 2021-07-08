@@ -281,7 +281,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   if (!dict.GetList(extensions::manifest_keys::kLayouts, &layouts))
     return false;
 
-  if (layouts->empty() || !layouts->GetString(0, &out->layout)) {
+  if (layouts->GetList().empty() || !layouts->GetString(0, &out->layout)) {
     out->layout = "us";
   }
 

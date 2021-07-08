@@ -53,7 +53,7 @@ TEST_F(PairingRegistryDelegateWinTest, SaveAndLoad) {
   delegate->SetRootKeys(privileged_.Handle(), unprivileged_.Handle());
 
   // Check that registry is initially empty.
-  EXPECT_TRUE(delegate->LoadAll()->empty());
+  EXPECT_TRUE(delegate->LoadAll()->GetList().empty());
 
   // Add a couple of pairings.
   PairingRegistry::Pairing pairing1(base::Time::Now(), "xxx", "xxx", "xxx");
@@ -84,7 +84,7 @@ TEST_F(PairingRegistryDelegateWinTest, SaveAndLoad) {
 
   // Delete the rest and verify.
   EXPECT_TRUE(delegate->DeleteAll());
-  EXPECT_TRUE(delegate->LoadAll()->empty());
+  EXPECT_TRUE(delegate->LoadAll()->GetList().empty());
 }
 
 // Verifies that the delegate is stateless by using two different instances.

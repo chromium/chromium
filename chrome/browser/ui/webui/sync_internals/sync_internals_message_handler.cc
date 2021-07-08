@@ -155,7 +155,7 @@ void SyncInternalsMessageHandler::RegisterMessages() {
 
 void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
     const ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   AllowJavascript();
 
   // is_registered_ flag protects us from double-registering.  This could
@@ -180,7 +180,7 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
 
 void SyncInternalsMessageHandler::HandleRequestListOfTypes(
     const ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   AllowJavascript();
 
   DictionaryValue event_details;
@@ -196,7 +196,7 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
 
 void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
     const ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   AllowJavascript();
 
   DictionaryValue value;

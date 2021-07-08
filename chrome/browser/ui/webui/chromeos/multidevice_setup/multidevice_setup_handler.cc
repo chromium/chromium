@@ -60,7 +60,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
 
 void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
     const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       Profile::FromWebUI(web_ui()),
       chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);

@@ -118,7 +118,7 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method) {
   const base::ListValue* login_screen_input_methods = nullptr;
   if (!cros_settings->GetList(chromeos::kDeviceLoginScreenInputMethods,
                               &login_screen_input_methods) ||
-      login_screen_input_methods->empty()) {
+      login_screen_input_methods->GetList().empty()) {
     StopEnforcingPolicyInputMethods();
     return;
   }

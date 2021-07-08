@@ -1037,7 +1037,7 @@ TEST_F(TraceEventTestFixture, DataDiscarded) {
 
   CancelTrace();
 
-  EXPECT_TRUE(trace_parsed_.empty());
+  EXPECT_TRUE(trace_parsed_.GetList().empty());
 }
 
 class MockEnabledStateChangedObserver :
@@ -1337,7 +1337,7 @@ TEST_F(TraceEventTestFixture, Categories) {
   TRACE_EVENT_INSTANT0("cat2", "name", TRACE_EVENT_SCOPE_THREAD);
   EndTraceAndFlush();
   DropTracedMetadataRecords();
-  EXPECT_TRUE(trace_parsed_.empty());
+  EXPECT_TRUE(trace_parsed_.GetList().empty());
 
   // Include existent category -> only events of that category
   Clear();

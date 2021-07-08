@@ -175,7 +175,7 @@ TEST_F(PairingRegistryTest, ClearAllPairings) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  EXPECT_TRUE(pairings_->empty());
+  EXPECT_TRUE(pairings_->GetList().empty());
 }
 
 ACTION_P(QuitMessageLoop, callback) {
@@ -187,7 +187,7 @@ MATCHER_P(EqualsClientName, client_name, "") {
 }
 
 MATCHER(NoPairings, "") {
-  return arg->empty();
+  return arg->GetList().empty();
 }
 
 TEST_F(PairingRegistryTest, SerializedRequests) {

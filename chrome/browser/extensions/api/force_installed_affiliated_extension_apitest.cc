@@ -76,7 +76,7 @@ void ForceInstalledAffiliatedExtensionApiTest::SetUpOnMainThread() {
   // policy::AffiliationTestHelper::PreLoginUser() in the PRE_ test.
   const base::ListValue* users =
       g_browser_process->local_state()->GetList("LoggedInUsers");
-  if (!users->empty()) {
+  if (!users->GetList().empty()) {
     policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   }
 

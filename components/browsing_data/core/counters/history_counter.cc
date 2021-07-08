@@ -152,8 +152,8 @@ void HistoryCounter::OnGetWebHistoryCount(
   // may have history items stored in Sync. Otherwise, we expect at least one
   // entry in the "event" list.
   const base::ListValue* events;
-  has_synced_visits_ =
-      !result || (result->GetList("event", &events) && !events->empty());
+  has_synced_visits_ = !result || (result->GetList("event", &events) &&
+                                   !events->GetList().empty());
   web_counting_finished_ = true;
   MergeResults();
 }

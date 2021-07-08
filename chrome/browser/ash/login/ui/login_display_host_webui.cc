@@ -345,7 +345,7 @@ std::string GetManagedLoginScreenLocale() {
   // compatibility, if dynamically switching locales on the login screen will be
   // implemented.
   std::string login_screen_locale;
-  if (login_screen_locales->empty() ||
+  if (login_screen_locales->GetList().empty() ||
       !login_screen_locales->GetString(0, &login_screen_locale))
     return std::string();
 

@@ -162,7 +162,7 @@ void ChangePictureHandler::SendDefaultImages() {
 }
 
 void ChangePictureHandler::HandleChooseFile(const base::ListValue* args) {
-  DCHECK(args && args->empty());
+  DCHECK(args && args->GetList().empty());
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
@@ -184,7 +184,7 @@ void ChangePictureHandler::HandleChooseFile(const base::ListValue* args) {
 }
 
 void ChangePictureHandler::HandleDiscardPhoto(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kObjectDelete, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }
@@ -219,7 +219,7 @@ void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
 }
 
 void ChangePictureHandler::HandlePageInitialized(const base::ListValue* args) {
-  DCHECK(args && args->empty());
+  DCHECK(args && args->GetList().empty());
 
   AllowJavascript();
 

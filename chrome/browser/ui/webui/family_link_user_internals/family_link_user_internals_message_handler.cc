@@ -164,7 +164,7 @@ FamilyLinkUserInternalsMessageHandler::GetSupervisedUserService() {
 
 void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
     const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   AllowJavascript();
   if (scoped_observation_.IsObserving())
     return;

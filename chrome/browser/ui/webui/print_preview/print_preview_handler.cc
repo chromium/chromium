@@ -1186,7 +1186,7 @@ void PrintPreviewHandler::OnAddedPrinters(PrinterType printer_type,
   DCHECK(printer_type == PrinterType::kExtension ||
          printer_type == PrinterType::kPrivet ||
          printer_type == PrinterType::kLocal);
-  DCHECK(!printers.empty());
+  DCHECK(!printers.GetList().empty());
   FireWebUIListener("printers-added",
                     base::Value(static_cast<int>(printer_type)), printers);
 

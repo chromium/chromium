@@ -181,7 +181,7 @@ void AmbientModeHandler::OnEnabledPrefChanged() {
 
 void AmbientModeHandler::HandleRequestSettings(const base::ListValue* args) {
   CHECK(args);
-  CHECK(args->empty());
+  CHECK(args->GetList().empty());
 
   AllowJavascript();
 
