@@ -10,8 +10,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 class AppUpdate;
@@ -23,6 +27,14 @@ namespace full_restore {
 class ArcAppLaunchHandlerArcAppBrowserTest;
 class ArcWindowHandler;
 class FullRestoreAppLaunchHandler;
+
+struct CpuTick {
+  uint64_t idle_time = 0;
+  uint64_t used_time = 0;
+  CpuTick operator-(const CpuTick& rhs) const {
+    return {idle_time - rhs.idle_time, used_time - rhs.used_time};
+  }
+};
 
 // The ArcAppLaunchHandler class restores ARC apps during the system startup
 // phase.
@@ -80,6 +92,16 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // Invoked when the app of the given `app_id` is removed.
   void RemoveApp(const std::string& app_id);
 
+  // Returns [0, 100] as percentage of device CPU usage rate.
+  int GetCpuUsageRate();
+
+  void StartCpuUsageCount();
+  void StopCpuUsageCount();
+  void UpdateCpuUsage();
+  void OnCpuUsageUpdated(
+      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnProbeServiceDisconnect();
+
   FullRestoreAppLaunchHandler* handler_ = nullptr;
 
   // The app id list to be restored. When the ARC app is ready in
@@ -99,6 +121,13 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   chromeos::ResourcedClient::PressureLevel pressure_level_ =
       chromeos::ResourcedClient::PressureLevel::MODERATE;
+
+  mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
+
+  // Cpu usage rate count window. It save the cpu usage in a time interval.
+  std::list<CpuTick> cpu_tick_window_;
+  absl::optional<CpuTick> last_cpu_tick_;
+  base::RepeatingTimer cpu_tick_count_timer_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

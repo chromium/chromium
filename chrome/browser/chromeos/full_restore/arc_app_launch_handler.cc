@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -16,12 +17,23 @@
 #include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 namespace chromeos {
 namespace full_restore {
+
+namespace {
+
+constexpr int kCpuUsageRefreshIntervalInSeconds = 1;
+constexpr int kCpuUsageCountWindowLength =
+    6 * kCpuUsageRefreshIntervalInSeconds;
+
+}  // namespace
 
 ArcAppLaunchHandler::ArcAppLaunchHandler() = default;
 ArcAppLaunchHandler::~ArcAppLaunchHandler() = default;
@@ -90,10 +102,22 @@ void ArcAppLaunchHandler::OnAppConnectionReady() {
   if (!HasRestoreData())
     return;
 
+  // Receive the memory pressure level.
   if (chromeos::ResourcedClient::Get() &&
       !resourced_client_observer_.IsObserving()) {
     resourced_client_observer_.Observe(chromeos::ResourcedClient::Get());
   }
+
+  // Receive the system CPU usage rate.
+  if (!probe_service_ || !probe_service_.is_connected()) {
+    cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
+        probe_service_.BindNewPipeAndPassReceiver());
+    probe_service_.set_disconnect_handler(
+        base::BindOnce(&ArcAppLaunchHandler::OnProbeServiceDisconnect,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  StartCpuUsageCount();
 }
 
 void ArcAppLaunchHandler::LoadRestoreData() {
@@ -222,6 +246,60 @@ void ArcAppLaunchHandler::RemoveApp(const std::string& app_id) {
 
   for (auto it : windows)
     no_stack_windows_.erase(it);
+}
+
+int ArcAppLaunchHandler::GetCpuUsageRate() {
+  uint64_t idle = 0, sum = 0;
+  for (const auto& tick : cpu_tick_window_) {
+    idle += tick.idle_time;
+    sum += tick.idle_time + tick.used_time;
+  }
+
+  // Convert to xx% percentage.
+  return sum ? int(100 * (sum - idle) / sum) : 0;
+}
+
+void ArcAppLaunchHandler::StartCpuUsageCount() {
+  cpu_tick_count_timer_.Start(
+      FROM_HERE,
+      base::TimeDelta::FromSeconds(kCpuUsageRefreshIntervalInSeconds),
+      base::BindRepeating(&ArcAppLaunchHandler::UpdateCpuUsage,
+                          base::Unretained(this)));
+}
+
+void ArcAppLaunchHandler::StopCpuUsageCount() {
+  cpu_tick_count_timer_.Stop();
+}
+
+void ArcAppLaunchHandler::UpdateCpuUsage() {
+  probe_service_->ProbeTelemetryInfo(
+      {chromeos::cros_healthd::mojom::ProbeCategoryEnum::kCpu},
+      base::BindOnce(&ArcAppLaunchHandler::OnCpuUsageUpdated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcAppLaunchHandler::OnCpuUsageUpdated(
+    chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr) {
+  CpuTick tick;
+  // For simplicity, assume that device has only one physical CPU.
+  for (const auto& logical_cpu :
+       info_ptr->cpu_result->get_cpu_info()->physical_cpus[0]->logical_cpus) {
+    tick.idle_time += logical_cpu->idle_time_user_hz;
+    tick.used_time +=
+        logical_cpu->user_time_user_hz + logical_cpu->system_time_user_hz;
+  }
+
+  if (last_cpu_tick_.has_value())
+    cpu_tick_window_.push_back(tick - last_cpu_tick_.value());
+  last_cpu_tick_ = tick;
+
+  // Sliding window for CPU usage count.
+  while (cpu_tick_window_.size() > kCpuUsageCountWindowLength)
+    cpu_tick_window_.pop_front();
+}
+
+void ArcAppLaunchHandler::OnProbeServiceDisconnect() {
+  probe_service_.reset();
 }
 
 }  // namespace full_restore
