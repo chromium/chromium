@@ -20,7 +20,7 @@ std::u16string WebEngineContentClient::GetLocalizedString(int message_id) {
 
 base::StringPiece WebEngineContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
