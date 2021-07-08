@@ -4238,7 +4238,7 @@
   {
     "name": "override-language-prefs-for-href-translate",
     "owners": [ "sclittle", "chrome-language@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 97
   },
   {
     "name": "override-similar-languages-for-href-translate",
@@ -4248,7 +4248,7 @@
   {
     "name": "override-site-prefs-for-href-translate",
     "owners": [ "sclittle", "chrome-language@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 97
   },
   {
     "name": "override-unsupported-page-language-for-href-translate",
