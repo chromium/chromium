@@ -29,14 +29,20 @@
 
 namespace {
 
-base::Value NetLogParamsForCreateAuth(const std::string& scheme,
-                                      const std::string& challenge,
-                                      const int net_error,
-                                      net::NetLogCaptureMode capture_mode) {
+base::Value NetLogParamsForCreateAuth(
+    const std::string& scheme,
+    const std::string& challenge,
+    const int net_error,
+    const GURL& origin,
+    const absl::optional<bool>& allows_default_credentials,
+    net::NetLogCaptureMode capture_mode) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("scheme", net::NetLogStringValue(scheme));
   if (net::NetLogCaptureIncludesSensitive(capture_mode))
     dict.SetKey("challenge", net::NetLogStringValue(challenge));
+  dict.SetStringKey("origin", origin.spec());
+  if (allows_default_credentials)
+    dict.SetBoolKey("allows_default_credentials", *allows_default_credentials);
   if (net_error < 0)
     dict.SetIntKey("net_error", net_error);
   return dict;
@@ -246,7 +252,10 @@ int HttpAuthHandlerRegistryFactory::CreateAuthHandler(
   net_log.AddEvent(NetLogEventType::AUTH_HANDLER_CREATE_RESULT,
                    [&](NetLogCaptureMode capture_mode) {
                      return NetLogParamsForCreateAuth(
-                         scheme, challenge->challenge_text(), net_error,
+                         scheme, challenge->challenge_text(), net_error, origin,
+                         *handler ? absl::make_optional(
+                                        (*handler)->AllowsDefaultCredentials())
+                                  : absl::nullopt,
                          capture_mode);
                    });
   return net_error;

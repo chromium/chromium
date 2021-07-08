@@ -2647,6 +2647,9 @@ EVENT_TYPE(AUTH_BOUND_TO_CONTROLLER)
 //      "scheme": <scheme>
 //      "net_error": <Net Error. Only present in case of error.>
 //      "challenge": <challenge string, if NetLogCaptureIncludesSensitive>
+//      "origin": <the origin of the server or proxy which issued the challenge>
+//      "allows_default_credentials": <whether the default credentials may be
+//                                     used for the origin>
 //  }
 EVENT_TYPE(AUTH_HANDLER_CREATE_RESULT)
 
