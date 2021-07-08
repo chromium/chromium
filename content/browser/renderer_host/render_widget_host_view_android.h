@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/delegated_frame_host_android.h"
 #include "ui/android/view_android.h"
@@ -252,7 +253,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void SendMouseEvent(const ui::MotionEventAndroid&, int action_button);
   void SendMouseWheelEvent(const blink::WebMouseWheelEvent& event);
   void SendGestureEvent(const blink::WebGestureEvent& event);
-  bool ShowSelectionMenu(const ContextMenuParams& params);
+  bool ShowSelectionMenu(RenderFrameHost* render_frame_host,
+                         const ContextMenuParams& params);
   void set_ime_adapter(ImeAdapterAndroid* ime_adapter) {
     ime_adapter_android_ = ime_adapter;
   }

@@ -71,6 +71,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/common/content_client.h"
@@ -1969,12 +1970,13 @@ void RenderWidgetHostViewAndroid::SendGestureEvent(
 }
 
 bool RenderWidgetHostViewAndroid::ShowSelectionMenu(
+    RenderFrameHost* render_frame_host,
     const ContextMenuParams& params) {
   if (!selection_popup_controller_ || is_in_vr_)
     return false;
 
-  return selection_popup_controller_->ShowSelectionMenu(params,
-                                                        GetTouchHandleHeight());
+  return selection_popup_controller_->ShowSelectionMenu(
+      render_frame_host, params, GetTouchHandleHeight());
 }
 
 void RenderWidgetHostViewAndroid::MoveCaret(const gfx::Point& point) {

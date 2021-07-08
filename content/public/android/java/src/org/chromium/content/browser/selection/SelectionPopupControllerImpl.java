@@ -53,6 +53,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeEventObserver;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -118,6 +119,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private WindowAndroid mWindowAndroid;
     private WebContentsImpl mWebContents;
     private ActionMode.Callback mCallback;
+    private RenderFrameHost mRenderFrameHost;
     private long mNativeSelectionPopupController;
 
     private SelectionClient.ResultCallback mResultCallback;
@@ -338,6 +340,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @Override
+    public RenderFrameHost getRenderFrameHost() {
+        return mRenderFrameHost;
+    }
+
+    @Override
     public void setNonSelectionActionModeCallback(ActionMode.Callback callback) {
         mNonSelectionCallback = callback;
     }
@@ -395,7 +402,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     public void showSelectionMenu(int left, int top, int right, int bottom, int handleHeight,
             boolean isEditable, boolean isPasswordType, String selectionText,
             int selectionStartOffset, boolean canSelectAll, boolean canRichlyEdit,
-            boolean shouldSuggest, @MenuSourceType int sourceType) {
+            boolean shouldSuggest, @MenuSourceType int sourceType,
+            RenderFrameHost renderFrameHost) {
         int offsetBottom = bottom;
         // Legacy action mode expects the selection rectangle not to include touch handle.
         if (supportsFloatingActionMode()) offsetBottom += handleHeight;
@@ -410,6 +418,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mUnselectAllOnDismiss = true;
 
         if (hasSelection()) {
+            mRenderFrameHost = renderFrameHost;
+
             if (mSmartSelectionEventProcessor != null) {
                 switch (sourceType) {
                     case MenuSourceType.MENU_SOURCE_ADJUST_SELECTION:
@@ -597,6 +607,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     public void finishActionMode() {
         mHidden = false;
         mHandler.removeCallbacks(mRepeatingHideRunnable);
+        mRenderFrameHost = null;
 
         if (isActionModeValid()) {
             mActionMode.finish();

@@ -155,6 +155,7 @@ void SelectionPopupController::OnSelectionChanged(const std::string& text) {
 }
 
 bool SelectionPopupController::ShowSelectionMenu(
+    RenderFrameHost* render_frame_host,
     const ContextMenuParams& params,
     int handle_height) {
   JNIEnv* env = AttachCurrentThread();
@@ -197,7 +198,8 @@ bool SelectionPopupController::ShowSelectionMenu(
       params.selection_rect.right(), params.selection_rect.bottom(),
       handle_height, params.is_editable, is_password_type, jselected_text,
       params.selection_start_offset, can_select_all, can_edit_richly,
-      should_suggest, params.source_type);
+      should_suggest, params.source_type,
+      render_frame_host->GetJavaRenderFrameHost());
   return true;
 }
 

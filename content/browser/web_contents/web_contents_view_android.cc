@@ -267,7 +267,7 @@ void WebContentsViewAndroid::ShowContextMenu(
 
   // See if context menu is handled by SelectionController as a selection menu.
   // If not, use the delegate to show it.
-  if (rwhv && rwhv->ShowSelectionMenu(params))
+  if (rwhv && rwhv->ShowSelectionMenu(render_frame_host, params))
     return;
 
   if (delegate_)

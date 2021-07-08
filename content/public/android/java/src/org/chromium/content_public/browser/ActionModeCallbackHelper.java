@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 
 /**
@@ -87,6 +89,13 @@ public abstract class ActionModeCallbackHelper {
      * @return The selected text (empty if no text is selected).
      */
     public abstract String getSelectedText();
+
+    /**
+     * @return {@link RenderFrameHost} object only available during page selection,
+     *      if there is a valid ActionMode available.
+     */
+    @Nullable
+    public abstract RenderFrameHost getRenderFrameHost();
 
     /**
      * Called when the processed text is replied from an activity that supports
