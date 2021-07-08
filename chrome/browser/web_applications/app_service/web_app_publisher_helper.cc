@@ -50,7 +50,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_utils.h"
@@ -1008,14 +1007,6 @@ IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {
   if (is_disabled) {
     icon_effects |= IconEffects::kBlocked;
   }
-
-// TODO(crbug.com/1214707): Implement badging for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (extensions::util::ShouldApplyChromeBadgeToWebApp(profile(),
-                                                       web_app->app_id())) {
-    icon_effects |= IconEffects::kChromeBadge;
-  }
-#endif
 
   return icon_effects;
 }

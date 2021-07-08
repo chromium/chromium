@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/app_service/web_apps_base.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -22,7 +21,7 @@ class Profile;
 namespace web_app {
 
 // An app publisher (in the App Service sense) of Web Apps.
-class WebAppsChromeOs : public WebAppsBase, public ArcAppListPrefs::Observer {
+class WebAppsChromeOs : public WebAppsBase {
  public:
   WebAppsChromeOs(const mojo::Remote<apps::mojom::AppService>& app_service,
                   Profile* profile,
@@ -30,10 +29,6 @@ class WebAppsChromeOs : public WebAppsBase, public ArcAppListPrefs::Observer {
   WebAppsChromeOs(const WebAppsChromeOs&) = delete;
   WebAppsChromeOs& operator=(const WebAppsChromeOs&) = delete;
   ~WebAppsChromeOs() override;
-
-  void Shutdown() override;
-
-  void ObserveArc();
 
  private:
   void Initialize();
@@ -61,14 +56,6 @@ class WebAppsChromeOs : public WebAppsBase, public ArcAppListPrefs::Observer {
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
 
-  // ArcAppListPrefs::Observer overrides.
-  void OnPackageInstalled(
-      const arc::mojom::ArcPackageInfo& package_info) override;
-  void OnPackageRemoved(const std::string& package_name,
-                        bool uninstalled) override;
-  void OnPackageListInitialRefreshed() override;
-  void OnArcAppListPrefsDestroyed() override;
-
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,
       apps::mojom::MenuType menu_type,
@@ -79,15 +66,7 @@ class WebAppsChromeOs : public WebAppsBase, public ArcAppListPrefs::Observer {
   void StartPublishingWebApps(
       mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote);
 
-  // Get the equivalent Chrome app from |arc_package_name| and set the Chrome
-  // app badge on the icon effects for the equivalent Chrome apps. If the
-  // equivalent ARC app is installed, add the Chrome app badge, otherwise,
-  // remove the Chrome app badge.
-  void ApplyChromeBadge(const std::string& arc_package_name);
-
   apps::InstanceRegistry* instance_registry_;
-
-  ArcAppListPrefs* arc_prefs_ = nullptr;
 };
 
 }  // namespace web_app

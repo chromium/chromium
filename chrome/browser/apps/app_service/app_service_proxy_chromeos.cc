@@ -200,9 +200,6 @@ void AppServiceProxyChromeOs::SetArcIsRegistered() {
 
   arc_is_registered_ = true;
   extension_apps_->ObserveArc();
-  if (web_apps_) {
-    web_apps_->ObserveArc();
-  }
 }
 
 void AppServiceProxyChromeOs::FlushMojoCallsForTesting() {

@@ -21,11 +21,8 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
@@ -41,7 +38,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -67,36 +63,7 @@ WebAppsChromeOs::WebAppsChromeOs(
   Initialize();
 }
 
-WebAppsChromeOs::~WebAppsChromeOs() {
-  // In unit tests, AppServiceProxy might be ReInitializeForTesting, so
-  // WebApps might be destroyed without calling Shutdown, so arc_prefs_
-  // needs to be removed from observer in the destructor function.
-  if (arc_prefs_) {
-    arc_prefs_->RemoveObserver(this);
-    arc_prefs_ = nullptr;
-  }
-}
-
-void WebAppsChromeOs::Shutdown() {
-  if (arc_prefs_) {
-    arc_prefs_->RemoveObserver(this);
-    arc_prefs_ = nullptr;
-  }
-
-  WebAppsBase::Shutdown();
-}
-
-void WebAppsChromeOs::ObserveArc() {
-  // Observe the ARC apps to set the badge on the equivalent web app's icon.
-  if (arc_prefs_) {
-    arc_prefs_->RemoveObserver(this);
-  }
-
-  arc_prefs_ = ArcAppListPrefs::Get(profile());
-  if (arc_prefs_) {
-    arc_prefs_->AddObserver(this);
-  }
-}
+WebAppsChromeOs::~WebAppsChromeOs() = default;
 
 void WebAppsChromeOs::Initialize() {
   DCHECK(profile());
@@ -302,41 +269,6 @@ void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
 void WebAppsChromeOs::SetWindowMode(const std::string& app_id,
                                     apps::mojom::WindowMode window_mode) {
   publisher_helper().SetWindowMode(app_id, window_mode);
-}
-
-void WebAppsChromeOs::OnPackageInstalled(
-    const arc::mojom::ArcPackageInfo& package_info) {
-  ApplyChromeBadge(package_info.package_name);
-}
-
-void WebAppsChromeOs::OnPackageRemoved(const std::string& package_name,
-                                       bool uninstalled) {
-  ApplyChromeBadge(package_name);
-}
-
-void WebAppsChromeOs::OnPackageListInitialRefreshed() {
-  if (!arc_prefs_) {
-    return;
-  }
-
-  for (const auto& app_name : arc_prefs_->GetPackagesFromPrefs()) {
-    ApplyChromeBadge(app_name);
-  }
-}
-
-void WebAppsChromeOs::OnArcAppListPrefsDestroyed() {
-  arc_prefs_ = nullptr;
-}
-
-void WebAppsChromeOs::ApplyChromeBadge(const std::string& package_name) {
-  const std::vector<std::string> app_ids =
-      extensions::util::GetEquivalentInstalledAppIds(package_name);
-
-  for (auto& app_id : app_ids) {
-    if (GetWebApp(app_id)) {
-      publisher_helper().SetIconEffect(app_id);
-    }
-  }
 }
 
 }  // namespace web_app
