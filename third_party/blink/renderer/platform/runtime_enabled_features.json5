@@ -143,7 +143,6 @@
     },
     {
       name: "AccessibilityUseAXPositionForDocumentMarkers",
-      status: "test",
     },
     {
       name: "AddEventListenerAbortSignal",

@@ -12,7 +12,6 @@ crbug.com/1225860 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/mul
 crbug.com/1225860 virtual/layout_ng_block_frag/fast/multicol/dynamic/untransformed-becomes-transformed-has-abspos-crash.html [ CRASH ]
 
 # Slow
-crbug.com/1212963 virtual/synchronous_html_parser/external/wpt/html/semantics/scripting-1/the-script-element/css-module/import-css-module-basic.html [ TIMEOUT ]
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/activation-start.html [ TIMEOUT ]
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/cross-origin-isolated.https.html [ TIMEOUT ]
 
