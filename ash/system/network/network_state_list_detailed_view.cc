@@ -296,32 +296,34 @@ void NetworkStateListDetailedView::HandleViewClicked(views::View* view) {
 
 void NetworkStateListDetailedView::HandleViewClickedImpl(
     NetworkStatePropertiesPtr network) {
-  // If the network is locked and is cellular show SIM unlock dialog in OS
-  // Settings.
-  if (network->type == NetworkType::kCellular &&
-      base::FeatureList::IsEnabled(
-          chromeos::features::kUpdatedCellularActivationUi) &&
-      network->type_state->get_cellular()->sim_locked) {
-    if (!Shell::Get()->session_controller()->ShouldEnableSettings()) {
+  if (network) {
+    // If the network is locked and is cellular show SIM unlock dialog in OS
+    // Settings.
+    if (network->type == NetworkType::kCellular &&
+        base::FeatureList::IsEnabled(
+            chromeos::features::kUpdatedCellularActivationUi) &&
+        network->type_state->get_cellular()->sim_locked) {
+      if (!Shell::Get()->session_controller()->ShouldEnableSettings()) {
+        return;
+      }
+      Shell::Get()->system_tray_model()->client()->ShowSettingsSimUnlock();
       return;
     }
-    Shell::Get()->system_tray_model()->client()->ShowSettingsSimUnlock();
-    return;
-  }
 
-  if (network && CanNetworkConnect(
-                     network->connection_state, network->type,
-                     network->type == NetworkType::kCellular
-                         ? network->type_state->get_cellular()->activation_state
-                         : ActivationStateType::kUnknown,
-                     network->connectable)) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        list_type_ == LIST_TYPE_VPN
-            ? UMA_STATUS_AREA_CONNECT_TO_VPN
-            : UMA_STATUS_AREA_CONNECT_TO_CONFIGURED_NETWORK);
-    LogUserNetworkEvent(*network.get());
-    chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
-    return;
+    if (CanNetworkConnect(
+            network->connection_state, network->type,
+            network->type == NetworkType::kCellular
+                ? network->type_state->get_cellular()->activation_state
+                : ActivationStateType::kUnknown,
+            network->connectable)) {
+      Shell::Get()->metrics()->RecordUserMetricsAction(
+          list_type_ == LIST_TYPE_VPN
+              ? UMA_STATUS_AREA_CONNECT_TO_VPN
+              : UMA_STATUS_AREA_CONNECT_TO_CONFIGURED_NETWORK);
+      LogUserNetworkEvent(*network.get());
+      chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
+      return;
+    }
   }
   // If the network is no longer available or not connectable or configurable,
   // show the Settings UI.
