@@ -11,6 +11,10 @@
 
 @class RemoteCommandCenterDelegateCocoa;
 
+namespace base {
+class TimeDelta;
+}
+
 namespace system_media_controls {
 
 class SystemMediaControlsObserver;

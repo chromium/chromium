@@ -4,6 +4,7 @@
 
 #include "components/system_media_controls/mac/remote_command_center_delegate.h"
 
+#include "base/time/time.h"
 #include "components/system_media_controls/mac/remote_command_center_delegate_cocoa.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
 

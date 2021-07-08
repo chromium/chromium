@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/engines/broker/interface_metadata_observer.h"
 #include "chrome/chrome_cleaner/logging/proto/interface_logger.pb.h"
 

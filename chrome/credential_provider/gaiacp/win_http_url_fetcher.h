@@ -14,6 +14,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace credential_provider {
 
 class FakeWinHttpUrlFetcherFactory;

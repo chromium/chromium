@@ -21,6 +21,10 @@
 
 class PrefRegistrySimple;
 
+namespace base {
+class Time;
+}
+
 namespace network {
 class SharedURLLoaderFactory;
 }

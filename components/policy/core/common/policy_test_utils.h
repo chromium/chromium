@@ -16,6 +16,10 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 
+#if defined(OS_APPLE)
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 namespace policy {
 
 class PolicyBundle;
