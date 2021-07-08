@@ -11,6 +11,7 @@
 #include "base/version.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -40,31 +41,50 @@ class ReleaseNotesStorageTest : public testing::Test,
             std::unique_ptr<FakeChromeUserManager>(user_manager_)) {}
   ~ReleaseNotesStorageTest() override {}
 
-  std::unique_ptr<Profile> CreateProfile(std::string email) {
-    AccountId account_id_ = AccountId::FromUserEmailGaiaId(email, "12345");
-    user_manager_->AddUser(account_id_);
+  void SetUpProfile() {
     TestingProfile::Builder builder;
-    builder.SetProfileName(email);
-    return builder.Build();
+    if (is_guest_) {
+      builder.SetGuestSession();
+    } else {
+      AccountId account_id_ = AccountId::FromUserEmailGaiaId(email_, "12345");
+      user_manager_->AddUser(account_id_);
+      builder.SetProfileName(email_);
+
+      builder.OverridePolicyConnectorIsManagedForTesting(is_managed_);
+      if (is_ephemeral_) {
+        // Enabling ephemeral users passes the |IsEphemeralUserProfile| check.
+        user_manager_->set_ephemeral_users_enabled(true);
+      } else if (is_unicorn_) {
+        user_manager_->set_current_user_child(true);
+        builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+      }
+    }
+    profile_ = builder.Build();
+    release_notes_storage_ =
+        std::make_unique<ReleaseNotesStorage>(profile_.get());
   }
 
-  std::unique_ptr<Profile> SetupStandardEnvironmentAndProfile(std::string email,
-                                                              bool is_managed) {
+  void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kReleaseNotesNotification,
                               features::kReleaseNotesNotificationAllChannels,
                               features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{});
-    std::unique_ptr<Profile> profile = CreateProfile(email);
-    profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
-        is_managed);
-    return profile;
   }
 
   FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<Profile> profile_;
+  std::unique_ptr<ReleaseNotesStorage> release_notes_storage_;
+
+  // Data members for SetUpProfile().
+  std::string email_ = "test@gmail.com";
+  bool is_guest_ = false;
+  bool is_managed_ = false;
+  bool is_ephemeral_ = false;
+  bool is_unicorn_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ReleaseNotesStorageTest);
 };
@@ -72,152 +92,139 @@ class ReleaseNotesStorageTest : public testing::Test,
 // Release notes are not shown for profiles that have been created in this
 // milestone.
 TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesOOBE) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
-  profile.get()->GetPrefs()->SetString(prefs::kProfileCreatedByVersion,
-                                       version_info::GetVersion().GetString());
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
+  SetUpProfile();
+  profile_.get()->GetPrefs()->SetString(prefs::kProfileCreatedByVersion,
+                                        version_info::GetVersion().GetString());
 
-  EXPECT_EQ(false, release_notes_storage->ShouldNotify());
+  EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
 }
 
 // Release notes are shown for profiles that have been created in an earlier
 // version of chrome.
 TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotesOldProfile) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
-  profile.get()->GetPrefs()->SetString(prefs::kProfileCreatedByVersion,
-                                       "20.0.0.0");
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
+  SetUpProfile();
+  profile_.get()->GetPrefs()->SetString(prefs::kProfileCreatedByVersion,
+                                        "20.0.0.0");
 
-  EXPECT_EQ(true, release_notes_storage->ShouldNotify());
+  EXPECT_EQ(true, release_notes_storage_->ShouldNotify());
 }
 
 // We have previously seen another notification on an earlier chrome version,
 // release notes should be shown.
 TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotes) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(
+  SetUpProfile();
+  profile_.get()->GetPrefs()->SetInteger(
       prefs::kHelpAppNotificationLastShownMilestone, 20);
 
-  EXPECT_EQ(true, release_notes_storage->ShouldNotify());
+  EXPECT_EQ(true, release_notes_storage_->ShouldNotify());
 }
 
 // We have already seen the notification on the current chrome version.
 TEST_F(ReleaseNotesStorageTest,
        ShouldNotShowReleaseNotesIfShownInCurrentChromeVersion) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(
+  SetUpProfile();
+  profile_.get()->GetPrefs()->SetInteger(
       prefs::kHelpAppNotificationLastShownMilestone, CurrentMilestone());
 
-  EXPECT_EQ(false, release_notes_storage->ShouldNotify());
+  EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
 }
 
 // Release notes ShouldNotify is false after being shown once.
 TEST_F(ReleaseNotesStorageTest, ReleaseNotesShouldOnlyBeNotifiedOnce) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
-  ASSERT_EQ(true, release_notes_storage->ShouldNotify());
+  SetUpProfile();
 
-  release_notes_storage->MarkNotificationShown();
+  ASSERT_EQ(true, release_notes_storage_->ShouldNotify());
 
-  EXPECT_NE(20, profile.get()->GetPrefs()->GetInteger(
+  release_notes_storage_->MarkNotificationShown();
+
+  EXPECT_NE(20, profile_.get()->GetPrefs()->GetInteger(
                     prefs::kHelpAppNotificationLastShownMilestone));
-  EXPECT_EQ(false, release_notes_storage->ShouldNotify());
+  EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
+}
+
+TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesForEphemeralProfile) {
+  is_ephemeral_ = true;
+  SetUpProfile();
+
+  EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
+}
+
+TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesForGuestProfile) {
+  is_guest_ = true;
+  SetUpProfile();
+
+  EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
 }
 
 TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesForManagedProfile) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@company.com", true);
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
+  is_managed_ = true;
+  SetUpProfile();
 
-  EXPECT_EQ(false, release_notes_storage->ShouldNotify());
+  EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
 }
 
 TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotesForGoogler) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@google.com", true);
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
+  is_managed_ = true;
+  email_ = "test@google.com";
+  SetUpProfile();
 
-  EXPECT_EQ(true, release_notes_storage->ShouldNotify());
+  EXPECT_EQ(true, release_notes_storage_->ShouldNotify());
 }
 
-TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIfFeatureDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kReleaseNotesNotification);
-  std::unique_ptr<Profile> profile = CreateProfile("test@gmail.com");
-  profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
+TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotesForUnicornProfile) {
+  is_managed_ = true;
+  is_unicorn_ = true;
+  SetUpProfile();
 
-  EXPECT_EQ(false, release_notes_storage->ShouldNotify());
+  EXPECT_EQ(true, release_notes_storage_->ShouldNotify());
 }
 
 // Tests that when kReleaseNotesSuggestionChipTimesLeftToShow is 0,
 // ReleaseNotesStorage::ShouldShowSuggestionChip returns false.
 TEST_F(ReleaseNotesStorageTest, DoesNotShowReleaseNotesSuggestionChip) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(
+  SetUpProfile();
+  profile_.get()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 
-  EXPECT_EQ(false, release_notes_storage->ShouldShowSuggestionChip());
+  EXPECT_EQ(false, release_notes_storage_->ShouldShowSuggestionChip());
 }
 
 // Tests that when kReleaseNotesSuggestionChipTimesLeftToShow is greater than 0,
 // ReleaseNotesStorage::ShouldShowSuggestionChip returns true, and when
 // decreased the method returns false again.
 TEST_F(ReleaseNotesStorageTest, ShowReleaseNotesSuggestionChip) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(
+  SetUpProfile();
+  profile_.get()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
-  ASSERT_EQ(true, release_notes_storage->ShouldShowSuggestionChip());
 
-  release_notes_storage->DecreaseTimesLeftToShowSuggestionChip();
+  ASSERT_EQ(true, release_notes_storage_->ShouldShowSuggestionChip());
 
-  EXPECT_EQ(0, profile.get()->GetPrefs()->GetInteger(
+  release_notes_storage_->DecreaseTimesLeftToShowSuggestionChip();
+
+  EXPECT_EQ(0, profile_.get()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-  EXPECT_EQ(false, release_notes_storage->ShouldShowSuggestionChip());
+  EXPECT_EQ(false, release_notes_storage_->ShouldShowSuggestionChip());
 }
 
 // Tests that when we mark a notification as shown, we also show the suggestion
 // chip.
 TEST_F(ReleaseNotesStorageTest, ShowSuggestionChipWhenNotificationShown) {
-  std::unique_ptr<Profile> profile =
-      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
-  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
-      std::make_unique<ReleaseNotesStorage>(profile.get());
+  SetUpProfile();
 
-  release_notes_storage->MarkNotificationShown();
+  release_notes_storage_->MarkNotificationShown();
 
-  EXPECT_EQ(3, profile.get()->GetPrefs()->GetInteger(
+  EXPECT_EQ(3, profile_.get()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-  EXPECT_EQ(true, release_notes_storage->ShouldShowSuggestionChip());
+  EXPECT_EQ(true, release_notes_storage_->ShouldShowSuggestionChip());
+}
+
+TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIfFeatureDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kReleaseNotesNotification);
+  SetUpProfile();
+
+  EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
 }
 
 }  // namespace ash

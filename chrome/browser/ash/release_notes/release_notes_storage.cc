@@ -36,12 +36,31 @@ int GetMilestone() {
 }
 
 bool IsEligibleProfile(Profile* profile) {
-  std::string user_email = profile->GetProfileUserName();
-  return gaia::IsGoogleInternalAccountEmail(user_email) ||
-         (ash::ProfileHelper::Get()
-              ->GetUserByProfile(profile)
-              ->HasGaiaAccount() &&
-          !profile->GetProfilePolicyConnector()->IsManaged());
+  // Do not show the notification for Ephemeral and Guest profiles.
+  if (ash::ProfileHelper::IsEphemeralUserProfile(profile))
+    return false;
+  if (profile->IsGuestSession())
+    return false;
+
+  // Do not show the notification for managed profiles (e.g. Enterprise,
+  // Education), except for Googlers and Unicorn accounts.
+
+  // Show the notification for Googlers.
+  if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName()))
+    return true;
+
+  // Show the notification for Unicorn profiles. Education profiles are Regular
+  // profiles, so they will not pass this check.
+  if (profile->IsChild())
+    return true;
+
+  // After the above exceptions, do not show the notification for profiles
+  // managed by a policy.
+  if (profile->GetProfilePolicyConnector()->IsManaged())
+    return false;
+
+  // Otherwise, show the notification for Consumer profiles.
+  return ash::ProfileHelper::Get()->GetUserByProfile(profile)->HasGaiaAccount();
 }
 
 bool ShouldShowForCurrentChannel() {
