@@ -236,7 +236,7 @@ bool FindWebViewReservation(uintptr_t* out_address, size_t* out_size) {
 
 // Performs as described in Linker.java.
 JNI_GENERATOR_EXPORT void
-Java_org_chromium_base_library_1loader_Linker_nativeFindMemoryRegionAtRandomAddress(
+Java_org_chromium_base_library_1loader_LinkerJni_nativeFindMemoryRegionAtRandomAddress(
     JNIEnv* env,
     jclass clazz,
     jobject lib_info_obj,
@@ -253,7 +253,7 @@ Java_org_chromium_base_library_1loader_Linker_nativeFindMemoryRegionAtRandomAddr
 
 // Performs as described in Linker.java.
 JNI_GENERATOR_EXPORT void
-Java_org_chromium_base_library_1loader_Linker_nativeReserveMemoryForLibrary(
+Java_org_chromium_base_library_1loader_LinkerJni_nativeReserveMemoryForLibrary(
     JNIEnv* env,
     jclass clazz,
     jobject lib_info_obj) {

@@ -13,6 +13,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
@@ -71,7 +72,6 @@ import javax.annotation.concurrent.GuardedBy;
  * - After loading the native library as a RELRO producer, the putSharedRelrosToBundle() becomes
  *   available to then send the Bundle to Linkers in other processes.
  */
-@JniIgnoreNatives
 abstract class Linker {
     private static final String TAG = "Linker";
 
@@ -186,7 +186,9 @@ abstract class Linker {
             mRelroProducer = false;
             ensureInitializedLocked();
             mLocalLibInfo.mLoadAddress = baseLoadAddress;
-            if (keepMemoryReservationUntilLoad()) nativeReserveMemoryForLibrary(mLocalLibInfo);
+            if (keepMemoryReservationUntilLoad()) {
+                getLinkerJni().reserveMemoryForLibrary(mLocalLibInfo);
+            }
         }
     }
 
@@ -373,7 +375,8 @@ abstract class Linker {
     /** Loads the Linker JNI library. Throws UnsatisfiedLinkError on error. */
     @SuppressLint({"UnsafeDynamicallyLoadedCode"})
     @GuardedBy("mLock")
-    private void loadLinkerJniLibraryLocked() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void loadLinkerJniLibraryLocked() {
         assert mState == State.UNINITIALIZED;
 
         LibraryLoader.setEnvForNative();
@@ -406,7 +409,8 @@ abstract class Linker {
             // load the library with mmap(nullptr, ... MAP_FIXED) on top of it. Unfortunately the
             // crazylinker feature to load on top of a reserved memory region is not well tested and
             // looks buggy.
-            nativeFindMemoryRegionAtRandomAddress(mLocalLibInfo, keepMemoryReservationUntilLoad());
+            getLinkerJni().findMemoryRegionAtRandomAddress(
+                    mLocalLibInfo, keepMemoryReservationUntilLoad());
             if (DEBUG) {
                 Log.i(TAG, "AsRelroProducer: chose address: 0x%x", mLocalLibInfo.mLoadAddress);
             }
@@ -446,8 +450,9 @@ abstract class Linker {
      * Native code accesses the fields of this class by name. Renaming should be done on C++ size as
      * well.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @JniIgnoreNatives
-    protected static class LibInfo implements Parcelable {
+    static class LibInfo implements Parcelable {
         private static final String EXTRA_LINKER_LIB_INFO = "libinfo";
 
         LibInfo() {}
@@ -546,32 +551,47 @@ abstract class Linker {
         public int mRelroFd = -1; // shared RELRO file descriptor, or -1
     }
 
-    /**
-     * Reserves a memory region (=mapping) of sufficient size to hold the loaded library before the
-     * real size is known. The mmap(2) being used here provides built in randomization.
-     *
-     * On failure |libInfo.mLoadAddress| should be set to 0. Observing it a subclass can:
-     * 1. Fail early and let LibraryLoader fall back to loading using the system linker
-     *    (ModernLinker)
-     * 2. Try again (LegacyLinker)
-     *
-     * @param libInfo holds the output values: |mLoadAddress| and |mLoadSize|. On failure sets
-     * the |libInfo.mLoadAddress| to 0.
-     * @param keepReserved should normally be |true|. Setting |keepReserved=false| is intended for
-     * the legacy behavior within the LegacyLinker. This way the address range is freed up
-     * (unmapped) immediately after being reserved.
-     */
-    private static native void nativeFindMemoryRegionAtRandomAddress(
-            @NonNull LibInfo libInfo, boolean keepReserved);
+    // Intentionally omitting @NativeMethods because generation of the stubs it requires (as
+    // GEN_JNI.java) is disabled by the @JniIgnoreNatives.
+    interface Natives {
+        /**
+         * Reserves a memory region (=mapping) of sufficient size to hold the loaded library before
+         * the real size is known. The mmap(2) being used here provides built in randomization.
+         *
+         * On failure |libInfo.mLoadAddress| should be set to 0. Observing it a subclass can:
+         * 1. Fail early and let LibraryLoader fall back to loading using the system linker
+         *    (ModernLinker)
+         * 2. Try again (LegacyLinker)
+         *
+         * @param libInfo holds the output values: |mLoadAddress| and |mLoadSize|. On failure sets
+         *                the |libInfo.mLoadAddress| to 0.
+         * @param keepReserved should normally be |true|. Setting |keepReserved=false| is intended
+         *                     for the legacy behavior within the LegacyLinker. This way the address
+         *                     range is freed up (unmapped) immediately after being reserved.
+         */
+        void findMemoryRegionAtRandomAddress(@NonNull LibInfo libInfo, boolean keepReserved);
 
-    /**
-     * Reserves the fixed address range starting at |libInfo.mLoadAddress| big enough to load the
-     * main native library. The size of the range is an internal detail of the native
-     * implementation.
-     *
-     *
-     * @param libInfo holds the output values: |mLoadAddress| and |mLoadSize|. On success returns
-     * the size in |libInfo.mLoadSize|. On failure sets the |libInfo.mLoadAddress| to 0.
-     */
-    private static native void nativeReserveMemoryForLibrary(@NonNull LibInfo libInfo);
+        /**
+         * Reserves the fixed address range starting at |libInfo.mLoadAddress| big enough to load
+         * the main native library. The size of the range is an internal detail of the native
+         * implementation.
+         *
+         * @param libInfo holds the output values: |mLoadAddress| and |mLoadSize|. On success
+         *                returns the size in |libInfo.mLoadSize|. On failure sets the
+         *                |libInfo.mLoadAddress| to 0.
+         */
+        void reserveMemoryForLibrary(@NonNull LibInfo libInfo);
+    }
+
+    private static Linker.Natives sNativesInstance;
+
+    static void setNativesForTesting(Natives instance) {
+        sNativesInstance = instance;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static Linker.Natives getLinkerJni() {
+        if (sNativesInstance != null) return sNativesInstance;
+        return new LinkerJni(); // R8 optimizes away all construction except the initial one.
+    }
 }
