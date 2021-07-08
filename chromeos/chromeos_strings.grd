@@ -1000,7 +1000,7 @@ Try tapping the mic to ask me anything.
         Connected
       </message>
       <message name="IDS_ONC_CONNECTING" desc="Settings > Internet, text in network summary when a network is connecting.">
-        Connecting
+        Connecting...
       </message>
       <message name="IDS_ONC_PORTAL_STATE" desc="Settings > Internet, label in network details page for the captive portal state.">
         Portal State
