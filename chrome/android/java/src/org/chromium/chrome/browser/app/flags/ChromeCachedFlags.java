@@ -133,6 +133,7 @@ public class ChromeCachedFlags {
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB,
                 StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY,
                 StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
+                StartSurfaceConfiguration.SHOW_NTP_TILES_ON_OMNIBOX,
                 StartSurfaceConfiguration.START_SURFACE_VARIATION,
                 StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY,
                 StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM,

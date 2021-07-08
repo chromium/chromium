@@ -162,6 +162,7 @@ void MostVisitedSitesProviderTest::OnProviderUpdate(bool updated_matches) {}
 
 TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
   std::string input_url = "https://example.com/";
+  std::string start_surface_url = "chrome://newtab";
 
   AutocompleteInput prefix_input(base::ASCIIToUTF16(input_url),
                                  metrics::OmniboxEventProto::OTHER,
@@ -180,11 +181,32 @@ TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
   on_clobber_input.set_current_url(GURL(input_url));
   on_clobber_input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
 
+  AutocompleteInput start_surface_input(
+      std::u16string(), metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE,
+      TestSchemeClassifier());
+  start_surface_input.set_current_url(GURL(start_surface_url));
+  start_surface_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+
+  AutocompleteInput start_surface_new_tab_input(
+      std::u16string(), metrics::OmniboxEventProto::START_SURFACE_NEW_TAB,
+      TestSchemeClassifier());
+  start_surface_new_tab_input.set_current_url(GURL());
+  start_surface_new_tab_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+
   // MostVisited should never deal with prefix suggestions.
   EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(prefix_input));
 
   // This should always be true, as otherwise we will break MostVisited.
   EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(on_focus_input));
+
+  // Verifies that metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE is allowed
+  // for MostVisited.
+  EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(start_surface_input));
+
+  // Verifies that metrics::OmniboxEventProto::START_SURFACE_NEW_TAB is allowed
+  // for MostVisited.
+  EXPECT_TRUE(
+      provider_->AllowMostVisitedSitesSuggestions(start_surface_new_tab_input));
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {

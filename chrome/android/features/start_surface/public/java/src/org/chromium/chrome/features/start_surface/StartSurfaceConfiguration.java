@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /**
@@ -59,6 +60,11 @@ public class StartSurfaceConfiguration {
     public static final BooleanCachedFieldTrialParameter OMNIBOX_FOCUSED_ON_NEW_TAB =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     OMNIBOX_FOCUSED_ON_NEW_TAB_PARAM, false);
+
+    private static final String SHOW_NTP_TILES_ON_OMNIBOX_PARAM = "show_ntp_tiles_on_omnibox";
+    public static final BooleanCachedFieldTrialParameter SHOW_NTP_TILES_ON_OMNIBOX =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    SHOW_NTP_TILES_ON_OMNIBOX_PARAM, false);
 
     private static final String HOME_BUTTON_ON_GRID_TAB_SWITCHER_PARAM =
             "home_button_on_grid_tab_switcher";
@@ -99,6 +105,28 @@ public class StartSurfaceConfiguration {
      */
     public static boolean isStartSurfaceSinglePaneEnabled() {
         return isStartSurfaceEnabled() && START_SURFACE_VARIATION.getValue().equals("single");
+    }
+
+    /**
+     * @return the PageClassification type of the fake Omnibox on the Start surface homepage.
+     */
+    public static int getPageClassificationForHomepage() {
+        // When NEW_SURFACE_FROM_HOME_BUTTON equals "hide_mv_tiles_and_tab_switcher", the MV (NTP)
+        // tiles are removed from the Start surface homepage when tapping the home button. Thus, we
+        // have to show MV (NTP) tiles when the fake omnibox get focusing, and there is no need to
+        // check SHOW_NTP_TILES_ON_OMNIBOX anymore.
+        return TextUtils.equals(
+                       NEW_SURFACE_FROM_HOME_BUTTON.getValue(), "hide_mv_tiles_and_tab_switcher")
+                ? PageClassification.START_SURFACE_HOMEPAGE_VALUE
+                : PageClassification.NTP_VALUE;
+    }
+
+    /**
+     * @return the PageClassification type of the new Tab.
+     */
+    public static int getPageClassificationForNewTab() {
+        return SHOW_NTP_TILES_ON_OMNIBOX.getValue() ? PageClassification.START_SURFACE_NEW_TAB_VALUE
+                                                    : PageClassification.NTP_VALUE;
     }
 
     /**

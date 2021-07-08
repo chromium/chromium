@@ -223,7 +223,9 @@ bool BaseSearchProvider::IsNTPPage(
          (classification == OEP::OBSOLETE_INSTANT_NTP) ||
          (classification == OEP::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS) ||
          (classification == OEP::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS) ||
-         (classification == OEP::NTP_REALBOX);
+         (classification == OEP::NTP_REALBOX) ||
+         (classification == OEP::START_SURFACE_HOMEPAGE) ||
+         (classification == OEP::START_SURFACE_NEW_TAB);
 }
 
 // static
