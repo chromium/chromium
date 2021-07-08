@@ -1754,9 +1754,12 @@ testing::AssertionResult ExtensionTabsZoomTest::RunGetZoom(
 
   if (!get_zoom_result)
     return testing::AssertionFailure() << "no result";
-  if (!get_zoom_result->GetAsDouble(zoom_factor))
+
+  absl::optional<double> maybe_value = get_zoom_result->GetIfDouble();
+  if (!maybe_value.has_value())
     return testing::AssertionFailure() << "result was not a double";
 
+  *zoom_factor = maybe_value.value();
   return testing::AssertionSuccess();
 }
 
