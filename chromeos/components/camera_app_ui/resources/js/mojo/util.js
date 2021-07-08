@@ -20,7 +20,7 @@ addUnloadCallback(() => {
  *     to happen.
  */
 async function wrapMojoResponse(call) {
-  const result = await Promise.race([call, windowUnload.wait()]);
+  const result = await Promise.race([windowUnload.wait(), call]);
   if (windowUnload.isSignaled()) {
     return new Promise(() => {});
   }
