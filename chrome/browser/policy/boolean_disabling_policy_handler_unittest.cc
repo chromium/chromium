@@ -56,9 +56,7 @@ TEST_F(BooleanDisablingPolicyHandlerTest, PolicySetToFalse) {
   UpdateProviderPolicy(policy);
   // When policy is false, false should be pushed to prefs.
   EXPECT_TRUE(store_->GetValue(kTestPref, &value_ptr));
-  bool value = true;
-  value_ptr->GetAsBoolean(&value);
-  EXPECT_FALSE(value);
+  EXPECT_FALSE(value_ptr->GetBool());
 }
 
 }  // namespace

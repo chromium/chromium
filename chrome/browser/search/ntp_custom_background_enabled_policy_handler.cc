@@ -22,9 +22,7 @@ void NtpCustomBackgroundEnabledPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* value = policies.GetValue(policy_name());
-  bool ntp_custom_background_enabled = true;
-  if (value && value->GetAsBoolean(&ntp_custom_background_enabled) &&
-      !ntp_custom_background_enabled) {
+  if (value && value->is_bool() && !value->GetBool()) {
     prefs->SetValue(prefs::kNtpCustomBackgroundDict,
                     base::Value(base::Value::Type::DICTIONARY));
   }
