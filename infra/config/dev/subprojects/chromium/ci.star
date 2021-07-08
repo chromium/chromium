@@ -35,6 +35,8 @@ luci.recipe.defaults.cipd_package.set(
     "infra/recipe_bundles/chromium.googlesource.com/chromium/tools/build",
 )
 
+luci.recipe.defaults.use_bbagent.set(True)
+
 defaults.bucket.set("ci")
 defaults.build_numbers.set(True)
 defaults.builder_group.set("chromium.dev")
