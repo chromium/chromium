@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util_export.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -27,13 +28,26 @@ namespace display {
 // a few utility postprocessings.
 class DISPLAY_UTIL_EXPORT EdidParser {
  public:
-  explicit EdidParser(const std::vector<uint8_t>& edid_blob);
+  explicit EdidParser(const std::vector<uint8_t>& edid_blob,
+                      bool is_external = false);
   ~EdidParser();
 
   uint16_t manufacturer_id() const { return manufacturer_id_; }
   uint16_t product_id() const { return product_id_; }
+  std::string block_zero_serial_number_hash() const {
+    return block_zero_serial_number_hash_.value_or("");
+  }
+  std::string descriptor_block_serial_number_hash() const {
+    return descriptor_block_serial_number_hash_.value_or("");
+  }
+  gfx::Size max_image_size() const {
+    return max_image_size_.value_or(gfx::Size());
+  }
   const std::string& display_name() const { return display_name_; }
   const gfx::Size& active_pixel_size() const { return active_pixel_size_; }
+  int32_t week_of_manufacture() const {
+    return week_of_manufacture_.value_or(0);
+  }
   int32_t year_of_manufacture() const { return year_of_manufacture_; }
   bool has_overscan_flag() const { return overscan_flag_.has_value(); }
   bool overscan_flag() const { return overscan_flag_.value(); }
@@ -74,11 +88,22 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   // Parses |edid_blob|, filling up as many as possible fields below.
   void ParseEdid(const std::vector<uint8_t>& edid);
 
+  // We collect optional fields UMAs for external external displays only.
+  void ReportEdidOptionalsForExternalDisplay() const;
+
+  // Whether or not this EDID belongs to an external display.
+  bool is_external_display_;
+
   uint16_t manufacturer_id_;
   uint16_t product_id_;
+  absl::optional<std::string> block_zero_serial_number_hash_;
+  absl::optional<std::string> descriptor_block_serial_number_hash_;
+  absl::optional<gfx::Size> max_image_size_;
   std::string display_name_;
   // Active pixel size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size_;
+  // When |week_of_manufacture_| == 0xFF, |year_of_manufacture_| is model year.
+  absl::optional<int32_t> week_of_manufacture_;
   int32_t year_of_manufacture_;
   absl::optional<bool> overscan_flag_;
   double gamma_;
@@ -94,4 +119,4 @@ class DISPLAY_UTIL_EXPORT EdidParser {
 
 }  // namespace display
 
-#endif // UI_DISPLAY_UTIL_EDID_PARSER_H_
+#endif  // UI_DISPLAY_UTIL_EDID_PARSER_H_

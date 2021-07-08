@@ -503,8 +503,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     DCHECK(edid_blob->length);
     edid.assign(static_cast<uint8_t*>(edid_blob->data),
                 static_cast<uint8_t*>(edid_blob->data) + edid_blob->length);
-
-    display::EdidParser edid_parser(edid);
+    const bool is_external = type != display::DISPLAY_CONNECTION_TYPE_INTERNAL;
+    display::EdidParser edid_parser(edid, is_external);
     display_name = edid_parser.display_name();
     active_pixel_size = edid_parser.active_pixel_size();
     product_code = edid_parser.GetProductCode();

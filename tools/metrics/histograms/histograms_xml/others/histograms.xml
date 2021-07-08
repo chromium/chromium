@@ -4683,14 +4683,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Display.BlockZeroSerialNumberType"
+    enum="BlockZeroSerialNumberType" expires_after="2022-07-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>chromeos-gfx@google.com</owner>
+  <summary>
+    The type of serial number retrived from block zero of a display's EDID
+    during EDID parsing.
+  </summary>
+</histogram>
+
 <histogram name="Display.ParseEdidFailure" enum="ParseEdidFailure"
     expires_after="2021-11-14">
   <owner>sashamcintosh@chromium.org</owner>
+  <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx@google.com</owner>
   <summary>
     Type of failure that occurs during EDID parsing. Typically the failure is
     caused by a mismatch between the EDID size and the expected offset of the
     data component.
+  </summary>
+</histogram>
+
+<histogram name="Display.ParseEdidOptionals" enum="ParseEdidOptionals"
+    expires_after="2022-07-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>chromeos-gfx@google.com</owner>
+  <summary>
+    The availability (or lack thereof) of tracked optional fields during EDID
+    parsing of external.
   </summary>
 </histogram>
 

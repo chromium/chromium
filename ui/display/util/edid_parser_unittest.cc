@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
+#include "base/hash/md5.h"
 #include "base/numerics/ranges.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -48,6 +49,75 @@ constexpr unsigned char kNormalDisplay[] =
     "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\xff"
     "\x00\x43\x4e\x34\x32\x30\x32\x31\x33\x37\x51\x0a\x20\x20\x00\x71";
 constexpr size_t kNormalDisplayLength = base::size(kNormalDisplay);
+
+// Max image display is an optional field and is omitted in this display by
+// setting bytes 21-22 to 0x00.
+constexpr unsigned char kNoMaxImageSizeDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x01\x01\x01\x01"
+    "\x02\x16\x01\x04\xb5\x00\x00\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\xff"
+    "\x00\x43\x4e\x34\x32\x30\x32\x31\x33\x37\x51\x0a\x20\x20\x00\x71";
+constexpr size_t kNoMaxImageSizeDisplayLength =
+    base::size(kNoMaxImageSizeDisplay);
+
+// Serial number is in bytes 12-15 of Block 0. Serial number descriptor
+// (tag: 0xff) is omitted and replaced by a dummy descriptor (tag: 0x10).
+constexpr unsigned char kBlockZeroSerialNumberOnlyDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x01\x01\x01\x01"
+    "\x02\x16\x01\x04\xb5\x40\x28\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\x10"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x71";
+constexpr size_t kBlockZeroSerialNumberOnlyDisplayLength =
+    base::size(kBlockZeroSerialNumberOnlyDisplay);
+
+// Serial number is unavilable. Omitted from bytes 12-15 of block zero and SN
+// descriptor (tag: 0xff).
+constexpr unsigned char kNoSerialNumberDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x00\x00\x00\x00"
+    "\x02\x16\x01\x04\xb5\x40\x28\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\x10"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x71";
+constexpr size_t kNoSerialNumberDisplayLength =
+    base::size(kNoSerialNumberDisplay);
+
+// Week of manufacture is optional and is omitted in this display
+// (0x00 at byte 16).
+constexpr unsigned char kNoWeekOfManufactureDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x01\x01\x01\x01"
+    "\x00\x16\x01\x04\xb5\x40\x28\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\xff"
+    "\x00\x43\x4e\x34\x32\x30\x32\x31\x33\x37\x51\x0a\x20\x20\x00\x71";
+constexpr size_t kNoWeekOfManufactureDisplayLength =
+    base::size(kNoWeekOfManufactureDisplay);
+
+// Week of manufacture can be used to signal that year of manufacture is the
+// model year by setting byte 16 to 0xff.
+constexpr unsigned char kModelYearDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x01\x01\x01\x01"
+    "\xff\x16\x01\x04\xb5\x40\x28\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\xff"
+    "\x00\x43\x4e\x34\x32\x30\x32\x31\x33\x37\x51\x0a\x20\x20\x00\x71";
+constexpr size_t kModelYearDisplayLength = base::size(kModelYearDisplay);
 
 constexpr unsigned char kInternalDisplay[] =
     "\x00\xff\xff\xff\xff\xff\xff\x00\x4c\xa3\x42\x31\x00\x00\x00\x00"
@@ -185,6 +255,16 @@ constexpr unsigned char kHDRMetadata[] =
     "\x00\x00\x1e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xbd";
 constexpr size_t kHDRMetadataLength = base::size(kHDRMetadata);
 
+const std::string kNoSerialNumber = "";
+const gfx::Size kNoMaxImageSize = gfx::Size(0, 0);
+constexpr uint8_t kNoWeekOfManufactureTag = 0x00;
+constexpr uint8_t kModelYearTag = 0xff;
+// 16843009 == 0x01010101
+const std::string kGenericBlockZeroHashedSerialNumber =
+    base::MD5String(std::string("16843009"));
+const std::string kNormalDisplayHashedDescriptorBlockSerialNumber =
+    base::MD5String(std::string("CN4202137Q"));
+
 // Primaries coordinates ({RX, RY, GX, GY, BX, BY, WX, WY}) calculated by hand
 // and rounded to 4 decimal places.
 constexpr SkColorSpacePrimaries kNormalDisplayPrimaries = {
@@ -240,8 +320,12 @@ constexpr static float kPrimariesPrecision = 1 / 2048.f;
 struct TestParams {
   uint16_t manufacturer_id;
   uint16_t product_id;
+  std::string block_zero_serial_number_hash;
+  std::string descriptor_block_serial_number_hash;
+  gfx::Size max_image_size;
   std::string display_name;
   gfx::Size active_pixel_size;
+  int32_t week_of_manufacture;
   int32_t year_of_manufacture;
   bool overscan_flag;
   double gamma;
@@ -263,8 +347,12 @@ struct TestParams {
 } kTestCases[] = {
     {0x22f0u,
      0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     gfx::Size(64, 40),
      "HP Z 30w",  // non-ascii char in display name.
      gfx::Size(2560, 1600),
+     2,
      2012,
      false,
      2.2,
@@ -281,8 +369,12 @@ struct TestParams {
      kBadDisplayNameLength},
     {0x22f0u,
      0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     gfx::Size(64, 40),
      "HP ZR30w",
      gfx::Size(2560, 1600),
+     2,
      2012,
      false,
      2.2,
@@ -297,10 +389,124 @@ struct TestParams {
      absl::nullopt,
      kNormalDisplay,
      kNormalDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     kNoMaxImageSize,
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     2,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     kNoMaxImageSizeDisplay,
+     kNoMaxImageSizeDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(64, 40),
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     2,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     kBlockZeroSerialNumberOnlyDisplay,
+     kBlockZeroSerialNumberOnlyDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(64, 40),
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     2,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     kNoSerialNumberDisplay,
+     kNoSerialNumberDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     gfx::Size(64, 40),
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     kNoWeekOfManufactureTag,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     kNoWeekOfManufactureDisplay,
+     kNoWeekOfManufactureDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     gfx::Size(64, 40),
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     kModelYearTag,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     kModelYearDisplay,
+     kModelYearDisplayLength},
     {0x4ca3u,
      0x4231u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(26, 16),
      "",
      gfx::Size(1280, 800),
+     kNoWeekOfManufactureTag,
      2011,
      false,
      2.2,
@@ -317,8 +523,12 @@ struct TestParams {
      kInternalDisplayLength},
     {0x4c2du,
      0xfe08u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(16, 9),
      "SAMSUNG",
      gfx::Size(1920, 1080),
+     41,
      2011,
      true,
      2.2,
@@ -335,8 +545,12 @@ struct TestParams {
      kOverscanDisplayLength},
     {0x10ACu,
      0x6440u,
+     base::MD5String("842018892"),  // == LSB of 0x4c, 0x30, 0x30, 0x32
+     base::MD5String("PH5NY13N200L"),
+     gfx::Size(64, 40),
      "DELL U3011",
      gfx::Size(1920, 1200),
+     12,
      2011,
      false,
      2.2,
@@ -353,8 +567,12 @@ struct TestParams {
      kMisdetectedDisplayLength},
     {0x22f0u,
      0x7626u,
+     kGenericBlockZeroHashedSerialNumber,
+     base::MD5String("CNK80204HM"),
+     gfx::Size(52, 33),
      "HP LP2465",
      gfx::Size(1920, 1200),
+     2,
      2008,
      false,
      2.2,
@@ -371,8 +589,12 @@ struct TestParams {
      kLP2565ALength},
     {0x22f0u,
      0x7526u,
+     kGenericBlockZeroHashedSerialNumber,
+     base::MD5String("CNK80204HM"),
+     gfx::Size(52, 33),
      "HP LP2465",
      gfx::Size(1920, 1200),
+     2,
      2008,
      false,
      2.2,
@@ -389,8 +611,12 @@ struct TestParams {
      kLP2565BLength},
     {0x22f0u,
      0x7532u,
+     kGenericBlockZeroHashedSerialNumber,
+     base::MD5String("CNC7270MW0"),
+     gfx::Size(70, 39),
      "HP Z32x",
      gfx::Size(3840, 2160),
+     27,
      2017,
      false,
      2.2,
@@ -407,8 +633,12 @@ struct TestParams {
      kHPz32xLength},
     {0x30E4u,
      0x2E04u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(27, 18),
      "",
      gfx::Size(2560, 1700),
+     kNoWeekOfManufactureTag,
      2014,
      false,
      2.5,
@@ -425,8 +655,12 @@ struct TestParams {
      kSamusLength},
     {0x4D10u,
      0x8A14u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(26, 17),
      "LQ123P1JX32",
      gfx::Size(2400, 1600),
+     22,
      2017,
      false,
      2.2,
@@ -443,8 +677,12 @@ struct TestParams {
      kEveLength},
     {19501u,
      62989u,
+     base::MD5String("16780800"),  // == LSB of 0x00, 0x0e, 0x00 0x01
+     kNoSerialNumber,
+     gfx::Size(95, 54),
      "SAMSUNG",
      gfx::Size(3840, 2160),
+     1,
      2017,
      true,
      2.2,
@@ -466,8 +704,12 @@ struct TestParams {
     // Empty Edid, which is tantamount to error.
     {0,
      0,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(0, 0),
      "",
      gfx::Size(0, 0),
+     kNoWeekOfManufactureTag,
      display::kInvalidYearOfManufacture,
      false,
      0.0,
@@ -500,8 +742,14 @@ class EDIDParserTest : public TestWithParam<TestParams> {
 TEST_P(EDIDParserTest, ParseEdids) {
   EXPECT_EQ(parser_.manufacturer_id(), GetParam().manufacturer_id);
   EXPECT_EQ(parser_.product_id(), GetParam().product_id);
+  EXPECT_EQ(parser_.block_zero_serial_number_hash(),
+            GetParam().block_zero_serial_number_hash);
+  EXPECT_EQ(parser_.descriptor_block_serial_number_hash(),
+            GetParam().descriptor_block_serial_number_hash);
+  EXPECT_EQ(parser_.max_image_size(), GetParam().max_image_size);
   EXPECT_EQ(parser_.display_name(), GetParam().display_name);
   EXPECT_EQ(parser_.active_pixel_size(), GetParam().active_pixel_size);
+  EXPECT_EQ(parser_.week_of_manufacture(), GetParam().week_of_manufacture);
   EXPECT_EQ(parser_.year_of_manufacture(), GetParam().year_of_manufacture);
   EXPECT_EQ(parser_.has_overscan_flag(), GetParam().overscan_flag);
   if (parser_.has_overscan_flag())

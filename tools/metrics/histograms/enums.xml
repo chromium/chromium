@@ -7737,6 +7737,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="BLOCK_STATUS_ALL_DOMAINS_BLOCKED"/>
 </enum>
 
+<enum name="BlockZeroSerialNumberType">
+  <int value="0" label="Normal serial number"/>
+  <int value="1" label="Repeating pattern in serial number"/>
+  <int value="2" label="Missing serial number"/>
+</enum>
+
 <enum name="BluetoothAdapterConnectToServiceInsecurelyResult">
   <int value="0" label="Success"/>
   <int value="1" label="Error: Invalid arguments"/>
@@ -61988,6 +61994,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="Too short EDID data: chromaticity coordinates"/>
   <int value="7" label="Invalid EDID: human unreadable char in name"/>
   <int value="8" label="Too short EDID data: extensions"/>
+  <int value="9" label="Too short EDID data: block zero serial number"/>
+  <int value="10" label="Too short EDID data: week of manufacture"/>
+  <int value="11" label="Too short EDID data: physical display size"/>
+</enum>
+
+<enum name="ParseEdidOptionals">
+  <int value="0" label="All optional fields are available"/>
+  <int value="1" label="Missing: block zero serial number"/>
+  <int value="2" label="Missing: descriptor block serial number"/>
+  <int value="3" label="Missing: week of manufacture"/>
+  <int value="4" label="Missing: physical display size"/>
 </enum>
 
 <enum name="PartnerBookmark.FaviconFetchResult">
