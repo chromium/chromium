@@ -891,8 +891,15 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   WaitForPictureInPictureButtonVisibility(true);
 }
 
+// Flaky on linux (https://crbug.com/1218003).
+#if defined(OS_LINUX)
+#define MAYBE_PlayingSessionAlwaysDisplayFirst \
+  DISABLED_PlayingSessionAlwaysDisplayFirst
+#else
+#define MAYBE_PlayingSessionAlwaysDisplayFirst PlayingSessionAlwaysDisplayFirst
+#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       PlayingSessionAlwaysDisplayFirst) {
+                       MAYBE_PlayingSessionAlwaysDisplayFirst) {
   OpenTestURL();
   StartPlayback();
   WaitForStart();
