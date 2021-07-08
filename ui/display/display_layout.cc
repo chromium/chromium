@@ -395,12 +395,10 @@ DisplayPlacement::DisplayPlacement(int64_t display_id,
   DCHECK_GE(kMaxValidOffset, abs(offset));
 }
 
-DisplayPlacement::DisplayPlacement(const DisplayPlacement& placement)
-    : display_id(placement.display_id),
-      parent_display_id(placement.parent_display_id),
-      position(placement.position),
-      offset(placement.offset),
-      offset_reference(placement.offset_reference) {}
+DisplayPlacement::DisplayPlacement(const DisplayPlacement&) = default;
+
+DisplayPlacement& DisplayPlacement::operator=(const DisplayPlacement&) =
+    default;
 
 bool DisplayPlacement::operator==(const DisplayPlacement& other) const {
   return display_id == other.display_id &&

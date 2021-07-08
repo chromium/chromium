@@ -22,6 +22,7 @@ struct GFX_EXPORT MasteringMetadata {
 
   MasteringMetadata();
   MasteringMetadata(const MasteringMetadata& rhs);
+  MasteringMetadata& operator=(const MasteringMetadata& rhs);
 
   bool operator==(const MasteringMetadata& rhs) const {
     return ((primary_r == rhs.primary_r) && (primary_g == rhs.primary_g) &&
@@ -43,6 +44,7 @@ struct GFX_EXPORT HDRMetadata {
 
   HDRMetadata();
   HDRMetadata(const HDRMetadata& rhs);
+  HDRMetadata& operator=(const HDRMetadata& rhs);
 
   bool IsValid() const {
     return !((max_content_light_level == 0) &&

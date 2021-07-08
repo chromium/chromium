@@ -70,6 +70,7 @@ struct COMPONENT_EXPORT(UI_BASE) TableColumn {
   TableColumn();
   TableColumn(int id, Alignment alignment, int width, float percent);
   TableColumn(const TableColumn& other);
+  TableColumn& operator=(const TableColumn& other);
 
   // A unique identifier for the column.
   int id;

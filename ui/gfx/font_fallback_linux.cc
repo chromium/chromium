@@ -57,6 +57,8 @@ class TypefaceCacheKey {
  public:
   TypefaceCacheKey(const base::FilePath& font_path, int ttc_index)
       : font_path_(font_path), ttc_index_(ttc_index) {}
+  TypefaceCacheKey(const TypefaceCacheKey&) = default;
+  TypefaceCacheKey& operator=(const TypefaceCacheKey&) = default;
 
   const base::FilePath& font_path() const { return font_path_; }
   int ttc_index() const { return ttc_index_; }
@@ -69,8 +71,6 @@ class TypefaceCacheKey {
  private:
   base::FilePath font_path_;
   int ttc_index_;
-
-  DISALLOW_ASSIGN(TypefaceCacheKey);
 };
 
 // Returns a SkTypeface for a given font path and ttc_index. The typeface is
@@ -514,6 +514,8 @@ base::LazyInstance<FontSetCache>::Leaky g_font_sets_by_locale =
 
 FallbackFontData::FallbackFontData() = default;
 FallbackFontData::FallbackFontData(const FallbackFontData& other) = default;
+FallbackFontData& FallbackFontData::operator=(const FallbackFontData& other) =
+    default;
 
 bool GetFallbackFontForChar(UChar32 c,
                             const std::string& locale,

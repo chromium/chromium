@@ -55,6 +55,9 @@ PointerProperties::PointerProperties(const MotionEvent& event,
 
 PointerProperties::PointerProperties(const PointerProperties& other) = default;
 
+PointerProperties& PointerProperties::operator=(
+    const PointerProperties& other) = default;
+
 void PointerProperties::SetAxesAndOrientation(float radius_x,
                                               float radius_y,
                                               float rotation_angle_degree) {

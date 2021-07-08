@@ -10,5 +10,7 @@ HDRStaticMetadata::HDRStaticMetadata() = default;
 HDRStaticMetadata::HDRStaticMetadata(double max, double max_avg, double min)
     : max(max), max_avg(max_avg), min(min) {}
 HDRStaticMetadata::HDRStaticMetadata(const HDRStaticMetadata& rhs) = default;
+HDRStaticMetadata& HDRStaticMetadata::operator=(const HDRStaticMetadata& rhs) =
+    default;
 
 }  // namespace gfx

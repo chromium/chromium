@@ -46,6 +46,7 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   // Initialize as sRGB-only.
   DisplayColorSpaces();
   DisplayColorSpaces(const DisplayColorSpaces& display_color_space);
+  DisplayColorSpaces& operator=(const DisplayColorSpaces& display_color_space);
 
   // Initialize as |color_space| for all settings. If |color_space| is the
   // default (invalid) color space, then initialize to sRGB. The BufferFormat

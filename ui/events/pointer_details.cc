@@ -44,7 +44,9 @@ PointerDetails::PointerDetails(EventPointerType pointer_type,
   }
 }
 
-PointerDetails::PointerDetails(const PointerDetails& other) = default;
+PointerDetails::PointerDetails(const PointerDetails&) = default;
+
+PointerDetails& PointerDetails::operator=(const PointerDetails&) = default;
 
 bool PointerDetails::operator==(const PointerDetails& other) const {
   return pointer_type == other.pointer_type && radius_x == other.radius_x &&

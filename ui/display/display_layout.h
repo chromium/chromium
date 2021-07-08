@@ -71,7 +71,8 @@ struct DISPLAY_EXPORT DisplayPlacement {
                    int offset,
                    OffsetReference offset_reference);
 
-  DisplayPlacement(const DisplayPlacement& placement);
+  DisplayPlacement(const DisplayPlacement&);
+  DisplayPlacement& operator=(const DisplayPlacement&);
 
   bool operator==(const DisplayPlacement& other) const;
   bool operator!=(const DisplayPlacement& other) const;

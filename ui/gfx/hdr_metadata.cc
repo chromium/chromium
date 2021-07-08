@@ -8,8 +8,11 @@ namespace gfx {
 
 MasteringMetadata::MasteringMetadata() = default;
 MasteringMetadata::MasteringMetadata(const MasteringMetadata& rhs) = default;
+MasteringMetadata& MasteringMetadata::operator=(const MasteringMetadata& rhs) =
+    default;
 
 HDRMetadata::HDRMetadata() = default;
 HDRMetadata::HDRMetadata(const HDRMetadata& rhs) = default;
+HDRMetadata& HDRMetadata::operator=(const HDRMetadata& rhs) = default;
 
 }  // namespace gfx

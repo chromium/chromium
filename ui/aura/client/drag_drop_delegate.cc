@@ -17,6 +17,8 @@ DragUpdateInfo::DragUpdateInfo() = default;
 DragUpdateInfo::DragUpdateInfo(int op, ui::DataTransferEndpoint endpoint)
     : drag_operation(op), data_endpoint(endpoint) {}
 
+DragUpdateInfo::DragUpdateInfo(const DragUpdateInfo& update_info) = default;
+
 DragUpdateInfo& DragUpdateInfo::operator=(const DragUpdateInfo& update_info) =
     default;
 

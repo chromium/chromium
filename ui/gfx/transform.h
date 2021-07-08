@@ -40,7 +40,8 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // initialized before use.
   Transform(SkipInitialization)
       : matrix_(skia::Matrix44::kUninitialized_Constructor) {}
-  Transform(const Transform& rhs) : matrix_(rhs.matrix_) {}
+  Transform(const Transform& rhs) = default;
+  Transform& operator=(const Transform& rhs) = default;
   // Initialize with the concatenation of lhs * rhs.
   Transform(const Transform& lhs, const Transform& rhs)
       : matrix_(lhs.matrix_, rhs.matrix_) {}

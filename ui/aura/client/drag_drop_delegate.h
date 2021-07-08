@@ -27,6 +27,7 @@ struct AURA_EXPORT DragUpdateInfo {
   DragUpdateInfo();
   DragUpdateInfo(int op, ui::DataTransferEndpoint endpoint);
 
+  DragUpdateInfo(const DragUpdateInfo& update_info);
   DragUpdateInfo& operator=(const DragUpdateInfo& update_info);
 
   // A bitmask of the DragDropTypes::DragOperation supported.

@@ -51,6 +51,7 @@ class GFX_EXPORT DelegatedInkMetadata {
         frame_time_(frame_time),
         is_hovering_(hovering) {}
   DelegatedInkMetadata(const DelegatedInkMetadata& other) = default;
+  DelegatedInkMetadata& operator=(const DelegatedInkMetadata& other) = default;
 
   const PointF& point() const { return point_; }
   double diameter() const { return diameter_; }

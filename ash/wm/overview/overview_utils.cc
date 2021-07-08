@@ -92,8 +92,6 @@ void FadeInWidgetToOverview(views::Widget* widget,
   if (window->layer()->GetTargetOpacity() == 1.f)
     return;
 
-  gfx::Transform original_transform = window->transform();
-
   // Fade in the widget from its current opacity.
   ScopedOverviewAnimationSettings scoped_overview_animation_settings(
       animation_type, window);

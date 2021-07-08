@@ -63,6 +63,7 @@ struct AX_EXPORT AXPropertyFilter {
 
   AXPropertyFilter(const std::string& str, Type type);
   AXPropertyFilter(const AXPropertyFilter&);
+  AXPropertyFilter& operator=(const AXPropertyFilter&);
 };
 
 // A single node filter specification  which will exclude any node where the

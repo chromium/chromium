@@ -28,6 +28,7 @@ struct COLOR_SPACE_EXPORT HDRStaticMetadata {
   HDRStaticMetadata();
   HDRStaticMetadata(double max, double max_avg, double min);
   HDRStaticMetadata(const HDRStaticMetadata& rhs);
+  HDRStaticMetadata& operator=(const HDRStaticMetadata& rhs);
 
   bool operator==(const HDRStaticMetadata& rhs) const {
     return ((max == rhs.max) && (max_avg == rhs.max_avg) && (min == rhs.min));

@@ -38,6 +38,8 @@ TableColumn::TableColumn(int id, Alignment alignment, int width, float percent)
 
 TableColumn::TableColumn(const TableColumn& other) = default;
 
+TableColumn& TableColumn::operator=(const TableColumn& other) = default;
+
 // TableModel -----------------------------------------------------------------
 
 // Used for sorting.

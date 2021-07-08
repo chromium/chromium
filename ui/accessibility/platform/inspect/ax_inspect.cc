@@ -22,6 +22,9 @@ std::string AXTreeSelector::AppName() const {
 
 AXPropertyFilter::AXPropertyFilter(const AXPropertyFilter&) = default;
 
+AXPropertyFilter& AXPropertyFilter::operator=(const AXPropertyFilter&) =
+    default;
+
 AXPropertyFilter::AXPropertyFilter(const std::string& str, Type type)
     : match_str(str), type(type) {
   size_t index = str.find(';');

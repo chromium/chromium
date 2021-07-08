@@ -79,6 +79,9 @@ GestureEventData::GestureEventData(EventType type,
 
 GestureEventData::GestureEventData(const GestureEventData& other) = default;
 
+GestureEventData& GestureEventData::operator=(const GestureEventData& other) =
+    default;
+
 GestureEventData::GestureEventData()
     : motion_event_id(0),
       primary_tool_type(MotionEvent::ToolType::UNKNOWN),
