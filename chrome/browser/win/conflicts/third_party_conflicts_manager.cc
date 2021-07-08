@@ -4,6 +4,8 @@
 
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
 
+#include <windows.h>
+
 #include <string>
 #include <utility>
 
