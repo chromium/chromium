@@ -1834,6 +1834,16 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurfaceFinale[] = {
     {"hide_switch_when_no_incognito_tabs", "true"},
     {"enable_tab_groups_continuation", "true"}};
 
+const FeatureEntry::FeatureParam
+    kStartSurfaceAndroid_SingleSurfaceFinale_NTPTilesOnOmnibox[] = {
+        {"start_surface_variation", "single"},
+        {"omnibox_focused_on_new_tab", "true"},
+        {"show_ntp_tiles_on_omnibox", "true"},
+        {"home_button_on_grid_tab_switcher", "true"},
+        {"new_home_surface_from_home_button", "hide_mv_tiles_and_tab_switcher"},
+        {"hide_switch_when_no_incognito_tabs", "true"},
+        {"enable_tab_groups_continuation", "true"}};
+
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2[] = {
     {"start_surface_variation", "single"},
     {"show_last_active_tab_only", "true"},
@@ -1848,6 +1858,16 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2Finale[] =
      {"new_home_surface_from_home_button", "hide_tab_switcher_only"},
      {"enable_tab_groups_continuation", "true"}};
 
+const FeatureEntry::FeatureParam
+    kStartSurfaceAndroid_SingleSurface_V2Finale_NTPTilesOnOmnibox[] = {
+        {"start_surface_variation", "single"},
+        {"show_last_active_tab_only", "true"},
+        {"omnibox_focused_on_new_tab", "true"},
+        {"show_ntp_tiles_on_omnibox", "true"},
+        {"home_button_on_grid_tab_switcher", "true"},
+        {"new_home_surface_from_home_button", "hide_mv_tiles_and_tab_switcher"},
+        {"enable_tab_groups_continuation", "true"}};
+
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurfaceSingleTab[] =
     {{"start_surface_variation", "single"},
      {"show_last_active_tab_only", "true"},
@@ -1858,10 +1878,18 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      base::size(kStartSurfaceAndroid_SingleSurface), nullptr},
     {"Single Surface Finale", kStartSurfaceAndroid_SingleSurfaceFinale,
      base::size(kStartSurfaceAndroid_SingleSurfaceFinale), nullptr},
+    {"Single Surface Finale + NTP tiles on Omnibox",
+     kStartSurfaceAndroid_SingleSurfaceFinale_NTPTilesOnOmnibox,
+     base::size(kStartSurfaceAndroid_SingleSurfaceFinale_NTPTilesOnOmnibox),
+     nullptr},
     {"Single Surface V2", kStartSurfaceAndroid_SingleSurface_V2,
      base::size(kStartSurfaceAndroid_SingleSurface_V2), nullptr},
     {"Single Surface V2 Finale", kStartSurfaceAndroid_SingleSurface_V2Finale,
      base::size(kStartSurfaceAndroid_SingleSurface_V2Finale), nullptr},
+    {"Single Surface V2 Finale + NTP tiles on Omnibox",
+     kStartSurfaceAndroid_SingleSurface_V2Finale_NTPTilesOnOmnibox,
+     base::size(kStartSurfaceAndroid_SingleSurface_V2Finale_NTPTilesOnOmnibox),
+     nullptr},
     {"Single Surface + Single Tab", kStartSurfaceAndroid_SingleSurfaceSingleTab,
      base::size(kStartSurfaceAndroid_SingleSurfaceSingleTab), nullptr},
 };
