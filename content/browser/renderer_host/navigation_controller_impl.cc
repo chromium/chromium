@@ -1146,17 +1146,24 @@ bool NavigationControllerImpl::RendererDidNavigate(
     }
   }
 
+  bool is_main_frame_navigation = !rfh->GetParent();
+
   // TODO(altimin, crbug.com/933147): Remove this logic after we are done with
   // implementing back-forward cache.
-
-  // Create a new metrics object or reuse the previous one depending on whether
-  // it's a main frame navigation or not.
-  scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics =
-      BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetrics(
-          GetLastCommittedEntry(), !rfh->GetParent(),
-          params.document_sequence_number);
+  // For primary frame tree navigations, choose an appropriate
+  // BackForwardCacheMetrics to be associated with the NavigationEntry, by
+  // either creating a new object or reusing the previous one depending on
+  // whether it's a main frame navigation or not.
+  scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics;
+  if (navigation_request->frame_tree_node()->frame_tree()->type() ==
+      FrameTree::Type::kPrimary) {
+    back_forward_cache_metrics =
+        BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetrics(
+            GetLastCommittedEntry(), is_main_frame_navigation,
+            params.document_sequence_number);
+  }
   // Notify the last active entry that we have navigated away.
-  if (!rfh->GetParent() && !is_same_document_navigation) {
+  if (is_main_frame_navigation && !is_same_document_navigation) {
     if (NavigationEntryImpl* navigation_entry = GetLastCommittedEntry()) {
       if (auto* metrics = navigation_entry->back_forward_cache_metrics()) {
         metrics->MainFrameDidNavigateAwayFromDocument(rfh, navigation_request);
@@ -1279,13 +1286,19 @@ bool NavigationControllerImpl::RendererDidNavigate(
   active_entry->SetHttpStatusCode(params.http_status_code);
   // TODO(altimin, crbug.com/933147): Remove this logic after we are done with
   // implementing back-forward cache.
-  if (!active_entry->back_forward_cache_metrics()) {
+  if (back_forward_cache_metrics &&
+      !active_entry->back_forward_cache_metrics()) {
     active_entry->set_back_forward_cache_metrics(
         std::move(back_forward_cache_metrics));
   }
-  active_entry->back_forward_cache_metrics()->DidCommitNavigation(
-      navigation_request,
-      back_forward_cache_.IsAllowed(navigation_request->GetURL()));
+
+  // `back_forward_cache_metrics()` may return null as we do not record
+  // back-forward cache metrics for navigations in non-primary frame trees.
+  if (active_entry->back_forward_cache_metrics()) {
+    active_entry->back_forward_cache_metrics()->DidCommitNavigation(
+        navigation_request,
+        back_forward_cache_.IsAllowed(navigation_request->GetURL()));
+  }
 
   // Grab the corresponding FrameNavigationEntry for a few updates, but only if
   // the SiteInstance matches (to avoid updating the wrong entry by mistake).

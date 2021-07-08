@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -892,6 +893,72 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheEnabledMetricsBrowserTest,
   } while (
       histogram_tester.GetAllSamples(kRestoreNavigationToNextPaintTimeHistogram)
           .empty());
+}
+
+class BackForwardCacheMetricsPrerenderingBrowserTest
+    : public BackForwardCacheMetricsBrowserTest {
+ public:
+  BackForwardCacheMetricsPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &BackForwardCacheMetricsPrerenderingBrowserTest::web_contents,
+            base::Unretained(this))) {}
+  ~BackForwardCacheMetricsPrerenderingBrowserTest() override = default;
+
+  test::PrerenderTestHelper* prerender_helper() { return &prerender_helper_; }
+
+  WebContents* web_contents() { return shell()->web_contents(); }
+
+ private:
+  test::PrerenderTestHelper prerender_helper_;
+};
+
+// Tests that activating a prerender works correctly when navigated
+// back.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsPrerenderingBrowserTest,
+                       MainFrameNavigation) {
+  ukm::TestAutoSetUkmRecorder recorder;
+
+  const GURL url1(embedded_test_server()->GetURL(
+      "/back_forward_cache/page_with_pageshow.html"));
+  const GURL prerender_url(embedded_test_server()->GetURL("/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title2.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // Loads a page in the prerender.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  RenderFrameHost* prerender_rfh =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(WaitForRenderFrameReady(prerender_rfh));
+
+  // Activates the page from the prerendering.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Makes sure that the page is activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetMainFrame()));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents());
+    shell()->GoBackOrForward(-1);
+    navigation_observer.WaitForNavigationFinished();
+  }
+
+  // The navigations observed should be:
+  // 1) url1
+  // 2) prerender_url (prerender)
+  // 3) prerender_url (activate prerender)
+  // 4) url2
+  // 5) prerender_url (back navigation)
+
+  ASSERT_EQ(navigation_ids_.size(), static_cast<size_t>(5));
+  ukm::SourceId id5 = ToSourceId(navigation_ids_[4]);
+
+  // We should only record metrics for the last navigation.
+  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
+              testing::ElementsAre(FeatureUsage{id5, 0, 0, 0}));
 }
 
 }  // namespace content
