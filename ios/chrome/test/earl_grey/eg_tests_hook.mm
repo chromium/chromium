@@ -71,11 +71,11 @@ void SetUpTestsIfPresent() {
           test_switches::kSignInAtStartup)) {
     // Record an identity as "known". If the identity isn't added, the
     // AuthenticationService will log the fake user off.
-    ios::ChromeBrowserProvider* provider = ios::GetChromeBrowserProvider();
     std::unique_ptr<ios::FakeChromeIdentityService> service(
         new ios::FakeChromeIdentityService());
     service->SetUpForIntegrationTests();
-    provider->SetChromeIdentityServiceForTesting(std::move(service));
+    ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
+        std::move(service));
     ios::FakeChromeIdentityService* identity_service =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     identity_service->AddIdentity([SigninEarlGreyAppInterface fakeIdentity1]);

@@ -176,7 +176,7 @@
 
 - (NSError*)canceledError {
   ios::SigninErrorProvider* provider =
-      ios::GetChromeBrowserProvider()->GetSigninErrorProvider();
+      ios::GetChromeBrowserProvider().GetSigninErrorProvider();
   return [NSError errorWithDomain:provider->GetSigninErrorDomain()
                              code:provider->GetCode(ios::SigninError::CANCELED)
                          userInfo:nil];

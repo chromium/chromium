@@ -115,7 +115,7 @@ using signin_metrics::PromoAction;
   [super start];
   self.identityInteractionManager =
       ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
+          .GetChromeIdentityService()
           ->CreateChromeIdentityInteractionManager(self);
 
   signin::IdentityManager* identityManager =

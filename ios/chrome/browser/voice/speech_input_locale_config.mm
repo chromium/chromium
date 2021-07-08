@@ -19,7 +19,7 @@ namespace voice {
 SpeechInputLocaleConfig* SpeechInputLocaleConfig::GetInstance() {
   static base::NoDestructor<SpeechInputLocaleConfigImpl> instance(
       ios::GetChromeBrowserProvider()
-          ->GetVoiceSearchProvider()
+          .GetVoiceSearchProvider()
           ->GetAvailableLanguages(),
       LoadSpeechInputLocaleMatches());
   return instance.get();

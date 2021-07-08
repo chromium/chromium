@@ -66,7 +66,6 @@ class SigninScreenMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    browser_provider_ = ios::TestChromeBrowserProvider::GetTestProvider();
     identity_service_ =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     browser_state_ = TestChromeBrowserState::Builder().Build();
@@ -97,12 +96,12 @@ class SigninScreenMediatorTest : public PlatformTest {
 
     // Update the service in the browser provider.
     identity_service_ = service.get();
-    browser_provider_->SetChromeIdentityServiceForTesting(std::move(service));
+    ios::TestChromeBrowserProvider::GetTestProvider()
+        .SetChromeIdentityServiceForTesting(std::move(service));
   }
 
   web::WebTaskEnvironment task_environment_;
   SigninScreenMediator* mediator_;
-  ios::TestChromeBrowserProvider* browser_provider_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   ios::FakeChromeIdentityService* identity_service_;
   FakeSigninScreenConsumer* consumer_;

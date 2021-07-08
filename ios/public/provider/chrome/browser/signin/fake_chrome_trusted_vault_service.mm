@@ -50,7 +50,7 @@ FakeChromeTrustedVaultService::~FakeChromeTrustedVaultService() {}
 FakeChromeTrustedVaultService*
 FakeChromeTrustedVaultService::GetInstanceFromChromeProvider() {
   return static_cast<ios::FakeChromeTrustedVaultService*>(
-      ios::GetChromeBrowserProvider()->GetChromeTrustedVaultService());
+      ios::GetChromeBrowserProvider().GetChromeTrustedVaultService());
 }
 
 void FakeChromeTrustedVaultService::FetchKeys(

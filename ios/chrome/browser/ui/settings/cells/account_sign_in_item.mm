@@ -45,7 +45,7 @@
 
   cell.detailTextLabel.text = self.detailText;
   cell.image = CircularImageFromImage(ios::GetChromeBrowserProvider()
-                                          ->GetSigninResourcesProvider()
+                                          .GetSigninResourcesProvider()
                                           ->GetDefaultAvatar(),
                                       kAccountProfilePhotoDimension);
 }

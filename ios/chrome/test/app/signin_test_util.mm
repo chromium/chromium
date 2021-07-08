@@ -39,7 +39,7 @@ void StartForgetAllIdentities(ChromeBrowserState* browser_state) {
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
   NSArray* identities_to_remove = account_manager_service->GetAllIdentities();
   ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   for (ChromeIdentity* identity in identities_to_remove) {
     identity_service->ForgetIdentity(identity, ^(NSError* error) {
       if (error) {
@@ -53,18 +53,17 @@ void StartForgetAllIdentities(ChromeBrowserState* browser_state) {
 }  // namespace
 
 void SetUpMockAuthentication() {
-  ios::ChromeBrowserProvider* provider = ios::GetChromeBrowserProvider();
   std::unique_ptr<ios::FakeChromeIdentityService> service(
       new ios::FakeChromeIdentityService());
   service->SetUpForIntegrationTests();
-  provider->SetChromeIdentityServiceForTesting(std::move(service));
+  ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
+      std::move(service));
   AuthenticationServiceFactory::GetForBrowserState(GetOriginalBrowserState())
       ->ResetChromeIdentityServiceObserverForTesting();
 }
 
 void TearDownMockAuthentication() {
-  ios::ChromeBrowserProvider* provider = ios::GetChromeBrowserProvider();
-  provider->SetChromeIdentityServiceForTesting(nullptr);
+  ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(nullptr);
   AuthenticationServiceFactory::GetForBrowserState(GetOriginalBrowserState())
       ->ResetChromeIdentityServiceObserverForTesting();
 }

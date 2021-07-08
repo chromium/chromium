@@ -412,7 +412,7 @@ using signin_metrics::PromoAction;
 
 - (void)openManageGoogleAccount {
   ios::GetChromeBrowserProvider()
-      ->GetChromeIdentityService()
+      .GetChromeIdentityService()
       ->PresentAccountDetailsController(
           self.authService->GetAuthenticatedIdentity(),
           self.googleServicesSettingsViewController, /*animated=*/YES);

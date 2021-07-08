@@ -547,7 +547,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
 - (TableViewLinkHeaderFooterItem*)footerGoogleAccountAndMyActivityItem {
   UIImage* image = ios::GetChromeBrowserProvider()
-                       ->GetBrandedImageProvider()
+                       .GetBrandedImageProvider()
                        ->GetClearBrowsingDataAccountActivityImage();
   return [self
       footerItemWithType:ItemTypeFooterGoogleAccountAndMyActivity
@@ -558,7 +558,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
 - (TableViewLinkHeaderFooterItem*)footerSavedSiteDataItem {
   UIImage* image = ios::GetChromeBrowserProvider()
-                       ->GetBrandedImageProvider()
+                       .GetBrandedImageProvider()
                        ->GetClearBrowsingDataSiteDataImage();
   return [self
       footerItemWithType:ItemTypeFooterSavedSiteData

@@ -776,7 +776,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   __weak SceneController* weakSelf = self;
   ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
 
   // Asynchronously checks whether the default identity can display extended
   // sync promos and displays the sign-in promo if possible.
@@ -2272,16 +2272,16 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Immediately hide modals from the provider (alert views, action sheets,
   // popovers). They will be ultimately dismissed by their owners, but at least,
   // they are not visible.
-  ios::GetChromeBrowserProvider()->HideModalViewStack();
+  ios::GetChromeBrowserProvider().HideModalViewStack();
 
   // ChromeIdentityService is responsible for the dialogs displayed by the
   // services it wraps.
-  ios::GetChromeBrowserProvider()->GetChromeIdentityService()->DismissDialogs();
+  ios::GetChromeBrowserProvider().GetChromeIdentityService()->DismissDialogs();
 
   // MailtoHandlerProvider is responsible for the dialogs displayed by the
   // services it wraps.
   ios::GetChromeBrowserProvider()
-      ->GetMailtoHandlerProvider()
+      .GetMailtoHandlerProvider()
       ->DismissAllMailtoHandlerInterfaces();
 
   // Then, depending on what the SSO view controller is presented on, dismiss
@@ -2325,7 +2325,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 
   // Verify that no modal views are left presented.
-  ios::GetChromeBrowserProvider()->LogIfModalViewsArePresented();
+  ios::GetChromeBrowserProvider().LogIfModalViewsArePresented();
 }
 
 - (void)openMultipleTabsInMode:
@@ -2885,7 +2885,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
     NSSet* URLContextSet = [NSSet setWithObject:context];
     if (!ios::GetChromeBrowserProvider()
-             ->GetChromeIdentityService()
+             .GetChromeIdentityService()
              ->HandleSessionOpenURLContexts(self.sceneState.scene,
                                             URLContextSet)) {
       [URLsToOpen addObject:options];

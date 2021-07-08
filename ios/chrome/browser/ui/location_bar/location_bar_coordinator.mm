@@ -154,7 +154,7 @@
                      ApplicationCommands, LoadQueryCommands, OmniboxCommands>>(
           self.browser->GetCommandDispatcher());
   self.viewController.voiceSearchEnabled = ios::GetChromeBrowserProvider()
-                                               ->GetVoiceSearchProvider()
+                                               .GetVoiceSearchProvider()
                                                ->IsVoiceSearchEnabled();
 
   _editController = std::make_unique<WebOmniboxEditControllerImpl>(self);

@@ -24,7 +24,7 @@ NSArray* GetScopeArray(const std::set<std::string>& scopes) {
 
 bool ShouldHandleSigninError(NSError* error) {
   ios::SigninErrorProvider* provider =
-      ios::GetChromeBrowserProvider()->GetSigninErrorProvider();
+      ios::GetChromeBrowserProvider().GetSigninErrorProvider();
   return ![provider->GetSigninErrorDomain() isEqualToString:error.domain] ||
          (error.code != provider->GetCode(ios::SigninError::CANCELED) &&
           error.code !=

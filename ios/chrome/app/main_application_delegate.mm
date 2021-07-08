@@ -165,7 +165,7 @@ const int kMainIntentCheckDelay = 1;
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
   ios::GetChromeBrowserProvider()
-      ->GetChromeIdentityService()
+      .GetChromeIdentityService()
       ->ApplicationDidDiscardSceneSessions(sceneSessions);
   [_appState application:application didDiscardSceneSessions:sceneSessions];
 }

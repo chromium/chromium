@@ -506,7 +506,7 @@ NSString* GetSizeString(long long size_in_bytes) {
     _installDriveIcon = [[UIImageView alloc] initWithFrame:CGRectZero];
     _installDriveIcon.translatesAutoresizingMaskIntoConstraints = NO;
     _installDriveIcon.image = ios::GetChromeBrowserProvider()
-                                  ->GetBrandedImageProvider()
+                                  .GetBrandedImageProvider()
                                   ->GetDownloadGoogleDriveImage();
   }
   return _installDriveIcon;

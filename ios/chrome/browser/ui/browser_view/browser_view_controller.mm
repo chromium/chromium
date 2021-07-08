@@ -2852,7 +2852,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)ensureVoiceSearchControllerCreated {
   if (!_voiceSearchController) {
     VoiceSearchProvider* provider =
-        ios::GetChromeBrowserProvider()->GetVoiceSearchProvider();
+        ios::GetChromeBrowserProvider().GetVoiceSearchProvider();
     if (provider) {
       _voiceSearchController =
           provider->CreateVoiceSearchController(self.browser);

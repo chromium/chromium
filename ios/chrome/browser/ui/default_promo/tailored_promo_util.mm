@@ -39,7 +39,7 @@ void SetUpTailoredConsumerWithType(id<TailoredPromoConsumer> consumer,
       subtitle =
           GetNSString(IDS_IOS_DEFAULT_BROWSER_TAILORED_STAY_SAFE_DESCRIPTION);
       image = ios::GetChromeBrowserProvider()
-                  ->GetBrandedImageProvider()
+                  .GetBrandedImageProvider()
                   ->GetStaySafePromoImage();
       break;
     case DefaultPromoTypeMadeForIOS:
@@ -47,13 +47,13 @@ void SetUpTailoredConsumerWithType(id<TailoredPromoConsumer> consumer,
         title = GetNSString(
             IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IPADOS_TITLE);
         image = ios::GetChromeBrowserProvider()
-                    ->GetBrandedImageProvider()
+                    .GetBrandedImageProvider()
                     ->GetMadeForIPadOSPromoImage();
       } else {
         title =
             GetNSString(IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IOS_TITLE);
         image = ios::GetChromeBrowserProvider()
-                    ->GetBrandedImageProvider()
+                    .GetBrandedImageProvider()
                     ->GetMadeForIOSPromoImage();
       }
       subtitle = GetNSString(

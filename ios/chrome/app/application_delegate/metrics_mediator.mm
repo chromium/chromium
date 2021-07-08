@@ -368,7 +368,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
     PrefService* prefs = GetApplicationContext()->GetLocalState();
     NSString* brandCode =
         base::SysUTF8ToNSString(ios::GetChromeBrowserProvider()
-                                    ->GetAppDistributionProvider()
+                                    .GetAppDistributionProvider()
                                     ->GetDistributionBrandCode());
 
     app_group::main_app::EnableMetrics(

@@ -114,7 +114,7 @@
 }
 
 - (ios::ChromeIdentityService*)identityService {
-  return ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+  return ios::GetChromeBrowserProvider().GetChromeIdentityService();
 }
 
 #pragma mark - ChromeBrowserProviderObserver

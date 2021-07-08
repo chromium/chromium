@@ -22,20 +22,16 @@ IOSTrustedVaultClient::IOSTrustedVaultClient(
 IOSTrustedVaultClient::~IOSTrustedVaultClient() = default;
 
 void IOSTrustedVaultClient::AddObserver(Observer* observer) {
-  ios::ChromeBrowserProvider* browser_provider =
-      ios::GetChromeBrowserProvider();
   ios::ChromeTrustedVaultService* trusted_vault_service =
-      browser_provider->GetChromeTrustedVaultService();
+      ios::GetChromeBrowserProvider().GetChromeTrustedVaultService();
   if (trusted_vault_service) {
     trusted_vault_service->AddObserver(observer);
   }
 }
 
 void IOSTrustedVaultClient::RemoveObserver(Observer* observer) {
-  ios::ChromeBrowserProvider* browser_provider =
-      ios::GetChromeBrowserProvider();
   ios::ChromeTrustedVaultService* trusted_vault_service =
-      browser_provider->GetChromeTrustedVaultService();
+      ios::GetChromeBrowserProvider().GetChromeTrustedVaultService();
   if (trusted_vault_service) {
     trusted_vault_service->RemoveObserver(observer);
   }
@@ -48,9 +44,7 @@ void IOSTrustedVaultClient::FetchKeys(
   ChromeIdentity* identity =
       account_manager_service_->GetIdentityWithGaiaID(account_info.gaia);
 
-  ios::ChromeBrowserProvider* browser_provider =
-      ios::GetChromeBrowserProvider();
-  browser_provider->GetChromeTrustedVaultService()->FetchKeys(
+  ios::GetChromeBrowserProvider().GetChromeTrustedVaultService()->FetchKeys(
       identity, std::move(callback));
 }
 
@@ -68,10 +62,9 @@ void IOSTrustedVaultClient::MarkLocalKeysAsStale(
   ChromeIdentity* identity =
       account_manager_service_->GetIdentityWithGaiaID(account_info.gaia);
 
-  ios::ChromeBrowserProvider* browser_provider =
-      ios::GetChromeBrowserProvider();
-  browser_provider->GetChromeTrustedVaultService()->MarkLocalKeysAsStale(
-      identity, std::move(callback));
+  ios::GetChromeBrowserProvider()
+      .GetChromeTrustedVaultService()
+      ->MarkLocalKeysAsStale(identity, std::move(callback));
 }
 
 void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
@@ -81,7 +74,7 @@ void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
       account_manager_service_->GetIdentityWithGaiaID(account_info.gaia);
 
   ios::GetChromeBrowserProvider()
-      ->GetChromeTrustedVaultService()
+      .GetChromeTrustedVaultService()
       ->GetDegradedRecoverabilityStatus(identity, std::move(callback));
 }
 

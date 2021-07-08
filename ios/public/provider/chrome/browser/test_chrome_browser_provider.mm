@@ -47,10 +47,9 @@ TestChromeBrowserProvider::TestChromeBrowserProvider()
 TestChromeBrowserProvider::~TestChromeBrowserProvider() {}
 
 // static
-TestChromeBrowserProvider* TestChromeBrowserProvider::GetTestProvider() {
-  ChromeBrowserProvider* provider = GetChromeBrowserProvider();
-  DCHECK(provider);
-  return static_cast<TestChromeBrowserProvider*>(provider);
+TestChromeBrowserProvider& TestChromeBrowserProvider::GetTestProvider() {
+  ChromeBrowserProvider& provider = GetChromeBrowserProvider();
+  return static_cast<TestChromeBrowserProvider&>(provider);
 }
 
 SigninResourcesProvider*

@@ -14,7 +14,7 @@ DiscoverFeedObserverBridge::DiscoverFeedObserverBridge(
     id<DiscoverFeedObserverBridgeDelegate> observer)
     : observer_(observer) {
   scoped_observation_.Observe(
-      ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider());
+      ios::GetChromeBrowserProvider().GetDiscoverFeedProvider());
 }
 
 DiscoverFeedObserverBridge::~DiscoverFeedObserverBridge() {}

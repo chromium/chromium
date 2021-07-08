@@ -744,7 +744,7 @@ const char kNTPHelpURL[] =
     // in the background. When background fetch completes, all observers will
     // be notified to refresh the user's avatar.
     ios::ChromeIdentityService* identityService =
-        ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+        ios::GetChromeBrowserProvider().GetChromeIdentityService();
     image = identityService->GetCachedAvatarForIdentity(identity);
     if (!image) {
       image = [self defaultAvatar];
@@ -769,7 +769,7 @@ const char kNTPHelpURL[] =
 // in but avatar image is not available yet.
 - (UIImage*)defaultAvatar {
   return ios::GetChromeBrowserProvider()
-      ->GetSigninResourcesProvider()
+      .GetSigninResourcesProvider()
       ->GetDefaultAvatar();
 }
 

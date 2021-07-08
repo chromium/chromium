@@ -98,7 +98,7 @@ ChromeAccountManagerService::ChromeAccountManagerService(
 bool ChromeAccountManagerService::HasIdentities() {
   FunctorHasIdentities helper;
   ios::GetChromeBrowserProvider()
-      ->GetChromeIdentityService()
+      .GetChromeIdentityService()
       ->IterateOverIdentities(helper.Callback());
   return helper.has_identities;
 }
@@ -115,7 +115,7 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
 
   FunctorLookupIdentityByGaiaID helper(gaia_id);
   ios::GetChromeBrowserProvider()
-      ->GetChromeIdentityService()
+      .GetChromeIdentityService()
       ->IterateOverIdentities(helper.Callback());
   return helper.identity;
 }
@@ -134,7 +134,7 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
 NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities() {
   FunctorCollectIdentities helper;
   ios::GetChromeBrowserProvider()
-      ->GetChromeIdentityService()
+      .GetChromeIdentityService()
       ->IterateOverIdentities(helper.Callback());
   return [helper.identities copy];
 }
@@ -142,7 +142,7 @@ NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities() {
 ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() {
   FunctorGetFirstIdentity helper;
   ios::GetChromeBrowserProvider()
-      ->GetChromeIdentityService()
+      .GetChromeIdentityService()
       ->IterateOverIdentities(helper.Callback());
   return helper.default_identity;
 }

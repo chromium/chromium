@@ -190,11 +190,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                              handler:(id<ApplicationCommands>)handler {
   DCHECK(browser);
   DCHECK(ios::GetChromeBrowserProvider()
-             ->GetUserFeedbackProvider()
+             .GetUserFeedbackProvider()
              ->IsUserFeedbackEnabled());
   UIViewController* controller =
       ios::GetChromeBrowserProvider()
-          ->GetUserFeedbackProvider()
+          .GetUserFeedbackProvider()
           ->CreateViewController(dataSource, handler, sender);
   DCHECK(controller);
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]

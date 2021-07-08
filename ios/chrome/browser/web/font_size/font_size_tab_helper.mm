@@ -139,7 +139,7 @@ void FontSizeTabHelper::SetPageFontSize(int size) {
   }
   tab_helper_has_zoomed_ = true;
 
-  ios::GetChromeBrowserProvider()->GetTextZoomProvider()->SetPageFontSize(
+  ios::GetChromeBrowserProvider().GetTextZoomProvider()->SetPageFontSize(
       web_state_, size);
 }
 

@@ -59,7 +59,7 @@ void DeviceAccountsProviderImpl::GetAccessToken(
     AccessTokenCallback callback) {
   DCHECK(!callback.is_null());
   ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
 
   // AccessTokenCallback is non-copyable. Using __block allocates the memory
   // directly in the block object at compilation time (instead of doing a
@@ -77,7 +77,7 @@ std::vector<DeviceAccountsProvider::AccountInfo>
 DeviceAccountsProviderImpl::GetAllAccounts() const {
   std::vector<AccountInfo> accounts;
   ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   NSArray* identities = account_manager_service_->GetAllIdentities();
   for (ChromeIdentity* identity in identities) {
     accounts.push_back(GetAccountInfo(identity, identity_service));
@@ -96,14 +96,14 @@ DeviceAccountsProviderImpl::GetAuthenticationErrorCategory(
   }
 
   ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   if (identity_service->IsMDMError(
           account_manager_service_->GetIdentityWithGaiaID(gaia_id), error)) {
     return kAuthenticationErrorCategoryAuthorizationErrors;
   }
 
   ios::SigninErrorProvider* provider =
-      ios::GetChromeBrowserProvider()->GetSigninErrorProvider();
+      ios::GetChromeBrowserProvider().GetSigninErrorProvider();
   switch (provider->GetErrorCategory(error)) {
     case ios::SigninErrorCategory::UNKNOWN_ERROR: {
       // Google's OAuth 2 implementation returns a 400 with JSON body

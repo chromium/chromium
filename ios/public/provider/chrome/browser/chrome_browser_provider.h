@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 
@@ -51,10 +52,12 @@ class ChromeTrustedVaultService;
 class SigninErrorProvider;
 class SigninResourcesProvider;
 
-// Setter and getter for the provider. The provider should be set early, before
-// any browser code is called.
-void SetChromeBrowserProvider(ChromeBrowserProvider* provider);
-ChromeBrowserProvider* GetChromeBrowserProvider();
+// Getter and setter for the provider. The provider should be set early, before
+// any browser code is called (as the getter will fail if the provider has not
+// been set).
+ChromeBrowserProvider& GetChromeBrowserProvider();
+ChromeBrowserProvider* SetChromeBrowserProvider(ChromeBrowserProvider* provider)
+    WARN_UNUSED_RESULT;
 
 // Factory function for the embedder specific provider. This function must be
 // implemented by the embedder and will be selected via linking (i.e. by the

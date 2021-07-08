@@ -23,7 +23,7 @@ class IOSChromeScopedTestingChromeBrowserProvider {
 
  private:
   std::unique_ptr<ios::ChromeBrowserProvider> chrome_browser_provider_;
-  ios::ChromeBrowserProvider* original_chrome_browser_provider_;
+  ios::ChromeBrowserProvider* original_chrome_browser_provider_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(IOSChromeScopedTestingChromeBrowserProvider);
 };

@@ -375,7 +375,7 @@
   self.headerController = nil;
   if (IsDiscoverFeedEnabled() && !IsRefactoredNTP()) {
     ios::GetChromeBrowserProvider()
-        ->GetDiscoverFeedProvider()
+        .GetDiscoverFeedProvider()
         ->RemoveFeedViewController(self.discoverFeedViewController);
   }
   self.contentSuggestionsExpanded = nil;
@@ -413,7 +413,7 @@
 
 - (void)discoverFeedShown {
   if (IsDiscoverFeedEnabled() && !self.feedShownWasCalled) {
-    ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->FeedWasShown();
+    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->FeedWasShown();
     self.feedShownWasCalled = YES;
   }
 }
@@ -489,7 +489,7 @@
 
 - (void)handleThemeChange {
   if (IsDiscoverFeedEnabled()) {
-    ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->UpdateTheme();
+    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->UpdateTheme();
   }
 }
 
@@ -629,7 +629,7 @@
 
 - (void)loadMoreFeedArticles {
   ios::GetChromeBrowserProvider()
-      ->GetDiscoverFeedProvider()
+      .GetDiscoverFeedProvider()
       ->LoadMoreFeedArticles();
   [self.discoverFeedMetricsRecorder recordInfiniteFeedTriggered];
 }
@@ -667,7 +667,7 @@
 
 - (void)reload {
   if (IsDiscoverFeedEnabled() && !IsRefactoredNTP() && [self isFeedVisible]) {
-    ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->RefreshFeed();
+    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
   }
   [self.contentSuggestionsMediator.dataSink reloadAllData];
 }
@@ -808,7 +808,7 @@
     return nil;
 
   UIViewController* discoverFeed = ios::GetChromeBrowserProvider()
-                                       ->GetDiscoverFeedProvider()
+                                       .GetDiscoverFeedProvider()
                                        ->NewFeedViewController(self.browser);
   // TODO(crbug.com/1085419): Once the CollectionView is cleanly exposed, remove
   // this loop.

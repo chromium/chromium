@@ -28,11 +28,10 @@ void FakeVoiceSearchAvailability::SetVoiceOverEnabled(bool enabled) {
 }
 
 void FakeVoiceSearchAvailability::SetVoiceProviderEnabled(bool enabled) {
-  ios::TestChromeBrowserProvider* browser_provider =
-      ios::TestChromeBrowserProvider::GetTestProvider();
   TestVoiceSearchProvider* voice_provider =
       static_cast<TestVoiceSearchProvider*>(
-          browser_provider->GetVoiceSearchProvider());
+          ios::TestChromeBrowserProvider::GetTestProvider()
+              .GetVoiceSearchProvider());
   voice_provider->set_voice_search_enabled(enabled);
 }
 

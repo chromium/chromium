@@ -28,7 +28,7 @@
 
 - (void)keyboardAccessoryVoiceSearchTouchUpInside:(UIView*)view {
   if (ios::GetChromeBrowserProvider()
-          ->GetVoiceSearchProvider()
+          .GetVoiceSearchProvider()
           ->IsVoiceSearchEnabled()) {
     [self.dispatcher preloadVoiceSearch];
     base::RecordAction(base::UserMetricsAction("MobileCustomRowVoiceSearch"));

@@ -771,7 +771,7 @@ API_AVAILABLE(ios(13.0))
   [self.contextMenuCoordinator stop];
 
   ios::GetChromeBrowserProvider()
-      ->GetModalsProvider()
+      .GetModalsProvider()
       ->DismissModalsForTableView(self.tableView);
 }
 

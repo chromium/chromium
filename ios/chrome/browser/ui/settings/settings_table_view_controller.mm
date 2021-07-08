@@ -725,7 +725,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       l10n_util::GetNSString(IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE);
   signinDisabledItem.image =
       CircularImageFromImage(ios::GetChromeBrowserProvider()
-                                 ->GetSigninResourcesProvider()
+                                 .GetSigninResourcesProvider()
                                  ->GetDefaultAvatar(),
                              kAccountProfilePhotoDimension);
   signinDisabledItem.enabled = NO;
@@ -1792,16 +1792,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 // Image used for loggedin user account that supports caching.
 - (UIImage*)userAccountImage {
   UIImage* image = ios::GetChromeBrowserProvider()
-                       ->GetChromeIdentityService()
+                       .GetChromeIdentityService()
                        ->GetCachedAvatarForIdentity(_identity);
   if (!image) {
     image = ios::GetChromeBrowserProvider()
-                ->GetSigninResourcesProvider()
+                .GetSigninResourcesProvider()
                 ->GetDefaultAvatar();
     // No cached image, trigger a fetch, which will notify all observers
     // (including the corresponding AccountViewBase).
     ios::GetChromeBrowserProvider()
-        ->GetChromeIdentityService()
+        .GetChromeIdentityService()
         ->GetAvatarForIdentity(_identity, nil);
   }
 

@@ -90,7 +90,7 @@
 
 - (UIImage*)fallbackAnswerBrandedIcon {
   return ios::GetChromeBrowserProvider()
-      ->GetBrandedImageProvider()
+      .GetBrandedImageProvider()
       ->GetOmniboxAnswerIcon();
 }
 

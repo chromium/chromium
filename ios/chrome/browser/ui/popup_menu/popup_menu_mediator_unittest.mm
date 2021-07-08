@@ -302,13 +302,13 @@ TEST_F(PopupMenuMediatorTest, TestToolsMenuItemsCount) {
                  /*trigger_incognito_hint=*/NO);
   NSUInteger number_of_action_items = 7;
   if (ios::GetChromeBrowserProvider()
-          ->GetUserFeedbackProvider()
+          .GetUserFeedbackProvider()
           ->IsUserFeedbackEnabled()) {
     number_of_action_items++;
   }
 
   if (ios::GetChromeBrowserProvider()
-          ->GetTextZoomProvider()
+          .GetTextZoomProvider()
           ->IsTextZoomEnabled()) {
     number_of_action_items++;
   }

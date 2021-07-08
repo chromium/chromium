@@ -22,7 +22,7 @@
 
 + (BOOL)isFullscreenInitialized {
   return ios::GetChromeBrowserProvider()
-      ->GetFullscreenProvider()
+      .GetFullscreenProvider()
       ->IsInitialized();
 }
 

@@ -238,7 +238,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* authenticatedEmail = [authenticatedIdentity userEmail];
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
     ios::ChromeIdentityService* identityService =
-        ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+        ios::GetChromeBrowserProvider().GetChromeIdentityService();
     ChromeIdentity* identity =
         identityService->GetIdentityWithGaiaID(account.gaia);
     if (!identity) {
@@ -532,7 +532,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _alertCoordinator = nil;
   _dimissAccountDetailsViewControllerBlock =
       ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
+          .GetChromeIdentityService()
           ->PresentAccountDetailsController(identity, self,
                                             /*animated=*/YES);
 }
@@ -575,7 +575,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(self.removeAccountCoordinator);
   self.removeAccountCoordinator = nil;
   self.uiDisabled = YES;
-  ios::GetChromeBrowserProvider()->GetChromeIdentityService()->ForgetIdentity(
+  ios::GetChromeBrowserProvider().GetChromeIdentityService()->ForgetIdentity(
       identity, ^(NSError* error) {
         self.uiDisabled = NO;
       });

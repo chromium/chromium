@@ -410,7 +410,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       ContentSuggestionsWhatsNewItem* item =
           [[ContentSuggestionsWhatsNewItem alloc] initWithType:0];
       item.icon = ios::GetChromeBrowserProvider()
-                      ->GetBrandedImageProvider()
+                      .GetBrandedImageProvider()
                       ->GetWhatsNewIconImage(_notificationPromo->icon());
       item.text = base::SysUTF8ToNSString(_notificationPromo->promo_text());
       [convertedSuggestions addObject:item];

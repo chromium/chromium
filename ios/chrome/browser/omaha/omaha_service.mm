@@ -400,7 +400,7 @@ void OmahaService::StartInternal() {
   started_ = true;
 
   // Start the provider at the same time as the rest of the service.
-  ios::GetChromeBrowserProvider()->GetOmahaServiceProvider()->Start();
+  ios::GetChromeBrowserProvider().GetOmahaServiceProvider()->Start();
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   next_tries_time_ = base::Time::FromCFAbsoluteTime(
@@ -465,7 +465,7 @@ void OmahaService::StopInternal() {
     return;
   }
 
-  ios::GetChromeBrowserProvider()->GetOmahaServiceProvider()->Stop();
+  ios::GetChromeBrowserProvider().GetOmahaServiceProvider()->Stop();
 }
 
 // static
@@ -515,7 +515,7 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
                                          const base::Time& installationTime,
                                          PingContent pingContent) {
   OmahaServiceProvider* provider =
-      ios::GetChromeBrowserProvider()->GetOmahaServiceProvider();
+      ios::GetChromeBrowserProvider().GetOmahaServiceProvider();
 
   XmlWrapper xml_wrapper;
   xml_wrapper.StartElement("request");
@@ -631,7 +631,7 @@ void OmahaService::SendPing() {
   DCHECK(!url_loader_);
 
   GURL url(ios::GetChromeBrowserProvider()
-               ->GetOmahaServiceProvider()
+               .GetOmahaServiceProvider()
                ->GetUpdateServerURL());
   if (!url.is_valid()) {
     return;
@@ -723,7 +723,7 @@ void OmahaService::OnURLLoadComplete(
                                length:response_body->length()];
   NSXMLParser* parser = [[NSXMLParser alloc] initWithData:xml];
   const std::string application_id = ios::GetChromeBrowserProvider()
-                                         ->GetOmahaServiceProvider()
+                                         .GetOmahaServiceProvider()
                                          ->GetApplicationID();
   ResponseParser* delegate = [[ResponseParser alloc]
       initWithAppId:base::SysUTF8ToNSString(application_id)];

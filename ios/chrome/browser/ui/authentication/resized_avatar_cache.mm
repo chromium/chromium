@@ -49,15 +49,15 @@ const CGFloat kAccountProfilePhotoDimension = 40.0f;
 
 - (UIImage*)resizedAvatarForIdentity:(ChromeIdentity*)identity {
   UIImage* image = ios::GetChromeBrowserProvider()
-                       ->GetChromeIdentityService()
+                       .GetChromeIdentityService()
                        ->GetCachedAvatarForIdentity(identity);
   if (!image) {
     image = ios::GetChromeBrowserProvider()
-                ->GetSigninResourcesProvider()
+                .GetSigninResourcesProvider()
                 ->GetDefaultAvatar();
     // No cached image, trigger a fetch, which will notify all observers.
     ios::GetChromeBrowserProvider()
-        ->GetChromeIdentityService()
+        .GetChromeIdentityService()
         ->GetAvatarForIdentity(identity, nil);
   }
 

@@ -467,8 +467,7 @@ class SaveCardInfobarEGTestHelper
 }
 
 + (NSString*)paymentsRiskData {
-  return base::SysUTF8ToNSString(
-      ios::GetChromeBrowserProvider()->GetRiskData());
+  return base::SysUTF8ToNSString(ios::GetChromeBrowserProvider().GetRiskData());
 }
 
 #pragma mark - Private

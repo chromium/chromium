@@ -736,7 +736,7 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
   }
   FakeAppDistributionProvider* provider =
       static_cast<FakeAppDistributionProvider*>(
-          ios::GetChromeBrowserProvider()->GetAppDistributionProvider());
+          ios::GetChromeBrowserProvider().GetAppDistributionProvider());
   EXPECT_TRUE(provider->cancel_called());
 }
 
@@ -796,7 +796,7 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   EXPECT_OCMOCK_VERIFY(getStartupInformationMock());
   FakeUserFeedbackProvider* user_feedback_provider =
       static_cast<FakeUserFeedbackProvider*>(
-          ios::GetChromeBrowserProvider()->GetUserFeedbackProvider());
+          ios::GetChromeBrowserProvider().GetUserFeedbackProvider());
   EXPECT_TRUE(user_feedback_provider->synchronize_called());
 }
 

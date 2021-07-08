@@ -84,7 +84,7 @@ const int kCurrentSpotlightIndexVersion = 3;
 
 Domain SpotlightDomainFromString(NSString* domain) {
   SpotlightProvider* provider =
-      ios::GetChromeBrowserProvider()->GetSpotlightProvider();
+      ios::GetChromeBrowserProvider().GetSpotlightProvider();
   if ([domain hasPrefix:[provider->GetBookmarkDomain()
                             stringByAppendingString:@"."]]) {
     return DOMAIN_BOOKMARKS;
@@ -103,7 +103,7 @@ Domain SpotlightDomainFromString(NSString* domain) {
 
 NSString* StringFromSpotlightDomain(Domain domain) {
   SpotlightProvider* provider =
-      ios::GetChromeBrowserProvider()->GetSpotlightProvider();
+      ios::GetChromeBrowserProvider().GetSpotlightProvider();
   switch (domain) {
     case DOMAIN_BOOKMARKS:
       return provider->GetBookmarkDomain();
@@ -159,7 +159,7 @@ void ClearAllSpotlightEntries(BlockWithError callback) {
 
 bool IsSpotlightAvailable() {
   bool provided = ios::GetChromeBrowserProvider()
-                      ->GetSpotlightProvider()
+                      .GetSpotlightProvider()
                       ->IsSpotlightEnabled();
   if (!provided) {
     // The product does not support Spotlight, do not go further.
@@ -189,7 +189,7 @@ void ClearSpotlightIndexWithCompletion(BlockWithError completion) {
 
 NSString* GetSpotlightCustomAttributeItemID() {
   return ios::GetChromeBrowserProvider()
-      ->GetSpotlightProvider()
+      .GetSpotlightProvider()
       ->GetCustomAttributeItemID();
 }
 

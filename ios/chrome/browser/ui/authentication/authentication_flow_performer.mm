@@ -138,7 +138,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 - (void)fetchManagedStatus:(ChromeBrowserState*)browserState
                forIdentity:(ChromeIdentity*)identity {
   ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   NSString* hostedDomain =
       identityService->GetCachedHostedDomainForIdentity(identity);
   if (hostedDomain) {
@@ -149,7 +149,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
   [self startWatchdogTimerForManagedStatus];
   __weak AuthenticationFlowPerformer* weakSelf = self;
   ios::GetChromeBrowserProvider()
-      ->GetChromeIdentityService()
+      .GetChromeIdentityService()
       ->GetHostedDomainForIdentity(
           identity, ^(NSString* hosted_domain, NSError* error) {
             [weakSelf handleGetHostedDomain:hosted_domain

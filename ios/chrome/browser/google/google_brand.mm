@@ -15,11 +15,8 @@ namespace ios {
 namespace google_brand {
 
 bool GetBrand(std::string* brand) {
-  if (!ios::GetChromeBrowserProvider())
-    return false;
-
   brand->assign(ios::GetChromeBrowserProvider()
-                    ->GetAppDistributionProvider()
+                    .GetAppDistributionProvider()
                     ->GetDistributionBrandCode());
   return true;
 }

@@ -29,7 +29,7 @@ TEST_F(MainApplicationDelegateTest, CrashIfNotInitialized) {
 
   // Save both ChromeBrowserProvider as MainController register new instance.
   ios::ChromeBrowserProvider* stashed_chrome_browser_provider =
-      ios::GetChromeBrowserProvider();
+      ios::SetChromeBrowserProvider(nullptr);
 
   id application = [OCMockObject niceMockForClass:[UIApplication class]];
   UIApplicationState backgroundState = UIApplicationStateBackground;
@@ -42,9 +42,13 @@ TEST_F(MainApplicationDelegateTest, CrashIfNotInitialized) {
 
   // Restore both ChromeBrowserProvider to its original value and destroy
   // instances created by MainController.
-  DCHECK_NE(ios::GetChromeBrowserProvider(), stashed_chrome_browser_provider);
-  delete ios::GetChromeBrowserProvider();
-  ios::SetChromeBrowserProvider(stashed_chrome_browser_provider);
+  DCHECK_NE(&ios::GetChromeBrowserProvider(), stashed_chrome_browser_provider);
+
+  ios::ChromeBrowserProvider* registered_provider =
+      ios::SetChromeBrowserProvider(stashed_chrome_browser_provider);
+
+  EXPECT_TRUE(registered_provider);
+  delete registered_provider;
 }
 
 // Tests that the application does not crash if |applicationWillTerminate:| is
@@ -59,12 +63,14 @@ TEST_F(MainApplicationDelegateTest, TerminateCalledWithNoBrowserProvider) {
   // ios::GetChromeBrowserProvider() return nullptr. Clear the previously-set
   // provider before proceeding.
   ios::ChromeBrowserProvider* stashed_chrome_browser_provider =
-      ios::GetChromeBrowserProvider();
-  ios::SetChromeBrowserProvider(nullptr);
+      ios::SetChromeBrowserProvider(nullptr);
 
   MainApplicationDelegate* delegate = [[MainApplicationDelegate alloc] init];
   [delegate applicationWillTerminate:application];
 
   // Restore ChromeBrowserProvider to its original value.
-  ios::SetChromeBrowserProvider(stashed_chrome_browser_provider);
+  ios::ChromeBrowserProvider* registered_provider =
+      ios::SetChromeBrowserProvider(stashed_chrome_browser_provider);
+
+  EXPECT_FALSE(registered_provider);
 }

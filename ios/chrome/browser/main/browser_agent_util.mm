@@ -78,5 +78,5 @@ void AttachBrowserAgents(Browser* browser) {
 
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.
-  ios::GetChromeBrowserProvider()->AttachBrowserAgents(browser);
+  ios::GetChromeBrowserProvider().AttachBrowserAgents(browser);
 }

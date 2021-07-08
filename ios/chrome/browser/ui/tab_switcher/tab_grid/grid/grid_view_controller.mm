@@ -818,7 +818,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)dismissModals {
   ios::GetChromeBrowserProvider()
-      ->GetModalsProvider()
+      .GetModalsProvider()
       ->DismissModalsForCollectionView(self.collectionView);
 }
 

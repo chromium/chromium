@@ -21,7 +21,7 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
       delete;
 
   // Returns the current provider as a |TestChromeBrowserProvider|.
-  static TestChromeBrowserProvider* GetTestProvider();
+  static TestChromeBrowserProvider& GetTestProvider();
 
   // ChromeBrowserProvider:
   SigninResourcesProvider* GetSigninResourcesProvider() override;

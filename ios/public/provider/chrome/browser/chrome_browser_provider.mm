@@ -6,6 +6,7 @@
 
 #include <cstddef>
 
+#include "base/check.h"
 #include "components/metrics/metrics_provider.h"
 #import "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/public/provider/chrome/browser/modals/modals_provider.h"
@@ -22,12 +23,17 @@ namespace {
 ChromeBrowserProvider* g_chrome_browser_provider = nullptr;
 }  // namespace
 
-void SetChromeBrowserProvider(ChromeBrowserProvider* provider) {
+ChromeBrowserProvider* SetChromeBrowserProvider(
+    ChromeBrowserProvider* provider) {
+  ChromeBrowserProvider* previous = g_chrome_browser_provider;
   g_chrome_browser_provider = provider;
+  return previous;
 }
 
-ChromeBrowserProvider* GetChromeBrowserProvider() {
-  return g_chrome_browser_provider;
+ChromeBrowserProvider& GetChromeBrowserProvider() {
+  DCHECK(g_chrome_browser_provider)
+      << "Calling GetChromeBrowserProvider() before SetChromeBrowserProvider()";
+  return *g_chrome_browser_provider;
 }
 
 // A dummy implementation of ChromeBrowserProvider.

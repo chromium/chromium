@@ -403,7 +403,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
     signinDisabledItem.image =
         CircularImageFromImage(ios::GetChromeBrowserProvider()
-                                   ->GetSigninResourcesProvider()
+                                   .GetSigninResourcesProvider()
                                    ->GetDefaultAvatar(),
                                kAccountProfilePhotoDimension);
     signinDisabledItem.textColor = [UIColor colorNamed:kTextSecondaryColor];

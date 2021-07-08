@@ -122,7 +122,7 @@
     ChromeIdentity* selectedIdentity = self.selectedIdentity;
     __weak UnifiedConsentMediator* weakSelf = self;
     ios::GetChromeBrowserProvider()
-        ->GetChromeIdentityService()
+        .GetChromeIdentityService()
         ->GetAvatarForIdentity(selectedIdentity, ^(UIImage* identityAvatar) {
           if (weakSelf.selectedIdentity != selectedIdentity)
             return;

@@ -31,7 +31,7 @@ std::string GetManagedBookmarksDomain(ChromeBrowserState* browser_state) {
     return std::string();
 
   ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   if (!identity_service)
     return std::string();
 

@@ -117,7 +117,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
       IdentityManagerFactory::GetForBrowserState(_browserState);
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
     ChromeIdentity* identity = ios::GetChromeBrowserProvider()
-                                   ->GetChromeIdentityService()
+                                   .GetChromeIdentityService()
                                    ->GetIdentityWithGaiaID(account.gaia);
 
     // If the account with a refresh token is invalidated during this operation

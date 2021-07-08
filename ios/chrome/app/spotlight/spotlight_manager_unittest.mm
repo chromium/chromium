@@ -180,7 +180,7 @@ TEST_F(SpotlightManagerTest, testDefaultKeywordsExist) {
   // Check static/hardcoded keywords exist
   NSSet* hardCodedKeywordsSet =
       [NSSet setWithArray:ios::GetChromeBrowserProvider()
-                              ->GetSpotlightProvider()
+                              .GetSpotlightProvider()
                               ->GetAdditionalKeywords()];
   EXPECT_TRUE([hardCodedKeywordsSet isSubsetOfSet:spotlightManagerKeywords]);
 }

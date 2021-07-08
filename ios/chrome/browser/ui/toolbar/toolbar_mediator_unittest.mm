@@ -183,7 +183,7 @@ class ToolbarMediatorTest : public PlatformTest {
 
   void set_voice_search_enabled(bool enabled) {
     static_cast<TestToolbarMediatorVoiceSearchProvider*>(
-        ios::GetChromeBrowserProvider()->GetVoiceSearchProvider())
+        ios::GetChromeBrowserProvider().GetVoiceSearchProvider())
         ->set_voice_search_enabled(enabled);
   }
 

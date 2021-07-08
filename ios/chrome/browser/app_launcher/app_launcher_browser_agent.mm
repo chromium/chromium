@@ -101,7 +101,7 @@ void AppLauncherBrowserAgent::TabHelperDelegate::LaunchAppForTabHelper(
   // Uses a Mailto Handler to open the appropriate app.
   if (url.SchemeIs(url::kMailToScheme)) {
     MailtoHandlerProvider* provider =
-        ios::GetChromeBrowserProvider()->GetMailtoHandlerProvider();
+        ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
     provider->HandleMailtoURL(net::NSURLWithGURL(url));
     return;
   }

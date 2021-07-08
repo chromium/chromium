@@ -105,7 +105,7 @@ using l10n_util::GetNSStringF;
   UIImage* image = self.userImage;
   if (!image) {
     image = ios::GetChromeBrowserProvider()
-                ->GetSigninResourcesProvider()
+                .GetSigninResourcesProvider()
                 ->GetDefaultAvatar();
   }
   [signinPromoView setProfileImage:image];

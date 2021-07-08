@@ -66,7 +66,7 @@
         setButtonText:l10n_util::GetNSString(
                           IDS_IOS_DEFAULT_NON_MODAL_PRIMARY_BUTTON_TEXT)];
     UIImage* image = ios::GetChromeBrowserProvider()
-                         ->GetBrandedImageProvider()
+                         .GetBrandedImageProvider()
                          ->GetNonModalPromoImage();
     [self.bannerViewController setIconImage:image];
     [self.bannerViewController setUseIconBackgroundTint:NO];

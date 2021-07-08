@@ -190,7 +190,7 @@ const CGFloat kOmniboxIconSize = 16;
                              self.templateURLService->search_terms_data()) ==
                              SEARCH_ENGINE_GOOGLE) {
     UIImage* bundledLogo = ios::GetChromeBrowserProvider()
-                               ->GetBrandedImageProvider()
+                               .GetBrandedImageProvider()
                                ->GetOmniboxAnswerIcon();
 
     if (bundledLogo) {

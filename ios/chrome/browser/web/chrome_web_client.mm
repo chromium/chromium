@@ -211,7 +211,7 @@ void ChromeWebClient::PreWebViewCreation() const {
     // Initialize the audio session to allow a web page's audio to continue
     // playing after the app is backgrounded.
     VoiceSearchProvider* voice_provider =
-        ios::GetChromeBrowserProvider()->GetVoiceSearchProvider();
+        ios::GetChromeBrowserProvider().GetVoiceSearchProvider();
     if (voice_provider) {
       AudioSessionController* audio_controller =
           voice_provider->GetAudioSessionController();
@@ -287,7 +287,7 @@ void ChromeWebClient::PostBrowserURLRewriterCreation(
     web::BrowserURLRewriter* rewriter) {
   rewriter->AddURLRewriter(&WillHandleWebBrowserAboutURL);
   BrowserURLRewriterProvider* provider =
-      ios::GetChromeBrowserProvider()->GetBrowserURLRewriterProvider();
+      ios::GetChromeBrowserProvider().GetBrowserURLRewriterProvider();
   if (provider)
     provider->AddProviderRewriters(rewriter);
 }

@@ -127,7 +127,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self blockPopupsItem]
       toSectionWithIdentifier:SectionIdentifierSettings];
   MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider()->GetMailtoHandlerProvider();
+      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
   NSString* settingsTitle = provider->MailtoHandlerSettingsTitle();
   // Display email settings only on one window at a time, by checking
   // if this is the current owner.
@@ -176,7 +176,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeSettingsComposeEmail];
   // Use the handler's preferred title string for the compose email item.
   MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider()->GetMailtoHandlerProvider();
+      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
   NSString* settingsTitle = provider->MailtoHandlerSettingsTitle();
   DCHECK([settingsTitle length]);
   // .detailText can display the selected mailto handling app, but the current
@@ -194,7 +194,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeSettingsComposeEmail];
   // Use the handler's preferred title string for the compose email item.
   MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider()->GetMailtoHandlerProvider();
+      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
   NSString* settingsTitle = provider->MailtoHandlerSettingsTitle();
   DCHECK([settingsTitle length]);
   // .detailText can display the selected mailto handling app, but the current
@@ -231,7 +231,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         break;
 
       MailtoHandlerProvider* provider =
-          ios::GetChromeBrowserProvider()->GetMailtoHandlerProvider();
+          ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
       UIViewController* controller =
           provider->MailtoHandlerSettingsController();
       if (controller) {
@@ -277,7 +277,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // bar stack items.
   NSString* top = self.navigationController.navigationBar.topItem.title;
   MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider()->GetMailtoHandlerProvider();
+      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
   NSString* mailToTitle = provider->MailtoHandlerSettingsTitle();
   if ([top isEqualToString:mailToTitle]) {
     openedMailTo = NO;

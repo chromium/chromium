@@ -336,7 +336,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [metricsMediator updateMetricsStateBasedOnPrefsUserTriggered:NO];
 
   // Send any feedback that might be still on temporary storage.
-  ios::GetChromeBrowserProvider()->GetUserFeedbackProvider()->Synchronize();
+  ios::GetChromeBrowserProvider().GetUserFeedbackProvider()->Synchronize();
 
   GetApplicationContext()->OnAppEnterForeground();
 
@@ -380,9 +380,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [_appCommandDispatcher prepareForShutdown];
 
   // Cancel any in-flight distribution notifications.
-  CHECK(ios::GetChromeBrowserProvider());
   ios::GetChromeBrowserProvider()
-      ->GetAppDistributionProvider()
+      .GetAppDistributionProvider()
       ->CancelDistributionNotifications();
 
   // Halt the tabs, so any outstanding requests get cleaned up, without actually

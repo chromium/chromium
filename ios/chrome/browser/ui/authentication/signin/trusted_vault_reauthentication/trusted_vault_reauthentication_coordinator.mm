@@ -52,9 +52,8 @@ using l10n_util::GetNSStringF;
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
-  ios::ChromeBrowserProvider* browserProvider = ios::GetChromeBrowserProvider();
   ios::ChromeTrustedVaultService* trustedVaultService =
-      browserProvider->GetChromeTrustedVaultService();
+      ios::GetChromeBrowserProvider().GetChromeTrustedVaultService();
   BOOL animated;
   switch (action) {
     case SigninCoordinatorInterruptActionNoDismiss:
@@ -96,9 +95,8 @@ using l10n_util::GetNSStringF;
   // If not, the coordinator can be closed successfuly, by calling
   // -[TrustedVaultReauthenticationCoordinator
   // reauthentificationCompletedWithSuccess:]
-  ios::ChromeBrowserProvider* browserProvider = ios::GetChromeBrowserProvider();
   ios::ChromeTrustedVaultService* trustedVaultService =
-      browserProvider->GetChromeTrustedVaultService();
+      ios::GetChromeBrowserProvider().GetChromeTrustedVaultService();
   self.identity = AuthenticationServiceFactory::GetForBrowserState(
                       self.browser->GetBrowserState())
                       ->GetAuthenticatedIdentity();

@@ -248,7 +248,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TEN)
   ]];
   NSArray* additionalArray = ios::GetChromeBrowserProvider()
-                                 ->GetSpotlightProvider()
+                                 .GetSpotlightProvider()
                                  ->GetAdditionalKeywords();
   if (additionalArray) {
     [keywordsArray addObjectsFromArray:additionalArray];

@@ -35,7 +35,6 @@ class IOSChromeUnitTestSuiteInitializer
   ~IOSChromeUnitTestSuiteInitializer() override {}
 
   void OnTestStart(const testing::TestInfo& test_info) override {
-    DCHECK(!ios::GetChromeBrowserProvider());
     test_ios_chrome_provider_initializer_.reset(
         new ios::TestChromeProviderInitializer());
 
@@ -48,7 +47,6 @@ class IOSChromeUnitTestSuiteInitializer
     application_context_.reset();
 
     test_ios_chrome_provider_initializer_.reset();
-    DCHECK(!ios::GetChromeBrowserProvider());
   }
 
  private:

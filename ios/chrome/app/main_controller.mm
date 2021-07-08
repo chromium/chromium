@@ -419,7 +419,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   _chromeMain = [ChromeMainStarter startChromeMain];
 
   // Initialize the ChromeBrowserProvider.
-  ios::GetChromeBrowserProvider()->Initialize();
+  ios::GetChromeBrowserProvider().Initialize();
 
   // If the user is interacting, crashes affect the user experience. Start
   // reporting as soon as possible.
@@ -548,7 +548,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       logLaunchMetricsWithStartupInformation:self
                              connectedScenes:self.appState.connectedScenes];
 
-  ios::GetChromeBrowserProvider()->GetOverridesProvider()->InstallOverrides();
+  ios::GetChromeBrowserProvider().GetOverridesProvider()->InstallOverrides();
 
   [self scheduleLowPriorityStartupTasks];
 
@@ -762,7 +762,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       enqueueBlockNamed:kSendQueuedFeedback
                   block:^{
                     ios::GetChromeBrowserProvider()
-                        ->GetUserFeedbackProvider()
+                        .GetUserFeedbackProvider()
                         ->Synchronize();
                   }];
 }
@@ -825,7 +825,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                                                 ->GetSharedURLLoaderFactory();
                     const bool is_first_run = FirstRun::IsChromeFirstRun();
                     ios::GetChromeBrowserProvider()
-                        ->GetAppDistributionProvider()
+                        .GetAppDistributionProvider()
                         ->ScheduleDistributionNotifications(URLLoaderFactory,
                                                             is_first_run);
 
@@ -834,7 +834,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                             metrics::prefs::kInstallDate));
 
                     ios::GetChromeBrowserProvider()
-                        ->GetAppDistributionProvider()
+                        .GetAppDistributionProvider()
                         ->InitializeFirebase(install_date, is_first_run);
                   }];
 }
@@ -937,13 +937,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                       return;
                     }
                     ios::GetChromeBrowserProvider()
-                        ->GetMailtoHandlerProvider()
+                        .GetMailtoHandlerProvider()
                         ->PrepareMailtoHandling(
                             strongSelf.appState.mainBrowserState);
 
                     [strongSelf registerCleanupClosure:base::BindOnce([] {
                                   ios::GetChromeBrowserProvider()
-                                      ->GetMailtoHandlerProvider()
+                                      .GetMailtoHandlerProvider()
                                       ->RemoveMailtoHandling();
                                 })];
                   }];

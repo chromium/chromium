@@ -43,7 +43,7 @@ void VoiceSearchAvailability::RemoveObserver(
 
 bool VoiceSearchAvailability::IsVoiceSearchAvailable() const {
   return !voice_over_enabled_ && ios::GetChromeBrowserProvider()
-                                     ->GetVoiceSearchProvider()
+                                     .GetVoiceSearchProvider()
                                      ->IsVoiceSearchEnabled();
 }
 

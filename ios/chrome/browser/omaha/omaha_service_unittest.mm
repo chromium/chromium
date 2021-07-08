@@ -112,7 +112,7 @@ class OmahaServiceTest : public PlatformTest {
 
   std::string test_application_id() const {
     return ios::GetChromeBrowserProvider()
-        ->GetOmahaServiceProvider()
+        .GetOmahaServiceProvider()
         ->GetApplicationID();
   }
 

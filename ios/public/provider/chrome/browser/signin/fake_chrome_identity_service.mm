@@ -28,7 +28,7 @@ namespace {
 
 UIImage* FakeGetCachedAvatarForIdentity(ChromeIdentity*) {
   ios::SigninResourcesProvider* provider =
-      ios::GetChromeBrowserProvider()->GetSigninResourcesProvider();
+      ios::GetChromeBrowserProvider().GetSigninResourcesProvider();
   return provider ? provider->GetDefaultAvatar() : nil;
 }
 
@@ -138,7 +138,7 @@ FakeChromeIdentityService::~FakeChromeIdentityService() {}
 FakeChromeIdentityService*
 FakeChromeIdentityService::GetInstanceFromChromeProvider() {
   return static_cast<ios::FakeChromeIdentityService*>(
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService());
+      ios::GetChromeBrowserProvider().GetChromeIdentityService());
 }
 
 DismissASMViewControllerBlock

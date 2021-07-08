@@ -224,7 +224,7 @@ using signin_metrics::PromoAction;
       "Signin_AccountSettings_GoogleActivityControlsClicked"));
   self.dismissWebAndAppSettingDetailsControllerBlock =
       ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
+          .GetChromeIdentityService()
           ->PresentWebAndAppSettingDetailsController(
               authService->GetAuthenticatedIdentity(), self.viewController,
               YES);

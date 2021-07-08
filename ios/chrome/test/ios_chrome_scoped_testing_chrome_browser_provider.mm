@@ -14,13 +14,14 @@
 IOSChromeScopedTestingChromeBrowserProvider::
     IOSChromeScopedTestingChromeBrowserProvider(
         std::unique_ptr<ios::ChromeBrowserProvider> chrome_browser_provider)
-    : chrome_browser_provider_(std::move(chrome_browser_provider)),
-      original_chrome_browser_provider_(ios::GetChromeBrowserProvider()) {
-  ios::SetChromeBrowserProvider(chrome_browser_provider_.get());
+    : chrome_browser_provider_(std::move(chrome_browser_provider)) {
+  original_chrome_browser_provider_ =
+      ios::SetChromeBrowserProvider(chrome_browser_provider_.get());
 }
 
 IOSChromeScopedTestingChromeBrowserProvider::
     ~IOSChromeScopedTestingChromeBrowserProvider() {
-  DCHECK_EQ(chrome_browser_provider_.get(), ios::GetChromeBrowserProvider());
-  ios::SetChromeBrowserProvider(original_chrome_browser_provider_);
+  ios::ChromeBrowserProvider* provider =
+      ios::SetChromeBrowserProvider(original_chrome_browser_provider_);
+  DCHECK_EQ(provider, chrome_browser_provider_.get());
 }

@@ -64,7 +64,7 @@
 #pragma mark - Properties
 
 - (ios::ChromeIdentityService*)chromeIdentityService {
-  return ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+  return ios::GetChromeBrowserProvider().GetChromeIdentityService();
 }
 
 - (void)setSelectedIdentity:(ChromeIdentity*)identity {

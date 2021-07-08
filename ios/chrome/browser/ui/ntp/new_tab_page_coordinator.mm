@@ -198,7 +198,7 @@
                                   self.browser->GetBrowserState())
               identityManager:IdentityManagerFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())
-                   logoVendor:ios::GetChromeBrowserProvider()->CreateLogoVendor(
+                   logoVendor:ios::GetChromeBrowserProvider().CreateLogoVendor(
                                   self.browser, self.webState)
       voiceSearchAvailability:&_voiceSearchAvailability];
   self.ntpMediator.browser = self.browser;
@@ -240,7 +240,7 @@
     self.ntpViewController = [[NewTabPageViewController alloc] init];
     self.discoverFeedViewController =
         ios::GetChromeBrowserProvider()
-            ->GetDiscoverFeedProvider()
+            .GetDiscoverFeedProvider()
             ->NewFeedViewControllerWithScrollDelegate(self.browser,
                                                       self.ntpViewController);
   }
@@ -286,7 +286,7 @@
   self.ntpViewController = nil;
   if (IsRefactoredNTP()) {
     ios::GetChromeBrowserProvider()
-        ->GetDiscoverFeedProvider()
+        .GetDiscoverFeedProvider()
         ->RemoveFeedViewController(self.discoverFeedViewController);
   }
   self.discoverFeedWrapperViewController = nil;
@@ -434,7 +434,7 @@
 
 - (void)reload {
   if (self.discoverFeedViewController) {
-    ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->RefreshFeed();
+    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
   }
   [self reloadContentSuggestions];
 }

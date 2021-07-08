@@ -121,7 +121,7 @@ void AuthenticationService::Initialize(
   crash_keys::SetCurrentlySignedIn(IsAuthenticated());
 
   identity_service_observation_.Observe(
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService());
+      ios::GetChromeBrowserProvider().GetChromeIdentityService());
 
   // Reload credentials to ensure the accounts from the token service are
   // up-to-date.
@@ -390,7 +390,7 @@ bool AuthenticationService::ShowMDMErrorDialogForIdentity(
   }
 
   ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   identity_service->HandleMDMNotification(identity, cached_info, ^(bool){
                                                     });
   return true;
@@ -399,7 +399,7 @@ bool AuthenticationService::ShowMDMErrorDialogForIdentity(
 void AuthenticationService::ResetChromeIdentityServiceObserverForTesting() {
   DCHECK(!identity_service_observation_.IsObserving());
   identity_service_observation_.Observe(
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService());
+      ios::GetChromeBrowserProvider().GetChromeIdentityService());
 }
 
 base::WeakPtr<AuthenticationService> AuthenticationService::GetWeakPtr() {
@@ -446,7 +446,7 @@ void AuthenticationService::OnIdentityListChanged(bool keychain_reload) {
 bool AuthenticationService::HandleMDMNotification(ChromeIdentity* identity,
                                                   NSDictionary* user_info) {
   ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   ios::MDMDeviceStatus status = identity_service->GetMDMDeviceStatus(user_info);
   NSDictionary* cached_info = GetCachedMDMInfo(identity);
 
@@ -483,7 +483,7 @@ void AuthenticationService::OnAccessTokenRefreshFailed(
   }
 
   ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   if (!identity_service->IsInvalidGrantError(user_info)) {
     // If the failure is not due to an invalid grant, the identity is not
     // invalid and there is nothing to do.

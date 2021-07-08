@@ -541,7 +541,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   } else {
     __weak SigninPromoViewMediator* weakSelf = self;
     ios::GetChromeBrowserProvider()
-        ->GetChromeIdentityService()
+        .GetChromeIdentityService()
         ->GetAvatarForIdentity(identity, ^(UIImage* identityAvatar) {
           if (weakSelf.identity != identity) {
             return;

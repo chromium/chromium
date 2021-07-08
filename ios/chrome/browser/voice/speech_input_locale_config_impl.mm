@@ -55,7 +55,7 @@ SpeechInputLocaleConfigImpl::SpeechInputLocaleConfigImpl(
 
 SpeechInputLocaleConfigImpl::SpeechInputLocaleConfigImpl()
     : SpeechInputLocaleConfigImpl(ios::GetChromeBrowserProvider()
-                                      ->GetVoiceSearchProvider()
+                                      .GetVoiceSearchProvider()
                                       ->GetAvailableLanguages(),
                                   LoadSpeechInputLocaleMatches()) {}
 

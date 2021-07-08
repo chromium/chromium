@@ -209,7 +209,7 @@
 - (void)setConsumer:(id<ToolbarConsumer>)consumer {
   _consumer = consumer;
   [_consumer setVoiceSearchEnabled:ios::GetChromeBrowserProvider()
-                                       ->GetVoiceSearchProvider()
+                                       .GetVoiceSearchProvider()
                                        ->IsVoiceSearchEnabled()];
   if (self.webState) {
     [self updateConsumer];

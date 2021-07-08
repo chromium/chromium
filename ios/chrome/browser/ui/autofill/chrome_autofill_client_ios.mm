@@ -450,7 +450,7 @@ void ChromeAutofillClientIOS::ExecuteCommand(int id) {
 
 void ChromeAutofillClientIOS::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
-  std::move(callback).Run(ios::GetChromeBrowserProvider()->GetRiskData());
+  std::move(callback).Run(ios::GetChromeBrowserProvider().GetRiskData());
 }
 
 LogManager* ChromeAutofillClientIOS::GetLogManager() const {

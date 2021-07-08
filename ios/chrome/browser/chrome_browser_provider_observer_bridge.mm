@@ -12,7 +12,7 @@ ChromeBrowserProviderObserverBridge::ChromeBrowserProviderObserverBridge(
     id<ChromeBrowserProviderObserver> observer)
     : observer_(observer) {
   DCHECK(observer_);
-  scoped_observation_.Observe(ios::GetChromeBrowserProvider());
+  scoped_observation_.Observe(&ios::GetChromeBrowserProvider());
 }
 
 ChromeBrowserProviderObserverBridge::~ChromeBrowserProviderObserverBridge() {}

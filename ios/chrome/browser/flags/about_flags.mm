@@ -979,7 +979,7 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     command_line->AppendSwitch(switches::kDisableThirdPartyKeyboardWorkaround);
   }
 
-  ios::GetChromeBrowserProvider()->AppendSwitchesFromExperimentalSettings(
+  ios::GetChromeBrowserProvider().AppendSwitchesFromExperimentalSettings(
       defaults, command_line);
 }
 
