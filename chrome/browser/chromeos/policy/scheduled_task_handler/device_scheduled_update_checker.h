@@ -15,7 +15,6 @@
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/task_executor_with_retries.h"
-#include "chromeos/dbus/power/native_timer.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/settings/timezone_settings.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"
@@ -32,7 +31,8 @@ class DeviceScheduledUpdateChecker
  public:
   DeviceScheduledUpdateChecker(
       ash::CrosSettings* cros_settings,
-      chromeos::NetworkStateHandler* network_state_handler);
+      chromeos::NetworkStateHandler* network_state_handler,
+      std::unique_ptr<ScheduledTaskExecutor> update_check_executor);
   ~DeviceScheduledUpdateChecker() override;
 
   // chromeos::system::TimezoneSettings::Observer implementation.
@@ -42,12 +42,6 @@ class DeviceScheduledUpdateChecker
   // Called when |update_check_timer_| fires. Triggers an update check and
   // schedules the next update check based on |scheduled_update_check_data_|.
   virtual void OnUpdateCheckTimerExpired();
-
-  // Calculates the delay from |cur_time| at which |update_check_timer_| should
-  // run next. Returns 0 delay if the calculation failed due to a concurrent DST
-  // or Time Zone change. Requires |scheduled_update_check_data_| to be set.
-  virtual base::TimeDelta CalculateNextUpdateCheckTimerDelay(
-      base::Time cur_time);
 
   // Called when |os_and_policies_update_checker_| has finished successfully or
   // unsuccessfully after retrying.
@@ -83,15 +77,6 @@ class DeviceScheduledUpdateChecker
   // Reset all state and cancel all pending tasks
   void ResetState();
 
-  // Returns current time.
-  virtual base::Time GetCurrentTime();
-
-  // Returns time ticks from boot including time ticks spent during sleeping.
-  virtual base::TimeTicks GetTicksSinceBoot();
-
-  // Returns the current time zone.
-  virtual const icu::TimeZone& GetTimeZone();
-
   // Used to retrieve Chrome OS settings. Not owned.
   ash::CrosSettings* const cros_settings_;
 
@@ -109,12 +94,15 @@ class DeviceScheduledUpdateChecker
   OsAndPoliciesUpdateChecker os_and_policies_update_checker_;
 
   // Timer that is scheduled to check for updates.
-  std::unique_ptr<chromeos::NativeTimer> update_check_timer_;
+  std::unique_ptr<ScheduledTaskExecutor> update_check_executor_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceScheduledUpdateChecker);
 };
 
 namespace update_checker_internal {
+
+// The tag associated to register |update_check_executor_|.
+constexpr char kUpdateCheckTimerTag[] = "DeviceScheduledUpdateChecker";
 
 // The timeout after which an OS and policies update is aborted.
 constexpr base::TimeDelta kOsAndPoliciesUpdateCheckHardTimeout =

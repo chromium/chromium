@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/device_scheduled_update_checker.h"
 
 #include <algorithm>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -53,6 +54,10 @@ constexpr int kDaysInAWeek = 7;
 constexpr char kESTTimeZoneID[] = "America/New_York";
 constexpr char kISTTimeZoneID[] = "Asia/Kolkata";
 constexpr char kPSTTimeZoneID[] = "America/Los_Angeles";
+
+// The tag associated to register |update_check_timer_|.
+constexpr char kUpdateCheckTimerTagForTest[] =
+    "DeviceScheduledUpdateCheckerForTest";
 
 void DecodeJsonStringAndNormalize(const std::string& json_string,
                                   base::Value* value) {
@@ -218,15 +223,11 @@ std::string CreateConnectedWifiConfigurationJsonString(
 
 }  // namespace
 
-class DeviceScheduledUpdateCheckerForTest
-    : public DeviceScheduledUpdateChecker {
+class ScheduledTaskExecutorForTest : public ScheduledTaskExecutor {
  public:
-  DeviceScheduledUpdateCheckerForTest(
-      ash::CrosSettings* cros_settings,
-      chromeos::NetworkStateHandler* network_state_handler,
-      const base::Clock* clock,
-      const base::TickClock* tick_clock)
-      : DeviceScheduledUpdateChecker(cros_settings, network_state_handler),
+  ScheduledTaskExecutorForTest(const base::Clock* clock,
+                               const base::TickClock* tick_clock)
+      : ScheduledTaskExecutor(kUpdateCheckTimerTagForTest),
         clock_(clock),
         tick_clock_(tick_clock) {
     // Set time zone so that tests are deterministic across different
@@ -234,6 +235,61 @@ class DeviceScheduledUpdateCheckerForTest
     time_zone_ = base::WrapUnique(icu::TimeZone::createTimeZone(
         icu::UnicodeString::fromUTF8(kESTTimeZoneID)));
   }
+
+  ScheduledTaskExecutorForTest(const ScheduledTaskExecutorForTest&) = delete;
+  ScheduledTaskExecutorForTest& operator=(const ScheduledTaskExecutorForTest&) =
+      delete;
+
+  ~ScheduledTaskExecutorForTest() override {}
+
+  void SetTimeZone(std::unique_ptr<icu::TimeZone> time_zone) {
+    time_zone_ = std::move(time_zone);
+  }
+
+  base::Time GetCurrentTime() override { return clock_->Now(); }
+
+  const icu::TimeZone& GetTimeZone() override { return *time_zone_; }
+
+  void SimulateCalculateNextUpdateCheckFailure(bool simulate) {
+    simulate_calculate_next_update_check_failure_ = simulate;
+  }
+
+  base::TimeDelta CalculateNextScheduledTaskTimerDelay(
+      base::Time cur_time,
+      ScheduledTaskData* scheduled_task_data) override {
+    if (simulate_calculate_next_update_check_failure_)
+      return scheduled_task_internal::kInvalidDelay;
+    return ScheduledTaskExecutor::CalculateNextScheduledTaskTimerDelay(
+        cur_time, scheduled_task_data);
+  }
+
+ private:
+  base::TimeTicks GetTicksSinceBoot() override {
+    return tick_clock_->NowTicks();
+  }
+  // Clock to use to get current time.
+  const base::Clock* const clock_;
+
+  // Clock to use to calculate time ticks.
+  const base::TickClock* const tick_clock_;
+
+  // The current time zone.
+  std::unique_ptr<icu::TimeZone> time_zone_;
+
+  // If set then |CalculateNextUpdateCheckTimerDelay| returns zero delay.
+  bool simulate_calculate_next_update_check_failure_ = false;
+};
+
+class DeviceScheduledUpdateCheckerForTest
+    : public DeviceScheduledUpdateChecker {
+ public:
+  DeviceScheduledUpdateCheckerForTest(
+      ash::CrosSettings* cros_settings,
+      chromeos::NetworkStateHandler* network_state_handler,
+      std::unique_ptr<ScheduledTaskExecutor> task_executor)
+      : DeviceScheduledUpdateChecker(cros_settings,
+                                     network_state_handler,
+                                     std::move(task_executor)) {}
 
   ~DeviceScheduledUpdateCheckerForTest() override {
     TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
@@ -244,27 +300,6 @@ class DeviceScheduledUpdateCheckerForTest
   }
 
   int GetUpdateCheckCompletions() const { return update_check_completions_; }
-
-  void SimulateCalculateNextUpdateCheckFailure(bool simulate) {
-    simulate_calculate_next_update_check_failure_ = simulate;
-  }
-
-  void SetTimeZone(std::unique_ptr<icu::TimeZone> time_zone) {
-    time_zone_ = std::move(time_zone);
-    DeviceScheduledUpdateChecker::TimezoneChanged(*time_zone_);
-  }
-
-  base::Time GetCurrentTime() override { return clock_->Now(); }
-
-  const icu::TimeZone& GetTimeZone() override { return *time_zone_; }
-
-  base::TimeDelta CalculateNextUpdateCheckTimerDelay(
-      base::Time cur_time) override {
-    if (simulate_calculate_next_update_check_failure_)
-      return scheduled_task_internal::kInvalidDelay;
-    return DeviceScheduledUpdateChecker::CalculateNextUpdateCheckTimerDelay(
-        cur_time);
-  }
 
  private:
   void OnUpdateCheckTimerExpired() override {
@@ -280,27 +315,11 @@ class DeviceScheduledUpdateCheckerForTest
         std::move(scoped_wake_lock), result);
   }
 
-  base::TimeTicks GetTicksSinceBoot() override {
-    return tick_clock_->NowTicks();
-  }
-
-  // Clock to use to get current time.
-  const base::Clock* const clock_;
-
-  // Clock to use to calculate time ticks.
-  const base::TickClock* const tick_clock_;
-
-  // The current time zone.
-  std::unique_ptr<icu::TimeZone> time_zone_;
-
   // Number of calls to |OnUpdateCheckTimerExpired|.
   int update_check_timer_expirations_ = 0;
 
   // Number of calls to |OnUpdateCheckCompletion| with |result| = true.
   int update_check_completions_ = 0;
-
-  // If set then |CalculateNextUpdateCheckTimerDelay| returns zero delay.
-  bool simulate_calculate_next_update_check_failure_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceScheduledUpdateCheckerForTest);
 };
@@ -328,12 +347,14 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
         std::make_unique<chromeos::NetworkStateTestHelper>(
             true /* use_default_devices_and_services */);
 
+    auto task_executor = std::make_unique<ScheduledTaskExecutorForTest>(
+        task_environment_.GetMockClock(), task_environment_.GetMockTickClock());
+    scheduled_task_executor_ = task_executor.get();
     device_scheduled_update_checker_ =
         std::make_unique<DeviceScheduledUpdateCheckerForTest>(
             ash::CrosSettings::Get(),
             network_state_test_helper_->network_state_handler(),
-            task_environment_.GetMockClock(),
-            task_environment_.GetMockTickClock());
+            std::move(task_executor));
   }
 
   ~DeviceScheduledUpdateCheckerTest() override {
@@ -464,9 +485,9 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     // Calculate time from one hour from now and set the update check policy to
     // happen daily at that time.
     base::Time update_check_time =
-        device_scheduled_update_checker_->GetCurrentTime() + delay;
+        scheduled_task_executor_->GetCurrentTime() + delay;
     auto update_check_icu_time = scheduled_task_internal::ConvertUtcToTzIcuTime(
-        update_check_time, device_scheduled_update_checker_->GetTimeZone());
+        update_check_time, scheduled_task_executor_->GetTimeZone());
 
     // Extracting fields from valid ICU time should always succeed.
     UErrorCode status = U_ZERO_ERROR;
@@ -515,9 +536,8 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
   // update check timer. Returns false if |tz_id| is the same as the current
   // time zone or on a scheduling error.
   bool CheckRecalculationOnTimezoneChange(const std::string& new_tz_id) {
-    base::Time cur_time = device_scheduled_update_checker_->GetCurrentTime();
-    const icu::TimeZone& cur_tz =
-        device_scheduled_update_checker_->GetTimeZone();
+    base::Time cur_time = scheduled_task_executor_->GetCurrentTime();
+    const icu::TimeZone& cur_tz = scheduled_task_executor_->GetTimeZone();
     auto new_tz = base::WrapUnique(
         icu::TimeZone::createTimeZone(icu::UnicodeString::fromUTF8(new_tz_id)));
     if (cur_tz == *new_tz) {
@@ -553,7 +573,9 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
 
     // Change the time zone. This should change the time at which the timer
     // should expire.
-    device_scheduled_update_checker_->SetTimeZone(std::move(new_tz));
+    scheduled_task_executor_->SetTimeZone(std::move(new_tz));
+    device_scheduled_update_checker_->TimezoneChanged(
+        scheduled_task_executor_->GetTimeZone());
 
     // Fast forward right before the new time zone's expected timer expiration
     // time and check if no new events happened.
@@ -586,6 +608,8 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  // Owned by |device_scheduled_update_checker_|
+  ScheduledTaskExecutorForTest* scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledUpdateCheckerForTest>
       device_scheduled_update_checker_;
   ash::ScopedTestingCrosSettings cros_settings_;
@@ -697,8 +721,7 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckIfMonthlyUpdateCheckIsScheduled) {
   base::Time second_update_check_time =
       update_checker_internal::IcuToBaseTime(*first_update_check_icu_time);
   base::TimeDelta second_update_check_delay =
-      second_update_check_time -
-      device_scheduled_update_checker_->GetCurrentTime();
+      second_update_check_time - scheduled_task_executor_->GetCurrentTime();
   EXPECT_GT(second_update_check_delay, scheduled_task_internal::kInvalidDelay);
   task_environment_.FastForwardBy(second_update_check_delay);
   // Simulate update check succeeding.
@@ -749,7 +772,7 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckMonthlyRolloverLogic) {
         update_checker_internal::IcuToBaseTime(*update_check_icu_time);
     base::TimeDelta expected_next_update_check_delay =
         expected_next_update_check_time -
-        device_scheduled_update_checker_->GetCurrentTime();
+        scheduled_task_executor_->GetCurrentTime();
     // This should be always set in a virtual time environment.
     EXPECT_GT(expected_next_update_check_delay,
               scheduled_task_internal::kInvalidDelay);
@@ -777,8 +800,7 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckMonthlyRolloverLogic) {
 TEST_F(DeviceScheduledUpdateCheckerTest, CheckRetryLogicEventualSuccess) {
   // This will simulate an error while calculating the next update check time
   // and will result in no update checks happening till its set.
-  device_scheduled_update_checker_->SimulateCalculateNextUpdateCheckFailure(
-      true);
+  scheduled_task_executor_->SimulateCalculateNextUpdateCheckFailure(true);
 
   // Calculate time from one hour from now and set the update check policy to
   // happen daily at that time.
@@ -804,8 +826,7 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckRetryLogicEventualSuccess) {
   // Reset failure mode and fast forward by the retry period. This time it
   // should succeed in setting an update check timer. No update checks should
   // happen yet but a check has just been scheduled.
-  device_scheduled_update_checker_->SimulateCalculateNextUpdateCheckFailure(
-      false);
+  scheduled_task_executor_->SimulateCalculateNextUpdateCheckFailure(false);
   task_environment_.FastForwardBy(
       update_checker_internal::kStartUpdateCheckTimerRetryTime);
   EXPECT_TRUE(CheckStats(expected_update_checks, expected_update_check_requests,
@@ -844,8 +865,7 @@ TEST_F(DeviceScheduledUpdateCheckerTest,
        CheckRetryLogicCapWithCalculationFailure) {
   // This will simulate an error while calculating the next update check time
   // and will result in no update checks happening till its set.
-  device_scheduled_update_checker_->SimulateCalculateNextUpdateCheckFailure(
-      true);
+  scheduled_task_executor_->SimulateCalculateNextUpdateCheckFailure(true);
   EXPECT_FALSE(CheckDailyUpdateCheck(1 /* hours_from_now */));
 
   // Fast forward by max retries * retry period and check that no update has
@@ -859,8 +879,7 @@ TEST_F(DeviceScheduledUpdateCheckerTest,
 
   // At this point all state has been reset. Reset failure mode and check if
   // daily update checks happen.
-  device_scheduled_update_checker_->SimulateCalculateNextUpdateCheckFailure(
-      false);
+  scheduled_task_executor_->SimulateCalculateNextUpdateCheckFailure(false);
   EXPECT_TRUE(CheckDailyUpdateCheck(1 /* hours_from_now */));
 }
 
