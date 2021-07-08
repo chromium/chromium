@@ -178,6 +178,10 @@ void FuchsiaAudioRenderer::OnBuffersAcquired(
     delayed_packets_.pop_front();
     SendInputPacket(std::move(packet));
   }
+
+  if (is_at_end_of_stream_) {
+    OnSysmemBufferStreamEndOfStream();
+  }
 }
 
 void FuchsiaAudioRenderer::InitializeStreamSink() {
@@ -710,6 +714,10 @@ void FuchsiaAudioRenderer::OnSysmemBufferStreamOutputPacket(
 void FuchsiaAudioRenderer::OnSysmemBufferStreamEndOfStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(is_at_end_of_stream_);
+
+  // Stream sink is not bound yet, don't send EOS.
+  if (!stream_sink_)
+    return;
 
   stream_sink_->EndOfStream();
 
