@@ -111,7 +111,7 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
   suggestions_status_.clear();
   popular_sites_json_.clear();
   most_visited_sites_ = client_->MakeMostVisitedSites();
-  most_visited_sites_->SetMostVisitedURLsObserver(this, site_count_);
+  most_visited_sites_->AddMostVisitedURLsObserver(this, site_count_);
   SendSourceInfo();
 }
 
@@ -170,7 +170,7 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
   // TODO(sfiera): refresh MostVisitedSites without re-creating it, as soon as
   // that will pick up changes to the Popular Sites overrides.
   most_visited_sites_ = client_->MakeMostVisitedSites();
-  most_visited_sites_->SetMostVisitedURLsObserver(this, site_count_);
+  most_visited_sites_->AddMostVisitedURLsObserver(this, site_count_);
   SendSourceInfo();
 }
 

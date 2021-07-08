@@ -40,7 +40,7 @@ NewTabPageThirdPartyHandler::NewTabPageThirdPartyHandler(
       ntp_navigation_start_time_(ntp_navigation_start_time),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
-  most_visited_sites_->SetMostVisitedURLsObserver(
+  most_visited_sites_->AddMostVisitedURLsObserver(
       this, ntp_tiles::kMaxNumMostVisited);
   most_visited_sites_->EnableCustomLinks(false);
   // Listen for theme installation.

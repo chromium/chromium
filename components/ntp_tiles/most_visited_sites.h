@@ -20,6 +20,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
@@ -88,15 +90,12 @@ class MostVisitedSites : public history::TopSitesObserver,
                          public RepeatableQueriesServiceObserver {
  public:
   // The observer to be notified when the list of most visited sites changes.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // |sections| must at least contain the PERSONALIZED section.
     virtual void OnURLsAvailable(
         const std::map<SectionType, NTPTilesVector>& sections) = 0;
     virtual void OnIconMadeAvailable(const GURL& site_url) = 0;
-
-   protected:
-    virtual ~Observer() {}
   };
 
   // This interface delegates the retrieval of the homepage to the
@@ -148,11 +147,20 @@ class MostVisitedSites : public history::TopSitesObserver,
   PopularSites* popular_sites() { return popular_sites_.get(); }
   MostVisitedSitesSupervisor* supervisor() { return supervisor_.get(); }
 
-  // Sets the observer, and immediately fetches the current suggestions.
+  // Adds the observer and immediately fetches the current suggestions.
+  // All observers will be notified when the suggestions are fetched.
+  //
+  // Note: only observers that require the same |max_num_sites| could observe
+  // the same MostVisitedSites instance. Otherwise, a new Instance should be
+  // created for the observer.
+  //
   // Does not take ownership of |observer|, which must outlive this object and
   // must not be null. |max_num_sites| indicates the the maximum number of most
   // visited sites to return.
-  void SetMostVisitedURLsObserver(Observer* observer, size_t max_num_sites);
+  void AddMostVisitedURLsObserver(Observer* observer, size_t max_num_sites);
+
+  // Removes the observer.
+  void RemoveMostVisitedURLsObserver(Observer* observer);
 
   // Sets the client that provides platform-specific homepage preferences.
   // When used to replace an existing client, the new client will first be
@@ -364,7 +372,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   std::unique_ptr<HomepageClient> homepage_client_;
   std::unique_ptr<ExploreSitesClient> explore_sites_client_;
 
-  Observer* observer_;
+  base::ObserverList<Observer> observers_;
 
   // The maximum number of most visited sites to return.
   // Do not use directly. Use GetMaxNumSites() instead.
@@ -395,6 +403,9 @@ class MostVisitedSites : public history::TopSitesObserver,
   // whenever it changes, including possibily an initial change from
   // !current_tiles_.has_value() to current_tiles_->empty().
   absl::optional<NTPTilesVector> current_tiles_;
+
+  // Whether has started observing data sources.
+  bool is_observing_;
 
   // For callbacks may be run after destruction, used exclusively for TopSites
   // (since it's used to detect whether there's a query in flight).

@@ -134,9 +134,9 @@ MostVisitedSites::MostVisitedSites(
       custom_links_(std::move(custom_links)),
       icon_cacher_(std::move(icon_cacher)),
       supervisor_(std::move(supervisor)),
-      observer_(nullptr),
       max_num_sites_(0u),
-      mv_source_(TileSource::TOP_SITES) {
+      mv_source_(TileSource::TOP_SITES),
+      is_observing_(false) {
   DCHECK(prefs_);
   // top_sites_ can be null in tests.
   // TODO(sfiera): have iOS use a dummy TopSites in its tests.
@@ -148,6 +148,7 @@ MostVisitedSites::MostVisitedSites(
 MostVisitedSites::~MostVisitedSites() {
   if (supervisor_)
     supervisor_->SetObserver(nullptr);
+  observers_.Clear();
 }
 
 // static
@@ -199,46 +200,56 @@ void MostVisitedSites::SetExploreSitesClient(
   explore_sites_client_ = std::move(client);
 }
 
-void MostVisitedSites::SetMostVisitedURLsObserver(Observer* observer,
+void MostVisitedSites::AddMostVisitedURLsObserver(Observer* observer,
                                                   size_t max_num_sites) {
-  DCHECK(observer);
-  observer_ = observer;
+  observers_.AddObserver(observer);
+
+  // All observer must provide the same |max_num_sites| value.
+  DCHECK(max_num_sites_ == 0u || max_num_sites_ == max_num_sites);
   max_num_sites_ = max_num_sites;
 
-  // The order for this condition is important, ShouldShowPopularSites() should
-  // always be called last to keep metrics as relevant as possible.
-  if (popular_sites_ && NeedPopularSites(prefs_, GetMaxNumSites()) &&
-      ShouldShowPopularSites()) {
-    popular_sites_->MaybeStartFetch(
-        false, base::BindOnce(&MostVisitedSites::OnPopularSitesDownloaded,
-                              base::Unretained(this)));
-  }
+  // Starts observing the following sources when the first observer is added.
+  if (!is_observing_) {
+    is_observing_ = true;
+    // The order for this condition is important, ShouldShowPopularSites()
+    // should always be called last to keep metrics as relevant as possible.
+    if (popular_sites_ && NeedPopularSites(prefs_, GetMaxNumSites()) &&
+        ShouldShowPopularSites()) {
+      popular_sites_->MaybeStartFetch(
+          false, base::BindOnce(&MostVisitedSites::OnPopularSitesDownloaded,
+                                base::Unretained(this)));
+    }
 
-  if (top_sites_) {
-    // Register as TopSitesObserver so that we can update ourselves when the
-    // TopSites changes.
-    top_sites_observation_.Observe(top_sites_.get());
-  }
+    if (top_sites_) {
+      // Register as TopSitesObserver so that we can update ourselves when the
+      // TopSites changes.
+      top_sites_observation_.Observe(top_sites_.get());
+    }
 
-  if (repeatable_queries_) {
-    repeatable_queries_observation_.Observe(repeatable_queries_);
-  }
+    if (repeatable_queries_) {
+      repeatable_queries_observation_.Observe(repeatable_queries_);
+    }
 
-  if (custom_links_) {
-    custom_links_subscription_ =
-        custom_links_->RegisterCallbackForOnChanged(base::BindRepeating(
-            &MostVisitedSites::OnCustomLinksChanged, base::Unretained(this)));
-  }
+    if (custom_links_) {
+      custom_links_subscription_ =
+          custom_links_->RegisterCallbackForOnChanged(base::BindRepeating(
+              &MostVisitedSites::OnCustomLinksChanged, base::Unretained(this)));
+    }
 
-  suggestions_subscription_ = suggestions_service_->AddCallback(
-      base::BindRepeating(&MostVisitedSites::OnSuggestionsProfileChanged,
-                          base::Unretained(this)));
+    suggestions_subscription_ = suggestions_service_->AddCallback(
+        base::BindRepeating(&MostVisitedSites::OnSuggestionsProfileChanged,
+                            base::Unretained(this)));
+  }
 
   // Immediately build the current set of tiles, getting suggestions from the
   // SuggestionsService's cache or, if that is empty, sites from TopSites.
   BuildCurrentTiles();
   // Also start a request for fresh suggestions.
   Refresh();
+}
+
+void MostVisitedSites::RemoveMostVisitedURLsObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void MostVisitedSites::Refresh() {
@@ -848,7 +859,8 @@ void MostVisitedSites::MergeMostVisitedTiles(NTPTilesVector personal_tiles) {
 
   // The explore sites tile may have taken a space that was utilized by the
   // personal tiles.
-  if (personal_tiles.size() + num_actual_tiles > GetMaxNumSites()) {
+  if (!personal_tiles.empty() &&
+      personal_tiles.size() + num_actual_tiles > GetMaxNumSites()) {
     personal_tiles.pop_back();
   }
   AddToHostsAndTotalCount(personal_tiles, &used_hosts, &num_actual_tiles);
@@ -884,10 +896,12 @@ void MostVisitedSites::SaveTilesAndNotify(
     }
   }
   prefs_->SetInteger(prefs::kNumPersonalTiles, num_personal_tiles);
-  if (!observer_)
+
+  if (observers_.empty())
     return;
   sections[SectionType::PERSONALIZED] = *current_tiles_;
-  observer_->OnURLsAvailable(sections);
+  for (auto& observer : observers_)
+    observer.OnURLsAvailable(sections);
 }
 
 // static
@@ -925,7 +939,8 @@ void MostVisitedSites::OnPopularSitesDownloaded(bool success) {
 }
 
 void MostVisitedSites::OnIconMadeAvailable(const GURL& site_url) {
-  observer_->OnIconMadeAvailable(site_url);
+  for (auto& observer : observers_)
+    observer.OnIconMadeAvailable(site_url);
 }
 
 void MostVisitedSites::TopSitesLoaded(TopSites* top_sites) {}

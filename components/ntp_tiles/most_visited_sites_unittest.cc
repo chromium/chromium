@@ -538,6 +538,7 @@ class MostVisitedSitesTest
       base::MakeRefCounted<StrictMock<MockTopSites>>();
   StrictMock<MockSuggestionsService> mock_suggestions_service_;
   StrictMock<MockMostVisitedSitesObserver> mock_observer_;
+  StrictMock<MockMostVisitedSitesObserver> mock_other_observer_;
   std::unique_ptr<MostVisitedSites> most_visited_sites_;
   base::test::ScopedFeatureList feature_list_;
   MockCustomLinksManager* mock_custom_links_;
@@ -568,8 +569,8 @@ TEST_P(MostVisitedSitesTest, ShouldIncludeTileForHomepage) {
       .WillRepeatedly(Return(false));
   EXPECT_CALL(mock_observer_, OnURLsAvailable(FirstPersonalizedTileIs(
                                   u"", kHomepageUrl, TileSource::HOMEPAGE)));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -583,8 +584,8 @@ TEST_P(MostVisitedSitesTest, ShouldNotIncludeHomepageWithoutClient) {
                   Pair(SectionType::PERSONALIZED,
                        Not(Contains(MatchesTile(u"", kHomepageUrl,
                                                 TileSource::HOMEPAGE)))))));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -615,8 +616,8 @@ TEST_P(MostVisitedSitesTest, ShouldIncludeHomeTileWithUrlBeforeQueryingName) {
                          Not(Contains(MatchesTile(kHomepageTitle, kHomepageUrl,
                                                   TileSource::HOMEPAGE)))))));
   }
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -634,8 +635,8 @@ TEST_P(MostVisitedSitesTest, ShouldUpdateHomepageTileWhenRefreshHomepageTile) {
       .WillRepeatedly(Return(false));
   EXPECT_CALL(mock_observer_, OnURLsAvailable(FirstPersonalizedTileIs(
                                   u"", kHomepageUrl, TileSource::HOMEPAGE)));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
   VerifyAndClearExpectations();
 
@@ -664,8 +665,8 @@ TEST_P(MostVisitedSitesTest, ShouldNotIncludeHomepageIfNoTileRequested) {
   EXPECT_CALL(
       mock_observer_,
       OnURLsAvailable(Contains(Pair(SectionType::PERSONALIZED, IsEmpty()))));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/0);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/0);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -685,8 +686,8 @@ TEST_P(MostVisitedSitesTest, ShouldReturnHomepageIfOneTileRequested) {
       OnURLsAvailable(Contains(Pair(
           SectionType::PERSONALIZED,
           ElementsAre(MatchesTile(u"", kHomepageUrl, TileSource::HOMEPAGE))))));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -709,8 +710,8 @@ TEST_P(MostVisitedSitesTest, ShouldHaveHomepageFirstInListWhenFull) {
   std::map<SectionType, NTPTilesVector> sections;
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_))
       .WillOnce(SaveArg<0>(&sections));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/4);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/4);
   base::RunLoop().RunUntilIdle();
   ASSERT_THAT(sections, Contains(Key(SectionType::PERSONALIZED)));
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
@@ -738,8 +739,8 @@ TEST_P(MostVisitedSitesTest, ShouldHaveHomepageFirstInListWhenNotFull) {
   std::map<SectionType, NTPTilesVector> sections;
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_))
       .WillOnce(SaveArg<0>(&sections));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/8);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/8);
   base::RunLoop().RunUntilIdle();
   ASSERT_THAT(sections, Contains(Key(SectionType::PERSONALIZED)));
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
@@ -767,8 +768,8 @@ TEST_P(MostVisitedSitesTest, ShouldDeduplicateHomepageWithTopSites) {
           AllOf(Contains(MatchesTile(u"", kHomepageUrl, TileSource::HOMEPAGE)),
                 Not(Contains(MatchesTile(u"", kHomepageUrl,
                                          TileSource::TOP_SITES))))))));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -787,8 +788,8 @@ TEST_P(MostVisitedSitesTest, ShouldNotIncludeHomepageIfThereIsNone) {
                   Pair(SectionType::PERSONALIZED,
                        Not(Contains(MatchesTile(u"", kHomepageUrl,
                                                 TileSource::HOMEPAGE)))))));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -807,8 +808,8 @@ TEST_P(MostVisitedSitesTest, ShouldNotIncludeHomepageIfEmptyUrl) {
   EXPECT_CALL(mock_observer_,
               OnURLsAvailable(Not(FirstPersonalizedTileIs(
                   u"", kEmptyHomepageUrl, TileSource::HOMEPAGE))));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -833,8 +834,8 @@ TEST_P(MostVisitedSitesTest, ShouldNotIncludeHomepageIfBlocked) {
                        Not(Contains(MatchesTile(u"", kHomepageUrl,
                                                 TileSource::HOMEPAGE)))))));
 
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -856,8 +857,8 @@ TEST_P(MostVisitedSitesTest, ShouldPinHomepageAgainIfBlockedUndone) {
                        Not(Contains(MatchesTile(u"", kHomepageUrl,
                                                 TileSource::HOMEPAGE)))))));
 
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
   VerifyAndClearExpectations();
 
@@ -893,8 +894,8 @@ TEST_P(MostVisitedSitesTest, ShouldNotIncludeTileForExploreSitesIfNoClient) {
                        Contains(TileWithSource(TileSource::EXPLORE)))))));
   // Note that 5 sites are requested, this means that there should be the 3 from
   // top sites and two from popular sites.
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/5);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/5);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -914,8 +915,8 @@ TEST_P(MostVisitedSitesTest, ShouldIncludeTileForExploreSites) {
                                          TileSource::EXPLORE)));
   // Note that 5 sites are requested, this means that there should be the 3 from
   // top sites, one from popular sites, and one explore tile.
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/5);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/5);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -937,8 +938,8 @@ TEST_P(MostVisitedSitesTest, RemovesPersonalSiteIfExploreSitesTilePresent) {
                                           TileSource::TOP_SITES),
                               MatchesTile(kTestExploreTitle, kTestExploreUrl,
                                           TileSource::EXPLORE))))));
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -972,8 +973,8 @@ TEST_P(MostVisitedSitesTest,
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_))
       .WillOnce(SaveArg<0>(&sections));
 
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/6);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/6);
   base::RunLoop().RunUntilIdle();
   ASSERT_THAT(sections, Contains(Key(SectionType::PERSONALIZED)));
   EXPECT_THAT(sections.at(SectionType::PERSONALIZED),
@@ -1030,8 +1031,8 @@ TEST_P(MostVisitedSitesTest, ShouldHandleTopSitesCacheHit) {
   EXPECT_CALL(mock_suggestions_service_, FetchSuggestionsData())
       .WillOnce(Return(true));
 
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   VerifyAndClearExpectations();
   EXPECT_FALSE(suggestions_service_callbacks_.empty());
   CHECK(top_sites_callbacks_.empty());
@@ -1152,8 +1153,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   EXPECT_CALL(*mock_custom_links_, RegisterCallbackForOnChanged(_));
   ExpectBuildWithTopSites(
       MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}, &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
   ASSERT_THAT(tiles.size(), Ge(1ul));
@@ -1201,8 +1202,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   EXPECT_CALL(*mock_custom_links_, RegisterCallbackForOnChanged(_));
   ExpectBuildWithTopSites(
       MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}, &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
   ASSERT_THAT(tiles.size(), Ge(1ul));
@@ -1244,8 +1245,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   // suggestions.
   EXPECT_CALL(*mock_custom_links_, RegisterCallbackForOnChanged(_));
   ExpectBuildWithSuggestions({MakeSuggestion(kTestTitle, kTestUrl)}, &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
   ASSERT_THAT(tiles.size(), Ge(1ul));
@@ -1284,8 +1285,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   // suggestions.
   EXPECT_CALL(*mock_custom_links_, RegisterCallbackForOnChanged(_));
   ExpectBuildWithSuggestions({MakeSuggestion(kTestTitle, kTestUrl)}, &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
   ASSERT_THAT(tiles.size(), Ge(1ul));
@@ -1326,8 +1327,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest, DisableCustomLinksWhenInitialized) {
   EXPECT_CALL(mock_suggestions_service_, FetchSuggestionsData())
       .WillOnce(Return(false));
   ExpectBuildWithCustomLinks(expected_links, &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
   ASSERT_THAT(sections.at(SectionType::PERSONALIZED),
               ElementsAre(MatchesTile(kTestTitle16, kTestUrl,
@@ -1377,8 +1378,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
                          MakeMostVisitedURL(kTestTitle2, kTestUrl2),
                          MakeMostVisitedURL(kTestTitle3, kTestUrl3)},
       &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
@@ -1418,8 +1419,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
                               MakeSuggestion(kTestTitle2, kTestUrl2),
                               MakeSuggestion(kTestTitle3, kTestUrl3)},
                              &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/3);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/3);
   base::RunLoop().RunUntilIdle();
 
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
@@ -1455,8 +1456,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
       MostVisitedURLList{MakeMostVisitedURL(kTestTitle1, kTestUrl1),
                          MakeMostVisitedURL(kTestTitle2, kTestUrl2)},
       &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/2);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/2);
   base::RunLoop().RunUntilIdle();
 
   // Both cases should not crash and generate an empty title tile.
@@ -1479,8 +1480,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   EXPECT_CALL(*mock_custom_links_, RegisterCallbackForOnChanged(_));
   ExpectBuildWithTopSites(
       MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}, &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
   ASSERT_THAT(tiles.size(), Ge(1ul));
@@ -1533,8 +1534,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   EXPECT_CALL(*mock_custom_links_, RegisterCallbackForOnChanged(_));
   ExpectBuildWithTopSites(
       MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}, &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
   ASSERT_THAT(tiles.size(), Ge(1ul));
@@ -1590,8 +1591,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   EXPECT_CALL(*mock_custom_links_, RegisterCallbackForOnChanged(_));
   ExpectBuildWithTopSites(
       MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}, &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
   ASSERT_THAT(tiles.size(), Ge(1ul));
@@ -1662,8 +1663,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest, RebuildTilesOnCustomLinksChanged) {
   ExpectBuildWithTopSites(
       MostVisitedURLList{MakeMostVisitedURL(kTestTitle1, kTestUrl1)},
       &sections);
-  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                  /*num_sites=*/1);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
   base::RunLoop().RunUntilIdle();
   NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
   ASSERT_THAT(tiles.size(), Ge(1ul));
@@ -1756,8 +1757,8 @@ class MostVisitedSitesWithCacheHitTest : public MostVisitedSitesTest {
     EXPECT_CALL(mock_suggestions_service_, FetchSuggestionsData())
         .WillOnce(Return(true));
 
-    most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                    /*num_sites=*/4);
+    most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                    /*max_num_sites=*/4);
     VerifyAndClearExpectations();
 
     EXPECT_FALSE(suggestions_service_callbacks_.empty());
@@ -1891,8 +1892,8 @@ class MostVisitedSitesWithEmptyCacheTest : public MostVisitedSitesTest {
     EXPECT_CALL(mock_suggestions_service_, FetchSuggestionsData())
         .WillOnce(Return(true));
 
-    most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
-                                                    /*num_sites=*/3);
+    most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                    /*max_num_sites=*/3);
     VerifyAndClearExpectations();
 
     EXPECT_FALSE(suggestions_service_callbacks_.empty());

@@ -214,7 +214,7 @@ InstantService::InstantService(Profile* profile)
     // If custom links are enabled, an additional tile may be returned making up
     // to ntp_tiles::kMaxNumCustomLinks custom links including the
     // "Add shortcut" button.
-    most_visited_sites_->SetMostVisitedURLsObserver(
+    most_visited_sites_->AddMostVisitedURLsObserver(
         this, ntp_tiles::kMaxNumMostVisited);
     most_visited_sites_->EnableCustomLinks(IsCustomLinksEnabled());
   }

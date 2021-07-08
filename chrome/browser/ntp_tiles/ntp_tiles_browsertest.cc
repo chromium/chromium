@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(NTPTilesTest, LoadURL) {
 
   // This call will call SyncWithHistory(), which means the new URL will be in
   // the next set of tiles that the waiter retrieves.
-  most_visited_sites_->SetMostVisitedURLsObserver(&waiter, /*num_sites=*/8);
+  most_visited_sites_->AddMostVisitedURLsObserver(&waiter, /*max_num_sites=*/8);
 
   NTPTilesVector tiles = waiter.WaitForTiles();
   EXPECT_THAT(tiles, Contains(MatchesTile("OK", page_url.spec().c_str(),
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(NTPTilesTest, ServerRedirect) {
       browser(), first_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   MostVisitedSitesWaiter waiter;
-  most_visited_sites_->SetMostVisitedURLsObserver(&waiter, /*num_sites=*/8);
+  most_visited_sites_->AddMostVisitedURLsObserver(&waiter, /*max_num_sites=*/8);
 
   NTPTilesVector tiles = waiter.WaitForTiles();
 
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(NTPTilesTest, NavigateAfterSettingObserver) {
 
   // Register the observer before doing the navigation.
   MostVisitedSitesWaiter waiter;
-  most_visited_sites_->SetMostVisitedURLsObserver(&waiter, /*num_sites=*/8);
+  most_visited_sites_->AddMostVisitedURLsObserver(&waiter, /*max_num_sites=*/8);
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), page_url, WindowOpenDisposition::CURRENT_TAB,
