@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_writer.h"
@@ -25,6 +26,7 @@ namespace cc {
 namespace {
 const bool kHasNoDiscardableImages = false;
 
+#if defined(OS_ANDROID)
 struct StretchShaderUniforms {
   // multiplier to apply to scale effect
   float uMaxStretchIntensity;
@@ -235,6 +237,13 @@ const char* kStretchShader = R"(
 static const float CONTENT_DISTANCE_STRETCHED = 1.f;
 static const float INTERPOLATION_STRENGTH_VALUE = 0.7f;
 
+sk_sp<SkRuntimeEffect> getStretchEffect() {
+  static base::NoDestructor<SkRuntimeEffect::Result> effect(
+      SkRuntimeEffect::MakeForShader(SkString(kStretchShader)));
+  return effect->effect;
+}
+#endif
+
 bool AreFiltersEqual(const PaintFilter* one, const PaintFilter* two) {
   if (!one || !two)
     return !one && !two;
@@ -262,12 +271,6 @@ sk_sp<PaintFilter> Snapshot(const sk_sp<PaintFilter>& filter,
   if (!filter)
     return nullptr;
   return filter->SnapshotWithImages(image_provider);
-}
-
-sk_sp<SkRuntimeEffect> getStretchEffect() {
-  static base::NoDestructor<SkRuntimeEffect::Result> effect(
-      SkRuntimeEffect::MakeForShader(SkString(kStretchShader)));
-  return effect->effect;
 }
 
 }  // namespace
@@ -1560,6 +1563,7 @@ StretchPaintFilter::StretchPaintFilter(SkScalar stretch_x,
       width_(width),
       height_(height),
       input_(std::move(input)) {
+#if defined(OS_ANDROID)
   float normOverScrollDistX = stretch_x_;
   float normOverScrollDistY = stretch_y_;
   float distanceStretchedX =
@@ -1590,6 +1594,11 @@ StretchPaintFilter::StretchPaintFilter(SkScalar stretch_x,
   sk_sp<SkData> uniformVals = SkData::MakeWithCopy(&uniforms, sizeof(uniforms));
   cached_sk_filter_ = SkMakeRuntimeImageFilter(getStretchEffect(), uniformVals,
                                                GetSkFilter(input_.get()));
+#else   // defined(OS_ANDROID)
+  // Stretch filter is only used on android and removed from other platforms
+  // to reduce size. See https://crbug.com/1226170.
+  NOTREACHED();
+#endif  // defined(OS_ANDROID)
 }
 
 StretchPaintFilter::~StretchPaintFilter() = default;
