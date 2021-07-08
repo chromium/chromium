@@ -184,6 +184,12 @@ SerialPortInfo* SerialPort::getInfo() {
 ScriptPromise SerialPort::open(ScriptState* script_state,
                                const SerialOptions* options,
                                ExceptionState& exception_state) {
+  if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Script context has shut down.");
+    return ScriptPromise();
+  }
+
   if (open_resolver_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
