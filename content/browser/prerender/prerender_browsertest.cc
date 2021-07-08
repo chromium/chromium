@@ -2517,6 +2517,19 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VisibilityWhilePrerendering) {
                 ->CalculatePageLifecycleState()
                 ->visibility,
             PageVisibilityState::kHidden);
+  EXPECT_EQ(prerendered_render_frame_host->GetVisibilityState(),
+            PageVisibilityState::kHidden);
+
+  // Activate prerendering page.
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  // The visibility state should be "visible" after activation.
+  EXPECT_EQ(rvh->GetPageLifecycleStateManager()
+                ->CalculatePageLifecycleState()
+                ->visibility,
+            PageVisibilityState::kVisible);
+  EXPECT_EQ(prerendered_render_frame_host->GetVisibilityState(),
+            PageVisibilityState::kVisible);
 }
 
 // Tests that prerendering doesn't affect WebContents::GetTitle().
