@@ -10,11 +10,20 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace chrome {
 namespace {
+
+std::string Redact(const std::string& s) {
+  return LOG_IS_ON(INFO) ? base::StrCat({"'", s, "'"}) : "(redacted)";
+}
+
+std::string Redact(const base::FilePath& path) {
+  return Redact(path.value());
+}
 
 // A zip::FileAccessor that talks to a file system through the Mojo
 // filesystem::mojom::Directory.
@@ -45,7 +54,7 @@ class MojoFileAccessor : public zip::FileAccessor {
 
     std::vector<filesystem::mojom::FileOpenResultPtr> results;
     if (!src_dir_->OpenFileHandles(std::move(details), &results)) {
-      LOG(ERROR) << "Cannot open '" << paths.front() << "' and "
+      LOG(ERROR) << "Cannot open " << Redact(paths.front()) << " and "
                  << (paths.size() - 1) << " other files";
       return false;
     }
@@ -77,7 +86,7 @@ class MojoFileAccessor : public zip::FileAccessor {
           path.value(), dir_remote.BindNewPipeAndPassReceiver(),
           filesystem::mojom::kFlagRead | filesystem::mojom::kFlagOpen, &error);
       if (error != base::File::Error::FILE_OK) {
-        LOG(ERROR) << "Cannot open '" << path << "': Error " << error;
+        LOG(ERROR) << "Cannot open " << Redact(path) << ": Error " << error;
         return false;
       }
       dir = dir_remote.get();
@@ -87,7 +96,8 @@ class MojoFileAccessor : public zip::FileAccessor {
     base::File::Error error;
     dir->Read(&error, &contents);
     if (error != base::File::Error::FILE_OK) {
-      LOG(ERROR) << "Cannot list content of '" << path << "': Error " << error;
+      LOG(ERROR) << "Cannot list content of " << Redact(path) << ": Error "
+                 << error;
       return false;
     }
 
@@ -111,7 +121,8 @@ class MojoFileAccessor : public zip::FileAccessor {
     filesystem::mojom::FileInformationPtr file_info;
     src_dir_->StatFile(path.value(), &error, &file_info);
     if (error != base::File::Error::FILE_OK) {
-      LOG(ERROR) << "Cannot get info of '" << path << "': Error " << error;
+      LOG(ERROR) << "Cannot get info of " << Redact(path) << ": Error "
+                 << error;
       return false;
     }
 

@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/services/filesystem/directory_impl.h"
@@ -15,6 +17,14 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace {
+
+std::string Redact(const std::string& s) {
+  return LOG_IS_ON(INFO) ? base::StrCat({"'", s, "'"}) : "(redacted)";
+}
+
+std::string Redact(const base::FilePath& path) {
+  return Redact(path.value());
+}
 
 // Creates the destination zip file only if it does not already exist.
 base::File OpenFileHandleAsync(const base::FilePath& zip_path) {
@@ -61,7 +71,7 @@ void ZipFileCreator::CreateZipFile(
   DCHECK(!remote_zip_file_creator_);
 
   if (!file.IsValid()) {
-    LOG(ERROR) << "Cannot create ZIP file '" << dest_file_ << "'";
+    LOG(ERROR) << "Cannot create ZIP file " << Redact(dest_file_);
     ReportDone(false);
     return;
   }
