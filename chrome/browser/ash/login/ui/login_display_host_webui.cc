@@ -455,8 +455,6 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
   SessionManagerClient::Get()->AddObserver(this);
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
-  display::Screen::GetScreen()->AddObserver(this);
-
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
 
   // When we wait for WebUI to be initialized we wait for one of
@@ -481,7 +479,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
 
   SessionManagerClient::Get()->RemoveObserver(this);
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
 
   if (waiting_for_configuration_) {
     OobeConfiguration::Get()->RemoveObserver(this);

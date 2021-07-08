@@ -272,6 +272,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // Measures OOBE WebUI load time.
   absl::optional<base::ElapsedTimer> oobe_load_timer_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   base::ObserverList<LoginDisplayHost::Observer> observers_;
 
   base::WeakPtrFactory<LoginDisplayHostWebUI> weak_factory_{this};
