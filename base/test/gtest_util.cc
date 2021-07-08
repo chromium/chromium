@@ -20,6 +20,9 @@ TestIdentifier::TestIdentifier() = default;
 
 TestIdentifier::TestIdentifier(const TestIdentifier& other) = default;
 
+TestIdentifier& TestIdentifier::operator=(const TestIdentifier& other) =
+    default;
+
 std::string FormatFullTestName(const std::string& test_case_name,
                                const std::string& test_name) {
   return test_case_name + "." + test_name;

@@ -717,7 +717,9 @@ SystemDiskInfo::SystemDiskInfo() {
   weighted_io_time = 0;
 }
 
-SystemDiskInfo::SystemDiskInfo(const SystemDiskInfo& other) = default;
+SystemDiskInfo::SystemDiskInfo(const SystemDiskInfo&) = default;
+
+SystemDiskInfo& SystemDiskInfo::operator=(const SystemDiskInfo&) = default;
 
 Value SystemDiskInfo::ToValue() const {
   Value res(Value::Type::DICTIONARY);

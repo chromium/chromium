@@ -76,6 +76,7 @@ class FilePath;
 struct TestIdentifier {
   TestIdentifier();
   TestIdentifier(const TestIdentifier& other);
+  TestIdentifier& operator=(const TestIdentifier& other);
 
   std::string test_case_name;
   std::string test_name;

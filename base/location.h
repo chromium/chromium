@@ -32,6 +32,7 @@ class BASE_EXPORT Location {
  public:
   Location();
   Location(const Location& other);
+  Location& operator=(const Location& other);
 
   // Only initializes the file name and program counter, the source information
   // will be null for the strings, and -1 for the line number.

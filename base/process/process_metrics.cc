@@ -42,7 +42,9 @@ int CalculateEventsPerSecond(uint64_t event_count,
 
 SystemMemoryInfoKB::SystemMemoryInfoKB() = default;
 
-SystemMemoryInfoKB::SystemMemoryInfoKB(const SystemMemoryInfoKB& other) =
+SystemMemoryInfoKB::SystemMemoryInfoKB(const SystemMemoryInfoKB&) = default;
+
+SystemMemoryInfoKB& SystemMemoryInfoKB::operator=(const SystemMemoryInfoKB&) =
     default;
 
 SystemMetrics::SystemMetrics() {

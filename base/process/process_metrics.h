@@ -330,6 +330,7 @@ BASE_EXPORT void IncreaseFdLimitTo(unsigned int max_descriptors);
 struct BASE_EXPORT SystemMemoryInfoKB {
   SystemMemoryInfoKB();
   SystemMemoryInfoKB(const SystemMemoryInfoKB& other);
+  SystemMemoryInfoKB& operator=(const SystemMemoryInfoKB& other);
 
   // Serializes the platform specific fields to value.
   Value ToValue() const;
@@ -446,7 +447,8 @@ BASE_EXPORT bool ParseProcVmstat(StringPiece input, VmStatInfo* vmstat);
 // Data from /proc/diskstats about system-wide disk I/O.
 struct BASE_EXPORT SystemDiskInfo {
   SystemDiskInfo();
-  SystemDiskInfo(const SystemDiskInfo& other);
+  SystemDiskInfo(const SystemDiskInfo&);
+  SystemDiskInfo& operator=(const SystemDiskInfo&);
 
   // Serializes the platform specific fields to value.
   Value ToValue() const;
