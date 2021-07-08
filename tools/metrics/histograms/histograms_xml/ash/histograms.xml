@@ -1566,11 +1566,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.Notification.ClearAllStacked.AnimationSmoothness"
+    units="%" expires_after="2022-07-02">
+  <owner>newcomer@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Animation smoothness of the &quot;clear all&quot; animation in the CrOS
+    message center. This occurs when the clear all button is pressed with
+    notifications that are not visible on screen. Measured via a throughtput
+    tracker.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Notification.ClearAllVisible.AnimationSmoothness"
+    units="%" expires_after="2022-07-02">
+  <owner>newcomer@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Animation smoothness of the &quot;clear all&quot; animation in the CrOS
+    message center. This occurs when the clear all button is pressed and all
+    notifications are visible. Measured via a throughtput tracker.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Notification.MoveDown.AnimationSmoothness" units="%"
+    expires_after="2022-07-02">
+  <owner>newcomer@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Animation smoothness of the &quot;move down&quot; animation in the CrOS
+    message center. This occurs when a notification is removed and notifications
+    above the deleted one animate downwards to fill in the space. Measured via a
+    throughtput tracker.
+  </summary>
+</histogram>
+
 <histogram name="Ash.NotificationPopup.AnimationSmoothness" units="%"
     expires_after="2022-06-25">
   <owner>leandre@chromium.org</owner>
   <owner>amehfooz@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of animations of notification pop-up. 100% represents
     ideally smooth 60 frames per second. Emitted when pop-up animations are

@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "ash/system/message_center/unified_message_center_view.h"
+#include "ash/system/message_center/unified_message_list_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -15,6 +16,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "ui/message_center/message_center.h"
 
 using message_center::MessageCenter;
@@ -91,8 +93,18 @@ class UnifiedMessageCenterBubbleTest : public AshTestBase {
   void WaitForAnimation() {
     while (GetSystemTrayBubble()
                ->controller_for_test()
-               ->animation_->is_animating())
+               ->animation_->is_animating()) {
       base::RunLoop().RunUntilIdle();
+    }
+  }
+
+  void WaitForNotificationAnimation() {
+    while (GetMessageCenterBubble()
+               ->message_center_view()
+               ->message_list_view_for_test()
+               ->IsAnimating()) {
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
   views::View* GetFirstMessageCenterFocusable() {
@@ -321,6 +333,28 @@ TEST_F(UnifiedMessageCenterBubbleTest, FocusCycleWithNoNotifications) {
   EXPECT_FALSE(message_center_widget->IsActive());
   EXPECT_EQ(quick_settings_widget->GetFocusManager()->GetFocusedView(),
             GetFirstQuickSettingsFocusable());
+}
+
+// Verifies that the Clear All animation in the child UnifiedMessageListView,
+// which occurs on notifications being removed via the Clear All button, records
+// metrics.
+TEST_F(UnifiedMessageCenterBubbleTest,
+       AnimationSmoothnessMetricsClearAllVisible) {
+  // Add a notification, then expand the message center.
+  AddNotification();
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  WaitForAnimation();
+  ToggleExpanded();
+  WaitForAnimation();
+
+  // Clear all notifications, the Clear All (visible) notification should
+  // trigger, and a histogram for animation performance should be logged.
+  base::HistogramTester histogram_tester;
+  GetMessageCenterBubble()->message_center_view()->ClearAllNotifications();
+  WaitForNotificationAnimation();
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.Notification.ClearAllVisible.AnimationSmoothness", 1);
 }
 
 }  // namespace ash
