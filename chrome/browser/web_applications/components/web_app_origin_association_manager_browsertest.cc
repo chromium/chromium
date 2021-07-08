@@ -22,6 +22,7 @@ const std::string& kValidAppUrl = "https://b.com";
 const std::string& kValidAndInvalidAppsUrl = "https://c.com";
 const std::string& kMultipleValidAppsUrl = "https://d.com";
 const std::string& kValidAppWithTooManyPathsUrl = "https://e.com";
+const std::string& kValidAppWithDuplicatePathsUrl = "https://f.com";
 
 constexpr char kInvalidFileContent[] = "invalid";
 constexpr char kValidAppFileContent[] =
@@ -79,6 +80,17 @@ constexpr char kValidAppWithTooManyPathsFileContent[] =
     "  }"
     "]}";
 
+constexpr char kValidAppWithDuplicatePathsFileContent[] =
+    "{\"web_apps\": ["
+    "  {"
+    "    \"manifest\": \"https://foo.com/manifest.json\","
+    "    \"details\": {"
+    "      \"paths\": [\"/1\", \"/1\", \"/1\"],"
+    "      \"exclude_paths\": [\"/2\", \"/2\", \"/2\"]"
+    "    }"
+    "  }"
+    "]}";
+
 }  // namespace
 
 namespace web_app {
@@ -104,6 +116,8 @@ class WebAppOriginAssociationManagerTest : public InProcessBrowserTest {
         {url::Origin::Create(GURL(kValidAppUrl)), kValidAppFileContent},
         {url::Origin::Create(GURL(kValidAppWithTooManyPathsUrl)),
          kValidAppWithTooManyPathsFileContent},
+        {url::Origin::Create(GURL(kValidAppWithDuplicatePathsUrl)),
+         kValidAppWithDuplicatePathsFileContent},
         {url::Origin::Create(GURL(kValidAndInvalidAppsUrl)),
          kValidAndInvalidAppsFileContent},
         {url::Origin::Create(GURL(kMultipleValidAppsUrl)),
@@ -119,6 +133,8 @@ class WebAppOriginAssociationManagerTest : public InProcessBrowserTest {
     valid_app_url_handler_.origin = url::Origin::Create(GURL(kValidAppUrl));
     valid_app_with_too_many_paths_url_handler_.origin =
         url::Origin::Create(GURL(kValidAppWithTooManyPathsUrl));
+    valid_app_with_duplicate_paths_url_handler_.origin =
+        url::Origin::Create(GURL(kValidAppWithDuplicatePathsUrl));
     valid_and_invalid_app_url_handler_.origin =
         url::Origin::Create(GURL(kValidAndInvalidAppsUrl));
     multiple_valid_apps_url_handler_.origin =
@@ -161,6 +177,7 @@ class WebAppOriginAssociationManagerTest : public InProcessBrowserTest {
   apps::UrlHandlerInfo invalid_file_url_handler_;
   apps::UrlHandlerInfo valid_app_url_handler_;
   apps::UrlHandlerInfo valid_app_with_too_many_paths_url_handler_;
+  apps::UrlHandlerInfo valid_app_with_duplicate_paths_url_handler_;
   apps::UrlHandlerInfo valid_and_invalid_app_url_handler_;
   apps::UrlHandlerInfo multiple_valid_apps_url_handler_;
 };
@@ -227,10 +244,32 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
             valid_app_with_too_many_paths_url_handler_.has_origin_wildcard);
 
         ASSERT_EQ(10u, url_handler.paths.size());
-        EXPECT_EQ(url_handler.paths[9], "/10");
-
         ASSERT_EQ(10u, url_handler.exclude_paths.size());
-        EXPECT_EQ(url_handler.exclude_paths[9], "/10");
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
+                       OneValidAppWithDuplicatePaths) {
+  base::RunLoop run_loop;
+  apps::UrlHandlers url_handlers{valid_app_with_duplicate_paths_url_handler_};
+  manager_->GetWebAppOriginAssociations(
+      GURL(kManifestUrl), std::move(url_handlers),
+      base::BindLambdaForTesting([&](apps::UrlHandlers result) {
+        ASSERT_TRUE(result.size() == 1);
+        auto url_handler = std::move(result[0]);
+        EXPECT_EQ(url_handler.origin,
+                  valid_app_with_duplicate_paths_url_handler_.origin);
+        EXPECT_EQ(
+            url_handler.has_origin_wildcard,
+            valid_app_with_duplicate_paths_url_handler_.has_origin_wildcard);
+
+        // Check that paths and exclude_paths have been deduplicated.
+        ASSERT_EQ(1u, url_handler.paths.size());
+        EXPECT_EQ(url_handler.paths[0], "/1");
+        ASSERT_EQ(1u, url_handler.exclude_paths.size());
+        EXPECT_EQ(url_handler.exclude_paths[0], "/2");
         run_loop.Quit();
       }));
   run_loop.Run();

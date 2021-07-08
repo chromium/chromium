@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
@@ -21,9 +22,10 @@ constexpr size_t kMaxPathsSize = 10;
 constexpr size_t kMaxPathLength = 2000;
 
 // Number of paths cannot exceed |kMaxPathsSize|, and each path cannot contain
-// more than |kMaxPathLength| characters.
+// more than |kMaxPathLength| characters. Duplicate paths are ignored and do not
+// count towards kMaxPathsSize.
 std::vector<std::string> GetValidPaths(std::vector<std::string> paths) {
-  std::vector<std::string> result;
+  base::flat_set<std::string> result;
   for (const std::string& path : paths) {
     if (result.size() == kMaxPathsSize)
       break;
@@ -31,9 +33,9 @@ std::vector<std::string> GetValidPaths(std::vector<std::string> paths) {
     if (path.length() > kMaxPathLength)
       continue;
 
-    result.push_back(std::move(path));
+    result.insert(std::move(path));
   }
-  return result;
+  return std::move(result).extract();
 }
 }  // namespace
 
