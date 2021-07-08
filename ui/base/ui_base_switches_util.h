@@ -9,6 +9,7 @@
 
 namespace switches {
 
+COMPONENT_EXPORT(UI_BASE) bool IsElasticOverscrollEnabled();
 COMPONENT_EXPORT(UI_BASE) bool IsTouchDragDropEnabled();
 
 }  // namespace switches

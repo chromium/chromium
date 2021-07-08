@@ -931,12 +931,6 @@ const char kDisableAcceleratedVideoDecode[] =
 // Disable Media Session API
 const char kDisableMediaSessionAPI[] = "disable-media-session-api";
 
-// Disable overscroll edge effects like those found in Android views.
-const char kDisableOverscrollEdgeEffect[]   = "disable-overscroll-edge-effect";
-
-// Disable the pull-to-refresh effect when vertically overscrolling content.
-const char kDisablePullToRefreshEffect[]   = "disable-pull-to-refresh-effect";
-
 // Disable the locking feature of the screen orientation API.
 const char kDisableScreenOrientationLock[]  = "disable-screen-orientation-lock";
 

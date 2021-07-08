@@ -150,6 +150,7 @@
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/base/ui_base_switches_util.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/rendering_pipeline.h"
 
@@ -627,21 +628,7 @@ void RenderThreadImpl::Init() {
   is_threaded_animation_enabled_ =
       !command_line.HasSwitch(cc::switches::kDisableThreadedAnimation);
 
-// On macOS this value is adjusted in `UpdateScrollbarTheme()`,
-// but the system default is true.
-#if defined(OS_MAC)
-  is_elastic_overscroll_enabled_ = true;
-#elif defined(OS_WIN)
-  is_elastic_overscroll_enabled_ =
-      base::FeatureList::IsEnabled(features::kElasticOverscroll);
-#elif defined(OS_ANDROID)
-  is_elastic_overscroll_enabled_ =
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableOverscrollEdgeEffect) &&
-      base::FeatureList::IsEnabled(features::kElasticOverscroll);
-#else
-  is_elastic_overscroll_enabled_ = false;
-#endif
+  is_elastic_overscroll_enabled_ = switches::IsElasticOverscrollEnabled();
 
   is_zoom_for_dsf_enabled_ = content::IsUseZoomForDSFEnabled();
 

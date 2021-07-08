@@ -255,8 +255,6 @@ CONTENT_EXPORT extern const char kDisableAcceleratedVideoDecode[];
 #if defined(OS_ANDROID)
 CONTENT_EXPORT extern const char kDisableMediaSessionAPI[];
 CONTENT_EXPORT extern const char kDisableOoprDebugCrashDump[];
-CONTENT_EXPORT extern const char kDisableOverscrollEdgeEffect[];
-CONTENT_EXPORT extern const char kDisablePullToRefreshEffect[];
 CONTENT_EXPORT extern const char kDisableScreenOrientationLock[];
 CONTENT_EXPORT extern const char kDisableSiteIsolationForPolicy[];
 CONTENT_EXPORT extern const char kDisableTimeoutsForProfiling[];

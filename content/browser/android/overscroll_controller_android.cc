@@ -19,7 +19,8 @@
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/base/l10n/l10n_util_android.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_switches.h"
+#include "ui/base/ui_base_switches_util.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
 using ui::DidOverscrollParams;
@@ -53,7 +54,7 @@ std::unique_ptr<OverscrollGlow> CreateGlowEffect(OverscrollGlowClient* client) {
   // The elastic overscroll feature indicates when the user is scrolling beyond
   // the range of the scrollable area. Showing a glow in addition would be
   // redundant.
-  if (base::FeatureList::IsEnabled(features::kElasticOverscroll))
+  if (switches::IsElasticOverscrollEnabled())
     return nullptr;
 
   return std::make_unique<OverscrollGlow>(client);

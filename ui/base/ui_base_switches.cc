@@ -6,6 +6,14 @@
 
 namespace switches {
 
+#if defined(OS_ANDROID)
+// Disable overscroll edge effects like those found in Android views.
+const char kDisableOverscrollEdgeEffect[] = "disable-overscroll-edge-effect";
+
+// Disable the pull-to-refresh effect when vertically overscrolling content.
+const char kDisablePullToRefreshEffect[] = "disable-pull-to-refresh-effect";
+#endif
+
 #if defined(OS_MAC)
 // Disable use of AVFoundation to draw video content.
 const char kDisableAVFoundationOverlays[] = "disable-avfoundation-overlays";

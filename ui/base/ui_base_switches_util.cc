@@ -7,9 +7,32 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace switches {
+
+bool IsElasticOverscrollEnabled() {
+// On macOS this value is adjusted in `UpdateScrollbarTheme()`,
+// but the system default is true.
+#if defined(OS_MAC)
+  return true;
+#elif defined(OS_WIN)
+  return base::FeatureList::IsEnabled(features::kElasticOverscroll);
+#elif defined(OS_ANDROID)
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+             base::android::SDK_VERSION_R &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableOverscrollEdgeEffect) &&
+         base::FeatureList::IsEnabled(features::kElasticOverscroll);
+#else
+  return false;
+#endif
+}
 
 bool IsTouchDragDropEnabled() {
   const auto* const command_line = base::CommandLine::ForCurrentProcess();
