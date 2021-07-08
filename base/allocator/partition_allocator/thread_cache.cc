@@ -79,7 +79,7 @@ uint8_t ThreadCache::global_limits_[ThreadCache::kBucketCount];
 
 // Start with the normal size, not the maximum one.
 uint16_t ThreadCache::largest_active_bucket_index_ =
-    BucketIndexForSize(kDefaultSizeThreshold);
+    BucketIndexLookup::GetIndex(kDefaultSizeThreshold);
 
 // static
 ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
@@ -310,6 +310,9 @@ void ThreadCache::EnsureThreadSpecificDataInitialized() {
 
 // static
 void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
+#if defined(OS_NACL)
+  IMMEDIATE_CRASH();
+#endif
   PA_CHECK(root->buckets[kBucketCount - 1].slot_size == kLargeSizeThreshold);
   PA_CHECK(root->buckets[largest_active_bucket_index_].slot_size ==
            kDefaultSizeThreshold);

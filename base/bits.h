@@ -76,7 +76,10 @@ inline T* AlignUp(T* ptr, size_t alignment) {
 //
 // C does not have an operator to do this, but fortunately the various
 // compilers have built-ins that map to fast underlying processor instructions.
-#if defined(COMPILER_MSVC)
+//
+// Prefer the clang path on Windows, as _BitScanReverse() and friends are not
+// constexpr.
+#if defined(COMPILER_MSVC) && !defined(__clang__)
 
 template <typename T, unsigned bits = sizeof(T) * 8>
 ALWAYS_INLINE
@@ -158,7 +161,7 @@ ALWAYS_INLINE uint64_t CountLeadingZeroBits64(uint64_t x) {
   return CountLeadingZeroBits(x);
 }
 
-#elif defined(COMPILER_GCC)
+#elif defined(COMPILER_GCC) || defined(__clang__)
 
 // __builtin_clz has undefined behaviour for an input of 0, even though there's
 // clearly a return value that makes sense, and even though some processor clz
