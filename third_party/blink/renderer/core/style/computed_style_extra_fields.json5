@@ -934,12 +934,14 @@
     {
       name: "MayHaveMargin",
       field_template: "monotonic_flag",
+      field_group: "surround",
       default_value: "false",
       custom_compare: true,
     },
     {
       name: "MayHavePadding",
       field_template: "monotonic_flag",
+      field_group: "surround",
       default_value: "false",
       custom_compare: true,
     },
