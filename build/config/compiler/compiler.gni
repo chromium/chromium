@@ -194,12 +194,9 @@ enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 
 declare_args() {
   # Set to true to use lld, the LLVM linker.
-  # Not supported for macOS (see docs/mac_lld.md), and not functional at all for
-  # iOS. But used for mac cross-compile on linux (may not work properly).
-  # The default linker everywhere else.
-  use_lld = is_clang && (!is_apple ||
-      (target_os == "mac" && chrome_pgo_phase != 1 &&
-          !(is_component_build && !is_debug)))
+  # In late bring-up on macOS (see docs/mac_lld.md), and not functional at all for
+  # iOS. The default linker everywhere else.
+  use_lld = is_clang && (!is_apple || (target_os == "mac" && chrome_pgo_phase != 1))
 }
 
 declare_args() {
