@@ -46,6 +46,8 @@
 #endif  // defined(OS_APPLE)
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include <commctrl.h>
 
 #include "remoting/host/switches.h"

@@ -33,6 +33,8 @@
 #endif  // defined(OS_APPLE)
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include <commctrl.h>
 #include <shellapi.h>
 #endif  // defined(OS_WIN)
