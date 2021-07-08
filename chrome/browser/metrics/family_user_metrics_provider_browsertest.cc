@@ -225,8 +225,9 @@ class FamilyUserMetricsProviderEphemeralUserTest
         IdentityManagerFactory::GetForProfile(browser()->profile()));
   }
 
-  chromeos::DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   chromeos::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kRegular,

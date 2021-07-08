@@ -128,6 +128,8 @@ class DeviceStateMixin : public InProcessBrowserTestMixin,
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-using chromeos::DeviceStateMixin;
+namespace ash {
+using ::chromeos::DeviceStateMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_DEVICE_STATE_MIXIN_H_

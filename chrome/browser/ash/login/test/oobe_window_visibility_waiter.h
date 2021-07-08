@@ -41,4 +41,10 @@ class OobeWindowVisibilityWaiter : public aura::WindowObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::OobeWindowVisibilityWaiter;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_

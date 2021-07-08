@@ -127,13 +127,12 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/events/test/event_generator.h"
 
-using extensions::mojom::ManifestLocation;
-
-namespace em = enterprise_management;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::extensions::mojom::ManifestLocation;
+
+namespace em = ::enterprise_management;
 
 const test::UIPath kConfigNetwork = {"app-launch-splash", "configNetwork"};
 const test::UIPath kAutolaunchConfirmButton = {"autolaunch", "confirmButton"};
@@ -546,7 +545,7 @@ class KioskTest : public OobeBaseTest {
   }
 
   bool LaunchApp(const std::string& app_id) {
-    return ash::LoginScreenTestApi::LaunchApp(app_id);
+    return LoginScreenTestApi::LaunchApp(app_id);
   }
 
   void ReloadKioskApps() {
@@ -579,9 +578,9 @@ class KioskTest : public OobeBaseTest {
 
   void PrepareAppLaunch() {
     // Wait for the Kiosk App configuration to reload.
-    int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
+    int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
     ReloadKioskApps();
-    ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+    LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
   }
 
   void StartAppLaunchFromLoginScreen(
@@ -623,8 +622,7 @@ class KioskTest : public OobeBaseTest {
     EXPECT_TRUE(static_cast<ProfileImpl*>(app_profile)->chromeos_preferences_);
 
     // Check installer status.
-    EXPECT_EQ(chromeos::KioskAppLaunchError::Error::kNone,
-              chromeos::KioskAppLaunchError::Get());
+    EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
 
     // Check if the kiosk webapp is really installed for the default profile.
     const extensions::Extension* app =
@@ -719,16 +717,16 @@ class KioskTest : public OobeBaseTest {
     static_cast<AppLaunchSplashScreenView::Delegate*>(
         GetKioskLaunchController())
         ->OnConfigureNetwork();
-    EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
     // There should be only one owner pod on this screen.
-    EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 1);
+    EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
 
     // A network error screen should be shown after authenticating.
     OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
-    ash::LoginScreenTestApi::SubmitPassword(test_owner_account_id_, "password",
-                                            /*check_if_submittable=*/true);
+    LoginScreenTestApi::SubmitPassword(test_owner_account_id_, "password",
+                                       /*check_if_submittable=*/true);
     error_screen_waiter.Wait();
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 
     ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
 
@@ -877,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   EXPECT_TRUE(user_manager->IsLoggedInAsKioskApp());
 
   keyboard::KeyboardConfig config =
-      ash::KeyboardController::Get()->GetKeyboardConfig();
+      KeyboardController::Get()->GetKeyboardConfig();
   EXPECT_TRUE(config.auto_capitalize);
   EXPECT_TRUE(config.auto_complete);
   EXPECT_TRUE(config.auto_correct);
@@ -894,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
   EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());
 
   // The shelf should be hidden at the beginning.
-  EXPECT_FALSE(ash::ShelfTestApi().IsVisible());
+  EXPECT_FALSE(ShelfTestApi().IsVisible());
 
   // Simulate the swipe-up gesture.
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
@@ -910,14 +908,14 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
   const gfx::Rect display_bounds = window->bounds();
   const gfx::Point start_point = gfx::Point(
       display_bounds.width() / 4,
-      display_bounds.bottom() - ash::ShelfConfig::Get()->shelf_size() / 2);
+      display_bounds.bottom() - ShelfConfig::Get()->shelf_size() / 2);
   gfx::Point end_point(start_point.x(), start_point.y() - 80);
   ui::test::EventGenerator event_generator(window);
   event_generator.GestureScrollSequence(
       start_point, end_point, base::TimeDelta::FromMilliseconds(500), 4);
 
   // The shelf should be still hidden after the gesture.
-  EXPECT_FALSE(ash::ShelfTestApi().IsVisible());
+  EXPECT_FALSE(ShelfTestApi().IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, ZoomSupport) {
@@ -1030,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   // Simulate Ctrl+Alt+N accelerator.
 
   LoginDisplayHost::default_host()->HandleAccelerator(
-      ash::LoginAcceleratorAction::kAppLaunchNetworkConfig);
+      LoginAcceleratorAction::kAppLaunchNetworkConfig);
   error_screen_waiter.Wait();
   ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
 
@@ -1104,10 +1102,10 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, DISABLED_LaunchAppUserCancel) {
       chrome::NOTIFICATION_APP_TERMINATING,
       content::NotificationService::AllSources());
   LoginDisplayHost::default_host()->HandleAccelerator(
-      ash::LoginAcceleratorAction::kAppLaunchBailout);
+      LoginAcceleratorAction::kAppLaunchBailout);
   signal.Wait();
-  EXPECT_EQ(chromeos::KioskAppLaunchError::Error::kUserCancel,
-            chromeos::KioskAppLaunchError::Get());
+  EXPECT_EQ(KioskAppLaunchError::Error::kUserCancel,
+            KioskAppLaunchError::Get());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningCancel) {
@@ -1182,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableCancel) {
   wizard_controller->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   LoginDisplayHost::default_host()->HandleAccelerator(
-      ash::LoginAcceleratorAction::kEnableConsumerKiosk);
+      LoginAcceleratorAction::kEnableConsumerKiosk);
 
   // Wait for the kiosk_enable screen to show and cancel the screen.
   OobeScreenWaiter(KioskEnableScreenView::kScreenId).Wait();
@@ -1210,7 +1208,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableConfirmed) {
   wizard_controller->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   LoginDisplayHost::default_host()->HandleAccelerator(
-      ash::LoginAcceleratorAction::kEnableConsumerKiosk);
+      LoginAcceleratorAction::kEnableConsumerKiosk);
 
   // Wait for the kiosk_enable screen to show and enable kiosk.
   OobeScreenWaiter(KioskEnableScreenView::kScreenId).Wait();
@@ -1239,7 +1237,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableAfter2ndSigninScreen) {
   wizard_controller->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   LoginDisplayHost::default_host()->HandleAccelerator(
-      ash::LoginAcceleratorAction::kEnableConsumerKiosk);
+      LoginAcceleratorAction::kEnableConsumerKiosk);
 
   // Wait for the kiosk_enable screen to show and cancel the screen.
   OobeScreenWaiter(KioskEnableScreenView::kScreenId).Wait();
@@ -1254,7 +1252,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableAfter2ndSigninScreen) {
 
   // Show kiosk enable screen again.
   LoginDisplayHost::default_host()->HandleAccelerator(
-      ash::LoginAcceleratorAction::kEnableConsumerKiosk);
+      LoginAcceleratorAction::kEnableConsumerKiosk);
 
   // And it should show up.
   OobeScreenWaiter(KioskEnableScreenView::kScreenId).Wait();
@@ -2534,8 +2532,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
   KioskSessionInitializedWaiter().Wait();
 
   // Check installer status.
-  EXPECT_EQ(chromeos::KioskAppLaunchError::Error::kNone,
-            chromeos::KioskAppLaunchError::Get());
+  EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
   EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
 
   // Wait for the window to appear.
@@ -2717,7 +2714,7 @@ IN_PROC_BROWSER_TEST_F(KioskVirtualKeyboardTest, MAYBE_RestrictFeatures) {
   EXPECT_TRUE(config.handwriting);
   EXPECT_TRUE(config.spell_check);
   EXPECT_TRUE(config.voice_input);
-  ash::KeyboardController::Get()->SetKeyboardConfig(config);
+  KeyboardController::Get()->SetKeyboardConfig(config);
 
   extensions::ResultCatcher catcher;
   StartAppLaunchFromLoginScreen(
@@ -2728,7 +2725,7 @@ IN_PROC_BROWSER_TEST_F(KioskVirtualKeyboardTest, MAYBE_RestrictFeatures) {
 // Specialized test fixture for testing kiosk mode on the
 // hidden WebUI initialization flow for slow hardware.
 class KioskHiddenWebUITest : public KioskTest,
-                             public ash::WallpaperControllerObserver {
+                             public WallpaperControllerObserver {
  public:
   KioskHiddenWebUITest() = default;
 
@@ -2753,7 +2750,7 @@ class KioskHiddenWebUITest : public KioskTest,
 
   bool wallpaper_loaded() const { return wallpaper_loaded_; }
 
-  // ash::WallpaperControllerObserver:
+  // WallpaperControllerObserver:
   void OnWallpaperChanged() override {
     wallpaper_loaded_ = true;
     if (runner_.get())
@@ -2846,7 +2843,7 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
 
 IN_PROC_BROWSER_TEST_F(KioskAutoLaunchViewsTest, ShowAutoLaunchScreen) {
   OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -31,11 +31,6 @@ namespace base {
 class CommandLine;
 }
 
-namespace chromeos {
-class KioskAutoLaunchViewsTest;
-class KioskTest;
-}  // namespace chromeos
-
 namespace extensions {
 class Extension;
 }
@@ -253,8 +248,8 @@ class KioskAppManager : public KioskAppManagerBase,
   friend struct base::LazyInstanceTraitsBase<KioskAppManager>;
   friend std::default_delete<KioskAppManager>;
   friend class KioskAppManagerTest;
-  friend class chromeos::KioskAutoLaunchViewsTest;
-  friend class chromeos::KioskTest;
+  friend class KioskAutoLaunchViewsTest;
+  friend class KioskTest;
 
   enum class AutoLoginState {
     kNone = 0,

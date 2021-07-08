@@ -52,9 +52,6 @@ namespace {
 
 namespace em = ::enterprise_management;
 
-// TODO(https://crbug.com/1164001): remove once this file is migrated.
-using ::ash::ChromeUserManagerImpl;
-
 struct Params {
   Params(std::string login_screen_isolate_origins,
          std::string user_policy_isolate_origins,
@@ -240,8 +237,8 @@ class SiteIsolationFlagHandlingTest
         std::make_unique<ash::SessionStateWaiter>();
   }
 
-  ChromeUserManagerImpl* GetChromeUserManager() const {
-    return static_cast<ChromeUserManagerImpl*>(
+  ash::ChromeUserManagerImpl* GetChromeUserManager() const {
+    return static_cast<ash::ChromeUserManagerImpl*>(
         user_manager::UserManager::Get());
   }
 
@@ -257,8 +254,9 @@ class SiteIsolationFlagHandlingTest
   bool attempt_restart_called_ = false;
 
   // This is important because ephemeral users only work on enrolled machines.
-  DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ash::UserPolicyMixin user_policy_{
       &mixin_host_,
       AccountId::FromUserEmailGaiaId(kTestUserAccountId, kTestUserGaiaId)};

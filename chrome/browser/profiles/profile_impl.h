@@ -36,8 +36,11 @@ class MediaDeviceIDSalt;
 class PrefService;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace chromeos {
+namespace ash {
 class KioskTest;
+}
+
+namespace chromeos {
 class LocaleChangeGuard;
 class Preferences;
 class SupervisedUserTestBase;
@@ -177,7 +180,7 @@ class ProfileImpl : public Profile {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  friend class chromeos::KioskTest;
+  friend class ash::KioskTest;
   friend class chromeos::SupervisedUserTestBase;
 #endif
   friend class Profile;

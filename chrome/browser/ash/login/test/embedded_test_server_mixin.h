@@ -35,4 +35,10 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::EmbeddedTestServerSetupMixin;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_

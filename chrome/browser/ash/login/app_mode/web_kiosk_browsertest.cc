@@ -32,8 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kAppInstallUrl[] = "https://app.com/install";
@@ -41,8 +40,6 @@ const char kAppLaunchUrl[] = "https://app.com/launch";
 const char16_t kAppTitle[] = u"title.";
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
-
-}  // namespace
 
 class WebKioskTest : public OobeBaseTest {
  public:
@@ -82,11 +79,11 @@ class WebKioskTest : public OobeBaseTest {
             kAppInstallUrl)};
 
     settings_ = std::make_unique<ScopedDeviceSettings>();
-    int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
+    int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
     policy::SetDeviceLocalAccounts(settings_->owner_settings_service(),
                                    device_local_accounts);
     // Wait for the Kiosk App configuration to reload.
-    ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+    LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
   }
 
   void MakeAppAlreadyInstalled() {
@@ -98,7 +95,7 @@ class WebKioskTest : public OobeBaseTest {
   }
 
   bool LaunchApp() {
-    return ash::LoginScreenTestApi::LaunchApp(
+    return LoginScreenTestApi::LaunchApp(
         WebKioskAppManager::Get()->GetAppByAccountId(account_id())->app_id());
   }
 
@@ -136,7 +133,7 @@ class WebKioskTest : public OobeBaseTest {
 
   void ExpectKeyboardConfig() {
     const keyboard::KeyboardConfig config =
-        ash::KeyboardController::Get()->GetKeyboardConfig();
+        KeyboardController::Get()->GetKeyboardConfig();
 
     // `auto_capitalize` is not controlled by the policy
     // 'VirtualKeyboardFeatures', and its default value remains true.
@@ -254,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, HiddenShelf) {
   KioskSessionInitializedWaiter().Wait();
 
   // The shelf should be hidden at the beginning.
-  EXPECT_FALSE(ash::ShelfTestApi().IsVisible());
+  EXPECT_FALSE(ShelfTestApi().IsVisible());
 
   // Simulate the swipe-up gesture.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1U);
@@ -263,14 +260,14 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, HiddenShelf) {
   const gfx::Rect display_bounds = window->bounds();
   const gfx::Point start_point = gfx::Point(
       display_bounds.width() / 4,
-      display_bounds.bottom() - ash::ShelfConfig::Get()->shelf_size() / 2);
+      display_bounds.bottom() - ShelfConfig::Get()->shelf_size() / 2);
   gfx::Point end_point(start_point.x(), start_point.y() - 80);
   ui::test::EventGenerator event_generator(window);
   event_generator.GestureScrollSequence(
       start_point, end_point, base::TimeDelta::FromMilliseconds(500), 4);
 
   // The shelf should be still hidden after the gesture.
-  EXPECT_FALSE(ash::ShelfTestApi().IsVisible());
+  EXPECT_FALSE(ShelfTestApi().IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskTest, KeyboardConfigPolicy) {
@@ -298,4 +295,5 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, OpenA11ySettings) {
   ASSERT_TRUE(settings_browser);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

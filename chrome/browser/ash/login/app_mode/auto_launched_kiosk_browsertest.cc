@@ -47,11 +47,10 @@
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 
-namespace em = enterprise_management;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
 
 // This is a simple test that only sends an extension message when app launch is
 // requested. Webstore data json is in
@@ -405,4 +404,4 @@ IN_PROC_BROWSER_TEST_F(ManagementApiKioskTest, ManagementApi) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-}  // namespace chromeos
+}  // namespace ash
