@@ -306,12 +306,18 @@ absl::optional<SuperPageSnapshot> SuperPageSnapshot::Create(
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;
   // Threshold for which bucket size it is worthwhile in checking whether the
   // object is a quarantined object and can be skipped.
-  static constexpr size_t kDefaultScanAreasReservation = 10;
   static constexpr size_t kLargeScanAreaThreshold = 8192;
+  static constexpr size_t kDefaultScanAreasReservation = 10;
 
-  // If the super page is empty, return nullopt.
+  SuperPageSnapshot snapshot;
+  snapshot.scan_areas_.reserve(kDefaultScanAreasReservation);
+
   auto* extent_entry = PartitionSuperPageToExtent<ThreadSafe>(
       reinterpret_cast<char*>(super_page));
+
+  typename Root::ScopedGuard lock(extent_entry->root->lock_);
+
+  // If the super page is empty, return nullopt.
   const size_t nonempty_slot_spans =
       extent_entry->number_of_nonempty_slot_spans;
   if (!nonempty_slot_spans) {
@@ -322,11 +328,6 @@ absl::optional<SuperPageSnapshot> SuperPageSnapshot::Create(
 #endif
     return absl::nullopt;
   }
-
-  SuperPageSnapshot snapshot;
-  snapshot.scan_areas_.reserve(kDefaultScanAreasReservation);
-
-  typename Root::ScopedGuard lock(extent_entry->root->lock_);
 
   IterateNonEmptySlotSpans(
       super_page, nonempty_slot_spans, [&snapshot](SlotSpan* slot_span) {
