@@ -241,6 +241,8 @@ void RawResource::Trace(Visitor* visitor) const {
 }
 
 void RawResource::ResponseReceived(const ResourceResponse& response) {
+  recordreplay::Assert("RawResource::ResponseReceived Start");
+
   if (response.WasFallbackRequiredByServiceWorker()) {
     // The ServiceWorker asked us to re-fetch the request. This resource must
     // not be reused.
@@ -256,6 +258,8 @@ void RawResource::ResponseReceived(const ResourceResponse& response) {
   while (RawResourceClient* c = w.Next()) {
     c->ResponseReceived(this, this->GetResponse());
   }
+
+  recordreplay::Assert("RawResource::ResponseReceived Done");
 }
 
 void RawResource::ResponseBodyReceived(

@@ -233,6 +233,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
 #endif
   DCHECK(active_loader_);
 
+  recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse Start");
+
   scoped_refptr<UrlData> destination_url_data(url_data_);
 
   if (!redirects_to_.is_empty()) {
@@ -300,6 +302,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
       // url_data_ hasn't been updated to the final destination yet.
       end_of_file = true;
     } else {
+      recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #5");
       active_loader_.reset();
       // Can't call fail until readers have been migrated to the new
       // url data below.
@@ -355,6 +358,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   }
 
   if (do_fail) {
+    recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #10");
     destination_url_data->Fail();
     return;  // "this" may be deleted now.
   }
@@ -372,6 +376,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
 
   // This test is vital for security!
   if (!url_data_->ValidateDataOrigin(response_url.GetOrigin())) {
+    recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #11");
     active_loader_.reset();
     url_data_->Fail();
     return;  // "this" may be deleted now.
@@ -381,6 +386,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     fifo_.push_back(DataBuffer::CreateEOSBuffer());
     url_data_->multibuffer()->OnDataProviderEvent(this);
   }
+
+  recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse Done");
 }
 
 void ResourceMultiBufferDataProvider::DidReceiveData(const char* data,
