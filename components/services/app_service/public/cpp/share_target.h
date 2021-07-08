@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -37,6 +38,8 @@ struct ShareTarget {
     Files& operator=(Files&&);
     ~Files();
 
+    base::Value AsDebugValue() const;
+
     std::string name;
     std::vector<std::string> accept;
   };
@@ -48,6 +51,8 @@ struct ShareTarget {
     Params& operator=(const Params&);
     Params& operator=(Params&&);
     ~Params();
+
+    base::Value AsDebugValue() const;
 
     std::string title;
     std::string text;
@@ -65,6 +70,8 @@ struct ShareTarget {
   static const char* MethodToString(Method);
   static const char* EnctypeToString(Enctype);
 
+  base::Value AsDebugValue() const;
+
   GURL action;
 
   Method method = Method::kGet;
@@ -73,11 +80,6 @@ struct ShareTarget {
 
   Params params;
 };
-
-// For logging and debug purposes.
-std::ostream& operator<<(std::ostream& out, const ShareTarget& share_target);
-std::ostream& operator<<(std::ostream& out, const ShareTarget::Params& params);
-std::ostream& operator<<(std::ostream& out, const ShareTarget::Files& files);
 
 bool operator==(const ShareTarget& share_target1,
                 const ShareTarget& share_target2);

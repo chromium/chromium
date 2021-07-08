@@ -230,7 +230,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://identity-internals",
     "chrome://indexeddb-internals",
     "chrome://inspect",
-    "chrome://internals/web-app",
     "chrome://interstitials/ssl",
     "chrome://invalidations",
     "chrome://local-state",
@@ -281,6 +280,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://usb-internals",
     "chrome://user-actions",
     "chrome://version",
+    "chrome://web-app-internals",
     "chrome://webrtc-internals",
     "chrome://webrtc-logs",
 #if defined(OS_ANDROID)

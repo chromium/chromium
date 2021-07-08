@@ -17,6 +17,30 @@ FileHandler::AcceptEntry::~AcceptEntry() = default;
 FileHandler::AcceptEntry::AcceptEntry(const AcceptEntry& accept_entry) =
     default;
 
+base::Value FileHandler::AcceptEntry::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+
+  root.SetStringKey("mime_type", mime_type);
+  base::Value& file_extensions_json =
+      *root.SetKey("file_extensions", base::Value(base::Value::Type::LIST));
+  for (const std::string& file_extension : file_extensions)
+    file_extensions_json.Append(file_extension);
+
+  return root;
+}
+
+base::Value FileHandler::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+
+  root.SetStringKey("action", action.spec());
+  base::Value& accept_json =
+      *root.SetKey("accept", base::Value(base::Value::Type::LIST));
+  for (const AcceptEntry& entry : accept)
+    accept_json.Append(entry.AsDebugValue());
+
+  return root;
+}
+
 std::set<std::string> GetMimeTypesFromFileHandlers(
     const FileHandlers& file_handlers) {
   std::set<std::string> mime_types;
@@ -36,25 +60,6 @@ std::set<std::string> GetFileExtensionsFromFileHandlers(
                              accept_entry.file_extensions.end());
   }
   return file_extensions;
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const FileHandler::AcceptEntry& accept_entry) {
-  out << "    mime_type: " << accept_entry.mime_type << std::endl;
-  out << "    file_extensions:";
-  for (const auto& file_extension : accept_entry.file_extensions)
-    out << " " << file_extension;
-  out << std::endl;
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const FileHandler& file_handler) {
-  out << "action: " << file_handler.action << std::endl;
-  for (const auto& accept_entry : file_handler.accept) {
-    out << "  accept:" << std::endl;
-    out << accept_entry;
-  }
-  return out;
 }
 
 bool operator==(const FileHandler::AcceptEntry& accept_entry1,

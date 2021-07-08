@@ -104,7 +104,6 @@ const char kChromeUIInspectHost[] = "inspect";
 const char kChromeUIInspectURL[] = "chrome://inspect/";
 const char kChromeUIInternalsHost[] = "internals";
 const char kChromeUIInternalsQueryTilesPath[] = "query-tiles";
-const char kChromeUIInternalsWebAppPath[] = "web-app";
 const char kChromeUIInterstitialHost[] = "interstitials";
 const char kChromeUIInterstitialURL[] = "chrome://interstitials/";
 const char kChromeUIInvalidationsHost[] = "invalidations";
@@ -220,6 +219,7 @@ const char kChromeUIWebApksHost[] = "webapks";
 const char kChromeUINearbyInternalsHost[] = "nearby-internals";
 const char kChromeUIReadLaterHost[] = "read-later.top-chrome";
 const char kChromeUIReadLaterURL[] = "chrome://read-later.top-chrome/";
+const char kChromeUIWebAppInternalsHost[] = "web-app-internals";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -536,6 +536,9 @@ const char* const kChromeHostURLs[] = {
     kChromeUIUsbInternalsHost,
     kChromeUIUserActionsHost,
     kChromeUIVersionHost,
+#if !defined(OS_ANDROID)
+    kChromeUIWebAppInternalsHost,
+#endif
     content::kChromeUIAppCacheInternalsHost,
     content::kChromeUIBlobInternalsHost,
     content::kChromeUIConversionInternalsHost,
@@ -624,8 +627,6 @@ const size_t kNumberOfChromeHostURLs = base::size(kChromeHostURLs);
 const char* const kChromeInternalsPathURLs[] = {
 #if defined(OS_ANDROID)
     kChromeUIInternalsQueryTilesPath,
-#else
-    kChromeUIInternalsWebAppPath,
 #endif  // defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
     kChromeUISessionServiceInternalsPath,

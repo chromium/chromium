@@ -2186,7 +2186,7 @@ const char kReadLaterNewBadgePromoDescription[] =
 const char kRecordWebAppDebugInfoName[] = "Record web app debug info";
 const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
-    "displayed in: chrome://internals/web-app";
+    "displayed in: chrome://web-app-internals";
 
 const char kReduceUserAgentName[] = "Reduce User-Agent request header";
 const char kReduceUserAgentDescription[] =

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/values.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -27,6 +28,8 @@ struct FileHandler {
     ~AcceptEntry();
     AcceptEntry(const AcceptEntry& accept_entry);
 
+    base::Value AsDebugValue() const;
+
     // A MIME type that can be handled by the file handler.
     std::string mime_type;
 
@@ -34,6 +37,8 @@ struct FileHandler {
     // handler, corresponding to the MIME type.
     base::flat_set<std::string> file_extensions;
   };
+
+  base::Value AsDebugValue() const;
 
   // The URL that will be navigated to when dispatching on a file with a
   // matching MIME type or file extension.
@@ -53,11 +58,6 @@ std::set<std::string> GetMimeTypesFromFileHandlers(
 // Get a set of all file extensions supported by any of |file_handlers|.
 std::set<std::string> GetFileExtensionsFromFileHandlers(
     const FileHandlers& file_handlers);
-
-// For logging and debug purposes.
-std::ostream& operator<<(std::ostream& out,
-                         const FileHandler::AcceptEntry& accept_entry);
-std::ostream& operator<<(std::ostream& out, const FileHandler& file_handler);
 
 bool operator==(const FileHandler::AcceptEntry& accept_entry1,
                 const FileHandler::AcceptEntry& accept_entry2);

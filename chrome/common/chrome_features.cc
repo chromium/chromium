@@ -777,7 +777,7 @@ const base::Feature kQuietNotificationPrompts{"QuietNotificationPrompts",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables recording additional web app related debugging data to be displayed
-// in: chrome://internals/web-app
+// in: chrome://web-app-internals
 const base::Feature kRecordWebAppDebugInfo{"RecordWebAppDebugInfo",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 

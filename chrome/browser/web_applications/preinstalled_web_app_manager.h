@@ -81,7 +81,7 @@ class PreinstalledWebAppManager {
 
   void LoadForTesting(ConsumeInstallOptions callback);
 
-  // Debugging info used by: chrome://internals/web-app
+  // Debugging info used by: chrome://web-app-internals
   struct DebugInfo {
     DebugInfo();
     ~DebugInfo();

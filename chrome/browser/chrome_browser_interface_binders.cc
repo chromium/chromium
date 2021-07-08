@@ -190,7 +190,6 @@
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/vm/vm_ui.h"
-#include "chrome/browser/ui/webui/internals/web_app/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"  // nogncheck crbug.com/1125897
@@ -713,9 +712,6 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,
                                          TabSearchUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      ::mojom::web_app_internals::WebAppInternalsPageHandler, InternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       download_shelf::mojom::PageHandlerFactory, DownloadShelfUI>(map);

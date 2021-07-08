@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_SOURCE_H_
+#define CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_SOURCE_H_
+
+#include <string>
+
+#include "content/public/browser/url_data_source.h"
+
+class Profile;
+
+// A simple JSON data source that returns web app debugging information for the
+// associated profile.
+class WebAppInternalsSource : public content::URLDataSource {
+ public:
+  explicit WebAppInternalsSource(Profile* profile);
+  WebAppInternalsSource(const WebAppInternalsSource&) = delete;
+  WebAppInternalsSource& operator=(const WebAppInternalsSource&) = delete;
+  ~WebAppInternalsSource() override;
+
+  // content::URLDataSource:
+  std::string GetSource() override;
+  std::string GetMimeType(const std::string& path) override;
+  void StartDataRequest(
+      const GURL& url,
+      const content::WebContents::Getter& wc_getter,
+      content::URLDataSource::GotDataCallback callback) override;
+
+ private:
+  Profile* const profile_;
+};
+
+#endif  // CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_SOURCE_H_

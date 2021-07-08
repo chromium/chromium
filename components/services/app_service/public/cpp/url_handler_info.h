@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_URL_HANDLER_INFO_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_URL_HANDLER_INFO_H_
 
-#include <ostream>
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "url/origin.h"
 
 namespace apps {
@@ -37,6 +37,8 @@ struct UrlHandlerInfo {
   // Reset the url handler to its default state.
   void Reset();
 
+  base::Value AsDebugValue() const;
+
   url::Origin origin;
 
   bool has_origin_wildcard = false;
@@ -58,8 +60,6 @@ bool operator!=(const UrlHandlerInfo& url_handler1,
 bool operator<(const UrlHandlerInfo& url_handler1,
                const UrlHandlerInfo& url_handler2);
 
-std::ostream& operator<<(std::ostream& out,
-                         const UrlHandlerInfo& url_handler_info);
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_URL_HANDLER_INFO_H_

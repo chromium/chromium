@@ -4,8 +4,21 @@
 
 #include "chrome/browser/web_applications/components/web_application_info.h"
 
+#include <sstream>
+
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+
+namespace {
+
+template <typename T>
+std::string ConvertToString(const T& value) {
+  std::stringstream ss;
+  ss << value;
+  return ss.str();
+}
+
+}  // namespace
 
 // IconBitmaps
 IconBitmaps::IconBitmaps() = default;
@@ -116,6 +129,15 @@ WebApplicationIconInfo& WebApplicationIconInfo::operator=(
 WebApplicationIconInfo& WebApplicationIconInfo::operator=(
     WebApplicationIconInfo&&) = default;
 
+base::Value WebApplicationIconInfo::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetStringKey("url", url.spec());
+  root.SetKey("square_size_px",
+              square_size_px ? base::Value(*square_size_px) : base::Value());
+  root.SetStringKey("purpose", ConvertToString(purpose));
+  return root;
+}
+
 // WebApplicationShortcutsMenuItemInfo::Icon
 WebApplicationShortcutsMenuItemInfo::Icon::Icon() = default;
 
@@ -134,6 +156,13 @@ WebApplicationShortcutsMenuItemInfo::Icon::operator=(
 WebApplicationShortcutsMenuItemInfo::Icon&
 WebApplicationShortcutsMenuItemInfo::Icon::operator=(
     WebApplicationShortcutsMenuItemInfo::Icon&&) = default;
+
+base::Value WebApplicationShortcutsMenuItemInfo::Icon::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetStringKey("url", url.spec());
+  root.SetIntKey("square_size_px", square_size_px);
+  return root;
+}
 
 // WebApplicationShortcutsMenuItemInfo
 WebApplicationShortcutsMenuItemInfo::WebApplicationShortcutsMenuItemInfo() =
@@ -186,6 +215,27 @@ void WebApplicationShortcutsMenuItemInfo::SetShortcutIconInfosForPurpose(
   }
 }
 
+base::Value WebApplicationShortcutsMenuItemInfo::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+
+  root.SetStringKey("name", name);
+
+  root.SetStringKey("url", url.spec());
+
+  base::Value& icons =
+      *root.SetKey("icons", base::Value(base::Value::Type::DICTIONARY));
+  for (IconPurpose purpose : kIconPurposes) {
+    base::Value& purpose_list = *icons.SetKey(
+        ConvertToString(purpose), base::Value(base::Value::Type::LIST));
+    for (const WebApplicationShortcutsMenuItemInfo::Icon& icon :
+         GetShortcutIconInfosForPurpose(purpose)) {
+      purpose_list.Append(icon.AsDebugValue());
+    }
+  }
+
+  return root;
+}
+
 // WebApplicationInfo
 WebApplicationInfo::WebApplicationInfo() = default;
 
@@ -227,18 +277,6 @@ bool operator==(const WebApplicationIconInfo& icon_info1,
                                                   icon_info2.purpose);
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const WebApplicationIconInfo& icon_info) {
-  out << "url: " << icon_info.url << std::endl;
-  out << "  square_size_px: ";
-  if (icon_info.square_size_px)
-    out << *icon_info.square_size_px << std::endl;
-  else
-    out << "none" << std::endl;
-  out << "  purpose: " << icon_info.purpose << std::endl;
-  return out;
-}
-
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
   return std::tie(icon_sizes1.any, icon_sizes1.maskable,
                   icon_sizes1.monochrome) == std::tie(icon_sizes2.any,
@@ -258,31 +296,4 @@ bool operator==(const WebApplicationShortcutsMenuItemInfo& shortcut_info1,
                   shortcut_info1.maskable, shortcut_info1.monochrome) ==
          std::tie(shortcut_info2.name, shortcut_info2.url, shortcut_info2.any,
                   shortcut_info2.maskable, shortcut_info2.monochrome);
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const WebApplicationShortcutsMenuItemInfo& info) {
-  out << "name: " << info.name << std::endl;
-  out << "  url: " << info.url << std::endl;
-  out << "  icons:" << std::endl;
-  out << "    any:" << std::endl;
-
-  for (WebApplicationShortcutsMenuItemInfo::Icon icon : info.any) {
-    out << "      url: " << icon.url << std::endl;
-    out << "      square_size_px: " << icon.square_size_px << std::endl;
-  }
-
-  out << "    maskable:" << std::endl;
-  for (WebApplicationShortcutsMenuItemInfo::Icon icon : info.maskable) {
-    out << "      url: " << icon.url << std::endl;
-    out << "      square_size_px: " << icon.square_size_px << std::endl;
-  }
-
-  out << "    monochrome:" << std::endl;
-  for (WebApplicationShortcutsMenuItemInfo::Icon icon : info.monochrome) {
-    out << "      url: " << icon.url << std::endl;
-    out << "      square_size_px: " << icon.square_size_px << std::endl;
-  }
-
-  return out;
 }

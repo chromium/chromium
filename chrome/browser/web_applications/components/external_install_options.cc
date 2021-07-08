@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 
 namespace web_app {
 
@@ -83,92 +84,74 @@ bool ExternalInstallOptions::operator==(
   return AsTuple(*this) == AsTuple(other);
 }
 
-namespace {
+base::Value ExternalInstallOptions::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
 
-template <typename T>
-std::ostream& operator<<(std::ostream& out, const absl::optional<T>& optional) {
-  if (optional)
-    out << *optional;
-  else
-    out << "nullopt";
-  return out;
-}
+  auto ConvertStringList = [](const std::vector<std::string> list) {
+    base::Value list_json(base::Value::Type::LIST);
+    for (const std::string& item : list)
+      list_json.Append(item);
+    return list_json;
+  };
 
-template <typename T>
-std::ostream& operator<<(std::ostream& out, const std::vector<T>& list) {
-  out << '[';
-  for (size_t i = 0; i < list.size(); ++i) {
-    if (i > 0)
-      out << ", ";
-    out << list[i];
-  }
-  out << ']';
-  return out;
-}
+  auto ConvertOptional = [](const auto& value) {
+    return value ? base::Value(*value) : base::Value();
+  };
 
-}  // namespace
-
-std::ostream& operator<<(std::ostream& out,
-                         const ExternalInstallOptions& install_options) {
-  return out
-         << "install_url: " << install_options.install_url
-         << "\n user_display_mode: " << install_options.user_display_mode
-         << "\n install_source: "
-         << static_cast<int32_t>(install_options.install_source)
-         << "\n fallback_app_name: "
-         << install_options.fallback_app_name.value_or("")
-         << "\n add_to_applications_menu: "
-         << install_options.add_to_applications_menu
-         << "\n add_to_desktop: " << install_options.add_to_desktop
-         << "\n add_to_quick_launch_bar: "
-         << install_options.add_to_quick_launch_bar
-         << "\n add_to_search: " << install_options.add_to_search
-         << "\n add_to_management: " << install_options.add_to_management
-         << "\n run_on_os_login: " << install_options.run_on_os_login
-         << "\n is_disabled: " << install_options.is_disabled
-         << "\n override_previous_user_uninstall: "
-         << install_options.override_previous_user_uninstall
-         << "\n only_for_new_users: " << install_options.only_for_new_users
-         << "\n only_if_previously_preinstalled: "
-         << install_options.only_if_previously_preinstalled
-         << "\n user_type_allowlist: " << install_options.user_type_allowlist
-         << "\n gate_on_feature: " << install_options.gate_on_feature
+  // Prefix with a ! so this appears at the top when serialized.
+  root.SetStringKey("!install_url", install_url.spec());
+  root.SetBoolKey("add_to_applications_menu", add_to_applications_menu);
+  root.SetBoolKey("add_to_desktop", add_to_desktop);
+  root.SetBoolKey("add_to_management", add_to_management);
+  root.SetBoolKey("add_to_quick_launch_bar", add_to_quick_launch_bar);
+  root.SetBoolKey("add_to_search", add_to_search);
+  root.SetKey("additional_search_terms",
+              ConvertStringList(additional_search_terms));
+  root.SetBoolKey("app_info_factory", static_cast<bool>(app_info_factory));
+  root.SetBoolKey("bypass_service_worker_check", bypass_service_worker_check);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-         << "\n disable_if_arc_supported: "
-         << install_options.disable_if_arc_supported
-         << "\n disable_if_tablet_form_factor: "
-         << install_options.disable_if_tablet_form_factor
+  root.SetBoolKey("disable_if_arc_supported", disable_if_arc_supported);
+  root.SetBoolKey("disable_if_tablet_form_factor",
+                  disable_if_tablet_form_factor);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-         << "\n bypass_service_worker_check: "
-         << install_options.bypass_service_worker_check
-         << "\n require_manifest: " << install_options.require_manifest
-         << "\n force_reinstall: " << install_options.force_reinstall
-         << "\n force_reinstall_for_milestone: "
-         << install_options.force_reinstall_for_milestone
-         << "\n wait_for_windows_closed: "
-         << install_options.wait_for_windows_closed
-         << "\n install_placeholder: " << install_options.install_placeholder
-         << "\n reinstall_placeholder: "
-         << install_options.reinstall_placeholder
-         << "\n launch_query_params: " << install_options.launch_query_params
-         << "\n load_and_await_service_worker_registration: "
-         << install_options.load_and_await_service_worker_registration
-         << "\n service_worker_registration_url: "
-         << install_options.service_worker_registration_url.value_or(GURL())
-         << "\n uninstall_and_replace:\n   "
-         << base::JoinString(install_options.uninstall_and_replace, "\n   ")
-         << "\n additional_search_terms:\n   "
-         << base::JoinString(install_options.additional_search_terms, "\n   ")
-         << "\n only_use_app_info_factory: "
-         << install_options.only_use_app_info_factory << "\n app_info_factory: "
-         << !install_options.app_info_factory.is_null()
-         << "\n system_app_type: "
-         << (install_options.system_app_type.has_value()
-                 ? static_cast<int32_t>(install_options.system_app_type.value())
-                 : -1)
-         << "\n oem_installed: " << install_options.oem_installed
-         << "\n disable_if_touchscreen_with_stylus_not_supported: "
-         << install_options.disable_if_touchscreen_with_stylus_not_supported;
+  root.SetBoolKey("disable_if_touchscreen_with_stylus_not_supported",
+                  disable_if_touchscreen_with_stylus_not_supported);
+  root.SetKey("fallback_app_name", ConvertOptional(fallback_app_name));
+  root.SetBoolKey("force_reinstall", force_reinstall);
+  root.SetKey("force_reinstall_for_milestone",
+              ConvertOptional(force_reinstall_for_milestone));
+  root.SetKey("gate_on_feature", ConvertOptional(gate_on_feature));
+  root.SetBoolKey("install_placeholder", install_placeholder);
+  root.SetIntKey("install_source", static_cast<int>(install_source));
+  root.SetBoolKey("is_disabled", is_disabled);
+  root.SetKey("launch_query_params", ConvertOptional(launch_query_params));
+  root.SetBoolKey("load_and_await_service_worker_registration",
+                  load_and_await_service_worker_registration);
+  root.SetBoolKey("oem_installed", oem_installed);
+  root.SetBoolKey("only_for_new_users", only_for_new_users);
+  root.SetBoolKey("only_if_previously_preinstalled",
+                  only_if_previously_preinstalled);
+  root.SetBoolKey("only_use_app_info_factory", only_use_app_info_factory);
+  root.SetBoolKey("override_previous_user_uninstall",
+                  override_previous_user_uninstall);
+  root.SetBoolKey("reinstall_placeholder", reinstall_placeholder);
+  root.SetBoolKey("require_manifest", require_manifest);
+  root.SetBoolKey("run_on_os_login", run_on_os_login);
+  root.SetKey("service_worker_registration_url",
+              service_worker_registration_url
+                  ? base::Value(service_worker_registration_url->spec())
+                  : base::Value());
+  root.SetKey("system_app_type",
+              system_app_type ? base::Value(static_cast<int>(*system_app_type))
+                              : base::Value());
+  root.SetKey("uninstall_and_replace",
+              ConvertStringList(uninstall_and_replace));
+  root.SetStringKey("user_display_mode",
+                    blink::DisplayModeToString(user_display_mode));
+  root.SetKey("user_type_allowlist", ConvertStringList(user_type_allowlist));
+  root.SetBoolKey("wait_for_windows_closed", wait_for_windows_closed);
+
+  return root;
 }
 
 InstallManager::InstallParams ConvertExternalInstallOptionsToParams(

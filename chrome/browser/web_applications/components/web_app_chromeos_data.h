@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_CHROMEOS_DATA_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_CHROMEOS_DATA_H_
 
-#include <iosfwd>
+#include "base/values.h"
 
 namespace web_app {
 
 struct WebAppChromeOsData {
+  base::Value AsDebugValue() const;
+
   // By default an app is shown everywhere.
   bool show_in_launcher = true;
   bool show_in_search = true;
@@ -23,9 +25,6 @@ struct WebAppChromeOsData {
   // manage multiple Sources for a single app.
   bool oem_installed = false;
 };
-
-// For logging and debugging purposes.
-std::ostream& operator<<(std::ostream& out, const WebAppChromeOsData& data);
 
 bool operator==(const WebAppChromeOsData& chromeos_data1,
                 const WebAppChromeOsData& chromeos_data2);

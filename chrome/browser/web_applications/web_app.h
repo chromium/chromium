@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -80,6 +81,8 @@ class WebApp {
     ClientData();
     ~ClientData();
     ClientData(const ClientData& client_data);
+    base::Value AsDebugValue() const;
+
     absl::optional<WebAppSystemWebAppData> system_web_app_data;
   };
 
@@ -172,6 +175,8 @@ class WebApp {
     // Copyable and move-assignable to support Copy-on-Write with Commit.
     SyncFallbackData(const SyncFallbackData& sync_fallback_data);
     SyncFallbackData& operator=(SyncFallbackData&& sync_fallback_data);
+
+    base::Value AsDebugValue() const;
 
     std::string name;
     absl::optional<SkColor> theme_color;
@@ -270,6 +275,7 @@ class WebApp {
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   bool operator!=(const WebApp&) const;
+  base::Value AsDebugValue() const;
 
  private:
   using Sources = std::bitset<Source::kMaxValue + 1>;
@@ -332,7 +338,7 @@ class WebApp {
   bool is_storage_isolated_ = false;
   // New fields must be added to:
   //  - |operator==|
-  //  - |operator<<|
+  //  - AsDebugValue()
   //  - WebAppDatabase::CreateWebApp()
   //  - WebAppDatabase::CreateWebAppProto()
   //  - CreateRandomWebApp()
@@ -340,8 +346,6 @@ class WebApp {
 };
 
 // For logging and debug purposes.
-std::ostream& operator<<(std::ostream& out,
-                         const WebApp::SyncFallbackData& sync_fallback_data);
 std::ostream& operator<<(std::ostream& out, const WebApp& app);
 
 bool operator==(const WebApp::SyncFallbackData& sync_fallback_data1,

@@ -104,7 +104,6 @@ extern const char kChromeUIInspectHost[];
 extern const char kChromeUIInspectURL[];
 extern const char kChromeUIInternalsHost[];
 extern const char kChromeUIInternalsQueryTilesPath[];
-extern const char kChromeUIInternalsWebAppPath[];
 extern const char kChromeUIInterstitialHost[];
 extern const char kChromeUIInterstitialURL[];
 extern const char kChromeUIInvalidationsHost[];
@@ -213,6 +212,7 @@ extern const char kChromeUIWebApksHost[];
 extern const char kChromeUINearbyInternalsHost[];
 extern const char kChromeUIReadLaterHost[];
 extern const char kChromeUIReadLaterURL[];
+extern const char kChromeUIWebAppInternalsHost[];
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

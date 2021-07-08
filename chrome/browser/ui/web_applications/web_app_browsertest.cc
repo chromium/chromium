@@ -1343,15 +1343,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopupLocationBar) {
       popup_browser->CanSupportWindowFeature(Browser::FEATURE_LOCATIONBAR));
 }
 
-// Make sure chrome://internals/web-app page loads fine.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InternalWebAppPage) {
+// Make sure chrome://web-app-internals page loads fine.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppInternalsPage) {
   // Loads with no web app.
-  NavigateToURLAndWait(browser(), GURL("chrome://internals/web-app"));
+  NavigateToURLAndWait(browser(), GURL("chrome://web-app-internals"));
 
   const GURL app_url = GetSecureAppURL();
   InstallPWA(app_url);
   // Loads with one web app.
-  NavigateToURLAndWait(browser(), GURL("chrome://internals/web-app"));
+  NavigateToURLAndWait(browser(), GURL("chrome://web-app-internals"));
 
   // Install a non-promotable web app.
   NavigateToURLAndWait(
@@ -1363,7 +1363,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InternalWebAppPage) {
   observer.AwaitNextInstall();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
   // Loads with two apps.
-  NavigateToURLAndWait(browser(), GURL("chrome://internals/web-app"));
+  NavigateToURLAndWait(browser(), GURL("chrome://web-app-internals"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,

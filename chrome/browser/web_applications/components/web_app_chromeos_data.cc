@@ -10,6 +10,16 @@
 
 namespace web_app {
 
+base::Value WebAppChromeOsData::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetBoolKey("show_in_launcher", show_in_launcher);
+  root.SetBoolKey("show_in_search", show_in_search);
+  root.SetBoolKey("show_in_management", show_in_management);
+  root.SetBoolKey("is_disabled", is_disabled);
+  root.SetBoolKey("oem_installed", oem_installed);
+  return root;
+}
+
 bool operator==(const WebAppChromeOsData& chromeos_data1,
                 const WebAppChromeOsData& chromeos_data2) {
   return std::tie(chromeos_data1.show_in_launcher,
@@ -20,18 +30,6 @@ bool operator==(const WebAppChromeOsData& chromeos_data1,
                   chromeos_data2.show_in_search,
                   chromeos_data2.show_in_management, chromeos_data2.is_disabled,
                   chromeos_data2.oem_installed);
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const WebAppChromeOsData& chromeos_data) {
-  out << "show_in_launcher: " << chromeos_data.show_in_launcher << std::endl;
-  out << "show_in_search: " << chromeos_data.show_in_search << std::endl;
-  out << "show_in_management: " << chromeos_data.show_in_management
-      << std::endl;
-  out << "is_disabled: " << chromeos_data.is_disabled << std::endl;
-  out << "oem_installed: " << chromeos_data.oem_installed << std::endl;
-
-  return out;
 }
 
 }  // namespace web_app

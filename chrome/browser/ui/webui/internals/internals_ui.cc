@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/webui/internals/query_tiles/query_tiles_internals_ui_message_handler.h"
 #else
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals_page_handler_impl.h"
-#include "chrome/browser/ui/webui/internals/web_app/web_app_internals_page_handler_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #endif  // defined(OS_ANDROID)
 
@@ -83,7 +82,10 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
                            IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
 
   // chrome://internals/web-app
-  WebAppInternalsPageHandlerImpl::AddPageResources(source_);
+  // This page has moved to chrome://web-app-internals, see
+  // WebAppInternalsSource.
+  // TODO(crbug.com/1226263): Clean up this redirect after M94 goes stable.
+  source_->AddResourcePath("web-app", IDR_WEB_APP_INTERNALS_HTML);
 #endif  // defined(OS_ANDROID)
 
   // chrome://internals/session-service
@@ -114,14 +116,6 @@ void InternalsUI::AddQueryTilesInternals(content::WebUI* web_ui) {
       std::make_unique<QueryTilesInternalsUIMessageHandler>(profile_));
 }
 #else   // defined(OS_ANDROID)
-void InternalsUI::BindInterface(
-    mojo::PendingReceiver<mojom::web_app_internals::WebAppInternalsPageHandler>
-        receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<WebAppInternalsPageHandlerImpl>(profile_),
-      std::move(receiver));
-}
-
 void InternalsUI::BindInterface(
     mojo::PendingReceiver<
         mojom::user_education_internals::UserEducationInternalsPageHandler>

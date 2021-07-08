@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -18,6 +19,8 @@ struct ProtocolHandlerInfo {
   ProtocolHandlerInfo(const ProtocolHandlerInfo& other);
   ~ProtocolHandlerInfo();
 
+  base::Value AsDebugValue() const;
+
   std::string protocol;
   GURL url;
 };
@@ -25,7 +28,6 @@ using ProtocolHandlers = std::vector<ProtocolHandlerInfo>;
 
 bool operator==(const ProtocolHandlerInfo& handler1,
                 const ProtocolHandlerInfo& handler2);
-std::ostream& operator<<(std::ostream& out, const ProtocolHandlerInfo& handler);
 
 }  // namespace apps
 

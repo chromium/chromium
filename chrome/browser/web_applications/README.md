@@ -239,5 +239,6 @@ See [the testing docs](docs/testing.md).
 
 ## Debugging
 
-Use [chrome://internals/web-app](chrome://internals/web-app) to inspect internal
-web app state.
+Use [chrome://web-app-internals](chrome://web-app-internals) to inspect internal
+web app state. For Chromium versions prior to M93 use
+[chrome://internals/web-app](chrome://internals/web-app).

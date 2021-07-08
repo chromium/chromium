@@ -1,0 +1,221 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_source.h"
+
+#include "base/json/json_writer.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
+
+namespace {
+
+constexpr char kInstalledWebApps[] = "InstalledWebApps";
+constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
+constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
+constexpr char kIconErrorLog[] = "IconErrorLog";
+
+constexpr char kNeedsRecordWebAppDebugInfo[] =
+    "No debugging info available! Please enable: "
+    "chrome://flags/#record-web-app-debug-info";
+
+template <typename T>
+std::string ConvertToString(const T& value) {
+  std::stringstream ss;
+  ss << value;
+  return ss.str();
+}
+
+base::Value BuildIndexJson() {
+  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value& index =
+      *root.SetKey("Index", base::Value(base::Value::Type::LIST));
+
+  index.Append(kInstalledWebApps);
+  index.Append(kPreinstalledWebAppConfigs);
+  index.Append(kExternallyManagedWebAppPrefs);
+  index.Append(kIconErrorLog);
+
+  return root;
+}
+
+base::Value BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
+  base::Value root(base::Value::Type::DICTIONARY);
+
+  base::Value& installed_web_apps = *root.SetKey(
+      kInstalledWebApps, base::Value(base::Value::Type::DICTIONARY));
+
+  std::vector<const web_app::WebApp*> web_apps;
+  for (const web_app::WebApp& web_app :
+       provider.registrar().AsWebAppRegistrar()->GetAppsIncludingStubs()) {
+    web_apps.push_back(&web_app);
+  }
+  base::ranges::sort(web_apps, {}, &web_app::WebApp::name);
+
+  // Prefix with a ! so this appears at the top when serialized.
+  base::Value& index = *installed_web_apps.SetKey(
+      "!Index", base::Value(base::Value::Type::DICTIONARY));
+  for (const web_app::WebApp* web_app : web_apps) {
+    const std::string& key = web_app->name();
+    base::Value* existing_entry = index.FindKey(key);
+    if (!existing_entry) {
+      index.SetStringKey(key, web_app->app_id());
+      continue;
+    }
+    // If any web apps share identical names then collect a list of app IDs.
+    const std::string* existing_id = existing_entry->GetIfString();
+    if (existing_id) {
+      base::Value id_copy(*existing_id);
+      index.SetKey(key, base::Value(base::Value::Type::LIST))
+          ->Append(std::move(id_copy));
+    }
+    index.FindListKey(key)->Append(web_app->app_id());
+  }
+
+  base::Value& web_app_details = *installed_web_apps.SetKey(
+      "Details", base::Value(base::Value::Type::LIST));
+  for (const web_app::WebApp* web_app : web_apps)
+    web_app_details.Append(web_app->AsDebugValue());
+
+  return root;
+}
+
+base::Value BuildPreinstalledWebAppConfigsJson(
+    web_app::WebAppProvider& provider) {
+  base::Value root(base::Value::Type::DICTIONARY);
+
+  const web_app::PreinstalledWebAppManager::DebugInfo* debug_info =
+      provider.preinstalled_web_app_manager().debug_info();
+  if (!debug_info) {
+    root.SetStringKey(kPreinstalledWebAppConfigs, kNeedsRecordWebAppDebugInfo);
+    return root;
+  }
+
+  base::Value& preinstalled_web_app_configs = *root.SetKey(
+      kPreinstalledWebAppConfigs, base::Value(base::Value::Type::DICTIONARY));
+
+  base::Value& config_parse_errors = *preinstalled_web_app_configs.SetKey(
+      "ConfigParseErrors", base::Value(base::Value::Type::LIST));
+  for (const std::string& parse_error : debug_info->parse_errors)
+    config_parse_errors.Append(parse_error);
+
+  base::Value& configs_enabled = *preinstalled_web_app_configs.SetKey(
+      "ConfigsEnabled", base::Value(base::Value::Type::LIST));
+  for (const web_app::ExternalInstallOptions& enabled_config :
+       debug_info->enabled_configs) {
+    configs_enabled.Append(enabled_config.AsDebugValue());
+  }
+
+  base::Value& configs_disabled = *preinstalled_web_app_configs.SetKey(
+      "ConfigsDisabled", base::Value(base::Value::Type::LIST));
+  for (const std::pair<web_app::ExternalInstallOptions, std::string>&
+           disabled_config : debug_info->disabled_configs) {
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetStringKey("!Reason", disabled_config.second);
+    entry.SetKey("Config", disabled_config.first.AsDebugValue());
+    configs_disabled.Append(std::move(entry));
+  }
+
+  base::Value& install_results = *preinstalled_web_app_configs.SetKey(
+      "InstallResults", base::Value(base::Value::Type::LIST));
+  for (std::pair<const GURL&,
+                 const web_app::ExternallyManagedAppManager::InstallResult&>
+           install_result : debug_info->install_results) {
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetStringKey("InstallUrl", install_result.first.spec());
+    entry.SetStringKey("ResultCode",
+                       ConvertToString(install_result.second.code));
+    entry.SetBoolKey("DidUninstallAndReplace",
+                     install_result.second.did_uninstall_and_replace);
+    install_results.Append(std::move(entry));
+  }
+
+  preinstalled_web_app_configs.SetBoolKey(
+      "IsStartUpTaskComplete", debug_info->is_start_up_task_complete);
+
+  base::Value& uninstall_results = *preinstalled_web_app_configs.SetKey(
+      "UninstallResults", base::Value(base::Value::Type::LIST));
+  for (std::pair<const GURL&, const bool&> uninstall_result :
+       debug_info->uninstall_results) {
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetStringKey("InstallUrl", uninstall_result.first.spec());
+    entry.SetBoolKey("Success", uninstall_result.second);
+    uninstall_results.Append(std::move(entry));
+  }
+
+  return root;
+}
+
+base::Value BuildExternallyManagedWebAppPrefsJson(Profile* profile) {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetKey(
+      kExternallyManagedWebAppPrefs,
+      profile->GetPrefs()->GetDictionary(prefs::kWebAppsExtensionIDs)->Clone());
+  return root;
+}
+
+base::Value BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
+  base::Value root(base::Value::Type::DICTIONARY);
+
+  const std::vector<std::string>* error_log =
+      provider.icon_manager().AsWebAppIconManager()->error_log();
+
+  if (!error_log) {
+    root.SetStringKey(kIconErrorLog, kNeedsRecordWebAppDebugInfo);
+    return root;
+  }
+
+  base::Value& icon_error_log =
+      *root.SetKey(kIconErrorLog, base::Value(base::Value::Type::LIST));
+  for (const std::string& error : *error_log)
+    icon_error_log.Append(error);
+
+  return root;
+}
+
+base::Value BuildWebAppInternalsJson(Profile* profile) {
+  auto* provider = web_app::WebAppProvider::Get(profile);
+  if (!provider)
+    return base::Value("Web app system not enabled for profile.");
+
+  base::Value root(base::Value::Type::LIST);
+  root.Append(BuildIndexJson());
+  root.Append(BuildInstalledWebAppsJson(*provider));
+  root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
+  root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
+  root.Append(BuildIconErrorLogJson(*provider));
+
+  return root;
+}
+
+}  // namespace
+
+WebAppInternalsSource::WebAppInternalsSource(Profile* profile)
+    : profile_(profile) {}
+
+WebAppInternalsSource::~WebAppInternalsSource() = default;
+
+std::string WebAppInternalsSource::GetSource() {
+  return chrome::kChromeUIWebAppInternalsHost;
+}
+
+std::string WebAppInternalsSource::GetMimeType(const std::string& path) {
+  return "application/json";
+}
+
+void WebAppInternalsSource::StartDataRequest(
+    const GURL& url,
+    const content::WebContents::Getter& wc_getter,
+    content::URLDataSource::GotDataCallback callback) {
+  std::string data = ConvertToString(BuildWebAppInternalsJson(profile_));
+  std::move(callback).Run(base::RefCountedString::TakeString(&data));
+}

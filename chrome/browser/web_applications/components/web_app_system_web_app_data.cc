@@ -9,17 +9,15 @@
 
 namespace web_app {
 
+base::Value WebAppSystemWebAppData::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetIntKey("system_app_type", static_cast<int>(system_app_type));
+  return root;
+}
+
 bool operator==(const WebAppSystemWebAppData& chromeos_data1,
                 const WebAppSystemWebAppData& chromeos_data2) {
   return chromeos_data1.system_app_type == chromeos_data2.system_app_type;
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const WebAppSystemWebAppData& chromeos_data) {
-  out << "swa type: " << static_cast<int>(chromeos_data.system_app_type)
-      << std::endl;
-
-  return out;
 }
 
 }  // namespace web_app

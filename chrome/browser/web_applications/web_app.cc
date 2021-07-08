@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
@@ -322,6 +323,14 @@ WebApp::ClientData::~ClientData() = default;
 
 WebApp::ClientData::ClientData(const ClientData& client_data) = default;
 
+base::Value WebApp::ClientData::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetKey("system_web_app_data", system_web_app_data
+                                         ? system_web_app_data->AsDebugValue()
+                                         : base::Value());
+  return root;
+}
+
 WebApp::SyncFallbackData::SyncFallbackData() = default;
 
 WebApp::SyncFallbackData::~SyncFallbackData() = default;
@@ -332,208 +341,16 @@ WebApp::SyncFallbackData::SyncFallbackData(
 WebApp::SyncFallbackData& WebApp::SyncFallbackData::operator=(
     SyncFallbackData&& sync_fallback_data) = default;
 
-template <typename T>
-std::ostream& operator<<(std::ostream& out, const absl::optional<T>& optional) {
-  if (optional.has_value())
-    return out << optional.value();
-  return out << "nullopt";
-}
-
-template <typename T>
-std::string Indent(const T& value) {
-  std::stringstream ss;
-  ss << value;
-  std::vector<std::string> lines = base::SplitString(
-      ss.str(), "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (std::string& line : lines)
-    line = "  " + line;
-  return base::JoinString(lines, "\n");
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const WebApp::SyncFallbackData& sync_fallback_data) {
-  out << "name: " << sync_fallback_data.name << std::endl;
-
-  out << "theme_color: " << ColorToString(sync_fallback_data.theme_color)
-      << std::endl;
-
-  out << "scope: " << sync_fallback_data.scope << std::endl;
-
-  out << "icon_infos:" << std::endl;
-  for (const WebApplicationIconInfo& icon : sync_fallback_data.icon_infos)
-    out << Indent(icon) << std::endl;
-
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const WebApp& app) {
-  out << "app_id: " << app.app_id_ << std::endl;
-
-  out << "unhashed app_id: "
-      << GenerateAppIdUnhashed(app.manifest_id_, app.start_url_) << std::endl;
-
-  out << "manifest_url: " << app.manifest_url_ << std::endl;
-
-  out << "manifest_id: " << app.manifest_id_ << std::endl;
-
-  out << "name: " << app.name_ << std::endl;
-
-  out << "start_url: " << app.start_url_ << std::endl;
-
-  out << "launch_query_params: " << app.launch_query_params_ << std::endl;
-
-  out << "scope: " << app.scope_ << std::endl;
-
-  out << "theme_color: " << ColorToString(app.theme_color_) << std::endl;
-
-  out << "background_color: " << ColorToString(app.background_color_)
-      << std::endl;
-
-  out << "display_mode: " << blink::DisplayModeToString(app.display_mode_)
-      << std::endl;
-
-  out << "display_override:";
-  for (const DisplayMode& mode : app.display_mode_override_)
-    out << " " << blink::DisplayModeToString(mode);
-  out << std::endl;
-
-  out << "user_display_mode: "
-      << blink::DisplayModeToString(app.user_display_mode_) << std::endl;
-
-  out << "user_page_ordinal: " << app.user_page_ordinal_.ToDebugString()
-      << std::endl;
-
-  out << "user_launch_ordinal: " << app.user_launch_ordinal_.ToDebugString()
-      << std::endl;
-
-  out << "sources:";
-  for (int i = Source::Type::kMinValue; i <= Source::Type::kMaxValue; ++i) {
-    if (app.sources_[i])
-      out << " " << static_cast<Source::Type>(i);
-  }
-  out << std::endl;
-
-  out << "is_locally_installed: " << app.is_locally_installed_ << std::endl;
-
-  out << "is_in_sync_install: " << app.is_in_sync_install_ << std::endl;
-
-  out << "is_uninstalling: " << app.is_uninstalling_ << std::endl;
-
-  out << "sync_fallback_data:" << std::endl
-      << Indent(app.sync_fallback_data_) << std::endl;
-
-  out << "description: " << app.description_ << std::endl;
-
-  out << "last_badging_time: " << app.last_badging_time_ << std::endl;
-
-  out << "last_launch_time: " << app.last_launch_time_ << std::endl;
-
-  out << "install_time: " << app.install_time_ << std::endl;
-
-  out << "is_generated_icon: " << app.is_generated_icon_ << std::endl;
-
-  out << "run_on_os_login_mode: "
-      << RunOnOsLoginModeToString(app.run_on_os_login_mode_) << std::endl;
-
-  out << "icon_infos:" << std::endl;
-  for (const WebApplicationIconInfo& icon : app.icon_infos_)
-    out << Indent(icon) << std::endl;
-
-  out << "downloaded_icon_sizes_any:";
-  for (SquareSizePx size : app.downloaded_icon_sizes_any_)
-    out << " " << size;
-  out << std::endl;
-
-  out << "downloaded_icon_sizes_monochrome:";
-  for (SquareSizePx size : app.downloaded_icon_sizes_monochrome_)
-    out << " " << size;
-  out << std::endl;
-
-  out << "downloaded_icon_sizes_maskable:";
-  for (SquareSizePx size : app.downloaded_icon_sizes_maskable_)
-    out << " " << size;
-  out << std::endl;
-
-  out << "shortcuts_menu_item_infos:" << std::endl;
-  for (const WebApplicationShortcutsMenuItemInfo& info :
-       app.shortcuts_menu_item_infos_) {
-    out << Indent(info) << std::endl;
-  }
-
-  out << "downloaded_shortcuts_menu_icons_sizes:" << std::endl;
-  for (size_t i = 0; i < app.downloaded_shortcuts_menu_icons_sizes_.size();
-       ++i) {
-    out << "  index: " << i << ":" << std::endl;
-    const IconSizes& icon_sizes = app.downloaded_shortcuts_menu_icons_sizes_[i];
-    out << "    any:";
-    for (SquareSizePx size : icon_sizes.any)
-      out << " " << size;
-    out << std::endl;
-
-    out << "    maskable:";
-    for (SquareSizePx size : icon_sizes.maskable)
-      out << " " << size;
-    out << std::endl;
-  }
-
-  out << "file_handlers:" << std::endl;
-  for (const apps::FileHandler& file_handler : app.file_handlers_)
-    out << Indent(file_handler) << std::endl;
-
-  out << "file_handler_permission_blocked:"
-      << app.file_handler_permission_blocked_ << std::endl;
-
-  out << "share_target:" << std::endl << Indent(app.share_target_) << std::endl;
-
-  out << "additional_search_terms:" << std::endl;
-  for (const std::string& additional_search_term : app.additional_search_terms_)
-    out << "  " << additional_search_term << std::endl;
-
-  out << "protocol_handlers:" << std::endl;
-  for (const apps::ProtocolHandlerInfo& protocol_handler :
-       app.protocol_handlers_) {
-    out << "  " << protocol_handler << std::endl;
-  }
-
-  out << "approved_launch_protocols:" << std::endl;
-  for (const std::string& approved_launch_protocols :
-       app.approved_launch_protocols_)
-    out << "  " << approved_launch_protocols << std::endl;
-
-  out << "url_handlers:" << std::endl;
-  for (const apps::UrlHandlerInfo& url_handler : app.url_handlers_)
-    out << Indent(url_handler) << std::endl;
-
-  out << "note_taking_new_note_url: " << app.note_taking_new_note_url_
-      << std::endl;
-
-  out << "capture_links: " << app.capture_links_ << std::endl;
-
-  out << "chromeos_data:" << std::endl
-      << Indent(app.chromeos_data_) << std::endl;
-
-  out << "system_web_app:" << std::endl
-      << Indent(app.client_data_.system_web_app_data) << std::endl;
-
-  out << "window_controls_overlay_enabled:" << std::endl
-      << Indent(app.window_controls_overlay_enabled_) << std::endl;
-
-  out << "is_storage_isolated: " << app.is_storage_isolated_ << std::endl;
-
-  return out;
-}
-
-bool operator==(const WebApp::SyncFallbackData& sync_fallback_data1,
-                const WebApp::SyncFallbackData& sync_fallback_data2) {
-  return std::tie(sync_fallback_data1.name, sync_fallback_data1.theme_color,
-                  sync_fallback_data1.scope, sync_fallback_data1.icon_infos) ==
-         std::tie(sync_fallback_data2.name, sync_fallback_data2.theme_color,
-                  sync_fallback_data2.scope, sync_fallback_data2.icon_infos);
-}
-
-bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
-                const WebApp::SyncFallbackData& sync_fallback_data2) {
-  return !(sync_fallback_data1 == sync_fallback_data2);
+base::Value WebApp::SyncFallbackData::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetStringKey("name", name);
+  root.SetStringKey("theme_color", ColorToString(theme_color));
+  root.SetStringKey("scope", scope.spec());
+  base::Value& icon_infos_json =
+      *root.SetKey("icon_infos", base::Value(base::Value::Type::LIST));
+  for (const WebApplicationIconInfo& icon_info : icon_infos)
+    icon_infos_json.Append(icon_info.AsDebugValue());
+  return root;
 }
 
 bool WebApp::operator==(const WebApp& other) const {
@@ -594,6 +411,180 @@ bool WebApp::operator==(const WebApp& other) const {
 
 bool WebApp::operator!=(const WebApp& other) const {
   return !(*this == other);
+}
+
+base::Value WebApp::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+
+  auto ConvertToString = [](const auto& value) {
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
+  };
+
+  auto ConvertList = [](const auto& list) {
+    base::Value list_json(base::Value::Type::LIST);
+    for (const auto& item : list)
+      list_json.Append(item);
+    return list_json;
+  };
+
+  auto ConvertDebugValueList = [](const auto& list) {
+    base::Value list_json(base::Value::Type::LIST);
+    for (const auto& item : list)
+      list_json.Append(item.AsDebugValue());
+    return list_json;
+  };
+
+  auto ConvertOptional = [](const auto& value) {
+    return value ? base::Value(*value) : base::Value();
+  };
+
+  // Prefix with a ! so these fields appear at the top when serialized.
+  root.SetStringKey("!app_id", app_id_);
+
+  root.SetStringKey("!name", name_);
+
+  root.SetKey("additional_search_terms", ConvertList(additional_search_terms_));
+
+  root.SetStringKey("app_service_icon_url",
+                    base::StrCat({"chrome://app-icon/", app_id_, "/32"}));
+
+  root.SetKey("approved_launch_protocols",
+              ConvertList(approved_launch_protocols_));
+
+  root.SetStringKey("background_color", ColorToString(background_color_));
+
+  root.SetStringKey("capture_links", ConvertToString(capture_links_));
+
+  root.SetKey("chromeos_data",
+              chromeos_data_ ? chromeos_data_->AsDebugValue() : base::Value());
+
+  root.SetKey("client_data", client_data_.AsDebugValue());
+
+  root.SetStringKey("description", description_);
+
+  root.SetStringKey("display_mode", blink::DisplayModeToString(display_mode_));
+
+  base::Value& display_override =
+      *root.SetKey("display_override", base::Value(base::Value::Type::LIST));
+  for (const DisplayMode& mode : display_mode_override_)
+    display_override.Append(blink::DisplayModeToString(mode));
+
+  base::Value& downloaded_icon_sizes_json = *root.SetKey(
+      "downloaded_icon_sizes", base::Value(base::Value::Type::DICTIONARY));
+  for (IconPurpose purpose : kIconPurposes) {
+    downloaded_icon_sizes_json.SetKey(
+        ConvertToString(purpose), ConvertList(downloaded_icon_sizes(purpose)));
+  }
+
+  base::Value& downloaded_shortcuts_menu_icons_sizes =
+      *root.SetKey("downloaded_shortcuts_menu_icons_sizes",
+                   base::Value(base::Value::Type::LIST));
+  for (size_t i = 0; i < downloaded_shortcuts_menu_icons_sizes_.size(); ++i) {
+    const IconSizes& icon_sizes = downloaded_shortcuts_menu_icons_sizes_[i];
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetIntKey("index", i);
+    for (IconPurpose purpose : kIconPurposes) {
+      entry.SetKey(ConvertToString(purpose),
+                   ConvertList(icon_sizes.GetSizesForPurpose(purpose)));
+    }
+    downloaded_shortcuts_menu_icons_sizes.Append(std::move(entry));
+  }
+
+  root.SetBoolKey("file_handler_permission_blocked",
+                  file_handler_permission_blocked_);
+
+  root.SetKey("file_handlers", ConvertDebugValueList(file_handlers_));
+
+  root.SetKey("icon_infos", ConvertDebugValueList(icon_infos_));
+
+  root.SetStringKey("install_time", ConvertToString(install_time_));
+
+  root.SetBoolKey("is_generated_icon", is_generated_icon_);
+
+  root.SetBoolKey("is_in_sync_install", is_in_sync_install_);
+
+  root.SetBoolKey("is_locally_installed", is_locally_installed_);
+
+  root.SetBoolKey("is_storage_isolated", is_storage_isolated_);
+
+  root.SetBoolKey("is_uninstalling", is_uninstalling_);
+
+  root.SetStringKey("last_badging_time", ConvertToString(last_badging_time_));
+
+  root.SetStringKey("last_launch_time", ConvertToString(last_launch_time_));
+
+  root.SetKey("launch_query_params", ConvertOptional(launch_query_params_));
+
+  root.SetKey("manifest_id", ConvertOptional(manifest_id_));
+
+  root.SetStringKey("manifest_url", ConvertToString(manifest_url_));
+
+  root.SetStringKey("note_taking_new_note_url",
+                    ConvertToString(note_taking_new_note_url_));
+
+  root.SetKey("protocol_handlers", ConvertDebugValueList(protocol_handlers_));
+
+  root.SetStringKey("run_on_os_login_mode",
+                    RunOnOsLoginModeToString(run_on_os_login_mode_));
+
+  root.SetStringKey("scope", ConvertToString(scope_));
+
+  root.SetKey("share_target",
+              share_target_ ? share_target_->AsDebugValue() : base::Value());
+
+  root.SetKey("shortcuts_menu_item_infos",
+              ConvertDebugValueList(shortcuts_menu_item_infos_));
+
+  base::Value& sources =
+      *root.SetKey("sources", base::Value(base::Value::Type::LIST));
+  for (int i = Source::Type::kMinValue; i <= Source::Type::kMaxValue; ++i) {
+    if (sources_[i])
+      sources.Append(ConvertToString(static_cast<Source::Type>(i)));
+  }
+
+  root.SetStringKey("start_url", ConvertToString(start_url_));
+
+  root.SetKey("sync_fallback_data",
+              base::Value(sync_fallback_data_.AsDebugValue()));
+
+  root.SetStringKey("theme_color", ColorToString(theme_color_));
+
+  root.SetStringKey("unhashed_app_id",
+                    GenerateAppIdUnhashed(manifest_id_, start_url_));
+
+  root.SetKey("url_handlers", ConvertDebugValueList(url_handlers_));
+
+  root.SetStringKey("user_display_mode",
+                    blink::DisplayModeToString(user_display_mode_));
+
+  root.SetStringKey("user_launch_ordinal",
+                    user_launch_ordinal_.ToDebugString());
+
+  root.SetStringKey("user_page_ordinal", user_page_ordinal_.ToDebugString());
+
+  root.SetBoolKey("window_controls_overlay_enabled",
+                  window_controls_overlay_enabled_);
+
+  return root;
+}
+
+std::ostream& operator<<(std::ostream& out, const WebApp& app) {
+  return out << app.AsDebugValue();
+}
+
+bool operator==(const WebApp::SyncFallbackData& sync_fallback_data1,
+                const WebApp::SyncFallbackData& sync_fallback_data2) {
+  return std::tie(sync_fallback_data1.name, sync_fallback_data1.theme_color,
+                  sync_fallback_data1.scope, sync_fallback_data1.icon_infos) ==
+         std::tie(sync_fallback_data2.name, sync_fallback_data2.theme_color,
+                  sync_fallback_data2.scope, sync_fallback_data2.icon_infos);
+}
+
+bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
+                const WebApp::SyncFallbackData& sync_fallback_data2) {
+  return !(sync_fallback_data1 == sync_fallback_data2);
 }
 
 }  // namespace web_app

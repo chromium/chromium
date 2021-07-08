@@ -42,6 +42,24 @@ void UrlHandlerInfo::Reset() {
   exclude_paths = {};
 }
 
+base::Value UrlHandlerInfo::AsDebugValue() const {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetStringKey("origin", origin.GetDebugString());
+  root.SetBoolKey("has_origin_wildcard", has_origin_wildcard);
+
+  base::Value& paths_json =
+      *root.SetKey("paths", base::Value(base::Value::Type::LIST));
+  for (const std::string& path : paths)
+    paths_json.Append(path);
+
+  base::Value& exclude_paths_json =
+      *root.SetKey("exclude_paths", base::Value(base::Value::Type::LIST));
+  for (const std::string& path : exclude_paths)
+    exclude_paths_json.Append(path);
+
+  return root;
+}
+
 bool operator==(const UrlHandlerInfo& handler1,
                 const UrlHandlerInfo& handler2) {
   return handler1.origin == handler2.origin &&
@@ -60,22 +78,6 @@ bool operator<(const UrlHandlerInfo& handler1, const UrlHandlerInfo& handler2) {
                   handler1.exclude_paths) <
          std::tie(handler2.origin, handler2.has_origin_wildcard, handler2.paths,
                   handler2.exclude_paths);
-}
-
-std::ostream& operator<<(std::ostream& out, const UrlHandlerInfo& handler) {
-  out << "origin: " << handler.origin << std::endl;
-  out << "  has_origin_wildcard: "
-      << (handler.has_origin_wildcard ? "true" : "false") << std::endl;
-
-  out << "  paths:" << std::endl;
-  for (auto path : handler.paths)
-    out << "    " << path << std::endl;
-
-  out << "  exclude_paths:" << std::endl;
-  for (auto path : handler.exclude_paths)
-    out << "    " << path << std::endl;
-
-  return out;
 }
 
 }  // namespace apps

@@ -79,8 +79,6 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_TRANSLATE_INTERNALS_HTML" file="../../components/translate/translate_internals/translate_internals.html" type="BINDATA" />
       <include name="IDR_TRANSLATE_INTERNALS_JS" file="../../components/translate/translate_internals/translate_internals.js" preprocess="true" type="BINDATA" />
       <include name="IDR_WEB_APP_INTERNALS_HTML" file="resources/web_app_internals/index.html" type="BINDATA" />
-      <include name="IDR_WEB_APP_INTERNALS_JS" file="${root_gen_dir}/chrome/browser/resources/web_app_internals/web_app_internals.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEB_APP_INTERNALS_MOJOM_LITE_JS" file="${root_gen_dir}/chrome/browser/ui/webui/internals/web_app/web_app_internals.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_HTML" file="../../components/ukm/debug/ukm_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_JS" file="../../components/ukm/debug/ukm_internals.js" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_CSS" file="../../components/ukm/debug/ukm_internals.css" type="BINDATA" />
