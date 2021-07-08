@@ -27,7 +27,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
@@ -44,6 +43,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayImage;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel;
+import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayState;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -169,9 +169,10 @@ public class AutofillAssistantOverlayUiTest {
         assertThat(checkElementExists(getWebContents(), "touch_area_one"), is(true));
 
         Rect rect = getBoundingRectForElement(getWebContents(), "touch_area_one");
-        runOnUiThreadBlocking(()
-                                      -> model.set(AssistantOverlayModel.TOUCHABLE_AREA,
-                                              Collections.singletonList(new RectF(rect))));
+        runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantOverlayModel.TOUCHABLE_AREA,
+                                Collections.singletonList(new AssistantOverlayRect(rect))));
 
         // Touchable area set, but no viewport given: equivalent to full overlay.
         tapElement("touch_area_one");
@@ -206,7 +207,7 @@ public class AutofillAssistantOverlayUiTest {
             model.set(AssistantOverlayModel.STATE, AssistantOverlayState.PARTIAL);
             model.set(AssistantOverlayModel.WEB_CONTENTS, getWebContents());
             model.set(AssistantOverlayModel.TOUCHABLE_AREA,
-                    Collections.singletonList(new RectF(rect)));
+                    Collections.singletonList(new AssistantOverlayRect(rect)));
         });
         assertScrimDisplayed(true);
         tapElement("touch_area_five");

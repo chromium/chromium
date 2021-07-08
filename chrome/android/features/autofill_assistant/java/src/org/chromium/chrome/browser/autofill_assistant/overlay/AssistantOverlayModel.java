@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant.overlay;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
@@ -25,15 +26,46 @@ import java.util.List;
  */
 @JNINamespace("autofill_assistant")
 public class AssistantOverlayModel extends PropertyModel {
+    /** Wrapper model for {@code RectF}. */
+    public static class AssistantOverlayRect extends RectF {
+        private boolean mIsFullWidth;
+
+        public AssistantOverlayRect() {
+            super();
+        }
+
+        public AssistantOverlayRect(
+                float left, float top, float right, float bottom, boolean fullWidth) {
+            super(left, top, right, bottom);
+            mIsFullWidth = fullWidth;
+        }
+
+        public AssistantOverlayRect(AssistantOverlayRect rect) {
+            set(rect);
+        }
+
+        public AssistantOverlayRect(Rect rect) {
+            super.set(rect);
+        }
+
+        public void set(AssistantOverlayRect rect) {
+            super.set(rect);
+            mIsFullWidth = rect.mIsFullWidth;
+        }
+
+        public boolean isFullWidth() {
+            return mIsFullWidth;
+        }
+    }
     public static final WritableIntPropertyKey STATE = new WritableIntPropertyKey();
 
     public static final WritableObjectPropertyKey<WebContents> WEB_CONTENTS =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<List<RectF>> TOUCHABLE_AREA =
+    public static final WritableObjectPropertyKey<List<AssistantOverlayRect>> TOUCHABLE_AREA =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<List<RectF>> RESTRICTED_AREA =
+    public static final WritableObjectPropertyKey<List<AssistantOverlayRect>> RESTRICTED_AREA =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<AssistantOverlayDelegate> DELEGATE =
@@ -71,11 +103,12 @@ public class AssistantOverlayModel extends PropertyModel {
         set(WEB_CONTENTS, webContents);
     }
 
-    private static List<RectF> toRectangles(float[] coords) {
-        List<RectF> boxes = new ArrayList<>();
-        for (int i = 0; i < coords.length; i += 4) {
-            boxes.add(new RectF(/* left= */ coords[i], /* top= */ coords[i + 1],
-                    /* right= */ coords[i + 2], /* bottom= */ coords[i + 3]));
+    private static List<AssistantOverlayRect> toRectangles(float[] coords) {
+        List<AssistantOverlayRect> boxes = new ArrayList<>();
+        for (int i = 0; i < coords.length; i += 5) {
+            boxes.add(new AssistantOverlayRect(/* left= */ coords[i], /* top= */ coords[i + 1],
+                    /* right= */ coords[i + 2], /* bottom= */ coords[i + 3],
+                    /* fullWidth= */ (int) coords[i + 4] == 1));
         }
         return boxes;
     }

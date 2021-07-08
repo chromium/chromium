@@ -16,9 +16,11 @@ struct RectF {
   float top;
   float right;
   float bottom;
+  bool full_width;
 
   RectF();
   RectF(float left, float top, float right, float bottom);
+  RectF(float left, float top, float right, float bottom, bool full_width);
 
   // Checks whether the rectangle is empty.
   bool empty() const;

@@ -96,7 +96,7 @@ class ElementArea {
     bool IsPending() const;
 
     // Fills the given rectangle from the current state, if possible.
-    void FillRect(RectF* rect, const RectF& visual_viewport) const;
+    void FillRect(RectF* rect) const;
 
     bool operator==(const Rectangle& another) const;
   };
@@ -116,22 +116,13 @@ class ElementArea {
   void OnGetElementRect(const Selector& selector,
                         const ClientStatus& rect_status,
                         const RectF& rect);
-  void OnGetVisualViewport(const ClientStatus& status, const RectF& rect);
   void ReportUpdate();
 
   ScriptExecutorDelegate* const delegate_;
   std::vector<Rectangle> rectangles_;
 
-  // If true, update for the visual viewport position is currently scheduled.
-  bool visual_viewport_pending_update_ = false;
-
-  // Visual viewport coordinates, in CSS pixels, relative to the layout
-  // viewport.
-  RectF visual_viewport_;
-
   // Cached positions from the last time an update was sent, used to avoid
   // sending updates when nothing has changed.
-  RectF last_visual_viewport_;
   std::vector<Rectangle> last_rectangles_;
 
   // While running, regularly calls Update().

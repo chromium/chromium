@@ -42,7 +42,24 @@ MATCHER_P4(MatchingRectF,
            bottom,
            ToString(RectF(left, top, right, bottom))) {
   if (abs(left - arg.left) < 0.01 && abs(top - arg.top) < 0.01 &&
-      abs(right - arg.right) < 0.01 && abs(bottom - arg.bottom) < 0.01) {
+      abs(right - arg.right) < 0.01 && abs(bottom - arg.bottom) < 0.01 &&
+      arg.full_width == false) {
+    return true;
+  }
+  *result_listener << arg;
+  return false;
+}
+
+MATCHER_P5(MatchingRectF,
+           left,
+           top,
+           right,
+           bottom,
+           full_width,
+           ToString(RectF(left, top, right, bottom, full_width))) {
+  if (abs(left - arg.left) < 0.01 && abs(top - arg.top) < 0.01 &&
+      abs(right - arg.right) < 0.01 && abs(bottom - arg.bottom) < 0.01 &&
+      full_width == arg.full_width) {
     return true;
   }
   *result_listener << arg;
@@ -74,9 +91,6 @@ class ElementAreaTest : public testing::Test {
     ON_CALL(mock_web_controller_, GetElementRect(_, _))
         .WillByDefault(
             RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
-    ON_CALL(mock_web_controller_, GetVisualViewport(_))
-        .WillByDefault(
-            RunOnceCallback<0>(OkClientStatus(), RectF(0, 0, 200, 400)));
 
     element_area_.SetOnUpdate(base::BindRepeating(&ElementAreaTest::OnUpdate,
                                                   base::Unretained(this)));
@@ -172,37 +186,6 @@ TEST_F(ElementAreaTest, CallOnUpdateAfterSetFromProto) {
   EXPECT_EQ(on_update_call_count_, 1);
   SetElement("#found");
   EXPECT_EQ(on_update_call_count_, 2);
-}
-
-TEST_F(ElementAreaTest, DontCallOnUpdateWhenViewportMissing) {
-  Selector expected_selector({"#found"});
-
-  // Swallowing calls to GetVisualViewport guarantees that the viewport
-  // position will never be known.
-  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_)).WillOnce(DoNothing());
-  EXPECT_CALL(mock_web_controller_,
-              GetElementRect(EqualsElement(test_util::MockFindElement(
-                                 mock_web_controller_, expected_selector)),
-                             _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
-
-  SetElement("#found");
-  EXPECT_EQ(on_update_call_count_, 0);
-}
-
-TEST_F(ElementAreaTest, CallOnUpdateWhenViewportMissingAndEmptyRect) {
-  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_))
-      .WillRepeatedly(
-          RunOnceCallback<0>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
-
-  SetElement("#found");
-
-  // A newly empty element area should be reported.
-  on_update_call_count_ = 0;
-  element_area_.Clear();
-
-  EXPECT_EQ(on_update_call_count_, 1);
-  EXPECT_THAT(reported_area_, IsEmpty());
 }
 
 TEST_F(ElementAreaTest, TwoRectangles) {
@@ -372,9 +355,6 @@ TEST_F(ElementAreaTest, FullWidthRectangle) {
                                  mock_web_controller_, expected_selector_2)),
                              _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(5, 7, 6, 8)));
-  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_))
-      .WillRepeatedly(
-          RunOnceCallback<0>(OkClientStatus(), RectF(100, 0, 200, 400)));
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
@@ -386,9 +366,8 @@ TEST_F(ElementAreaTest, FullWidthRectangle) {
   std::vector<RectF> rectangles;
   element_area_.GetTouchableRectangles(&rectangles);
 
-  // left and right of the box come from the visual viewport, top from the 1st
-  // element, bottom from the 2nd.
-  EXPECT_THAT(rectangles, ElementsAre(MatchingRectF(100, 3, 200, 8)));
+  // left and top come from the 1st element, right and bottom from the 2nd.
+  EXPECT_THAT(rectangles, ElementsAre(MatchingRectF(1, 3, 6, 8, true)));
 }
 
 TEST_F(ElementAreaTest, ElementMovesAfterUpdate) {

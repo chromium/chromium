@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.autofill_assistant.overlay;
 
 import android.content.Context;
-import android.graphics.RectF;
 
+import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -50,11 +50,11 @@ public class AssistantOverlayCoordinator {
                 mEventFilter.setWebContents(webContents);
                 mDrawable.setWebContents(webContents);
             } else if (AssistantOverlayModel.TOUCHABLE_AREA == propertyKey) {
-                List<RectF> area = model.get(AssistantOverlayModel.TOUCHABLE_AREA);
+                List<AssistantOverlayRect> area = model.get(AssistantOverlayModel.TOUCHABLE_AREA);
                 mEventFilter.setTouchableArea(area);
                 mDrawable.setTransparentArea(area);
             } else if (AssistantOverlayModel.RESTRICTED_AREA == propertyKey) {
-                List<RectF> area = model.get(AssistantOverlayModel.RESTRICTED_AREA);
+                List<AssistantOverlayRect> area = model.get(AssistantOverlayModel.RESTRICTED_AREA);
                 mEventFilter.setRestrictedArea(area);
                 mDrawable.setRestrictedArea(area);
             } else if (AssistantOverlayModel.DELEGATE == propertyKey) {

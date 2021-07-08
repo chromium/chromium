@@ -78,6 +78,7 @@ std::vector<float> ToFloatVector(const std::vector<RectF>& areas) {
     flattened.emplace_back(rect.top);
     flattened.emplace_back(rect.right);
     flattened.emplace_back(rect.bottom);
+    flattened.emplace_back(rect.full_width ? 1 : 0);
   }
   return flattened;
 }

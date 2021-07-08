@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -94,7 +95,7 @@ class AssistantOverlayDrawable extends Drawable
     private WebContents mWebContents;
 
     private final List<Box> mTransparentArea = new ArrayList<>();
-    private List<RectF> mRestrictedArea = Collections.emptyList();
+    private List<AssistantOverlayRect> mRestrictedArea = Collections.emptyList();
 
     /** Padding added between the element area and the grayed-out area. */
     private final float mPaddingPx;
@@ -214,14 +215,14 @@ class AssistantOverlayDrawable extends Drawable
     }
 
     /** Set or updates the transparent area. */
-    void setTransparentArea(List<RectF> transparentArea) {
+    void setTransparentArea(List<AssistantOverlayRect> transparentArea) {
         // Add or update boxes for each rectangle in the area.
         for (int i = 0; i < transparentArea.size(); i++) {
             while (i >= mTransparentArea.size()) {
                 mTransparentArea.add(new Box());
             }
             Box box = mTransparentArea.get(i);
-            RectF rect = transparentArea.get(i);
+            AssistantOverlayRect rect = transparentArea.get(i);
             boolean isNew = box.mRect.isEmpty() && !rect.isEmpty();
             box.mRect.set(rect);
             if (mPartial && isNew) {
@@ -265,7 +266,7 @@ class AssistantOverlayDrawable extends Drawable
     }
 
     /** Set or update the restricted area. */
-    void setRestrictedArea(List<RectF> restrictedArea) {
+    void setRestrictedArea(List<AssistantOverlayRect> restrictedArea) {
         mRestrictedArea = restrictedArea;
         invalidateSelf();
     }
@@ -328,16 +329,19 @@ class AssistantOverlayDrawable extends Drawable
         float top = renderCoordinates.getScrollY();
 
         // Don't draw on top of the restricted area.
-        for (RectF rect : mRestrictedArea) {
-            mDrawRect.left = renderCoordinates.fromLocalCssToPix(rect.left - left);
+        for (AssistantOverlayRect rect : mRestrictedArea) {
+            mDrawRect.left =
+                    rect.isFullWidth() ? 0 : renderCoordinates.fromLocalCssToPix(rect.left - left);
             mDrawRect.top = yTop + renderCoordinates.fromLocalCssToPix(rect.top - top);
-            mDrawRect.right = renderCoordinates.fromLocalCssToPix(rect.right - left);
+            mDrawRect.right = rect.isFullWidth()
+                    ? width
+                    : renderCoordinates.fromLocalCssToPix(rect.right - left);
             mDrawRect.bottom = yTop + renderCoordinates.fromLocalCssToPix(rect.bottom - top);
             canvas.clipRect(mDrawRect, Region.Op.DIFFERENCE);
         }
 
         for (Box box : mTransparentArea) {
-            RectF rect = box.getRectToDraw();
+            AssistantOverlayRect rect = box.getRectToDraw();
             if (rect.isEmpty() || (!mPartial && box.mAnimationType != AnimationType.FADE_IN)) {
                 continue;
             }
@@ -346,9 +350,13 @@ class AssistantOverlayDrawable extends Drawable
             int fillAlpha = (int) (mBackgroundAlpha * (1f - box.getVisibility()));
             mBoxFill.setAlpha(fillAlpha);
 
-            mDrawRect.left = renderCoordinates.fromLocalCssToPix(rect.left - left) - mPaddingPx;
+            mDrawRect.left = rect.isFullWidth()
+                    ? 0
+                    : (renderCoordinates.fromLocalCssToPix(rect.left - left) - mPaddingPx);
             mDrawRect.top = yTop + renderCoordinates.fromLocalCssToPix(rect.top - top) - mPaddingPx;
-            mDrawRect.right = renderCoordinates.fromLocalCssToPix(rect.right - left) + mPaddingPx;
+            mDrawRect.right = rect.isFullWidth()
+                    ? width
+                    : (renderCoordinates.fromLocalCssToPix(rect.right - left) + mPaddingPx);
             mDrawRect.bottom =
                     yTop + renderCoordinates.fromLocalCssToPix(rect.bottom - top) + mPaddingPx;
             if (mDrawRect.left <= 0 && mDrawRect.right >= width) {
@@ -410,11 +418,11 @@ class AssistantOverlayDrawable extends Drawable
 
     private class Box {
         /** Current rectangle and touchable area, as reported by the model. */
-        final RectF mRect = new RectF();
+        final AssistantOverlayRect mRect = new AssistantOverlayRect();
 
         /** A copy of the rectangle that used to be displayed in mRect while fading in. */
         @Nullable
-        RectF mFadeInRect;
+        AssistantOverlayRect mFadeInRect;
 
         /** Type of {@link #mAnimator}. */
         @AnimationType
@@ -434,7 +442,7 @@ class AssistantOverlayDrawable extends Drawable
         }
 
         /** Returns the rectangle that should be drawn. */
-        RectF getRectToDraw() {
+        AssistantOverlayRect getRectToDraw() {
             return mFadeInRect != null ? mFadeInRect : mRect;
         }
 
@@ -453,7 +461,7 @@ class AssistantOverlayDrawable extends Drawable
                         AnimationType.FADE_IN, 1f, 0f, BakedBezierInterpolator.FADE_IN_CURVE)) {
                 return;
             }
-            mFadeInRect = new RectF(mRect);
+            mFadeInRect = new AssistantOverlayRect(mRect);
             mAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator ignored) {

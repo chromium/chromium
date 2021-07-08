@@ -13,6 +13,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -77,10 +78,10 @@ class AssistantOverlayEventFilter
     private WebContents mWebContents;
 
     /** Touchable area, expressed in CSS pixels relative to the layout viewport. */
-    private List<RectF> mTouchableArea = Collections.emptyList();
+    private List<AssistantOverlayRect> mTouchableArea = Collections.emptyList();
 
     /** Restricted area, expressed in CSS pixels relative to the layout viewport. */
-    private List<RectF> mRestrictedArea = Collections.emptyList();
+    private List<AssistantOverlayRect> mRestrictedArea = Collections.emptyList();
 
     /**
      * Detects taps: {@link GestureDetector#onTouchEvent} returns {@code true} after a tap event.
@@ -169,14 +170,14 @@ class AssistantOverlayEventFilter
     /**
      * Set the touchable area. This only applies if current state is AssistantOverlayState.PARTIAL.
      */
-    void setTouchableArea(List<RectF> touchableArea) {
+    void setTouchableArea(List<AssistantOverlayRect> touchableArea) {
         mTouchableArea = touchableArea;
     }
 
     /**
      * Set the restricted area. This only applies if current state is AssistantOverlayState.PARTIAL.
      */
-    void setRestrictedArea(List<RectF> restrictedArea) {
+    void setRestrictedArea(List<AssistantOverlayRect> restrictedArea) {
         mRestrictedArea = restrictedArea;
     }
 
@@ -359,6 +360,18 @@ class AssistantOverlayEventFilter
         }
     }
 
+    private boolean rectContains(AssistantOverlayRect rect, float absoluteXCss, float absoluteYCss,
+            RenderCoordinatesImpl renderCoordinates) {
+        if (!rect.isFullWidth()) {
+            return rect.contains(absoluteXCss, absoluteYCss);
+        }
+        RectF rectCompare = new RectF(/* left= */ renderCoordinates.getScrollX(), rect.top,
+                /* right= */ renderCoordinates.getScrollX()
+                        + renderCoordinates.getContentWidthCss(),
+                rect.bottom);
+        return rectCompare.contains(absoluteXCss, absoluteYCss);
+    }
+
     private boolean isInTouchableArea(float x, float y) {
         if (mWebContents == null || mTouchableArea.isEmpty()) return false;
 
@@ -374,12 +387,12 @@ class AssistantOverlayEventFilter
         float absoluteXCss = (x * physicalToCssPixels) + renderCoordinates.getScrollX();
         float absoluteYCss = (y * physicalToCssPixels) + renderCoordinates.getScrollY();
 
-        for (RectF rect : mRestrictedArea) {
-            if (rect.contains(absoluteXCss, absoluteYCss)) return false;
+        for (AssistantOverlayRect rect : mRestrictedArea) {
+            if (rectContains(rect, absoluteXCss, absoluteYCss, renderCoordinates)) return false;
         }
 
-        for (RectF rect : mTouchableArea) {
-            if (rect.contains(absoluteXCss, absoluteYCss)) return true;
+        for (AssistantOverlayRect rect : mTouchableArea) {
+            if (rectContains(rect, absoluteXCss, absoluteYCss, renderCoordinates)) return true;
         }
         return false;
     }
