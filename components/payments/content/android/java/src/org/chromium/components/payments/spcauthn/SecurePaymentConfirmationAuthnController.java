@@ -59,6 +59,10 @@ public class SecurePaymentConfirmationAuthnController {
 
         @Override
         public int getVerticalScrollOffset() {
+            if (mView != null) {
+                return mView.getScrollY();
+            }
+
             return 0;
         }
 

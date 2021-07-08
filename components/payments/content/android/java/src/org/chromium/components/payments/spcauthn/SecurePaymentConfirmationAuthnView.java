@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 package org.chromium.components.payments.spcauthn;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.chromium.components.payments.R;
@@ -19,7 +21,8 @@ import org.chromium.components.payments.R;
  * payment details and provides the option to continue with the payment or to cancel.
  */
 /* package */ class SecurePaymentConfirmationAuthnView {
-    private final LinearLayout mContentView;
+    private final RelativeLayout mContentView;
+    private final ScrollView mScrollView;
 
     /* package */ final ImageView mHeaderImage;
     /* package */ final TextView mStoreOrigin;
@@ -31,9 +34,10 @@ import org.chromium.components.payments.R;
     /* package */ final Button mCancelButton;
 
     /* package */ SecurePaymentConfirmationAuthnView(Context context) {
-        mContentView = (LinearLayout) LayoutInflater.from(context).inflate(
+        mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
                 R.layout.secure_payment_confirmation_authn_ui, null);
 
+        mScrollView = (ScrollView) mContentView.findViewById(R.id.scroll_view);
         mHeaderImage =
                 (ImageView) mContentView.findViewById(R.id.secure_payment_confirmation_image);
         mStoreOrigin = (TextView) mContentView.findViewById(R.id.store);
@@ -49,5 +53,9 @@ import org.chromium.components.payments.R;
 
     /* package */ View getContentView() {
         return mContentView;
+    }
+
+    /* package */ int getScrollY() {
+        return mScrollView.getScrollY();
     }
 }
