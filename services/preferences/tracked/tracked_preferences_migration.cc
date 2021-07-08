@@ -186,7 +186,7 @@ void MigratePrefsFromOldToNewStore(const std::set<std::string>& pref_names,
         // value in order to provide the same no-op behaviour as if the pref was
         // added to the wrong file when there was already a value for
         // |pref_name| in |new_store|.
-        new_store->Remove(pref_name, NULL);
+        new_store->RemovePath(pref_name);
         *new_store_altered = true;
       }
     }

@@ -45,7 +45,7 @@ base::StringPiece DictionaryHashStoreContents::GetUMASuffix() const {
 }
 
 void DictionaryHashStoreContents::Reset() {
-  storage_->Remove(kPreferenceMACs, NULL);
+  storage_->RemovePath(kPreferenceMACs);
 }
 
 bool DictionaryHashStoreContents::GetMac(const std::string& path,

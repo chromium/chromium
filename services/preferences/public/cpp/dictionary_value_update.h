@@ -123,11 +123,9 @@ class DictionaryValueUpdate {
 
   // Removes the Value with the specified path from this dictionary (or one
   // of its child dictionaries, if the path is more than just a local key).
-  // If |out_value| is non-NULL, the removed Value will be passed out via
-  // |out_value|.  If |out_value| is NULL, the removed value will be deleted.
   // This method returns true if |path| is a valid path; otherwise it will
   // return false and the DictionaryValue object will be unchanged.
-  bool Remove(base::StringPiece path, std::unique_ptr<base::Value>* out_value);
+  bool Remove(base::StringPiece path);
 
   // Like Remove(), but without special treatment of '.'.  This allows e.g. URLs
   // to be used as paths.

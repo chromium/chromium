@@ -156,7 +156,7 @@ void AppShimRegistry::SetAppInfo(
 
   // If there are no installed profiles, clear the app's key.
   if (installed_profiles && installed_profiles->empty()) {
-    update->Remove(app_id, nullptr);
+    update->Remove(app_id);
     return;
   }
 

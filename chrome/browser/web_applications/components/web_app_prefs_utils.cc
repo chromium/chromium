@@ -215,7 +215,7 @@ void RemoveWebAppPref(PrefService* pref_service,
 
   std::unique_ptr<prefs::DictionaryValueUpdate> web_app_prefs =
       UpdateWebAppDictionary(update.Get(), app_id);
-  web_app_prefs->Remove(path, nullptr);
+  web_app_prefs->Remove(path);
 }
 
 void RecordInstallIphIgnored(PrefService* pref_service,

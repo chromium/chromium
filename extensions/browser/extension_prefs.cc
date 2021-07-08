@@ -571,7 +571,7 @@ void ExtensionPrefs::UpdateExtensionPref(
   if (data_value)
     update->Set(key, std::move(data_value));
   else
-    update->Remove(key, NULL);
+    update->Remove(key);
 }
 
 void ExtensionPrefs::DeleteExtensionPrefs(const std::string& extension_id) {
@@ -579,7 +579,7 @@ void ExtensionPrefs::DeleteExtensionPrefs(const std::string& extension_id) {
   for (auto& observer : observer_list_)
     observer.OnExtensionPrefsDeleted(extension_id);
   prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_names::kExtensions);
-  update->Remove(extension_id, NULL);
+  update->Remove(extension_id);
 }
 
 bool ExtensionPrefs::ReadPrefAsBoolean(const std::string& extension_id,
@@ -1643,7 +1643,7 @@ bool ExtensionPrefs::RemoveDelayedInstallInfo(
   if (!GetExtensionPref(extension_id))
     return false;
   ScopedExtensionPrefUpdate update(prefs_, extension_id);
-  bool result = update->Remove(kDelayedInstallInfo, NULL);
+  bool result = update->Remove(kDelayedInstallInfo);
   return result;
 }
 
@@ -1667,9 +1667,9 @@ bool ExtensionPrefs::FinishDelayedInstallInfo(
                                       &serialized_ordinal)) {
     suggested_page_ordinal = syncer::StringOrdinal(serialized_ordinal);
     needs_sort_ordinal = true;
-    pending_install_dict->Remove(kPrefSuggestedPageOrdinal, NULL);
+    pending_install_dict->Remove(kPrefSuggestedPageOrdinal);
   }
-  pending_install_dict->Remove(kDelayedInstallReason, NULL);
+  pending_install_dict->Remove(kDelayedInstallReason);
 
   const base::Time install_time = clock_->Now();
   pending_install_dict->SetString(
@@ -1869,7 +1869,7 @@ void ExtensionPrefs::ClearLastLaunchTimes() {
       continue;
 
     if (extension_dict->HasKey(kPrefLastLaunchTime))
-      extension_dict->Remove(kPrefLastLaunchTime, NULL);
+      extension_dict->Remove(kPrefLastLaunchTime);
   }
 }
 
@@ -2419,7 +2419,7 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
   // the previous install are cleared up in case of an update. Else just set the
   // entry (which will overwrite any existing value).
   if (ruleset_install_prefs.empty()) {
-    extension_dict->Remove(kDNRStaticRulesetPref, nullptr /* out_value */);
+    extension_dict->Remove(kDNRStaticRulesetPref);
   } else {
     auto ruleset_prefs = std::make_unique<base::DictionaryValue>();
     for (const declarative_net_request::RulesetInstallPref& install_pref :
@@ -2441,7 +2441,7 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
 
   // Clear the list of enabled static rulesets for the extension since it
   // shouldn't persist across extension updates.
-  extension_dict->Remove(kDNREnabledStaticRulesetIDs, nullptr /* out_value */);
+  extension_dict->Remove(kDNREnabledStaticRulesetIDs);
 
   if (util::CanWithholdPermissionsFromExtension(*extension)) {
     // If the withhold permission creation flag is present it takes precedence
@@ -2472,7 +2472,7 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
   if (install_flags & kInstallFlagDoNotSync)
     extension_dict->SetBoolean(kPrefDoNotSync, true);
   else
-    extension_dict->Remove(kPrefDoNotSync, NULL);
+    extension_dict->Remove(kPrefDoNotSync);
 }
 
 void ExtensionPrefs::InitExtensionControlledPrefs(
@@ -2558,11 +2558,11 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
 
   // If this point has been reached, any pending installs should be considered
   // out of date.
-  extension_dict->Remove(kDelayedInstallInfo, NULL);
+  extension_dict->Remove(kDelayedInstallInfo);
 
   // Clear state that may be registered from a previous install.
-  extension_dict->Remove(EventRouter::kRegisteredLazyEvents, nullptr);
-  extension_dict->Remove(EventRouter::kRegisteredServiceWorkerEvents, nullptr);
+  extension_dict->Remove(EventRouter::kRegisteredLazyEvents);
+  extension_dict->Remove(EventRouter::kRegisteredServiceWorkerEvents);
 
   // FYI, all code below here races on sudden shutdown because |extension_dict|,
   // |app_sorting|, |extension_pref_value_map_|, and (potentially) observers
@@ -2657,7 +2657,7 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
     }
 
     for (const char* key : kObsoleteKeys)
-      inner_update->Remove(key, nullptr);
+      inner_update->Remove(key);
   }
 }
 

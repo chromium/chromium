@@ -40,7 +40,7 @@ void CleanupDeprecatedTrackedPreferences(
 
   for (size_t i = 0; i < base::size(kDeprecatedTrackedPreferences); ++i) {
     const char* key = kDeprecatedTrackedPreferences[i];
-    pref_store_contents->Remove(key, NULL);
+    pref_store_contents->RemovePath(key);
     hash_store_transaction->ClearHash(key);
   }
 }

@@ -90,7 +90,7 @@ bool TrackedSplitPreference::EnforceAndReport(
 
       for (std::vector<std::string>::const_iterator it = invalid_keys.begin();
            it != invalid_keys.end(); ++it) {
-        dict_value->Remove(*it, NULL);
+        dict_value->RemoveKey(*it);
       }
     } else {
       pref_store_contents->RemovePath(pref_path_, NULL);
