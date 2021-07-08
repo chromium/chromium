@@ -244,16 +244,16 @@ void ApplyFirstScrollTracking(const ui::LatencyInfo* latency,
     return;
   }
 
-  // Construct a callback that, given presentation feedback, will report the
-  // time span between the scroll input-event creation and the
+  // Construct a callback that, given a successful presentation timestamp, will
+  // report the time span between the scroll input-event creation and the
   // presentation timestamp.
-  LayerTreeHost::PresentationTimeCallback presentation_callback =
+  PresentationTimeCallbackBuffer::CompositorCallback presentation_callback =
       base::BindOnce(
           [](base::TimeTicks event_creation,
              LayerTreeHostImpl* layer_tree_host_impl,
-             const gfx::PresentationFeedback& feedback) {
+             base::TimeTicks presentation_timestamp) {
             layer_tree_host_impl->DidObserveScrollDelay(
-                feedback.timestamp - event_creation, event_creation);
+                presentation_timestamp - event_creation, event_creation);
           },
           creation_timestamp, impl);
 
@@ -2049,8 +2049,14 @@ void LayerTreeHostImpl::DidReceiveCompositorFrameAck() {
 void LayerTreeHostImpl::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
+  // Presentation callbacks registered on the compositor thread are expected to
+  // be called on the first successful presentation. So, if the presentation is
+  // failed, we only pop main thread callbacks at this point and leave
+  // compositor thread callbacks alone until a successful presentation.
+  const bool main_callbacks_only = details.presentation_feedback.failed();
   PresentationTimeCallbackBuffer::PendingCallbacks activated_callbacks =
-      presentation_time_callbacks_.PopPendingCallbacks(frame_token);
+      presentation_time_callbacks_.PopPendingCallbacks(frame_token,
+                                                       main_callbacks_only);
 
   // Send all tasks to the client so that it can decide which tasks
   // should run on which thread.
@@ -2819,20 +2825,20 @@ void LayerTreeHostImpl::UpdateTreeResourcesForGpuRasterizationIfNeeded() {
   SetRequiresHighResToDraw();
 }
 
-void LayerTreeHostImpl::RegisterMainThreadPresentationTimeCallback(
+void LayerTreeHostImpl::RegisterMainThreadPresentationTimeCallbackForTesting(
     uint32_t frame_token,
-    LayerTreeHost::PresentationTimeCallback callback) {
-  std::vector<LayerTreeHost::PresentationTimeCallback> as_vector;
-  as_vector.emplace_back(std::move(callback));
+    PresentationTimeCallbackBuffer::MainCallback callback) {
+  std::vector<PresentationTimeCallbackBuffer::MainCallback> as_vector;
+  as_vector.push_back(std::move(callback));
   presentation_time_callbacks_.RegisterMainThreadPresentationCallbacks(
       frame_token, std::move(as_vector));
 }
 
 void LayerTreeHostImpl::RegisterCompositorPresentationTimeCallback(
     uint32_t frame_token,
-    LayerTreeHost::PresentationTimeCallback callback) {
-  std::vector<LayerTreeHost::PresentationTimeCallback> as_vector;
-  as_vector.emplace_back(std::move(callback));
+    PresentationTimeCallbackBuffer::CompositorCallback callback) {
+  std::vector<PresentationTimeCallbackBuffer::CompositorCallback> as_vector;
+  as_vector.push_back(std::move(callback));
   presentation_time_callbacks_.RegisterCompositorPresentationCallbacks(
       frame_token, std::move(as_vector));
 }
@@ -4970,13 +4976,12 @@ void LayerTreeHostImpl::SetUkmSmoothnessDestination(
 
 void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(
     uint32_t frame_token,
-    std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
+    std::vector<PresentationTimeCallbackBuffer::CompositorCallback> callbacks,
     const viz::FrameTimingDetails& details) {
   frame_trackers_.NotifyFramePresented(frame_token,
                                        details.presentation_feedback);
-  for (LayerTreeHost::PresentationTimeCallback& callback : callbacks) {
-    std::move(callback).Run(details.presentation_feedback);
-  }
+  for (auto& callback : callbacks)
+    std::move(callback).Run(details.presentation_feedback.timestamp);
 }
 
 void LayerTreeHostImpl::AllocateLocalSurfaceId() {

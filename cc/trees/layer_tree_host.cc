@@ -754,7 +754,7 @@ bool LayerTreeHost::UpdateLayers() {
 
 void LayerTreeHost::DidPresentCompositorFrame(
     uint32_t frame_token,
-    std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
+    std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks,
     const gfx::PresentationFeedback& feedback) {
   for (auto& callback : callbacks)
     std::move(callback).Run(feedback);
@@ -1127,7 +1127,7 @@ bool LayerTreeHost::IsThreaded() const {
 }
 
 void LayerTreeHost::RequestPresentationTimeForNextFrame(
-    PresentationTimeCallback callback) {
+    PresentationTimeCallbackBuffer::MainCallback callback) {
   pending_presentation_time_callbacks_.push_back(std::move(callback));
 }
 

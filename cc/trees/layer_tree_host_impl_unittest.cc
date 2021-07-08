@@ -1691,10 +1691,8 @@ class LayerTreeHostImplTestInvokeMainThreadCallbacks
     auto main_thread_callbacks = std::move(activated.main_thread_callbacks);
     host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
         frame_token, std::move(activated.compositor_thread_callbacks), details);
-    for (LayerTreeHost::PresentationTimeCallback& callback :
-         main_thread_callbacks) {
+    for (auto& callback : main_thread_callbacks)
       std::move(callback).Run(details.presentation_feedback);
-    }
   }
 };
 
@@ -1704,25 +1702,27 @@ TEST_F(LayerTreeHostImplTestInvokeMainThreadCallbacks,
        PresentationFeedbackCallbacksFire) {
   bool compositor_thread_callback_fired = false;
   bool main_thread_callback_fired = false;
-  gfx::PresentationFeedback feedback_seen_by_compositor_thread_callback;
+  base::TimeTicks presentation_time_seen_by_compositor_thread_callback;
   gfx::PresentationFeedback feedback_seen_by_main_thread_callback;
 
   // Register a compositor-thread callback to run when the frame for
   // |frame_token_1| gets presented.
   constexpr uint32_t frame_token_1 = 1;
   host_impl_->RegisterCompositorPresentationTimeCallback(
-      frame_token_1, base::BindLambdaForTesting(
-                         [&](const gfx::PresentationFeedback& feedback) {
-                           compositor_thread_callback_fired = true;
-                           feedback_seen_by_compositor_thread_callback =
-                               feedback;
-                         }));
+      frame_token_1,
+      base::BindLambdaForTesting([&](base::TimeTicks presentation_timestamp) {
+        DCHECK(presentation_time_seen_by_compositor_thread_callback.is_null());
+        DCHECK(!presentation_timestamp.is_null());
+        compositor_thread_callback_fired = true;
+        presentation_time_seen_by_compositor_thread_callback =
+            presentation_timestamp;
+      }));
 
   // Register a main-thread callback to run when the frame for |frame_token_2|
   // gets presented.
   constexpr uint32_t frame_token_2 = 2;
   ASSERT_GT(frame_token_2, frame_token_1);
-  host_impl_->RegisterMainThreadPresentationTimeCallback(
+  host_impl_->RegisterMainThreadPresentationTimeCallbackForTesting(
       frame_token_2, base::BindLambdaForTesting(
                          [&](const gfx::PresentationFeedback& feedback) {
                            main_thread_callback_fired = true;
@@ -1735,8 +1735,8 @@ TEST_F(LayerTreeHostImplTestInvokeMainThreadCallbacks,
   host_impl_->DidPresentCompositorFrame(frame_token_1, mock_details);
 
   EXPECT_TRUE(compositor_thread_callback_fired);
-  EXPECT_EQ(feedback_seen_by_compositor_thread_callback,
-            mock_details.presentation_feedback);
+  EXPECT_EQ(presentation_time_seen_by_compositor_thread_callback,
+            mock_details.presentation_feedback.timestamp);
 
   // Since |frame_token_2| is strictly greater than |frame_token_1|, the
   // main-thread callback must remain queued for now.

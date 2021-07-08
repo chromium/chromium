@@ -41,6 +41,7 @@
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/web_vital_metrics.h"
 #include "cc/paint/node_id.h"
+#include "cc/trees//presentation_time_callback_buffer.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/compositor_mode.h"
 #include "cc/trees/layer_tree_frame_sink.h"
@@ -338,9 +339,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Registers a callback that is run when the next frame successfully makes it
   // to the screen (it's entirely possible some frames may be dropped between
   // the time this is called and the callback is run).
-  using PresentationTimeCallback =
-      base::OnceCallback<void(const gfx::PresentationFeedback&)>;
-  void RequestPresentationTimeForNextFrame(PresentationTimeCallback callback);
+  void RequestPresentationTimeForNextFrame(
+      PresentationTimeCallbackBuffer::MainCallback callback);
 
   // Registers a callback that is run when any ongoing scroll-animation ends. If
   // there are no ongoing animations, then the callback is run immediately.
@@ -628,7 +628,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool UpdateLayers();
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
+      std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks,
       const gfx::PresentationFeedback& feedback);
   // Called when the compositor completed page scale animation.
   void DidCompletePageScaleAnimation();
@@ -958,7 +958,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Presentation time callbacks requested for the next frame are initially
   // added here.
-  std::vector<PresentationTimeCallback> pending_presentation_time_callbacks_;
+  std::vector<PresentationTimeCallbackBuffer::MainCallback>
+      pending_presentation_time_callbacks_;
 
   struct ScrollAnimationState {
     ScrollAnimationState();

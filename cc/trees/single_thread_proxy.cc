@@ -540,15 +540,13 @@ void SingleThreadProxy::DidPresentCompositorFrameOnImplThread(
     uint32_t frame_token,
     PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
     const viz::FrameTimingDetails& details) {
-  std::vector<LayerTreeHost::PresentationTimeCallback> main_thread_callbacks =
-      std::move(callbacks.main_thread_callbacks);
   DebugScopedSetImplThread impl(task_runner_provider_);
   host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
       frame_token, std::move(callbacks.compositor_thread_callbacks), details);
   {
     DebugScopedSetMainThread main(task_runner_provider_);
     layer_tree_host_->DidPresentCompositorFrame(
-        frame_token, std::move(main_thread_callbacks),
+        frame_token, std::move(callbacks.main_thread_callbacks),
         details.presentation_feedback);
   }
   if (scheduler_on_impl_thread_) {

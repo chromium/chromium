@@ -58,7 +58,7 @@ class CC_EXPORT ProxyMain : public Proxy {
       std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state);
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
+      std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks,
       const gfx::PresentationFeedback& feedback);
   void NotifyThroughputTrackerResults(CustomTrackerResults results);
   void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay,

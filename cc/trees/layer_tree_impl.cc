@@ -805,15 +805,15 @@ void LayerTreeImpl::SetBackdropFilterMutated(
 }
 
 void LayerTreeImpl::AddPresentationCallbacks(
-    std::vector<LayerTreeHost::PresentationTimeCallback> callbacks) {
+    std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks) {
   std::copy(std::make_move_iterator(callbacks.begin()),
             std::make_move_iterator(callbacks.end()),
             std::back_inserter(presentation_callbacks_));
 }
 
-std::vector<LayerTreeHost::PresentationTimeCallback>
+std::vector<PresentationTimeCallbackBuffer::MainCallback>
 LayerTreeImpl::TakePresentationCallbacks() {
-  std::vector<LayerTreeHost::PresentationTimeCallback> callbacks;
+  std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks;
   callbacks.swap(presentation_callbacks_);
   return callbacks;
 }

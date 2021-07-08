@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "components/viz/common/quads/compositor_frame_metadata.h"
+
 namespace cc {
 
 PresentationTimeCallbackBuffer::PresentationTimeCallbackBuffer() = default;
@@ -37,7 +39,7 @@ PresentationTimeCallbackBuffer::FrameTokenInfo::~FrameTokenInfo() = default;
 
 void PresentationTimeCallbackBuffer::RegisterMainThreadPresentationCallbacks(
     uint32_t frame_token,
-    std::vector<CallbackType> callbacks) {
+    std::vector<MainCallback> callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   FrameTokenInfo& frame_info = GetOrMakeRegistration(frame_token);
 
@@ -45,20 +47,16 @@ void PresentationTimeCallbackBuffer::RegisterMainThreadPresentationCallbacks(
   auto& sink = frame_info.main_thread_callbacks;
   sink.reserve(sink.size() + callbacks.size());
   std::move(callbacks.begin(), callbacks.end(), std::back_inserter(sink));
-
-  DCHECK_LE(frame_token_infos_.size(), 25u);
 }
 
 void PresentationTimeCallbackBuffer::RegisterCompositorPresentationCallbacks(
     uint32_t frame_token,
-    std::vector<CallbackType> callbacks) {
+    std::vector<CompositorCallback> callbacks) {
   // Splice the given |callbacks| onto the vector of existing callbacks.
-  std::vector<LayerTreeHost::PresentationTimeCallback>& sink =
+  std::vector<CompositorCallback>& sink =
       GetOrMakeRegistration(frame_token).compositor_thread_callbacks;
   sink.reserve(sink.size() + callbacks.size());
   std::move(callbacks.begin(), callbacks.end(), std::back_inserter(sink));
-
-  DCHECK_LE(frame_token_infos_.size(), 25u);
 }
 
 PresentationTimeCallbackBuffer::PendingCallbacks::PendingCallbacks() = default;
@@ -70,29 +68,33 @@ PresentationTimeCallbackBuffer::PendingCallbacks::operator=(
 PresentationTimeCallbackBuffer::PendingCallbacks::~PendingCallbacks() = default;
 
 PresentationTimeCallbackBuffer::PendingCallbacks
-PresentationTimeCallbackBuffer::PopPendingCallbacks(uint32_t frame_token) {
+PresentationTimeCallbackBuffer::PopPendingCallbacks(uint32_t frame_token,
+                                                    bool main_only) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   PendingCallbacks result;
 
-  while (!frame_token_infos_.empty()) {
-    auto info = frame_token_infos_.begin();
+  for (auto info = frame_token_infos_.begin();
+       info != frame_token_infos_.end();) {
     if (viz::FrameTokenGT(info->token, frame_token))
       break;
 
-    // Collect the main-thread callbacks. It's the caller's job to post them to
-    // the main thread.
     std::move(info->main_thread_callbacks.begin(),
               info->main_thread_callbacks.end(),
               std::back_inserter(result.main_thread_callbacks));
+    info->main_thread_callbacks.clear();
 
-    // Collect the compositor-thread callbacks. It's the caller's job to run
-    // them on the compositor thread.
-    std::move(info->compositor_thread_callbacks.begin(),
-              info->compositor_thread_callbacks.end(),
-              std::back_inserter(result.compositor_thread_callbacks));
+    const bool should_keep_callbacks =
+        main_only && !info->compositor_thread_callbacks.empty();
 
-    frame_token_infos_.erase(info);
+    if (should_keep_callbacks) {
+      ++info;
+    } else {
+      std::move(info->compositor_thread_callbacks.begin(),
+                info->compositor_thread_callbacks.end(),
+                std::back_inserter(result.compositor_thread_callbacks));
+      info = frame_token_infos_.erase(info);
+    }
   }
 
   return result;
@@ -105,6 +107,7 @@ PresentationTimeCallbackBuffer::GetOrMakeRegistration(uint32_t frame_token) {
   if (frame_token_infos_.empty() ||
       viz::FrameTokenGT(frame_token, frame_token_infos_.back().token)) {
     frame_token_infos_.emplace_back(frame_token);
+    DCHECK_LE(frame_token_infos_.size(), 25u);
   }
 
   // Registrations should use monotonically increasing frame tokens.
