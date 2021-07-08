@@ -6356,10 +6356,6 @@ static_library("browser") {
       "printing/cloud_print/privet_http_impl.h",
       "printing/cloud_print/privet_local_printer_lister.cc",
       "printing/cloud_print/privet_local_printer_lister.h",
-      "printing/cloud_print/privet_notifications.cc",
-      "printing/cloud_print/privet_notifications.h",
-      "printing/cloud_print/privet_notifications_factory.cc",
-      "printing/cloud_print/privet_notifications_factory.h",
       "printing/cloud_print/privet_url_loader.cc",
       "printing/cloud_print/privet_url_loader.h",
     ]

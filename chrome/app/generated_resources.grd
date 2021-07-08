@@ -10135,29 +10135,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Share
       </message>
 
-      <!-- Local Device Discovery display strings -->
-      <if expr="enable_service_discovery">
-        <message name="IDS_LOCAL_DISCOVERY_NOTIFICATION_TITLE_PRINTER" desc="Title of notification for one or more new printer showing up on your network. [ICU Syntax]">
-        {NUM_PRINTER, plural,
-         =1 {New printer on your network}
-         other {New printers on your network}}
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_NOTIFICATION_CONTENTS_PRINTER" desc="Contents of notification for one or more new printers showing up on your network. [ICU Syntax]">
-        {NUM_PRINTER, plural,
-          =1 {Add the printer to Google Cloud Print so you can print from anywhere.}
-          other {Add # printers to Google Cloud Print so you can print from anywhere.}}
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_SERVICE_NAME_PRINTER" desc="Display name for notification for a new printer showing up on your network">
-          Google Cloud Print
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_NOTIFICATION_BUTTON_PRINTER" desc="Message on registration button for printer">
-          Add to Cloud Print
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_NOTIFICATIONS_DISABLE_BUTTON_LABEL" desc="Label for button disabling local device notifications">
-          Don't show this again
-        </message>
-      </if>
-
       <!--Printer registration message for local discovery and Print Preview-->
       <message name="IDS_CLOUD_PRINT_REGISTER_PRINTER_INFORMATION" desc="Information about registering printers with Google Cloud Print shown to the user before they confirm registration.">
         Documents are <ph name="BEGIN_LINK_HELP">&lt;a is="action-link" href="https://support.google.com/cloudprint/answer/2541843" target="_blank"&gt;</ph>sent to Google<ph name="END_LINK_HELP">&lt;/a&gt;</ph> to prepare them for printing. View, edit and manage your printers and printer history on the <ph name="BEGIN_LINK_DASHBOARD">&lt;a is="action-link" href="https://www.google.com/cloudprint#jobs" target="_blank"&gt;</ph>Google Cloud Print dashboard<ph name="END_LINK_DASHBOARD">&lt;/a&gt;</ph>.

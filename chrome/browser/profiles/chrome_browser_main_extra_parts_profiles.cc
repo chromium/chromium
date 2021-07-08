@@ -175,10 +175,6 @@
 #include "chrome/browser/printing/cloud_print/cloud_print_proxy_service_factory.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-#include "chrome/browser/printing/cloud_print/privet_notifications_factory.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_service_factory.h"
 #endif
@@ -292,9 +288,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   ChromeBrowsingDataRemoverDelegateFactory::GetInstance();
   ChromeSigninClientFactory::GetInstance();
   ClientHintsFactory::GetInstance();
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  cloud_print::PrivetNotificationServiceFactory::GetInstance();
-#endif
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
   CloudPrintProxyServiceFactory::GetInstance();
 #endif
