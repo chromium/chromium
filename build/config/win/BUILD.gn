@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
@@ -491,12 +492,16 @@ config("release_crt") {
   if (is_component_build) {
     cflags = [ "/MD" ]
 
-    # On Windows, including libcpmt[d]/msvcprt[d] explicitly links the C++
-    # standard library, which libc++ needs for exception_ptr internals.
-    ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
+    if (use_custom_libcxx) {
+      # On Windows, including libcpmt[d]/msvcprt[d] explicitly links the C++
+      # standard library, which libc++ needs for exception_ptr internals.
+      ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
+    }
   } else {
     cflags = [ "/MT" ]
-    ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
+    }
   }
 }
 
@@ -504,10 +509,14 @@ config("dynamic_crt") {
   if (is_debug) {
     # This pulls in the DLL debug CRT and defines _DEBUG
     cflags = [ "/MDd" ]
-    ldflags = [ "/DEFAULTLIB:msvcprtd.lib" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:msvcprtd.lib" ]
+    }
   } else {
     cflags = [ "/MD" ]
-    ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
+    }
   }
 }
 
@@ -515,10 +524,14 @@ config("static_crt") {
   if (is_debug) {
     # This pulls in the static debug CRT and defines _DEBUG
     cflags = [ "/MTd" ]
-    ldflags = [ "/DEFAULTLIB:libcpmtd.lib" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:libcpmtd.lib" ]
+    }
   } else {
     cflags = [ "/MT" ]
-    ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
+    }
   }
 }
 
