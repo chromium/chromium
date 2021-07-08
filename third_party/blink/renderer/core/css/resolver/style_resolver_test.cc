@@ -88,13 +88,14 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   animations.SetAnimationStyleChange(true);
 
   StyleResolver& resolver = GetStyleEngine().GetStyleResolver();
-  ASSERT_TRUE(resolver.ResolveStyle(div, StyleRecalcContext()));
-  EXPECT_EQ(20, resolver.ResolveStyle(div, StyleRecalcContext())->FontSize());
-  ASSERT_TRUE(animations.BaseComputedStyle());
-  EXPECT_EQ(20, animations.BaseComputedStyle()->FontSize());
+  auto style1 = resolver.ResolveStyle(div, StyleRecalcContext());
+  ASSERT_TRUE(style1);
+  EXPECT_EQ(20, style1->FontSize());
+  ASSERT_TRUE(style1->GetBaseComputedStyle());
+  EXPECT_EQ(20, style1->GetBaseComputedStyle()->FontSize());
 
-  // Getting style with customized parent style should not affect cached
-  // animation base computed style.
+  // Getting style with customized parent style should not affect previously
+  // produced animation base computed style.
   const ComputedStyle* parent_style =
       GetDocument().documentElement()->GetComputedStyle();
   StyleRequest style_request;
@@ -102,8 +103,8 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   style_request.layout_parent_override = parent_style;
   EXPECT_EQ(10, resolver.ResolveStyle(div, StyleRecalcContext(), style_request)
                     ->FontSize());
-  ASSERT_TRUE(animations.BaseComputedStyle());
-  EXPECT_EQ(20, animations.BaseComputedStyle()->FontSize());
+  ASSERT_TRUE(style1->GetBaseComputedStyle());
+  EXPECT_EQ(20, style1->GetBaseComputedStyle()->FontSize());
   EXPECT_EQ(20, resolver.ResolveStyle(div, StyleRecalcContext())->FontSize());
 }
 
@@ -134,9 +135,6 @@ TEST_F(StyleResolverTest, BaseReusableIfFontRelativeUnitsAbsent) {
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   StyleForId("div");
 
-  ASSERT_TRUE(div->GetElementAnimations());
-  EXPECT_TRUE(div->GetElementAnimations()->BaseComputedStyle());
-
   StyleResolverState state(GetDocument(), *div);
   EXPECT_TRUE(StyleResolver::CanReuseBaseComputedStyle(state));
 }
@@ -164,13 +162,12 @@ TEST_F(StyleResolverTest, AnimationNotMaskedByImportant) {
 
   div->SetNeedsAnimationStyleRecalc();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  StyleForId("div");
+  auto style = StyleForId("div");
 
-  ASSERT_TRUE(div->GetElementAnimations());
-  const CSSBitset* bitset = div->GetElementAnimations()->BaseImportantSet();
+  const CSSBitset* bitset = style->GetBaseImportantSet();
   EXPECT_FALSE(CSSAnimations::IsAnimatingStandardProperties(
       div->GetElementAnimations(), bitset, KeyframeEffect::kDefaultPriority));
-  EXPECT_TRUE(div->GetElementAnimations()->BaseComputedStyle());
+  EXPECT_TRUE(style->GetBaseComputedStyle());
   EXPECT_FALSE(bitset && bitset->Has(CSSPropertyID::kWidth));
   EXPECT_TRUE(bitset && bitset->Has(CSSPropertyID::kHeight));
 }
@@ -235,11 +232,10 @@ TEST_F(StyleResolverTest, AnimationMaskedByImportant) {
 
   div->SetNeedsAnimationStyleRecalc();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  StyleForId("div");
+  auto style = StyleForId("div");
 
-  ASSERT_TRUE(div->GetElementAnimations());
-  EXPECT_TRUE(div->GetElementAnimations()->BaseComputedStyle());
-  EXPECT_TRUE(div->GetElementAnimations()->BaseImportantSet());
+  EXPECT_TRUE(style->GetBaseComputedStyle());
+  EXPECT_TRUE(style->GetBaseImportantSet());
 
   StyleResolverState state(GetDocument(), *div);
   EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
@@ -294,53 +290,6 @@ TEST_F(StyleResolverTest,
             ComputedValue("font-size", *StyleForId("target")));
 }
 
-TEST_F(StyleResolverTest, NonCachableStyleCheckDoesNotAffectBaseComputedStyle) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
-    <style>
-      .adjust { color: rgb(0, 0, 0); }
-    </style>
-    <div>
-      <div style="color: rgb(0, 128, 0)">
-        <div id="target" style="transition: color 1s linear"></div>
-      </div>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* target = GetDocument().getElementById("target");
-
-  EXPECT_EQ("rgb(0, 128, 0)", ComputedValue("color", *StyleForId("target")));
-
-  // Trigger a transition on an inherited property.
-  target->setAttribute(html_names::kClassAttr, "adjust");
-  UpdateAllLifecyclePhasesForTest();
-  ElementAnimations* element_animations = target->GetElementAnimations();
-  EXPECT_TRUE(element_animations);
-  Animation* transition = (*element_animations->Animations().begin()).key;
-  EXPECT_TRUE(transition);
-
-  // Advance to the midpoint of the transition.
-  transition->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(500),
-                             ASSERT_NO_EXCEPTION);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ("rgb(0, 64, 0)", ComputedValue("color", *StyleForId("target")));
-  EXPECT_TRUE(element_animations->BaseComputedStyle());
-
-  element_animations->ClearBaseComputedStyle();
-
-  // Perform a non-cacheable style resolution, and ensure that the base computed
-  // style is not updated.
-  StyleRequest style_request;
-  style_request.matching_behavior = kMatchAllRulesExcludingSMIL;
-  GetStyleEngine().GetStyleResolver().ResolveStyle(target, StyleRecalcContext(),
-                                                   style_request);
-  EXPECT_FALSE(element_animations->BaseComputedStyle());
-
-  // Computing the style with default args updates the base computed style.
-  EXPECT_EQ("rgb(0, 64, 0)", ComputedValue("color", *StyleForId("target")));
-  EXPECT_TRUE(element_animations->BaseComputedStyle());
-}
-
 class StyleResolverFontRelativeUnitTest
     : public testing::WithParamInterface<const char*>,
       public StyleResolverTest {};
@@ -363,8 +312,7 @@ TEST_P(StyleResolverFontRelativeUnitTest,
   auto computed_style = StyleForId("div");
 
   EXPECT_TRUE(computed_style->HasFontRelativeUnits());
-  ASSERT_TRUE(div->GetElementAnimations());
-  EXPECT_TRUE(div->GetElementAnimations()->BaseComputedStyle());
+  EXPECT_TRUE(computed_style->GetBaseComputedStyle());
 
   StyleResolverState state(GetDocument(), *div);
   EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
@@ -388,8 +336,7 @@ TEST_P(StyleResolverFontRelativeUnitTest,
   auto computed_style = StyleForId("div");
 
   EXPECT_TRUE(computed_style->HasFontRelativeUnits());
-  ASSERT_TRUE(div->GetElementAnimations());
-  EXPECT_TRUE(div->GetElementAnimations()->BaseComputedStyle());
+  EXPECT_TRUE(computed_style->GetBaseComputedStyle());
 
   StyleResolverState state(GetDocument(), *div);
   EXPECT_TRUE(StyleResolver::CanReuseBaseComputedStyle(state));

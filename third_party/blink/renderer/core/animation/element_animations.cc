@@ -124,29 +124,6 @@ void ElementAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(worklet_animations_);
 }
 
-const ComputedStyle* ElementAnimations::BaseComputedStyle() const {
-  return base_computed_style_.get();
-}
-
-const CSSBitset* ElementAnimations::BaseImportantSet() const {
-  if (IsAnimationStyleChange())
-    return base_important_set_.get();
-  return nullptr;
-}
-
-void ElementAnimations::UpdateBaseComputedStyle(
-    const ComputedStyle* computed_style,
-    std::unique_ptr<CSSBitset> base_important_set) {
-  DCHECK(computed_style);
-  base_computed_style_ = ComputedStyle::Clone(*computed_style);
-  base_important_set_ = std::move(base_important_set);
-}
-
-void ElementAnimations::ClearBaseComputedStyle() {
-  base_computed_style_ = nullptr;
-  base_important_set_ = nullptr;
-}
-
 bool ElementAnimations::UpdateBoxSizeAndCheckTransformAxisAlignment(
     const FloatSize& box_size) {
   bool preserves_axis_alignment = true;

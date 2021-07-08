@@ -60,6 +60,8 @@ blink_core_sources_style = [
   "shape_clip_path_operation.h",
   "shape_value.h",
   "style_aspect_ratio.h",
+  "style_base_data.h",
+  "style_base_data.cc",
   "style_cached_data.h",
   "style_content_alignment_data.h",
   "style_crossfade_image.cc",

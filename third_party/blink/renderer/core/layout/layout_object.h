@@ -2272,8 +2272,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   void SetModifiedStyleOutsideStyleRecalc(scoped_refptr<const ComputedStyle>,
                                           ApplyStyleChanges);
 
-  void ClearBaseComputedStyle();
-
   // This function returns an enclosing non-anonymous LayoutBlock for this
   // element. This function is not always returning the containing block as
   // defined by CSS. In particular:
