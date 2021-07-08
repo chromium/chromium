@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 // Stores network state, managed properties, and an observer for a network.
 struct NetworkProperties {
@@ -30,11 +30,12 @@ struct NetworkProperties {
 
 using NetworkPropertiesMap = std::map<std::string, NetworkProperties>;
 
-using DeviceMap = std::map<network_config::mojom::NetworkType,
-                           network_config::mojom::DeviceStatePropertiesPtr>;
+using DeviceMap =
+    std::map<chromeos::network_config::mojom::NetworkType,
+             chromeos::network_config::mojom::DeviceStatePropertiesPtr>;
 
 class NetworkHealthProvider
-    : public network_config::mojom::CrosNetworkConfigObserver,
+    : public chromeos::network_config::mojom::CrosNetworkConfigObserver,
       public mojom::NetworkHealthProvider {
  public:
   NetworkHealthProvider();
@@ -58,10 +59,11 @@ class NetworkHealthProvider
   void OnNetworkStateListChanged() override;
   void OnDeviceStateListChanged() override;
   void OnActiveNetworksChanged(
-      std::vector<network_config::mojom::NetworkStatePropertiesPtr>
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           active_networks) override;
   void OnNetworkStateChanged(
-      network_config::mojom::NetworkStatePropertiesPtr network_state) override;
+      chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state)
+      override;
   void OnVpnProvidersChanged() override;
   void OnNetworkCertificatesChanged() override;
 
@@ -74,16 +76,18 @@ class NetworkHealthProvider
  private:
   // Handler for receiving a list of active networks.
   void OnActiveNetworkStateListReceived(
-      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks);
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks);
 
   // Handler for receiving a list of devices.
   void OnDeviceStateListReceived(
-      std::vector<network_config::mojom::DeviceStatePropertiesPtr> devices);
+      std::vector<chromeos::network_config::mojom::DeviceStatePropertiesPtr>
+          devices);
 
   // Handler for receiving managed properties for a network.
   void OnManagedPropertiesReceived(
       const std::string& guid,
-      network_config::mojom::ManagedPropertiesPtr managed_properties);
+      chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties);
 
   // Gets ManagedProperties for a network |guid| from CrosNetworkConfig.
   void GetManagedPropertiesForNetwork(const std::string& guid);
@@ -106,8 +110,8 @@ class NetworkHealthProvider
   NetworkProperties& GetNetworkProperties(const std::string& guid);
 
   // Finds a matching device for a given network type.
-  network_config::mojom::DeviceStateProperties* GetMatchingDevice(
-      network_config::mojom::NetworkType type);
+  chromeos::network_config::mojom::DeviceStateProperties* GetMatchingDevice(
+      chromeos::network_config::mojom::NetworkType type);
 
   // Map of networks that are active and of a supported
   // type (Ethernet, WiFi, Cellular).
@@ -121,11 +125,11 @@ class NetworkHealthProvider
   std::string active_guid_;
 
   // Remote for sending requests to the CrosNetworkConfig service.
-  mojo::Remote<network_config::mojom::CrosNetworkConfig>
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
 
   // Receiver for the CrosNetworkConfigObserver events.
-  mojo::Receiver<network_config::mojom::CrosNetworkConfigObserver>
+  mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
 
   // Remotes for tracking observers that will be notified of changes to the
@@ -136,6 +140,6 @@ class NetworkHealthProvider
 };
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_NETWORK_HEALTH_PROVIDER_H_

@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
@@ -122,4 +122,4 @@ void RoutineLog::CreateFile() {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

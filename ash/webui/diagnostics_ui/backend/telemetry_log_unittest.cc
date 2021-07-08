@@ -10,7 +10,7 @@
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
@@ -159,4 +159,4 @@ TEST_F(TelemetryLogTest, CpuUsageUint8) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
@@ -113,4 +113,4 @@ TEST_F(RoutineLogTest, Cancelled) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -29,31 +29,32 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
-void SetProbeTelemetryInfoResponse(
-    cros_healthd::mojom::BatteryInfoPtr battery_info,
-    cros_healthd::mojom::CpuInfoPtr cpu_info,
-    cros_healthd::mojom::MemoryInfoPtr memory_info,
-    cros_healthd::mojom::SystemInfoPtr system_info) {
-  auto info = cros_healthd::mojom::TelemetryInfo::New();
+namespace healthd_mojom = ::chromeos::cros_healthd::mojom;
+
+void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
+                                   healthd_mojom::CpuInfoPtr cpu_info,
+                                   healthd_mojom::MemoryInfoPtr memory_info,
+                                   healthd_mojom::SystemInfoPtr system_info) {
+  auto info = healthd_mojom::TelemetryInfo::New();
   if (system_info) {
-    info->system_result = cros_healthd::mojom::SystemResult::NewSystemInfo(
-        std::move(system_info));
+    info->system_result =
+        healthd_mojom::SystemResult::NewSystemInfo(std::move(system_info));
   }
   if (battery_info) {
-    info->battery_result = cros_healthd::mojom::BatteryResult::NewBatteryInfo(
-        std::move(battery_info));
+    info->battery_result =
+        healthd_mojom::BatteryResult::NewBatteryInfo(std::move(battery_info));
   }
   if (memory_info) {
-    info->memory_result = cros_healthd::mojom::MemoryResult::NewMemoryInfo(
-        std::move(memory_info));
+    info->memory_result =
+        healthd_mojom::MemoryResult::NewMemoryInfo(std::move(memory_info));
   }
   if (cpu_info) {
     info->cpu_result =
-        cros_healthd::mojom::CpuResult::NewCpuInfo(std::move(cpu_info));
+        healthd_mojom::CpuResult::NewCpuInfo(std::move(cpu_info));
   }
 
   cros_healthd::FakeCrosHealthdClient::Get()
@@ -71,25 +72,24 @@ void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
                                       const std::string& build_number,
                                       const std::string& patch_number) {
   // System info
-  auto system_info = cros_healthd::mojom::SystemInfo::New();
+  auto system_info = healthd_mojom::SystemInfo::New();
   system_info->product_name = absl::optional<std::string>(board_name);
-  auto os_version_info = cros_healthd::mojom::OsVersion::New(
+  auto os_version_info = healthd_mojom::OsVersion::New(
       milestone_version, build_number, patch_number, "unittest-channel");
   system_info->os_version = std::move(os_version_info);
   system_info->marketing_name = marketing_name;
 
   // Battery info
-  auto battery_info =
-      has_battery ? cros_healthd::mojom::BatteryInfo::New() : nullptr;
+  auto battery_info = has_battery ? healthd_mojom::BatteryInfo::New() : nullptr;
 
   // Memory info
-  auto memory_info = cros_healthd::mojom::MemoryInfo::New();
+  auto memory_info = healthd_mojom::MemoryInfo::New();
   memory_info->total_memory_kib = total_memory_kib;
 
   // CPU info
-  auto cpu_info = cros_healthd::mojom::CpuInfo::New();
-  auto physical_cpu_info = cros_healthd::mojom::PhysicalCpuInfo::New();
-  auto logical_cpu_info = cros_healthd::mojom::LogicalCpuInfo::New();
+  auto cpu_info = healthd_mojom::CpuInfo::New();
+  auto physical_cpu_info = healthd_mojom::PhysicalCpuInfo::New();
+  auto logical_cpu_info = healthd_mojom::LogicalCpuInfo::New();
   logical_cpu_info->max_clock_speed_khz = cpu_max_clock_speed_khz;
   physical_cpu_info->logical_cpus.push_back(std::move(logical_cpu_info));
   physical_cpu_info->model_name = cpu_model;
@@ -102,7 +102,7 @@ void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
 
 // Constructs a BatteryInfoPtr. If |temperature| = 0, it will be omitted from
 // the response to simulate an empty temperature field.
-cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
+healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
     int64_t cycle_count,
     double voltage_now,
     const std::string& vendor,
@@ -117,19 +117,19 @@ cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
     const std::string& status,
     const absl::optional<std::string>& manufacture_date,
     uint64_t temperature) {
-  cros_healthd::mojom::NullableUint64Ptr temp_value_ptr(
-      cros_healthd::mojom::NullableUint64::New());
+  healthd_mojom::NullableUint64Ptr temp_value_ptr(
+      healthd_mojom::NullableUint64::New());
   if (temperature != 0) {
     temp_value_ptr->value = temperature;
   }
-  auto battery_info = cros_healthd::mojom::BatteryInfo::New(
+  auto battery_info = healthd_mojom::BatteryInfo::New(
       cycle_count, voltage_now, vendor, serial_number, charge_full_design,
       charge_full, voltage_min_design, model_name, charge_now, current_now,
       technology, status, manufacture_date, std::move(temp_value_ptr));
   return battery_info;
 }
 
-cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
+healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
     const std::string& vendor,
     double charge_full_design) {
   return CreateCrosHealthdBatteryInfoResponse(
@@ -149,9 +149,9 @@ cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
       /*temperature=*/0);
 }
 
-cros_healthd::mojom::BatteryInfoPtr
-CreateCrosHealthdBatteryChargeStatusResponse(double charge_now,
-                                             double current_now) {
+healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryChargeStatusResponse(
+    double charge_now,
+    double current_now) {
   return CreateCrosHealthdBatteryInfoResponse(
       /*cycle_count=*/0,
       /*voltage_now=*/0,
@@ -169,7 +169,7 @@ CreateCrosHealthdBatteryChargeStatusResponse(double charge_now,
       /*temperature=*/0);
 }
 
-cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
+healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
     double charge_full_now,
     double charge_full_design,
     int32_t cycle_count) {
@@ -192,7 +192,7 @@ cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
 
 void SetCrosHealthdBatteryInfoResponse(const std::string& vendor,
                                        double charge_full_design) {
-  cros_healthd::mojom::BatteryInfoPtr battery_info =
+  healthd_mojom::BatteryInfoPtr battery_info =
       CreateCrosHealthdBatteryInfoResponse(vendor, charge_full_design);
   SetProbeTelemetryInfoResponse(std::move(battery_info), /*cpu_info=*/nullptr,
                                 /*memory_info=*/nullptr,
@@ -201,7 +201,7 @@ void SetCrosHealthdBatteryInfoResponse(const std::string& vendor,
 
 void SetCrosHealthdBatteryChargeStatusResponse(double charge_now,
                                                double current_now) {
-  cros_healthd::mojom::BatteryInfoPtr battery_info =
+  healthd_mojom::BatteryInfoPtr battery_info =
       CreateCrosHealthdBatteryChargeStatusResponse(charge_now, current_now);
   SetProbeTelemetryInfoResponse(std::move(battery_info), /*cpu_info=*/nullptr,
                                 /*memory_info=*/nullptr,
@@ -211,7 +211,7 @@ void SetCrosHealthdBatteryChargeStatusResponse(double charge_now,
 void SetCrosHealthdBatteryHealthResponse(double charge_full_now,
                                          double charge_full_design,
                                          int32_t cycle_count) {
-  cros_healthd::mojom::BatteryInfoPtr battery_info =
+  healthd_mojom::BatteryInfoPtr battery_info =
       CreateCrosHealthdBatteryHealthResponse(charge_full_now,
                                              charge_full_design, cycle_count);
   SetProbeTelemetryInfoResponse(std::move(battery_info), /*cpu_info=*/nullptr,
@@ -222,10 +222,9 @@ void SetCrosHealthdBatteryHealthResponse(double charge_full_now,
 void SetCrosHealthdMemoryUsageResponse(uint32_t total_memory_kib,
                                        uint32_t free_memory_kib,
                                        uint32_t available_memory_kib) {
-  cros_healthd::mojom::MemoryInfoPtr memory_info =
-      cros_healthd::mojom::MemoryInfo::New(total_memory_kib, free_memory_kib,
-                                           available_memory_kib,
-                                           /*page_faults_since_last_boot=*/0);
+  healthd_mojom::MemoryInfoPtr memory_info = healthd_mojom::MemoryInfo::New(
+      total_memory_kib, free_memory_kib, available_memory_kib,
+      /*page_faults_since_last_boot=*/0);
   SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr, /*cpu_info=*/nullptr,
                                 /*memory_info=*/std::move(memory_info),
                                 /*system_info=*/nullptr);
@@ -235,13 +234,13 @@ void SetCrosHealthdCpuResponse(
     const std::vector<CpuUsageData>& usage_data,
     const std::vector<int32_t>& cpu_temps,
     const std::vector<uint32_t>& scaled_cpu_clock_speed) {
-  auto cpu_info_ptr = cros_healthd::mojom::CpuInfo::New();
-  auto physical_cpu_info_ptr = cros_healthd::mojom::PhysicalCpuInfo::New();
+  auto cpu_info_ptr = healthd_mojom::CpuInfo::New();
+  auto physical_cpu_info_ptr = healthd_mojom::PhysicalCpuInfo::New();
 
   DCHECK_EQ(usage_data.size(), scaled_cpu_clock_speed.size());
   for (size_t i = 0; i < usage_data.size(); ++i) {
     const auto& data = usage_data[i];
-    auto logical_cpu_info_ptr = cros_healthd::mojom::LogicalCpuInfo::New();
+    auto logical_cpu_info_ptr = healthd_mojom::LogicalCpuInfo::New();
 
     logical_cpu_info_ptr->user_time_user_hz = data.GetUserTime();
     logical_cpu_info_ptr->system_time_user_hz = data.GetSystemTime();
@@ -256,8 +255,7 @@ void SetCrosHealthdCpuResponse(
 
   cpu_info_ptr->physical_cpus.push_back(std::move(physical_cpu_info_ptr));
   for (const auto& cpu_temp : cpu_temps) {
-    auto cpu_temp_channel_ptr =
-        cros_healthd::mojom::CpuTemperatureChannel::New();
+    auto cpu_temp_channel_ptr = healthd_mojom::CpuTemperatureChannel::New();
     cpu_temp_channel_ptr->temperature_celsius = cpu_temp;
     cpu_info_ptr->temperature_channels.emplace_back(
         std::move(cpu_temp_channel_ptr));
@@ -1018,4 +1016,4 @@ TEST_F(SystemDataProviderTest, GetSystemInfoLogs) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

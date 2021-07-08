@@ -821,22 +821,22 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::NetworkUI, chromeos::ConnectivityDiagnosticsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::diagnostics::mojom::InputDataProvider,
-      chromeos::DiagnosticsDialogUI>(map);
+      ash::diagnostics::mojom::InputDataProvider, ash::DiagnosticsDialogUI>(
+      map);
 
   if (chromeos::features::IsNetworkingInDiagnosticsAppEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        chromeos::diagnostics::mojom::NetworkHealthProvider,
-        chromeos::DiagnosticsDialogUI>(map);
+        ash::diagnostics::mojom::NetworkHealthProvider,
+        ash::DiagnosticsDialogUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::diagnostics::mojom::SystemDataProvider,
-      chromeos::DiagnosticsDialogUI>(map);
+      ash::diagnostics::mojom::SystemDataProvider, ash::DiagnosticsDialogUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::diagnostics::mojom::SystemRoutineController,
-      chromeos::DiagnosticsDialogUI>(map);
+      ash::diagnostics::mojom::SystemRoutineController,
+      ash::DiagnosticsDialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::vm::mojom::VmDiagnosticsProvider, chromeos::VmUI>(map);

@@ -16,7 +16,7 @@
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 class FakeDeviceManager : public ui::DeviceManager {
@@ -357,4 +357,4 @@ TEST_F(InputDataProviderTest, ObserveConnectedDevices_TouchDevices) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

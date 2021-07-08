@@ -35,7 +35,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -179,9 +179,9 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 DiagnosticsDialogUI::DiagnosticsDialogUI(
     content::WebUI* web_ui,
-    const chromeos::diagnostics::SessionLogHandler::SelectFilePolicyCreator&
+    const diagnostics::SessionLogHandler::SelectFilePolicyCreator&
         select_file_policy_creator,
-    ash::HoldingSpaceClient* holding_space_client)
+    HoldingSpaceClient* holding_space_client)
     : ui::MojoWebDialogUI(web_ui),
       session_log_handler_(std::make_unique<diagnostics::SessionLogHandler>(
           select_file_policy_creator,
@@ -259,4 +259,4 @@ void DiagnosticsDialogUI::BindInterface(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DiagnosticsDialogUI)
 
-}  // namespace chromeos
+}  // namespace ash

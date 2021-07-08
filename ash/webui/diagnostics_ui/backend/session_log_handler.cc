@@ -19,7 +19,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
@@ -152,4 +152,4 @@ void SessionLogHandler::HandleInitialize(const base::ListValue* args) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

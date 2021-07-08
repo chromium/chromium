@@ -9,6 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chromeos/network/network_profile_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/proxy_config/proxy_prefs.h"
 
@@ -22,7 +24,6 @@ namespace chromeos {
 
 class NetworkState;
 class NetworkStateHandler;
-class NetworkProfileHandler;
 
 // This class provides an interface to the UI for getting a network proxy
 // configuration.
@@ -89,5 +90,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::UIProxyConfigService;
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_PROXY_UI_PROXY_CONFIG_SERVICE_H_

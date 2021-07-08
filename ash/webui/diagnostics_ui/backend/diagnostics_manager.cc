@@ -11,7 +11,7 @@
 #include "ash/webui/diagnostics_ui/backend/system_data_provider.h"
 #include "ash/webui/diagnostics_ui/backend/system_routine_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 DiagnosticsManager::DiagnosticsManager(SessionLogHandler* session_log_handler)
@@ -49,4 +49,4 @@ InputDataProvider* DiagnosticsManager::GetInputDataProvider() const {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

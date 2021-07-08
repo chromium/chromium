@@ -27,7 +27,7 @@ namespace ash {
 class HoldingSpaceClient;
 }  // namespace ash
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 class TelemetryLog;
@@ -95,6 +95,6 @@ class SessionLogHandler : public content::WebUIMessageHandler,
 };
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_SESSION_LOG_HANDLER_H_

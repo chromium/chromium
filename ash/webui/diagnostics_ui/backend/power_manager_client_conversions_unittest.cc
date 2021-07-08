@@ -9,7 +9,7 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
@@ -101,4 +101,4 @@ TEST_F(PowerManagerClientConversionsTest, PowerTime) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

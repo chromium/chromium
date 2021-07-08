@@ -31,9 +31,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when network_config is moved to ash.
+namespace network_config = ::chromeos::network_config;
 
 void ValidateManagedPropertiesSet(
     const NetworkPropertiesMap& network_properties_map,
@@ -405,4 +408,4 @@ TEST_F(NetworkHealthProviderTest, NetworkStateObserver) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

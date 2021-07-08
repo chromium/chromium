@@ -289,11 +289,11 @@ export function systemPageTestSuite() {
     let routineSection;
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+      ash.diagnostics.mojom.RoutineType.kCpuCache,
     ];
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        ash.diagnostics.mojom.RoutineType.kCpuCache,
+        ash.diagnostics.mojom.StandardRoutineResult.kTestPassed);
     return initializeSystemPage(
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
                fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)

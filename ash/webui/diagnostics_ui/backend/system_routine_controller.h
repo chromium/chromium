@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,22 +23,15 @@ namespace base {
 class OneShotTimer;
 }  // namespace base
 
-namespace cros_healthd {
-namespace mojom {
-class RunRoutineResponsePtr;
-class RoutineUpdatePtr;
-}  // namespace mojom
-}  // namespace cros_healthd
-
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 class RoutineLog;
 
 constexpr int32_t kInvalidRoutineId = 0;
 
-using RunRoutineCallback =
-    base::OnceCallback<void(cros_healthd::mojom::RunRoutineResponsePtr)>;
+using RunRoutineCallback = base::OnceCallback<void(
+    chromeos::cros_healthd::mojom::RunRoutineResponsePtr)>;
 
 class SystemRoutineController : public mojom::SystemRoutineController {
  public:
@@ -64,33 +58,34 @@ class SystemRoutineController : public mojom::SystemRoutineController {
  private:
   void OnAvailableRoutinesFetched(
       GetSupportedRoutinesCallback callback,
-      const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>&
+      const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
           supported_routines);
 
   void ExecuteRoutine(mojom::RoutineType routine_type);
 
   void OnRoutineStarted(
       mojom::RoutineType routine_type,
-      cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
+      chromeos::cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
 
   void OnPowerRoutineStarted(
       mojom::RoutineType routine_type,
-      cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
+      chromeos::cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
 
   void ContinuePowerRoutine(mojom::RoutineType routine_type);
 
   void OnPowerRoutineContinued(
       mojom::RoutineType routine_type,
-      cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+      chromeos::cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   void CheckRoutineStatus(mojom::RoutineType routine_type);
 
-  void OnRoutineStatusUpdated(mojom::RoutineType routine_type,
-                              cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+  void OnRoutineStatusUpdated(
+      mojom::RoutineType routine_type,
+      chromeos::cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   void HandlePowerRoutineStatusUpdate(
       mojom ::RoutineType routine_type,
-      cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+      chromeos::cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   bool IsRoutineRunning() const;
 
@@ -124,7 +119,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   void OnInflightRoutineRunnerDisconnected();
 
   void OnRoutineCancelAttempted(
-      cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+      chromeos::cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   bool IsLoggingEnabled() const;
 
@@ -149,7 +144,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   mojo::Remote<mojom::RoutineRunner> inflight_routine_runner_;
   std::unique_ptr<base::OneShotTimer> inflight_routine_timer_;
 
-  mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService>
+  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsService>
       diagnostics_service_;
 
   mojo::Receiver<mojom::SystemRoutineController> receiver_{this};
@@ -168,6 +163,6 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 };
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_SYSTEM_ROUTINE_CONTROLLER_H_

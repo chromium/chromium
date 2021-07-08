@@ -4,7 +4,7 @@
 
 #include "ash/webui/diagnostics_ui/backend/cpu_usage_data.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 CpuUsageData::CpuUsageData(uint64_t user_time,
@@ -49,4 +49,4 @@ CpuUsageData& CpuUsageData::operator-=(const CpuUsageData& other) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

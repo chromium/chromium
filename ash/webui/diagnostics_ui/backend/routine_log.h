@@ -10,7 +10,7 @@
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/files/file_path.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 // RoutineLog is used to record the status and outcome of Diagnostics Routines.
@@ -43,6 +43,6 @@ class RoutineLog {
 };
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_ROUTINE_LOG_H_

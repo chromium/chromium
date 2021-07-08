@@ -12,7 +12,7 @@
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 // Contains information related to a mojom::RoutineType, used in conjunction
@@ -22,7 +22,7 @@ struct RoutineProperties {
   mojom::RoutineType type;
   const char* metric_name;
   uint32_t duration_seconds;
-  cros_healthd::mojom::DiagnosticRoutineEnum healthd_type;
+  chromeos::cros_healthd::mojom::DiagnosticRoutineEnum healthd_type;
 };
 
 extern const RoutineProperties kRoutineProperties[];
@@ -39,6 +39,6 @@ uint32_t GetExpectedRoutineDurationInSeconds(mojom::RoutineType routine_type);
 const RoutineProperties& GetRoutineProperties(mojom::RoutineType routine_type);
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_ROUTINE_PROPERTIES_H_

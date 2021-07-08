@@ -21,11 +21,11 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
-namespace healthd = cros_healthd::mojom;
+namespace healthd = ::chromeos::cros_healthd::mojom;
 using PhysicalCpuInfos = std::vector<healthd::PhysicalCpuInfoPtr>;
 using PowerSupplyProperties = power_manager::PowerSupplyProperties;
 using ProbeCategories = healthd::ProbeCategoryEnum;
@@ -644,4 +644,4 @@ bool SystemDataProvider::IsLoggingEnabled() const {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

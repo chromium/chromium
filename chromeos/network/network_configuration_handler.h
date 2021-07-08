@@ -237,4 +237,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::NetworkConfigurationHandler;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_NETWORK_CONFIGURATION_HANDLER_H_

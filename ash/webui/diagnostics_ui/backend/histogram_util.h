@@ -14,7 +14,7 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace metrics {
 
@@ -29,6 +29,6 @@ void EmitRoutineResult(mojom::RoutineType routine_type,
 
 }  // namespace metrics
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_HISTOGRAM_UTIL_H_

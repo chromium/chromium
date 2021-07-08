@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 extern const char kSeparator[];
@@ -21,6 +21,6 @@ std::vector<std::string> GetLogLines(const std::string& log);
 std::vector<std::string> GetLogLineContents(const std::string& log_line);
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_LOG_TEST_HELPERS_H_

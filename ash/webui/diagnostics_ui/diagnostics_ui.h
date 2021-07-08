@@ -19,13 +19,8 @@ namespace ash {
 
 class HoldingSpaceClient;
 
-}  // namespace ash
-
-namespace chromeos {
 namespace diagnostics {
-
 class DiagnosticsManager;
-
 }  // namespace diagnostics
 
 // The WebDialogUI for chrome://diagnostics.
@@ -33,9 +28,9 @@ class DiagnosticsDialogUI : public ui::MojoWebDialogUI {
  public:
   explicit DiagnosticsDialogUI(
       content::WebUI* web_ui,
-      const chromeos::diagnostics::SessionLogHandler::SelectFilePolicyCreator&
+      const diagnostics::SessionLogHandler::SelectFilePolicyCreator&
           select_file_policy_creator,
-      ash::HoldingSpaceClient* holding_space_client);
+      HoldingSpaceClient* holding_space_client);
   ~DiagnosticsDialogUI() override;
 
   DiagnosticsDialogUI(const DiagnosticsDialogUI&) = delete;

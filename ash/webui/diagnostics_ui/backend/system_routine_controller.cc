@@ -26,11 +26,11 @@
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
-namespace healthd = cros_healthd::mojom;
+namespace healthd = ::chromeos::cros_healthd::mojom;
 
 constexpr uint32_t kBatteryDurationInSeconds = 30;
 constexpr uint32_t kBatteryChargeMinimumPercent = 0;
@@ -440,7 +440,7 @@ void SystemRoutineController::OnRoutineStatusUpdated(
 
 void SystemRoutineController::HandlePowerRoutineStatusUpdate(
     mojom ::RoutineType routine_type,
-    cros_healthd::mojom::RoutineUpdatePtr update_ptr) {
+    healthd::RoutineUpdatePtr update_ptr) {
   DCHECK(IsPowerRoutine(routine_type));
 
   const healthd::NonInteractiveRoutineUpdate* update =
@@ -714,4 +714,4 @@ void SystemRoutineController::ReleaseWakeLock() {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

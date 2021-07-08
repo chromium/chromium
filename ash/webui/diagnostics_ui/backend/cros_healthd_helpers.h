@@ -5,46 +5,37 @@
 #ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_CROS_HEALTHD_HELPERS_H_
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_CROS_HEALTHD_HELPERS_H_
 
-namespace cros_healthd {
-namespace mojom {
-class BatteryInfo;
-class CpuInfo;
-class MemoryInfo;
-class NonInteractiveRoutineUpdate;
-class RoutineUpdate;
-class SystemInfo;
-class TelemetryInfo;
-}  // namespace mojom
-}  // namespace cros_healthd
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 // Extracts BatteryInfo from |info|. Logs and returns a nullptr if
 // BatteryInfo in not present.
-const cros_healthd::mojom::BatteryInfo* GetBatteryInfo(
-    const cros_healthd::mojom::TelemetryInfo& info);
+const chromeos::cros_healthd::mojom::BatteryInfo* GetBatteryInfo(
+    const chromeos::cros_healthd::mojom::TelemetryInfo& info);
 
 // Extracts CpuInfo from |info|. Logs and returns a nullptr if CpuInfo
 // in not present.
-const cros_healthd::mojom::CpuInfo* GetCpuInfo(
-    const cros_healthd::mojom::TelemetryInfo& info);
+const chromeos::cros_healthd::mojom::CpuInfo* GetCpuInfo(
+    const chromeos::cros_healthd::mojom::TelemetryInfo& info);
 
 // Extracts MemoryInfo from |info|. Logs and returns a nullptr if MemoryInfo
 // in not present.
-const cros_healthd::mojom::MemoryInfo* GetMemoryInfo(
-    const cros_healthd::mojom::TelemetryInfo& info);
+const chromeos::cros_healthd::mojom::MemoryInfo* GetMemoryInfo(
+    const chromeos::cros_healthd::mojom::TelemetryInfo& info);
 
 // Extracts SystemInfo from |info|. Logs and returns a nullptr if SystemInfo
 // in not present.
-const cros_healthd::mojom::SystemInfo* GetSystemInfo(
-    const cros_healthd::mojom::TelemetryInfo& info);
+const chromeos::cros_healthd::mojom::SystemInfo* GetSystemInfo(
+    const chromeos::cros_healthd::mojom::TelemetryInfo& info);
 
-const cros_healthd::mojom::NonInteractiveRoutineUpdate*
+const chromeos::cros_healthd::mojom::NonInteractiveRoutineUpdate*
 GetNonInteractiveRoutineUpdate(
-    const cros_healthd::mojom::RoutineUpdate& update);
+    const chromeos::cros_healthd::mojom::RoutineUpdate& update);
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_CROS_HEALTHD_HELPERS_H_

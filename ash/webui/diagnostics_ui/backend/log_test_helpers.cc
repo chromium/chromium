@@ -9,7 +9,7 @@
 
 #include "base/strings/string_split.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 const char kSeparator[] = "-";
@@ -29,4 +29,4 @@ std::vector<std::string> GetLogLineContents(const std::string& log_line) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -17,7 +17,7 @@
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 class InputDataProvider : public mojom::InputDataProvider,
@@ -62,6 +62,6 @@ class InputDataProvider : public mojom::InputDataProvider,
 };
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_H_

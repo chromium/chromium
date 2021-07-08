@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <limits>
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 class CpuUsageData {
@@ -43,6 +43,6 @@ class CpuUsageData {
 };
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_CPU_USAGE_DATA_H_

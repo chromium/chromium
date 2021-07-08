@@ -4,9 +4,9 @@
 
 #include "ash/webui/diagnostics_ui/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUIDiagnosticsAppHost[] = "diagnostics";
 const char kChromeUIDiagnosticsAppUrl[] = "chrome://diagnostics";
 
-}  // namespace chromeos
+}  // namespace ash

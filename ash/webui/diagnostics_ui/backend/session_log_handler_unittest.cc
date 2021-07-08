@@ -31,7 +31,7 @@
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
@@ -313,4 +313,4 @@ TEST_F(SessionLogHandlerTest, AddToHoldingSpace) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

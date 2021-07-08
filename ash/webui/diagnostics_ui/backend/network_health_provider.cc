@@ -13,11 +13,11 @@
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
-namespace network_mojom = chromeos::network_config::mojom;
+namespace network_mojom = ::chromeos::network_config::mojom;
 using network_mojom::ConnectionStateType;
 using network_mojom::NetworkType;
 
@@ -344,4 +344,4 @@ void NetworkHealthProvider::NotifyNetworkStateObserver(
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -341,4 +341,11 @@ class ServiceConnection {
 }  // namespace cros_healthd
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace cros_healthd {
+using ::chromeos::cros_healthd::ServiceConnection;
+}  // namespace cros_healthd
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_CROS_HEALTHD_PUBLIC_CPP_SERVICE_CONNECTION_H_

@@ -4,9 +4,9 @@
 
 #include "ash/webui/diagnostics_ui/backend/routine_properties.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
-namespace healthd = cros_healthd::mojom;
+namespace healthd = ::chromeos::cros_healthd::mojom;
 
 const RoutineProperties kRoutineProperties[] = {
     {mojom::RoutineType::kBatteryCharge, "BatteryChargeResult",
@@ -72,4 +72,4 @@ const RoutineProperties& GetRoutineProperties(mojom::RoutineType routine_type) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

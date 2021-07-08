@@ -16,7 +16,7 @@
 #include "base/strings/string_util.h"
 #include "chromeos/system/statistics_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 namespace {
@@ -225,4 +225,4 @@ void InputDataProvider::AddKeyboard(int id,
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

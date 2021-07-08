@@ -19,8 +19,8 @@ std::unique_ptr<WebApplicationInfo>
 CreateWebAppInfoForDiagnosticsSystemWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUIDiagnosticsAppUrl);
-  info->scope = GURL(chromeos::kChromeUIDiagnosticsAppUrl);
+  info->start_url = GURL(ash::kChromeUIDiagnosticsAppUrl);
+  info->scope = GURL(ash::kChromeUIDiagnosticsAppUrl);
 
   // TODO(jimmyxgong): Update the title with finalized i18n copy.
   info->title = u"Diagnostics";

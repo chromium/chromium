@@ -112,4 +112,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) SystemTokenCertDbStorage {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::SystemTokenCertDbStorage;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_

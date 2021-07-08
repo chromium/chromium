@@ -25,11 +25,11 @@
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace {
 
-namespace healthd = cros_healthd::mojom;
+namespace healthd = ::chromeos::cros_healthd::mojom;
 
 constexpr char kChargePercentKey[] = "chargePercent";
 constexpr char kDischargePercentKey[] = "dischargePercent";
@@ -950,4 +950,4 @@ TEST_F(SystemRoutineControllerTest, CancelMemoryReleasesWakeLock) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

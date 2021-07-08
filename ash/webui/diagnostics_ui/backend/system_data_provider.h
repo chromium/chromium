@@ -22,7 +22,7 @@ namespace base {
 class RepeatingTimer;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 class TelemetryLog;
@@ -75,11 +75,11 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void OnSystemInfoProbeResponse(
       GetSystemInfoCallback callback,
-      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   void OnBatteryInfoProbeResponse(
       GetBatteryInfoCallback callback,
-      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   void UpdateBatteryChargeStatus();
 
@@ -102,16 +102,20 @@ class SystemDataProvider : public mojom::SystemDataProvider,
   void OnBatteryChargeStatusUpdated(
       const absl::optional<power_manager::PowerSupplyProperties>&
           power_supply_properties,
-      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void OnBatteryHealthUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnBatteryHealthUpdated(
+      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void OnMemoryUsageUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnMemoryUsageUpdated(
+      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void OnCpuUsageUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnCpuUsageUpdated(
+      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void ComputeAndPopulateCpuUsage(const cros_healthd::mojom::CpuInfo& cpu_info,
-                                  mojom::CpuUsage& out_cpu_usage);
+  void ComputeAndPopulateCpuUsage(
+      const chromeos::cros_healthd::mojom::CpuInfo& cpu_info,
+      mojom::CpuUsage& out_cpu_usage);
 
   bool IsLoggingEnabled() const;
 
@@ -119,7 +123,8 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   CpuUsageData previous_cpu_usage_data_;
 
-  mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
+  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService>
+      probe_service_;
   mojo::RemoteSet<mojom::BatteryChargeStatusObserver>
       battery_charge_status_observers_;
   mojo::RemoteSet<mojom::BatteryHealthObserver> battery_health_observers_;
@@ -137,6 +142,6 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 };
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_SYSTEM_DATA_PROVIDER_H_

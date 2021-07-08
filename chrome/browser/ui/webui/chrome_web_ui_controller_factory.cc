@@ -455,12 +455,12 @@ WebUIController* NewWebUI<ash::ScanningUI>(WebUI* web_ui, const GURL& url) {
 }
 
 template <>
-WebUIController* NewWebUI<chromeos::DiagnosticsDialogUI>(WebUI* web_ui,
-                                                         const GURL& url) {
+WebUIController* NewWebUI<ash::DiagnosticsDialogUI>(WebUI* web_ui,
+                                                    const GURL& url) {
   ash::HoldingSpaceKeyedService* holding_space_keyed_service =
       ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
           web_ui->GetWebContents()->GetBrowserContext());
-  return new chromeos::DiagnosticsDialogUI(
+  return new ash::DiagnosticsDialogUI(
       web_ui, base::BindRepeating(&CreateChromeSelectFilePolicy),
       holding_space_keyed_service->client());
 }
@@ -807,8 +807,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIPowerHost)
     return &NewWebUI<chromeos::PowerUI>;
   if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp) &&
-      url.host_piece() == chromeos::kChromeUIDiagnosticsAppHost) {
-    return &NewWebUI<chromeos::DiagnosticsDialogUI>;
+      url.host_piece() == ash::kChromeUIDiagnosticsAppHost) {
+    return &NewWebUI<ash::DiagnosticsDialogUI>;
   }
   if (url.host_piece() == chromeos::kChromeUIPrintManagementHost)
     return &NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>;

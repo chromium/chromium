@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 TEST(RoutineTypeUtilTtest, RoutinePropertiesListUpToDate) {
@@ -18,4 +18,4 @@ TEST(RoutineTypeUtilTtest, RoutinePropertiesListUpToDate) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

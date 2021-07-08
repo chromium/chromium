@@ -9,7 +9,7 @@
 
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 class TelemetryLog {
@@ -39,6 +39,6 @@ class TelemetryLog {
 };
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_TELEMETRY_LOG_H_

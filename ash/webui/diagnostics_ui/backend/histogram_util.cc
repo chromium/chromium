@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 namespace metrics {
 
@@ -37,4 +37,4 @@ void EmitRoutineResult(mojom::RoutineType routine_type,
 
 }  // namespace metrics
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

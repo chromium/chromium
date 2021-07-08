@@ -162,8 +162,7 @@ export function setInputDataProviderForTesting(testProvider) {
  */
 export function getInputDataProvider() {
   if (!inputDataProvider) {
-    inputDataProvider =
-        chromeos.diagnostics.mojom.InputDataProvider.getRemote();
+    inputDataProvider = ash.diagnostics.mojom.InputDataProvider.getRemote();
   }
 
   assert(!!inputDataProvider);

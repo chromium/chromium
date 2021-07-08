@@ -63,4 +63,11 @@ class CrosNetworkConfigTestHelper {
 }  // namespace network_config
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace network_config {
+using ::chromeos::network_config::CrosNetworkConfigTestHelper;
+}  // namespace network_config
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_HELPER_H_

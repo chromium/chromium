@@ -8,7 +8,7 @@
 #include "base/time/time.h"
 #include "ui/base/l10n/time_format.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 mojom::BatteryState ConvertBatteryStateFromProto(
@@ -91,4 +91,4 @@ std::u16string ConstructPowerTime(
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

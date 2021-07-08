@@ -305,4 +305,11 @@ class FakeCrosHealthdService final
 }  // namespace cros_healthd
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace cros_healthd {
+using ::chromeos::cros_healthd::FakeCrosHealthdService;
+}  // namespace cros_healthd
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_SERVICE_H_

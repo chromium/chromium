@@ -109,4 +109,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::NetworkProfileHandler;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_NETWORK_PROFILE_HANDLER_H_

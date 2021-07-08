@@ -10,7 +10,7 @@
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 mojom::BatteryState ConvertBatteryStateFromProto(
@@ -29,6 +29,6 @@ std::u16string ConstructPowerTime(
     const power_manager::PowerSupplyProperties& power_supply_props);
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_POWER_MANAGER_CLIENT_CONVERSIONS_H_

@@ -9,7 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 class LogHelpersTest : public testing::Test {
@@ -61,4 +61,4 @@ TEST_F(LogHelpersTest, GetLogLines) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash

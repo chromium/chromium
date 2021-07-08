@@ -26,7 +26,7 @@ class DiagnosticsAppIntegrationTest : public SystemWebAppIntegrationTest {
 // spot checks on the manifest.
 IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
                        DiagnosticsAppInLauncher) {
-  const GURL url(chromeos::kChromeUIDiagnosticsAppUrl);
+  const GURL url(ash::kChromeUIDiagnosticsAppUrl);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       web_app::SystemAppType::DIAGNOSTICS, url, "Diagnostics"));
 }

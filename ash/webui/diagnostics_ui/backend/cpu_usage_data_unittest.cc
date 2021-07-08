@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace diagnostics {
 
 class CpuUsageDataTest : public testing::Test {
@@ -76,4 +76,4 @@ TEST_F(CpuUsageDataTest, CompoundSubtraction) {
 }
 
 }  // namespace diagnostics
-}  // namespace chromeos
+}  // namespace ash
