@@ -12,8 +12,7 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-
-class SkTextBlob;
+#include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace printing {
 class MetafileSkia;
