@@ -1885,6 +1885,12 @@
                   'ios/chrome/browser/ui/translate|'\
                   'ios/web_view/internal/translate'
     },
+    'turtledove': {
+      'filepath': 'content/browser/interest_group/|'\
+                  'content/services/auction_worklet/|'\
+                  'third_party/blink/public/mojom/interest_group/|'\
+                  'third_party/blink/renderer/modules/ad_auction/'
+    },
     'ui_compositor': {
       'filepath': 'ui/compositor/layer\.|'\
                   'ui/compositor/layer_unittest|'\
@@ -2810,6 +2816,7 @@
                 'spang+watch@chromium.org'],
     'traffic_annotation': ['nicolaso+watch@chromium.org'],
     'translate': ['translate-reviews@chromium.org'],
+    'turtledove': ['taymon@google.com'],
     'ui_compositor': ['cc-bugs@chromium.org'],
     'ui_display_win': ['robliao+watch@chromium.org'],
     'ui_resources': ['oshima+watch@chromium.org'],
