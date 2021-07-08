@@ -201,8 +201,8 @@ export class SiteListElement extends SiteListElementBase {
      */
     this.activeDialogAnchor_ = null;
 
-    /** @private {?SiteSettingsPrefsBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!SiteSettingsPrefsBrowserProxy} */
+    this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -262,12 +262,6 @@ export class SiteListElement extends SiteListElementBase {
   configureWidget_() {
     if (this.category === undefined) {
       return;
-    }
-
-    // The observer for All Sites fires before the attached/ready event, so
-    // initialize this here.
-    if (this.browserProxy_ === null) {
-      this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
     }
 
     this.setUpActionMenu_();

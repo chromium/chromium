@@ -83,15 +83,7 @@ class PasswordCheckListItemElement extends PolymerElement {
   constructor() {
     super();
 
-    /** @private {?PasswordManagerProxy} */
-    this.passwordManager_ = null;
-  }
-
-  /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-
-    // Set the manager. These can be overridden by tests.
+    /** @private {!PasswordManagerProxy} */
     this.passwordManager_ = PasswordManagerImpl.getInstance();
   }
 

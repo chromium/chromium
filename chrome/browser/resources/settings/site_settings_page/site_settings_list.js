@@ -100,8 +100,8 @@ class SettingsSiteSettingsListElement extends
   constructor() {
     super();
 
-    /** @private {?SiteSettingsPrefsBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!SiteSettingsPrefsBrowserProxy} */
+    this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
   }
 
   /**
@@ -127,8 +127,6 @@ class SettingsSiteSettingsListElement extends
   /** @override */
   ready() {
     super.ready();
-
-    this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
     Promise
         .all(this.categoryList.map(

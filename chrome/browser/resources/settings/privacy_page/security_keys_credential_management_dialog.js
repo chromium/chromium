@@ -106,8 +106,8 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
   constructor() {
     super();
 
-    /** @private {?SecurityKeysCredentialBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!SecurityKeysCredentialBrowserProxy} */
+    this.browserProxy_ = SecurityKeysCredentialBrowserProxyImpl.getInstance();
 
     /** @private {?Set<string>} */
     this.checkedCredentialIds_ = null;
@@ -125,7 +125,6 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
         'security-keys-credential-management-finished',
         this.onError_.bind(this));
     this.checkedCredentialIds_ = new Set();
-    this.browserProxy_ = SecurityKeysCredentialBrowserProxyImpl.getInstance();
     this.browserProxy_.startCredentialManagement().then(([minPinLength]) => {
       this.minPinLength_ = minPinLength;
       this.dialogPage_ = CredentialManagementDialogPage.PIN_PROMPT;

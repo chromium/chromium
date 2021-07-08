@@ -296,8 +296,8 @@ class SettingsChromeCleanupPageElement extends
     /** @private {!ChromeCleanerScannerResults} */
     this.emptyChromeCleanerScannerResults_ = {'files': [], 'registryKeys': []};
 
-    /** @private {?ChromeCleanupProxy} */
-    this.browserProxy_ = null;
+    /** @private {!ChromeCleanupProxy} */
+    this.browserProxy_ = ChromeCleanupProxyImpl.getInstance();
 
     /** @private {?function()} */
     this.doAction_ = null;
@@ -326,7 +326,6 @@ class SettingsChromeCleanupPageElement extends
   connectedCallback() {
     super.connectedCallback();
 
-    this.browserProxy_ = ChromeCleanupProxyImpl.getInstance();
     this.cardStateToComponentsMap_ = this.buildCardStateToComponentsMap_();
 
     this.addWebUIListener('chrome-cleanup-on-idle', this.onIdle_.bind(this));

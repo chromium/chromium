@@ -90,11 +90,11 @@ export class SettingsSafetyCheckPageElement extends
   constructor() {
     super();
 
-    /** @private {?SafetyCheckBrowserProxy} */
-    this.safetyCheckBrowserProxy_ = null;
+    /** @private {!SafetyCheckBrowserProxy} */
+    this.safetyCheckBrowserProxy_ = SafetyCheckBrowserProxyImpl.getInstance();
 
-    /** @private {?MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = null;
+    /** @private {!MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
 
     /**
      * Timer ID for periodic update.
@@ -106,9 +106,6 @@ export class SettingsSafetyCheckPageElement extends
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    this.safetyCheckBrowserProxy_ = SafetyCheckBrowserProxyImpl.getInstance();
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
 
     // Register for safety check status updates.
     this.addWebUIListener(

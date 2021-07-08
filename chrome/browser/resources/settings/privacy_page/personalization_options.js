@@ -110,8 +110,8 @@ export class SettingsPersonalizationOptionsElement extends
   constructor() {
     super();
 
-    /** @private {?PrivacyPageBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!PrivacyPageBrowserProxy} */
+    this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
   }
 
   /**
@@ -125,8 +125,6 @@ export class SettingsPersonalizationOptionsElement extends
   /** @override */
   ready() {
     super.ready();
-
-    this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
 
     // <if expr="_google_chrome and not chromeos">
     const setMetricsReportingPref = this.setMetricsReportingPref_.bind(this);

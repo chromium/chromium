@@ -311,8 +311,9 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
      */
     this.activeDialogAnchorStack_ = [];
 
-    /** @private {?PasswordManagerProxy} */
-    this.passwordManager_ = null;
+    /** @private {!PasswordManagerProxy} */
+    this.passwordManager_ = PasswordManagerImpl.getInstance();
+
 
     /** @private {?function(boolean):void} */
     this.setIsOptedInForAccountStorageListener_ = null;
@@ -353,9 +354,6 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
 
     this.setIsOptedInForAccountStorageListener_ =
         setIsOptedInForAccountStorageListener;
-
-    // Set the manager. These can be overridden by tests.
-    this.passwordManager_ = PasswordManagerImpl.getInstance();
 
     // <if expr="chromeos">
     // If the user's account supports the password check, an auth token will be

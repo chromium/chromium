@@ -78,15 +78,13 @@ class SettingsStartupUrlDialogElement extends PolymerElement {
   constructor() {
     super();
 
-    /** @private {?StartupUrlsPageBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!StartupUrlsPageBrowserProxy} */
+    this.browserProxy_ = StartupUrlsPageBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    this.browserProxy_ = StartupUrlsPageBrowserProxyImpl.getInstance();
 
     if (this.model) {
       this.dialogTitle_ = loadTimeData.getString('onStartupEditPage');

@@ -171,14 +171,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   constructor() {
     super();
 
-    /** @type {?MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = null;
-  }
-
-  /** @override */
-  ready() {
-    super.ready();
-
+    /** @type {!MetricsBrowserProxy} */
     this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
   }
 

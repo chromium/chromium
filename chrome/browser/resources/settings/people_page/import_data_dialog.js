@@ -87,8 +87,8 @@ class SettingsImportDataDialogElement extends
   constructor() {
     super();
 
-    /** @private {?ImportDataBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!ImportDataBrowserProxy} */
+    this.browserProxy_ = ImportDataBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -102,7 +102,6 @@ class SettingsImportDataDialogElement extends
   connectedCallback() {
     super.connectedCallback();
 
-    this.browserProxy_ = ImportDataBrowserProxyImpl.getInstance();
     this.browserProxy_.initializeImportDialog().then(data => {
       this.browserProfiles_ = data;
       this.selected_ = this.browserProfiles_[0];

@@ -56,23 +56,21 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   constructor() {
     super();
 
-    /** @private {?MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = null;
+    /** @private {!MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
 
-    /** @private {?PrivacySandboxBrowserProxy} */
-    this.privacySandboxBrowserProxy_ = null;
+    /** @private {!PrivacySandboxBrowserProxy} */
+    this.privacySandboxBrowserProxy_ =
+        PrivacySandboxBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   ready() {
     super.ready();
 
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
     chrome.metricsPrivate.recordSparseHashable(
         'WebUI.Settings.PathVisited', '/privacySandbox');
 
-    this.privacySandboxBrowserProxy_ =
-        PrivacySandboxBrowserProxyImpl.getInstance();
     this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
     addWebUIListener('floc-id-changed', id => this.flocId_ = id);
 

@@ -71,19 +71,16 @@ export class SettingsSafetyCheckUpdatesChildElement extends
   constructor() {
     super();
 
-    /** @private {?LifetimeBrowserProxy} */
-    this.lifetimeBrowserProxy_ = null;
+    /** @private {!LifetimeBrowserProxy} */
+    this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
 
-    /** @private {?MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = null;
+    /** @private {!MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
 
     // Register for safety check status updates.
     this.addWebUIListener(

@@ -45,18 +45,14 @@ class SettingsPasswordRemoveConfirmationDialogElement extends
   constructor() {
     super();
 
-    /**
-     * @private {?PasswordManagerProxy}
-     */
-    this.passwordManager_ = null;
+    /** @private {!PasswordManagerProxy} */
+    this.passwordManager_ = PasswordManagerImpl.getInstance();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
 
-    // Set the manager. These can be overridden by tests.
-    this.passwordManager_ = PasswordManagerImpl.getInstance();
     this.$.dialog.showModal();
   }
 

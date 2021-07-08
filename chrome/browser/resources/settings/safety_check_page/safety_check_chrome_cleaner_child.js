@@ -90,19 +90,16 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
   constructor() {
     super();
 
-    /** @private {?ChromeCleanupProxy} */
-    this.chromeCleanupBrowserProxy_ = null;
+    /** @private {!ChromeCleanupProxy} */
+    this.chromeCleanupBrowserProxy_ = ChromeCleanupProxyImpl.getInstance();
 
-    /** @private {?MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = null;
+    /** @private {!MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    this.chromeCleanupBrowserProxy_ = ChromeCleanupProxyImpl.getInstance();
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
 
     // Register for safety check status updates.
     this.addWebUIListener(

@@ -209,8 +209,8 @@ class SettingsSecurityKeysSetPinDialogElement extends
   constructor() {
     super();
 
-    /** @private {?SecurityKeysPINBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!SecurityKeysPINBrowserProxy} */
+    this.browserProxy_ = SecurityKeysPINBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -218,7 +218,6 @@ class SettingsSecurityKeysSetPinDialogElement extends
     super.connectedCallback();
 
     this.title_ = this.i18n('securityKeysSetPINInitialTitle');
-    this.browserProxy_ = SecurityKeysPINBrowserProxyImpl.getInstance();
     this.$.dialog.showModal();
 
     this.browserProxy_.startSetPIN().then(

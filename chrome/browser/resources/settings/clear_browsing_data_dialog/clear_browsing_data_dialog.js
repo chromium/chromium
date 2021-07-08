@@ -299,18 +299,17 @@ class SettingsClearBrowsingDataDialogElement extends
   constructor() {
     super();
 
-    /** @private {ClearBrowsingDataBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!ClearBrowsingDataBrowserProxy} */
+    this.browserProxy_ = ClearBrowsingDataBrowserProxyImpl.getInstance();
 
-    /** @private {?SyncBrowserProxy} */
-    this.syncBrowserProxy_ = null;
+    /** @private {!SyncBrowserProxy} */
+    this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   ready() {
     super.ready();
 
-    this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
     this.syncBrowserProxy_.getSyncStatus().then(
         this.handleSyncStatus_.bind(this));
     this.addWebUIListener(
@@ -329,7 +328,6 @@ class SettingsClearBrowsingDataDialogElement extends
   connectedCallback() {
     super.connectedCallback();
 
-    this.browserProxy_ = ClearBrowsingDataBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize().then(() => {
       this.$.clearBrowsingDataDialog.showModal();
     });

@@ -88,8 +88,8 @@ class SettingsSecurityKeysResetDialogElement extends
   constructor() {
     super();
 
-    /** @private {?SecurityKeysResetBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!SecurityKeysResetBrowserProxy} */
+    this.browserProxy_ = SecurityKeysResetBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -97,7 +97,6 @@ class SettingsSecurityKeysResetDialogElement extends
     super.connectedCallback();
 
     this.title_ = this.i18n('securityKeysResetTitle');
-    this.browserProxy_ = SecurityKeysResetBrowserProxyImpl.getInstance();
     this.$.dialog.showModal();
 
     this.browserProxy_.reset().then(code => {

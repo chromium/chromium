@@ -149,11 +149,11 @@ export class SettingsSecurityPageElement extends
 
   constructor() {
     super();
-    /** @private {?PrivacyPageBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!PrivacyPageBrowserProxy} */
+    this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
 
-    /** @private {?MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = null;
+    /** @private {!MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -168,9 +168,6 @@ export class SettingsSecurityPageElement extends
     } else if (prefValue === SafeBrowsingSetting.STANDARD) {
       this.$.safeBrowsingStandard.expanded = true;
     }
-    this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
-
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
   }
 
   /**

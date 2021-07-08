@@ -123,8 +123,8 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
   constructor() {
     super();
 
-    /** @private {?SecurityKeysBioEnrollProxy} */
-    this.browserProxy_ = null;
+    /** @private {!SecurityKeysBioEnrollProxy} */
+    this.browserProxy_ = SecurityKeysBioEnrollProxyImpl.getInstance();
 
     /** @private {number} */
     this.maxSamples_ = -1;
@@ -149,7 +149,6 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
         'security-keys-bio-enroll-error', this.onError_.bind(this));
     this.addWebUIListener(
         'security-keys-bio-enroll-status', this.onEnrollmentSample_.bind(this));
-    this.browserProxy_ = SecurityKeysBioEnrollProxyImpl.getInstance();
     this.browserProxy_.startBioEnroll().then(([minPinLength]) => {
       this.minPinLength_ = minPinLength;
       this.dialogPage_ = BioEnrollDialogPage.PIN_PROMPT;

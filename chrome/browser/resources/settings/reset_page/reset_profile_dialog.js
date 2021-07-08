@@ -78,8 +78,8 @@ export class SettingsResetProfileDialogElement extends
   constructor() {
     super();
 
-    /** @private {?ResetBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!ResetBrowserProxy} */
+    this.browserProxy_ = ResetBrowserProxyImpl.getInstance();
   }
 
   /**
@@ -117,8 +117,6 @@ export class SettingsResetProfileDialogElement extends
   /** @override */
   ready() {
     super.ready();
-
-    this.browserProxy_ = ResetBrowserProxyImpl.getInstance();
 
     this.addEventListener('cancel', () => {
       this.browserProxy_.onHideResetProfileDialog();

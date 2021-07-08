@@ -81,16 +81,14 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
 
     /**
      * The browser proxy used to retrieve and change cookies.
-     * @private {?LocalDataBrowserProxy}
+     * @private {!LocalDataBrowserProxy}
      */
-    this.browserProxy_ = null;
+    this.browserProxy_ = LocalDataBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   ready() {
     super.ready();
-
-    this.browserProxy_ = LocalDataBrowserProxyImpl.getInstance();
 
     this.addWebUIListener(
         'on-tree-item-removed', this.getCookieDetails_.bind(this));

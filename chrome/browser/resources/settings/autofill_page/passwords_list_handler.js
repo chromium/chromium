@@ -149,8 +149,8 @@ class PasswordsListHandlerElement extends PasswordsListHandlerElementBase {
   constructor() {
     super();
 
-    /** @private {?PasswordManagerProxy} */
-    this.passwordManager_ = null;
+    /** @private {!PasswordManagerProxy} */
+    this.passwordManager_ = PasswordManagerImpl.getInstance();
   }
 
   /** @override */
@@ -168,8 +168,6 @@ class PasswordsListHandlerElement extends PasswordsListHandlerElementBase {
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    this.passwordManager_ = PasswordManagerImpl.getInstance();
 
     const extractFirstAccountEmail = accounts => {
       this.firstSignedInAccountEmail_ =

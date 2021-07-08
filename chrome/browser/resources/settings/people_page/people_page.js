@@ -194,8 +194,8 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   constructor() {
     super();
 
-    /** @private {?SyncBrowserProxy} */
-    this.syncBrowserProxy_ = null;
+    /** @private {!SyncBrowserProxy} */
+    this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -222,7 +222,6 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
           'profile-info-changed', this.handleProfileInfo_.bind(this));
     }
 
-    this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
     this.syncBrowserProxy_.getSyncStatus().then(
         this.handleSyncStatus_.bind(this));
     this.addWebUIListener(

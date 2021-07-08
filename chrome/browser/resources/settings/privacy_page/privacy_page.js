@@ -239,19 +239,17 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   constructor() {
     super();
-    /** @private {?PrivacyPageBrowserProxy} */
-    this.browserProxy_ = null;
 
-    /** @private {?MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = null;
+    /** @private {!PrivacyPageBrowserProxy} */
+    this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
+
+    /** @private {!MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   ready() {
     super.ready();
-
-    this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
 
     this.onBlockAutoplayStatusChanged_({
       pref: /** @type {chrome.settingsPrivate.PrefObject} */ ({value: false}),

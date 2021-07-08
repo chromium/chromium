@@ -75,8 +75,8 @@ class SettingsStartupUrlsPageElement extends
   constructor() {
     super();
 
-    /** @private {?StartupUrlsPageBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!StartupUrlsPageBrowserProxy} */
+    this.browserProxy_ = StartupUrlsPageBrowserProxyImpl.getInstance();
 
     /**
      * The element to return focus to, when the startup-url-dialog is closed.
@@ -89,7 +89,6 @@ class SettingsStartupUrlsPageElement extends
   connectedCallback() {
     super.connectedCallback();
 
-    this.browserProxy_ = StartupUrlsPageBrowserProxyImpl.getInstance();
     this.addWebUIListener('update-startup-pages', startupPages => {
       // If an "edit" URL dialog was open, close it, because the underlying page
       // might have just been removed (and model indices have changed anyway).

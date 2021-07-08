@@ -132,15 +132,14 @@ class SiteDetailsElement extends SiteDetailsElementBase {
     /** @private {string} */
     this.fetchingForHost_ = '';
 
-    /** @private {?WebsiteUsageBrowserProxy} */
-    this.websiteUsageProxy_ = null;
+    /** @private {!WebsiteUsageBrowserProxy} */
+    this.websiteUsageProxy_ = WebsiteUsageBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
 
-    this.websiteUsageProxy_ = WebsiteUsageBrowserProxyImpl.getInstance();
     this.addWebUIListener('usage-total-changed', (host, data, cookies) => {
       this.onUsageTotalChanged_(host, data, cookies);
     });

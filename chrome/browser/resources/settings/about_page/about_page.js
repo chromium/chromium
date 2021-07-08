@@ -125,21 +125,18 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   constructor() {
     super();
 
-    /** @private {?AboutPageBrowserProxy} */
-    this.aboutBrowserProxy_ = null;
+    /** @private {!AboutPageBrowserProxy} */
+    this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
 
-    /** @private {?LifetimeBrowserProxy} */
-    this.lifetimeBrowserProxy_ = null;
+    /** @private {!LifetimeBrowserProxy} */
+    this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
 
-    this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
     this.aboutBrowserProxy_.pageReady();
-
-    this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
 
     // <if expr="not chromeos">
     this.startListening_();

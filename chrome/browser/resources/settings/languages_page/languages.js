@@ -238,15 +238,16 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     this.boundOnSpellcheckDictionariesChanged_ = null;
     // </if>
 
-    /** @private {?LanguagesBrowserProxy} */
-    this.browserProxy_ = null;
+    /** @private {!LanguagesBrowserProxy} */
+    this.browserProxy_ = LanguagesBrowserProxyImpl.getInstance();
 
-    /** @private {?LanguageSettingsPrivate} */
-    this.languageSettingsPrivate_ = null;
+    /** @private {!LanguageSettingsPrivate} */
+    this.languageSettingsPrivate_ =
+        this.browserProxy_.getLanguageSettingsPrivate();
 
     // <if expr="chromeos">
-    /** @private {?InputMethodPrivate} */
-    this.inputMethodPrivate_ = null;
+    /** @private {!InputMethodPrivate} */
+    this.inputMethodPrivate_ = this.browserProxy_.getInputMethodPrivate();
 
     /** @private {?Function} */
     this.boundOnInputMethodAdded_ = null;
@@ -262,13 +263,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    this.browserProxy_ = LanguagesBrowserProxyImpl.getInstance();
-    this.languageSettingsPrivate_ =
-        this.browserProxy_.getLanguageSettingsPrivate();
-    // <if expr="chromeos">
-    this.inputMethodPrivate_ = this.browserProxy_.getInputMethodPrivate();
-    // </if>
 
     const promises = [];
 
