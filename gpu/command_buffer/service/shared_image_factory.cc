@@ -500,10 +500,18 @@ void SharedImageFactory::RegisterSharedImageBackingFactoryForTesting(
 }
 
 bool SharedImageFactory::IsSharedBetweenThreads(uint32_t usage) {
-  // If |shared_image_manager_| is thread safe, it means the display is running
-  // on a separate thread (which uses a separate GL context or VkDeviceQueue).
-  return shared_image_manager_->display_context_on_another_thread() &&
-         (usage & SHARED_IMAGE_USAGE_DISPLAY);
+  // Ignore for mipmap usage.
+  usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
+  // If |shared_image_manager_| is thread safe, it means the display is
+  // running on a separate thread (which uses a separate GL context or
+  // VkDeviceQueue).
+  const bool used_by_display_compositor_gpu_thread =
+      (usage & SHARED_IMAGE_USAGE_DISPLAY) &&
+      shared_image_manager_->display_context_on_another_thread();
+  // If it has usage other than DISPLAY, it means that it is used by the
+  // gpu main thread.
+  const bool used_by_main_gpu_thread = usage & ~SHARED_IMAGE_USAGE_DISPLAY;
+  return used_by_display_compositor_gpu_thread && used_by_main_gpu_thread;
 }
 
 SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(

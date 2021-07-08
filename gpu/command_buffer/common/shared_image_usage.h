@@ -43,6 +43,8 @@ enum SharedImageUsage : uint32_t {
   // GLImage::DisableInUseByWindowServer should be called on any GLImages that
   // use this SharedImage.
   SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 12,
+  // Image will be used with mipmap enabled
+  SHARED_IMAGE_USAGE_MIPMAP = 1 << 13,
 };
 
 }  // namespace gpu

@@ -178,9 +178,10 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   }
 
   bool InitializeGMB(const SkImageInfo& info,
-                     SharedMemoryRegionWrapper shm_wrapper) {
-    if (Initialize(info, shm_wrapper.GetMemoryAsSpan(),
-                   shm_wrapper.GetStride())) {
+                     SharedMemoryRegionWrapper shm_wrapper,
+                     GrMipMapped mipmap) {
+    if (Initialize(info, shm_wrapper.GetMemoryAsSpan(), shm_wrapper.GetStride(),
+                   mipmap)) {
       shared_memory_wrapper_ = std::move(shm_wrapper);
       return true;
     }
@@ -194,7 +195,8 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   // data must be provided since updating compressed textures is not supported.
   bool Initialize(const SkImageInfo& info,
                   base::span<const uint8_t> pixels,
-                  size_t stride) {
+                  size_t stride,
+                  GrMipMapped mipmap) {
     if (context_state_->context_lost())
       return false;
 
@@ -230,10 +232,10 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
       // We don't do this on release builds because there is a slight overhead.
       backend_texture_ = context_state_->gr_context()->createBackendTexture(
           size().width(), size().height(), GetSkColorType(), SkColors::kBlue,
-          GrMipMapped::kNo, GrRenderable::kYes, GrProtected::kNo);
+          mipmap, GrRenderable::kYes, GrProtected::kNo);
 #else
       backend_texture_ = context_state_->gr_context()->createBackendTexture(
-          size().width(), size().height(), GetSkColorType(), GrMipMapped::kNo,
+          size().width(), size().height(), GetSkColorType(), mipmap,
           GrRenderable::kYes, GrProtected::kNo);
 #endif
 
@@ -422,7 +424,9 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
   std::unique_ptr<WrappedSkImage> texture(
       new WrappedSkImage(mailbox, format, size, color_space, surface_origin,
                          alpha_type, usage, estimated_size, context_state_));
-  if (!texture->Initialize(info, data, /*stride=*/0))
+  GrMipMapped mipmap =
+      usage & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes : GrMipMapped::kNo;
+  if (!texture->Initialize(info, data, /*stride=*/0, mipmap))
     return nullptr;
   return texture;
 }
@@ -469,7 +473,9 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
   std::unique_ptr<WrappedSkImage> texture(new WrappedSkImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       info.computeMinByteSize(), context_state_));
-  if (!texture->InitializeGMB(info, std::move(shm_wrapper)))
+  GrMipMapped mipmap = (usage & SHARED_IMAGE_USAGE_MIPMAP) ? GrMipMapped::kYes
+                                                           : GrMipMapped::kNo;
+  if (!texture->InitializeGMB(info, std::move(shm_wrapper), mipmap))
     return nullptr;
 
   return texture;
@@ -483,9 +489,12 @@ bool WrappedSkImageFactory::CanImportGpuMemoryBuffer(
 bool WrappedSkImageFactory::CanUseWrappedSkImage(
     uint32_t usage,
     GrContextType gr_context_type) const {
-  constexpr auto kWrappedSkImageUsage = SHARED_IMAGE_USAGE_RASTER |
-                                        SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-                                        SHARED_IMAGE_USAGE_DISPLAY;
+  // Ignore for mipmap usage.
+  usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
+  auto kWrappedSkImageUsage = SHARED_IMAGE_USAGE_DISPLAY |
+                              SHARED_IMAGE_USAGE_RASTER |
+                              SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+
   if (gr_context_type != GrContextType::kGL) {
     // For SkiaRenderer/Vulkan+Dawn use WrappedSkImage if the usage is only
     // raster and/or display.
@@ -493,7 +502,8 @@ bool WrappedSkImageFactory::CanUseWrappedSkImage(
   } else {
     // For d SkiaRenderer/GL only use WrappedSkImages for OOP-R because
     // CopySubTexture() doesn't use Skia. https://crbug.com/984045
-    return usage == kWrappedSkImageUsage;
+    return (usage == kWrappedSkImageUsage) ||
+           (usage == SHARED_IMAGE_USAGE_DISPLAY);
   }
 }
 
