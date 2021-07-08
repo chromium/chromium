@@ -83,7 +83,7 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 # Flaking on Nexus 5X
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
-crbug.com/880078 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash [ RetryOnFailure ]
+crbug.com/1210594 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash [ Skip ]
 crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
 
 # Nexus 6
