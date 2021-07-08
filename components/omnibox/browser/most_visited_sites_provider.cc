@@ -66,7 +66,16 @@ bool BuildTileNavsuggest(AutocompleteProvider* provider,
   if (container.empty())
     return false;
 
-  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+  // We force to build TILE_NAVSUGGEST when the TileContainer type is
+  // ntp_tiles::NTPTilesVector. This is because:
+  // 1) NTPTiles are always presented as a TILE_NAVSUGGEST entry;
+  // 2) NTPTiles are only served in the START_SURFACE_HOMEPAGE and
+  //    START_SURFACE_NEW_TAB context, making these controlled by the same finch
+  //    feature flag as start surface itself.
+  bool using_ntp_tiles =
+      std::is_same<TileContainer, ntp_tiles::NTPTilesVector>::value;
+  if (using_ntp_tiles ||
+      base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
     AutocompleteMatch match = BuildMatch(
         provider, client, std::u16string(), GURL::EmptyGURL(),
         kMostVisitedTilesRelevance, AutocompleteMatchType::TILE_NAVSUGGEST);
