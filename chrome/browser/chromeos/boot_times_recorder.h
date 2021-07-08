@@ -10,16 +10,12 @@
 #include "base/atomic_sequence_num.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "base/time/time.h"
-#include "chromeos/login/auth/login_event_recorder.h"
+#include "chromeos/metrics/login_event_recorder.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -27,29 +23,20 @@ namespace chromeos {
 
 // BootTimesRecorder is used to record times of boot, login, and logout.
 class BootTimesRecorder : public content::NotificationObserver,
-                          public content::RenderWidgetHostObserver,
-                          public LoginEventRecorder::Delegate {
+                          public content::RenderWidgetHostObserver {
  public:
   BootTimesRecorder();
+  BootTimesRecorder(const BootTimesRecorder&) = delete;
+  BootTimesRecorder& operator=(const BootTimesRecorder&) = delete;
   ~BootTimesRecorder() override;
 
   static BootTimesRecorder* Get();
 
-  // LoginEventRecorder::Delegate override.
-  void AddLoginTimeMarker(const char* marker_name, bool send_to_uma) override;
-  void RecordAuthenticationSuccess() override;
-  void RecordAuthenticationFailure() override;
-
-  // Add a time marker for logout. A timeline will be dumped to
-  // /tmp/logout-times-sent after logout is done. If |send_to_uma| is true
-  // the time between this marker and the last will be sent to UMA with
-  // the identifier ShutdownTime.|marker_name|.
+  // TODO(oshima): Deprecate following 3 methods and just use
+  // LoginEventRecorder.
+  void AddLoginTimeMarker(const char* marker_name, bool send_to_uma);
   void AddLogoutTimeMarker(const char* marker_name, bool send_to_uma);
 
-  // Records current uptime and disk usage for metrics use.
-  // Posts task to file thread.
-  // name will be used as part of file names in /tmp.
-  // Existing stats files will not be overwritten.
   void RecordCurrentStats(const std::string& name);
 
   // Saves away the stats at main, so the can be recorded later. At main() time
@@ -93,86 +80,21 @@ class BootTimesRecorder : public content::NotificationObserver,
       content::RenderWidgetHost* widget_host) override;
 
  private:
-  class TimeMarker {
-   public:
-    TimeMarker(const char* name,
-               absl::optional<std::string> url,
-               bool send_to_uma);
-    TimeMarker(const TimeMarker& other);
-    ~TimeMarker();
-
-    const char* name() const { return name_; }
-    base::Time time() const { return time_; }
-    const absl::optional<std::string>& url() const { return url_; }
-    bool send_to_uma() const { return send_to_uma_; }
-
-    // comparitor for sorting
-    bool operator<(const TimeMarker& other) const {
-      return time_ < other.time_;
-    }
-
-   private:
-    friend class std::vector<TimeMarker>;
-    const char* name_;
-    base::Time time_;
-    absl::optional<std::string> url_;
-    bool send_to_uma_;
-  };
-
-  class Stats {
-   public:
-    // Initializes stats with current /proc values.
-    static Stats GetCurrentStats();
-
-    // Returns JSON representation.
-    std::string SerializeToString() const;
-
-    // Creates new object from JSON representation.
-    static Stats DeserializeFromString(const std::string& value);
-
-    const std::string& uptime() const { return uptime_; }
-    const std::string& disk() const { return disk_; }
-
-    // Writes "uptime in seconds" to result. (This is first field in uptime_.)
-    // Returns true on successful conversion.
-    bool UptimeDouble(double* result) const;
-
-    void RecordStats(const std::string& name) const;
-    void RecordStatsWithCallback(const std::string& name,
-                                 base::OnceClosure callback) const;
-
-   private:
-    // Runs asynchronously when RecordStats(WithCallback) is called.
-    void RecordStatsAsync(const std::string& name) const;
-
-    std::string uptime_;
-    std::string disk_;
-  };
-
   // Adds optional URL to the marker.
   void AddLoginTimeMarkerWithURL(const char* marker_name,
                                  const std::string& url);
-
-  static void WriteTimes(const std::string base_name,
-                         const std::string uma_name,
-                         const std::string uma_prefix,
-                         std::vector<TimeMarker> login_times);
-  static void AddMarker(std::vector<TimeMarker>* vector, TimeMarker marker);
 
   // Clear saved logout-started metric in Local State.
   // This method is called when logout-state was writen to file.
   static void ClearLogoutStartedLastPreference();
 
-  // Used to hold the stats at main().
-  Stats chrome_main_stats_;
+  // Used to hold the stats at mai().
+  LoginEventRecorder::Stats chrome_main_stats_;
 
   // Used to track notifications for login.
   content::NotificationRegistrar registrar_;
   base::AtomicSequenceNumber num_tabs_;
   bool have_registered_;
-
-  std::vector<TimeMarker> login_time_markers_;
-  std::vector<TimeMarker> logout_time_markers_;
 
   base::ScopedMultiSourceObservation<content::RenderWidgetHost,
                                      content::RenderWidgetHostObserver>
@@ -181,8 +103,6 @@ class BootTimesRecorder : public content::NotificationObserver,
   bool login_done_;
 
   bool restart_requested_;
-
-  DISALLOW_COPY_AND_ASSIGN(BootTimesRecorder);
 };
 
 }  // namespace chromeos

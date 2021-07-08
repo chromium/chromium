@@ -10,6 +10,7 @@ include_rules = [
   "+base/component_export.h",
   "+chromeos/cryptohome",
   "+chromeos/dbus",
+  "+chromeos/metrics",
   "+chromeos/login/login_state",
   "+chromeos/tpm",
   "+components/account_id",

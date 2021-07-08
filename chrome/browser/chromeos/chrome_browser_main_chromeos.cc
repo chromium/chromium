@@ -177,7 +177,6 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/disks/disk_mount_manager.h"
-#include "chromeos/login/auth/login_event_recorder.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/memory/memory_ablation_study.h"
@@ -724,7 +723,6 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
 
   // Now that the file thread exists we can record our stats.
   BootTimesRecorder::Get()->RecordChromeMainStats();
-  LoginEventRecorder::Get()->SetDelegate(BootTimesRecorder::Get());
 
   // Trigger prefetching of ownership status.
   DeviceSettingsService::Get()->Load();

@@ -45,6 +45,7 @@ source_set("chromeos") {
     "//chromeos/dbus:vm_permission_service_proto",
     "//chromeos/dbus:vm_sk_forwarding_proto",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/metrics",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/strings",
     "//components/live_caption:constants",

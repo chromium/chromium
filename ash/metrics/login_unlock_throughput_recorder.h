@@ -5,13 +5,15 @@
 #ifndef ASH_METRICS_LOGIN_UNLOCK_THROUGHPUT_RECORDER_H_
 #define ASH_METRICS_LOGIN_UNLOCK_THROUGHPUT_RECORDER_H_
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "chromeos/login/login_state/login_state.h"
 
 namespace ash {
 
-class LoginUnlockThroughputRecorder : public SessionObserver,
-                                      public chromeos::LoginState::Observer {
+class ASH_EXPORT LoginUnlockThroughputRecorder
+    : public SessionObserver,
+      public chromeos::LoginState::Observer {
  public:
   LoginUnlockThroughputRecorder();
   LoginUnlockThroughputRecorder(const LoginUnlockThroughputRecorder&) = delete;

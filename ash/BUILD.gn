@@ -1877,6 +1877,7 @@ component("ash") {
     "//chromeos/dbus/shill",
     "//chromeos/dbus/system_clock",
     "//chromeos/login/login_state",
+    "//chromeos/metrics",
     "//chromeos/network",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
