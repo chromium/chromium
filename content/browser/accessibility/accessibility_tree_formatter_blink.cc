@@ -800,8 +800,8 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
         break;
       }
       case base::Value::Type::DOUBLE: {
-        double double_value = 0.0;
-        value->GetAsDouble(&double_value);
+        double double_value;
+        double_value = value->GetIfDouble().value_or(0.0);
         WriteAttribute(
             false, base::StringPrintf("%s=%.2f", attribute_name, double_value),
             &line);
