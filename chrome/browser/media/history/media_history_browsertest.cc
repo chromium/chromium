@@ -1081,8 +1081,15 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   EXPECT_TRUE(sessions.empty());
 }
 
+// TODO(crbug.com/1086828): Test is flaky on Linux and Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_DoNotRecordWatchtime_Background \
+  DISABLED_DoNotRecordWatchtime_Background
+#else
+#define MAYBE_DoNotRecordWatchtime_Background DoNotRecordWatchtime_Background
+#endif
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       DoNotRecordWatchtime_Background) {
+                       MAYBE_DoNotRecordWatchtime_Background) {
   auto* browser = CreateBrowserFromParam();
   auto* service = GetMediaHistoryService(browser);
 
