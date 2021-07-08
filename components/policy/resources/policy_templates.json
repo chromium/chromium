@@ -5366,6 +5366,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5386,6 +5387,7 @@
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:85-', 'chrome_os:85-'],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5413,6 +5415,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5436,6 +5439,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5459,6 +5463,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5482,6 +5487,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5501,6 +5507,7 @@
       'supported_on': ['chrome.*:10-63', 'chrome_os:11-63', 'android:30-63'],
       'deprecated': True,
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5528,6 +5535,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5554,6 +5562,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5580,6 +5589,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5599,6 +5609,7 @@
       'supported_on': ['chrome.*:25-63', 'chrome_os:25-63', 'android:30-63'],
       'deprecated': True,
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5624,6 +5635,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5647,6 +5659,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5670,6 +5683,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5693,6 +5707,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5712,6 +5727,7 @@
       'supported_on': ['chrome.*:29-63', 'chrome_os:29-63', 'android:30-63'],
       'deprecated': True,
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
@@ -5737,6 +5753,7 @@
         'ios:88-',
       ],
       'features': {
+        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
