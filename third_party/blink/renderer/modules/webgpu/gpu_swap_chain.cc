@@ -209,8 +209,7 @@ bool GPUSwapChain::CopyToResourceProvider(
 // gpu_swap_chain.idl
 GPUTexture* GPUSwapChain::getCurrentTexture() {
   if (!swap_buffers_) {
-    // TODO(cwallez@chromium.org) return an error texture.
-    return nullptr;
+    return GPUTexture::CreateError(device_);
   }
 
   // As we are getting a new texture, we need to tell the canvas context that

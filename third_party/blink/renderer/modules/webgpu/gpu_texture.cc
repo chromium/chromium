@@ -100,6 +100,10 @@ WGPUTextureFormat SkColorTypeToWGPUTextureFormat(SkColorType color_type) {
   }
 }
 
+void popErrorDiscardCallback(WGPUErrorType, const char*, void*) {
+  // This callback is used to silently consume expected error messages
+}
+
 }  // anonymous namespace
 
 // static
@@ -119,6 +123,27 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
       static_cast<WGPUTextureUsage>(dawn_desc.usage));
   if (webgpu_desc->hasLabel())
     texture->setLabel(webgpu_desc->label());
+  return texture;
+}
+
+// static
+GPUTexture* GPUTexture::CreateError(GPUDevice* device) {
+  DCHECK(device);
+
+  // Force the creation of an invalid texture and consume the errors that it
+  // causes. It would be nice if Dawn provided a more direct way of creating
+  // an error texture to simplify this.
+  WGPUTextureDescriptor dawn_desc = {};
+  device->GetProcs().devicePushErrorScope(device->GetHandle(),
+                                          WGPUErrorFilter_Validation);
+  GPUTexture* texture = MakeGarbageCollected<GPUTexture>(
+      device,
+      device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc),
+      dawn_desc.dimension, dawn_desc.format,
+      static_cast<WGPUTextureUsage>(dawn_desc.usage));
+  device->GetProcs().devicePopErrorScope(device->GetHandle(),
+                                         &popErrorDiscardCallback, nullptr);
+
   return texture;
 }
 

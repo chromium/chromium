@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 
 namespace blink {
 
@@ -41,6 +42,7 @@ GPUCanvasContext::~GPUCanvasContext() {}
 
 void GPUCanvasContext::Trace(Visitor* visitor) const {
   visitor->Trace(swapchain_);
+  visitor->Trace(configured_device_);
   CanvasRenderingContext::Trace(visitor);
 }
 
@@ -66,6 +68,7 @@ void GPUCanvasContext::Stop() {
     swapchain_->Neuter();
     swapchain_ = nullptr;
   }
+  configured_device_ = nullptr;
   stopped_ = true;
 }
 
@@ -167,6 +170,8 @@ void GPUCanvasContext::unconfigure() {
     swapchain_->Neuter();
     swapchain_ = nullptr;
   }
+
+  configured_device_ = nullptr;
 }
 
 String GPUCanvasContext::getPreferredFormat(const GPUAdapter* adapter) {
@@ -176,10 +181,15 @@ String GPUCanvasContext::getPreferredFormat(const GPUAdapter* adapter) {
 
 GPUTexture* GPUCanvasContext::getCurrentTexture(
     ExceptionState& exception_state) {
-  if (!swapchain_) {
+  if (!configured_device_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "context is not configured");
     return nullptr;
+  }
+  if (!swapchain_) {
+    configured_device_->InjectError(WGPUErrorType_Validation,
+                                    "context configuration is invalid.");
+    return GPUTexture::CreateError(configured_device_);
   }
   return swapchain_->getCurrentTexture();
 }
@@ -228,6 +238,10 @@ void GPUCanvasContext::ConfigureInternal(
     swapchain_ = nullptr;
   }
 
+  // Store the configured device separately, even if the configuration fails, so
+  // that errors can be generated in the appropriate error scope.
+  configured_device_ = descriptor->device();
+
   WGPUTextureUsage usage = AsDawnEnum<WGPUTextureUsage>(descriptor->usage());
   WGPUTextureFormat format =
       AsDawnEnum<WGPUTextureFormat>(descriptor->format());
@@ -235,13 +249,13 @@ void GPUCanvasContext::ConfigureInternal(
     case WGPUTextureFormat_BGRA8Unorm:
       break;
     case WGPUTextureFormat_RGBA16Float:
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kUnknownError,
+      configured_device_->InjectError(
+          WGPUErrorType_Validation,
           "rgba16float swap chain is not yet supported");
       return;
     default:
-      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                        "unsupported swap chain format");
+      configured_device_->InjectError(WGPUErrorType_Validation,
+                                      "unsupported swap chain format");
       return;
   }
 
@@ -256,9 +270,15 @@ void GPUCanvasContext::ConfigureInternal(
     size = IntSize(dawn_extent.width, dawn_extent.height);
 
     if (dawn_extent.depthOrArrayLayers != 1) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kOperationError,
+      configured_device_->InjectError(
+          WGPUErrorType_Validation,
           "swap chain size must have depthOrArrayLayers set to 1");
+      return;
+    }
+    if (size.IsEmpty()) {
+      configured_device_->InjectError(
+          WGPUErrorType_Validation,
+          "context width and height must be greater than 0");
       return;
     }
   } else {
@@ -266,7 +286,7 @@ void GPUCanvasContext::ConfigureInternal(
   }
 
   swapchain_ = MakeGarbageCollected<GPUSwapChain>(
-      this, descriptor->device(), usage, format, filter_quality_, size);
+      this, configured_device_, usage, format, filter_quality_, size);
   swapchain_->CcLayer()->SetContentsOpaque(!CreationAttributes().alpha);
   if (descriptor->hasLabel())
     swapchain_->setLabel(descriptor->label());

@@ -96,6 +96,7 @@ class GPUCanvasContext : public CanvasRenderingContext {
 
   SkFilterQuality filter_quality_ = kLow_SkFilterQuality;
   Member<GPUSwapChain> swapchain_;
+  Member<GPUDevice> configured_device_;
   bool stopped_ = false;
 };
 
