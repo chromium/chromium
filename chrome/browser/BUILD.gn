@@ -78,9 +78,9 @@ if (is_win) {
       "dwmapi.lib",
       "imm32.lib",  # chrome_elf_init.cc
       "netapi32.lib",
-      "ndfapi.lib",  # For browser / net / net_error_diagnostics_dialog_win.h
-      "pdh.lib",  # For browser / private_working_set_snapshot.h
-      "wbemuuid.lib",  # For browser / metrics /
+      "ndfapi.lib",  # For browser/net/net_error_diagnostics_dialog_win.h
+      "pdh.lib",  # For browser/private_working_set_snapshot.h
+      "wbemuuid.lib",  # For browser/metrics /
                        # antivirus_metrics_provider_win.cc
     ]
     ldflags = [
@@ -1886,6 +1886,7 @@ static_library("browser") {
   deps = [
     ":active_use_util",
     ":availability_protos",
+    ":browser_process",
     ":buildflags",
     ":dev_ui_browser_resources_grit",
     ":expired_flags_list",
@@ -1908,7 +1909,6 @@ static_library("browser") {
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
-    "//chrome/browser:browser_process",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
     "//chrome/browser/image_decoder",
@@ -3332,8 +3332,7 @@ static_library("browser") {
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
       "//components/security_state/content/android",
       "//components/send_tab_to_self",
-      "//components/signin/internal/identity_manager",  # cf android / signin /
-                                                        # DEPS
+      "//components/signin/internal/identity_manager",  # cf android/signin/DEPS
       "//components/signin/public/android:jni_headers",
       "//components/subresource_filter/android",
       "//components/thin_webview/internal",
@@ -5348,7 +5347,10 @@ static_library("browser") {
   }
 
   if (is_posix || is_fuchsia) {
-    deps += [ "//chrome/app:shutdown_signal_handlers" ]
+    sources += [
+      "shutdown_signal_handlers_posix.cc",
+      "shutdown_signal_handlers_posix.h",
+    ]
   }
 
   if (is_win || is_mac) {
@@ -5500,7 +5502,7 @@ static_library("browser") {
   }
 
   if (is_posix && !is_mac) {
-    # TODO(crbug.com / 753619): Enable crash reporting on Fuchsia.
+    # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
     sources += [
       "//chrome/app/chrome_crash_reporter_client.cc",
       "//chrome/app/chrome_crash_reporter_client.h",
@@ -5551,8 +5553,8 @@ static_library("browser") {
       "media_galleries/fileapi/mtp_file_stream_reader.h",
     ]
     if (is_chromeos_ash && use_dbus) {
-      # TODO(donna.wu@intel.com): push this into chrome / browser / chromeos
-      # and chrome / browser / media_galleries / chromeos
+      # TODO(donna.wu@intel.com): push this into chrome/browser/chromeos
+      # and chrome/browser/media_galleries/chromeos
       deps += [ "//services/device/public/mojom" ]
     }
   }
@@ -6955,9 +6957,9 @@ static_library("test_support") {
     "//chrome/browser/ui:test_support",
   ]
   deps = [
+    ":browser_process",
     "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
-    "//chrome/browser:browser_process",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
     "//components/consent_auditor:test_support",
@@ -7260,8 +7262,8 @@ if (!is_android) {
 
     deps = [
       ":browser",
+      ":browser_process",
       "//chrome:browser_tests_pak",
-      "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/common:mojo_bindings",
       "//chrome/test/data:web_ui_test_bindings",

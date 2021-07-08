@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_APP_SHUTDOWN_SIGNAL_HANDLERS_POSIX_H_
-#define CHROME_APP_SHUTDOWN_SIGNAL_HANDLERS_POSIX_H_
+#ifndef CHROME_BROWSER_SHUTDOWN_SIGNAL_HANDLERS_POSIX_H_
+#define CHROME_BROWSER_SHUTDOWN_SIGNAL_HANDLERS_POSIX_H_
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -19,4 +19,4 @@ void InstallShutdownSignalHandlers(
     base::OnceCallback<void(int)> shutdown_callback,
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
-#endif  // CHROME_APP_SHUTDOWN_SIGNAL_HANDLERS_POSIX_H_
+#endif  // CHROME_BROWSER_SHUTDOWN_SIGNAL_HANDLERS_POSIX_H_

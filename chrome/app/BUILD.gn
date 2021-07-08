@@ -25,17 +25,6 @@ source_set("command_ids") {
   ]
 }
 
-# TODO: put back in chrome/browser if necessary. http://crbug.com/771801.
-source_set("shutdown_signal_handlers") {
-  if (is_posix || is_fuchsia) {
-    sources = [
-      "shutdown_signal_handlers_posix.cc",
-      "shutdown_signal_handlers_posix.h",
-    ]
-  }
-  deps = [ "//base" ]
-}
-
 # On Windows, links chrome_dll.rc. On other platforms, does nothing so you can
 # unconditionally depend on it.
 source_set("chrome_dll_resources") {
@@ -126,7 +115,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/app:shutdown_signal_handlers",
     "//chrome/browser",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",

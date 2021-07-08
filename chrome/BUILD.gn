@@ -1327,7 +1327,6 @@ group("browser_dependencies") {
   public_deps = [
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
-    "//chrome/app:shutdown_signal_handlers",
     "//chrome/browser",
     "//chrome/browser/policy:path_parser",
     "//chrome/common",
