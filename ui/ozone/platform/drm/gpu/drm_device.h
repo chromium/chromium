@@ -64,11 +64,11 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
 
   struct Property {
     // Unique identifier for the property. 0 denotes an invalid ID.
-    uint32_t id;
+    uint32_t id = 0;
 
     // Depending on the property, this may be an actual value describing the
     // property or an ID of another property.
-    uint64_t value;
+    uint64_t value = 0;
   };
 
   DrmDevice(const base::FilePath& device_path,

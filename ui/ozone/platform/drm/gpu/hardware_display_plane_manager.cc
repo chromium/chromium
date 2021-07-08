@@ -36,6 +36,11 @@ HardwareDisplayPlaneList::PageFlipInfo::PageFlipInfo(
 
 HardwareDisplayPlaneList::PageFlipInfo::~PageFlipInfo() = default;
 
+HardwareDisplayPlaneManager::CrtcProperties::CrtcProperties() = default;
+HardwareDisplayPlaneManager::CrtcProperties::CrtcProperties(
+    const CrtcProperties& other) = default;
+HardwareDisplayPlaneManager::CrtcProperties::~CrtcProperties() = default;
+
 HardwareDisplayPlaneManager::CrtcState::CrtcState() = default;
 
 HardwareDisplayPlaneManager::CrtcState::~CrtcState() = default;
@@ -252,6 +257,8 @@ void HardwareDisplayPlaneManager::ResetConnectorsCache(
     }
     GetDrmPropertyForName(drm_, props.get(), "CRTC_ID", &state_props.crtc_id);
     DCHECK(!drm_->is_atomic() || state_props.crtc_id.id);
+    GetDrmPropertyForName(drm_, props.get(), "link-status",
+                          &state_props.link_status);
 
     connectors_props_.emplace_back(std::move(state_props));
   }

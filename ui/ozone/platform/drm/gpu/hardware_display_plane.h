@@ -46,6 +46,8 @@ class HardwareDisplayPlane {
 
  protected:
   struct Properties {
+    Properties();
+    ~Properties();
     // These properties are mandatory on DRM atomic. On legacy they may or may
     // not be present.
     DrmDevice::Property crtc_id;

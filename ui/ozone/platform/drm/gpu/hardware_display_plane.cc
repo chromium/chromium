@@ -35,6 +35,8 @@ void ParseSupportedFormatsAndModifiers(
 }
 
 }  // namespace
+HardwareDisplayPlane::Properties::Properties() = default;
+HardwareDisplayPlane::Properties::~Properties() = default;
 
 HardwareDisplayPlane::HardwareDisplayPlane(uint32_t id) : id_(id) {}
 

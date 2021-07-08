@@ -98,9 +98,18 @@ bool HardwareDisplayPlaneManagerAtomic::SetConnectorProps(
   // updated only after a successful modeset.
   ConnectorProperties connector_props = connectors_props_[connector_index];
   connector_props.crtc_id.value = crtc_id;
+  // Always set link-status to DRM_MODE_LINK_STATUS_GOOD. In case a link
+  // training has failed and link-status is now BAD, the kernel expects the
+  // userspace to reset it to GOOD; otherwise, it will ignore modeset requests
+  // which have the same mode as the reported bad status.
+  // https://www.kernel.org/doc/html/latest/gpu/drm-kms.html#standard-connector-properties
+  connector_props.link_status.value = DRM_MODE_LINK_STATUS_GOOD;
 
-  return AddPropertyIfValid(atomic_request, connector_id,
-                            connector_props.crtc_id);
+  bool status =
+      AddPropertyIfValid(atomic_request, connector_id, connector_props.crtc_id);
+  status &= AddPropertyIfValid(atomic_request, connector_id,
+                               connector_props.link_status);
+  return status;
 }
 
 bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,

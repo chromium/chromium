@@ -58,6 +58,9 @@ struct HardwareDisplayPlaneList {
 class HardwareDisplayPlaneManager {
  public:
   struct CrtcProperties {
+    CrtcProperties();
+    CrtcProperties(const CrtcProperties& other);
+    ~CrtcProperties();
     // Unique identifier for the CRTC. This must be greater than 0 to be valid.
     uint32_t id;
     // Keeps track of the CRTC state. If a surface has been bound, then the
@@ -193,6 +196,7 @@ class HardwareDisplayPlaneManager {
   struct ConnectorProperties {
     uint32_t id;
     DrmDevice::Property crtc_id;
+    DrmDevice::Property link_status;
   };
 
   bool InitializeCrtcState();

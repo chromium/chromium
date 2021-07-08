@@ -44,6 +44,7 @@ constexpr uint32_t kInFormatsBlobPropId = 400;
 constexpr uint32_t kActivePropId = 1000;
 constexpr uint32_t kModePropId = 1001;
 constexpr uint32_t kCrtcIdPropId = 2000;
+constexpr uint32_t kLinkStatusPropId = 2001;
 
 constexpr uint32_t kPlaneCrtcId = 3001;
 constexpr uint32_t kCrtcX = 3002;
@@ -163,6 +164,7 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic) {
   std::vector<ui::MockDrmDevice::ConnectorProperties> connector_properties(2);
   std::map<uint32_t, std::string> connector_property_names = {
       {kCrtcIdPropId, "CRTC_ID"},
+      {kLinkStatusPropId, "link-status"},
   };
   for (size_t i = 0; i < connector_properties.size(); ++i) {
     connector_properties[i].id = kConnectorIdBase + i;
@@ -340,11 +342,20 @@ TEST_F(HardwareDisplayControllerTest, ConnectorPropsAfterModeset) {
   ui::ScopedDrmObjectPropertyPtr connector_props =
       drm_->GetObjectProperties(kConnectorIdBase, DRM_MODE_OBJECT_CONNECTOR);
 
-  ui::DrmDevice::Property prop = {};
-  ui::GetDrmPropertyForName(drm_.get(), connector_props.get(), "CRTC_ID",
-                            &prop);
-  EXPECT_EQ(kCrtcIdPropId, prop.id);
-  EXPECT_EQ(kCrtcIdBase, prop.value);
+  {
+    ui::DrmDevice::Property prop = {};
+    ui::GetDrmPropertyForName(drm_.get(), connector_props.get(), "CRTC_ID",
+                              &prop);
+    EXPECT_EQ(kCrtcIdPropId, prop.id);
+    EXPECT_EQ(kCrtcIdBase, prop.value);
+  }
+  {
+    ui::DrmDevice::Property prop = {};
+    ui::GetDrmPropertyForName(drm_.get(), connector_props.get(), "link-status",
+                              &prop);
+    EXPECT_EQ(kLinkStatusPropId, prop.id);
+    EXPECT_EQ(static_cast<uint64_t>(DRM_MODE_LINK_STATUS_GOOD), prop.value);
+  }
 }
 
 TEST_F(HardwareDisplayControllerTest, PlanePropsAfterModeset) {
