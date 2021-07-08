@@ -315,4 +315,9 @@ public interface Tab extends TabLifecycle {
      * The default value when a Tab is initialized is false.
      */
     void setIsTabSaveEnabled(boolean isSaveEnabled);
+
+    /**
+     * @return true if the {@link Tab} is a custom tab.
+     */
+    boolean isCustomTab();
 }

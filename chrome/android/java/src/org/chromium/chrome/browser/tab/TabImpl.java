@@ -1587,6 +1587,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @CalledByNative
+    @Override
     public boolean isCustomTab() {
         ChromeActivity activity = getActivity();
         return activity != null && activity.isCustomTab();
