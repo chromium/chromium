@@ -15,8 +15,12 @@ namespace page_load_metrics {
 
 namespace {
 
-// Default timer delay value. Can be overridden by field trial.
-const int kDefaultBufferTimerDelayMillis = 1000;
+// Default timer delay when the PageLoadMetricsTimerDelay feature is disabled.
+const int kDefaultDisabledBufferTimerDelayMillis = 1000;
+
+// Default timer delay when the PageLoadMetricsTimerDelay feature is enabled.
+// Can be overridden by the BufferTimerDelayMillis field trial parameter.
+const int kDefaultEnabledBufferTimerDelayMillis = 100;
 
 // Maximum timer delay value.
 const int kMaxBufferTimerDelayMillis = 1000;
@@ -83,9 +87,13 @@ absl::optional<base::TimeDelta> OptionalMin(
 }
 
 int GetBufferTimerDelayMillis(TimerType timer_type) {
-  int result = base::GetFieldTrialParamByFeatureAsInt(
-      kPageLoadMetricsTimerDelayFeature, kBufferTimerDelayParamName,
-      kDefaultBufferTimerDelayMillis /* default value */);
+  int result = kDefaultDisabledBufferTimerDelayMillis;
+
+  if (base::FeatureList::IsEnabled(kPageLoadMetricsTimerDelayFeature)) {
+    result = base::GetFieldTrialParamByFeatureAsInt(
+        kPageLoadMetricsTimerDelayFeature, kBufferTimerDelayParamName,
+        kDefaultEnabledBufferTimerDelayMillis /* default value */);
+  }
 
   DCHECK(timer_type == TimerType::kBrowser ||
          timer_type == TimerType::kRenderer);
