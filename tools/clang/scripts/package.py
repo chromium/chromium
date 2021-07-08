@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import time
 
 from update import RELEASE_VERSION, STAMP_FILE
 
@@ -572,7 +573,10 @@ def main():
     binaries = [f for f in want if f.endswith('.exe') or f.endswith('.dll')]
     assert 'bin/clang-cl.exe' in binaries
     assert 'bin/lld-link.exe' in binaries
+    start = time.time()
     UploadPDBsToSymbolServer(binaries)
+    end = time.time()
+    print('symbol upload took', end - start, 'seconds')
 
   # FIXME: Warn if the file already exists on the server.
 
