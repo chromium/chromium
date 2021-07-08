@@ -11,13 +11,13 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/memory/free_deleter.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

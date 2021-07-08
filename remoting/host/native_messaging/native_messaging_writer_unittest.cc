@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "remoting/host/setup/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

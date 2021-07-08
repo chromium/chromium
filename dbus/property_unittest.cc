@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"

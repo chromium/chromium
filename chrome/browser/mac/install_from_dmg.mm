@@ -19,6 +19,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/authorization_util.h"
@@ -31,7 +32,6 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"

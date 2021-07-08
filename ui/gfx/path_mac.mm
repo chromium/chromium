@@ -8,8 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 

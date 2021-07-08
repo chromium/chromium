@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 
 const char kChromeUIChromeURLsURL[] = "chrome://chrome-urls/";

@@ -14,7 +14,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/synchronization/lock.h"
 #include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/test/test_hook.h"

@@ -34,8 +34,8 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"

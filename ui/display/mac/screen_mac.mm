@@ -13,12 +13,12 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/mac/sdk_forward_declarations.h"
-#include "base/stl_util.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/display.h"

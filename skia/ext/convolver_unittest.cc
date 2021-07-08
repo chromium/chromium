@@ -9,8 +9,8 @@
 #include <numeric>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "skia/ext/convolver.h"
 #include "testing/gtest/include/gtest/gtest.h"

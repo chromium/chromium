@@ -7,12 +7,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #import "base/mac/foundation_util.h"
 #include "base/native_library.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "ui/gfx/animation/tween.h"
 
 // The window animations in this file use private APIs as described here:

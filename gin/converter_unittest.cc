@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gin/function_template.h"
 #include "gin/handle.h"

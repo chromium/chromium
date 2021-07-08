@@ -12,8 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/json/json_writer.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "dbus/message.h"
 #include "testing/gtest/include/gtest/gtest.h"

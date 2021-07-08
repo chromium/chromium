@@ -7,8 +7,8 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "components/url_formatter/url_fixer.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"

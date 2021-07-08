@@ -7,8 +7,8 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/flags_ui/feature_entry.h"

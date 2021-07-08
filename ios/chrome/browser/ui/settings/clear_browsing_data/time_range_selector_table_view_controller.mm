@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller.h"
 
+#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
-#include "base/stl_util.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_member.h"

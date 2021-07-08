@@ -7,9 +7,9 @@
 #include <Cocoa/Cocoa.h>
 #include <stddef.h>
 
+#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/font.h"
 

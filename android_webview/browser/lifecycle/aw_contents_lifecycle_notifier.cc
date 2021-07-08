@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "android_webview/browser_jni_headers/AwContentsLifecycleNotifier_jni.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "content/public/browser/browser_thread.h"
 
 using base::android::AttachCurrentThread;

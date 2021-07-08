@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/task_runner_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"

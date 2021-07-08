@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/site_isolation/features.h"

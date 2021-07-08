@@ -26,9 +26,9 @@
 #import <AppKit/NSFont.h>
 #import <AvailabilityMacros.h>
 
+#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/stl_util.h"
 #include "third_party/blink/public/platform/mac/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"

@@ -8,8 +8,8 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"

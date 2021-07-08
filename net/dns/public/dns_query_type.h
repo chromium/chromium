@@ -5,7 +5,7 @@
 #ifndef NET_DNS_PUBLIC_DNS_QUERY_TYPE_H_
 #define NET_DNS_PUBLIC_DNS_QUERY_TYPE_H_
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "net/base/net_export.h"
 
 namespace net {

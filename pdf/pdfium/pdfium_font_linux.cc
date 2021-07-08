@@ -7,13 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "base/sequence_checker.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "components/services/font/public/cpp/font_loader.h"
 #include "pdf/font_table_linux.h"

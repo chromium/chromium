@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/video.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"

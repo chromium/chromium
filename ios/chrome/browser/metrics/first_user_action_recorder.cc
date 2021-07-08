@@ -5,10 +5,10 @@
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"

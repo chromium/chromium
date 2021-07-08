@@ -267,7 +267,7 @@ def CreateFromDict(registration_dict, use_hash):
 
 #include "base/android/jni_generator/jni_generator_helper.h"
 #include "base/android/jni_int_wrapper.h"
-#include "base/stl_util.h"  // For base::size().
+#include "base/cxx17_backports.h"  // For base::size().
 
 
 // Step 1: Forward declarations (classes).

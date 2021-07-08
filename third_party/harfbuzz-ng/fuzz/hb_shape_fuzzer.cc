@@ -11,7 +11,7 @@
 #include <hb-ot.h>
 // clang-format on
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 constexpr size_t kMaxInputLength = 16800;

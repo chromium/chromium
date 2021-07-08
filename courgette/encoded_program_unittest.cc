@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "courgette/image_utils.h"
 #include "courgette/label_manager.h"
 #include "courgette/streams.h"

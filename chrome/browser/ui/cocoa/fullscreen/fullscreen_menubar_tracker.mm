@@ -7,8 +7,8 @@
 #include <Carbon/Carbon.h>
 #include <QuartzCore/QuartzCore.h>
 
+#include "base/cxx17_backports.h"
 #include "base/mac/mac_util.h"
-#include "base/stl_util.h"
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller.h"
 #include "ui/base/cocoa/appkit_utils.h"
 

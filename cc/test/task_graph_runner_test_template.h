@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
 #include "cc/raster/task_category.h"

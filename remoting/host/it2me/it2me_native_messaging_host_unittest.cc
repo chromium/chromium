@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -18,7 +19,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"

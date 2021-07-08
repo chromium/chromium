@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/enums.h"

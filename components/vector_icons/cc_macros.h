@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VECTOR_ICONS_CC_MACROS_H_
 #define COMPONENTS_VECTOR_ICONS_CC_MACROS_H_
 
-#include "base/stl_util.h"  // For base::size().
+#include "base/cxx17_backports.h"  // For base::size().
 
 // This file holds macros that are common to each vector icon target's
 // vector_icons.cc.template file.

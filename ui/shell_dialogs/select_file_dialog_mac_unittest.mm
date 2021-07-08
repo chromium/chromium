@@ -4,12 +4,12 @@
 
 #import "ui/shell_dialogs/select_file_dialog_mac.h"
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"

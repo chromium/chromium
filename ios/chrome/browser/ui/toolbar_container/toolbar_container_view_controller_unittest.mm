@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_collapsing.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_height_range.h"

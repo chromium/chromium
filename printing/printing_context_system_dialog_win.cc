@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "printing/backend/win_helper.h"

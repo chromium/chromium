@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/sequence_checker.h"
-#include "base/stl_util.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"

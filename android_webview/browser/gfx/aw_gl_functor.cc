@@ -6,7 +6,7 @@
 
 #include "android_webview/browser_jni_headers/AwGLFunctor_jni.h"
 #include "android_webview/public/browser/draw_gl.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

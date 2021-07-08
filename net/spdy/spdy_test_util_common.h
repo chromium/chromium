@@ -13,8 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"

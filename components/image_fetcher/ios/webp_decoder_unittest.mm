@@ -13,12 +13,12 @@
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"

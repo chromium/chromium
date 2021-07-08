@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/chrome_url_util.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"

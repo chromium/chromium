@@ -12,10 +12,10 @@
 #include <sys/types.h>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/notreached.h"
 #include "base/process/process_metrics.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"

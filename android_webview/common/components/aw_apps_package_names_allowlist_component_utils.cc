@@ -4,7 +4,8 @@
 
 #include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
 
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 
 namespace android_webview {
 

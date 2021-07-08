@@ -4,10 +4,10 @@
 
 #include "weblayer/browser/persistence/browser_persister_file_utils.h"
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/base32/base32.h"

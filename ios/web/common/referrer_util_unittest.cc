@@ -4,7 +4,7 @@
 
 #include "ios/web/common/referrer_util.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "net/url_request/referrer_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"

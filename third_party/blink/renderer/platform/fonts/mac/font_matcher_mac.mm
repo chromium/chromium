@@ -33,10 +33,10 @@
 #import <Foundation/Foundation.h>
 #import <math.h>
 
+#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #import "third_party/blink/renderer/platform/wtf/hash_set.h"
 #import "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"

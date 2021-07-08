@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
@@ -15,7 +16,6 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"

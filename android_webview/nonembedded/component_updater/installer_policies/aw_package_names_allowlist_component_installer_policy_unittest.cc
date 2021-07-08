@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "android_webview/common/aw_switches.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"

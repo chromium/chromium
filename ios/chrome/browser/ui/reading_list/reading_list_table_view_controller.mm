@@ -5,12 +5,12 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/stl_util.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"

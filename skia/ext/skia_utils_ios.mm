@@ -9,10 +9,10 @@
 #include <stdint.h>
 #import <UIKit/UIKit.h>
 
+#include "base/cxx17_backports.h"
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 
 namespace {

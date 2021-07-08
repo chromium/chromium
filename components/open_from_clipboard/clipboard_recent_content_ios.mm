@@ -9,9 +9,9 @@
 #include <stdint.h>
 #import <UIKit/UIKit.h>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"

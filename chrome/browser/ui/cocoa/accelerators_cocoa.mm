@@ -9,9 +9,9 @@
 
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/commander/commander.h"

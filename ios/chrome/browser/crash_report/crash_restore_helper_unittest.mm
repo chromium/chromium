@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"

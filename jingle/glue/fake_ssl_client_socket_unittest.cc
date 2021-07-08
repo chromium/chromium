@@ -12,8 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"

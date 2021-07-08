@@ -10,13 +10,13 @@
 
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 

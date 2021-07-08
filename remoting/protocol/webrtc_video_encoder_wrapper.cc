@@ -12,9 +12,9 @@
 
 #include "base/bind.h"
 #include "base/bind_post_task.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

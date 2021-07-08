@@ -4,8 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/autofill/core/common/autofill_constants.h"

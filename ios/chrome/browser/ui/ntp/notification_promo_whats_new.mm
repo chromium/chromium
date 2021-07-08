@@ -9,12 +9,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/ios/ios_util.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"

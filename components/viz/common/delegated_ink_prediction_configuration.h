@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_DELEGATED_INK_PREDICTION_CONFIGURATION_H_
 #define COMPONENTS_VIZ_COMMON_DELEGATED_INK_PREDICTION_CONFIGURATION_H_
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace viz {
 

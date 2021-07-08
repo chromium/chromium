@@ -9,10 +9,10 @@
 #import <Carbon/Carbon.h>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/scoped_policy.h"
-#include "base/stl_util.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace ui {

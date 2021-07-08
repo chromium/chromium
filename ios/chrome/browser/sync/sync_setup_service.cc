@@ -6,8 +6,8 @@
 
 #include <stdio.h>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/user_selectable_type.h"

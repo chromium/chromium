@@ -6,7 +6,7 @@
 
 #include <cstring>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "courgette/third_party/bsdiff/paged_array.h"
 #include "courgette/third_party/divsufsort/divsufsort.h"
 #include "testing/gtest/include/gtest/gtest.h"

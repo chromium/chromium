@@ -8,10 +8,10 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

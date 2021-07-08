@@ -7,7 +7,7 @@
 #import <objc/runtime.h>
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #import "content/browser/renderer_host/render_widget_host_view_mac.h"
 
