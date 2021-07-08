@@ -135,12 +135,18 @@ class ResourceSizesDiff(BaseDiff):
 
   @property
   def summary_stat(self):
+    items = []
     for section_name, results in self._diff.items():
       for subsection_name, value, units in results:
         if 'normalized' in subsection_name:
-          full_name = '{} {}'.format(section_name, subsection_name)
-          return _DiffResult(full_name, value, units)
-    raise Exception('Could not find "normalized" in: ' + repr(self._diff))
+          items.append([section_name, subsection_name, value, units])
+    if len(items) > 1:  # Handle Trichrome.
+      items = [item for item in items if 'Combined_normalized' in item[1]]
+    if len(items) == 1:
+      [section_name, subsection_name, value, units] = items[0]
+      full_name = '{} {}'.format(section_name, subsection_name)
+      return _DiffResult(full_name, value, units)
+    raise Exception('Could not find canonical "normalized" in: %r' % self._diff)
 
   def CombinedSizeChangeForSection(self, section):
     for subsection_name, value, _ in self._diff[section]:
