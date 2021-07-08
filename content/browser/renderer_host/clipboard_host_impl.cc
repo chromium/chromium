@@ -363,8 +363,7 @@ void ClipboardHostImpl::ReadImage(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::OnReadImage(ui::ClipboardBuffer clipboard_buffer,
                                     ReadImageCallback callback,
                                     const SkBitmap& bitmap) {
-  std::string data =
-      std::string(reinterpret_cast<const char*>(bitmap.getPixels()),
+  std::string data(reinterpret_cast<const char*>(bitmap.getPixels()),
                   bitmap.computeByteSize());
   PasteIfPolicyAllowed(clipboard_buffer,
                        ui::ClipboardFormatType::GetBitmapType(),
