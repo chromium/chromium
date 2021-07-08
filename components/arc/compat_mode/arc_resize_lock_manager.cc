@@ -208,6 +208,8 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   // Because we use the compat mode button as the "anchor" in the splash, we
   // need to show it after the setup of the compat mode button.
   if (is_first_launch && ShouldShowSplashScreenDialog(pref_delegate_)) {
+    // Compat-mode button must exist as the anchoring target of the splash.
+    UpdateCompatModeButton(window);
     const bool is_for_unresizable =
         window->GetProperty(ash::kArcResizeLockTypeKey) ==
         ash::ArcResizeLockType::FULLY_LOCKED;
