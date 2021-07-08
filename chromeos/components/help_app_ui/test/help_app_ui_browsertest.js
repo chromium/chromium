@@ -89,6 +89,11 @@ TEST_F('HelpAppUIBrowserTest', 'GuestCanSearchWithCategories', async () => {
   testDone();
 });
 
+TEST_F('HelpAppUIBrowserTest', 'GuestCanLimitMaxSearchResults', async () => {
+  await runTestInGuest('GuestCanLimitMaxSearchResults');
+  testDone();
+});
+
 TEST_F('HelpAppUIBrowserTest', 'GuestCanClearSearchIndex', async () => {
   await runTestInGuest('GuestCanClearSearchIndex');
   testDone();

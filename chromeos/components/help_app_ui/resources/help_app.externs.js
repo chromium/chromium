@@ -191,9 +191,11 @@ helpApp.ClientApiDelegate.prototype.clearSearchIndex = function() {};
 /**
  * Search the search index for content that matches the given query.
  * @param {string} query
+ * @param {number=} maxResults Maximum number of search results. Default 50.
  * @return {!Promise<!helpApp.FindResponse>}
  */
-helpApp.ClientApiDelegate.prototype.findInSearchIndex = function(query) {};
+helpApp.ClientApiDelegate.prototype.findInSearchIndex = function(
+    query, maxResults) {};
 
 /**
  * Close the app. Works if the app is open in the background page.

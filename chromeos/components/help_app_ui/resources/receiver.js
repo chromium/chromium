@@ -38,11 +38,13 @@ const DELEGATE = {
   /**
    * @override
    * @param {string} query
+   * @param {number=} maxResults Maximum number of search results. Default 50.
    * @return {!Promise<!helpApp.FindResponse>}
    */
-  findInSearchIndex(query) {
+  findInSearchIndex(query, maxResults) {
     return /** @type {!Promise<!helpApp.FindResponse>} */ (
-        parentMessagePipe.sendMessage(Message.FIND_IN_SEARCH_INDEX, {query}));
+        parentMessagePipe.sendMessage(
+            Message.FIND_IN_SEARCH_INDEX, {query, maxResults}));
   },
   closeBackgroundPage() {
     parentMessagePipe.sendMessage(Message.CLOSE_BACKGROUND_PAGE);

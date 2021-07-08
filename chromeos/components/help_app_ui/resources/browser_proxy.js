@@ -140,9 +140,11 @@ guestMessagePipe.registerHandler(
       if (!(await isLssEnabled)) {
         return {results: null};
       }
+      const dataFromApp =
+          /** @type {{query: string, maxResults:(number|undefined)}} */
+          (message);
       const response = await indexRemote.find(
-          toString16((/** @type {{query: string}} */ (message)).query),
-          /*max_results=*/ 100);
+          toString16(dataFromApp.query), dataFromApp.maxResults || 50);
 
       // Record the search status in the trusted frame.
       chrome.metricsPrivate.recordEnumerationValue(

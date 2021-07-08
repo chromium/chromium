@@ -163,6 +163,45 @@ GUEST_TEST('GuestCanSearchWithCategories', async () => {
     ]);
 });
 
+// Test that the number of search results is reduced when maxResults is
+// provided.
+GUEST_TEST('GuestCanLimitMaxSearchResults', async () => {
+  const delegate = await waitForInitialIndexUpdate();
+
+  await delegate.addOrUpdateSearchIndex([{
+    // Main category match. No subcategories.
+    id: 'test-id-1',
+    title: 'Title with of article',
+    body: 'Body text',
+    mainCategoryName: 'Verycomplicatedsearchtoken',
+    locale: 'en-US',
+  },{
+    // Subcategory match.
+    id: 'test-id-2',
+    title: 'Title 2',
+    subcategoryNames: [
+      'Subcategory 1', 'verycomplicatedsearchtoken in subcategory.'
+    ],
+    body: 'Body text',
+    mainCategoryName: 'Help',
+    locale: 'en-US',
+  }]);
+
+  // Limit to 1 result. This search query was chosen because it is unlikely to
+  // show any search results for the real app's data.
+  const res = await delegate.findInSearchIndex('verycomplicatedsearchtoken', 1);
+
+  chai.expect(res.results).to.have.deep.members([
+      {
+        id: 'test-id-1',
+        titlePositions: [],
+        subheadingIndex: null,
+        subheadingPositions: null,
+        bodyPositions: [],
+      },
+    ]);
+});
+
 // Test that the guest frame can clear the search index.
 GUEST_TEST('GuestCanClearSearchIndex', async () => {
   const delegate = await waitForInitialIndexUpdate();
