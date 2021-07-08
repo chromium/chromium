@@ -27,7 +27,9 @@ Windows10TabSearchCaptionButton::Windows10TabSearchCaptionButton(
                              accessible_name),
       tab_search_bubble_host_(std::make_unique<TabSearchBubbleHost>(
           this,
-          frame_view->browser_view()->GetProfile())) {}
+          frame_view->browser_view()->GetProfile())) {
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+}
 
 Windows10TabSearchCaptionButton::~Windows10TabSearchCaptionButton() = default;
 
