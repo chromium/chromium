@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, SuccessfulTransition) {
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetInteger(
-      arc::prefs::kArcSupervisionTransition,
+      arc::prefs::kArcManagementTransition,
       static_cast<int>(arc::ArcSupervisionTransition::NO_TRANSITION));
 
   EXPECT_FALSE(ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(

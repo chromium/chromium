@@ -583,7 +583,7 @@ ArcSupervisionTransition GetSupervisionTransition(const Profile* profile) {
 
   const ArcSupervisionTransition supervision_transition =
       static_cast<ArcSupervisionTransition>(
-          profile->GetPrefs()->GetInteger(prefs::kArcSupervisionTransition));
+          profile->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
   const bool is_child_to_regular_enabled =
       base::FeatureList::IsEnabled(kEnableChildToRegularTransitionFeature);
   const bool is_regular_to_child_enabled =

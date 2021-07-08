@@ -1221,7 +1221,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
         transition = arc::ArcSupervisionTransition::NO_TRANSITION;
       }
 
-      profile->GetPrefs()->SetInteger(arc::prefs::kArcSupervisionTransition,
+      profile->GetPrefs()->SetInteger(arc::prefs::kArcManagementTransition,
                                       static_cast<int>(transition));
     }
 

@@ -1212,7 +1212,7 @@ void ArcSessionManager::RequestArcDataRemoval() {
 
   data_remover_->Schedule();
   profile_->GetPrefs()->SetInteger(
-      prefs::kArcSupervisionTransition,
+      prefs::kArcManagementTransition,
       static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
   // To support 1) case above, maybe start data removal.
   if (state_ == State::STOPPED)
@@ -1473,7 +1473,7 @@ void ArcSessionManager::OnFirstPoliciesLoadedOrTimeout() {
     // User has become managed, notify ARC by setting transition preference,
     // which is eventually passed to ARC via ArcSession parameters.
     profile_->GetPrefs()->SetInteger(
-        arc::prefs::kArcSupervisionTransition,
+        arc::prefs::kArcManagementTransition,
         static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
 
     // Restart ARC to perform managed re-provisioning.

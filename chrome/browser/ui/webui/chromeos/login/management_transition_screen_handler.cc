@@ -98,7 +98,7 @@ void ManagementTransitionScreenHandler::Show() {
 
   registrar_.Init(profile->GetPrefs());
   registrar_.Add(
-      arc::prefs::kArcSupervisionTransition,
+      arc::prefs::kArcManagementTransition,
       base::BindRepeating(
           &ManagementTransitionScreenHandler::OnManagementTransitionFinished,
           weak_factory_.GetWeakPtr()));

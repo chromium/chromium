@@ -383,7 +383,7 @@ void ArcAuthService::ReportManagementChangeStatus(
     case mojom::ManagementChangeStatus::CLOUD_DPC_ENABLED:
     case mojom::ManagementChangeStatus::CLOUD_DPC_ALREADY_ENABLED:
       profile_->GetPrefs()->SetInteger(
-          prefs::kArcSupervisionTransition,
+          prefs::kArcManagementTransition,
           static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
       // TODO(brunokim): notify potential observers.
       break;

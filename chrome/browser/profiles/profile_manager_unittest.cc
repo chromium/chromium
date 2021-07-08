@@ -961,7 +961,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildOnFirstSignIn) {
       false /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
-      profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcSupervisionTransition::NO_TRANSITION));
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
             supervised_users::kChildAccountSUID);
@@ -974,7 +974,7 @@ TEST_F(ProfileManagerTest, InitProfileForRegularToChildTransition) {
       false /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
-      profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcSupervisionTransition::REGULAR_TO_CHILD));
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
             supervised_users::kChildAccountSUID);
@@ -987,7 +987,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildToRegularTransition) {
       false /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
-      profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcSupervisionTransition::CHILD_TO_REGULAR));
   EXPECT_TRUE(profile->GetPrefs()->GetString(prefs::kSupervisedUserId).empty());
 }
@@ -1003,7 +1003,7 @@ TEST_F(ProfileManagerTest, InitProfileForUnmanagedToManagedTransition) {
       true /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
-      profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
 }
 
@@ -1018,7 +1018,7 @@ TEST_F(ProfileManagerTest, InitProfileForManagedUserOnFirstSignIn) {
       true /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
-      profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcSupervisionTransition::NO_TRANSITION));
 }
 
@@ -1030,7 +1030,7 @@ TEST_F(ProfileManagerTest,
       false /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
-      profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcSupervisionTransition::NO_TRANSITION));
   EXPECT_TRUE(profile->GetPrefs()->GetString(prefs::kSupervisedUserId).empty());
 }

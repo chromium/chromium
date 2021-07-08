@@ -113,7 +113,7 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
   const std::string app_id =
       ArcAppTest::GetAppId(arc_app_test()->fake_apps()[0]);
 
-  profile()->GetPrefs()->SetInteger(prefs::kArcSupervisionTransition,
+  profile()->GetPrefs()->SetInteger(prefs::kArcManagementTransition,
                                     static_cast<int>(arc_transition()));
 
   // Attempt to launch ARC app triggers notification.
@@ -150,14 +150,14 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
 
   // Finishing transition automatically dismisses notification.
   profile()->GetPrefs()->SetInteger(
-      prefs::kArcSupervisionTransition,
+      prefs::kArcManagementTransition,
       static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
   EXPECT_FALSE(
       display_service()->GetNotification(kManagementTransitionNotificationId));
 
   // Re-activate notification and check opt out. On opt-out notification is also
-  // automatially dismissed.
-  profile()->GetPrefs()->SetInteger(prefs::kArcSupervisionTransition,
+  // automatically dismissed.
+  profile()->GetPrefs()->SetInteger(prefs::kArcManagementTransition,
                                     static_cast<int>(arc_transition()));
   ShowManagementTransitionNotification(profile());
   EXPECT_TRUE(

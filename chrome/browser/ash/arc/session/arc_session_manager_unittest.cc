@@ -787,7 +787,7 @@ TEST_F(ArcSessionManagerTest, RegularToChildTransition_FlagOn) {
   // Emulate the situation where a regular user has transitioned to a child
   // account.
   profile()->GetPrefs()->SetInteger(
-      prefs::kArcSupervisionTransition,
+      prefs::kArcManagementTransition,
       static_cast<int>(ArcSupervisionTransition::REGULAR_TO_CHILD));
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -797,9 +797,8 @@ TEST_F(ArcSessionManagerTest, RegularToChildTransition_FlagOn) {
   arc_session_manager()->Initialize();
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
-  EXPECT_EQ(
-      static_cast<int>(ArcSupervisionTransition::NO_TRANSITION),
-      profile()->GetPrefs()->GetInteger(prefs::kArcSupervisionTransition));
+  EXPECT_EQ(static_cast<int>(ArcSupervisionTransition::NO_TRANSITION),
+            profile()->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
   EXPECT_EQ(ArcSessionManager::State::REMOVING_DATA_DIR,
             arc_session_manager()->state());
 
@@ -810,7 +809,7 @@ TEST_F(ArcSessionManagerTest, RegularToChildTransition_FlagOff) {
   // Emulate the situation where a regular user has transitioned to a child
   // account, but the feature flag is disabled.
   profile()->GetPrefs()->SetInteger(
-      prefs::kArcSupervisionTransition,
+      prefs::kArcManagementTransition,
       static_cast<int>(ArcSupervisionTransition::REGULAR_TO_CHILD));
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -821,9 +820,8 @@ TEST_F(ArcSessionManagerTest, RegularToChildTransition_FlagOff) {
   arc_session_manager()->RequestEnable();
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
-  EXPECT_EQ(
-      static_cast<int>(ArcSupervisionTransition::REGULAR_TO_CHILD),
-      profile()->GetPrefs()->GetInteger(prefs::kArcSupervisionTransition));
+  EXPECT_EQ(static_cast<int>(ArcSupervisionTransition::REGULAR_TO_CHILD),
+            profile()->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
             arc_session_manager()->state());
@@ -833,7 +831,7 @@ TEST_F(ArcSessionManagerTest, RegularToChildTransition_FlagOff) {
 
 TEST_F(ArcSessionManagerTest, ClearArcTransitionOnShutdown) {
   profile()->GetPrefs()->SetInteger(
-      prefs::kArcSupervisionTransition,
+      prefs::kArcManagementTransition,
       static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
 
   // Initialize ARC.
@@ -851,22 +849,20 @@ TEST_F(ArcSessionManagerTest, ClearArcTransitionOnShutdown) {
   arc_session_manager()->OnProvisioningFinished(
       ArcProvisioningResult(std::move(result)));
 
-  EXPECT_EQ(
-      static_cast<int>(ArcSupervisionTransition::NO_TRANSITION),
-      profile()->GetPrefs()->GetInteger(prefs::kArcSupervisionTransition));
+  EXPECT_EQ(static_cast<int>(ArcSupervisionTransition::NO_TRANSITION),
+            profile()->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
 
   // Child started graduation.
   profile()->GetPrefs()->SetInteger(
-      prefs::kArcSupervisionTransition,
+      prefs::kArcManagementTransition,
       static_cast<int>(ArcSupervisionTransition::CHILD_TO_REGULAR));
   // Simulate ARC shutdown.
   const bool enable_requested = arc_session_manager()->enable_requested();
   arc_session_manager()->RequestDisable();
   if (enable_requested)
     arc_session_manager()->RequestArcDataRemoval();
-  EXPECT_EQ(
-      static_cast<int>(ArcSupervisionTransition::NO_TRANSITION),
-      profile()->GetPrefs()->GetInteger(prefs::kArcSupervisionTransition));
+  EXPECT_EQ(static_cast<int>(ArcSupervisionTransition::NO_TRANSITION),
+            profile()->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
 
   arc_session_manager()->Shutdown();
 }
@@ -895,7 +891,7 @@ TEST_F(ArcSessionManagerTest, ClearArcTransitionOnArcDataRemoval) {
 
   // Child started graduation.
   profile()->GetPrefs()->SetInteger(
-      prefs::kArcSupervisionTransition,
+      prefs::kArcManagementTransition,
       static_cast<int>(ArcSupervisionTransition::CHILD_TO_REGULAR));
 
   arc_session_manager()->RequestArcDataRemoval();

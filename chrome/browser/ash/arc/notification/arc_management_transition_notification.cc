@@ -43,7 +43,7 @@ class NotificationDelegate : public message_center::NotificationDelegate,
     ArcSessionManager::Get()->AddObserver(this);
     pref_change_registrar_.Init(profile_->GetPrefs());
     pref_change_registrar_.Add(
-        prefs::kArcSupervisionTransition,
+        prefs::kArcManagementTransition,
         base::BindRepeating(&NotificationDelegate::OnTransitionChanged,
                             base::Unretained(this)));
   }

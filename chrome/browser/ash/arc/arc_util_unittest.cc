@@ -734,7 +734,7 @@ TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOn) {
       arc::kEnableUnmanagedToManagedTransitionFeature);
 
   profile()->GetPrefs()->SetInteger(
-      arc::prefs::kArcSupervisionTransition,
+      arc::prefs::kArcManagementTransition,
       static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
 
   EXPECT_EQ(GetSupervisionTransition(profile()),
@@ -747,7 +747,7 @@ TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOff) {
       arc::kEnableUnmanagedToManagedTransitionFeature);
 
   profile()->GetPrefs()->SetInteger(
-      arc::prefs::kArcSupervisionTransition,
+      arc::prefs::kArcManagementTransition,
       static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
 
   EXPECT_EQ(GetSupervisionTransition(profile()),

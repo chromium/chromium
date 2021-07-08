@@ -57,12 +57,12 @@ const char kArcVisibleExternalStorages[] = "arc.visible_external_storages";
 // |kArcInitialSettingsPending| can be different and
 // |kArcInitialSettingsPending| may even be handled in the next user session.
 const char kArcInitialSettingsPending[] = "arc.initial.settings.pending";
+// A preference that indicates that a management transition is necessary, in
+// response to account management state change.
+const char kArcManagementTransition[] = "arc.management_transition";
 // A preference that indicated whether Android reported it's compliance status
 // with provided policies. This is used only as a signal to start Android kiosk.
 const char kArcPolicyComplianceReported[] = "arc.policy_compliance_reported";
-// A preference that indicates that a supervision transition is necessary, in
-// response to a CHILD_ACCOUNT transiting to a REGULAR_ACCOUNT or vice-versa.
-const char kArcSupervisionTransition[] = "arc.supervision_transition";
 // A preference that indicates that user accepted PlayStore terms.
 const char kArcTermsAccepted[] = "arc.terms.accepted";
 // A preference that indicates that ToS was shown in OOBE flow.
@@ -165,7 +165,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kArcLocationServiceEnabled, false);
 
   registry->RegisterIntegerPref(
-      kArcSupervisionTransition,
+      kArcManagementTransition,
       static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
 
   registry->RegisterBooleanPref(kArcIsManaged, false);
