@@ -24,6 +24,22 @@
       "use_goma": true
     }
   },
+  "Comparison Linux": {
+    "goma": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_goma": true
+    },
+    "reclient": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_rbe": true
+    }
+  },
   "Libfuzzer Upload Chrome OS ASan": {
     "gn_args": {
       "archive_seed_corpus": false,

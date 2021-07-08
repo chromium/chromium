@@ -148,6 +148,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:reclient_goma_comparison",
+)
+
+build_recipe(
     name = "recipe:swarming/deterministic_build",
 )
 
