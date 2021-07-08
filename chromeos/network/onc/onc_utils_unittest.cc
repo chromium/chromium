@@ -142,14 +142,11 @@ TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
     bool expected_success = (networks_with_cert_refs->GetSize() ==
                              expected_resolved_onc->GetSize());
 
-    std::unique_ptr<base::ListValue> actual_resolved_onc(
-        networks_with_cert_refs->DeepCopy());
-
-    bool success =
-        ResolveServerCertRefsInNetworks(certs, actual_resolved_onc.get());
+    base::Value actual_resolved_onc(networks_with_cert_refs->Clone());
+    bool success = ResolveServerCertRefsInNetworks(certs, &actual_resolved_onc);
     EXPECT_EQ(expected_success, success);
     EXPECT_TRUE(
-        test_utils::Equals(expected_resolved_onc, actual_resolved_onc.get()));
+        test_utils::Equals(expected_resolved_onc, &actual_resolved_onc));
   }
 }
 

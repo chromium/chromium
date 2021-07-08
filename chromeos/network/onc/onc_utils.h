@@ -21,7 +21,6 @@ class PrefService;
 
 namespace base {
 class DictionaryValue;
-class ListValue;
 }
 
 namespace user_manager {
@@ -66,13 +65,13 @@ std::string GetSourceAsString(::onc::ONCSource source);
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void ExpandStringsInOncObject(const OncValueSignature& signature,
                               const VariableExpander& variable_expander,
-                              base::DictionaryValue* onc_object);
+                              base::Value* onc_object);
 
 // Replaces expandable fields in the networks of |network_configs|, which must
 // be a list of ONC NetworkConfigurations. See ExpandStringsInOncObject above.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void ExpandStringsInNetworks(const VariableExpander& variable_expander,
-                             base::ListValue* network_configs);
+                             base::Value* network_configs);
 
 // Fills in all missing HexSSID fields that are mentioned in the ONC
 // specification. The object of |onc_object| is modified in place.
@@ -118,9 +117,9 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 bool ParseAndValidateOncForImport(const std::string& onc_blob,
                                   ::onc::ONCSource onc_source,
                                   const std::string& passphrase,
-                                  base::ListValue* network_configs,
-                                  base::DictionaryValue* global_network_config,
-                                  base::ListValue* certificates);
+                                  base::Value* network_configs,
+                                  base::Value* global_network_config,
+                                  base::Value* certificates);
 
 // Parse the given PEM encoded certificate |pem_encoded| and return the
 // contained DER encoding. Returns an empty string on failure.
@@ -138,14 +137,14 @@ net::ScopedCERTCertificate DecodePEMCertificate(const std::string& pem_encoded);
 // NetworkConfiguration dictionaries.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
-                                     base::ListValue* network_configs);
+                                     base::Value* network_configs);
 
 // Replaces all references by GUID to Server or CA certs by their PEM
 // encoding. Returns true if all references could be resolved. |network_config|
 // must be a ONC NetworkConfiguration.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 bool ResolveServerCertRefsInNetwork(const CertPEMsByGUIDMap& certs_by_guid,
-                                    base::DictionaryValue* network_config);
+                                    base::Value* network_config);
 
 // Returns a network type pattern for matching the ONC type string.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
@@ -167,14 +166,13 @@ base::Value ConvertProxyConfigToOncProxySettings(
 // be a list of ONC NetworkConfigurations. Currently only user name placeholders
 // are implemented, which are replaced by attributes from |user|.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-void ExpandStringPlaceholdersInNetworksForUser(
-    const user_manager::User* user,
-    base::ListValue* network_configs);
+void ExpandStringPlaceholdersInNetworksForUser(const user_manager::User* user,
+                                               base::Value* network_configs);
 
 // Returns the number of networks successfully imported.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 int ImportNetworksForUser(const user_manager::User* user,
-                          const base::ListValue& network_configs,
+                          const base::Value& network_configs,
                           std::string* error);
 
 // Looks up the policy for |guid| for the current active user and sets
@@ -212,12 +210,12 @@ bool HasPolicyForNetwork(const PrefService* profile_prefs,
 // variable set as the password.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
-                                        base::DictionaryValue* onc_object);
+                                        base::Value* onc_object);
 
 // Checks whether a list of network objects has at least one network with the
 // ${PASSWORD} substitution variable set as the password.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-bool HasUserPasswordSubsitutionVariable(base::ListValue* network_configs);
+bool HasUserPasswordSubsitutionVariable(base::Value* network_configs);
 
 }  // namespace onc
 }  // namespace chromeos
