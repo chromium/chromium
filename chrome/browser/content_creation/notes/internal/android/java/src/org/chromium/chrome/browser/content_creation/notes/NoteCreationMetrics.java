@@ -39,6 +39,11 @@ public final class NoteCreationMetrics {
     public static void recordNoteShared() {
         RecordHistogram.recordEnumeratedHistogram("NoteCreation.Funnel",
                 NoteCreationFunnel.NOTE_SHARED, NoteCreationFunnel.NUM_ENTRIES);
+        RecordHistogram.recordBooleanHistogram("NoteCreation.NoteShared", true);
+    }
+
+    public static void recordNoteNotShared() {
+        RecordHistogram.recordBooleanHistogram("NoteCreation.NoteShared", false);
     }
 
     public static void recordNoteCreationStatus(boolean created) {

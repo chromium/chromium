@@ -9547,6 +9547,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Set"/>
 </enum>
 
+<enum name="BooleanShared">
+  <int value="0" label="Not shared"/>
+  <int value="1" label="Shared"/>
+</enum>
+
 <enum name="BooleanShareGroup">
   <int value="0" label="No share group"/>
   <int value="1" label="Using share group"/>

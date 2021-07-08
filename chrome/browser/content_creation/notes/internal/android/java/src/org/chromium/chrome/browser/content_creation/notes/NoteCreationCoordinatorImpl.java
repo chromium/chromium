@@ -137,7 +137,9 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                                         }
 
                                         @Override
-                                        public void onCancel() {}
+                                        public void onCancel() {
+                                            NoteCreationMetrics.recordNoteNotShared();
+                                        }
                                     })
                                     .build();
 
