@@ -299,10 +299,6 @@ using signin_metrics::PromoAction;
           self.browser->GetBrowserState());
   BOOL isSyncConsentGiven =
       syncSetupService && syncSetupService->IsFirstSetupComplete();
-  NSString* title =
-      isSyncConsentGiven
-          ? l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_TITLE_WITHOUT_SYNC)
-          : nil;
   NSString* message =
       isSyncConsentGiven
           ? l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_SYNC)
@@ -310,7 +306,7 @@ using signin_metrics::PromoAction;
   self.signOutCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                           title:title
+                           title:nil
                          message:message
                             rect:targetRect
                             view:self.viewController.view];
