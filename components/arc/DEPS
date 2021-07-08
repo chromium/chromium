@@ -39,6 +39,10 @@ specific_include_rules = {
     "+ash/public",
     "+services/service_manager/public",
   ],
+  "arc_intent_helper_bridge.cc": [
+    # For net::IsLocalhost.
+    "+net/base/url_util.h",
+  ],
   "arc_util.cc": [
     "+ui/aura",
   ],

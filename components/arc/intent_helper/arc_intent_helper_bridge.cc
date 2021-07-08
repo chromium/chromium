@@ -25,6 +25,7 @@
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/url_formatter/url_fixer.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
 #include "url/url_constants.h"
@@ -100,6 +101,14 @@ void RecordOpenAppIntentAction(const mojom::LaunchIntentPtr& intent) {
   }
 
   UMA_HISTOGRAM_ENUMERATION("Arc.IntentHelper.OpenAppWithIntentAction", action);
+}
+
+// Returns true if a Web App is allowed to be opened for the given URL.
+bool CanOpenWebAppForUrl(const GURL& url) {
+  bool is_http_localhost =
+      url.SchemeIs(url::kHttpScheme) && net::IsLocalhost(url);
+  return url.is_valid() &&
+         (url.SchemeIs(url::kHttpsScheme) || is_http_localhost);
 }
 
 }  // namespace
@@ -255,11 +264,9 @@ void ArcIntentHelperBridge::OnOpenWebApp(const std::string& url) {
   RecordOpenType(ArcIntentHelperOpenType::WEB_APP);
   // Converts |url| to a fixed-up one and checks validity.
   const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
-  if (!gurl.is_valid())
-    return;
 
   // Web app launches should only be invoked on HTTPS URLs.
-  if (gurl.SchemeIs(url::kHttpsScheme))
+  if (CanOpenWebAppForUrl(gurl))
     g_open_url_delegate->OpenWebAppFromArc(gurl);
 }
 
@@ -362,15 +369,13 @@ void ArcIntentHelperBridge::OnOpenAppWithIntent(
     return;
   }
 
-  if (!start_url.is_valid())
-    return;
-
-  RecordOpenType(ArcIntentHelperOpenType::WEB_APP);
-  RecordOpenAppIntentAction(intent);
-
   // Web app launches should only be invoked on HTTPS URLs.
-  if (start_url.SchemeIs(url::kHttpsScheme))
+  if (CanOpenWebAppForUrl(start_url)) {
+    RecordOpenType(ArcIntentHelperOpenType::WEB_APP);
+    RecordOpenAppIntentAction(intent);
+
     g_open_url_delegate->OpenAppWithIntent(start_url, std::move(intent));
+  }
 }
 
 ArcIntentHelperBridge::GetResult ArcIntentHelperBridge::GetActivityIcons(

@@ -381,10 +381,14 @@ TEST_F(ArcIntentHelperTest, TestOnOpenUrl) {
             test_open_url_delegate_->TakeLastOpenedUrl());
 }
 
-// Tests that OnOpenWebApp opens only HTTPS URLs.
+// Tests that OnOpenWebApp opens only HTTPS URLs or localhost.
 TEST_F(ArcIntentHelperTest, TestOnOpenWebApp) {
   instance_->OnOpenWebApp("http://google.com");
   EXPECT_EQ(GURL(), test_open_url_delegate_->TakeLastOpenedUrl());
+
+  instance_->OnOpenWebApp("http://localhost/");
+  EXPECT_EQ(GURL("http://localhost/"),
+            test_open_url_delegate_->TakeLastOpenedUrl());
 
   instance_->OnOpenWebApp("https://google.com");
   EXPECT_EQ(GURL("https://google.com"),
@@ -434,6 +438,11 @@ TEST_F(ArcIntentHelperTest, TestOnOpenAppWithIntent) {
                                    mojom::LaunchIntent::New());
     EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
     EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
+
+    instance_->OnOpenAppWithIntent(GURL("http://localhost:8000/foo"),
+                                   mojom::LaunchIntent::New());
+    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+    EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
 
     instance_->OnOpenAppWithIntent(GURL("chrome://settings"),
                                    mojom::LaunchIntent::New());
