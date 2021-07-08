@@ -139,6 +139,9 @@
       status: "experimental",
     },
     {
+      name: "AccessibilityPageZoom",
+    },
+    {
       name: "AccessibilityUseAXPositionForDocumentMarkers",
       status: "test",
     },

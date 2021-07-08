@@ -206,6 +206,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kEnableAccessibilityExposeHTMLElement},
     {wf::EnableAccessibilityExposeIgnoredNodes,
      features::kEnableAccessibilityExposeIgnoredNodes},
+#if defined(OS_ANDROID)
+    {wf::EnableAccessibilityPageZoom, features::kAccessibilityPageZoom},
+#endif
     {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
      features::kUseAXPositionForDocumentMarkers},
     {wf::EnableAllowActivationDelegationAttr,

@@ -136,6 +136,10 @@ void WebRuntimeFeatures::EnableAccessibilityObjectModel(bool enable) {
   RuntimeEnabledFeatures::SetAccessibilityObjectModelEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableAccessibilityPageZoom(bool enable) {
+  RuntimeEnabledFeatures::SetAccessibilityPageZoomEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableAccessibilityUseAXPositionForDocumentMarkers(
     bool enable) {
   RuntimeEnabledFeatures::

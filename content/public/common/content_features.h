@@ -254,6 +254,8 @@ CONTENT_EXPORT extern const base::Feature kWebXr;
 CONTENT_EXPORT extern const base::Feature kWebXrArModule;
 
 #if defined(OS_ANDROID)
+CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoom;
+CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoomUpdatedUI;
 CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;
 CONTENT_EXPORT extern const base::Feature kBindingManagementWaiveCpu;
