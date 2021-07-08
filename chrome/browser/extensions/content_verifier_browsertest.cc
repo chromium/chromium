@@ -524,8 +524,9 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
 }
 
 // Now actually test what happens on the next startup after the PRE test above.
+// TODO(https://crbug.com/1226260): Test is flaky.
 IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
-                       UserInstalledCorruptedResourceOnStartup) {
+                       DISABLED_UserInstalledCorruptedResourceOnStartup) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   int disable_reasons = prefs->GetDisableReasons(kStoragePermissionExtensionId);
