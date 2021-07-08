@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -135,9 +136,8 @@ void WaylandSurface::UpdateBufferDamageRegion(
   }
   // Apply viewport scale (wp_viewport.set_destination).
   gfx::Size viewport_dst = bounds;
-  if (!display_size_px_.IsEmpty()) {
-    viewport_dst =
-        gfx::ScaleToCeiledSize(display_size_px_, 1.f / buffer_scale_);
+  if (!display_size_dip_.IsEmpty()) {
+    viewport_dst = display_size_dip_;
   }
 
   if (connection_->compositor_version() >=
@@ -308,22 +308,20 @@ void WaylandSurface::SetViewportSource(const gfx::RectF& src_rect) {
 }
 
 void WaylandSurface::SetViewportDestination(const gfx::Size& dest_size_px) {
-  if (dest_size_px == display_size_px_)
+  if (dest_size_px == gfx::ScaleToRoundedSize(display_size_dip_, buffer_scale_))
     return;
 
   if (dest_size_px.IsEmpty()) {
-    display_size_px_ = gfx::Size();
+    display_size_dip_ = gfx::Size();
     if (viewport()) {
       wp_viewport_set_destination(viewport(), -1, -1);
     }
     return;
   }
-  display_size_px_ = dest_size_px;
-  gfx::Size viewport_dst =
-      gfx::ScaleToCeiledSize(display_size_px_, 1.f / buffer_scale_);
+  display_size_dip_ = gfx::ScaleToCeiledSize(dest_size_px, 1.f / buffer_scale_);
   if (viewport()) {
-    wp_viewport_set_destination(viewport(), viewport_dst.width(),
-                                viewport_dst.height());
+    wp_viewport_set_destination(viewport(), display_size_dip_.width(),
+                                display_size_dip_.height());
   }
 }
 

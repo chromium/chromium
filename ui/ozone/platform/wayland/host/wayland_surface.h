@@ -180,11 +180,10 @@ class WaylandSurface {
   // If empty, no cropping is applied.
   gfx::RectF crop_rect_ = gfx::RectF();
 
-  // Current size of the destination of the viewport in physical pixels. Wayland
-  // compositor will scale the (cropped) buffer content to fit the
-  // |display_size_px_|.
+  // Current size of the destination of the viewport in DIP. Wayland compositor
+  // will scale the (cropped) buffer content to fit the |display_size_dip_|.
   // If empty, no scaling is applied.
-  gfx::Size display_size_px_ = gfx::Size();
+  gfx::Size display_size_dip_ = gfx::Size();
 
   void ExplicitRelease(struct zwp_linux_buffer_release_v1* linux_buffer_release,
                        absl::optional<int32_t> fence);
