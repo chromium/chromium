@@ -3485,6 +3485,7 @@ void NavigationRequest::OnStartChecksComplete(
               frame_tree_node_->frame_tree_node_id()),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
       std::move(cached_response_head), std::move(interceptor));
+  loader_->Start();
 
   DCHECK(!render_frame_host_);
 }

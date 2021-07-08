@@ -28,6 +28,7 @@ class CachedNavigationURLLoader : public NavigationURLLoader {
       network::mojom::URLResponseHeadPtr cached_response_head);
 
   // NavigationURLLoader implementation.
+  void Start() override;
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,

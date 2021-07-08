@@ -254,6 +254,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
         base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
                            redirect_url.GetOrigin().spec().c_str()),
         request_method, &delegate);
+    loader->Start();
     delegate.WaitForRequestRedirected();
     loader->FollowRedirect({}, {}, {}, blink::PreviewsTypes::PREVIEWS_OFF);
 
@@ -293,6 +294,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
                            url.GetOrigin().spec().c_str()),
         "GET", &delegate, blink::NavigationDownloadPolicy(),
         true /*is_main_frame*/, upgrade_if_insecure);
+    loader->Start();
     delegate.WaitForRequestRedirected();
     loader->FollowRedirect({}, {}, {}, blink::PreviewsTypes::PREVIEWS_OFF);
     if (expect_request_fail) {
@@ -325,6 +327,7 @@ TEST_F(NavigationURLLoaderImplTest, IsolationInfoOfMainFrameNavigation) {
                          url.GetOrigin().spec().c_str()),
       "GET", &delegate, blink::NavigationDownloadPolicy(),
       true /*is_main_frame*/, false /*upgrade_if_insecure*/);
+  loader->Start();
   delegate.WaitForResponseStarted();
 
   ASSERT_TRUE(most_recent_resource_request_);
@@ -434,6 +437,7 @@ TEST_F(NavigationURLLoaderImplTest, RedirectModifiedHeaders) {
   TestNavigationURLLoaderDelegate delegate;
   std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
       redirect_url, "Header1: Value1\r\nHeader2: Value2", "GET", &delegate);
+  loader->Start();
   delegate.WaitForRequestRedirected();
 
   ASSERT_TRUE(most_recent_resource_request_);

@@ -80,6 +80,9 @@ class CONTENT_EXPORT NavigationURLLoader {
 
   virtual ~NavigationURLLoader() {}
 
+  // Called right after the loader is constructed.
+  virtual void Start() = 0;
+
   // Called in response to OnRequestRedirected to continue processing the
   // request. |new_previews_state| will be updated for newly created URLLoaders,
   // but the existing default URLLoader will not see |new_previews_state| unless

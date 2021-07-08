@@ -117,6 +117,7 @@ TEST_F(NavigationURLLoaderTest, RequestFailedNoCertError) {
   TestNavigationURLLoaderDelegate delegate;
   std::unique_ptr<NavigationURLLoader> loader =
       MakeTestLoader(GURL("bogus:bogus"), &delegate);
+  loader->Start();
 
   // Wait for the request to fail as expected.
   delegate.WaitForRequestFailed();
@@ -136,6 +137,7 @@ TEST_F(NavigationURLLoaderTest, RequestFailedCertError) {
   TestNavigationURLLoaderDelegate delegate;
   std::unique_ptr<NavigationURLLoader> loader =
       MakeTestLoader(https_server.GetURL("/"), &delegate);
+  loader->Start();
 
   // Wait for the request to fail as expected.
   delegate.WaitForRequestFailed();
@@ -169,6 +171,7 @@ TEST_F(NavigationURLLoaderTest, RequestFailedCertErrorFatal) {
 
   TestNavigationURLLoaderDelegate delegate;
   std::unique_ptr<NavigationURLLoader> loader = MakeTestLoader(url, &delegate);
+  loader->Start();
 
   // Wait for the request to fail as expected.
   delegate.WaitForRequestFailed();

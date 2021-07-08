@@ -24,17 +24,7 @@ CachedNavigationURLLoader::CachedNavigationURLLoader(
     network::mojom::URLResponseHeadPtr cached_response_head)
     : request_info_(std::move(request_info)),
       delegate_(delegate),
-      cached_response_head_(std::move(cached_response_head)) {
-  // Respond with a fake response. We use PostTask here to mimic the flow of
-  // a normal navigation.
-  //
-  // Normal navigations never call OnResponseStarted on the same message loop
-  // iteration that the NavigationURLLoader is created, because they have to
-  // make a network request.
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CachedNavigationURLLoader::OnResponseStarted,
-                                weak_factory_.GetWeakPtr()));
-}
+      cached_response_head_(std::move(cached_response_head)) {}
 
 void CachedNavigationURLLoader::OnResponseStarted() {
   GlobalRequestID global_id = GlobalRequestID::MakeBrowserInitiated();
@@ -56,6 +46,18 @@ std::unique_ptr<NavigationURLLoader> CachedNavigationURLLoader::Create(
     network::mojom::URLResponseHeadPtr cached_response_head) {
   return std::make_unique<CachedNavigationURLLoader>(
       std::move(request_info), delegate, std::move(cached_response_head));
+}
+
+void CachedNavigationURLLoader::Start() {
+  // Respond with a fake response. We use PostTask here to mimic the flow of
+  // a normal navigation.
+  //
+  // Normal navigations never call OnResponseStarted on the same message loop
+  // iteration that the NavigationURLLoader is created, because they have to
+  // make a network request.
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CachedNavigationURLLoader::OnResponseStarted,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void CachedNavigationURLLoader::FollowRedirect(

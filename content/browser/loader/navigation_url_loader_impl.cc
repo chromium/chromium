@@ -326,7 +326,7 @@ NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
   }
 }
 
-void NavigationURLLoaderImpl::Start(
+void NavigationURLLoaderImpl::StartImpl(
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
     AppCacheNavigationHandle* appcache_handle,
     scoped_refptr<PrefetchedSignedExchangeCache>
@@ -1284,11 +1284,17 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
             std::move(factory_remote));
   }
 
-  Start(network_factory, appcache_handle,
-        std::move(prefetched_signed_exchange_cache),
-        std::move(signed_exchange_prefetch_metric_recorder),
-        std::move(factory_for_webui), std::move(accept_langs),
-        needs_loader_factory_interceptor);
+  start_closure_ =
+      base::BindOnce(&NavigationURLLoaderImpl::StartImpl,
+                     base::Unretained(this), network_factory, appcache_handle,
+                     std::move(prefetched_signed_exchange_cache),
+                     std::move(signed_exchange_prefetch_metric_recorder),
+                     std::move(factory_for_webui), std::move(accept_langs),
+                     needs_loader_factory_interceptor);
+}
+
+void NavigationURLLoaderImpl::Start() {
+  std::move(start_closure_).Run();
 }
 
 void NavigationURLLoaderImpl::FollowRedirect(
