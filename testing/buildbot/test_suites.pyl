@@ -131,7 +131,7 @@
       'webkit_unit_tests':{
         'test': 'blink_unittests',
           'android_swarming': {
-            'shards': 4,
+            'shards': 6,
           },
       },
     },
@@ -822,7 +822,7 @@
       'webkit_unit_tests': {
         'test': 'blink_unittests',
         'android_swarming': {
-          'shards': 4,
+          'shards': 6,
         },
       },
       'wtf_unittests': {},
@@ -4631,7 +4631,7 @@
       'webkit_unit_tests': {
         'test': 'blink_unittests',
         'android_swarming': {
-          'shards': 4,
+          'shards': 6,
         },
       },
       'wtf_unittests': {},
