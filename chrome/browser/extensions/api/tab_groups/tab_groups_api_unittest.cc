@@ -550,17 +550,31 @@ TEST_F(TabGroupsApiUnitTest, IsTabStripEditable) {
   const std::string args =
       base::StringPrintf(R"([%d, {"index": %d}])", group_id, 1);
 
-  // Succeed moving group in normal case.
+  EXPECT_TRUE(browser_window()->IsTabStripEditable());
+
+  // Succeed moving group when tab strip is editable.
   {
     auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
     function->set_extension(extension);
-    ASSERT_TRUE(extension_function_test_utils::RunFunction(
+    EXPECT_TRUE(extension_function_test_utils::RunFunction(
         function.get(), args, browser(), api_test_utils::NONE));
+  }
+
+  // Make tab strip uneditable.
+  browser_window()->SetIsTabStripEditable(false);
+  EXPECT_FALSE(browser_window()->IsTabStripEditable());
+
+  // Succeed querying group when tab strip is not editable.
+  {
+    const char* query_args = R"([{"title": "Sample title"}])";
+    auto function = base::MakeRefCounted<TabGroupsQueryFunction>();
+    function->set_extension(extension);
+    EXPECT_TRUE(extension_function_test_utils::RunFunction(
+        function.get(), query_args, browser(), api_test_utils::NONE));
   }
 
   // Gracefully cancel group tab drag if tab strip isn't editable.
   {
-    browser_window()->SetIsTabStripEditable(false);
     auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
     function->set_extension(extension);
     std::string error =

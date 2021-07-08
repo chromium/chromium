@@ -123,8 +123,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       }
     }
 
-    TabStripModel* tab_strip =
-        ExtensionTabUtil::GetEditableTabStripModel(browser);
+    TabStripModel* tab_strip = browser->tab_strip_model();
     if (!tab_strip)
       return RespondNow(Error(tabs_constants::kTabStripNotEditableQueryError));
     for (const tab_groups::TabGroupId& id :
