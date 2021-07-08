@@ -74,12 +74,10 @@ bool IntersectionObserverController::ComputeIntersections(
     HeapVector<Member<IntersectionObservation>> observations_to_process;
     CopyToVector(tracked_implicit_root_observations_, observations_to_process);
     {
-      // TODO(pdr): This has been temporarily disabled to investigate the effect
-      // on metrics and should be re-enabled. See: https://crbug.com/1215345.
-      // LocalFrameUkmAggregator::IterativeTimer ukm_timer(ukm_aggregator);
+      LocalFrameUkmAggregator::IterativeTimer ukm_timer(ukm_aggregator);
       for (auto& observer : observers_to_process) {
         if (observer->HasObservations()) {
-          // ukm_timer.StartInterval(observer->GetUkmMetricId());
+          ukm_timer.StartInterval(observer->GetUkmMetricId());
           needs_occlusion_tracking_ |=
               observer->ComputeIntersections(flags, monotonic_time);
         } else {
@@ -87,7 +85,7 @@ bool IntersectionObserverController::ComputeIntersections(
         }
       }
       for (auto& observation : observations_to_process) {
-        // ukm_timer.StartInterval(observation->Observer()->GetUkmMetricId());
+        ukm_timer.StartInterval(observation->Observer()->GetUkmMetricId());
         observation->ComputeIntersection(flags, monotonic_time);
         needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
       }
