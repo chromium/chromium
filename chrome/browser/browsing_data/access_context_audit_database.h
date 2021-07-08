@@ -107,6 +107,12 @@ class AccessContextAuditDatabase
   // Removes all records where |begin| <= record.last_access_time <= |end|.
   void RemoveAllRecordsForTimeRange(base::Time begin, base::Time end);
 
+  // Removes all records where |begin| <= record.last_access_time <= |end| from
+  // a history deletion. Like RemoveAllRecordsHistory, we keep cross-site
+  // storage access records and make the top-level origin opaque when user
+  // controls for third-party data clearing is enabled.
+  void RemoveAllRecordsForTimeRangeHistory(base::Time begin, base::Time end);
+
   // Removes all records that match the provided cookie details.
   void RemoveAllRecordsForCookie(const std::string& name,
                                  const std::string& domain,
@@ -144,6 +150,8 @@ class AccessContextAuditDatabase
 
   std::vector<AccessRecord> GetStorageRecordsForTopFrameOrigins(
       const std::vector<url::Origin>& origins);
+  std::vector<AccessRecord> GetStorageRecordsForTimeRange(base::Time begin,
+                                                          base::Time end);
 
   sql::Database db_;
   sql::MetaTable meta_table_;

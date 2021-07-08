@@ -334,7 +334,7 @@ void AccessContextAuditService::OnURLsDeleted(
     database_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &AccessContextAuditDatabase::RemoveAllRecordsForTimeRange,
+            &AccessContextAuditDatabase::RemoveAllRecordsForTimeRangeHistory,
             database_, deletion_info.time_range().begin(),
             deletion_info.time_range().end()));
   }

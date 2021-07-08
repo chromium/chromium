@@ -453,6 +453,21 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTimeRange(base::Time begin,
   transaction.Commit();
 }
 
+void AccessContextAuditDatabase::RemoveAllRecordsForTimeRangeHistory(
+    base::Time begin,
+    base::Time end) {
+  std::vector<AccessContextAuditDatabase::AccessRecord>
+      cross_site_storage_records;
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kEnableRemovingAllThirdPartyCookies)) {
+    cross_site_storage_records =
+        SelectCrossSiteStorageRecordsWithoutTopLevelOrigins(
+            GetStorageRecordsForTimeRange(begin, end));
+  }
+  RemoveAllRecordsForTimeRange(begin, end);
+  AddRecords(cross_site_storage_records);
+}
+
 void AccessContextAuditDatabase::RemoveSessionOnlyRecords(
     const ContentSettingsForOneType& content_settings) {
   // ContentSettingsForOneType is a list of settings in decreasing specificity
@@ -686,6 +701,26 @@ AccessContextAuditDatabase::GetStorageRecordsForTopFrameOrigins(
           StorageAccessRecordFromStatement(select_storage_api));
     }
     select_storage_api.Reset(true);
+  }
+
+  return records;
+}
+
+std::vector<AccessContextAuditDatabase::AccessRecord>
+AccessContextAuditDatabase::GetStorageRecordsForTimeRange(base::Time begin,
+                                                          base::Time end) {
+  std::vector<AccessContextAuditDatabase::AccessRecord> records;
+
+  const char kSelectStorageApiRecords[] =
+      "SELECT top_frame_origin, type, origin, access_utc FROM "
+      "originStorageAPIs WHERE access_utc BETWEEN ? AND ?";
+  sql::Statement select_storage_api(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectStorageApiRecords));
+
+  select_storage_api.BindTime(0, begin);
+  select_storage_api.BindTime(1, end);
+  while (select_storage_api.Step()) {
+    records.emplace_back(StorageAccessRecordFromStatement(select_storage_api));
   }
 
   return records;

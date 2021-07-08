@@ -151,6 +151,8 @@ class AccessContextAuditService
                            HistoryDeletion);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditThirdPartyDataClearingTest,
                            AllHistoryDeletion);
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditThirdPartyDataClearingTest,
+                           TimeRangeHistoryDeletion);
 
   // Records accesses for all cookies in |details| against |top_frame_origin|.
   // Should only be accessed via the CookieAccessHelper.

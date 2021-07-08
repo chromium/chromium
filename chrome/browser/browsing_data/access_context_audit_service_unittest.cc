@@ -916,3 +916,85 @@ TEST_F(AccessContextAuditThirdPartyDataClearingTest, AllHistoryDeletion) {
 
   ValidateCrossSiteStorageRecords(kCrossSiteURL);
 }
+
+TEST_F(AccessContextAuditThirdPartyDataClearingTest, TimeRangeHistoryDeletion) {
+  const GURL kTopLevelURL("https://toplevel.com/");
+  const GURL kInsideTimeRangeURL("https://inside.range.com/");
+  const GURL kOutsideTimeRangeURL("https://outside.range.com/");
+
+  const url::Origin kTopLevelOrigin = url::Origin::Create(kTopLevelURL);
+  const url::Origin kInsideTimeRangeOrigin =
+      url::Origin::Create(kInsideTimeRangeURL);
+  const url::Origin kOutsideTimeRangeOrigin =
+      url::Origin::Create(kOutsideTimeRangeURL);
+
+  clock()->SetNow(base::Time::Now());
+  service()->SetClockForTesting(clock());
+  const base::Time kInsideTimeRange =
+      clock()->Now() + base::TimeDelta::FromHours(1);
+  const base::Time kOutsideTimeRange =
+      clock()->Now() + base::TimeDelta::FromHours(3);
+
+  clock()->SetNow(kOutsideTimeRange);
+  // A cookie record outside the time range should not be modified.
+  service()->RecordCookieAccess(
+      {*net::CanonicalCookie::Create(
+          kOutsideTimeRangeURL, "same=site; max-age=3600", kOutsideTimeRange,
+          absl::nullopt /* server_time */)},
+      kTopLevelOrigin);
+  clock()->SetNow(kInsideTimeRange);
+  // A cookie record inside the time range should be deleted.
+  service()->RecordCookieAccess(
+      {*net::CanonicalCookie::Create(
+          kInsideTimeRangeURL, "cross=site; max-age=3600", kInsideTimeRange,
+          absl::nullopt /* server_time */)},
+      kTopLevelOrigin);
+  // A same-site storage record in the time range should be deleted.
+  service()->RecordStorageAPIAccess(
+      kTopLevelOrigin, AccessContextAuditDatabase::StorageAPIType::kIndexedDB,
+      kTopLevelOrigin);
+  // Set a cross-site storage access record in the time range. This should be
+  // kept but the top-level origin should be removed.
+  service()->RecordStorageAPIAccess(
+      kInsideTimeRangeOrigin,
+      AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
+      kTopLevelOrigin);
+  clock()->SetNow(kOutsideTimeRange);
+  // A cross-site storage record outside the time range should not be modified.
+  service()->RecordStorageAPIAccess(
+      kOutsideTimeRangeOrigin,
+      AccessContextAuditDatabase::StorageAPIType::kServiceWorker,
+      kTopLevelOrigin);
+  EXPECT_EQ(5u, GetAllAccessRecords().size());
+
+  history_service()->AddPageWithDetails(kTopLevelURL, u"Test1", 1, 1,
+                                        kInsideTimeRange, false,
+                                        history::SOURCE_BROWSED);
+  history_service()->AddPageWithDetails(kTopLevelURL, u"Test1", 1, 1,
+                                        kOutsideTimeRange, false,
+                                        history::SOURCE_BROWSED);
+
+  // Expire history in target time range.
+  base::RunLoop run_loop;
+  base::CancelableTaskTracker task_tracker;
+  history_service()->ExpireHistoryBetween(
+      std::set<GURL>(), kInsideTimeRange - base::TimeDelta::FromMinutes(10),
+      kInsideTimeRange + base::TimeDelta::FromMinutes(10),
+      /*user_initiated*/ true, run_loop.QuitClosure(), &task_tracker);
+  run_loop.Run();
+
+  std::vector<AccessContextAuditDatabase::AccessRecord> records =
+      GetAllAccessRecords();
+  EXPECT_EQ(3u, records.size());
+  size_t n_storage_records = 0;
+  for (const auto& record : records) {
+    if (record.type == AccessContextAuditDatabase::StorageAPIType::kCookie) {
+      EXPECT_EQ("outside.range.com", record.domain);
+      continue;
+    }
+    n_storage_records++;
+    EXPECT_EQ(record.origin == url::Origin::Create(kInsideTimeRangeURL),
+              record.top_frame_origin.opaque());
+  }
+  EXPECT_EQ(2u, n_storage_records);
+}
