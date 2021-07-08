@@ -306,7 +306,6 @@ class ProfileNetworkContextServiceCacheChangeBrowsertest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky on Linux and Mac: https://crbug.com/1041810
 // The first time we load, even if we're in an experiment there's no reset
 // from the unknown state.
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
