@@ -4,6 +4,9 @@
 
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 
+#include <set>
+
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "media/base/decoder_buffer.h"
@@ -328,7 +331,8 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
       return false;
     }
 
-    new_buffer_state.picture_id = next_picture_id_ = 0;
+    new_buffer_state.picture_id = 0;
+    next_picture_id_ = 1;
   } else if (header.show_existing_frame) {
     if (!reference_buffers_[header.frame_to_show_map_idx]) {
       LOG(ERROR) << "Attempting to show an existing frame, but the selected "
@@ -361,12 +365,23 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     }
   } else {
     std::vector<int> expected_pdiffs;
+    std::set<uint8_t> used_indices;
     for (uint8_t ref_frame_index : header.ref_frame_idx) {
       if (ref_frame_index >= static_cast<uint8_t>(kVp9NumRefFrames)) {
         LOG(ERROR) << "Invalid reference frame index: "
                    << static_cast<int>(ref_frame_index);
         return false;
       }
+
+      if (base::Contains(used_indices, ref_frame_index)) {
+        // |header.ref_frame_index| might have the same indices because an
+        // encoder fills the same index if the actually used ref frames is less
+        // than |kVp9NumRefsPerFrame|.
+        continue;
+      }
+
+      used_indices.insert(ref_frame_index);
+
       if (!reference_buffers_[ref_frame_index]) {
         LOG(ERROR) << "Frame is trying to reference buffer with invalid state.";
         return false;
