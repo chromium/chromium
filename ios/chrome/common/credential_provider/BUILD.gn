@@ -18,8 +18,6 @@ source_set("credential_provider") {
     "constants.mm",
     "memory_credential_store.h",
     "memory_credential_store.mm",
-    "multi_store_credential_store.h",
-    "multi_store_credential_store.mm",
     "user_defaults_credential_store.h",
     "user_defaults_credential_store.mm",
   ]
@@ -52,7 +50,6 @@ source_set("unit_tests") {
     "archivable_credential_unittest.mm",
     "as_password_credential_identity+credential_unittests.mm",
     "memory_credential_store_unittests.mm",
-    "multi_store_credential_store_unittests.mm",
     "user_defaults_credential_store_unittests.mm",
   ]
   deps = [

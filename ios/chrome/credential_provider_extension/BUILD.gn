@@ -75,7 +75,6 @@ ios_appex_bundle("credential_provider_extension") {
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/credential_provider_extension/resources",
     "//ios/chrome/credential_provider_extension/ui",
-    "//ios/chrome/credential_provider_extension/ui:feature_flags",
   ]
   bundle_deps_filter = [ "//third_party/icu:icudata" ]
 

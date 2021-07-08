@@ -14,10 +14,6 @@ NSURL* CredentialProviderSharedArchivableStoreURL();
 // validated in the extension.
 NSString* AppGroupUserDefaultsCredentialProviderManagedUserID();
 
-// Key for the app group user defaults containing the metadata for credentials
-// created in the extension.
-NSString* AppGroupUserDefaultsCredentialProviderNewCredentials();
-
 // An array of deprecated keys to be removed if present.
 NSArray<NSString*>* UnusedUserDefaultsCredentialProviderKeys();
 
