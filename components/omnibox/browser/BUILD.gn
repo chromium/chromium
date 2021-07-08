@@ -245,6 +245,7 @@ static_library("browser") {
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/navigation_metrics",
+    "//components/ntp_tiles",
     "//components/open_from_clipboard",
     "//components/pref_registry",
     "//components/prefs",

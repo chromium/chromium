@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -23,50 +24,24 @@ namespace {
 // The relevance score for navsuggest tiles.
 // Navsuggest tiles should be positioned below the Query Tiles object.
 constexpr const int kMostVisitedTilesRelevance = 1500;
-}  // namespace
 
-void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
-                                     bool minimal_changes) {
-  Stop(true, false);
-  if (!AllowMostVisitedSitesSuggestions(input))
-    return;
+// Use the same max number of tiles as MostVisitedListCoordinator to offer the
+// same content.
+constexpr const int kMaxTileCount = 12;
 
-  scoped_refptr<history::TopSites> top_sites = client_->GetTopSites();
-  if (!top_sites)
-    return;
-
-  top_sites->GetMostVisitedURLs(
-      base::BindRepeating(&MostVisitedSitesProvider::OnMostVisitedUrlsAvailable,
-                          request_weak_ptr_factory_.GetWeakPtr()));
-}
-
-void MostVisitedSitesProvider::Stop(bool clear_cached_results,
-                                    bool due_to_user_inactivity) {
-  request_weak_ptr_factory_.InvalidateWeakPtrs();
-  if (clear_cached_results)
-    matches_.clear();
-}
-
-MostVisitedSitesProvider::MostVisitedSitesProvider(
-    AutocompleteProviderClient* client,
-    AutocompleteProviderListener* listener)
-    : AutocompleteProvider(TYPE_MOST_VISITED_SITES),
-      client_{client},
-      listener_{listener} {}
-
-MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
-
-AutocompleteMatch MostVisitedSitesProvider::BuildMatch(
-    const std::u16string& description,
-    const GURL& url,
-    int relevance,
-    AutocompleteMatchType::Type type) {
-  AutocompleteMatch match(this, relevance, false, type);
+// Constructs an AutocompleteMatch from supplied details.
+AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
+                             AutocompleteProviderClient* client,
+                             const std::u16string& description,
+                             const GURL& url,
+                             int relevance,
+                             AutocompleteMatchType::Type type) {
+  AutocompleteMatch match(provider, relevance, false, type);
   match.destination_url = url;
 
   match.fill_into_edit +=
       AutocompleteInput::FormattedStringWithEquivalentMeaning(
-          url, url_formatter::FormatUrl(url), client_->GetSchemeClassifier(),
+          url, url_formatter::FormatUrl(url), client->GetSchemeClassifier(),
           nullptr);
 
   // Zero suggest results should always omit protocols and never appear bold.
@@ -83,30 +58,97 @@ AutocompleteMatch MostVisitedSitesProvider::BuildMatch(
   return match;
 }
 
-void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
-    const history::MostVisitedURLList& urls) {
-  if (urls.empty())
-    return;
+template <typename TileContainer>
+bool BuildTileNavsuggest(AutocompleteProvider* provider,
+                         AutocompleteProviderClient* const client,
+                         const TileContainer& container,
+                         ACMatches& matches) {
+  if (container.empty())
+    return false;
 
   if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
     AutocompleteMatch match = BuildMatch(
-        std::u16string(), GURL::EmptyGURL(), kMostVisitedTilesRelevance,
-        AutocompleteMatchType::TILE_NAVSUGGEST);
-    match.navsuggest_tiles.reserve(urls.size());
+        provider, client, std::u16string(), GURL::EmptyGURL(),
+        kMostVisitedTilesRelevance, AutocompleteMatchType::TILE_NAVSUGGEST);
 
-    for (const auto& url : urls) {
-      match.navsuggest_tiles.push_back({url.url, url.title});
+    match.navsuggest_tiles.reserve(container.size());
+
+    for (const auto& tile : container) {
+      match.navsuggest_tiles.push_back({tile.url, tile.title});
     }
-    matches_.push_back(std::move(match));
+    matches.push_back(std::move(match));
   } else {
     int relevance = 600;
-    for (const auto& url : urls) {
-      matches_.emplace_back(BuildMatch(url.title, url.url, relevance,
-                                       AutocompleteMatchType::NAVSUGGEST));
+    for (const auto& tile : container) {
+      matches.emplace_back(BuildMatch(provider, client, tile.title, tile.url,
+                                      relevance,
+                                      AutocompleteMatchType::NAVSUGGEST));
       --relevance;
     }
   }
-  listener_->OnProviderUpdate(true);
+  return true;
+}
+
+}  // namespace
+
+void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
+                                     bool minimal_changes) {
+  Stop(true, false);
+  if (!AllowMostVisitedSitesSuggestions(input))
+    return;
+
+  if (input.current_page_classification() ==
+          metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE ||
+      input.current_page_classification() ==
+          metrics::OmniboxEventProto::START_SURFACE_NEW_TAB) {
+    StartFetchNTPTiles();
+    return;
+  }
+
+  StartFetchTopSites();
+}
+
+void MostVisitedSitesProvider::StartFetchTopSites() {
+  scoped_refptr<history::TopSites> top_sites = client_->GetTopSites();
+  if (!top_sites)
+    return;
+
+  top_sites->GetMostVisitedURLs(
+      base::BindRepeating(&MostVisitedSitesProvider::OnMostVisitedUrlsAvailable,
+                          request_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void MostVisitedSitesProvider::StartFetchNTPTiles() {
+  if (!most_visited_sites_)
+    most_visited_sites_ = client_->GetNtpMostVisitedSites();
+
+  // |most_visited_sites| will notify the provider when the fetch is complete.
+  most_visited_sites_->AddMostVisitedURLsObserver(this, kMaxTileCount);
+}
+
+void MostVisitedSitesProvider::Stop(bool clear_cached_results,
+                                    bool due_to_user_inactivity) {
+  if (most_visited_sites_)
+    most_visited_sites_->RemoveMostVisitedURLsObserver(this);
+
+  request_weak_ptr_factory_.InvalidateWeakPtrs();
+  if (clear_cached_results)
+    matches_.clear();
+}
+
+MostVisitedSitesProvider::MostVisitedSitesProvider(
+    AutocompleteProviderClient* client,
+    AutocompleteProviderListener* listener)
+    : AutocompleteProvider(TYPE_MOST_VISITED_SITES),
+      client_{client},
+      listener_{listener} {}
+
+MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
+
+void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
+    const history::MostVisitedURLList& urls) {
+  if (BuildTileNavsuggest(this, client_, urls, matches_))
+    listener_->OnProviderUpdate(true);
 }
 
 bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
@@ -150,3 +192,19 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
 
   return true;
 }
+
+void MostVisitedSitesProvider::OnURLsAvailable(
+    const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
+        sections) {
+  // If the |matches_| has been build, don't build it again.
+  if (!matches_.empty())
+    return;
+
+  if (BuildTileNavsuggest(this, client_,
+                          sections.at(ntp_tiles::SectionType::PERSONALIZED),
+                          matches_)) {
+    listener_->OnProviderUpdate(true);
+  }
+}
+
+void MostVisitedSitesProvider::OnIconMadeAvailable(const GURL& site_url) {}
