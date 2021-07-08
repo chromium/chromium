@@ -45,6 +45,7 @@
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "net/base/network_change_notifier.h"
 
 class FastInitiationManager;
@@ -71,7 +72,8 @@ class NearbySharingServiceImpl
       public NearbyConnectionsManager::DiscoveryListener,
       public ash::SessionObserver,
       public PowerClient::Observer,
-      public net::NetworkChangeNotifier::NetworkChangeObserver {
+      public net::NetworkChangeNotifier::NetworkChangeObserver,
+      public device::BluetoothLowEnergyScanSession::Delegate {
  public:
   // The number of unexpected nearby process shutdowns that we allow during a
   // fixed window before deciding not to restart the process.
@@ -177,6 +179,18 @@ class NearbySharingServiceImpl
   // PowerClient::Observer:
   void SuspendImminent() override;
   void SuspendDone() override;
+
+  // device::BluetoothLowEnergyScanSession::Delegate
+  void OnSessionStarted(
+      device::BluetoothLowEnergyScanSession* scan_session,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+          error_code) override;
+  void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
+                     device::BluetoothDevice* device) override;
+  void OnDeviceLost(device::BluetoothLowEnergyScanSession* scan_session,
+                    device::BluetoothDevice* device) override;
+  void OnSessionInvalidated(
+      device::BluetoothLowEnergyScanSession* scan_session) override;
 
   base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
       ReceiveSurfaceState state);
@@ -493,9 +507,6 @@ class NearbySharingServiceImpl
   // The current advertising power level. PowerLevel::kUnknown while not
   // advertising.
   PowerLevel advertising_power_level_ = PowerLevel::kUnknown;
-  // True if we are background scanning for remote devices that are attempting
-  // to share.
-  bool is_background_scanning_ = false;
   // True if we are currently scanning for remote devices.
   bool is_scanning_ = false;
   // True if we're currently sending or receiving a file.
@@ -521,6 +532,10 @@ class NearbySharingServiceImpl
   // the time between an incoming share being accepted and the first payload
   // byte being processed.
   base::TimeTicks incoming_share_accepted_timestamp_;
+  // Scan session which is non-null when we are performing a background scan for
+  // remote devices that are attempting to share.
+  std::unique_ptr<device::BluetoothLowEnergyScanSession>
+      background_scan_session_ = nullptr;
 
   int recent_nearby_process_unexpected_shutdown_count_ = 0;
   base::OneShotTimer clear_recent_nearby_process_shutdown_count_timer_;

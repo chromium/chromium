@@ -55,6 +55,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "crypto/random.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -348,6 +349,10 @@ void NearbySharingServiceImpl::Shutdown() {
   observers_.Clear();
 
   StopAdvertising();
+  if (base::FeatureList::IsEnabled(
+          features::kNearbySharingBackgroundScanning)) {
+    StopBackgroundScanning();
+  }
   StopFastInitiationAdvertising();
   StopScanning();
   nearby_connections_manager_->Shutdown();
@@ -1165,6 +1170,10 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
   } else {
     NS_LOG(INFO) << __func__ << ": Nearby sharing disabled!";
     StopAdvertising();
+    if (base::FeatureList::IsEnabled(
+            features::kNearbySharingBackgroundScanning)) {
+      StopBackgroundScanning();
+    }
     StopScanning();
     nearby_connections_manager_->Shutdown();
     local_device_data_manager_->Stop();
@@ -1270,6 +1279,42 @@ void NearbySharingServiceImpl::SuspendImminent() {
 void NearbySharingServiceImpl::SuspendDone() {
   NS_LOG(VERBOSE) << __func__ << ": Suspend done.";
   InvalidateSurfaceState();
+}
+
+void NearbySharingServiceImpl::OnSessionStarted(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+        error_code) {
+  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
+  // This is not invoked unless the background scanning feature flag is enabled.
+  if (error_code) {
+    NS_LOG(INFO) << __func__ << ": Error!";
+  } else {
+    NS_LOG(INFO) << __func__ << ": Success!";
+  }
+}
+
+void NearbySharingServiceImpl::OnDeviceFound(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {
+  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
+  // This is not invoked unless the background scanning feature flag is enabled.
+  NS_LOG(INFO) << __func__;
+}
+
+void NearbySharingServiceImpl::OnDeviceLost(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {
+  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
+  // This is not invoked unless the background scanning feature flag is enabled.
+  NS_LOG(INFO) << __func__;
+}
+
+void NearbySharingServiceImpl::OnSessionInvalidated(
+    device::BluetoothLowEnergyScanSession* scan_session) {
+  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
+  // This is not invoked unless the background scanning feature flag is enabled.
+  NS_LOG(INFO) << __func__;
 }
 
 base::ObserverList<TransferUpdateCallback>&
@@ -2135,7 +2180,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
 
   process_shutdown_pending_timer_.Stop();
 
-  if (is_background_scanning_) {
+  if (background_scan_session_) {
     NS_LOG(VERBOSE) << __func__ << ": Ignoring, already background scanning.";
     return;
   }
@@ -2144,17 +2189,27 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
 }
 
 void NearbySharingServiceImpl::StartBackgroundScanning() {
-  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
-  // This is not invoked unless the background scanning feature flag is enabled.
-  NS_LOG(INFO) << __func__ << ": Starting background scanning.";
-  is_background_scanning_ = true;
+  DCHECK(!background_scan_session_);
+  NS_LOG(VERBOSE) << __func__ << ": Starting background scanning.";
+  auto filter = std::make_unique<device::BluetoothLowEnergyScanFilter>(
+      /*device_found_threshold=*/-80, /*device_found_timeout=*/1,
+      /*device_lost_threshold=*/-100, /*device_lost_timeout=*/5);
+  filter->AddPattern(
+      /*start_position=*/0,
+      device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
+      /*value=*/std::vector<uint8_t>{0x2c, 0xfe, 0xfc, 0x12, 0x8e});
+  background_scan_session_ = bluetooth_adapter_->StartLowEnergyScanSession(
+      std::move(filter), /*delegate=*/weak_ptr_factory_.GetWeakPtr());
 }
 
 void NearbySharingServiceImpl::StopBackgroundScanning() {
-  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
-  // This is not invoked unless the background scanning feature flag is enabled.
-  NS_LOG(INFO) << __func__ << ": Stopping background scanning.";
-  is_background_scanning_ = false;
+  if (!background_scan_session_) {
+    NS_LOG(VERBOSE) << __func__ << ": Ignoring, not background scanning.";
+    return;
+  }
+
+  background_scan_session_.reset();
+  NS_LOG(VERBOSE) << __func__ << ": Stopped background scanning.";
 }
 
 void NearbySharingServiceImpl::ScheduleRotateBackgroundAdvertisementTimer() {
