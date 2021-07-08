@@ -227,6 +227,16 @@ stage_install_common() {
     done
   fi
 
+  # ANGLE's libvulkan library
+  if [ -f "${OUTPUTDIR}/libvulkan.so.1" ]; then
+    file="libvulkan.so.1"
+    buildfile="${OUTPUTDIR}/${file}"
+    strippedfile="${buildfile}.stripped"
+    debugfile="${buildfile}.debug"
+    "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+    install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+  fi
+
   # SwiftShader ES
   if [ -f "${OUTPUTDIR}/swiftshader/libEGL.so" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/swiftshader/"
