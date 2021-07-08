@@ -265,10 +265,14 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     scoped_refptr<net::URLRequestContextGetter> getter =
         currentInterface.browserState->GetRequestContext();
     _savingCookies = YES;
+    __weak AppState* weakSelf = self;
+
     __block base::OnceClosure criticalClosure = base::MakeCriticalClosure(
         "applicationDidEnterBackground:_savingCookies", base::BindOnce(^{
           DCHECK_CURRENTLY_ON(web::WebThread::UI);
-          self->_savingCookies = NO;
+          AppState* strongSelf = weakSelf;
+          if (strongSelf)
+            strongSelf->_savingCookies = NO;
         }));
     base::PostTask(
         FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
