@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/quick_pair/common/quick_pair_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/feature_status_tracker/mock_bluetooth_enabled_provider.h"

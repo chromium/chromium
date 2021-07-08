@@ -21,8 +21,6 @@ component("common") {
     "logging.h",
     "protocol.cc",
     "protocol.h",
-    "quick_pair_features.cc",
-    "quick_pair_features.h",
   ]
 
   deps = [ "//base" ]

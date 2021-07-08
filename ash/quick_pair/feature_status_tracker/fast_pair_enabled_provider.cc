@@ -4,7 +4,7 @@
 
 #include "ash/quick_pair/feature_status_tracker/fast_pair_enabled_provider.h"
 
-#include "ash/quick_pair/common/quick_pair_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/feature_status_tracker/base_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 #include "base/bind.h"
@@ -22,7 +22,7 @@ FastPairEnabledProvider::FastPairEnabledProvider(
           std::move(google_api_key_availability_provider)) {
   // If the flag isn't enabled or if the API keys aren't available,
   // Fast Pair will never be enabled so don't hook up any callbacks.
-  if (base::FeatureList::IsEnabled(features::kFastPair) &&
+  if (features::IsFastPairEnabled() &&
       google_api_key_availability_provider_->is_enabled()) {
     bluetooth_enabled_provider_->SetCallback(base::BindRepeating(
         &FastPairEnabledProvider::OnSubProviderEnabledChanged,
