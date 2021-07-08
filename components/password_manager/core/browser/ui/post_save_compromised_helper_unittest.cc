@@ -41,6 +41,22 @@ InsecureCredential CreateInsecureCredential(
   return compromised;
 }
 
+// Creates a form.
+PasswordForm CreateForm(
+    base::StringPiece signon_realm,
+    base::StringPiece16 username,
+    PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
+  PasswordForm form;
+  form.signon_realm = std::string(signon_realm);
+  form.username_value = std::u16string(username);
+  form.in_store = store;
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
+  return form;
+}
+
 }  // namespace
 
 class PostSaveCompromisedHelperTest : public testing::Test {
@@ -53,6 +69,17 @@ class PostSaveCompromisedHelperTest : public testing::Test {
 
   ~PostSaveCompromisedHelperTest() override {
     mock_profile_store_->ShutdownOnUIThread();
+  }
+
+  void ExpectGetLoginsCall(std::vector<PasswordForm> password_forms) {
+    EXPECT_CALL(*profile_store(), GetAutofillableLogins)
+        .WillOnce(testing::WithArg<0>([password_forms](
+                                          PasswordStoreConsumer* consumer) {
+          std::vector<std::unique_ptr<PasswordForm>> results;
+          for (auto& form : password_forms)
+            results.push_back(std::make_unique<PasswordForm>(std::move(form)));
+          consumer->OnGetPasswordStoreResults(std::move(results));
+        }));
   }
 
   void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
@@ -83,7 +110,7 @@ TEST_F(PostSaveCompromisedHelperTest, EmptyStore) {
   PostSaveCompromisedHelper helper({}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl);
+  ExpectGetLoginsCall({});
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
                                   callback.Get());
   WaitForPasswordStore();
@@ -98,10 +125,9 @@ TEST_F(PostSaveCompromisedHelperTest, RandomSite_FullStore) {
   PostSaveCompromisedHelper helper({}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, _));
-  std::vector<InsecureCredential> saved = {
-      CreateInsecureCredential(kUsername2)};
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(saved));
+
+  PasswordForm form = CreateForm(kSignonRealm, kUsername2);
+  ExpectGetLoginsCall({form});
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
                                   callback.Get());
   WaitForPasswordStore();
@@ -112,14 +138,16 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemStayed) {
   prefs()->SetDouble(
       kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
-  std::vector<InsecureCredential> saved = {
-      CreateInsecureCredential(kUsername),
-      CreateInsecureCredential(kUsername2)};
-  PostSaveCompromisedHelper helper({saved}, kUsername);
+  PasswordForm form1 = CreateForm(kSignonRealm, kUsername);
+  form1.password_issues->insert({InsecureType::kLeaked, InsecurityMetadata()});
+  PasswordForm form2 = CreateForm(kSignonRealm, kUsername2);
+  form2.password_issues->insert({InsecureType::kLeaked, InsecurityMetadata()});
+
+  PostSaveCompromisedHelper helper({{CreateInsecureCredential(kUsername)}},
+                                   kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
-  EXPECT_CALL(callback, Run(BubbleType::kNoBubble, _));
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(saved));
+  ExpectGetLoginsCall({form1, form2});
+  EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 2));
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
                                   callback.Get());
   WaitForPasswordStore();
@@ -133,12 +161,15 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemGone) {
   std::vector<InsecureCredential> saved = {
       CreateInsecureCredential(kUsername),
       CreateInsecureCredential(kUsername2)};
+
+  PasswordForm form1 = CreateForm(kSignonRealm, kUsername);
+  PasswordForm form2 = CreateForm(kSignonRealm, kUsername2);
+  form2.password_issues->insert({InsecureType::kLeaked, InsecurityMetadata()});
+
   PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedWithMoreToFix, 1));
-  saved = {CreateInsecureCredential(kUsername2)};
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(saved));
+  ExpectGetLoginsCall({form1, form2});
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
                                   callback.Get());
   WaitForPasswordStore();
@@ -147,11 +178,11 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemGone) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckNeverDone) {
-  std::vector<InsecureCredential> saved = {CreateInsecureCredential(kUsername)};
-  PostSaveCompromisedHelper helper({saved}, kUsername);
+  PostSaveCompromisedHelper helper({{CreateInsecureCredential(kUsername)}},
+                                   kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl).Times(0);
+  EXPECT_CALL(*profile_store(), GetAutofillableLogins).Times(0);
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
                                   callback.Get());
   WaitForPasswordStore();
@@ -167,7 +198,7 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneLongAgo) {
   PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl).Times(0);
+  EXPECT_CALL(*profile_store(), GetAutofillableLogins).Times(0);
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
                                   callback.Get());
   WaitForPasswordStore();
@@ -183,9 +214,7 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneRecently) {
   PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedSafeState, 0));
-  saved = {};
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(saved));
+  ExpectGetLoginsCall({CreateForm(kSignonRealm, kUsername)});
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
                                   callback.Get());
   WaitForPasswordStore();
@@ -206,9 +235,7 @@ TEST_F(PostSaveCompromisedHelperTest, BubbleShownEvenIfIssueIsMuted) {
   PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedSafeState, 0));
-  saved = {};
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(saved));
+  ExpectGetLoginsCall({CreateForm(kSignonRealm, kUsername)});
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
                                   callback.Get());
   WaitForPasswordStore();
@@ -228,13 +255,14 @@ TEST_F(PostSaveCompromisedHelperTest, MutedIssuesNotIncludedToCount) {
   PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedWithMoreToFix, 1));
-  saved = {
-      CreateInsecureCredential(kUsername2),
-      CreateInsecureCredential(kUsername3, PasswordForm::Store::kProfileStore,
-                               IsMuted(true)),
-  };
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(saved));
+  PasswordForm form1 = CreateForm(kSignonRealm, kUsername);
+  PasswordForm form2 = CreateForm(kSignonRealm, kUsername2);
+  form2.password_issues->insert({InsecureType::kLeaked, InsecurityMetadata()});
+  PasswordForm form3 = CreateForm(kSignonRealm, kUsername3);
+  form3.password_issues->insert(
+      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+
+  ExpectGetLoginsCall({form1, form2, form3});
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
                                   callback.Get());
   WaitForPasswordStore();
@@ -280,12 +308,24 @@ TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
       account_store_compromised_credential};
 
   PostSaveCompromisedHelper helper({compromised_credentials}, kUsername);
-  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(std::vector<InsecureCredential>{
-          profile_store_compromised_credential}));
-  EXPECT_CALL(*account_store(), GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(std::vector<InsecureCredential>{
-          account_store_compromised_credential}));
+  EXPECT_CALL(*profile_store(), GetAutofillableLogins)
+      .WillOnce(testing::WithArg<0>([](PasswordStoreConsumer* consumer) {
+        std::vector<std::unique_ptr<PasswordForm>> results;
+        results.push_back(std::make_unique<PasswordForm>(
+            CreateForm(kSignonRealm, kUsername)));
+        results.back()->password_issues->insert(
+            {InsecureType::kLeaked, InsecurityMetadata()});
+        consumer->OnGetPasswordStoreResults(std::move(results));
+      }));
+  EXPECT_CALL(*account_store(), GetAutofillableLogins)
+      .WillOnce(testing::WithArg<0>([](PasswordStoreConsumer* consumer) {
+        std::vector<std::unique_ptr<PasswordForm>> results;
+        results.push_back(std::make_unique<PasswordForm>(CreateForm(
+            kSignonRealm, kUsername, PasswordForm::Store::kAccountStore)));
+        results.back()->password_issues->insert(
+            {InsecureType::kLeaked, InsecurityMetadata()});
+        consumer->OnGetPasswordStoreResults(std::move(results));
+      }));
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, _));
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),

@@ -55,6 +55,9 @@ using password_manager::MockPasswordStore;
 using password_manager::PasswordForm;
 using ReauthSucceeded =
     password_manager::PasswordManagerClient::ReauthSucceeded;
+using InsecureType = password_manager::InsecureType;
+using password_manager::InsecurityMetadata;
+using password_manager::PasswordForm;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::AtMost;
@@ -274,6 +277,8 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_local_form_.username_element = u"username_element";
   test_local_form_.password_value = u"12345";
   test_local_form_.password_element = u"password_element";
+  test_local_form_.password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
 
   test_federated_form_.url = GURL("http://example.com/login");
   test_federated_form_.signon_realm =
@@ -281,6 +286,11 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_federated_form_.username_value = u"username";
   test_federated_form_.federation_origin =
       url::Origin::Create(GURL("https://federation.test/"));
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  test_federated_form_.password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
 
   submitted_form_ = test_local_form_;
   submitted_form_.username_value = u"submitted_username";
@@ -1541,16 +1551,22 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   // password not anymore.
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
+  password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
+
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
+      .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
+        post_save_helper = consumer;
+      }));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The bubble gets hidden after the user clicks on save.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
-  saved = {};
-  EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(saved));
+
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  results.push_back(std::make_unique<PasswordForm>(submitted_form()));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  post_save_helper->OnGetPasswordStoreResults(std::move(results));
   WaitForPasswordStore();
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());
@@ -1572,22 +1588,36 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
+  // Pretend that the current credential was insecure.
   std::vector<InsecureCredential> saved = {
       CreateInsecureCredential(test_local_form())};
-  // Pretend that the current credential was insecure.
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
+
+  password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
+
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
+      .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
+        post_save_helper = consumer;
+      }));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
+  // There are more insecure credentials to fix.
+  std::vector<PasswordForm> expected_forms = {test_local_form(),
+                                              submitted_form()};
+  expected_forms.at(0).username_value = u"another username";
+  expected_forms.at(0).password_issues->insert(
+      {InsecureType::kLeaked, InsecurityMetadata()});
+  expected_forms.at(1).password_issues->clear();
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  for (const auto& form : expected_forms) {
+    results.push_back(std::make_unique<PasswordForm>(form));
+  }
   // The bubble gets hidden after the user clicks on save.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
-  // There are more insecure credentials to fix.
-  saved[0].username = u"another username";
-  EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllInsecureCredentialsImpl)
-      .WillOnce(Return(saved));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  post_save_helper->OnGetPasswordStoreResults(std::move(results));
   WaitForPasswordStore();
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());

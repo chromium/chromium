@@ -4,8 +4,8 @@
 
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
 
+#include "base/barrier_closure.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -51,34 +51,58 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentials(
   }
 
   callback_ = std::move(callback);
-  insecure_credentials_reader_ =
-      std::make_unique<InsecureCredentialsReader>(profile_store, account_store);
-  // Unretained(this) is safe here since `this` outlives
-  // `insecure_credentials_reader_`.
-  insecure_credentials_reader_->GetAllInsecureCredentials(
-      base::BindOnce(&PostSaveCompromisedHelper::OnGetAllInsecureCredentials,
-                     base::Unretained(this)));
+
+  int awaiting_callbacks = 1;
+  if (account_store)
+    awaiting_callbacks++;
+
+  forms_received_ = base::BarrierClosure(
+      awaiting_callbacks,
+      base::BindOnce(
+          &PostSaveCompromisedHelper::AnalyzeLeakedCredentialsInternal,
+          base::Unretained(this)));
+
+  profile_store->GetAutofillableLogins(this);
+  if (account_store)
+    account_store->GetAutofillableLogins(this);
 }
 
-void PostSaveCompromisedHelper::OnGetAllInsecureCredentials(
-    std::vector<InsecureCredential> insecure_credentials) {
-  const bool compromised_password_changed =
-      current_leak_ && !base::Contains(insecure_credentials, *current_leak_);
-  if (base::FeatureList::IsEnabled(features::kMutingCompromisedCredentials)) {
-    // We want to show bubble even if updated insecure credentials was muted,
-    // this is why muted credentials are erased after computing
-    // 'compromised_password_changed';
-    base::EraseIf(insecure_credentials,
-                  [](const auto& credential) { return credential.is_muted; });
+void PostSaveCompromisedHelper::OnGetPasswordStoreResults(
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
+  base::ranges::move(results, std::back_inserter(passwords_));
+  forms_received_.Run();
+}
+
+void PostSaveCompromisedHelper::AnalyzeLeakedCredentialsInternal() {
+  bool compromised_password_changed = false;
+
+  for (const auto& form : passwords_) {
+    DCHECK(form->password_issues.has_value());
+    if (current_leak_ && form->username_value == current_leak_->username &&
+        form->signon_realm == current_leak_->signon_realm) {
+      if (form->password_issues->empty())
+        compromised_password_changed = true;
+    }
+    if (!form->password_issues->empty()) {
+      if (base::FeatureList::IsEnabled(
+              features::kMutingCompromisedCredentials)) {
+        if (std::any_of(
+                form->password_issues->begin(), form->password_issues->end(),
+                [](const auto& issue) { return !issue.second.is_muted; })) {
+          compromised_count_++;
+        }
+      } else {
+        compromised_count_++;
+      }
+    }
   }
   if (compromised_password_changed) {
-    bubble_type_ = insecure_credentials.empty()
+    bubble_type_ = compromised_count_ == 0
                        ? BubbleType::kPasswordUpdatedSafeState
                        : BubbleType::kPasswordUpdatedWithMoreToFix;
   } else {
     bubble_type_ = BubbleType::kNoBubble;
   }
-  compromised_count_ = insecure_credentials.size();
   std::move(callback_).Run(bubble_type_, compromised_count_);
 }
 
