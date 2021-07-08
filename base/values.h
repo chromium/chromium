@@ -839,10 +839,6 @@ class BASE_EXPORT ListValue : public Value {
   // DEPRECATED, use `GetList()::size()` instead.
   size_t GetSize() const { return list().size(); }
 
-  // Returns whether the list is empty.
-  // DEPRECATED, use `GetList()::empty()` instead.
-  bool empty() const { return list().empty(); }
-
   // Sets the list item at the given index to be the Value specified by
   // the value given.  If the index beyond the current end of the list, null
   // Values will be used to pad out the list.
