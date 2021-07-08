@@ -910,7 +910,7 @@ void D3D11VideoDecoder::NotifyError(const Status& reason) {
     // decode_cb and input_buffer_queue cb's.
     // Let the init handler set the error string if this is an init failure.
     MEDIA_LOG(ERROR, media_log_) << "D3D11VideoDecoder error: 0x" << std::hex
-                                 << reason.code() << reason.message();
+                                 << reason.code() << " " << reason.message();
   }
 
   current_buffer_ = nullptr;
