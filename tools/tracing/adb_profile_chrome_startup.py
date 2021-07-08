@@ -35,6 +35,9 @@ def ProfileChrome(options):
   Args:
     options: Command line flags with their specified values as
         returned by optparse.
+
+  Returns:
+    Path to Android profetto trace file
   """
   if not options.device_serial_number:
     # Find the serial number of the connected device.
@@ -78,6 +81,8 @@ def ProfileChrome(options):
 
   if options.view:
     _DisplayInBrowser(options, trace_file)
+
+  return trace_file
 
 
 def _DisplayInBrowser(options, trace_file):
