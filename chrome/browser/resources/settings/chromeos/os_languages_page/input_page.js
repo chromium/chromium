@@ -299,11 +299,10 @@ Polymer({
   onAddSpellcheckLanguagesDialogClose_() {
     this.showAddSpellcheckLanguagesDialog_ = false;
 
-    if (this.languages.spellCheckOnLanguages.length === 0) {
-      // User closed the dialog right after turning on spell check without any
-      // existing spell check languages - turn off spell checking if this is
-      // the case.
-      this.setPrefValue('browser.enable_spellchecking', false);
+    if (this.languages.spellCheckOnLanguages.length > 0) {
+      // User has at least one spell check language after closing the dialog.
+      // If spell checking is disabled, enabled it.
+      this.setPrefValue('browser.enable_spellchecking', true);
     }
 
     // Because #addSpellcheckLanguages is not statically created (as it is
@@ -366,23 +365,25 @@ Polymer({
   },
 
   /**
-   * @return {string|undefined}
+   * Called whenever the spell check toggle is changed by the user.
    * @param {!Event} e
    * @private
    */
   onSpellcheckToggleChange_(e) {
-    this.languagesMetricsProxy_.recordToggleSpellCheck(e.target.checked);
+    const toggle = /** @type {SettingsToggleButtonElement} */ (e.target);
 
-    if (this.languageSettingsV2Update2Enabled_ && e.target.checked &&
+    this.languagesMetricsProxy_.recordToggleSpellCheck(toggle.checked);
+
+    if (this.languageSettingsV2Update2Enabled_ && toggle.checked &&
         this.languages.spellCheckOnLanguages.length === 0) {
       // In LSV2 Update 2, we never want to enable spell check without the user
       // having a spell check language. When this happens, we try estimating
       // their expected spell check language (their device language, assuming
       // that the user has an input method which supports that language).
       // If that doesn't work, we fall back on prompting the user to enable a
-      // spell check language. If the user dismisses this dialog without adding
-      // a spell check language, we disable spell check again
-      // (see |onAddSpellcheckLanguagesDialogClose_|).
+      // spell check language and immediately disable spell check before this
+      // happens. If the user then adds a spell check language, we finally
+      // enable spell check (see |onAddSpellcheckLanguagesDialogClose_|).
 
       // This assert is safe as prospectiveUILanguage is always defined in
       // languages.js' |createModel_()|.
@@ -399,8 +400,19 @@ Polymer({
         this.languageHelper.toggleSpellCheck(deviceLanguageCode, true);
       } else {
         this.onAddSpellcheckLanguagesClick_();
+
+        // "Undo" the toggle change by reverting it back to the original pref
+        // value. The toggle will be flipped on once the user finishes adding
+        // a spell check language.
+        toggle.resetToPrefValue();
+        // We don't need to commit the pref change below, so early return.
+        return;
       }
     }
+
+    // Manually commit the pref change as we've set noSetPref on the toggle
+    // button.
+    toggle.sendPrefChange();
   },
 
   /**

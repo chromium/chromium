@@ -217,7 +217,7 @@
       </div>
       <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
           label="$i18n{spellCheckTitle}"
-          pref="{{prefs.browser.enable_spellchecking}}"
+          pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
           disabled="[[isEnableSpellcheckingDisabled_(
               languageSettingsV2Update2Enabled_, spellCheckLanguages_.length)]]"
           on-settings-boolean-control-change="onSpellcheckToggleChange_"
