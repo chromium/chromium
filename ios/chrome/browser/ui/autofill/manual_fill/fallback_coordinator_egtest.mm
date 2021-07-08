@@ -290,9 +290,17 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
+  // TODO(crbug.com/1220724): iOS 15 phones seem to act more like iPads now,
+  // dismissing the keyboard when tapping on the option above. Confirm that this
+  // is expected and either fix, or remove this comment.
+  BOOL isIOS15 = NO;
+  if (@available(iOS 15, *)) {
+    isIOS15 = YES;
+  }
+
   // On iPad the picker is a table view in a popover, we need to dismiss that
   // first.
-  if ([ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom] || isIOS15) {
     // Tap in the web view so the popover dismisses.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
         performAction:grey_tapAtPoint(CGPointMake(0, 0))];
@@ -319,6 +327,16 @@ BOOL WaitForKeyboardToAppear() {
   // Verify the status of the icons.
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // TODO(crbug.com/1227392): This doesn't appear to work on iOS15 phone. It
+  // appears the profiles icon is visible and selected (so interaction
+  // disabled), but the keyboard itself is visible. As a workaround, tap the
+  // keyboard icon and continue the test.
+  if (![ChromeEarlGrey isIPadIdiom] && isIOS15) {
+    [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+        performAction:grey_tap()];
+  }
+
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
       assertWithMatcher:grey_userInteractionEnabled()];
   [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
