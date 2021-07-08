@@ -45,7 +45,6 @@ using chrome_test_util::SettingsCollectionView;
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(signin::kMobileIdentityConsistency);
-  config.features_disabled.push_back(kDiscoverFeedInNtp);
   return config;
 }
 

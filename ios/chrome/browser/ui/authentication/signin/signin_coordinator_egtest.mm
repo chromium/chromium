@@ -105,7 +105,6 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(kDiscoverFeedInNtp);
   config.features_disabled.push_back(signin::kMobileIdentityConsistency);
   config.features_enabled.push_back(signin::kSimplifySignOutIOS);
   return config;
