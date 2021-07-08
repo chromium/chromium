@@ -128,7 +128,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   bool BindInt64(int col, int64_t val);
   bool BindDouble(int col, double val);
   bool BindCString(int col, const char* val);
-  bool BindString(int col, const std::string& val);
+  bool BindString(int col, base::StringPiece val);
   bool BindString16(int col, base::StringPiece16 value);
   bool BindBlob(int col, base::span<const uint8_t> value);
 

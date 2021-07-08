@@ -204,15 +204,23 @@ bool Statement::BindCString(int col, const char* val) {
                                                  SQLITE_TRANSIENT));
 }
 
-bool Statement::BindString(int col, const std::string& val) {
+bool Statement::BindString(int col, base::StringPiece value) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
 
+  // base::StringPiece::data() may return null for empty pieces. In particular,
+  // this may happen when the StringPiece is created from the default
+  // constructor.
+  //
+  // However, sqlite3_bind_text() always interprets a nullptr data argument as a
+  // NULL value, instead of an empty BLOB value.
+  static constexpr char kEmptyPlaceholder[] = {0x00};
+  const char* data = (value.size() > 0) ? value.data() : kEmptyPlaceholder;
+
   return is_valid() &&
-         CheckOk(sqlite3_bind_text(ref_->stmt(), col + 1, val.data(),
-                                   base::checked_cast<int>(val.size()),
+         CheckOk(sqlite3_bind_text(ref_->stmt(), col + 1, data, value.size(),
                                    SQLITE_TRANSIENT));
 }
 

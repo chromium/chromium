@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_piece_forward.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/error_callback_support.h"
@@ -178,6 +179,20 @@ TEST_F(SQLStatementTest, BindString) {
     ASSERT_TRUE(select.Step());
     EXPECT_EQ(value, select.ColumnString(0));
   }
+  EXPECT_FALSE(select.Step());
+}
+
+TEST_F(SQLStatementTest, BindString_NullData) {
+  ASSERT_TRUE(db_.Execute("CREATE TABLE strings (s TEXT NOT NULL)"));
+
+  Statement insert(db_.GetUniqueStatement("INSERT INTO strings VALUES(?)"));
+  insert.BindString(0, base::StringPiece(nullptr, 0));
+  ASSERT_TRUE(insert.Run());
+
+  Statement select(db_.GetUniqueStatement("SELECT s FROM strings"));
+  ASSERT_TRUE(select.Step());
+  EXPECT_EQ(std::string(), select.ColumnString(0));
+
   EXPECT_FALSE(select.Step());
 }
 
