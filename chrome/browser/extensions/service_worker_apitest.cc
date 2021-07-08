@@ -831,8 +831,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationAtStartupTest,
   EXPECT_TRUE(WillRegisterServiceWorker());
 }
 
+// Flaky on all platforms (https://crbug.com/1169238).
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationAtStartupTest,
-                       ExtensionActivationDoesNotReregister) {
+                       DISABLED_ExtensionActivationDoesNotReregister) {
   // Since the extension has onStartup listener, the Service Worker will run on
   // browser start and we'll see "WORKER_RUNNING" message from the worker.
   EXPECT_TRUE(WaitForMessage());
