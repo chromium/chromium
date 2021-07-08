@@ -22,35 +22,55 @@ public class PiiElider {
 
     private static final String GOOD_IRI_CHAR = "a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF";
 
-    private static final Pattern IP_ADDRESS = Pattern.compile(
+    private static final String IP_ADDRESS =
             "((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
             + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
             + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
-            + "|[1-9][0-9]|[0-9]))");
+            + "|[1-9][0-9]|[0-9]))";
 
     private static final String IRI =
-            "[" + GOOD_IRI_CHAR + "]([" + GOOD_IRI_CHAR + "\\-]{0,61}[" + GOOD_IRI_CHAR + "]){0,1}";
+            "[" + GOOD_IRI_CHAR + "]([" + GOOD_IRI_CHAR + "-]{0,61}[" + GOOD_IRI_CHAR + "]){0,1}";
 
     private static final String GOOD_GTLD_CHAR = "a-zA-Z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF";
     private static final String GTLD = "[" + GOOD_GTLD_CHAR + "]{2,63}";
     private static final String HOST_NAME = "(" + IRI + "\\.)+" + GTLD;
 
-    private static final Pattern DOMAIN_NAME =
-            Pattern.compile("(" + HOST_NAME + "|" + IP_ADDRESS + ")");
+    private static final String URI_ENCODED_CHAR = "(%[a-fA-F0-9]{2})";
+
+    private static final String URI_CHAR = "([a-zA-Z0-9$_.+!*'(),;?&=-]|" + URI_ENCODED_CHAR + ")";
+
+    private static final String PATH_CHAR =
+            // Either a single valid path component character or a URI-encoded character.
+            "(([" + GOOD_IRI_CHAR + ";/?:@&=#~.+!*'(),_-])|" + URI_ENCODED_CHAR + ")";
+
+    private static final String URI_SCHEME = "((http|https|Http|Https|rtsp|Rtsp)://"
+            + "(" + URI_CHAR + "{1,64}(:" + URI_CHAR + "{1,25})?@)?)";
+
+    private static final String DOMAIN_NAME = "(" + HOST_NAME + "|" + IP_ADDRESS + ")";
+
+    private static final String PORT = "(:\\d{1,5})";
+
+    private static final String URL_WITH_OPTIONAL_SCHEME_AND_PORT =
+            "(" + URI_SCHEME + "?" + DOMAIN_NAME + PORT + "?)";
+
+    private static final String PATH_COMPONENT = "(" + PATH_CHAR + "+)";
+
+    // Based on: http://www.faqs.org/rfcs/rfc2396.html#:~:text=Scheme%20Component
+    private static final String INTENT_SCHEME = "[a-zA-Z][a-zA-Z0-9+.-]+://";
+
+    private static final String INTENT = "(" + INTENT_SCHEME + PATH_COMPONENT + ")";
+
+    private static final String URL_OR_INTENT =
+            "(" + URL_WITH_OPTIONAL_SCHEME_AND_PORT + "|" + INTENT + ")";
+
+    private static final Pattern WEB_URL =
+            Pattern.compile("(\\b|^)" // Always start on a word boundary or start of string.
+                    + "(" + URL_OR_INTENT + ")" // Main URL or Intent scheme/domain/root path.
+                    + "(/" + PATH_CHAR + "*)?" // Rest of the URI path.
+                    + "(\\b|$)"); // Always end on a word boundary or end of string.
 
     private static final Pattern LIKELY_EXCEPTION_LOG =
             Pattern.compile("\\sat\\sorg\\.chromium\\.[^ ]+.");
-
-    private static final Pattern WEB_URL =
-            Pattern.compile("(?:\\b|^)((?:(http|https|Http|Https|rtsp|Rtsp):"
-                    + "\\/\\/(?:(?:[a-zA-Z0-9\\$\\-\\_\\.\\+\\!\\*\\'\\(\\)"
-                    + "\\,\\;\\?\\&\\=]|(?:\\%[a-fA-F0-9]{2})){1,64}(?:\\:(?:[a-zA-Z0-9\\$\\-\\_"
-                    + "\\.\\+\\!\\*\\'\\(\\)\\,\\;\\?\\&\\=]|(?:\\%[a-fA-F0-9]{2})){1,25})?\\@)?)?"
-                    + "(?:" + DOMAIN_NAME + ")"
-                    + "(?:\\:\\d{1,5})?)"
-                    + "(\\/(?:(?:[" + GOOD_IRI_CHAR + "\\;\\/\\?\\:\\@\\&\\=\\#\\~"
-                    + "\\-\\.\\+\\!\\*\\'\\(\\)\\,\\_])|(?:\\%[a-fA-F0-9]{2}))*)?"
-                    + "(?:\\b|$)");
 
     private static final String IP_ELISION = "1.2.3.4";
     private static final String MAC_ELISION = "01:23:45:67:89:AB";

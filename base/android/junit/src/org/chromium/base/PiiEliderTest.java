@@ -89,6 +89,13 @@ public class PiiEliderTest {
     }
 
     @Test
+    public void testElideNonHttpUrl() {
+        String original = "test some-other-scheme://address/01010?param=33&other_param=AAA !!!";
+        String expected = "test HTTP://WEBADDRESS.ELIDED !!!";
+        assertEquals(expected, PiiElider.elideUrl(original));
+    }
+
+    @Test
     public void testDontElideFileSuffixes() {
         String original = "chromium_android_linker.so";
         assertEquals(original, PiiElider.elideUrl(original));
