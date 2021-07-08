@@ -23,7 +23,6 @@
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -52,7 +51,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
                                     public HoldingSpaceModelObserver,
                                     public SessionObserver,
                                     public ui::SimpleMenuModel::Delegate,
-                                    public views::ContextMenuController,
                                     public views::WidgetObserver {
  public:
   METADATA_HEADER(HoldingSpaceTray);
@@ -90,6 +88,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void OnThemeChanged() override;
   void OnShouldShowAnimationChanged(bool should_animate) override;
+  std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel() override;
 
   // Invoke to cause the holding space tray to recalculate and update its
   // visibility. Note that this may or may not result in a visibility change
@@ -131,11 +130,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
-
-  // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
 
   // views::WidgetObserver:
   void OnWidgetDragWillStart(views::Widget* widget) override;
@@ -183,8 +177,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
                    ui::mojom::DragOperation& output_drag_op);
 
   std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
-  std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
-  std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<aura::client::DragDropClientObserver> drag_drop_observer_;
 
   // Default tray icon shown when there are no previews available (or the

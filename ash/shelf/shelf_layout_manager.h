@@ -333,6 +333,7 @@ class ASH_EXPORT ShelfLayoutManager
   friend class ShelfLayoutManagerWindowDraggingTest;
   friend class NotificationTrayTest;
   friend class UnifiedSystemTrayTest;
+  friend class TrayBackgroundViewTest;
   friend class Shelf;
 
   struct State {

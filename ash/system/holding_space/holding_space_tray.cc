@@ -45,7 +45,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -277,7 +276,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   layer()->Add(progress_ring_->layer());
 
   // Enable context menu, which supports an action to toggle item previews.
-  set_context_menu_controller(this);
+  SetContextMenuEnabled(true);
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;
@@ -543,6 +542,34 @@ void HoldingSpaceTray::OnShouldShowAnimationChanged(bool should_animate) {
   previews_tray_icon_->set_should_animate_updates(should_animate);
 }
 
+std::unique_ptr<ui::SimpleMenuModel>
+HoldingSpaceTray::CreateContextMenuModel() {
+  holding_space_metrics::RecordPodAction(
+      holding_space_metrics::PodAction::kShowContextMenu);
+
+  bool previews_enabled = holding_space_prefs::IsPreviewsEnabled(
+      Shell::Get()->session_controller()->GetActivePrefService());
+  auto context_menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+
+  if (previews_enabled) {
+    context_menu_model->AddItemWithIcon(
+        static_cast<int>(HoldingSpaceCommandId::kHidePreviews),
+        l10n_util::GetStringUTF16(
+            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_HIDE_PREVIEWS),
+        ui::ImageModel::FromVectorIcon(kVisibilityOffIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
+  } else {
+    context_menu_model->AddItemWithIcon(
+        static_cast<int>(HoldingSpaceCommandId::kShowPreviews),
+        l10n_util::GetStringUTF16(
+            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_PREVIEWS),
+        ui::ImageModel::FromVectorIcon(kVisibilityIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
+  }
+
+  return context_menu_model;
+}
+
 void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
   // When the `model` is attached the session is either being started/unlocked
   // or the active profile is being changed. It's also possible that the status
@@ -623,60 +650,6 @@ void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
       NOTREACHED();
       break;
   }
-}
-
-void HoldingSpaceTray::ShowContextMenuForViewImpl(
-    views::View* source,
-    const gfx::Point& point,
-    ui::MenuSourceType source_type) {
-  holding_space_metrics::RecordPodAction(
-      holding_space_metrics::PodAction::kShowContextMenu);
-
-  context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-
-  const bool previews_enabled = holding_space_prefs::IsPreviewsEnabled(
-      Shell::Get()->session_controller()->GetActivePrefService());
-
-  if (previews_enabled) {
-    context_menu_model_->AddItemWithIcon(
-        static_cast<int>(HoldingSpaceCommandId::kHidePreviews),
-        l10n_util::GetStringUTF16(
-            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_HIDE_PREVIEWS),
-        ui::ImageModel::FromVectorIcon(kVisibilityOffIcon, /*color_id=*/-1,
-                                       kHoldingSpaceIconSize));
-  } else {
-    context_menu_model_->AddItemWithIcon(
-        static_cast<int>(HoldingSpaceCommandId::kShowPreviews),
-        l10n_util::GetStringUTF16(
-            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_PREVIEWS),
-        ui::ImageModel::FromVectorIcon(kVisibilityIcon, /*color_id=*/-1,
-                                       kHoldingSpaceIconSize));
-  }
-
-  const int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
-                        views::MenuRunner::CONTEXT_MENU |
-                        views::MenuRunner::FIXED_ANCHOR;
-
-  context_menu_runner_ =
-      std::make_unique<views::MenuRunner>(context_menu_model_.get(), run_types);
-
-  views::MenuAnchorPosition anchor;
-  switch (shelf()->alignment()) {
-    case ShelfAlignment::kBottom:
-    case ShelfAlignment::kBottomLocked:
-      anchor = views::MenuAnchorPosition::kBubbleTopRight;
-      break;
-    case ShelfAlignment::kLeft:
-      anchor = views::MenuAnchorPosition::kBubbleRight;
-      break;
-    case ShelfAlignment::kRight:
-      anchor = views::MenuAnchorPosition::kBubbleLeft;
-      break;
-  }
-
-  context_menu_runner_->RunMenuAt(
-      source->GetWidget(), /*button_controller=*/nullptr,
-      source->GetBoundsInScreen(), anchor, source_type);
 }
 
 void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {

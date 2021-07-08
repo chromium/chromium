@@ -548,6 +548,12 @@ bool StatusAreaWidget::ShouldShowShelf() const {
   if (unified_system_tray_->IsBubbleShown())
     return true;
 
+  // If any tray is showing a context menu, the shelf should be visible.
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
+    if (tray_button->IsShowingMenu())
+      return true;
+  }
+
   // If it has a slider bubble, return false.
   if (unified_system_tray_->IsSliderBubbleShown())
     return false;

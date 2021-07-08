@@ -7,6 +7,8 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/status_area_widget_delegate.h"
@@ -14,15 +16,17 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/task_environment.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 
 namespace ash {
 
-class TrayBackgroundViewTestView : public TrayBackgroundView {
+class TrayBackgroundViewTestView : public TrayBackgroundView,
+                                   public ui::SimpleMenuModel::Delegate {
  public:
   explicit TrayBackgroundViewTestView(Shelf* shelf)
-      : TrayBackgroundView(shelf) {}
+      : TrayBackgroundView(shelf), provide_menu_model_(false) {}
 
   TrayBackgroundViewTestView(const TrayBackgroundViewTestView&) = delete;
   TrayBackgroundViewTestView& operator=(const TrayBackgroundViewTestView&) =
@@ -30,12 +34,31 @@ class TrayBackgroundViewTestView : public TrayBackgroundView {
 
   ~TrayBackgroundViewTestView() override = default;
 
+  // TrayBackgroundView:
   void ClickedOutsideBubble() override {}
   std::u16string GetAccessibleNameForTray() override {
     return u"TrayBackgroundViewTestView";
   }
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
+  std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel() override {
+    return provide_menu_model_ ? std::make_unique<ui::SimpleMenuModel>(this)
+                               : nullptr;
+  }
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override {}
+
+  void set_provide_menu_model(bool provide_menu_model) {
+    provide_menu_model_ = provide_menu_model;
+  }
+
+  void SetShouldShowMenu(bool should_show_menu) {
+    SetContextMenuEnabled(should_show_menu);
+  }
+
+ private:
+  bool provide_menu_model_;
 };
 
 class TrayBackgroundViewTest : public AshTestBase {
@@ -84,6 +107,14 @@ class TrayBackgroundViewTest : public AshTestBase {
   DictationButtonTray* GetSecondaryDictationTray() {
     return StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
         ->dictation_button_tray();
+  }
+
+  bool TriggerAutoHideTimeout(ShelfLayoutManager* layout_manager) {
+    if (!layout_manager->auto_hide_timer_.IsRunning())
+      return false;
+
+    layout_manager->auto_hide_timer_.FireNow();
+    return true;
   }
 
  private:
@@ -219,6 +250,96 @@ TEST_F(TrayBackgroundViewTest, SecondaryDisplay) {
   EXPECT_FALSE(
       GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
+}
+
+// Tests that a context menu only appears when a tray provides a menu model and
+// the tray should show a context menu.
+TEST_F(TrayBackgroundViewTest, ContextMenu) {
+  test_view()->SetVisiblePreferred(true);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(test_view()->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(test_view()->IsShowingMenu());
+
+  // The tray should not display a context menu, and no model is provided, so
+  // no menu should appear.
+  generator->ClickRightButton();
+  EXPECT_FALSE(test_view()->IsShowingMenu());
+
+  // The tray should display a context menu, but no model is provided, so no
+  // menu should appear.
+  test_view()->SetShouldShowMenu(true);
+  generator->ClickRightButton();
+  EXPECT_FALSE(test_view()->IsShowingMenu());
+
+  // The tray should display a context menu, and a model is provided, so a menu
+  // should appear.
+  test_view()->set_provide_menu_model(true);
+  generator->ClickRightButton();
+  EXPECT_TRUE(test_view()->IsShowingMenu());
+
+  // The tray should not display a context menu, so even though a model is
+  // provided, no menu should appear.
+  test_view()->SetShouldShowMenu(false);
+  generator->ClickRightButton();
+  EXPECT_FALSE(test_view()->IsShowingMenu());
+}
+
+// Tests the auto-hide shelf status when opening and closing a context menu.
+TEST_F(TrayBackgroundViewTest, AutoHideShelfWithContextMenu) {
+  // Create one window, or the shelf won't auto-hide.
+  std::unique_ptr<views::Widget> unused = CreateTestWidget();
+
+  // Set the shelf to auto-hide.
+  Shelf* shelf = test_view()->shelf();
+  EXPECT_TRUE(shelf);
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  ShelfLayoutManager* layout_manager = shelf->shelf_layout_manager();
+  EXPECT_TRUE(layout_manager);
+  ASSERT_FALSE(TriggerAutoHideTimeout(layout_manager));
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Move mouse to display the shelf.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  generator->MoveMouseTo(display_bounds.bottom_center());
+  ASSERT_TRUE(TriggerAutoHideTimeout(layout_manager));
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Open tray context menu.
+  test_view()->SetVisiblePreferred(true);
+  test_view()->set_provide_menu_model(true);
+  test_view()->SetShouldShowMenu(true);
+  generator->MoveMouseTo(test_view()->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  EXPECT_FALSE(test_view()->IsShowingMenu());
+  generator->ClickRightButton();
+  EXPECT_TRUE(test_view()->IsShowingMenu());
+
+  // Close the context menu with the mouse over the shelf. The shelf should
+  // remain shown.
+  generator->ClickRightButton();
+  ASSERT_FALSE(TriggerAutoHideTimeout(layout_manager));
+  EXPECT_FALSE(test_view()->IsShowingMenu());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Reopen tray context menu.
+  generator->ClickRightButton();
+  EXPECT_TRUE(test_view()->IsShowingMenu());
+
+  // Mouse away from the shelf with the context menu still showing. The shelf
+  // should remain shown.
+  generator->MoveMouseTo(0, 0);
+  ASSERT_TRUE(TriggerAutoHideTimeout(layout_manager));
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Close the context menu with the mouse away from the shelf. The shelf
+  // should hide.
+  generator->ClickRightButton();
+  ASSERT_FALSE(TriggerAutoHideTimeout(layout_manager));
+  EXPECT_FALSE(test_view()->IsShowingMenu());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 }
 
 }  // namespace ash

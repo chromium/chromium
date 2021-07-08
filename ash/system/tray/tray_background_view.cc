@@ -33,6 +33,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -52,6 +54,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
@@ -319,6 +322,10 @@ void TrayBackgroundView::SetVisiblePreferred(bool visible_preferred) {
     UpdateStatusArea(true /*should_log_visible_pod_count*/);
 }
 
+bool TrayBackgroundView::IsShowingMenu() const {
+  return context_menu_runner_ && context_menu_runner_->IsRunning();
+}
+
 void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
   if (visible == layer()->GetTargetVisibility())
     return;
@@ -388,6 +395,40 @@ void TrayBackgroundView::OnVisibilityAnimationFinished(
     views::View::SetVisible(false);
     UpdateStatusArea(should_log_visible_pod_count);
   }
+}
+
+void TrayBackgroundView::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::MenuSourceType source_type) {
+  context_menu_model_ = CreateContextMenuModel();
+  if (!context_menu_model_)
+    return;
+
+  const int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                        views::MenuRunner::CONTEXT_MENU |
+                        views::MenuRunner::FIXED_ANCHOR;
+  context_menu_runner_ = std::make_unique<views::MenuRunner>(
+      context_menu_model_.get(), run_types,
+      base::BindRepeating(&Shelf::UpdateAutoHideState,
+                          base::Unretained(shelf_)));
+  views::MenuAnchorPosition anchor;
+  switch (shelf_->alignment()) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      anchor = views::MenuAnchorPosition::kBubbleTopRight;
+      break;
+    case ShelfAlignment::kLeft:
+      anchor = views::MenuAnchorPosition::kBubbleRight;
+      break;
+    case ShelfAlignment::kRight:
+      anchor = views::MenuAnchorPosition::kBubbleLeft;
+      break;
+  }
+
+  context_menu_runner_->RunMenuAt(
+      source->GetWidget(), /*button_controller=*/nullptr,
+      source->GetBoundsInScreen(), anchor, source_type);
 }
 
 void TrayBackgroundView::AboutToRequestFocusFromTabTraversal(bool reverse) {
@@ -702,6 +743,11 @@ void TrayBackgroundView::HandlePerformActionResult(bool action_performed,
   if (action_performed)
     return;
   ActionableView::HandlePerformActionResult(action_performed, event);
+}
+
+std::unique_ptr<ui::SimpleMenuModel>
+TrayBackgroundView::CreateContextMenuModel() {
+  return nullptr;
 }
 
 views::PaintInfo::ScaleType TrayBackgroundView::GetPaintScaleType() const {

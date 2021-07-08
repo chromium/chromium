@@ -17,6 +17,16 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/context_menu_controller.h"
+
+namespace ui {
+enum MenuSourceType;
+}  // namespace ui
+
+namespace views {
+class MenuRunner;
+class View;
+}  // namespace views
 
 namespace ash {
 class Shelf;
@@ -28,6 +38,7 @@ class TrayEventFilter;
 // inherits from ActionableView so that the tray items can override
 // PerformAction when clicked on.
 class ASH_EXPORT TrayBackgroundView : public ActionableView,
+                                      public views::ContextMenuController,
                                       public ui::LayerAnimationObserver,
                                       public ShelfBackgroundAnimatorObserver,
                                       public TrayBubbleView::Delegate,
@@ -149,6 +160,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // disabled until the returned scoped closure runner is run.
   base::ScopedClosureRunner DisableShowAnimation() WARN_UNUSED_RESULT;
 
+  // Returns true if the view is showing a context menu.
+  bool IsShowingMenu() const;
+
  protected:
   // ActionableView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -158,6 +172,15 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
 
   virtual void OnShouldShowAnimationChanged(bool should_animate) {}
+
+  // Specifies the menu that appears when this tray is right-clicked if
+  // `SetContextMenuEnabled(true)` has been called. Default implementation
+  // returns a nullptr, in which case no context menu is shown.
+  virtual std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel();
+
+  void SetContextMenuEnabled(bool should_enable_menu) {
+    set_context_menu_controller(should_enable_menu ? this : nullptr);
+  }
 
   void set_show_with_virtual_keyboard(bool show_with_virtual_keyboard) {
     show_with_virtual_keyboard_ = show_with_virtual_keyboard;
@@ -181,6 +204,11 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // update to the view's visibility and the view's status area widget state.
   void OnVisibilityAnimationFinished(bool should_log_visible_pod_count,
                                      bool aborted);
+
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
   // views::View:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
@@ -252,6 +280,8 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   std::unique_ptr<TrayWidgetObserver> widget_observer_;
   std::unique_ptr<TrayEventFilter> tray_event_filter_;
   std::unique_ptr<TrayBackgroundViewSessionChangeHandler> handler_;
+  std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   base::WeakPtrFactory<TrayBackgroundView> weak_factory_{this};
 };

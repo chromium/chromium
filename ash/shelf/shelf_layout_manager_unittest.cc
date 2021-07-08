@@ -152,6 +152,14 @@ int GetWidgetOffsetFromBottom(const views::Widget* widget) {
          widget->GetClientAreaBoundsInScreen().top_center().y();
 }
 
+// Creates and displays a test app in the hotseat.
+void AddApp() {
+  ShelfController* controller = Shell::Get()->shelf_controller();
+  const int next_app_index = controller->model()->item_count();
+  ShelfTestUtil::AddAppShortcut(
+      "app_id_" + base::NumberToString(next_app_index), TYPE_PINNED_APP);
+}
+
 class TestDisplayObserver : public display::DisplayObserver {
  public:
   TestDisplayObserver() = default;
@@ -2842,6 +2850,67 @@ TEST_F(ShelfLayoutManagerTest, RtlPlacement) {
   base::i18n::SetICUDefaultLocale(locale);
 }
 
+// Tests the auto-hide shelf status when opening and closing a context menu.
+TEST_F(ShelfLayoutManagerTest, AutoHideShelfWithContextMenu) {
+  // Create one window, or the shelf won't auto-hide.
+  CreateTestWidget();
+
+  // Set the shelf to auto-hide.
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  ShelfLayoutManager* layout_manager = GetShelfLayoutManager();
+  layout_manager->LayoutShelf();
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Create an app that we can use to pull up a context menu.
+  EXPECT_EQ(0,
+            ShelfViewTestAPI(shelf->GetShelfViewForTesting()).GetButtonCount());
+  AddApp();
+  EXPECT_EQ(1,
+            ShelfViewTestAPI(shelf->GetShelfViewForTesting()).GetButtonCount());
+
+  // Swipe up to show the shelf.
+  SwipeUpOnShelf();
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Open hotseat context menu.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  ShelfAppButton* clickable_app_button =
+      ShelfViewTestAPI(shelf->GetShelfViewForTesting()).GetButton(0);
+  EXPECT_TRUE(clickable_app_button);
+  EXPECT_FALSE(shelf->shelf_widget()->IsShowingMenu());
+  generator->MoveMouseTo(
+      clickable_app_button->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  generator->ClickRightButton();
+  EXPECT_TRUE(shelf->shelf_widget()->IsShowingMenu());
+
+  // Close the context menu with the mouse over the shelf. The shelf should
+  // remain shown.
+  generator->ClickRightButton();
+  ASSERT_FALSE(TriggerAutoHideTimeout());
+  EXPECT_FALSE(shelf->shelf_widget()->IsShowingMenu());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Reopen hotseat context menu.
+  generator->ClickRightButton();
+  EXPECT_TRUE(shelf->shelf_widget()->IsShowingMenu());
+
+  // Mouse away from the shelf with the context menu still showing. The shelf
+  // should remain shown.
+  generator->MoveMouseTo(0, 0);
+  ASSERT_TRUE(TriggerAutoHideTimeout());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Close the context menu with the mouse away from the shelf. The shelf
+  // should hide.
+  generator->ClickRightButton();
+  ASSERT_FALSE(TriggerAutoHideTimeout());
+  EXPECT_FALSE(shelf->shelf_widget()->IsShowingMenu());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+}
+
 class AppListBubbleShelfLayoutManagerTest : public ShelfLayoutManagerTest {
  public:
   AppListBubbleShelfLayoutManagerTest() {
@@ -3942,18 +4011,11 @@ TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   EXPECT_EQ(display_count, root_windows.size());
 
-  auto add_app = []() {
-    ShelfController* controller = Shell::Get()->shelf_controller();
-    int n_apps = controller->model()->item_count();
-    ShelfTestUtil::AddAppShortcut("app_id_" + base::NumberToString(n_apps),
-                                  TYPE_PINNED_APP);
-  };
-
   // Keep this low so that all apps fit at the center of the screen on all
   // displays.
   const int max_app_count = 4;
   for (int app_count = 1; app_count <= max_app_count; ++app_count) {
-    add_app();
+    AddApp();
 
     // Wait for everything to settle down.
     for (unsigned int display_index = 0; display_index < display_count;
