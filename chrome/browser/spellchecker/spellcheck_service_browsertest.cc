@@ -170,9 +170,8 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
         prefs_->GetList(spellcheck::prefs::kSpellCheckDictionaries);
     std::vector<base::StringPiece> dictionaries;
     for (const auto& item_value : list_value->GetList()) {
-      base::StringPiece dictionary;
-      EXPECT_TRUE(item_value.GetAsString(&dictionary));
-      dictionaries.push_back(dictionary);
+      EXPECT_TRUE(item_value.is_string());
+      dictionaries.push_back(item_value.GetString());
     }
     return base::JoinString(dictionaries, ",");
   }
