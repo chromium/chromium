@@ -34,10 +34,10 @@ struct VP9SVCLayers::FrameConfig {
       : layer_index_(layer_index), buffer_flags_{first, second} {}
   FrameConfig() = delete;
 
-  // VP9SVCLayers uses 2 reference frames for each spatial layer, and totally
-  // uses up to 6 reference frames. SL0 uses the first two (0, 1) reference
-  // frames, SL1 uses middle two (2, 3) reference frames, and SL2 used last two
-  // (4, 5) reference frames.
+  // VP9SVCLayers uses 2 reference frame slots for each spatial layer, and
+  // totally uses up to 6 reference frame slots. SL0 uses the first two (0, 1)
+  // slots, SL1 uses middle two (2, 3) slots, and SL2 uses last two (4, 5)
+  // slots.
   std::vector<uint8_t> GetRefFrameIndices(size_t spatial_idx,
                                           size_t frame_num) const {
     std::vector<uint8_t> indices;
@@ -79,46 +79,35 @@ struct VP9SVCLayers::FrameConfig {
 namespace {
 // GetTemporalLayersReferencePattern() constructs the
 // following temporal layers.
-// 2 temporal layers structure: https://imgur.com/vBvHtdp.
-// 3 temporal layers structure: https://imgur.com/pURAGvp.
 std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
     size_t num_temporal_layers) {
   using FrameConfig = VP9SVCLayers::FrameConfig;
-  // In a vp9 software encoder used in libwebrtc, each frame has only one
-  // reference to the TL0 frame. It improves the encoding speed without reducing
-  // the frame quality noticeably. This class, at this moment, lets each frame
-  // have as many references as possible for the sake of better quality,
-  // assuming a hardware encoder is sufficiently fast. TODO(crbug.com/1030199):
-  // Measure speed vs. quality changing these structures.
   switch (num_temporal_layers) {
     case 1:
       // In this case, the number of spatial layers must great than 1.
       // TL0 references and updates the 'first' buffer.
+      // [TL0]---[TL0]
       return {FrameConfig(0, kReferenceAndUpdate, kNone)};
     case 2:
       // TL0 references and updates the 'first' buffer.
-      // TL1 references 'first' and references and updates 'second'.
+      // TL1 references 'first' buffer.
+      //      [TL1]
+      //     /
+      // [TL0]-----[TL0]
       return {FrameConfig(0, kReferenceAndUpdate, kNone),
-              FrameConfig(1, kReference, kUpdate),
-              FrameConfig(0, kReferenceAndUpdate, kNone),
-              FrameConfig(1, kReference, kReferenceAndUpdate),
-              FrameConfig(0, kReferenceAndUpdate, kNone),
-              FrameConfig(1, kReference, kReferenceAndUpdate),
-              FrameConfig(0, kReferenceAndUpdate, kNone),
-              FrameConfig(1, kReference, kReferenceAndUpdate)};
+              FrameConfig(1, kReference, kNone)};
     case 3:
       // TL0 references and updates the 'first' buffer.
-      // TL1 references 'first' and references and updates 'second'.
-      // TL2 references, if there are, both 'first' and 'second' but updates no
-      // buffer.
+      // TL1 references 'first' and updates 'second'.
+      // TL2 references either 'first' or 'second' buffer.
+      //    [TL2]      [TL2]
+      //    _/   [TL1]--/
+      //   /_______/
+      // [TL0]--------------[TL0]
       return {FrameConfig(0, kReferenceAndUpdate, kNone),
               FrameConfig(2, kReference, kNone),
               FrameConfig(1, kReference, kUpdate),
-              FrameConfig(2, kReference, kReference),
-              FrameConfig(0, kReferenceAndUpdate, kNone),
-              FrameConfig(2, kReference, kReference),
-              FrameConfig(1, kReference, kReferenceAndUpdate),
-              FrameConfig(2, kReference, kReference)};
+              FrameConfig(2, kNone, kReference)};
     default:
       NOTREACHED();
       return {};

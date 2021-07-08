@@ -143,8 +143,15 @@ void VP9SVCLayersTest::VerifyRefFrames(
 
   // Six slots at most in the reference pool are used in spatial/temporal layer
   // encoding. Additionally, non-keyframe must reference some frames.
+  // |ref_frames_used| must be {true, false, false} because here is,
+  // 1. if the frame is in key picture, it references one lower spatial layer,
+  // 2. otherwise the frame doesn't reference other spatial layers and thus
+  // references only one frame in the same spatial layer based on the current
+  // reference pattern.
+  constexpr std::array<bool, kVp9NumRefsPerFrame> kExpectedRefFramesUsed = {
+      true, false, false};
   EXPECT_EQ(frame_hdr.refresh_frame_flags & ~(0b111111u), 0u);
-  EXPECT_TRUE(base::Contains(ref_frames_used, true));
+  EXPECT_EQ(ref_frames_used, kExpectedRefFramesUsed);
   EXPECT_EQ(metadata.has_reference, !metadata.p_diffs.empty());
   EXPECT_EQ(metadata.has_reference, !key_pic);
   if (key_pic) {
@@ -157,25 +164,21 @@ void VP9SVCLayersTest::VerifyRefFrames(
   }
 
   // Check that the current frame doesn't reference upper layer frames.
-  for (size_t i = 0; i < kVp9NumRefsPerFrame; i++) {
-    if (!ref_frames_used[i])
-      continue;
-    const uint8_t index = frame_hdr.ref_frame_idx[i];
-    scoped_refptr<VP9Picture> ref_frame = ref_frames.GetFrame(index);
-    ASSERT_TRUE(!!ref_frame);
-    const auto& ref_metadata = ref_frame->metadata_for_encoding;
-    ASSERT_TRUE(ref_metadata.has_value());
-    const size_t ref_temporal_index = ref_metadata->temporal_idx;
-    EXPECT_LE(ref_temporal_index, temporal_index);
-    const uint8_t ref_spatial_index = ref_metadata->spatial_idx;
-    EXPECT_LE(ref_spatial_index, spatial_index);
-    // In key picture, upper spatial layers must refer the lower spatial layer.
-    // Or referenced frames must be in the same spatial layer.
-    if (key_pic)
-      EXPECT_EQ(ref_spatial_index, spatial_index - 1);
-    else
-      EXPECT_EQ(ref_spatial_index, spatial_index);
-  }
+  const uint8_t index = frame_hdr.ref_frame_idx[0];
+  scoped_refptr<VP9Picture> ref_frame = ref_frames.GetFrame(index);
+  ASSERT_TRUE(!!ref_frame);
+  const auto& ref_metadata = ref_frame->metadata_for_encoding;
+  ASSERT_TRUE(ref_metadata.has_value());
+  const size_t ref_temporal_index = ref_metadata->temporal_idx;
+  EXPECT_LE(ref_temporal_index, temporal_index);
+  const uint8_t ref_spatial_index = ref_metadata->spatial_idx;
+  EXPECT_LE(ref_spatial_index, spatial_index);
+  // In key picture, upper spatial layers must refer the lower spatial layer.
+  // Or referenced frames must be in the same spatial layer.
+  if (key_pic)
+    EXPECT_EQ(ref_spatial_index, spatial_index - 1);
+  else
+    EXPECT_EQ(ref_spatial_index, spatial_index);
 }
 
 // This test verifies the bitrate check in MaybeUpdateActiveLayer().

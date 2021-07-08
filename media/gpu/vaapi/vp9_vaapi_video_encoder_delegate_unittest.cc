@@ -70,6 +70,8 @@ constexpr std::array<bool, kVp9NumRefsPerFrame> kRefFramesUsedForKeyFrame = {
     false, false, false};
 constexpr std::array<bool, kVp9NumRefsPerFrame> kRefFramesUsedForInterFrame = {
     true, true, true};
+constexpr std::array<bool, kVp9NumRefsPerFrame>
+    kRefFramesUsedForInterFrameInTemporalLayer = {true, false, false};
 
 void GetTemporalLayer(bool keyframe,
                       int frame_num,
@@ -80,21 +82,11 @@ void GetTemporalLayer(bool keyframe,
   switch (num_temporal_layers) {
     case 1:
       if (num_spatial_layers > 1) {
-        // K-SVC stream.
-        if (keyframe) {
-          *ref_frames_used = keyframe ? kRefFramesUsedForKeyFrame
-                                      : kRefFramesUsedForInterFrame;
-          return;
-        }
-
         *temporal_layer_id = 0;
-        {
-          constexpr std::tuple<uint8_t, std::array<bool, kVp9NumRefsPerFrame>>
-              kOneTemporalLayersDescription[] = {{0, {true, false, false}}};
-          const auto& layer_info = kOneTemporalLayersDescription
-              [frame_num % base::size(kOneTemporalLayersDescription)];
-          std::tie(*temporal_layer_id, *ref_frames_used) = layer_info;
-        }
+        // K-SVC stream.
+        *ref_frames_used = keyframe
+                               ? kRefFramesUsedForKeyFrame
+                               : kRefFramesUsedForInterFrameInTemporalLayer;
       } else {
         // Simple stream.
         *ref_frames_used =
@@ -109,17 +101,10 @@ void GetTemporalLayer(bool keyframe,
       }
 
       {
-        // 2 temporal layers structure. See https://imgur.com/vBvHtdp.
-        constexpr std::tuple<uint8_t, std::array<bool, kVp9NumRefsPerFrame>>
-            kTwoTemporalLayersDescription[] = {
-                {0, {true, false, false}}, {1, {true, false, false}},
-                {0, {true, false, false}}, {1, {true, true, false}},
-                {0, {true, false, false}}, {1, {true, true, false}},
-                {0, {true, false, false}}, {1, {true, true, false}},
-            };
-        const auto& layer_info = kTwoTemporalLayersDescription
-            [frame_num % base::size(kTwoTemporalLayersDescription)];
-        std::tie(*temporal_layer_id, *ref_frames_used) = layer_info;
+        constexpr uint8_t kTwoTemporalLayerIds[] = {0, 1};
+        *temporal_layer_id =
+            kTwoTemporalLayerIds[frame_num % base::size(kTwoTemporalLayerIds)];
+        *ref_frames_used = kRefFramesUsedForInterFrameInTemporalLayer;
       }
       break;
     case 3:
@@ -130,17 +115,11 @@ void GetTemporalLayer(bool keyframe,
       }
 
       {
-        // 3 temporal layers structure. See https://imgur.com/pURAGvp.
-        constexpr std::tuple<uint8_t, std::array<bool, kVp9NumRefsPerFrame>>
-            kThreeTemporalLayersDescription[] = {
-                {0, {true, false, false}}, {2, {true, false, false}},
-                {1, {true, false, false}}, {2, {true, true, false}},
-                {0, {true, false, false}}, {2, {true, true, false}},
-                {1, {true, true, false}},  {2, {true, true, false}},
-            };
-        const auto& layer_info = kThreeTemporalLayersDescription
-            [frame_num % base::size(kThreeTemporalLayersDescription)];
-        std::tie(*temporal_layer_id, *ref_frames_used) = layer_info;
+        constexpr uint8_t kThreeTemporalLayerIds[] = {0, 2, 1, 2};
+        *temporal_layer_id =
+            kThreeTemporalLayerIds[frame_num %
+                                   base::size(kThreeTemporalLayerIds)];
+        *ref_frames_used = kRefFramesUsedForInterFrameInTemporalLayer;
       }
       break;
   }
