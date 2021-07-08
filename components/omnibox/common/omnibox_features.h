@@ -17,9 +17,7 @@ extern const base::Feature kExperimentalKeywordMode;
 extern const base::Feature kImageSearchSuggestionThumbnail;
 extern const base::Feature kSearchProviderWarmUpOnFocus;
 extern const base::Feature kDisplayTitleForCurrentUrl;
-extern const base::Feature kDocumentProvider;
 extern const base::Feature kOmniboxRemoveSuggestionsFromClipboard;
-extern const base::Feature kDebounceDocumentProvider;
 
 // Flags that affect the "twiddle" step of AutocompleteResult, i.e. SortAndCull.
 // TODO(tommycli): There are more flags above that belong in this category.
@@ -56,10 +54,15 @@ extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
 extern const base::Feature kDisableCGIParamMatching;
 extern const base::Feature kShortBookmarkSuggestions;
 extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;
+extern const base::Feature kBookmarkPaths;
+
+// Document provider
+extern const base::Feature kDocumentProvider;
+extern const base::Feature kDebounceDocumentProvider;
+extern const base::Feature kDocumentProviderAso;
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;
-extern const base::Feature kBookmarkPaths;
 extern const base::Feature kClipboardSuggestionContentHidden;
 extern const base::Feature kCompactSuggestions;
 extern const base::Feature kMostVisitedTiles;

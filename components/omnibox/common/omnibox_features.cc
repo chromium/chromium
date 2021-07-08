@@ -44,12 +44,6 @@ const auto enabled_by_default_desktop_ios =
 //     base::FEATURE_DISABLED_BY_DEFAULT;
 // #endif
 
-// Allows Omnibox to dynamically adjust number of offered suggestions to fill in
-// the space between Omnibox an the soft keyboard. The number of suggestions
-// shown will be no less than minimum for the platform (eg. 5 for Android).
-const base::Feature kAdaptiveSuggestionsCount{
-    "OmniboxAdaptiveSuggestionsCount", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Feature that enables the tab-switch suggestions corresponding to an open
 // tab, for a button or dedicated suggestion. Enabled by default on Desktop
 // and iOS.
@@ -78,17 +72,9 @@ const base::Feature kSearchProviderWarmUpOnFocus{
 const base::Feature kDisplayTitleForCurrentUrl{
     "OmniboxDisplayTitleForCurrentUrl", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Feature used to fetch document suggestions.
-const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Feature used to allow users to remove suggestions from clipboard.
 const base::Feature kOmniboxRemoveSuggestionsFromClipboard{
     "OmniboxRemoveSuggestionsFromClipboard", enabled_by_default_android_only};
-
-// Feature to debounce drive requests from the document provider.
-const base::Feature kDebounceDocumentProvider{
-    "OmniboxDebounceDocumentProvider", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Demotes the relevance scores when comparing suggestions based on the
 // suggestion's |AutocompleteMatchType| and the user's |PageClassification|.
@@ -222,6 +208,23 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
 // containing 'planet.'
 const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Feature used to fetch document suggestions.
+const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+// Feature to debounce drive requests from the document provider.
+const base::Feature kDebounceDocumentProvider{
+    "OmniboxDebounceDocumentProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+// Feature to determine a value in the drive request indicating whether the
+// request should be served by the  ASO backend.
+const base::Feature kDocumentProviderAso{"OmniboxDocumentProviderAso",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Allows Omnibox to dynamically adjust number of offered suggestions to fill in
+// the space between Omnibox and the soft keyboard. The number of suggestions
+// shown will be no less than minimum for the platform (eg. 5 for Android).
+const base::Feature kAdaptiveSuggestionsCount{
+    "OmniboxAdaptiveSuggestionsCount", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, clipboard suggestion will not show the clipboard content until
 // the user clicks the reveal button.
