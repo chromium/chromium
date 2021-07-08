@@ -56,11 +56,29 @@ class LogManager {
       base::RepeatingClosure notification_callback);
 
   // This is the preferred way to submitting log entries.
+  //
+  // In case you often find yourself writing the following code:
+  // if (log_manager) {
+  //   log_manager->Log() << ...;
+  // }
+  // You can use
+  // SafeLog(log_manager) << ...;
+  //
+  // If you want to prefix all log messages, you can write the following:
+  // LogBufferSubmitter LogWithScope(LogManager* log_manager) {
+  //  LogBufferSubmitter submitter = SafeLog(log_manager);
+  //  submitter << LoggingScope::kMyLoggingScope;
+  //  return submitter;
+  // }
   virtual LogBufferSubmitter Log() = 0;
 
   // Returns a LogBufferSubmitter that ignores all input.
   static LogBufferSubmitter DevNull();
 };
+
+// Returns a LogBufferSubmitter for |log_buffer| if it is not null, otherwise
+// LogManager::DevNull();
+LogBufferSubmitter SafeLog(LogManager* log_manager);
 
 }  // namespace autofill
 

@@ -111,4 +111,8 @@ LogBufferSubmitter LogManager::DevNull() {
   return LogBufferSubmitter(nullptr, false);
 }
 
+LogBufferSubmitter SafeLog(LogManager* log_manager) {
+  return log_manager ? log_manager->Log() : LogManager::DevNull();
+}
+
 }  // namespace autofill

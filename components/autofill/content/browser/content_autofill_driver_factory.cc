@@ -102,7 +102,8 @@ void ContentAutofillDriverFactory::BindAutofillDriver(
   if (!factory)
     return;
 
-  ContentAutofillDriver* driver = factory->DriverForFrame(render_frame_host);
+  ContentAutofillDriver* driver =
+      factory->GetOrCreateDriverForFrame(render_frame_host);
   if (driver)
     driver->BindPendingReceiver(std::move(pending_receiver));
 }
@@ -125,6 +126,15 @@ ContentAutofillDriverFactory::ContentAutofillDriverFactory(
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     content::RenderFrameHost* render_frame_host) {
   AutofillDriver* driver = DriverForKey(render_frame_host);
+  // This cast is safe because AutofillDriverFactory::AddForKey is protected
+  // and always called with ContentAutofillDriver instances within
+  // ContentAutofillDriverFactory.
+  return static_cast<ContentAutofillDriver*>(driver);
+}
+
+ContentAutofillDriver* ContentAutofillDriverFactory::GetOrCreateDriverForFrame(
+    content::RenderFrameHost* render_frame_host) {
+  AutofillDriver* driver = DriverForKey(render_frame_host);
 
   // ContentAutofillDriver are created on demand here.
   if (!driver) {
@@ -140,6 +150,12 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
   // and always called with ContentAutofillDriver instances within
   // ContentAutofillDriverFactory.
   return static_cast<ContentAutofillDriver*>(driver);
+}
+
+void ContentAutofillDriverFactory::RenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  // Create the driver at the earliest possible opportunity.
+  GetOrCreateDriverForFrame(render_frame_host);
 }
 
 void ContentAutofillDriverFactory::RenderFrameDeleted(
@@ -181,7 +197,7 @@ void ContentAutofillDriverFactory::DidStartNavigation(
     content::RenderFrameHost* render_frame_host =
         content::RenderFrameHost::FromID(id);
     if (render_frame_host) {
-      DriverForFrame(render_frame_host)->ProbablyFormSubmitted();
+      GetOrCreateDriverForFrame(render_frame_host)->ProbablyFormSubmitted();
     }
   }
 }
@@ -192,7 +208,7 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
       (navigation_handle->IsInMainFrame() ||
        navigation_handle->HasSubframeNavigationEntryCommitted())) {
     ContentAutofillDriver* driver =
-        DriverForFrame(navigation_handle->GetRenderFrameHost());
+        GetOrCreateDriverForFrame(navigation_handle->GetRenderFrameHost());
     if (!navigation_handle->IsSameDocument() &&
         !navigation_handle->IsServedFromBackForwardCache()) {
       if (navigation_handle->IsInMainFrame()) {
@@ -229,7 +245,7 @@ void ContentAutofillDriverFactory::ReadyToCommitNavigation(
       navigation_handle->GetPreviousRenderFrameHostId()) {
     return;
   }
-  AutofillDriver* driver = DriverForFrame(render_frame_host);
+  AutofillDriver* driver = GetOrCreateDriverForFrame(render_frame_host);
   if (!driver)
     return;
   static_cast<ContentAutofillDriver*>(driver)

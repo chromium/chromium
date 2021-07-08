@@ -38,18 +38,14 @@
 namespace autofill {
 namespace {
 void LogCardUploadDisabled(LogManager* log_manager, std::string context) {
-  if (log_manager) {
-    log_manager->Log() << LoggingScope::kCreditCardUploadStatus
+  SafeLog(log_manager) << LoggingScope::kCreditCardUploadStatus
                        << LogMessage::kCreditCardUploadDisabled << context
                        << CTag{};
-  }
 }
 
 void LogCardUploadEnabled(LogManager* log_manager) {
-  if (log_manager) {
-    log_manager->Log() << LoggingScope::kCreditCardUploadStatus
+  SafeLog(log_manager) << LoggingScope::kCreditCardUploadStatus
                        << LogMessage::kCreditCardUploadEnabled << CTag{};
-  }
 }
 }  // namespace
 

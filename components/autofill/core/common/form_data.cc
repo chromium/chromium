@@ -268,6 +268,8 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
 }
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
+  if (!buffer.active())
+    return buffer;
   buffer << Tag{"div"} << Attrib{"class", "form"};
   buffer << Tag{"table"};
   buffer << Tr{} << "Form name:" << form.name;
