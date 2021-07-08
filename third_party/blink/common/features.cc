@@ -1028,5 +1028,10 @@ const base::Feature kUACHPlatformEnabledByDefault{
 const base::Feature kAllowDropAlphaForMediaStream{
     "AllowDropAlphaForMediaStream", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables partitioning of third party storage (IndexedDB, CacheStorage, etc.)
+// by the top level site to reduce fingerprinting.
+const base::Feature kThirdPartyStoragePartitioning{
+    "ThirdPartyStoragePartitioning", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

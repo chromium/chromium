@@ -7,8 +7,10 @@
 #include <cctype>
 #include <ostream>
 
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -24,6 +26,11 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 StorageKey StorageKey::CreateFromStringForTesting(const std::string& origin) {
   absl::optional<StorageKey> result = Deserialize(origin);
   return result.value_or(StorageKey());
+}
+
+// static
+bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
+  return base::FeatureList::IsEnabled(features::kThirdPartyStoragePartitioning);
 }
 
 std::string StorageKey::Serialize() const {

@@ -4,8 +4,11 @@
 
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -186,6 +189,14 @@ TEST(StorageKeyTest, SerializeDeserialize) {
                 *key_deserialized_from_local_storage);
     }
   }
+}
+
+TEST(StorageKeyTest, IsThirdPartyStoragePartitioningEnabled) {
+  EXPECT_FALSE(StorageKey::IsThirdPartyStoragePartitioningEnabled());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThirdPartyStoragePartitioning);
+  EXPECT_TRUE(StorageKey::IsThirdPartyStoragePartitioningEnabled());
 }
 
 }  // namespace blink

@@ -439,6 +439,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kUACHPlatformEnabledByDefault;
 // other sinks connected do not use alpha.
 BLINK_COMMON_EXPORT extern const base::Feature kAllowDropAlphaForMediaStream;
 
+BLINK_COMMON_EXPORT extern const base::Feature kThirdPartyStoragePartitioning;
+
 }  // namespace features
 }  // namespace blink
 

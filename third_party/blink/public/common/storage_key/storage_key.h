@@ -49,6 +49,9 @@ class BLINK_COMMON_EXPORT StorageKey {
   // For use in tests only.
   static StorageKey CreateFromStringForTesting(const std::string& origin);
 
+  // Returns true if ThirdPartyStoragePartitioning feature flag is enabled.
+  static bool IsThirdPartyStoragePartitioningEnabled();
+
   // Serializes the `StorageKey` into a string.
   // This function will return the spec url of the underlying Origin. Do not
   // call if `this` is opaque.
