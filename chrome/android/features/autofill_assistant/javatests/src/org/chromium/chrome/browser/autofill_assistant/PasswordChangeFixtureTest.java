@@ -214,7 +214,7 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
 
         // Should fail during login. Wait for error opening site's settings.
         waitUntilViewMatchesCondition(
-                withText("Can't open site's settings"), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+                withText("Can't change your password"), isDisplayed(), MAX_WAIT_TIME_IN_MS);
 
         // Assert initial credential has not changed.
         PasswordStoreCredential newCredential = getCredentialForDomainAndUser(
