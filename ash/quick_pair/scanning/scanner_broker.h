@@ -6,7 +6,6 @@
 #define ASH_QUICK_PAIR_SCANNING_SCANNER_BROKER_H_
 
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "base/observer_list_types.h"
 

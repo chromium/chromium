@@ -13,10 +13,17 @@ component("ui") {
   defines = [ "IS_QUICK_PAIR_UI_IMPL" ]
 
   sources = [
+    "actions.cc",
+    "actions.h",
     "fast_pair/fast_pair_image_decoder.cc",
     "fast_pair/fast_pair_image_decoder.h",
     "fast_pair/fast_pair_notification_controller.cc",
     "fast_pair/fast_pair_notification_controller.h",
+    "fast_pair/fast_pair_presenter.cc",
+    "fast_pair/fast_pair_presenter.h",
+    "ui_broker.h",
+    "ui_broker_impl.cc",
+    "ui_broker_impl.h",
   ]
 
   deps = [
