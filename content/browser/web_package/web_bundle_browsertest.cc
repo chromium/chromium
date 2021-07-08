@@ -1843,7 +1843,13 @@ class WebBundleTrustableFileNotFoundBrowserTest
   DISALLOW_COPY_AND_ASSIGN(WebBundleTrustableFileNotFoundBrowserTest);
 };
 
-IN_PROC_BROWSER_TEST_F(WebBundleTrustableFileNotFoundBrowserTest, NotFound) {
+// TODO(https://crbug.com/1227439): flaky
+#if defined(OS_LINUX)
+#define MAYBE_NotFound DISABLED_NotFound
+#else
+#define MAYBE_NotFound NotFound
+#endif
+IN_PROC_BROWSER_TEST_F(WebBundleTrustableFileNotFoundBrowserTest, MAYBE_NotFound) {
   std::string console_message = ExpectNavigationFailureAndReturnConsoleMessage(
       shell()->web_contents(), test_data_url());
 
