@@ -143,10 +143,6 @@ class ComputedStyleBase {
 
   void InheritFrom(const ComputedStyleBase& other,
                                       IsAtShadowBoundary isAtShadowBoundary);
-  void InheritCustomPropertiesFrom(const ComputedStyleBase& other) {
-    inherited_variables_data_ = other.inherited_variables_data_;
-  }
-
   void CopyNonInheritedFromCached(
       const ComputedStyleBase& other);
 

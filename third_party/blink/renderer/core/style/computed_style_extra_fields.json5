@@ -500,7 +500,7 @@
       include_paths: ["third_party/blink/renderer/core/style/style_inherited_variables.h"],
       default_value: "nullptr",
       wrapper_pointer_name: "scoped_refptr",
-      field_group: "InheritedVariables",
+      field_group: "inherited",
       computed_style_custom_functions: ["getter", "setter"],
     },
     {

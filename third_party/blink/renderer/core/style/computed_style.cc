@@ -106,7 +106,7 @@ struct SameSizeAsComputedStyleBase {
   }
 
  private:
-  void* data_refs[9];
+  void* data_refs[8];
   unsigned bitfields[5];
 };
 
@@ -370,8 +370,11 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
 void ComputedStyle::PropagateIndependentInheritedProperties(
     const ComputedStyle& parent_style) {
   ComputedStyleBase::PropagateIndependentInheritedProperties(parent_style);
-  if (!HasVariableReference() && !HasVariableDeclaration())
-    InheritCustomPropertiesFrom(parent_style);
+  if (!HasVariableReference() && !HasVariableDeclaration() &&
+      (InheritedVariables() != parent_style.InheritedVariables())) {
+    MutableInheritedVariablesInternal() =
+        parent_style.InheritedVariablesInternal();
+  }
 }
 
 StyleSelfAlignmentData ResolvedSelfAlignment(
