@@ -366,8 +366,9 @@ class PageContentAnnotationsServiceNoHistoryTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(https://crbug.com/1225946): Test is flaky.
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
-                       ModelExecutesButDoesntWriteToHistory) {
+                       DISABLED_ModelExecutesButDoesntWriteToHistory) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello-no-history.html"));
