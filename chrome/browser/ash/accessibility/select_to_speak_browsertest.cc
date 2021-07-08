@@ -191,7 +191,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_ActivatesWithTapOnSelectToSpeakTray DISABLED_ActivatesWithTapOnSelectToSpeakTray
+#else
+#define MAYBE_ActivatesWithTapOnSelectToSpeakTray ActivatesWithTapOnSelectToSpeakTray
+#endif
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_ActivatesWithTapOnSelectToSpeakTray) {
   base::RepeatingCallback<void()> callback = base::BindRepeating(
       &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
   AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(callback);
@@ -213,7 +219,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, WorksWithTouchSelection) {
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_WorksWithTouchSelection DISABLED_WorksWithTouchSelection
+#else
+#define MAYBE_WorksWithTouchSelection WorksWithTouchSelection
+#endif
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_WorksWithTouchSelection) {
   base::RepeatingCallback<void()> callback = base::BindRepeating(
       &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
   AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(callback);
@@ -299,7 +311,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SmoothlyReadsAcrossInlineUrl) {
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_SmoothlyReadsAcrossInlineUrl DISABLED_SmoothlyReadsAcrossInlineUrl
+#else
+#define MAYBE_SmoothlyReadsAcrossInlineUrl SmoothlyReadsAcrossInlineUrl
+#endif
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SmoothlyReadsAcrossInlineUrl) {
   // Make sure an inline URL is read smoothly.
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<p>This is some text <a href=\"\">with a"
@@ -311,7 +329,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SmoothlyReadsAcrossInlineUrl) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SmoothlyReadsAcrossMultipleLines) {
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_SmoothlyReadsAcrossMultipleLines DISABLED_SmoothlyReadsAcrossMultipleLines
+#else
+#define MAYBE_SmoothlyReadsAcrossMultipleLines SmoothlyReadsAcrossMultipleLines
+#endif
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SmoothlyReadsAcrossMultipleLines) {
   // Sentences spanning multiple lines.
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div style=\"width:100px\">This"
@@ -338,8 +362,16 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SmoothlyReadsAcrossFormattedText) {
   sm_.Replay();
 }
 
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_ReadsStaticTextWithoutInlineTextChildren \
+  DISABLED_ReadsStaticTextWithoutInlineTextChildren
+#else
+#define MAYBE_ReadsStaticTextWithoutInlineTextChildren \
+  ReadsStaticTextWithoutInlineTextChildren
+#endif
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
-                       ReadsStaticTextWithoutInlineTextChildren) {
+                       MAYBE_ReadsStaticTextWithoutInlineTextChildren) {
   // Bold or formatted text
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<canvas>This is some text</canvas>");
@@ -393,7 +425,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithLanguageDetection,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DoesNotCrashWithMousewheelEvent) {
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_DoesNotCrashWithMousewheelEvent DISABLED_DoesNotCrashWithMousewheelEvent
+#else
+#define MAYBE_DoesNotCrashWithMousewheelEvent DoesNotCrashWithMousewheelEvent
+#endif
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_DoesNotCrashWithMousewheelEvent) {
   ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html;charset=utf-8,<p>This is some text</p>"));
   gfx::Rect bounds = GetWebContentsBounds();
