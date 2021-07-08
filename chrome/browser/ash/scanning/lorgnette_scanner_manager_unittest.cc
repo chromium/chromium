@@ -304,6 +304,28 @@ TEST_F(LorgnetteScannerManagerTest, DeduplicateScanner) {
   EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.display_name}));
 }
 
+// Test that two detected scanners with the same IP address are deduplicated and
+// reported with single scanner name, while USB of the same model is reported
+// separately.
+TEST_F(LorgnetteScannerManagerTest, DeduplicateNetPlusUsbScanner) {
+  lorgnette::ListScannersResponse response;
+  lorgnette::ScannerInfo info =
+      CreateLorgnetteScanner(kLorgnetteUsbDeviceName, "MX3100");
+  *response.add_scanners() = std::move(info);
+  info = CreateLorgnetteScanner(kLorgnetteNetworkIpDeviceName, "MX3100");
+  *response.add_scanners() = std::move(info);
+
+  GetLorgnetteManagerClient()->SetListScannersResponse(response);
+  auto scanner = CreateZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerNames();
+  WaitForResult();
+  EXPECT_THAT(scanner_names(),
+              ElementsAreArray(
+                  {scanner.display_name, scanner.display_name + " (USB)"}));
+}
+
 // Test that a lorgnette scanner with a URL in the name gets reported as a
 // network scanner instead of a USB scanner (i.e. USB is not in the returned
 // scanner name).

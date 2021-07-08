@@ -185,7 +185,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     // Iterate through each lorgnette scanner and add its info to an existing
     // Scanner if it has a matching IP address. Otherwise, create a new Scanner
     // for the lorgnette scanner.
-    base::flat_map<net::IPAddress, chromeos::Scanner*> known_ip_addresses =
+    base::flat_map<net::IPAddress, std::string> known_ip_addresses =
         GetKnownIpAddresses();
     for (const auto& lorgnette_scanner : response->scanners()) {
       std::string ip_address_str;
@@ -196,7 +196,9 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
         if (ip_address.AssignFromIPLiteral(ip_address_str)) {
           const auto it = known_ip_addresses.find(ip_address);
           if (it != known_ip_addresses.end()) {
-            it->second->device_names[protocol].emplace(
+            const auto existing = deduped_scanners_.find(it->second);
+            DCHECK(existing != deduped_scanners_.end());
+            existing->second.device_names[protocol].emplace(
                 lorgnette_scanner.name());
             continue;
           }
@@ -225,14 +227,15 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       deduped_scanners_[scanner.display_name] = scanner;
   }
 
-  // Returns a map of IP addresses to the scanners they correspond to in
-  // deduped_scanners_. This enables deduplication of network scanners by making
-  // it easy to check for and modify them using their IP addresses.
-  base::flat_map<net::IPAddress, chromeos::Scanner*> GetKnownIpAddresses() {
-    base::flat_map<net::IPAddress, chromeos::Scanner*> known_ip_addresses;
+  // Returns a map of IP addresses to the display names (lookup keys) of
+  // scanners they correspond to in deduped_scanners_. This enables
+  // deduplication of network scanners by making it easy to check for and modify
+  // them using their IP addresses.
+  base::flat_map<net::IPAddress, std::string> GetKnownIpAddresses() {
+    base::flat_map<net::IPAddress, std::string> known_ip_addresses;
     for (auto& entry : deduped_scanners_) {
       for (const auto& ip_address : entry.second.ip_addresses)
-        known_ip_addresses[ip_address] = &entry.second;
+        known_ip_addresses[ip_address] = entry.second.display_name;
     }
 
     return known_ip_addresses;
