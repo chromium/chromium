@@ -18,7 +18,6 @@ if (is_chromeos_ash) {
 
   js_library("fake_network_config_mojom") {
     deps = [
-      "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
       "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
       "//ui/webui/resources/js:assert",
       "//ui/webui/resources/js:promise_resolver",
@@ -34,13 +33,6 @@ js_library("fake_network_config_mojom.m") {
   sources = []
   if (is_chromeos_ash) {
     sources += [ "$root_gen_dir/chrome/test/data/webui/chromeos/fake_network_config_mojom.m.js" ]
-  }
-  if (is_chromeos_ash) {
-    deps = [
-      "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
-      "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-      "//ui/webui/resources/js:promise_resolver.m",
-    ]
   }
   extra_deps = [ ":modulize" ]
 }

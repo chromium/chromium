@@ -23,28 +23,33 @@
     this.resolverMap_ = new Map();
 
     /**
-     * @type {!Map<chromeos.networkConfig.mojom.NetworkType,
+     * @private {!Map<chromeos.networkConfig.mojom.NetworkType,
      *     !chromeos.networkConfig.mojom.DeviceStateProperties>}
      */
     this.deviceStates_ = new Map();
 
-    /** @type {!Array<!chromeos.networkConfig.mojom.NetworkStateProperties>} */
+    /**
+     * @private {!Array<!chromeos.networkConfig.mojom.NetworkStateProperties>}
+     */
     this.networkStates_ = [];
 
-    /** @type {!Map<string, !chromeos.networkConfig.mojom.ManagedProperties>} */
+    /**
+     * @private {!Map<string, !chromeos.networkConfig.mojom.ManagedProperties>}
+     */
     this.managedProperties_ = new Map();
 
-    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
     this.globalPolicy_ = undefined;
 
-    /** @type {!Array<!chromeos.networkConfig.mojom.NetworkCertificate>} */
+    /** @private {!Array<!chromeos.networkConfig.mojom.NetworkCertificate>} */
     this.serverCas_ = [];
 
-    /** @type {!Array<!chromeos.networkConfig.mojom.NetworkCertificate>} */
+    /** @private {!Array<!chromeos.networkConfig.mojom.NetworkCertificate>} */
     this.userCerts_ = [];
 
     /**
-     * @type {!Array<!chromeos.networkConfig.mojom.CrosNetworkConfigObserver>}
+     * @private {!Array<
+     *     !chromeos.networkConfig.mojom.CrosNetworkConfigObserverRemote>}
      */
     this.observers_ = [];
 
@@ -57,7 +62,7 @@
     this.testPin = '';
 
     /**
-     * @type {chromeos.networkConfig.mojom.AlwaysOnVpnProperties}
+     * @private {chromeos.networkConfig.mojom.AlwaysOnVpnProperties}
      */
     this.alwaysOnVpnProperties_ = {
       mode: chromeos.networkConfig.mojom.AlwaysOnVpnMode.kOff,
@@ -67,7 +72,7 @@
     /** @type {Function} */
     this.beforeGetDeviceStateList = null;
 
-    /** @type {!Array<chromeos.networkConfig.mojom.VpnProvider>} */
+    /** @private {!Array<chromeos.networkConfig.mojom.VpnProvider>} */
     this.vpnProviders_ = [];
 
     this.resetForTest();
@@ -295,12 +300,7 @@
     this.onNetworkCertificatesChanged();
   }
 
-  /**
-   * networkConfig observers
-   * TODO(joonbug): Remove the suppress when CrosNetworkConfigObserver is
-   * properly discoverable.
-   * @suppress {missingProperties}
-   */
+  // networkConfig observers
   onActiveNetworksChanged() {
     const activeNetworks = this.networkStates_.filter(state => {
       // Calling onActiveNetworksChanged will trigger mojo checks on all
@@ -316,38 +316,18 @@
     this.observers_.forEach(o => o.onActiveNetworksChanged(activeNetworks));
   }
 
-  /**
-   * TODO(joonbug): Remove the suppress when CrosNetworkConfigObserver is
-   * properly discoverable.
-   * @suppress {missingProperties}
-   */
   onNetworkStateListChanged() {
     this.observers_.forEach(o => o.onNetworkStateListChanged());
   }
 
-  /**
-   * TODO(joonbug): Remove the suppress when CrosNetworkConfigObserver is
-   * properly discoverable.
-   * @suppress {missingProperties}
-   */
   onDeviceStateListChanged() {
     this.observers_.forEach(o => o.onDeviceStateListChanged());
   }
 
-  /**
-   * TODO(joonbug): Remove the suppress when CrosNetworkConfigObserver is
-   * properly discoverable.
-   * @suppress {missingProperties}
-   */
   onVpnProvidersChanged() {
     this.observers_.forEach(o => o.onVpnProvidersChanged());
   }
 
-  /**
-   * TODO(joonbug): Remove the suppress when CrosNetworkConfigObserver is
-   * properly discoverable.
-   * @suppress {missingProperties}
-   */
   onNetworkCertificatesChanged() {
     this.observers_.forEach(o => o.onNetworkCertificatesChanged());
   }
@@ -355,7 +335,7 @@
   // networkConfig methods
 
   /**
-   * @param {!chromeos.networkConfig.mojom.CrosNetworkConfigObserver}
+   * @param {!chromeos.networkConfig.mojom.CrosNetworkConfigObserverRemote}
    *     observer
    */
   addObserver(observer) {
