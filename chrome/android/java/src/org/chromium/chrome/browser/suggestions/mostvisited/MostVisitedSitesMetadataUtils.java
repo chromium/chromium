@@ -27,7 +27,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -172,7 +171,6 @@ public class MostVisitedSitesMetadataUtils {
             stream.writeInt(suggestionInfo.titleSource);
             stream.writeInt(suggestionInfo.source);
             stream.writeInt(suggestionInfo.sectionType);
-            stream.writeLong(suggestionInfo.dataGenerationTime.getTime());
         }
         stream.close();
         Log.i(TAG, "Serializing top sites lists finished; count: " + topSitesCount);
@@ -185,8 +183,6 @@ public class MostVisitedSitesMetadataUtils {
         }
 
         DataInputStream stream = new DataInputStream(new ByteArrayInputStream(listData));
-
-        Date dataGenerationTime;
 
         // Get how many top sites there are.
         final int count = stream.readInt();
@@ -207,9 +203,8 @@ public class MostVisitedSitesMetadataUtils {
             int titleSource = stream.readInt();
             int source = stream.readInt();
             int sectionType = stream.readInt();
-            dataGenerationTime = new Date(stream.readLong());
-            SiteSuggestion newSite = new SiteSuggestion(title, url, allowlistIconPath, titleSource,
-                    source, sectionType, dataGenerationTime);
+            SiteSuggestion newSite = new SiteSuggestion(
+                    title, url, allowlistIconPath, titleSource, source, sectionType);
             Tile newTile = new Tile(newSite, index);
             tiles.add(newTile);
         }

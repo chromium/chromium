@@ -157,7 +157,6 @@ void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
   std::vector<int> title_sources;
   std::vector<int> sources;
   std::vector<int> section_types;
-  std::vector<int64_t> data_generation_times;
   for (const auto& section : sections) {
     const NTPTilesVector& tiles = section.second;
     section_types.resize(section_types.size() + tiles.size(),
@@ -168,8 +167,6 @@ void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
       allowlist_icons.emplace_back(tile.allowlist_icon_path.value());
       title_sources.emplace_back(static_cast<int>(tile.title_source));
       sources.emplace_back(static_cast<int>(tile.source));
-      data_generation_times.emplace_back(
-          tile.data_generation_time.ToJavaTime());
     }
   }
   Java_MostVisitedSitesBridge_onURLsAvailable(
@@ -177,8 +174,7 @@ void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
       url::GURLAndroid::ToJavaArrayOfGURLs(env, urls),
       ToJavaIntArray(env, section_types),
       ToJavaArrayOfStrings(env, allowlist_icons),
-      ToJavaIntArray(env, title_sources), ToJavaIntArray(env, sources),
-      ToJavaLongArray(env, data_generation_times));
+      ToJavaIntArray(env, title_sources), ToJavaIntArray(env, sources));
 }
 
 void MostVisitedSitesBridge::JavaObserver::OnIconMadeAvailable(
@@ -248,7 +244,6 @@ void MostVisitedSitesBridge::RecordTileImpression(
     jint jicon_type,
     jint jtitle_source,
     jint jsource,
-    jlong jdata_generation_time_ms,
     const JavaParamRef<jobject>& jurl) {
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
   TileTitleSource title_source = static_cast<TileTitleSource>(jtitle_source);
@@ -258,8 +253,7 @@ void MostVisitedSitesBridge::RecordTileImpression(
       static_cast<favicon_base::IconType>(jicon_type);
 
   ntp_tiles::metrics::RecordTileImpression(ntp_tiles::NTPTileImpression(
-      jindex, source, title_source, visual_type, icon_type,
-      base::Time::FromJavaTime(jdata_generation_time_ms), *url));
+      jindex, source, title_source, visual_type, icon_type, *url));
 }
 
 void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
@@ -268,13 +262,11 @@ void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
     jint index,
     jint tile_type,
     jint title_source,
-    jint source,
-    jlong jdata_generation_time_ms) {
+    jint source) {
   ntp_tiles::metrics::RecordTileClick(ntp_tiles::NTPTileImpression(
       index, static_cast<TileSource>(source),
       static_cast<TileTitleSource>(title_source),
       static_cast<TileVisualType>(tile_type), favicon_base::IconType::kInvalid,
-      base::Time::FromJavaTime(jdata_generation_time_ms),
       /*url_for_rappor=*/GURL()));
 }
 

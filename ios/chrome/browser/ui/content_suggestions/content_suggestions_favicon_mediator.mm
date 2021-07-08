@@ -182,8 +182,7 @@ initWithContentService:(ntp_snippets::ContentSuggestionsService*)contentService
     ntp_tiles::NTPTile& ntpTile = _mostVisitedDataForLogging[i];
     if (ntpTile.url == item.URL) {
       RecordNTPTileImpression(i, ntpTile.source, ntpTile.title_source,
-                              item.attributes, ntpTile.data_generation_time,
-                              ntpTile.url);
+                              item.attributes, ntpTile.url);
       // Reset the URL to be sure to log the impression only once.
       ntpTile.url = GURL();
       break;

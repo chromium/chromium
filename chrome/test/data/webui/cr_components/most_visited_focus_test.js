@@ -40,7 +40,6 @@ suite('CrComponentsMostVisitedFocusTest', () => {
         url: {url: `https://${char}/`},
         source: i,
         titleSource: i,
-        dataGenerationTime: {internalValue: 0},
       };
     });
     const tilesRendered = eventToPromise('dom-change', mostVisited.$.tiles);

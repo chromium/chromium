@@ -52,7 +52,6 @@ ntp_tiles::NTPTileImpression MakeNTPTileImpression(int index,
                                                    TileVisualType visual_type) {
   return ntp_tiles::NTPTileImpression(index, source, title_source, visual_type,
                                       favicon_base::IconType::kInvalid,
-                                      /*data_generation_time=*/base::Time(),
                                       /*url_for_rappor=*/GURL());
 }
 
@@ -538,23 +537,13 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordImpressionsAge) {
   TestNTPUserDataLogger logger(GURL("chrome://newtab/"));
 
   constexpr base::TimeDelta delta = base::TimeDelta::FromMilliseconds(0);
-  constexpr base::TimeDelta kSuggestionAge = base::TimeDelta::FromMinutes(1);
-  constexpr base::TimeDelta kBucketTolerance = base::TimeDelta::FromSeconds(20);
 
   logger.LogMostVisitedImpression(ntp_tiles::NTPTileImpression(
       0, TileSource::TOP_SITES, TileTitleSource::UNKNOWN,
-      TileVisualType::ICON_REAL, favicon_base::IconType::kInvalid,
-      base::Time::Now() - kSuggestionAge, GURL()));
+      TileVisualType::ICON_REAL, favicon_base::IconType::kInvalid, GURL()));
 
   logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
                               /*is_visible=*/true);
-
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "NewTabPage.SuggestionsImpressionAge.client"),
-              ElementsAre(IsBucketBetween(
-                  (kSuggestionAge - kBucketTolerance).InSeconds(),
-                  (kSuggestionAge + kBucketTolerance).InSeconds(),
-                  /*count=*/1)));
 }
 
 TEST_F(NTPUserDataLoggerTest,

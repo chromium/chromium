@@ -639,9 +639,8 @@ const char kNTPHelpURL[] =
       recordAction:new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY];
   base::RecordAction(base::UserMetricsAction("MobileNTPMostVisited"));
 
-  // TODO(crbug.com/763946): Plumb generation time.
   RecordNTPTileClick(mostVisitedIndex, item.source, item.titleSource,
-                     item.attributes, base::Time(), GURL());
+                     item.attributes, GURL());
 }
 
 // Shows a snackbar with an action to undo the removal of the most visited item

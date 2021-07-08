@@ -31,7 +31,6 @@ ntp_tiles::NTPTileImpression MakeNTPTileImpression(
       /*visual_type=*/
       ntp_tiles::TileVisualType::ICON_REAL /* unused on desktop */,
       /*icon_type=*/favicon_base::IconType::kInvalid /* unused on desktop */,
-      /*data_generation_time=*/tile.data_generation_time,
       /*url_for_rappor=*/GURL() /* unused */);
 }
 
@@ -203,7 +202,6 @@ void MostVisitedHandler::OnURLsAvailable(
     value->url = tile.url;
     value->source = static_cast<int32_t>(tile.source);
     value->title_source = static_cast<int32_t>(tile.title_source);
-    value->data_generation_time = tile.data_generation_time;
     value->is_query_tile =
         base::FeatureList::IsEnabled(ntp_features::kNtpRepeatableQueries) &&
         template_url_service &&

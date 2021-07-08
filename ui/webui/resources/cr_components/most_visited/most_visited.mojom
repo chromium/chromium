@@ -20,9 +20,6 @@ struct MostVisitedTile {
   int32 source;
   // Identifier of most visited entry title source (e.g. page's title tag).
   int32 title_source;
-  // Time the most visited entry was generated (e.g. received by a suggestion
-  // server).
-  mojo_base.mojom.Time data_generation_time;
 };
 
 // Theme settings for the NTP MV tiles.

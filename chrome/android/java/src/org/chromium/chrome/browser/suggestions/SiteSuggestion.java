@@ -9,8 +9,6 @@ import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.url.GURL;
 
-import java.util.Date;
-
 /**
  * Data class that holds the site suggestion data provided by the tiles component.
  */
@@ -41,19 +39,14 @@ public class SiteSuggestion {
     @TileSectionType
     public final int sectionType;
 
-    /** The instant in time representing when the tile was originally generated
-        (produced by a ranking algorithm). */
-    public final Date dataGenerationTime;
-
     public SiteSuggestion(String title, GURL url, String allowlistIconPath, int titleSource,
-            int source, int sectionType, Date dataGenerationTime) {
+            int source, int sectionType) {
         this.title = title;
         this.url = url;
         this.allowlistIconPath = allowlistIconPath;
         this.source = source;
         this.titleSource = titleSource;
         this.sectionType = sectionType;
-        this.dataGenerationTime = (Date) dataGenerationTime.clone();
     }
 
     @Override

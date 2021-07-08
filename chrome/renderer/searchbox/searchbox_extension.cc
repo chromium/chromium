@@ -148,27 +148,13 @@ v8::Local<v8::Object> GenerateMostVisitedItemData(
       .Set("title", title)
       .Set("domain", mv_item.url.host())
       .Set("direction", base::StringPiece(direction))
-      .Set("url", mv_item.url.spec())
-      .Set("dataGenerationTime",
-           mv_item.data_generation_time.is_null()
-               ? v8::Local<v8::Value>(v8::Null(isolate))
-               : v8::Date::New(isolate->GetCurrentContext(),
-                               mv_item.data_generation_time.ToJsTime())
-                     .ToLocalChecked());
+      .Set("url", mv_item.url.spec());
 
   // If the suggestion already has a favicon, we populate the element with it.
   if (!mv_item.favicon.spec().empty())
     builder.Set("faviconUrl", mv_item.favicon.spec());
 
   return builder.Build();
-}
-
-base::Time ConvertDateValueToTime(v8::Value* value) {
-  DCHECK(value);
-  if (value->IsNull() || !value->IsDate())
-    return base::Time();
-
-  return base::Time::FromJsTime(v8::Date::Cast(value)->ValueOf());
 }
 
 absl::optional<int> CoerceToInt(v8::Isolate* isolate, v8::Value* value) {
@@ -613,18 +599,14 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
                                                      int rid);
   static void LogEvent(int event);
   static void LogSuggestionEventWithValue(int event, int data);
-  static void LogMostVisitedImpression(
-      int position,
-      int tile_title_source,
-      int tile_source,
-      int tile_type,
-      v8::Local<v8::Value> data_generation_time);
-  static void LogMostVisitedNavigation(
-      int position,
-      int tile_title_source,
-      int tile_source,
-      int tile_type,
-      v8::Local<v8::Value> data_generation_time);
+  static void LogMostVisitedImpression(int position,
+                                       int tile_title_source,
+                                       int tile_source,
+                                       int tile_type);
+  static void LogMostVisitedNavigation(int position,
+                                       int tile_title_source,
+                                       int tile_source,
+                                       int tile_type);
   static void ResetCustomBackgroundInfo();
   static void SetCustomBackgroundInfo(const std::string& background_url,
                                       const std::string& attribution_line_1,
@@ -868,12 +850,10 @@ void NewTabPageBindings::LogSuggestionEventWithValue(int event, int data) {
 }
 
 // static
-void NewTabPageBindings::LogMostVisitedImpression(
-    int position,
-    int tile_title_source,
-    int tile_source,
-    int tile_type,
-    v8::Local<v8::Value> data_generation_time) {
+void NewTabPageBindings::LogMostVisitedImpression(int position,
+                                                  int tile_title_source,
+                                                  int tile_source,
+                                                  int tile_type) {
   SearchBox* search_box = GetSearchBoxForCurrentContext();
   if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)))
     return;
@@ -886,19 +866,16 @@ void NewTabPageBindings::LogMostVisitedImpression(
         static_cast<ntp_tiles::TileTitleSource>(tile_title_source),
         static_cast<ntp_tiles::TileVisualType>(tile_type),
         favicon_base::IconType::kInvalid,
-        ConvertDateValueToTime(*data_generation_time),
         /*url_for_rappor=*/GURL());
     search_box->LogMostVisitedImpression(impression);
   }
 }
 
 // static
-void NewTabPageBindings::LogMostVisitedNavigation(
-    int position,
-    int tile_title_source,
-    int tile_source,
-    int tile_type,
-    v8::Local<v8::Value> data_generation_time) {
+void NewTabPageBindings::LogMostVisitedNavigation(int position,
+                                                  int tile_title_source,
+                                                  int tile_source,
+                                                  int tile_type) {
   SearchBox* search_box = GetSearchBoxForCurrentContext();
   if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)))
     return;
@@ -911,7 +888,6 @@ void NewTabPageBindings::LogMostVisitedNavigation(
         static_cast<ntp_tiles::TileTitleSource>(tile_title_source),
         static_cast<ntp_tiles::TileVisualType>(tile_type),
         favicon_base::IconType::kInvalid,
-        ConvertDateValueToTime(*data_generation_time),
         /*url_for_rappor=*/GURL());
     search_box->LogMostVisitedNavigation(impression);
   }

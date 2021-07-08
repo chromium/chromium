@@ -16,7 +16,6 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -118,7 +117,7 @@ public class FakeMostVisitedSites implements MostVisitedSites {
 
     public static SiteSuggestion createSiteSuggestion(String title, String url) {
         return new SiteSuggestion(title, new GURL(url), "", TileTitleSource.TITLE_TAG,
-                TileSource.TOP_SITES, TileSectionType.PERSONALIZED, new Date());
+                TileSource.TOP_SITES, TileSectionType.PERSONALIZED);
     }
 
     private void notifyTileSuggestionsAvailable() {

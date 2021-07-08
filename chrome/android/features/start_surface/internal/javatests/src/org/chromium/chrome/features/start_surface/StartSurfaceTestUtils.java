@@ -68,7 +68,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -364,15 +363,14 @@ public class StartSurfaceTestUtils {
         siteSuggestions.add(new SiteSuggestion("0 EXPLORE_SITES",
                 // Use pre-serialized GURL to avoid loading native.
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), "", TileTitleSource.UNKNOWN,
-                TileSource.EXPLORE, TileSectionType.PERSONALIZED, new Date()));
+                TileSource.EXPLORE, TileSectionType.PERSONALIZED));
 
         String urlTemplate = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_NUMERAL).serialize();
         for (int i = 0; i < 7; i++) {
             siteSuggestions.add(new SiteSuggestion(String.valueOf(i),
                     // Use pre-serialized GURL to avoid loading native.
                     GURL.deserialize(urlTemplate.replace("www.1.com", "www." + i + ".com")), "",
-                    TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
-                    new Date()));
+                    TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED));
         }
 
         return siteSuggestions;

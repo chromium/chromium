@@ -43,20 +43,18 @@ void RecordNTPTileImpression(int index,
                              ntp_tiles::TileSource source,
                              ntp_tiles::TileTitleSource title_source,
                              const FaviconAttributes* attributes,
-                             base::Time data_generation_time,
                              const GURL& url) {
   ntp_tiles::metrics::RecordTileImpression(ntp_tiles::NTPTileImpression(
       index, source, title_source, VisualTypeFromAttributes(attributes),
-      IconTypeFromAttributes(attributes), data_generation_time, url));
+      IconTypeFromAttributes(attributes), url));
 }
 
 void RecordNTPTileClick(int index,
                         ntp_tiles::TileSource source,
                         ntp_tiles::TileTitleSource title_source,
                         const FaviconAttributes* attributes,
-                        base::Time data_generation_time,
                         const GURL& url) {
   ntp_tiles::metrics::RecordTileClick(ntp_tiles::NTPTileImpression(
       index, source, title_source, VisualTypeFromAttributes(attributes),
-      IconTypeFromAttributes(attributes), data_generation_time, url));
+      IconTypeFromAttributes(attributes), url));
 }

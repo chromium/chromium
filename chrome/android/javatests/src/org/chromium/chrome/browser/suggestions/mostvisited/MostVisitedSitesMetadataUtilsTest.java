@@ -32,7 +32,6 @@ import org.chromium.url.GURL;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -146,13 +145,11 @@ public class MostVisitedSitesMetadataUtilsTest {
     private static List<Tile> createFakeSiteSuggestionTiles1() {
         List<Tile> suggestionTiles = new ArrayList<>();
         SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
-                TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
-                new Date());
+                TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED);
         suggestionTiles.add(new Tile(data, 0));
 
         data = new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"), "",
-                TileTitleSource.UNKNOWN, TileSource.ALLOWLIST, TileSectionType.PERSONALIZED,
-                new Date());
+                TileTitleSource.UNKNOWN, TileSource.ALLOWLIST, TileSectionType.PERSONALIZED);
         suggestionTiles.add(new Tile(data, 1));
 
         return suggestionTiles;
@@ -161,8 +158,7 @@ public class MostVisitedSitesMetadataUtilsTest {
     private static List<Tile> createFakeSiteSuggestionTiles2() {
         List<Tile> suggestionTiles = new ArrayList<>();
         SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.baz.com"), "",
-                TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
-                new Date());
+                TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED);
         suggestionTiles.add(new Tile(data, 0));
 
         return suggestionTiles;

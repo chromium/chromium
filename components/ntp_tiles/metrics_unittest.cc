@@ -60,10 +60,6 @@ class Builder {
     impression_.icon_type = icon_type;
     return *this;
   }
-  Builder& WithDataGenerationTime(base::Time data_generation_time) {
-    impression_.data_generation_time = data_generation_time;
-    return *this;
-  }
   Builder& WithUrl(const GURL& url) {
     impression_.url_for_rappor = url;
     return *this;
@@ -222,30 +218,6 @@ TEST(RecordTileImpressionTest, ShouldRecordImpressionsForTileTitleSource) {
                           base::Bucket(kInferredTitleSource, /*count=*/1)));
 }
 
-TEST(RecordTileImpressionTest, ShouldRecordAge) {
-  const base::TimeDelta kSuggestionAge = base::TimeDelta::FromMinutes(1);
-  const base::TimeDelta kBucketTolerance = base::TimeDelta::FromSeconds(20);
-  base::HistogramTester histogram_tester;
-  RecordTileImpression(
-      Builder()
-          .WithSource(TileSource::TOP_SITES)
-          .WithDataGenerationTime(base::Time::Now() - kSuggestionAge)
-          .Build());
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("NewTabPage.SuggestionsImpressionAge"),
-      ElementsAre(
-          IsBucketBetween((kSuggestionAge - kBucketTolerance).InSeconds(),
-                          (kSuggestionAge + kBucketTolerance).InSeconds(),
-                          /*count=*/1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "NewTabPage.SuggestionsImpressionAge.client"),
-              ElementsAre(IsBucketBetween(
-                  (kSuggestionAge - kBucketTolerance).InSeconds(),
-                  (kSuggestionAge + kBucketTolerance).InSeconds(),
-                  /*count=*/1)));
-}
-
 TEST(RecordTileImpressionTest, ShouldRecordUmaForIconType) {
   base::HistogramTester histogram_tester;
 
@@ -367,29 +339,6 @@ TEST(RecordTileClickTest, ShouldRecordClicksForTileTitleSource) {
                           base::Bucket(kManifestTitleSource, /*count=*/1),
                           base::Bucket(kMetaTagTitleSource, /*count=*/1),
                           base::Bucket(kTitleTagTitleSource, /*count=*/3)));
-}
-
-TEST(RecordTileClickTest, ShouldRecordClickAge) {
-  const base::TimeDelta kSuggestionAge = base::TimeDelta::FromMinutes(1);
-  const base::TimeDelta kBucketTolerance = base::TimeDelta::FromSeconds(20);
-  base::HistogramTester histogram_tester;
-  RecordTileClick(
-      Builder()
-          .WithSource(TileSource::TOP_SITES)
-          .WithDataGenerationTime(base::Time::Now() - kSuggestionAge)
-          .Build());
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.MostVisitedAge"),
-              ElementsAre(IsBucketBetween(
-                  (kSuggestionAge - kBucketTolerance).InSeconds(),
-                  (kSuggestionAge + kBucketTolerance).InSeconds(),
-                  /*count=*/1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("NewTabPage.MostVisitedAge.client"),
-      ElementsAre(
-          IsBucketBetween((kSuggestionAge - kBucketTolerance).InSeconds(),
-                          (kSuggestionAge + kBucketTolerance).InSeconds(),
-                          /*count=*/1)));
 }
 
 TEST(RecordTileClickTest, ShouldRecordClicksForIconType) {

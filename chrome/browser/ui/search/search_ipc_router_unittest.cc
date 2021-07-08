@@ -349,7 +349,7 @@ TEST_F(SearchIPCRouterTest, ProcessLogMostVisitedImpressionMsg) {
   const ntp_tiles::NTPTileImpression impression(
       3, ntp_tiles::TileSource::TOP_SITES, ntp_tiles::TileTitleSource::UNKNOWN,
       ntp_tiles::TileVisualType::ICON_REAL, favicon_base::IconType::kInvalid,
-      base::Time(), GURL());
+      GURL());
   NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
@@ -366,7 +366,7 @@ TEST_F(SearchIPCRouterTest, ProcessLogMostVisitedNavigationMsg) {
   const ntp_tiles::NTPTileImpression impression(
       3, ntp_tiles::TileSource::TOP_SITES, ntp_tiles::TileTitleSource::UNKNOWN,
       ntp_tiles::TileVisualType::ICON_REAL, favicon_base::IconType::kInvalid,
-      base::Time(), GURL());
+      GURL());
   NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();

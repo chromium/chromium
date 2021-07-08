@@ -83,7 +83,6 @@ async function addTiles(n, customLinksEnabled = true, visible = true) {
       source: i,
       titleSource: i,
       isQueryTile: false,
-      dataGenerationTime: {internalValue: BigInt(0)},
     };
   });
   const tilesRendered = eventToPromise('dom-change', mostVisited.$.tiles);
@@ -419,7 +418,6 @@ suite('General', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
-      dataGenerationTime: {internalValue: BigInt(0)},
     });
     assertDeepEquals(tiles[1], {
       title: 'b',
@@ -428,7 +426,6 @@ suite('General', () => {
       source: 1,
       titleSource: 1,
       isQueryTile: false,
-      dataGenerationTime: {internalValue: BigInt(0)},
     });
   });
 
@@ -453,7 +450,6 @@ suite('General', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
-      dataGenerationTime: {internalValue: BigInt(0)},
     });
   });
 
@@ -799,7 +795,6 @@ suite('Modification', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: true,
-      dataGenerationTime: {internalValue: BigInt(0)},
     }]);
     const actionMenuButton = queryTiles()[0].querySelector('#actionMenuButton');
     assertFalse(actionMenu.open);
@@ -837,7 +832,6 @@ suite('Modification', () => {
           source: 0,
           titleSource: 0,
           isQueryTile: true,
-          dataGenerationTime: {internalValue: BigInt(0)},
         }],
         /* customLinksEnabled */ false);
     const removeButton = queryTiles()[0].querySelector('#removeButton');
@@ -1051,7 +1045,6 @@ suite('Theming', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
-      dataGenerationTime: {internalValue: BigInt(0)},
     }]);
     const [tile] = queryTiles();
     const titleElement = tile.querySelector('.tile-title');
@@ -1066,7 +1059,6 @@ suite('Theming', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
-      dataGenerationTime: {internalValue: BigInt(0)},
     }]);
     const [tile] = queryTiles();
     const titleElement = tile.querySelector('.tile-title');
