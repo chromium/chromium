@@ -1,20 +1,17 @@
 {
   "android-arm32-pgo": {
-    "args_file": "//clank/build/custom_args.gn",
     "gn_args": {
       "chrome_pgo_phase": 1,
-      "enable_remoting": true,
-      "enable_webview_bundles": true,
+      "clang_use_default_sample_profile": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
       "proprietary_codecs": true,
       "strip_absolute_paths_from_debug_symbols": true,
-      "system_webview_apk_target": "//clank/android_webview:system_webview_google_apk",
+      "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_goma": true,
-      "use_signing_keys": true
+      "use_goma": true
     }
   },
   "linux-pgo": {
