@@ -5,7 +5,6 @@ create {
       tag_pattern: "%s-dev"
     }
     patch_dir: "patches"
-    patch_version: "alpha"
   }
 
   build {

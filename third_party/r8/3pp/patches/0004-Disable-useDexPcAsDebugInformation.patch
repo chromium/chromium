@@ -1,7 +1,7 @@
-From 1a7ca4f116f86104a772705433a12f91a7d6a08f Mon Sep 17 00:00:00 2001
+From ca66a211ce82c330257d9ca94dcca4c644cb4674 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Wed, 23 Jun 2021 21:53:35 -0400
-Subject: [PATCH 4/5] Disable useDexPcAsDebugInformation
+Subject: [PATCH 4/4] Disable useDexPcAsDebugInformation
 
 useDexPcAsDebugInformation breaks deobfuscation, but would be great to turn on.
 
@@ -11,10 +11,10 @@ See crbug.com/1214915 for more information.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-index c17a6ac6e..f20be9f49 100644
+index e82e04d90..03bab9255 100644
 --- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
 +++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-@@ -1718,7 +1718,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+@@ -1704,7 +1704,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
    }
  
    public boolean canUseDexPcAsDebugInformation() {
@@ -24,5 +24,5 @@ index c17a6ac6e..f20be9f49 100644
  
    public boolean isInterfaceMethodDesugaringEnabled() {
 -- 
-2.32.0.93.g670b81a890-goog
+2.32.0.288.g62a8d224e6-goog
 
