@@ -100,6 +100,13 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         continue;
       }
 
+      if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
+        DBG_DRAW_RECT("delegated.overlay.aggregated", candidate.display_rect);
+        candidates->push_back(candidate);
+        candidate_quads.push_back(it);
+        continue;
+      }
+
       // Because of the device scale factor (2) we check against a rounded empty
       // rect.
       // TODO(https://crbug.com/1218678) : Move and generalize this fix in
@@ -133,14 +140,11 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   // Check for support.
   this->CheckOverlaySupport(primary_plane, candidates);
 
-  // Reverse iterate to avoid iterator invalidation of future elements.
-  auto quad_to_iter = candidate_quads.rbegin();
-  for (auto candidate = candidates->rbegin(); candidate != candidates->rend();
-       candidate++, quad_to_iter++) {
-    if (candidate->overlay_handled) {
-      quad_list->EraseAndInvalidateAllPointers(*quad_to_iter);
-    }
-  }
+  // We cannot erase the quads that were handled as overlays because raw
+  // pointers of the aggregate draw quads were placed in the |rpdq| member of
+  // the |OverlayCandidate|. As keeping with the pattern in
+  // overlay_processor_mac we will also set the damage to empty on the
+  // successful promotion of all quads.
 
   return true;
 }

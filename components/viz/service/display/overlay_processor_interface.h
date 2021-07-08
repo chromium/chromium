@@ -44,6 +44,15 @@ class RendererSettings;
 class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
  public:
 #if defined(OS_APPLE)
+  using PlatformOverlayCandidate = CALayerOverlay;
+#elif defined(OS_WIN)
+  using PlatformOverlayCandidate = DCLayerOverlay;
+#else
+  // Default.
+  using PlatformOverlayCandidate = OverlayCandidate;
+#endif
+
+#if defined(OS_APPLE)
   using CandidateList = CALayerOverlayList;
 #elif defined(OS_WIN)
   using CandidateList = DCLayerOverlayList;

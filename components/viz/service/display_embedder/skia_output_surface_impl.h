@@ -140,7 +140,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void PreserveChildSurfaceControls() override;
   gpu::SyncToken Flush() override;
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
   SkCanvas* BeginPaintRenderPassOverlay(
       const gfx::Size& size,
       ResourceFormat format,

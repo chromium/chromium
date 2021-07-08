@@ -252,8 +252,9 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // be sent to GPU scheduler.
   void FlushOutputSurface();
 
-#if defined(OS_APPLE)
-  void PrepareRenderPassOverlay(CALayerOverlay* overlay);
+#if defined(OS_APPLE) || defined(USE_OZONE)
+  void PrepareRenderPassOverlay(
+      OverlayProcessorInterface::PlatformOverlayCandidate* overlay);
 #endif
 
   DisplayResourceProviderSkia* resource_provider() {

@@ -17,6 +17,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -29,6 +30,7 @@ class Rect;
 }
 
 namespace viz {
+class AggregatedRenderPassDrawQuad;
 class DisplayResourceProvider;
 class SolidColorDrawQuad;
 class StreamVideoDrawQuad;
@@ -153,6 +155,18 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // for solid color quads only
   absl::optional<SkColor> solid_color;
 
+  // If |rpdq| is present, then the renderer must draw the filter effects and
+  // copy the result into the buffer backing of a render pass.
+  const AggregatedRenderPassDrawQuad* rpdq = nullptr;
+  // The DDL for generating render pass overlay buffer with SkiaRenderer. This
+  // is the recorded output of rendering the |rpdq|.
+  sk_sp<SkDeferredDisplayList> ddl;
+
+  // The bounds in pixels of the rendered |rpdq|.
+  // TODO(petermcneeley) : Refactor the usage of this member to be compatible
+  // with |uv_rect| member in this class.
+  gfx::RectF bounds_rect;
+
  private:
   static bool FromDrawQuadResource(
       DisplayResourceProvider* resource_provider,
@@ -172,6 +186,13 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                            const TileDrawQuad* quad,
                            const gfx::RectF& primary_rect,
                            OverlayCandidate* candidate);
+
+  static bool FromAggregateQuad(DisplayResourceProvider* resource_provider,
+                                SurfaceDamageRectList* surface_damage_rect_list,
+                                const AggregatedRenderPassDrawQuad* quad,
+                                const gfx::RectF& primary_rect,
+                                OverlayCandidate* candidate);
+
   static bool FromSolidColorQuad(
       DisplayResourceProvider* resource_provider,
       SurfaceDamageRectList* surface_damage_rect_list,

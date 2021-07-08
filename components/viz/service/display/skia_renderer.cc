@@ -2276,6 +2276,11 @@ void SkiaRenderer::ScheduleOverlays() {
   // Only Wayland uses this code path.
   auto& locks = pending_overlay_locks_.back();
   for (auto& overlay : current_frame()->overlay_list) {
+    if (overlay.rpdq) {
+      PrepareRenderPassOverlay(&overlay);
+      // The output will be attached via mailbox when overlays are scheduled.
+      continue;
+    }
     // Solid Color quads do not have associated resource buffers.
     if (overlay.solid_color.has_value())
       continue;
@@ -2771,8 +2776,9 @@ void SkiaRenderer::FlushOutputSurface() {
   lock_set_for_external_use_->UnlockResources(sync_token);
 }
 
-#if defined(OS_APPLE)
-void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
+#if defined(OS_APPLE) || defined(USE_OZONE)
+void SkiaRenderer::PrepareRenderPassOverlay(
+    OverlayProcessorInterface::PlatformOverlayCandidate* overlay) {
   DCHECK(!current_canvas_);
   DCHECK(batched_quads_.empty());
   DCHECK(overlay->rpdq);
@@ -2872,6 +2878,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
     bypass_mode = CalculateBypassParams(bypass->second, &rpdq_params, &params);
     if (bypass_mode == BypassMode::kSkip)
       return;
+
     // For bypassed render pass, we use the same format and color space for the
     // framebuffer.
     buffer_format = GetResourceFormat(reshape_buffer_format());
@@ -2889,7 +2896,13 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
 
   // Adjust the overlay |buffer_size| to reduce memory fragmentation. It also
   // increases buffer reusing possibilities.
+#if defined(OS_APPLE)
   constexpr int kBufferMultiple = 64;
+#else  // defined(USE_OZONE)
+  // TODO(petermcneeley) : Support buffer rounding by dynamically changing
+  // texture uvs.
+  constexpr int kBufferMultiple = 1;
+#endif
   gfx::Size buffer_size(
       cc::MathUtil::CheckedRoundUp(filter_bounds.width(), kBufferMultiple),
       cc::MathUtil::CheckedRoundUp(filter_bounds.height(), kBufferMultiple));

@@ -277,7 +277,7 @@ class SkiaOutputSurfaceImplOnGpu
 
   void ReleaseAsyncReadResultHelpers();
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
   std::unique_ptr<gpu::SharedImageRepresentationSkia>
   GetOrCreateRenderPassOverlayBacking(
       const SkSurfaceCharacterization& characterization);
@@ -376,7 +376,7 @@ class SkiaOutputSurfaceImplOnGpu
   // Tracking for ongoing AsyncReadResults.
   base::flat_set<AsyncReadResultHelper*> async_read_result_helpers_;
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
   using UniqueBackingPtr = std::unique_ptr<gpu::SharedImageRepresentationSkia>;
   class BackingComparator {
    public:

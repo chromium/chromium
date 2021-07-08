@@ -578,7 +578,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   return current_paint_->recorder()->getCanvas();
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
 SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPassOverlay(
     const gfx::Size& size,
     ResourceFormat format,
@@ -607,7 +607,7 @@ SkiaOutputSurfaceImpl::EndPaintRenderPassOverlay() {
   current_paint_.reset();
   return ddl;
 }
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_APPLE) || defined(USE_OZONE)
 
 void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -748,14 +748,14 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
     OverlayList overlays,
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished) {
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
   DCHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
   // If there are render pass overlays, then a gl context is needed for drawing
   // the overlay render passes to a backing for being scanned out.
-  bool make_current = std::find_if(overlays.begin(), overlays.end(),
-                                   [](const CALayerOverlay& overlay) {
-                                     return !!overlay.ddl;
-                                   }) != overlays.end();
+  bool make_current =
+      std::find_if(overlays.begin(), overlays.end(), [](const auto& overlay) {
+        return !!overlay.ddl;
+      }) != overlays.end();
   // Append |resource_sync_tokens_| which are depended by drawing render passes
   // to overlay backings.
   std::move(resource_sync_tokens_.begin(), resource_sync_tokens_.end(),

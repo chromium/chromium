@@ -146,8 +146,12 @@ bool OverlayCandidate::FromDrawQuad(
   const SharedQuadState* sqs = quad->shared_quad_state;
 
   // We don't support an opacity value different than one for an overlay plane.
-  if (sqs->opacity != 1.f)
+  // Render pass quads should have their |sqs| opacity integrated directly into
+  // their final output buffers.
+  if (!cc::MathUtil::IsWithinEpsilon(sqs->opacity, 1.0f) &&
+      quad->material != DrawQuad::Material::kAggregatedRenderPass) {
     return false;
+  }
 
   // We support only kSrc (no blending) and kSrcOver (blending with premul).
   if (!(sqs->blend_mode == SkBlendMode::kSrc ||
@@ -178,7 +182,13 @@ bool OverlayCandidate::FromDrawQuad(
       return candidate->FromSolidColorQuad(
           resource_provider, surface_damage_rect_list,
           SolidColorDrawQuad::MaterialCast(quad), primary_rect, candidate);
-
+    case DrawQuad::Material::kAggregatedRenderPass:
+      if (!is_delegated_context)
+        return false;
+      return candidate->FromAggregateQuad(
+          resource_provider, surface_damage_rect_list,
+          AggregatedRenderPassDrawQuad::MaterialCast(quad), primary_rect,
+          candidate);
     case DrawQuad::Material::kTiledContent:
       if (!is_delegated_context)
         return false;
@@ -347,6 +357,21 @@ bool OverlayCandidate::FromDrawQuadResource(
     candidate->mailbox = resource_provider->GetMailbox(resource_id);
   }
 
+  return true;
+}
+
+// static
+bool OverlayCandidate::FromAggregateQuad(
+    DisplayResourceProvider* resource_provider,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    const AggregatedRenderPassDrawQuad* quad,
+    const gfx::RectF& primary_rect,
+    OverlayCandidate* candidate) {
+  if (!FromDrawQuadResource(resource_provider, surface_damage_rect_list, quad,
+                            kInvalidResourceId, false, candidate)) {
+    return false;
+  }
+  candidate->rpdq = quad;
   return true;
 }
 

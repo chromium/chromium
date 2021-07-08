@@ -179,7 +179,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // the GPU main thread.
   virtual gpu::SyncToken Flush() = 0;
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
   virtual SkCanvas* BeginPaintRenderPassOverlay(
       const gfx::Size& size,
       ResourceFormat format,

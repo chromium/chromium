@@ -321,7 +321,7 @@ gpu::SyncToken FakeSkiaOutputSurface::Flush() {
   return sync_token;
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
 SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPassOverlay(
     const gfx::Size& size,
     ResourceFormat format,

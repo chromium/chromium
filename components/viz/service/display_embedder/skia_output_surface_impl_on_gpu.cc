@@ -1178,7 +1178,7 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
     std::vector<ImageContextImpl*> image_contexts,
     base::OnceClosure on_finished) {
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
   if (context_is_lost_)
     return;
 
@@ -1559,7 +1559,7 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(output_device_);
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
   // Release any backings which are not reused by the current frame, probably
   // because the properties of render passes are changed or render passes are
   // removed
@@ -1713,7 +1713,7 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
     waiting_for_full_damage_ = true;
   }
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
   // |available_render_pass_overlay_backings_| are used or released in
   // SwapBuffers() for every frames.
   DCHECK(available_render_pass_overlay_backings_.empty());
@@ -1792,7 +1792,7 @@ void SkiaOutputSurfaceImplOnGpu::PreserveChildSurfaceControls() {
     gl_surface_->PreserveChildSurfaceControls();
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
 std::unique_ptr<gpu::SharedImageRepresentationSkia>
 SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(
     const SkSurfaceCharacterization& characterization) {
@@ -1859,7 +1859,7 @@ SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(
 
   return backing;
 }
-#endif
+#endif  // defined(OS_APPLE)  || defined(USE_OZONE)
 
 void SkiaOutputSurfaceImplOnGpu::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
