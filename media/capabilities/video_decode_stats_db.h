@@ -59,6 +59,7 @@ class MEDIA_EXPORT VideoDecodeStatsDB {
                      uint64_t frames_dropped,
                      uint64_t frames_power_efficient);
     DecodeStatsEntry(const DecodeStatsEntry& entry);
+    DecodeStatsEntry& operator=(const DecodeStatsEntry& entry);
 
     // Add stats from |right| to |this| entry.
     DecodeStatsEntry& operator+=(const DecodeStatsEntry& right);

@@ -20,6 +20,7 @@ struct MEDIA_EXPORT OverlayInfo {
 
   OverlayInfo();
   OverlayInfo(const OverlayInfo&);
+  OverlayInfo& operator=(const OverlayInfo&);
 
   // Convenience functions to return true if and only if this specifies a
   // surface ID / routing token that is not kNoSurfaceID / empty.  I.e., if we

@@ -76,10 +76,11 @@ VideoDecodeStatsDB::DecodeStatsEntry::DecodeStatsEntry(
 }
 
 VideoDecodeStatsDB::DecodeStatsEntry::DecodeStatsEntry(
-    const DecodeStatsEntry& entry)
-    : frames_decoded(entry.frames_decoded),
-      frames_dropped(entry.frames_dropped),
-      frames_power_efficient(entry.frames_power_efficient) {}
+    const DecodeStatsEntry& entry) = default;
+
+VideoDecodeStatsDB::DecodeStatsEntry&
+VideoDecodeStatsDB::DecodeStatsEntry::operator=(const DecodeStatsEntry& entry) =
+    default;
 
 std::string VideoDecodeStatsDB::DecodeStatsEntry::ToLogString() const {
   return base::StringPrintf(

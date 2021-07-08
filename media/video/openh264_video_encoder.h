@@ -43,6 +43,7 @@ class MEDIA_EXPORT OpenH264VideoEncoder : public VideoEncoder {
    public:
     ISVCEncoderDeleter();
     ISVCEncoderDeleter(const ISVCEncoderDeleter&);
+    ISVCEncoderDeleter& operator=(const ISVCEncoderDeleter&);
     void operator()(ISVCEncoder* coder);
     void MarkInitialized();
 

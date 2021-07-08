@@ -8,6 +8,7 @@ namespace media {
 
 OverlayInfo::OverlayInfo() = default;
 OverlayInfo::OverlayInfo(const OverlayInfo&) = default;
+OverlayInfo& OverlayInfo::operator=(const OverlayInfo&) = default;
 
 bool OverlayInfo::HasValidRoutingToken() const {
   return routing_token.has_value();

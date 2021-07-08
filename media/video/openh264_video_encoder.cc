@@ -60,6 +60,9 @@ Status SetUpOpenH264Params(const VideoEncoder::Options& options,
 OpenH264VideoEncoder::ISVCEncoderDeleter::ISVCEncoderDeleter() = default;
 OpenH264VideoEncoder::ISVCEncoderDeleter::ISVCEncoderDeleter(
     const ISVCEncoderDeleter&) = default;
+OpenH264VideoEncoder::ISVCEncoderDeleter&
+OpenH264VideoEncoder::ISVCEncoderDeleter::operator=(const ISVCEncoderDeleter&) =
+    default;
 void OpenH264VideoEncoder::ISVCEncoderDeleter::operator()(ISVCEncoder* codec) {
   if (codec) {
     if (initialized_) {
