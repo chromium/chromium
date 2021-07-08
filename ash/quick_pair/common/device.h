@@ -18,7 +18,7 @@ namespace quick_pair {
 // can use |metadata_id| to query the Service to receive a full metadata object.
 struct Device {
   Device(std::string metadata_id, std::string address, Protocol protocol);
-  Device(const Device&) = default;
+  Device(const Device&) = delete;
   Device(Device&&) = default;
   Device& operator=(const Device&) = delete;
   Device& operator=(Device&&) = delete;

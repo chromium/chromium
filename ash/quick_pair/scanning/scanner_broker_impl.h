@@ -29,8 +29,8 @@ class ScannerBrokerImpl : public ScannerBroker {
   void StartFastPairScanning();
   void StopFastPairScanning();
 
-  void NotifyDeviceFound(Device device);
-  void NotifyDeviceLost(Device device);
+  void NotifyDeviceFound(const Device& device);
+  void NotifyDeviceLost(const Device& device);
 
   base::ObserverList<Observer> observers_;
 };

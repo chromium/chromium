@@ -47,13 +47,13 @@ void ScannerBrokerImpl::StopFastPairScanning() {
   QP_LOG(INFO) << "Stoping Fast Pair Scanning.";
 }
 
-void ScannerBrokerImpl::NotifyDeviceFound(Device device) {
+void ScannerBrokerImpl::NotifyDeviceFound(const Device& device) {
   for (auto& observer : observers_) {
     observer.OnDeviceFound(device);
   }
 }
 
-void ScannerBrokerImpl::NotifyDeviceLost(Device device) {
+void ScannerBrokerImpl::NotifyDeviceLost(const Device& device) {
   for (auto& observer : observers_) {
     observer.OnDeviceLost(device);
   }
