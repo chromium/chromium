@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.state.PriceDropMetricsLogger.MetricsResult;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -108,6 +109,46 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.PRICE_MICROS, deserialized.getPriceMicros());
         Assert.assertEquals(
                 ShoppingPersistedTabData.NO_PRICE_KNOWN, deserialized.getPreviousPriceMicros());
+        MetricsResult metricsResult =
+                deserialized.getPriceDropMetricsLoggerForTesting().getMetricsResultForTesting();
+        Assert.assertFalse(metricsResult.isProductDetailPage);
+        Assert.assertTrue(metricsResult.containsPrice);
+        Assert.assertFalse(metricsResult.containsPriceDrop);
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testMetricDerivations() {
+        Tab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID,
+                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
+        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+        supplier.set(true);
+        shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
+        for (boolean isProductDetailPage : new boolean[] {false, true}) {
+            for (boolean containsPrice : new boolean[] {false, true}) {
+                for (boolean containsPriceDrop : new boolean[] {false, true}) {
+                    shoppingPersistedTabData.setMainOfferId(
+                            isProductDetailPage ? "non-empty-offer-id" : null);
+                    shoppingPersistedTabData.setPriceMicros(containsPrice || containsPriceDrop
+                                    ? 42_000_000L
+                                    : ShoppingPersistedTabData.NO_PRICE_KNOWN);
+                    shoppingPersistedTabData.setPreviousPriceMicros(containsPriceDrop
+                                    ? 30_000_000L
+                                    : ShoppingPersistedTabData.NO_PRICE_KNOWN);
+                    ByteBuffer serialized = shoppingPersistedTabData.getSerializeSupplier().get();
+                    ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
+                    deserialized.deserialize(serialized);
+                    MetricsResult metricsResult = deserialized.getPriceDropMetricsLoggerForTesting()
+                                                          .getMetricsResultForTesting();
+                    Assert.assertEquals(isProductDetailPage, metricsResult.isProductDetailPage);
+                    Assert.assertEquals(
+                            containsPrice || containsPriceDrop, metricsResult.containsPrice);
+                    Assert.assertEquals(containsPriceDrop, metricsResult.containsPriceDrop);
+                }
+            }
+        }
     }
 
     @SmallTest

@@ -230,8 +230,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                         PriceTrackingData.parseFrom(metadata.getValue());
                                 parsePriceTrackingDataProto(tab, priceTrackingDataProto, null);
                                 setLastUpdatedMs(System.currentTimeMillis());
-                                mPriceDropMetricsLogger =
-                                        new PriceDropMetricsLogger(priceTrackingDataProto);
+                                mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
                                 mPriceDropMetricsLogger.logPriceDropMetrics(
                                         METRICS_IDENTIFIER_PREFIX);
                             } catch (InvalidProtocolBufferException e) {
@@ -259,6 +258,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (mPriceDropMetricsLogger != null) {
             mPriceDropMetricsLogger.logPriceDropMetrics(locationIdentifier);
         }
+    }
+
+    @VisibleForTesting
+    protected PriceDropMetricsLogger getPriceDropMetricsLoggerForTesting() {
+        return mPriceDropMetricsLogger;
     }
 
     @VisibleForTesting
@@ -604,9 +608,23 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return mPriceDropData.priceMicros;
     }
 
+    /**
+     * @return true if there is a price
+     */
+    protected boolean hasPriceMicros() {
+        return mPriceDropData.priceMicros != NO_PRICE_KNOWN;
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public long getPreviousPriceMicros() {
         return mPriceDropData.previousPriceMicros;
+    }
+
+    /**
+     * @return true if there is a previous price
+     */
+    protected boolean hasPreviousPriceMicros() {
+        return mPriceDropData.previousPriceMicros != NO_PRICE_KNOWN;
     }
 
     @VisibleForTesting
@@ -754,6 +772,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             setLastUpdatedMs(shoppingPersistedTabDataProto.getLastUpdatedMs());
             mLastPriceChangeTimeMs = shoppingPersistedTabDataProto.getLastPriceChangeTimeMs();
             mPriceDropData.offerId = shoppingPersistedTabDataProto.getMainOfferId();
+            mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
             return true;
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG,
