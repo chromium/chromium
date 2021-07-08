@@ -151,9 +151,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::String accept_language_override_;
   InspectorAgentState::String locale_override_;
   InspectorAgentState::Double virtual_time_budget_;
-  InspectorAgentState::Double virtual_time_budget_initial_offset_;
   InspectorAgentState::Double initial_virtual_time_;
-  InspectorAgentState::Double virtual_time_offset_;
   InspectorAgentState::String virtual_time_policy_;
   InspectorAgentState::Integer virtual_time_task_starvation_count_;
   InspectorAgentState::Boolean wait_for_navigation_;

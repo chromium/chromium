@@ -88,7 +88,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool VirtualTimeAllowedToAdvance() const override;
   void SetVirtualTimePolicy(VirtualTimePolicy) override;
   void SetInitialVirtualTime(base::Time time) override;
-  void SetInitialVirtualTimeOffset(base::TimeDelta offset) override;
   void GrantVirtualTimeBudget(
       base::TimeDelta budget,
       base::OnceClosure budget_exhausted_callback) override;

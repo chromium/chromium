@@ -73,7 +73,6 @@ class FakePageScheduler final : public PageScheduler {
   bool VirtualTimeAllowedToAdvance() const override { return false; }
   void SetVirtualTimePolicy(VirtualTimePolicy policy) override {}
   void SetInitialVirtualTime(base::Time time) override {}
-  void SetInitialVirtualTimeOffset(base::TimeDelta offset) override {}
   void GrantVirtualTimeBudget(base::TimeDelta budget,
                               base::OnceClosure callback) override {}
   void SetMaxVirtualTimeTaskStarvationCount(int count) override {}

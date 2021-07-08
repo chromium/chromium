@@ -131,7 +131,6 @@ class DummyPageScheduler : public PageScheduler {
   void DisableVirtualTimeForTesting() override {}
   bool VirtualTimeAllowedToAdvance() const override { return true; }
   void SetInitialVirtualTime(base::Time) override {}
-  void SetInitialVirtualTimeOffset(base::TimeDelta) override {}
   void SetVirtualTimePolicy(VirtualTimePolicy) override {}
   void GrantVirtualTimeBudget(base::TimeDelta, base::OnceClosure) override {}
   void SetMaxVirtualTimeTaskStarvationCount(int) override {}

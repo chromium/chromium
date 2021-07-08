@@ -117,10 +117,6 @@ class PLATFORM_EXPORT PageScheduler {
   // This is used to set initial Date.now() while in virtual time mode.
   virtual void SetInitialVirtualTime(base::Time time) = 0;
 
-  // This is used for cross origin navigations to account for virtual time
-  // advancing in the previous renderer.
-  virtual void SetInitialVirtualTimeOffset(base::TimeDelta offset) = 0;
-
   // Sets the virtual time policy, which is applied imemdiatly to all child
   // FrameSchedulers.
   virtual void SetVirtualTimePolicy(VirtualTimePolicy) = 0;

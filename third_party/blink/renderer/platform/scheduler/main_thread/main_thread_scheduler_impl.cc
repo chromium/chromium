@@ -1852,11 +1852,8 @@ base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime(
   if (main_thread_only().initial_virtual_time_ticks.is_null())
     main_thread_only().initial_virtual_time_ticks = tick_clock()->NowTicks();
   virtual_time_domain_ = std::make_unique<AutoAdvancingVirtualTimeDomain>(
-      main_thread_only().initial_virtual_time +
-          main_thread_only().initial_virtual_time_offset,
-      main_thread_only().initial_virtual_time_ticks +
-          main_thread_only().initial_virtual_time_offset,
-      &helper_, policy);
+      main_thread_only().initial_virtual_time,
+      main_thread_only().initial_virtual_time_ticks, &helper_, policy);
   RegisterTimeDomain(virtual_time_domain_.get());
 
   DCHECK(!virtual_time_control_task_queue_);
@@ -1980,11 +1977,6 @@ void MainThreadSchedulerImpl::SetVirtualTimePolicy(VirtualTimePolicy policy) {
 
 void MainThreadSchedulerImpl::SetInitialVirtualTime(base::Time time) {
   main_thread_only().initial_virtual_time = time;
-}
-
-void MainThreadSchedulerImpl::SetInitialVirtualTimeOffset(
-    base::TimeDelta offset) {
-  main_thread_only().initial_virtual_time_offset = offset;
 }
 
 void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {

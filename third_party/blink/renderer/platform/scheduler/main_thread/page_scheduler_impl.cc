@@ -473,10 +473,6 @@ void PageSchedulerImpl::SetInitialVirtualTime(base::Time time) {
   main_thread_scheduler_->SetInitialVirtualTime(time);
 }
 
-void PageSchedulerImpl::SetInitialVirtualTimeOffset(base::TimeDelta offset) {
-  main_thread_scheduler_->SetInitialVirtualTimeOffset(offset);
-}
-
 bool PageSchedulerImpl::VirtualTimeAllowedToAdvance() const {
   return main_thread_scheduler_->VirtualTimeAllowedToAdvance();
 }

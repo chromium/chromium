@@ -314,7 +314,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   bool VirtualTimeAllowedToAdvance() const;
   void SetVirtualTimePolicy(VirtualTimePolicy virtual_time_policy);
   void SetInitialVirtualTime(base::Time time);
-  void SetInitialVirtualTimeOffset(base::TimeDelta offset);
   void SetMaxVirtualTimeTaskStarvationCount(int max_task_starvation_count);
   base::TimeTicks IncrementVirtualTimePauseCount();
   void DecrementVirtualTimePauseCount();
@@ -908,9 +907,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::Time initial_virtual_time;
     base::TimeTicks initial_virtual_time_ticks;
 
-    // This is used for cross origin navigations to account for virtual time
-    // advancing in the previous renderer.
-    base::TimeDelta initial_virtual_time_offset;
     VirtualTimePolicy virtual_time_policy;
 
     // In VirtualTimePolicy::kDeterministicLoading virtual time is only allowed
