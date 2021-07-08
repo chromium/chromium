@@ -388,49 +388,52 @@ TEST_F('AccessibilityExtensionCursorsTest', 'IsInWebRange', function() {
   });
 });
 
-TEST_F('AccessibilityExtensionCursorsTest', 'SingleDocSelection', function() {
-  this.runWithLoadedTree(
-      `
+// Disabled due to being flaky on ChromeOS. See https://crbug.com/1227435.
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'DISABLED_SingleDocSelection',
+    function() {
+      this.runWithLoadedTree(
+          `
     <span>start</span>
     <p><a href="google.com">google home page</a></p>
     <p>some more text</p>
     <p>end of text</p>
   `,
-      function(root) {
-        // For some reason, Blink fails if we don't first select something on
-        // the page.
-        ChromeVoxState.instance.currentRange.select();
-        const link = root.find({role: RoleType.LINK});
-        const p1 = root.find({role: RoleType.PARAGRAPH});
-        const p2 = p1.nextSibling;
+          function(root) {
+            // For some reason, Blink fails if we don't first select something
+            // on the page.
+            ChromeVoxState.instance.currentRange.select();
+            const link = root.find({role: RoleType.LINK});
+            const p1 = root.find({role: RoleType.PARAGRAPH});
+            const p2 = p1.nextSibling;
 
-        const singleSel = new cursors.Range(
-            new cursors.Cursor(link, 0), new cursors.Cursor(link, 1));
+            const singleSel = new cursors.Range(
+                new cursors.Cursor(link, 0), new cursors.Cursor(link, 1));
 
-        const multiSel = new cursors.Range(
-            new cursors.Cursor(p1.firstChild, 2),
-            new cursors.Cursor(p2.firstChild, 4));
+            const multiSel = new cursors.Range(
+                new cursors.Cursor(p1.firstChild, 2),
+                new cursors.Cursor(p2.firstChild, 4));
 
-        function verifySel() {
-          if (root.selectionStartObject === link.firstChild) {
-            assertEquals(link.firstChild, root.selectionStartObject);
-            assertEquals(0, root.selectionStartOffset);
-            assertEquals(link.firstChild, root.selectionEndObject);
-            assertEquals(1, root.selectionEndOffset);
-            this.listenOnce(root, 'textSelectionChanged', verifySel);
-            multiSel.select();
-          } else if (root.selectionStartObject === p1.firstChild) {
-            assertEquals(p1.firstChild, root.selectionStartObject);
-            assertEquals(2, root.selectionStartOffset);
-            assertEquals(p2.firstChild, root.selectionEndObject);
-            assertEquals(4, root.selectionEndOffset);
-          }
-        }
+            function verifySel() {
+              if (root.selectionStartObject === link.firstChild) {
+                assertEquals(link.firstChild, root.selectionStartObject);
+                assertEquals(0, root.selectionStartOffset);
+                assertEquals(link.firstChild, root.selectionEndObject);
+                assertEquals(1, root.selectionEndOffset);
+                this.listenOnce(root, 'textSelectionChanged', verifySel);
+                multiSel.select();
+              } else if (root.selectionStartObject === p1.firstChild) {
+                assertEquals(p1.firstChild, root.selectionStartObject);
+                assertEquals(2, root.selectionStartOffset);
+                assertEquals(p2.firstChild, root.selectionEndObject);
+                assertEquals(4, root.selectionEndOffset);
+              }
+            }
 
-        this.listenOnce(root, 'textSelectionChanged', verifySel, true);
-        singleSel.select();
-      });
-});
+            this.listenOnce(root, 'textSelectionChanged', verifySel, true);
+            singleSel.select();
+          });
+    });
 
 TEST_F(
     'AccessibilityExtensionCursorsTest', 'MultiLineOffsetSelection',
