@@ -83,6 +83,7 @@ void MediaFoundationRendererWrapper::SetPlaybackRate(double playback_rate) {
 }
 
 void MediaFoundationRendererWrapper::SetVolume(float volume) {
+  volume_ = volume;
   renderer_->SetVolume(muted_ ? 0 : volume_);
 }
 
