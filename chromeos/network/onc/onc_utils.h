@@ -20,7 +20,7 @@
 class PrefService;
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace user_manager {
@@ -175,15 +175,6 @@ int ImportNetworksForUser(const user_manager::User* user,
                           const base::Value& network_configs,
                           std::string* error);
 
-// Looks up the policy for |guid| for the current active user and sets
-// |global_config| (if not NULL) and |onc_source| (if not NULL) accordingly. If
-// |guid| is empty, returns NULL and sets the |global_config| and |onc_source|
-// if a policy is found.
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
-const base::DictionaryValue* FindPolicyForActiveUser(
-    const std::string& guid,
-    ::onc::ONCSource* onc_source);
-
 // Convenvience function to retrieve the "AllowOnlyPolicyNetworksToAutoconnect"
 // setting from the global network configuration (see
 // GetGlobalConfigFromPolicy).
@@ -194,11 +185,10 @@ bool PolicyAllowsOnlyPolicyNetworksToAutoconnect(bool for_active_user);
 // |profile_prefs| and |local_state_prefs| might be NULL. Returns NULL if no
 // applicable policy is found. Sets |onc_source| accordingly.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-const base::DictionaryValue* GetPolicyForNetwork(
-    const PrefService* profile_prefs,
-    const PrefService* local_state_prefs,
-    const NetworkState& network,
-    ::onc::ONCSource* onc_source);
+const base::Value* GetPolicyForNetwork(const PrefService* profile_prefs,
+                                       const PrefService* local_state_prefs,
+                                       const NetworkState& network,
+                                       ::onc::ONCSource* onc_source);
 
 // Convenience function to check only whether a policy for a network exists.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)

@@ -495,43 +495,38 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
 
 // Returns the NetworkConfiugration with |guid| from |network_configs|, or
 // nullptr if no such NetworkConfiguration is found.
-const base::DictionaryValue* GetNetworkConfigByGUID(
-    const base::Value& network_configs,
-    const std::string& guid) {
-  for (const auto& entry : network_configs.GetList()) {
-    const base::DictionaryValue* network = nullptr;
-    entry.GetAsDictionary(&network);
-    DCHECK(network);
+const base::Value* GetNetworkConfigByGUID(const base::Value& network_configs,
+                                          const std::string& guid) {
+  for (const auto& network : network_configs.GetList()) {
+    DCHECK(network.is_dict());
 
-    std::string current_guid =
-        GetString(*network, ::onc::network_config::kGUID);
+    std::string current_guid = GetString(network, ::onc::network_config::kGUID);
     if (current_guid == guid)
-      return network;
+      return &network;
   }
   return nullptr;
 }
 
 // Returns the first Ethernet NetworkConfiguration from |network_configs| with
 // "Authentication: None", or nullptr if no such NetworkConfiguration is found.
-const base::DictionaryValue* GetNetworkConfigForEthernetWithoutEAP(
+const base::Value* GetNetworkConfigForEthernetWithoutEAP(
     const base::Value& network_configs) {
   VLOG(2) << "Search for ethernet policy without EAP.";
-  for (const auto& entry : network_configs.GetList()) {
-    const base::DictionaryValue* network = nullptr;
-    entry.GetAsDictionary(&network);
-    DCHECK(network);
+  for (const auto& network : network_configs.GetList()) {
+    DCHECK(network.is_dict());
 
-    std::string type = GetString(*network, ::onc::network_config::kType);
+    std::string type = GetString(network, ::onc::network_config::kType);
     if (type != ::onc::network_type::kEthernet)
       continue;
 
-    const base::DictionaryValue* ethernet = nullptr;
-    network->GetDictionaryWithoutPathExpansion(::onc::network_config::kEthernet,
-                                               &ethernet);
+    const base::Value* ethernet =
+        network.FindDictKey(::onc::network_config::kEthernet);
+    if (!ethernet)
+      continue;
 
     std::string auth = GetString(*ethernet, ::onc::ethernet::kAuthentication);
     if (auth == ::onc::ethernet::kAuthenticationNone)
-      return network;
+      return &network;
   }
   return nullptr;
 }
@@ -542,7 +537,7 @@ const base::DictionaryValue* GetNetworkConfigForEthernetWithoutEAP(
 // is an Ethernet network, tries lookup of the GUID of the shared EthernetEAP
 // service, or otherwise returns the first Ethernet NetworkConfiguration with
 // "Authentication: None".
-const base::DictionaryValue* GetNetworkConfigForNetworkFromOnc(
+const base::Value* GetNetworkConfigForNetworkFromOnc(
     const base::Value& network_configs,
     const NetworkState& network) {
   // In all cases except Ethernet, we use the GUID of |network|.
@@ -576,10 +571,9 @@ const base::DictionaryValue* GetNetworkConfigForNetworkFromOnc(
 // Returns the NetworkConfiguration ONC object for |network| from this ONC, or
 // nullptr if no configuration is found. See |GetNetworkConfigForNetworkFromOnc|
 // for the NetworkConfiguration lookup rules.
-const base::DictionaryValue* GetPolicyForNetworkFromPref(
-    const PrefService* pref_service,
-    const char* pref_name,
-    const NetworkState& network) {
+const base::Value* GetPolicyForNetworkFromPref(const PrefService* pref_service,
+                                               const char* pref_name,
+                                               const NetworkState& network) {
   if (!pref_service) {
     VLOG(2) << "No pref service";
     return nullptr;
@@ -615,7 +609,7 @@ const base::DictionaryValue* GetPolicyForNetworkFromPref(
 // Returns the global network configuration dictionary from the ONC policy of
 // the active user if |for_active_user| is true, or from device policy if it is
 // false.
-const base::DictionaryValue* GetGlobalConfigFromPolicy(bool for_active_user) {
+const base::Value* GetGlobalConfigFromPolicy(bool for_active_user) {
   std::string username_hash;
   if (for_active_user) {
     const user_manager::User* user =
@@ -1279,17 +1273,6 @@ int ImportNetworksForUser(const user_manager::User* user,
   return networks_created;
 }
 
-const base::DictionaryValue* FindPolicyForActiveUser(
-    const std::string& guid,
-    ::onc::ONCSource* onc_source) {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  std::string username_hash = user ? user->username_hash() : std::string();
-  return NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->FindPolicyByGUID(username_hash, guid, onc_source);
-}
-
 bool PolicyAllowsOnlyPolicyNetworksToAutoconnect(bool for_active_user) {
   const base::Value* global_config = GetGlobalConfigFromPolicy(for_active_user);
   if (!global_config)
@@ -1301,15 +1284,14 @@ bool PolicyAllowsOnlyPolicyNetworksToAutoconnect(bool for_active_user) {
       .value_or(false);
 }
 
-const base::DictionaryValue* GetPolicyForNetwork(
-    const PrefService* profile_prefs,
-    const PrefService* local_state_prefs,
-    const NetworkState& network,
-    ::onc::ONCSource* onc_source) {
+const base::Value* GetPolicyForNetwork(const PrefService* profile_prefs,
+                                       const PrefService* local_state_prefs,
+                                       const NetworkState& network,
+                                       ::onc::ONCSource* onc_source) {
   VLOG(2) << "GetPolicyForNetwork: " << network.path();
   *onc_source = ::onc::ONC_SOURCE_NONE;
 
-  const base::DictionaryValue* network_policy = GetPolicyForNetworkFromPref(
+  const base::Value* network_policy = GetPolicyForNetworkFromPref(
       profile_prefs, ::onc::prefs::kOpenNetworkConfiguration, network);
   if (network_policy) {
     VLOG(1) << "Network " << network.path() << " is managed by user policy.";
@@ -1332,7 +1314,7 @@ bool HasPolicyForNetwork(const PrefService* profile_prefs,
                          const PrefService* local_state_prefs,
                          const NetworkState& network) {
   ::onc::ONCSource ignored_onc_source;
-  const base::DictionaryValue* policy = onc::GetPolicyForNetwork(
+  const base::Value* policy = onc::GetPolicyForNetwork(
       profile_prefs, local_state_prefs, network, &ignored_onc_source);
   return policy != nullptr;
 }
