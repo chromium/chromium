@@ -76,6 +76,10 @@ GURL GetWebUINewTabPage() {
   return GURL(chrome::kChromeUINewTabPageURL);
 }
 
+GURL GetWebUINewTabPageThirdParty() {
+  return GURL(chrome::kChromeUINewTabPageThirdPartyURL);
+}
+
 GURL GetContentSettingsURL() {
   return GetSettingsURL().Resolve(chrome::kContentSettingsSubPage);
 }
@@ -1281,6 +1285,16 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_WebUINewTabPage_UseNonIncognitoWindow) {
   RunUseNonIncognitoWindowTest(
       GetWebUINewTabPage(), ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK);
+}
+
+// This test verifies that chrome://new-tab-page-third-party isn't opened in the
+// incognito window.
+IN_PROC_BROWSER_TEST_F(
+    BrowserNavigatorTest,
+    Disposition_WebUINewTabPageThirdParty_UseNonIncognitoWindow) {
+  RunUseNonIncognitoWindowTest(
+      GetWebUINewTabPageThirdParty(),
+      ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK);
 }
 
 // This test verifies that the view-source settings page isn't opened in the

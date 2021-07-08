@@ -787,7 +787,8 @@ bool IsHostAllowedInIncognito(const GURL& url) {
          host != chrome::kChromeUIThumbnailHost2 &&
          host != chrome::kChromeUISuggestionsHost &&
          host != chrome::kChromeUIDevicesHost &&
-         host != chrome::kChromeUINewTabPageHost;
+         host != chrome::kChromeUINewTabPageHost &&
+         host != chrome::kChromeUINewTabPageThirdPartyHost;
 }
 
 bool IsURLAllowedInIncognito(const GURL& url,
