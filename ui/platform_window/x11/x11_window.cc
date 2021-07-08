@@ -1565,8 +1565,6 @@ void X11Window::ConvertEventLocationToTargetLocation(
       display->GetDisplayMatching(target_window_bounds);
   auto display_window_current =
       display->GetDisplayMatching(current_window_bounds);
-  DCHECK_EQ(display_window_target.device_scale_factor(),
-            display_window_current.device_scale_factor());
 
   ConvertEventLocationToTargetWindowLocation(target_window_bounds.origin(),
                                              current_window_bounds.origin(),
