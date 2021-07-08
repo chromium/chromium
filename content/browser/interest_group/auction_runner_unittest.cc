@@ -891,10 +891,10 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
   void StartStandardAuction() {
     std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders;
     bidders.push_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
-                                        kTrustedSignalsUrl, {"k1", "k2"},
+                                        kBidder1TrustedSignalsUrl, {"k1", "k2"},
                                         GURL("https://ad1.com")));
     bidders.push_back(MakeInterestGroup(kBidder2, kBidder2Name, kBidder2Url,
-                                        kTrustedSignalsUrl, {"l1", "l2"},
+                                        kBidder2TrustedSignalsUrl, {"l1", "l2"},
                                         GURL("https://ad2.com")));
 
     StartAuction(kSellerUrl, std::move(bidders),
@@ -960,14 +960,16 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
   const url::Origin frame_origin_ =
       url::Origin::Create(GURL("https://frame.origin.test"));
   const GURL kSellerUrl{"https://adstuff.publisher1.com/auction.js"};
+
   const GURL kBidder1Url{"https://adplatform.com/offers.js"};
   const url::Origin kBidder1 = url::Origin::Create(kBidder1Url);
   const std::string kBidder1Name{"Ad Platform"};
+  const GURL kBidder1TrustedSignalsUrl{"https://adplatform.com/signals1"};
+
   const GURL kBidder2Url{"https://anotheradthing.com/bids.js"};
   const url::Origin kBidder2 = url::Origin::Create(kBidder2Url);
   const std::string kBidder2Name{"Another Ad Thing"};
-
-  const GURL kTrustedSignalsUrl{"https://trustedsignaller.org/signals"};
+  const GURL kBidder2TrustedSignalsUrl{"https://anotheradthing.com/signals2"};
 
   base::test::TaskEnvironment task_environment_;
 
@@ -1034,14 +1036,14 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
                     true /* has_signals */, "k1", "a"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
 
   std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders;
   bidders.push_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
-                                      kTrustedSignalsUrl, {"k1", "k2"},
+                                      kBidder1TrustedSignalsUrl, {"k1", "k2"},
                                       GURL("https://ad1.com")));
 
   RunAuctionAndWait(kSellerUrl, std::move(bidders),
@@ -1077,14 +1079,14 @@ TEST_F(AuctionRunnerTest, Basic) {
                     true /* has_signals */, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
@@ -1111,14 +1113,14 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
   url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
@@ -1152,14 +1154,14 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
                                          MakeAuctionScript());
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
@@ -1185,14 +1187,14 @@ TEST_F(AuctionRunnerTest, NoBids) {
   url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2":"b", "extra":"c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra":"c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2":"b", "extra":"c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra":"c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_FALSE(res.ad_url);
@@ -1221,14 +1223,14 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
                                          MakeAuctionScript());
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2":"b", "extra":"c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra":"c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2":"b", "extra":"c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra":"c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_FALSE(res.ad_url);
@@ -1263,14 +1265,14 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
   // No seller scoring function in a bid script.
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          bid_script1);
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2":"b", "extra":"c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra":"c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2":"b", "extra":"c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra":"c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_FALSE(res.ad_url);
@@ -1301,14 +1303,14 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
                     true /* has_signals */, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScriptReject2());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
@@ -1403,11 +1405,11 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
       MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
                     false /* has_signals */, "l2", "b"));
   url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2", "",
-      net::HTTP_NOT_FOUND);
+      kBidder1TrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2",
+      "", net::HTTP_NOT_FOUND);
   url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2", "",
-      net::HTTP_NOT_FOUND);
+      kBidder2TrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2",
+      "", net::HTTP_NOT_FOUND);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
 
@@ -1424,12 +1426,12 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::UnorderedElementsAre(
                               "Failed to load "
-                              "https://trustedsignaller.org/"
-                              "signals?hostname=publisher1.com&keys=k1,k2 "
+                              "https://adplatform.com/"
+                              "signals1?hostname=publisher1.com&keys=k1,k2 "
                               "HTTP status = 404 Not Found.",
                               "Failed to load "
-                              "https://trustedsignaller.org/"
-                              "signals?hostname=publisher1.com&keys=l1,l2 "
+                              "https://anotheradthing.com/"
+                              "signals2?hostname=publisher1.com&keys=l1,l2 "
                               "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   2 /* expected_interest_groups */, 2 /* expected_owners */);
@@ -1447,14 +1449,14 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
                     true /* has_signals */, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScriptNoReportUrl());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
@@ -1486,14 +1488,14 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
           kReportWinNoUrl);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
@@ -1524,14 +1526,14 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
           kReportWinNoUrl);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScriptNoReportUrl());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
@@ -1564,14 +1566,14 @@ TEST_F(AuctionRunnerTest, NoReportResult) {
           kReportWinExpectNullAuctionSignals);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kCheckingAuctionScript);
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
   EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
@@ -1603,14 +1605,14 @@ TEST_F(AuctionRunnerTest, ProcessManagerDelaysAuction) {
                     true /* has_signals */, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
-      R"({"k1":"a", "k2": "b", "extra": "c"})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
-      R"({"l1":"a", "l2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   // Create AuctionProcessManager in advance of starting the auction so can
   // create seller worklets before the auction starts.
