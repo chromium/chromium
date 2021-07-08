@@ -33,7 +33,8 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+           {"ignore_outstanding_network_request_for_testing", "true"}}},
          {internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {features::kBackForwardCacheMemoryControls});
@@ -97,23 +98,15 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
 
 }  // namespace
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223445
-#define MAYBE_FirstPaintAfterBackForwardCacheRestore \
-  DISABLED_FirstPaintAfterBackForwardCacheRestore
-#else
-#define MAYBE_FirstPaintAfterBackForwardCacheRestore \
-  FirstPaintAfterBackForwardCacheRestore
-#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       MAYBE_FirstPaintAfterBackForwardCacheRestore) {
+                       FirstPaintAfterBackForwardCacheRestore) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // Navigate to A.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHost* rfh_a = top_frame_host();
+  content::RenderFrameHostWrapper rfh_a(top_frame_host());
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
@@ -128,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
             kFirstPaintAfterBackForwardCacheRestore);
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a, top_frame_host());
+    EXPECT_EQ(rfh_a.get(), top_frame_host());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -147,10 +140,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
         internal::kHistogramLargestContentfulPaint, 0, 1);
   }
 
-  // The RenderFrameHost for the page B was likely in the back-forward cache
-  // just after the history navigation, but now this might be evicted due to
-  // outstanding-network request.
-
   // Navigate to B again.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -164,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
             kFirstPaintAfterBackForwardCacheRestore);
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a, top_frame_host());
+    EXPECT_EQ(rfh_a.get(), top_frame_host());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -182,24 +171,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   }
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
-#define MAYBE_FirstPaintAfterBackForwardCacheRestoreBackground \
-  DISABLED_FirstPaintAfterBackForwardCacheRestoreBackground
-#else
-#define MAYBE_FirstPaintAfterBackForwardCacheRestoreBackground \
-  FirstPaintAfterBackForwardCacheRestoreBackground
-#endif
-
 IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       MAYBE_FirstPaintAfterBackForwardCacheRestoreBackground) {
+                       FirstPaintAfterBackForwardCacheRestoreBackground) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // Navigate to A.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHost* rfh_a = top_frame_host();
+  content::RenderFrameHostWrapper rfh_a(top_frame_host());
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
@@ -219,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     web_contents()->WasHidden();
 
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a, top_frame_host());
+    EXPECT_EQ(rfh_a.get(), top_frame_host());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -242,25 +222,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   }
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
-#define MAYBE_FirstInputDelayAfterBackForwardCacheRestoreBackground \
-  DISABLED_FirstInputDelayAfterBackForwardCacheRestoreBackground
-#else
-#define MAYBE_FirstInputDelayAfterBackForwardCacheRestoreBackground \
-  FirstInputDelayAfterBackForwardCacheRestoreBackground
-#endif
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCachePageLoadMetricsObserverBrowserTest,
-    MAYBE_FirstInputDelayAfterBackForwardCacheRestoreBackground) {
+IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
+                       FirstInputDelayAfterBackForwardCacheRestoreBackground) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // Navigate to A.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHost* rfh_a = top_frame_host();
+  content::RenderFrameHostWrapper rfh_a(top_frame_host());
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
@@ -279,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(
 
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a, top_frame_host());
+    EXPECT_EQ(rfh_a.get(), top_frame_host());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
