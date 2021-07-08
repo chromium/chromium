@@ -102,8 +102,8 @@ class ArcDataSnapshotdManager final
   class SnapshotInfo {
    public:
     // Creates new snapshot with current parameters.
-    explicit SnapshotInfo(bool last);
-    SnapshotInfo(const base::Value* value, bool last);
+    explicit SnapshotInfo(bool is_last);
+    SnapshotInfo(const base::Value* value, bool is_last);
     SnapshotInfo(const SnapshotInfo&) = delete;
     SnapshotInfo& operator=(const SnapshotInfo&) = delete;
     ~SnapshotInfo();
@@ -115,7 +115,7 @@ class ArcDataSnapshotdManager final
         const base::Time& creation_date,
         bool verified,
         bool updated,
-        bool last);
+        bool is_last);
 
     // Syncs stored snapshot info to dictionaty |value|.
     void Sync(base::Value* value);
@@ -129,8 +129,10 @@ class ArcDataSnapshotdManager final
     void set_verified(bool verified) { verified_ = true; }
     bool is_verified() const { return verified_; }
 
+    void set_is_last(bool is_last) { is_last_ = is_last; }
     bool is_last() const { return is_last_; }
 
+    void set_updated(bool updated) { updated_ = updated; }
     bool updated() const { return updated_; }
 
    private:
@@ -138,7 +140,7 @@ class ArcDataSnapshotdManager final
                  const base::Time& creation_date,
                  bool verified,
                  bool updated,
-                 bool last);
+                 bool is_last);
 
     // Returns dictionary path in arc.snapshot local state preference.
     std::string GetDictPath() const;
@@ -148,6 +150,7 @@ class ArcDataSnapshotdManager final
     // Called once this snapshot is expired.
     void OnSnapshotExpired();
 
+    // True if the instance is the last snapshot taken.
     bool is_last_;
 
     // Values should be kept in sync with values stored in arc.snapshot.last or
@@ -183,8 +186,8 @@ class ArcDataSnapshotdManager final
         PrefService* local_state,
         bool blocked_ui_mode,
         bool started,
-        std::unique_ptr<SnapshotInfo> last,
-        std::unique_ptr<SnapshotInfo> previous);
+        std::unique_ptr<SnapshotInfo> last_snapshot,
+        std::unique_ptr<SnapshotInfo> previous_snapshot);
 
     // Parses the snapshot info from arc.snapshot preference.
     void Parse();
@@ -209,15 +212,15 @@ class ArcDataSnapshotdManager final
     }
     bool is_blocked_ui_mode() const { return blocked_ui_mode_; }
     bool started() const { return started_; }
-    SnapshotInfo* last() { return last_.get(); }
-    SnapshotInfo* previous() { return previous_.get(); }
+    SnapshotInfo* last_snapshot() { return last_snapshot_.get(); }
+    SnapshotInfo* previous_snapshot() { return previous_snapshot_.get(); }
 
    private:
     Snapshot(PrefService* local_state,
              bool blocked_ui_mode,
              bool started,
-             std::unique_ptr<SnapshotInfo> last,
-             std::unique_ptr<SnapshotInfo> previous);
+             std::unique_ptr<SnapshotInfo> last_snapshot,
+             std::unique_ptr<SnapshotInfo> previous_snapshot);
 
     // Unowned pointer - outlives this instance.
     PrefService* const local_state_;
@@ -226,8 +229,8 @@ class ArcDataSnapshotdManager final
     // preference.
     bool blocked_ui_mode_ = false;
     bool started_ = false;
-    std::unique_ptr<SnapshotInfo> last_;
-    std::unique_ptr<SnapshotInfo> previous_;
+    std::unique_ptr<SnapshotInfo> last_snapshot_;
+    std::unique_ptr<SnapshotInfo> previous_snapshot_;
   };
 
   ArcDataSnapshotdManager(PrefService* local_state,

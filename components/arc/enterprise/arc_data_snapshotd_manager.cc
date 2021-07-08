@@ -115,15 +115,15 @@ bool ArcDataSnapshotdManager::is_snapshot_enabled_for_testing_ = false;
 // This class is owned by ChromeBrowserMainPartsChromeos.
 static ArcDataSnapshotdManager* g_arc_data_snapshotd_manager = nullptr;
 
-ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(bool last)
-    : is_last_(last) {
+ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(bool is_last)
+    : is_last_(is_last) {
   os_version_ = base::SysInfo::OperatingSystemVersion();
   UpdateCreationDate(base::Time::Now());
 }
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
-                                                    bool last)
-    : is_last_(last) {
+                                                    bool is_last)
+    : is_last_(is_last) {
   const base::DictionaryValue* dict;
   if (!value || !value->GetAsDictionary(&dict) || !dict)
     return;
@@ -161,9 +161,9 @@ ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
     const base::Time& creation_date,
     bool verified,
     bool updated,
-    bool last) {
+    bool is_last) {
   return base::WrapUnique(new ArcDataSnapshotdManager::SnapshotInfo(
-      os_version, creation_date, verified, updated, last));
+      os_version, creation_date, verified, updated, is_last));
 }
 
 void ArcDataSnapshotdManager::SnapshotInfo::Sync(base::Value* dict) {
@@ -198,8 +198,8 @@ ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(
     const base::Time& creation_date,
     bool verified,
     bool updated,
-    bool last)
-    : is_last_(last),
+    bool is_last)
+    : is_last_(is_last),
       os_version_(os_version),
       verified_(verified),
       updated_(updated) {
@@ -247,11 +247,11 @@ ArcDataSnapshotdManager::Snapshot::CreateForTesting(
     PrefService* local_state,
     bool blocked_ui_mode,
     bool started,
-    std::unique_ptr<SnapshotInfo> last,
-    std::unique_ptr<SnapshotInfo> previous) {
+    std::unique_ptr<SnapshotInfo> last_snapshot,
+    std::unique_ptr<SnapshotInfo> previous_snapshot) {
   return base::WrapUnique(new ArcDataSnapshotdManager::Snapshot(
-      local_state, blocked_ui_mode, started, std::move(last),
-      std::move(previous)));
+      local_state, blocked_ui_mode, started, std::move(last_snapshot),
+      std::move(previous_snapshot)));
 }
 
 void ArcDataSnapshotdManager::Snapshot::Parse() {
@@ -262,12 +262,12 @@ void ArcDataSnapshotdManager::Snapshot::Parse() {
   {
     const auto* found = dict->FindDictPath(kPrevious);
     if (found)
-      previous_ = std::make_unique<SnapshotInfo>(found, false);
+      previous_snapshot_ = std::make_unique<SnapshotInfo>(found, false);
   }
   {
     const auto* found = dict->FindDictPath(kLast);
     if (found)
-      last_ = std::make_unique<SnapshotInfo>(found, true);
+      last_snapshot_ = std::make_unique<SnapshotInfo>(found, true);
   }
   {
     auto found = dict->FindBoolPath(kBlockedUiReboot);
@@ -283,35 +283,41 @@ void ArcDataSnapshotdManager::Snapshot::Parse() {
 
 void ArcDataSnapshotdManager::Snapshot::Sync() {
   base::DictionaryValue dict;
-  if (previous_)
-    previous_->Sync(&dict);
-  if (last_)
-    last_->Sync(&dict);
+  if (previous_snapshot_)
+    previous_snapshot_->Sync(&dict);
+  if (last_snapshot_)
+    last_snapshot_->Sync(&dict);
   dict.SetBoolKey(kBlockedUiReboot, blocked_ui_mode_);
   dict.SetBoolKey(kStarted, started_);
   local_state_->Set(arc::prefs::kArcSnapshotInfo, std::move(dict));
 }
 
 void ArcDataSnapshotdManager::Snapshot::ClearSnapshot(bool last) {
-  std::unique_ptr<SnapshotInfo>* snapshot = (last ? &last_ : &previous_);
+  std::unique_ptr<SnapshotInfo>* snapshot =
+      (last ? &last_snapshot_ : &previous_snapshot_);
   snapshot->reset();
   Sync();
 }
 
 void ArcDataSnapshotdManager::Snapshot::StartNewSnapshot() {
-  previous_ = std::move(last_);
-  last_ = nullptr;
+  // Make the last snapshot a previous one, because the new (last) snapshot is
+  // going to be taken now.
+  if (last_snapshot_) {
+    previous_snapshot_ = std::move(last_snapshot_);
+    previous_snapshot_->set_is_last(false);
+    last_snapshot_ = nullptr;
+  }
 
   started_ = true;
   Sync();
 }
 
 void ArcDataSnapshotdManager::Snapshot::OnSnapshotTaken() {
-  if (last_) {
+  if (last_snapshot_) {
     LOG(WARNING) << "Last snapshot exists";
-    last_.reset();
+    last_snapshot_.reset();
   }
-  last_ = std::make_unique<SnapshotInfo>(true /* last */);
+  last_snapshot_ = std::make_unique<SnapshotInfo>(true /* is_last */);
   // Clear snapshot started pref to highlight that the snapshot creation process
   // is over.
   started_ = false;
@@ -319,24 +325,24 @@ void ArcDataSnapshotdManager::Snapshot::OnSnapshotTaken() {
 
 ArcDataSnapshotdManager::SnapshotInfo*
 ArcDataSnapshotdManager::Snapshot::GetCurrentSnapshot() {
-  if (last_)
-    return last_.get();
+  if (last_snapshot_)
+    return last_snapshot_.get();
 
-  DCHECK(previous_);
-  return previous_.get();
+  DCHECK(previous_snapshot_);
+  return previous_snapshot_.get();
 }
 
 ArcDataSnapshotdManager::Snapshot::Snapshot(
     PrefService* local_state,
     bool blocked_ui_mode,
     bool started,
-    std::unique_ptr<SnapshotInfo> last,
-    std::unique_ptr<SnapshotInfo> previous)
+    std::unique_ptr<SnapshotInfo> last_snapshot,
+    std::unique_ptr<SnapshotInfo> previous_snapshot)
     : local_state_(local_state),
       blocked_ui_mode_(blocked_ui_mode),
       started_(started),
-      last_(std::move(last)),
-      previous_(std::move(previous)) {
+      last_snapshot_(std::move(last_snapshot)),
+      previous_snapshot_(std::move(previous_snapshot)) {
   DCHECK(local_state_);
 }
 
@@ -382,7 +388,6 @@ ArcDataSnapshotdManager::~ArcDataSnapshotdManager() {
     session_controller_->RemoveObserver(this);
   policy_service_.RemoveObserver(this);
 
-  snapshot_.Sync();
   EnsureDaemonStopped(base::DoNothing());
 }
 
@@ -426,7 +431,7 @@ void ArcDataSnapshotdManager::StartLoadingSnapshot(base::OnceClosure callback) {
   }
   std::string account_id = GetMgsCryptohomeAccountId();
   if (!account_id.empty() && IsSnapshotEnabled() &&
-      (snapshot_.last() || snapshot_.previous())) {
+      (snapshot_.last_snapshot() || snapshot_.previous_snapshot())) {
     state_ = State::kLoading;
     EnsureDaemonStarted(base::BindOnce(
         &ArcDataSnapshotdManager::LoadSnapshot, weak_ptr_factory_.GetWeakPtr(),
@@ -480,15 +485,7 @@ void ArcDataSnapshotdManager::OnSnapshotSessionStarted() {
 }
 
 void ArcDataSnapshotdManager::OnSnapshotSessionStopped() {
-  if (state_ != State::kRunning)
-    NOTREACHED();
-  state_ = State::kNone;
-
-  snapshot_.GetCurrentSnapshot()->set_verified(true);
-  snapshot_.Sync();
-
-  session_controller_->RemoveObserver(this);
-  session_controller_.reset();
+  NOTREACHED();
 }
 
 void ArcDataSnapshotdManager::OnSnapshotSessionFailed() {
@@ -503,11 +500,12 @@ void ArcDataSnapshotdManager::OnSnapshotSessionFailed() {
     case State::kRunning:
       state_ = State::kNone;
 
-      snapshot_.ClearSnapshot(snapshot_.GetCurrentSnapshot()->is_last());
+      if (snapshot_.GetCurrentSnapshot()->is_verified()) {
+        snapshot_.GetCurrentSnapshot()->set_updated(true);
+      } else {
+        snapshot_.ClearSnapshot(snapshot_.GetCurrentSnapshot()->is_last());
+      }
       snapshot_.Sync();
-
-      DCHECK(!attempt_user_exit_callback_.is_null());
-      EnsureDaemonStopped(std::move(attempt_user_exit_callback_));
       break;
     case State::kBlockedUi:
     case State::kLoading:
@@ -526,20 +524,40 @@ void ArcDataSnapshotdManager::OnSnapshotAppInstalled(int percent) {
 }
 
 void ArcDataSnapshotdManager::OnSnapshotSessionPolicyCompliant() {
-  if (state_ != State::kMgsLaunched)
-    return;
-  // Stop tracking apps, since ARC is compliant with policy.
-  // That means that 100% of required apps got installed and ARC is fully
-  // prepared to be snapshotted.
-  // If the policy changes or an app gets uninstalled, the compliance with the
-  // required apps list will be fixed automatically on the next session
-  // startup.
-  session_controller_->RemoveObserver(this);
-  session_controller_.reset();
+  switch (state_) {
+    case State::kMgsLaunched:
+      // Stop tracking apps, since ARC is compliant with policy.
+      // That means that 100% of required apps got installed and ARC is fully
+      // prepared to be snapshotted.
+      // If the policy changes or an app gets uninstalled, the compliance with
+      // the required apps list will be fixed automatically on the next session
+      // startup.
+      session_controller_->RemoveObserver(this);
+      session_controller_.reset();
 
-  delegate_->RequestStopArcInstance(
-      base::BindOnce(&ArcDataSnapshotdManager::OnArcInstanceStopped,
-                     weak_ptr_factory_.GetWeakPtr()));
+      delegate_->RequestStopArcInstance(
+          base::BindOnce(&ArcDataSnapshotdManager::OnArcInstanceStopped,
+                         weak_ptr_factory_.GetWeakPtr()));
+
+      break;
+    case State::kRunning:
+      state_ = State::kNone;
+
+      snapshot_.GetCurrentSnapshot()->set_verified(true);
+      snapshot_.GetCurrentSnapshot()->set_updated(false);
+      snapshot_.Sync();
+
+      session_controller_->RemoveObserver(this);
+      session_controller_.reset();
+      break;
+    case State::kBlockedUi:
+    case State::kLoading:
+    case State::kMgsToLaunch:
+    case State::kNone:
+    case State::kRestored:
+    case State::kStopping:
+      break;
+  }
 }
 
 void ArcDataSnapshotdManager::OnSnapshotsDisabled() {
@@ -588,8 +606,9 @@ void ArcDataSnapshotdManager::OnSnapshotUpdateEndTimeChanged() {
     return;
   // Do not reboot if last and previous snapshots exist and should not be
   // updated.
-  if (snapshot_.last() && !snapshot_.last()->updated() &&
-      snapshot_.previous() && !snapshot_.previous()->updated()) {
+  if (snapshot_.last_snapshot() && !snapshot_.last_snapshot()->updated() &&
+      snapshot_.previous_snapshot() &&
+      !snapshot_.previous_snapshot()->updated()) {
     return;
   }
 
@@ -648,10 +667,10 @@ void ArcDataSnapshotdManager::StopDaemon(base::OnceClosure callback) {
 
 void ArcDataSnapshotdManager::DoClearSnapshots() {
   DoClearSnapshot(
-      snapshot_.previous(),
+      snapshot_.previous_snapshot(),
       base::BindOnce(
           &ArcDataSnapshotdManager::DoClearSnapshot,
-          weak_ptr_factory_.GetWeakPtr(), snapshot_.last(),
+          weak_ptr_factory_.GetWeakPtr(), snapshot_.last_snapshot(),
           base::BindOnce(&ArcDataSnapshotdManager::OnSnapshotsCleared,
                          weak_ptr_factory_.GetWeakPtr())),
       true /* success */);
@@ -896,7 +915,7 @@ void ArcDataSnapshotdManager::OnSnapshotLoaded(base::OnceClosure callback,
           << " snapshot";
   state_ = State::kRunning;
   // Clear last snapshot if the previous one was loaded.
-  if (!last && snapshot_.last()) {
+  if (!last && snapshot_.last_snapshot()) {
     snapshot_.ClearSnapshot(true /* last */);
     snapshot_.Sync();
   }
