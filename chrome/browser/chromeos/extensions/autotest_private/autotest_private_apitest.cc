@@ -366,8 +366,7 @@ class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
 };
 
 // TODO(crbug.com/1201545): Fix flakiness.
-IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest,
-                       DISABLED_SystemWebApps) {
+IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest, SystemWebApps) {
   ASSERT_TRUE(RunExtensionTest("autotest_private",
                                {.custom_arg = "systemWebApps"},
                                {.load_as_component = true}))

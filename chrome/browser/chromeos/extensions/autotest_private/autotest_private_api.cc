@@ -1987,6 +1987,7 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
   web_app::SystemAppLaunchParams swa_params;
   swa_params.url = GURL(params->url);
   web_app::LaunchSystemWebAppAsync(profile, *app_type, swa_params);
+  web_app::FlushSystemWebAppLaunchesForTesting(profile);
 
   return RespondNow(NoArguments());
 }
