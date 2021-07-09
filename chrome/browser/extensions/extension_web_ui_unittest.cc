@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/common/extensions/api/chrome_url_overrides.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_callback.h"
@@ -86,7 +87,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   manifest.Set(manifest_keys::kName, "ext1")
       .Set(manifest_keys::kVersion, "0.1")
       .Set(manifest_keys::kManifestVersion, 2)
-      .Set(std::string(manifest_keys::kChromeURLOverrides),
+      .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
            DictionaryBuilder().Set("bookmarks", kOverrideResource).Build());
   scoped_refptr<const Extension> ext_unpacked(
       ExtensionBuilder()
@@ -122,7 +123,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   manifest2.Set(manifest_keys::kName, "ext2")
       .Set(manifest_keys::kVersion, "0.1")
       .Set(manifest_keys::kManifestVersion, 2)
-      .Set(std::string(manifest_keys::kChromeURLOverrides),
+      .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
            DictionaryBuilder().Set("bookmarks", kOverrideResource2).Build());
   scoped_refptr<const Extension> ext_component(
       ExtensionBuilder()

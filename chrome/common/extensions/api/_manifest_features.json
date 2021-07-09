@@ -56,6 +56,16 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
   },
+  "chrome_url_overrides.activationmessage": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"],
+    "platforms": ["chromeos"]
+  },
+  "chrome_url_overrides.keyboard": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"],
+    "platforms": ["chromeos"]
+  },
   "commands": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]

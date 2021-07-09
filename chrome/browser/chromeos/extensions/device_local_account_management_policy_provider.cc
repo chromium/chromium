@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/common/extensions/api/chrome_url_overrides.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/device_local_account_util.h"
@@ -72,7 +73,7 @@ const char* const kSafeManifestEntries[] = {
     // emk::kSettingsOverride,
 
     // Bookmark manager, history, new tab - should be safe.
-    emk::kChromeURLOverrides,
+    ext_api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
 
     // General risk of capturing user input, but key combos must include Ctrl or
     // Alt, so I think this is safe.

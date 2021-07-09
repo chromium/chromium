@@ -35,7 +35,6 @@ extern const char kBluetooth[];
 extern const char kBookmarkUI[];
 extern const char kBrowserAction[];
 extern const char kBrowseURLs[];
-extern const char kChromeURLOverrides[];
 extern const char kCommands[];
 extern const char kContentCapabilities[];
 extern const char kContentSecurityPolicy[];
