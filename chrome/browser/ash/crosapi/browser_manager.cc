@@ -458,6 +458,8 @@ void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
   // Ensure we're not trying to open a window before the shelf is initialized.
   DCHECK(ChromeShelfController::instance());
 
+  // Always reset |relaunch_requested_| when launching Lacros.
+  relaunch_requested_ = false;
   SetState(State::CREATING_LOG_FILE);
 
   // TODO(ythjkt): After M92 cherry-pick, clean up the following code by moving
@@ -664,6 +666,12 @@ void BrowserManager::OnBrowserServiceDisconnected(
     browser_service_.reset();
 }
 
+void BrowserManager::OnBrowserRelaunchRequested(CrosapiId id) {
+  if (id != crosapi_id_)
+    return;
+  relaunch_requested_ = true;
+}
+
 void BrowserManager::OnMojoDisconnected() {
   DCHECK(state_ == State::STARTING || state_ == State::RUNNING);
   LOG(WARNING)
@@ -688,6 +696,9 @@ void BrowserManager::OnLacrosChromeTerminated() {
   // TODO(https://crbug.com/1109366): Restart lacros-chrome if it exits
   // abnormally (e.g. crashes). For now, assume the user meant to close it.
   SetLaunchOnLoginPref(false);
+
+  if (relaunch_requested_)
+    Start(mojom::InitialBrowserAction::kRestoreLastSession);
 }
 
 void BrowserManager::OnSessionStateChanged() {

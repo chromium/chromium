@@ -629,9 +629,24 @@ interface BrowserService {
 // split files.
 // This interface is used to register BrowserService provided by a
 // crosapi client.
+//
+// Next MinVersion: 2.
+// Next ID: 2
+//
 [Stable, Uuid="7864a7d6-c74d-4e5f-8589-8cdb99d0c92e"]
 interface BrowserServiceHost {
   // Registers the remote as a BrowserService. Crosapi host (ash-chrome)
   // can make requests to control the registered browser.
   AddBrowserService@0(pending_remote<BrowserService> browser);
+
+  // Requests to relaunch the browser again, soon after its shutdown.
+  // The browser is expected to be terminated sometime soon by itself,
+  // i.e., Crosapi host (ash-chrome) will not forcibly kill the process.
+  // It is important to terminate soon, because otherwise the users may be
+  // surprised of unexpected relaunching on later termination.
+  // If there's multiple requests before termination, they'll be degenerated
+  // into one relaunching.
+  // Added in M93.
+  [MinVersion=1]
+  RequestRelaunch@1();
 };

@@ -264,6 +264,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                                  uint32_t browser_service_version) override;
   void OnBrowserServiceDisconnected(CrosapiId id,
                                     mojo::RemoteSetElementId mojo_id) override;
+  void OnBrowserRelaunchRequested(CrosapiId id) override;
 
   // Called when the Mojo connection to lacros-chrome is disconnected.
   // It may be "just a Mojo error" or "lacros-chrome crash".
@@ -326,6 +327,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Proxy to BrowserService mojo service in lacros-chrome.
   // Available during lacros-chrome is running.
   absl::optional<BrowserServiceInfo> browser_service_;
+
+  // Remembers the request from Lacros-chrome whether it needs to be
+  // relaunched. Reset on new process start in any cases.
+  bool relaunch_requested_ = false;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when

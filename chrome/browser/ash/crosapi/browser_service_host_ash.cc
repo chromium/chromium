@@ -76,6 +76,12 @@ void BrowserServiceHostAsh::OnVersionReady(
     observer.OnBrowserServiceConnected(id, mojo_id, service, version);
 }
 
+void BrowserServiceHostAsh::RequestRelaunch() {
+  CrosapiId crosapi_id = receiver_set_.current_context();
+  for (auto& observer : observer_list_)
+    observer.OnBrowserRelaunchRequested(crosapi_id);
+}
+
 void BrowserServiceHostAsh::OnDisconnected(mojo::RemoteSetElementId mojo_id) {
   auto it = crosapi_map_.find(mojo_id);
   if (it == crosapi_map_.end())

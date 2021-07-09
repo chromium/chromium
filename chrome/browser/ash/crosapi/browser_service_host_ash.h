@@ -42,6 +42,7 @@ class BrowserServiceHostAsh : public mojom::BrowserServiceHost {
   // crosapi::mojom::BrowserServiceHost
   void AddBrowserService(
       mojo::PendingRemote<mojom::BrowserService> remote) override;
+  void RequestRelaunch() override;
 
  private:
   void AddRemote(CrosapiId id, mojo::Remote<mojom::BrowserService> remote);

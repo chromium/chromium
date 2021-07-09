@@ -2408,7 +2408,6 @@ if (!is_android) {
     if (!is_chromeos_ash) {
       sources += [
         "../browser/external_protocol/external_protocol_handler_browsertest.cc",
-        "../browser/lifetime/application_lifetime_browsertest.cc",
         "../browser/ui/signin_reauth_view_controller_browsertest.cc",
       ]
     }
@@ -2416,6 +2415,7 @@ if (!is_android) {
     if (!is_chromeos) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
+        "../browser/lifetime/application_lifetime_browsertest.cc",
         "../browser/policy/test/promotional_tabs_enabled_policy_browsertest.cc",
       ]
     }

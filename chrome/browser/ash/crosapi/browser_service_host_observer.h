@@ -29,6 +29,10 @@ class BrowserServiceHostObserver : public base::CheckedObserver {
   // When this is called, mojom::BrowserService is already destroyed.
   virtual void OnBrowserServiceDisconnected(CrosapiId id,
                                             mojo::RemoteSetElementId mojo_id) {}
+
+  // Called when BrowserServiceHost::RequestRelaunch is called from
+  // the Crosapi client.
+  virtual void OnBrowserRelaunchRequested(CrosapiId id) {}
 };
 
 }  // namespace crosapi

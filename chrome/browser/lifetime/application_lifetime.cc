@@ -57,6 +57,11 @@
 #include "ui/aura/env.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/profile_picker.h"
 #endif
@@ -167,14 +172,30 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // Run exit process in clean stack.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ExitIgnoreUnloadHandlers));
-#else
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH).
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Request ash-chrome to relaunch Lacros on its process termination.
+  // Do not set kRestartLastSessionOnShutdown for Lacros, because it tries to
+  // respawn another Chrome process from the current Chrome process, which
+  // does not work on Lacros.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service->IsAvailable<crosapi::mojom::BrowserServiceHost>() &&
+      lacros_service->GetInterfaceVersion(
+          crosapi::mojom::BrowserServiceHost::Uuid_) >=
+          static_cast<int>(
+              crosapi::mojom::BrowserServiceHost::kRequestRelaunchMinVersion)) {
+    lacros_service->GetRemote<crosapi::mojom::BrowserServiceHost>()
+        ->RequestRelaunch();
+  }
+#else   // !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Set the flag to restore state after the restart.
   pref_service->SetBoolean(prefs::kRestartLastSessionOnShutdown, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   if (ignore_unload_handlers)
     ExitIgnoreUnloadHandlers();
   else
     AttemptExit();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 #endif  // !defined(OS_ANDROID)
 
