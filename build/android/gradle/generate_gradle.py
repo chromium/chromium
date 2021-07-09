@@ -178,9 +178,6 @@ class _ProjectEntry(object):
   def NinjaTarget(self):
     return self._gn_target[2:]
 
-  def GnBuildConfigTarget(self):
-    return '%s__build_config_crbug_908819' % self._gn_target
-
   def GradleSubdir(self):
     """Returns the output subdirectory."""
     ninja_target = self.NinjaTarget()
