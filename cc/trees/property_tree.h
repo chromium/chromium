@@ -74,11 +74,11 @@ class CC_EXPORT PropertyTree {
   int Insert(const T& tree_node, int parent_id);
 
   T* Node(int i) {
-    DCHECK(i < static_cast<int>(nodes_.size()));
+    CHECK_LT(i, static_cast<int>(nodes_.size()));
     return i > kInvalidNodeId ? &nodes_[i] : nullptr;
   }
   const T* Node(int i) const {
-    DCHECK(i < static_cast<int>(nodes_.size()));
+    CHECK_LT(i, static_cast<int>(nodes_.size()));
     return i > kInvalidNodeId ? &nodes_[i] : nullptr;
   }
 
