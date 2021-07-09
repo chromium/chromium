@@ -8,7 +8,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/numerics/ranges.h"
-#include "chrome/android/chrome_jni_headers/WebApkUkmRecorder_jni.h"
+#include "chrome/browser/android/browserservices/metrics/jni_headers/WebApkUkmRecorder_jni.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

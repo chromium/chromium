@@ -9,7 +9,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
-import org.chromium.chrome.browser.webapps.WebApkUkmRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.ShortcutSource;

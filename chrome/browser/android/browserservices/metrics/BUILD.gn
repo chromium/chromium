@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/browserservices/metrics/BrowserServicesTimingMetrics.java",
     "java/src/org/chromium/chrome/browser/browserservices/metrics/OriginVerifierMetricsRecorder.java",
+    "java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUkmRecorder.java",
     "java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java",
   ]
   deps = [
@@ -16,4 +17,9 @@ android_library("java") {
     "//components/browser_ui/util/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUkmRecorder.java" ]
 }

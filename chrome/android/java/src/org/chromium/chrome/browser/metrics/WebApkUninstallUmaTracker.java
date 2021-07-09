@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.metrics;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.webapps.WebApkUkmRecorder;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.WebApkDistributor;
