@@ -21,13 +21,22 @@ D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
       []() { return gl::QueryD3D11DeviceObjectFromANGLE(); });
 }
 
+bool ShouldUseD3D11VideoDecoder(
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+  if (!base::FeatureList::IsEnabled(kD3D11VideoDecoder))
+    return false;
+  if (gpu_workarounds.disable_d3d11_video_decoder)
+    return false;
+  if (base::win::GetVersion() == base::win::Version::WIN7)
+    return false;
+  return true;
+}
+
 }  // namespace
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     const VideoDecoderTraits& traits) {
-  if (!base::FeatureList::IsEnabled(kD3D11VideoDecoder) ||
-      traits.gpu_workarounds->disable_d3d11_video_decoder ||
-      base::win::GetVersion() == base::win::Version::WIN7) {
+  if (!ShouldUseD3D11VideoDecoder(*traits.gpu_workarounds)) {
     if (traits.gpu_workarounds->disable_dxva_video_decoder)
       return nullptr;
     return VdaVideoDecoder::Create(
@@ -50,14 +59,11 @@ SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuPreferences gpu_preferences,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
   SupportedVideoDecoderConfigs supported_configs;
-  if (!base::FeatureList::IsEnabled(kD3D11VideoDecoder) ||
-      gpu_workarounds.disable_d3d11_video_decoder ||
-      base::win::GetVersion() == base::win::Version::WIN7) {
-    if (!gpu_workarounds.disable_dxva_video_decoder)
-      supported_configs = std::move(get_vda_configs).Run();
-  } else if (base::FeatureList::IsEnabled(kD3D11VideoDecoder)) {
+  if (ShouldUseD3D11VideoDecoder(gpu_workarounds)) {
     supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
         gpu_preferences, gpu_workarounds, GetD3D11DeviceCallback());
+  } else if (!gpu_workarounds.disable_dxva_video_decoder) {
+    supported_configs = std::move(get_vda_configs).Run();
   }
   return supported_configs;
 }
@@ -65,6 +71,14 @@ SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   return nullptr;
+}
+
+VideoDecoderType GetPlatformDecoderImplementationType(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences) {
+  if (!ShouldUseD3D11VideoDecoder(gpu_workarounds))
+    return VideoDecoderType::kVda;
+  return VideoDecoderType::kD3D11;
 }
 
 // There is no CdmFactory on windows, so just stub it out.

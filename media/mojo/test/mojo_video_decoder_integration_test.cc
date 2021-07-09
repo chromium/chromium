@@ -373,7 +373,7 @@ TEST_F(MojoVideoDecoderIntegrationTest, GetSupportedConfigs) {
       callback;
 
   // TODO(sandersd): Expect there to be an entry.
-  EXPECT_CALL(callback, Run(_));
+  EXPECT_CALL(callback, Run(_, _));
   remote_video_decoder->GetSupportedConfigs(callback.Get());
   RunUntilIdle();
 }

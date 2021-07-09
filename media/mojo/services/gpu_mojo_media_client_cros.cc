@@ -54,6 +54,15 @@ SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(
   return std::move(get_vda_configs).Run();
 }
 
+VideoDecoderType GetPlatformDecoderImplementationType(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences) {
+  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences)) {
+    return VideoDecoderType::kVaapi;
+  }
+  return VideoDecoderType::kVda;
+}
+
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   return nullptr;

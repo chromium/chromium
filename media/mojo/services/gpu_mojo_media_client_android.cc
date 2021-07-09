@@ -80,4 +80,10 @@ std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
       base::BindRepeating(&CreateMediaDrmStorage, frame_interfaces));
 }
 
+VideoDecoderType GetPlatformDecoderImplementationType(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences) {
+  return VideoDecoderType::kMediaCodec;
+}
+
 }  // namespace media

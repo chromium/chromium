@@ -36,4 +36,10 @@ std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
   return nullptr;
 }
 
+VideoDecoderType GetPlatformDecoderImplementationType(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences) {
+  return VideoDecoderType::kVda;
+}
+
 }  // namespace media

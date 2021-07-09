@@ -177,8 +177,6 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner(
   // Note: This is a bit of a hack, since we don't specify the implementation
   // before asking for the map of supported configs.  We do this because it
   // (a) saves an ipc call, and (b) makes the return of those configs atomic.
-  // Otherwise, we might have received configs for kDefault but not yet
-  // kAlternate, for example.
   interface_factory_->CreateVideoDecoder(
       video_decoder_.BindNewPipeAndPassReceiver());
   video_decoder_.set_disconnect_handler(
@@ -205,10 +203,12 @@ void GpuVideoAcceleratorFactoriesImpl::NotifyDecoderSupportKnown(
 }
 
 void GpuVideoAcceleratorFactoriesImpl::OnSupportedDecoderConfigs(
-    const media::SupportedVideoDecoderConfigs& supported_configs) {
+    const media::SupportedVideoDecoderConfigs& supported_configs,
+    media::VideoDecoderType decoder_type) {
   base::AutoLock lock(supported_profiles_lock_);
   video_decoder_.reset();
   supported_decoder_configs_ = supported_configs;
+  video_decoder_type_ = decoder_type;
   decoder_support_notifier_.Notify();
 }
 
@@ -322,6 +322,11 @@ GpuVideoAcceleratorFactoriesImpl::IsDecoderConfigSupported(
       return Supported::kTrue;
   }
   return Supported::kFalse;
+}
+
+media::VideoDecoderType GpuVideoAcceleratorFactoriesImpl::GetDecoderType() {
+  base::AutoLock lock(supported_profiles_lock_);
+  return video_decoder_type_;
 }
 
 std::unique_ptr<media::VideoDecoder>

@@ -150,8 +150,8 @@ void MojoVideoDecoderService::GetSupportedConfigs(
   DVLOG(3) << __func__;
   TRACE_EVENT0("media", "MojoVideoDecoderService::GetSupportedConfigs");
 
-  std::move(callback).Run(
-      mojo_media_client_->GetSupportedVideoDecoderConfigs());
+  std::move(callback).Run(mojo_media_client_->GetSupportedVideoDecoderConfigs(),
+                          mojo_media_client_->GetDecoderImplementationType());
 }
 
 void MojoVideoDecoderService::Construct(

@@ -79,6 +79,7 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   int32_t GetCommandBufferRouteId() override;
   Supported IsDecoderConfigSupported(
       const media::VideoDecoderConfig& config) override;
+  media::VideoDecoderType GetDecoderType() override;
   bool IsDecoderSupportKnown() override;
   void NotifyDecoderSupportKnown(base::OnceClosure callback) override;
   std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(
@@ -170,7 +171,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   void SetContextProviderLostOnMainThread();
 
   void OnSupportedDecoderConfigs(
-      const media::SupportedVideoDecoderConfigs& supported_configs);
+      const media::SupportedVideoDecoderConfigs& supported_configs,
+      media::VideoDecoderType decoder_type);
   void OnDecoderSupportFailed();
 
   void OnGetVideoEncodeAcceleratorSupportedProfiles(
@@ -217,6 +219,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   // are no supported configs.
   absl::optional<media::SupportedVideoDecoderConfigs> supported_decoder_configs_
       GUARDED_BY(supported_profiles_lock_);
+  media::VideoDecoderType video_decoder_type_
+      GUARDED_BY(supported_profiles_lock_) = media::VideoDecoderType::kUnknown;
   Notifier decoder_support_notifier_ GUARDED_BY(supported_profiles_lock_);
 
   absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>

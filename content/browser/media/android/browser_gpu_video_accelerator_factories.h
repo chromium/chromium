@@ -30,6 +30,7 @@ class BrowserGpuVideoAcceleratorFactories
   int32_t GetCommandBufferRouteId() override;
   Supported IsDecoderConfigSupported(
       const media::VideoDecoderConfig& config) override;
+  media::VideoDecoderType GetDecoderType() override;
   bool IsDecoderSupportKnown() override;
   void NotifyDecoderSupportKnown(base::OnceClosure) override;
   std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(

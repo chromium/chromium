@@ -97,6 +97,11 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   virtual Supported IsDecoderConfigSupported(
       const VideoDecoderConfig& config) = 0;
 
+  // Returns VideoDecoderType::kUnknown in cases where IsDecoderSupportKnown()
+  // is false. Otherwise, it returns the type of decoder that provided the
+  // configs for the config support check.
+  virtual VideoDecoderType GetDecoderType() = 0;
+
   // Callers must verify IsDecoderSupportKnown() prior to using this, or they
   // will immediately receive a kUnknown.
   //

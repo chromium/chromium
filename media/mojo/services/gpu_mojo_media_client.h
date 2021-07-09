@@ -96,6 +96,11 @@ std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
 std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces);
 
+// Queries the platform decoder type.
+VideoDecoderType GetPlatformDecoderImplementationType(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences);
+
 class GpuMojoMediaClient final : public MojoMediaClient {
  public:
   // |media_gpu_channel_manager| must only be used on |gpu_task_runner|, which
@@ -112,6 +117,7 @@ class GpuMojoMediaClient final : public MojoMediaClient {
 
   // MojoMediaClient implementation.
   SupportedVideoDecoderConfigs GetSupportedVideoDecoderConfigs() final;
+  VideoDecoderType GetDecoderImplementationType() final;
   std::unique_ptr<AudioDecoder> CreateAudioDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) final;
   std::unique_ptr<VideoDecoder> CreateVideoDecoder(

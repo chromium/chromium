@@ -56,6 +56,8 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
   virtual std::vector<SupportedVideoDecoderConfig>
   GetSupportedVideoDecoderConfigs();
 
+  virtual VideoDecoderType GetDecoderImplementationType();
+
   virtual std::unique_ptr<VideoDecoder> CreateVideoDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       MediaLog* media_log,

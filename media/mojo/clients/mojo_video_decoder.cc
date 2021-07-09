@@ -158,6 +158,9 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (gpu_factories_)
+    decoder_type_ = gpu_factories_->GetDecoderType();
+
   // Fail immediately if we know that the remote side cannot support |config|.
   if (gpu_factories_ && gpu_factories_->IsDecoderConfigSupported(config) ==
                             GpuVideoAcceleratorFactories::Supported::kFalse) {

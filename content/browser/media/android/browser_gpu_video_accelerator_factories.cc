@@ -106,6 +106,10 @@ BrowserGpuVideoAcceleratorFactories::IsDecoderConfigSupported(
   return media::GpuVideoAcceleratorFactories::Supported::kTrue;
 }
 
+media::VideoDecoderType BrowserGpuVideoAcceleratorFactories::GetDecoderType() {
+  return media::VideoDecoderType::kMediaCodec;
+}
+
 bool BrowserGpuVideoAcceleratorFactories::IsDecoderSupportKnown() {
   return true;
 }

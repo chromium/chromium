@@ -106,6 +106,11 @@ std::unique_ptr<AudioDecoder> GpuMojoMediaClient::CreateAudioDecoder(
   return CreatePlatformAudioDecoder(task_runner);
 }
 
+VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
+  return GetPlatformDecoderImplementationType(gpu_workarounds_,
+                                              gpu_preferences_);
+}
+
 SupportedVideoDecoderConfigs
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (!supported_config_cache_)
