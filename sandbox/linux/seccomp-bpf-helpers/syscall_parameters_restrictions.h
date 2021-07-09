@@ -39,6 +39,7 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMmapFlags();
 
 // Restrict the prot argument in mprotect(2).
 // Only allow: PROT_READ | PROT_WRITE | PROT_EXEC.
+// PROT_BTI | PROT_MTE is additionally allowed on 64-bit Arm.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMprotectFlags();
 
 // Restrict fcntl(2) cmd argument to:

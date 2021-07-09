@@ -64,6 +64,14 @@
 #if defined(__mips__) && !defined(MAP_STACK)
 #define MAP_STACK 0x40000
 #endif
+
+// Temporary definitions for Arm's Memory Tagging Extension (MTE) and Branch
+// Target Identification (BTI).
+#if defined(ARCH_CPU_ARM64)
+#define PROT_MTE 0x20
+#define PROT_BTI 0x10
+#endif
+
 namespace {
 
 inline bool IsArchitectureX86_64() {
@@ -229,7 +237,15 @@ ResultExpr RestrictMprotectFlags() {
   // "denied" mask because of the negation operator.
   // Significantly, we don't permit weird undocumented flags such as
   // PROT_GROWSDOWN.
-  const uint64_t kAllowedMask = PROT_READ | PROT_WRITE | PROT_EXEC;
+#if defined(ARCH_CPU_ARM64)
+  // Allows PROT_MTE and PROT_BTI (as explained higher up) on only Arm
+  // platforms.
+  const uint64_t kArchSpecificFlags = PROT_MTE | PROT_BTI;
+#else
+  const uint64_t kArchSpecificFlags = 0;
+#endif
+  const uint64_t kAllowedMask =
+      PROT_READ | PROT_WRITE | PROT_EXEC | kArchSpecificFlags;
   const Arg<int> prot(2);
   return If((prot & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
 }
