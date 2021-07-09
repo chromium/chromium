@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/policy/core/common/policy_loader_ios_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -12,6 +14,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -155,6 +158,31 @@
       performAction:grey_tap()];
 
   [self verifySignInScreenIsDisplayed];
+}
+
+// Tests that the FRE is shown when incognito is forced by policy.
+- (void)testFirstRunWithIncognitoForced {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+
+  std::string policy_data = "<dict>"
+                            "    <key>IncognitoModeAvailability</key>"
+                            "    <integer>2</integer>"
+                            "</dict>";
+  base::RemoveChars(policy_data, base::kWhitespaceASCII, &policy_data);
+
+  config.additional_args.push_back(
+      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+  config.additional_args.push_back(policy_data);
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Assert that the FRE UI is shown while the browser is in incognito mode.
+  // Do this by looking at the presence of a UI artifact in the first screen
+  // (TOS) that is a signature for the presence of the FRE.
+  id<GREYMatcher> termsOfServiceLink = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_FIRSTRUN_TERMS_TITLE));
+  [[EarlGrey selectElementWithMatcher:termsOfServiceLink]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
