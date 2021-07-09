@@ -556,6 +556,7 @@ void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
           "MAP *:443 127.0.0.1:%d,"
           // Set to always exclude, allows cache_replayer overwrite
           "EXCLUDE clients1.google.com,"
+          "EXCLUDE content-autofill.googleapis.com,"
           "EXCLUDE localhost",
           kHostHttpPort, kHostHttpsPort));
   command_line->AppendSwitchASCII(
