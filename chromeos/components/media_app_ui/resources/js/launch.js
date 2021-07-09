@@ -899,28 +899,37 @@ async function processOtherFilesInDirectory(
   let relatedFiles = [];
   // TODO(b/158149714): Clear out old tokens as well? Care needs to be taken to
   // ensure any file currently open with unsaved changes can still be saved.
-  for await (const /** !FileSystemHandle */ handle of directory.values()) {
-    if (localLaunchNumber !== globalLaunchNumber) {
-      // Abort, another more up to date launch in progress.
-      return ProcessOtherFilesResult.ABORT;
-    }
+  try {
+    for await (const /** !FileSystemHandle */ handle of directory.values()) {
+      if (localLaunchNumber !== globalLaunchNumber) {
+        // Abort, another more up to date launch in progress.
+        return ProcessOtherFilesResult.ABORT;
+      }
 
-    if (handle.kind !== 'file') {
-      continue;
+      if (handle.kind !== 'file') {
+        continue;
+      }
+      const fileHandle = /** @type {!FileSystemFileHandle} */ (handle);
+      // Only allow traversal of related file types.
+      if (isFileRelated(focusFile, handle.name)) {
+        // Note: The focus file will be processed here again but will be skipped
+        // over when added to `currentFiles`.
+        relatedFiles.push({
+          token: generateToken(fileHandle),
+          // This will get populated by refreshFile before the file gets opened.
+          file: null,
+          handle: fileHandle,
+          inCurrentDirectory: true,
+        });
+      }
     }
-    const fileHandle = /** @type {!FileSystemFileHandle} */ (handle);
-    // Only allow traversal of related file types.
-    if (isFileRelated(focusFile, handle.name)) {
-      // Note: The focus file will be processed here again but will be skipped
-      // over when added to `currentFiles`.
-      relatedFiles.push({
-        token: generateToken(fileHandle),
-        // This will get populated by refreshFile before the file gets opened.
-        file: null,
-        handle: fileHandle,
-        inCurrentDirectory: true,
-      });
-    }
+  } catch (e) {
+    // Likely source of b/163639398 crashes. This can probably be turned into a
+    // "console.warn()". Attempting to re-open the directory is probably not
+    // worth the added complexity, given the crash rate.
+    console.error(e, '(failed to traverse directory)');
+    // It's unlikely traversal can "resume", but try to continue with anything
+    // obtained so far.
   }
 
   if (currentFiles.length > 1) {
@@ -1191,19 +1200,19 @@ async function advance(direction, currentFileToken) {
  * @param {?LaunchParams} params
  * @return {!Promise<undefined>}
  */
-function launchConsumer(params) {
+async function launchConsumer(params) {
   // The MediaApp sets `include_launch_directory = true` in its SystemAppInfo
   // struct compiled into Chrome. That means files[0] is guaranteed to be a
   // directory, with remaining launch files following it. Validate that this is
   // true and abort the launch if is is not.
   if (!params || !params.files || params.files.length < 2) {
     console.error('Invalid launch (missing files): ', params);
-    return Promise.resolve();
+    return;
   }
 
   if (assertCast(params.files[0]).kind !== 'directory') {
     console.error('Invalid launch: files[0] is not a directory: ', params);
-    return Promise.resolve();
+    return;
   }
   const directory =
       /** @type {!FileSystemDirectoryHandle} */ (params.files[0]);
@@ -1213,10 +1222,30 @@ function launchConsumer(params) {
   // the launch directory itself) as navigation candidates.
   if (params.files.length === 2) {
     const focusEntry = assertCast(params.files[1]);
-    return launchWithDirectory(directory, focusEntry);
+    try {
+      await launchWithDirectory(directory, focusEntry);
+    } catch (e) {
+      console.error(e, '(launchWithDirectory aborted)');
+    }
   } else {
-    return launchWithMultipleSelection(directory, params.files.slice(1));
+    try {
+      await launchWithMultipleSelection(directory, params.files.slice(1));
+    } catch (e) {
+      console.error(e, '(launchWithMultipleSelection aborted)');
+    }
   }
+}
+
+/**
+ * Wrapper for the launch consumer to ensure it doesn't return a Promise, nor
+ * propagate exceptions. Tests will want to target `launchConsumer` directly so
+ * that they can properly await launch results.
+ * @param {?LaunchParams} params
+ */
+function wrappedLaunchConsumer(params) {
+  launchConsumer(params).catch(e => {
+    console.error(e, '(launch aborted)');
+  });
 }
 
 /**
@@ -1227,7 +1256,7 @@ function installLaunchHandler() {
     console.error('FileHandling API missing.');
     return;
   }
-  window.launchQueue.setConsumer(launchConsumer);
+  window.launchQueue.setConsumer(wrappedLaunchConsumer);
 }
 
 installLaunchHandler();
