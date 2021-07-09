@@ -262,6 +262,17 @@ export class ChromeHelper {
   }
 
   /**
+   * Returns true if the document mode is supported on the device.
+   * @return {!Promise<boolean>}
+   */
+  async isDocumentModeSupported() {
+    // TODO(b/180564352): Switch to the actual implementation once it is ready.
+    const {isSupported} =
+        await MockDocumentScanner.getInstance().isDocumentModeSupported();
+    return isSupported;
+  }
+
+  /**
    * Scans the blob data and returns the detected document corners.
    * @param {!Blob} blob
    * @return {!Promise<!Array<!gfx.mojom.PointF>>}

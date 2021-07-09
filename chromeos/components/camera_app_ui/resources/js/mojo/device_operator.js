@@ -613,18 +613,6 @@ export class DeviceOperator {
   }
 
   /**
-   * Returns true if the document mode is supported on the device.
-   * @param {string} deviceId The id of target camera device.
-   * @return {!Promise<boolean>}
-   */
-  async isDocumentModeSupported(deviceId) {
-    // TODO(b/180564352): Switch to the actual implementation once it is ready.
-    const {isSupported} =
-        await MockDocumentScanner.getInstance().isDocumentModeSupported();
-    return isSupported;
-  }
-
-  /**
    * Registers a document corners detector and triggers |callback| if the
    * detected corners are updated.
    * @param {string} deviceId The id of target camera device.
