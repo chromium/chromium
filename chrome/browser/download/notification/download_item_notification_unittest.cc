@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -28,6 +29,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/download_item_reroute_info.pb.h"
 #include "content/public/browser/download_item_utils.h"
@@ -155,6 +157,7 @@ class DownloadItemNotificationTest : public testing::Test {
 };
 
 TEST_F(DownloadItemNotificationTest, ShowAndCloseNotification) {
+  base::HistogramTester histograms;
   EXPECT_EQ(0u, NotificationCount());
 
   // Shows a notification
@@ -172,6 +175,32 @@ TEST_F(DownloadItemNotificationTest, ShowAndCloseNotification) {
 
   // Makes sure the DownloadItem::Cancel() is never called.
   EXPECT_CALL(*download_item_, Cancel(_)).Times(0);
+
+  // Not logged because the download is safe.
+  histograms.ExpectTotalCount("Download.ShowedDownloadWarning", 0);
+}
+
+TEST_F(DownloadItemNotificationTest, ShowAndCloseDangerousNotification) {
+  base::HistogramTester histograms;
+  EXPECT_CALL(*download_item_, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT));
+  EXPECT_CALL(*download_item_, IsDangerous()).WillRepeatedly(Return(true));
+
+  // Shows a notification
+  CreateDownloadItemNotification();
+  download_item_->NotifyObserversDownloadOpened();
+  EXPECT_EQ(1u, NotificationCount());
+
+  // Closes it once.
+  RemoveNotification();
+
+  // Confirms that the notification is closed.
+  EXPECT_EQ(0u, NotificationCount());
+
+  // The download warning showed histogram is logged.
+  histograms.ExpectBucketCount("Download.ShowedDownloadWarning",
+                               download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
+                               1);
 }
 
 TEST_F(DownloadItemNotificationTest, PauseAndResumeNotification) {

@@ -1104,7 +1104,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     A download warning was shown in the shelf. Note that some downloads may not
     be shown on the shelf, e.g., if chrome://downloads is already open when the
     download completes, or if an extension is using the downloads API. Grouped
-    by the type of danger.
+    by the type of danger. This histogram is logged on ChromeOS since M93.
 
     This metric is used to populate a dashboard on go/crsb-site.
   </summary>
