@@ -56,10 +56,9 @@ class ActivityLogConverterStrategyTest : public testing::Test {
 
   testing::AssertionResult VerifyDouble(v8::Local<v8::Value> v8_value,
                                         double expected) {
-    double out;
     std::unique_ptr<base::Value> value(
         converter_->FromV8Value(v8_value, context()));
-    if (value->is_double() && value->GetAsDouble(&out) && out == expected)
+    if (value->is_double() && value->GetDouble() == expected)
       return testing::AssertionSuccess();
     return testing::AssertionFailure();
   }
