@@ -1068,6 +1068,7 @@ bool ConversionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
   RecordInitializationStatus(InitStatus::kSuccess);
   return true;
 }
+
 bool ConversionStorageSql::InitializeSchema(bool db_empty) {
   if (db_empty)
     return CreateSchema();
