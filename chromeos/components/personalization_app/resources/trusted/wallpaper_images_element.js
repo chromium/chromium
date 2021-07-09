@@ -45,6 +45,13 @@ export class WallpaperImages extends WithPersonalizationStore {
       },
 
       /**
+       * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+       */
+      collections_: {
+        type: Array,
+      },
+
+      /**
        * @type {!Object<string,
        *     ?Array<!chromeos.personalizationApp.mojom.WallpaperImage>>}
        * @private
@@ -92,6 +99,7 @@ export class WallpaperImages extends WithPersonalizationStore {
     super.connectedCallback();
     this.watch('images_', state => state.backdrop.images);
     this.watch('imagesLoading_', state => state.loading.images);
+    this.watch('collections_', state => state.backdrop.collections);
     this.updateFromStore();
   }
 
@@ -144,6 +152,28 @@ export class WallpaperImages extends WithPersonalizationStore {
       const iframe = await this.iframePromise_;
       sendImagesFunction(iframe.contentWindow, this.images_[collectionId]);
     }
+  }
+
+  /**
+   * @private
+   * @param {string} collectionId
+   * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   *     collections
+   * @return {string}
+   */
+  getMainAriaLabel_(collectionId, collections) {
+    if (!collectionId || !Array.isArray(collections)) {
+      return '';
+    }
+    const collection =
+        collections.find(collection => collection.id === collectionId);
+
+    if (!collection) {
+      console.warn('Did not find collection matching collectionId');
+      return '';
+    }
+
+    return collection.name;
   }
 }
 

@@ -125,6 +125,25 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   /**
+   * @param {boolean} hidden
+   * @param {!Array<!chromeos.personalizationApp.mojom.LocalImage>} images
+   * @return {number}
+   */
+  getImageCount_(hidden, images) {
+    return this.getImages_(hidden, images).length;
+  }
+
+  /**
+   * TODO(b/192975897) compare with currently selected image to return correct
+   * aria-selected attribute.
+   * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+   * @return {string}
+   */
+  getAriaSelected_(image) {
+    return 'false';
+  }
+
+  /**
    * @private
    * @param {chromeos.personalizationApp.mojom.LocalImage} image
    * @param {Object<string, string>} imageData
@@ -171,6 +190,16 @@ export class LocalImages extends WithPersonalizationStore {
     selectWallpaper(
         /** @type {!chromeos.personalizationApp.mojom.LocalImage} */ (image),
         getWallpaperProvider(), this.getStore());
+  }
+
+
+  /**
+   * @private
+   * @param {number} i
+   * @return {number}
+   */
+  getAriaIndex_(i) {
+    return i + 1;
   }
 }
 

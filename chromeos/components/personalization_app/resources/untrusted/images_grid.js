@@ -69,6 +69,16 @@ class ImagesGrid extends PolymerElement {
   }
 
   /**
+   * TODO(b/192975897) compare with currently selected image to return correct
+   * aria-selected attribute.
+   * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+   * @return {string}
+   */
+  getAriaSelected_(image) {
+    return 'false';
+  }
+
+  /**
    * Notify trusted code that a user clicked on an image.
    * @private
    * @param {!Event} e
@@ -76,6 +86,24 @@ class ImagesGrid extends PolymerElement {
   onImageClicked_(e) {
     const img = e.currentTarget;
     selectImage(window.parent, BigInt(img.dataset.id));
+  }
+
+  /**
+   * @private
+   * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
+   * @return {string}
+   */
+  getImgAlt_(image) {
+    return image.attribution.join(' ');
+  }
+
+  /**
+   * @private
+   * @param {number} i
+   * @return {number}
+   */
+  getAriaIndex_(i) {
+    return i + 1;
   }
 }
 

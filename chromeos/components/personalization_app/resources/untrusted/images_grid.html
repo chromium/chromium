@@ -3,12 +3,15 @@
     margin: 12px 0;
   }
 </style>
-<iron-list scroll-target="document" grid items="[[images_]]">
+<iron-list scroll-target="document" grid items="[[images_]]" role="listbox"
+    aria-setsize$="[[images_.length]]">
   <template>
-    <div class="photo-container">
+    <div class="photo-container" tabindex$="[[tabIndex]]" role="option"
+        aria-posinset$="[[getAriaIndex_(index)]]"
+        aria-selected$="[[getAriaSelected_(item)]]">
       <div class="padding-fix">
         <img data-id$="[[item.assetId]]" src="[[item.url.url]]"
-            on-click="onImageClicked_">
+            on-click="onImageClicked_" alt$="[[getImgAlt_(item)]]">
       </div>
     </div>
   </template>

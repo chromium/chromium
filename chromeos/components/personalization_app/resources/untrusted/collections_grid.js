@@ -232,6 +232,15 @@ class CollectionsGrid extends PolymerElement {
     }
     selectCollection(window.parent, id);
   }
+
+  /**
+   * @private
+   * @param {number} i
+   * @return {number}
+   */
+  getAriaIndex_(i) {
+    return i + 1;
+  }
 }
 
 customElements.define(CollectionsGrid.is, CollectionsGrid);

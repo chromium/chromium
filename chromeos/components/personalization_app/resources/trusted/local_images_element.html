@@ -2,23 +2,34 @@
   :host {
     overflow: hidden;
   }
+  #main {
+    height: 100%;
+    overflow-y: auto;
+    width: 100%;
+  }
 </style>
 <paper-spinner-lite active="[[imagesLoading_]]">
 </paper-spinner-lite>
 <!-- TODO(b/181697575) handle error cases and update error string to UI spec -->
 <p hidden$="[[!hasError_]]" id="error">error</p>
 <template is="dom-if" if="[[showImages_]]">
-  <iron-list items="[[getImages_(hidden, images_)]]" grid>
-    <template>
-      <div class="photo-container">
-        <div class="padding-fix">
-          <template is="dom-if"
-            if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
-            <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
-              src="[[getImageData_(item, imageData_)]]">
-          </template>
+  <div id="main" role="main" aria-label="[[i18n('myImagesLabel')]]">
+    <iron-list items="[[getImages_(hidden, images_)]]" grid role="listbox"
+        scroll-target="main"
+        aria-setsize$="[[getImageCount_(hidden, images_)]]">
+      <template>
+        <div class="photo-container" role="option" tabindex$="[[tabIndex]]"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            aria-selected$="[[getAriaSelected_(item)]]">
+          <div class="padding-fix">
+            <template is="dom-if"
+              if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
+              <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
+                src="[[getImageData_(item, imageData_)]]" alt="[[item.name]]">
+            </template>
+          </div>
         </div>
-      </div>
-    </template>
-  </iron-list>
+      </template>
+    </iron-list>
+  </div>
 </template>

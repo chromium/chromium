@@ -3,10 +3,12 @@
     margin: 12px 0;
   }
 </style>
-<iron-list items="[[tiles_]]" grid scroll-target="document">
+<iron-list items="[[tiles_]]" grid scroll-target="document" role="listbox"
+    aria-setsize$="[[tiles_.length]]">
   <template>
     <div class="photo-container" data-id$="[[item.id]]"
-      on-click="onCollectionClicked_">
+        on-click="onCollectionClicked_" tabindex$="[[tabIndex]]" role="option"
+        aria-posinset$="[[getAriaIndex_(index)]]" aria-selected="false">
       <div class="padding-fix">
         <template is="dom-if" if="[[item.preview]]">
           <img src="[[item.preview.url]]">

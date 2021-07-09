@@ -4,5 +4,6 @@
 <!-- TODO(b/181697575) handle error cases and update error string to UI spec -->
 <p hidden$="[[!hasError_]]" id="error">error</p>
 <iframe id="collections-iframe" frameBorder="0" hidden$="[[!showCollections_]]"
-    src="chrome-untrusted://personalization/untrusted/collections.html">
+    src="chrome-untrusted://personalization/untrusted/collections.html"
+    role="main" aria-label$="[[i18n('wallpaperCollections')]]">
 </iframe>
