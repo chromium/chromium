@@ -152,6 +152,9 @@ class CORE_EXPORT InspectorOverlayAgent final
   static std::unique_ptr<InspectorScrollSnapContainerHighlightConfig>
   ToScrollSnapContainerHighlightConfig(
       protocol::Overlay::ScrollSnapContainerHighlightConfig*);
+  static std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>
+  ToContainerQueryContainerHighlightConfig(
+      protocol::Overlay::ContainerQueryContainerHighlightConfig*);
   static std::unique_ptr<InspectorFlexItemHighlightConfig>
   ToFlexItemHighlightConfig(protocol::Overlay::FlexItemHighlightConfig*);
   static absl::optional<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
@@ -238,6 +241,10 @@ class CORE_EXPORT InspectorOverlayAgent final
       std::unique_ptr<
           protocol::Array<protocol::Overlay::ScrollSnapHighlightConfig>>
           scroll_snap_highlight_configs) override;
+  protocol::Response setShowContainerQueryOverlays(
+      std::unique_ptr<
+          protocol::Array<protocol::Overlay::ContainerQueryHighlightConfig>>
+          container_query_highlight_configs) override;
 
   // InspectorBaseAgent overrides.
   void Restore() override;

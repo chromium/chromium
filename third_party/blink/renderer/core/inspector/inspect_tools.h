@@ -154,6 +154,10 @@ using ScrollSnapConfigs = Vector<
     std::pair<Member<Node>,
               std::unique_ptr<InspectorScrollSnapContainerHighlightConfig>>>;
 
+using ContainerQueryConfigs = Vector<std::pair<
+    Member<Node>,
+    std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>>>;
+
 class PersistentTool : public InspectTool {
   using InspectTool::InspectTool;
 
@@ -166,6 +170,7 @@ class PersistentTool : public InspectTool {
   void SetGridConfigs(GridConfigs);
   void SetFlexContainerConfigs(FlexContainerConfigs);
   void SetScrollSnapConfigs(ScrollSnapConfigs);
+  void SetContainerQueryConfigs(ContainerQueryConfigs);
 
   std::unique_ptr<protocol::DictionaryValue> GetGridInspectorHighlightsAsJson()
       const;
@@ -179,6 +184,7 @@ class PersistentTool : public InspectTool {
   GridConfigs grid_node_highlights_;
   FlexContainerConfigs flex_container_configs_;
   ScrollSnapConfigs scroll_snap_configs_;
+  ContainerQueryConfigs container_query_configs_;
 };
 
 // -----------------------------------------------------------------------------
