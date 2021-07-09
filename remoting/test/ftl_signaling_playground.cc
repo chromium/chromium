@@ -252,8 +252,8 @@ void FtlSignalingPlayground::InitializeTransport() {
       protocol::NetworkSettings::NAT_TRAVERSAL_FULL);
   auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-      url_loader_factory_owner_->GetURLLoaderFactory(), network_settings,
-      transport_role_);
+      url_loader_factory_owner_->GetURLLoaderFactory(), nullptr,
+      network_settings, transport_role_);
   auto close_callback =
       base::BindOnce(&FtlSignalingPlayground::AsyncTearDownAndRunCallback,
                      base::Unretained(this));

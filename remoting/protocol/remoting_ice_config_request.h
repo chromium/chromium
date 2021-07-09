@@ -26,6 +26,7 @@ class GetIceConfigResponse;
 }  // namespace apis
 
 class ProtobufHttpStatus;
+class OAuthTokenGetter;
 
 namespace protocol {
 
@@ -33,8 +34,9 @@ namespace protocol {
 // service.
 class RemotingIceConfigRequest final : public IceConfigRequest {
  public:
-  explicit RemotingIceConfigRequest(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  RemotingIceConfigRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      OAuthTokenGetter* oauth_token_getter);
   ~RemotingIceConfigRequest() override;
 
   // IceConfigRequest implementation.
@@ -46,6 +48,7 @@ class RemotingIceConfigRequest final : public IceConfigRequest {
   void OnResponse(const ProtobufHttpStatus& status,
                   std::unique_ptr<apis::v1::GetIceConfigResponse> response);
 
+  bool make_authenticated_requests_ = false;
   OnIceConfigCallback on_ice_config_callback_;
   ProtobufHttpClient http_client_;
 

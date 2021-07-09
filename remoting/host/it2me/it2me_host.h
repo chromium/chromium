@@ -36,6 +36,7 @@ class FtlSignalingConnector;
 class HostEventLogger;
 class HostStatusLogger;
 class LogToServer;
+class OAuthTokenGetter;
 class RegisterSupportHostRequest;
 class RsaKeyPair;
 
@@ -54,6 +55,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     std::unique_ptr<LogToServer> log_to_server;
     std::unique_ptr<RegisterSupportHostRequest> register_request;
     std::unique_ptr<SignalStrategy> signal_strategy;
+    std::unique_ptr<OAuthTokenGetter> oauth_token_getter;
 
     // Since the deferred context only provides an interface* for the signal
     // strategy, we use this boolean to indicate whether the host process should
@@ -98,9 +100,6 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Methods called by the script object, from the plugin thread.
 
   // Creates It2Me host structures and starts the host.
-  //
-  // XmppLogToServer cannot be created and used in different sequence, so pass
-  // in a factory callback instead.
   virtual void Connect(
       std::unique_ptr<ChromotingHostContext> context,
       std::unique_ptr<base::DictionaryValue> policies,
@@ -185,6 +184,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<SignalStrategy> signal_strategy_;
   std::unique_ptr<FtlSignalingConnector> ftl_signaling_connector_;
   std::unique_ptr<LogToServer> log_to_server_;
+  std::unique_ptr<OAuthTokenGetter> oauth_token_getter_;
 
   It2MeHostState state_ = It2MeHostState::kDisconnected;
 

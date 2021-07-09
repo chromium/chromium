@@ -42,7 +42,8 @@ class RemotingIceConfigRequestTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   ProtobufHttpTestResponder test_responder_;
-  RemotingIceConfigRequest request_{test_responder_.GetUrlLoaderFactory()};
+  RemotingIceConfigRequest request_{test_responder_.GetUrlLoaderFactory(),
+                                    nullptr};
 };
 
 TEST_F(RemotingIceConfigRequestTest, SuccessfulRequest) {

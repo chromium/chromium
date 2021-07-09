@@ -539,6 +539,7 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
           runtime_->url_loader_factory(),
+          /* oauth_token_getter= */ nullptr,
           protocol::NetworkSettings(
               protocol::NetworkSettings::NAT_TRAVERSAL_FULL),
           protocol::TransportRole::CLIENT);

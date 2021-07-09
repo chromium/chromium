@@ -294,7 +294,7 @@ class ProtocolPerfTest
         GetParam().out_of_order_rate);
     scoped_refptr<protocol::TransportContext> transport_context(
         new protocol::TransportContext(std::move(port_allocator_factory),
-                                       nullptr, network_settings,
+                                       nullptr, nullptr, network_settings,
                                        protocol::TransportRole::SERVER));
     std::unique_ptr<protocol::SessionManager> session_manager(
         new protocol::JingleSessionManager(host_signaling_.get()));
@@ -361,7 +361,7 @@ class ProtocolPerfTest
         GetParam().out_of_order_rate);
     scoped_refptr<protocol::TransportContext> transport_context(
         new protocol::TransportContext(std::move(port_allocator_factory),
-                                       nullptr, network_settings,
+                                       nullptr, nullptr, network_settings,
                                        protocol::TransportRole::CLIENT));
 
     protocol::ClientAuthenticationConfig client_auth_config;

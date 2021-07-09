@@ -316,6 +316,9 @@ void It2MeNativeMessagingHost::ProcessConnect(
                     std::make_unique<PassthroughOAuthTokenGetter>(username,
                                                                   access_token),
                     host_context->url_loader_factory());
+            connection_context->oauth_token_getter =
+                std::make_unique<PassthroughOAuthTokenGetter>(username,
+                                                              access_token);
             return connection_context;
           },
           username, access_token);

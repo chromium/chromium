@@ -26,6 +26,8 @@ class NetworkManager;
 
 namespace remoting {
 
+class OAuthTokenGetter;
+
 namespace protocol {
 
 class PortAllocatorFactory;
@@ -44,6 +46,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   TransportContext(
       std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      OAuthTokenGetter* oauth_token_getter,
       const NetworkSettings& network_settings,
       TransportRole role);
 
@@ -96,6 +99,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
 
   std::unique_ptr<PortAllocatorFactory> port_allocator_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  OAuthTokenGetter* oauth_token_getter_ = nullptr;
   NetworkSettings network_settings_;
   TransportRole role_;
 

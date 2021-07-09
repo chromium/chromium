@@ -19,6 +19,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/host/chromoting_host.h"
@@ -143,6 +144,7 @@ void It2MeHost::ConnectOnNetworkThread(
   auto connection_context = std::move(create_context).Run(host_context_.get());
   log_to_server_ = std::move(connection_context->log_to_server);
   signal_strategy_ = std::move(connection_context->signal_strategy);
+  oauth_token_getter_ = std::move(connection_context->oauth_token_getter);
   DCHECK(log_to_server_);
   DCHECK(signal_strategy_);
 
@@ -213,8 +215,8 @@ void It2MeHost::ConnectOnNetworkThread(
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-          host_context_->url_loader_factory(), network_settings,
-          protocol::TransportRole::SERVER);
+          host_context_->url_loader_factory(), oauth_token_getter_.get(),
+          network_settings, protocol::TransportRole::SERVER);
   if (!ice_config.is_null()) {
     transport_context->set_turn_ice_config(ice_config);
   }

@@ -234,6 +234,7 @@ static_library("protocol") {
     "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/codec:decoder",
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling",

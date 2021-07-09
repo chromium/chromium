@@ -1557,8 +1557,8 @@ void HostProcess::StartHost() {
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-          context_->url_loader_factory(), network_settings,
-          protocol::TransportRole::SERVER);
+          context_->url_loader_factory(), oauth_token_getter_.get(),
+          network_settings, protocol::TransportRole::SERVER);
   std::unique_ptr<protocol::SessionManager> session_manager(
       new protocol::JingleSessionManager(signal_strategy_.get()));
 
