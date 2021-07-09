@@ -3845,10 +3845,19 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // TODO(crbug.com/1140387): Share action.
   }
 
+  // Truncate context meny titles that originate from URLs, leaving text titles
+  // untruncated.
+  NSString* menuTitle = params.menu_title;
+  if (params.menu_title_origin != web::ContextMenuTitleOrigin::kImageTitle &&
+      menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
+    menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+        stringByAppendingString:kContextMenuEllipsis];
+  }
+
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
         RecordMenuShown(MenuScenario::kContextMenuLink);
-        return [UIMenu menuWithTitle:@"" children:menuElements];
+        return [UIMenu menuWithTitle:menuTitle children:menuElements];
       };
 
   UIContextMenuConfiguration* configuration =
