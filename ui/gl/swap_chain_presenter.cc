@@ -340,8 +340,6 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImages(
     copy_texture_.Reset();
     HRESULT hr =
         d3d11_device_->CreateTexture2D(&desc, nullptr, &staging_texture_);
-    base::UmaHistogramSparse(
-        "GPU.DirectComposition.UploadVideoImages.CreateStagingTexture", hr);
     if (FAILED(hr)) {
       DLOG(ERROR) << "Creating D3D11 video staging texture failed: " << std::hex
                   << hr;
@@ -400,8 +398,6 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImages(
     desc.BindFlags = D3D11_BIND_DECODER;
     desc.CPUAccessFlags = 0;
     HRESULT hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &copy_texture_);
-    base::UmaHistogramSparse(
-        "GPU.DirectComposition.UploadVideoImages.CreateCopyTexture", hr);
     if (FAILED(hr)) {
       DLOG(ERROR) << "Creating D3D11 video upload texture failed: " << std::hex
                   << hr;

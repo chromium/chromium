@@ -442,7 +442,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CreateVideoProcessorEnumerator"
-    enum="Hresult" expires_after="2021-08-01">
+    enum="Hresult" expires_after="2021-07-09">
+  <obsolete>
+    Removed 07/09/2021. CreateVideoProcessorEnumerator rarely fails.
+  </obsolete>
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -616,7 +619,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.UploadVideoImages.CreateCopyTexture"
-    enum="Hresult" expires_after="2021-08-01">
+    enum="Hresult" expires_after="2021-07-09">
+  <obsolete>
+    Removed 07/09/2021. CreateTexture2D for a copy texture rarely fails.
+  </obsolete>
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -626,7 +632,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.UploadVideoImages.CreateStagingTexture"
-    enum="Hresult" expires_after="2021-08-01">
+    enum="Hresult" expires_after="2021-07-09">
+  <obsolete>
+    Removed 07/09/2021. CreateTexture2D for a staging texture rarely fails.
+  </obsolete>
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -636,7 +645,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.VideoDeviceCreateVideoProcessor"
-    enum="Hresult" expires_after="2021-08-01">
+    enum="Hresult" expires_after="2021-07-09">
+  <obsolete>
+    Removed 07/09/2021. CreateVideoProcessor rarely fails.
+  </obsolete>
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
