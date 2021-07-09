@@ -5,21 +5,28 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_H_
 
-#include "cc/document_transition/document_transition_request.h"
+#include <memory>
+
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+
+namespace cc {
+class DocumentTransitionRequest;
+}
 
 namespace blink {
 
 class Document;
 class DocumentTransitionPrepareOptions;
 class DocumentTransitionStartOptions;
+class Element;
+class ExceptionState;
+class ScriptPromise;
+class ScriptPromiseResolver;
 class ScriptState;
 
 class CORE_EXPORT DocumentTransition

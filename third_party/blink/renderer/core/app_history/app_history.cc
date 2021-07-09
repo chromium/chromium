@@ -4,7 +4,12 @@
 
 #include "third_party/blink/renderer/core/app_history/app_history.h"
 
+#include <memory>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"

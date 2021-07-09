@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_child.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"

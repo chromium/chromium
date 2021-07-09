@@ -29,6 +29,7 @@ specific_include_rules = {
   ],
   "local_frame_view\.cc": [
     "+base/timer/lap_timer.h",
+    "+cc/document_transition/document_transition_request.h",
     "+cc/tiles/frame_viewer_instrumentation.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
   ],

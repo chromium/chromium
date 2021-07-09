@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
 
+#include "cc/document_transition/document_transition_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_prepare_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"

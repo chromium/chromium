@@ -37,6 +37,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/timer/lap_timer.h"
 #include "cc/animation/animation_host.h"
+#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"

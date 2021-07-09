@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
+
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "cc/document_transition/document_transition_request.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
