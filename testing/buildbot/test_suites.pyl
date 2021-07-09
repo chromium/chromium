@@ -7140,29 +7140,25 @@
       }
     },
 
-    # This test suite takes the standard ios test suites,
-    # and removes failing ones from ios14-sdk-simulator.
-    # The result is test suites with certain tests removed,
-    # identified by *_noncq.
     'ios_simulator_noncq_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPHONE_6S_13_6',
+          'SIM_IPHONE_6S_15_0',
         ]
       },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_6S_13_6',
+          'SIM_IPHONE_6S_15_0',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_6S_PLUS_13_6',
-          'SIM_IPHONE_6S_13_6',
-          'SIM_IPHONE_SE_1ST_GEN_13_6',
-          'SIM_IPAD_AIR_2_13_6',
+          'SIM_IPHONE_6S_PLUS_15_0',
+          'SIM_IPHONE_6S_15_0',
+          'SIM_IPHONE_SE_1ST_GEN_15_0',
+          'SIM_IPAD_AIR_2_15_0',
         ]
       },
     },
@@ -7172,16 +7168,22 @@
       'ios_common_tests': {
         'variants': [
           'SIM_IPHONE_6S_14_4',
+          'SIM_IPHONE_6S_13_6',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_6S_14_4',
+          'SIM_IPHONE_6S_13_6',
         ]
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
+          'SIM_IPHONE_6S_PLUS_13_6',
+          'SIM_IPHONE_6S_13_6',
+          'SIM_IPHONE_SE_1ST_GEN_13_6',
+          'SIM_IPAD_AIR_2_13_6',
           'SIM_IPHONE_6S_PLUS_14_4',
           'SIM_IPHONE_6S_14_4',
           'SIM_IPHONE_SE_1ST_GEN_14_4',
