@@ -192,7 +192,9 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
   VLOG(1) << "Preparing files and start streaming from ARC virtual filesystem";
   file_handler_->StartPreparingFiles(
       base::BindOnce(&NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow,
-                     weak_ptr_factory_.GetWeakPtr(), arc_window));
+                     weak_ptr_factory_.GetWeakPtr(), arc_window),
+      base::BindRepeating(&NearbyShareSessionImpl::OnProgressBarUpdate,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
@@ -267,6 +269,11 @@ void NearbyShareSessionImpl::OnTimerFired() {
              << kWindowInitializationTimeout.InSeconds() << " second(s)";
   OnNearbyShareClosed();
   std::move(session_finished_callback_).Run(task_id_);
+}
+
+void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
+  // TODO(b/191705289): Add UI integration with views::ProgressBar.
+  VLOG(1) << "Called OnProgressBarUpdate with value: " << value;
 }
 
 }  // namespace arc

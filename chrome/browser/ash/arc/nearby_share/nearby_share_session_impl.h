@@ -75,6 +75,9 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Called back once the session duration exceeds the maximum duration.
   void OnTimerFired();
 
+  // Called when progress bar UI update is available.
+  void OnProgressBarUpdate(double value);
+
   // Android activity's task ID
   int32_t task_id_;
 

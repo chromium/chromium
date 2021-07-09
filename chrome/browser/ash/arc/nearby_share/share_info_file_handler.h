@@ -53,6 +53,9 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
   using CompletedCallback =
       base::OnceCallback<void(absl::optional<base::File::Error> result)>;
 
+  // |value| is a percentage from 0 to 1 in double format (e.g. 0.50 for 50%).
+  using ProgressBarUpdateCallback = base::RepeatingCallback<void(double value)>;
+
   ShareInfoFileHandler(Profile* profile,
                        mojom::ShareIntentInfo* share_info,
                        base::FilePath directory);
@@ -71,10 +74,13 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
   size_t GetNumberOfFiles() const { return file_config_.num_files; }
 
   // Start streaming virtual files to destination file descriptors in
-  // preparation for Nearby Share.
+  // preparation for Nearby Share.  Callbacks are run on the UI thread.
   // |completed_callback| is called when file streaming is completed with
   // either error or success.
-  void StartPreparingFiles(CompletedCallback completed_callback);
+  // |update_callback| is for updating a progress bar view value if needed
+  // (e.g. views::ProgressBar::SetValue(double)).
+  void StartPreparingFiles(CompletedCallback completed_callback,
+                           ProgressBarUpdateCallback update_callback);
 
  private:
   friend struct content::BrowserThread::DeleteOnThread<
@@ -137,6 +143,7 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
   std::list<base::ScopedTempDir> scoped_temp_dirs_;
   FileShareConfig file_config_;
   CompletedCallback completed_callback_;
+  ProgressBarUpdateCallback update_callback_;
 
   // Updated by multiple stream adapters on UI thread.
   uint64_t num_bytes_read_ = 0;

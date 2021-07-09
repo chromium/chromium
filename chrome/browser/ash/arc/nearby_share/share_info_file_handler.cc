@@ -135,11 +135,14 @@ const std::vector<std::string>& ShareInfoFileHandler::GetMimeTypes() const {
 }
 
 void ShareInfoFileHandler::StartPreparingFiles(
-    CompletedCallback completed_callback) {
+    CompletedCallback completed_callback,
+    ProgressBarUpdateCallback update_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!completed_callback.is_null());
+  DCHECK(!update_callback.is_null());
 
   completed_callback_ = std::move(completed_callback);
+  update_callback_ = std::move(update_callback);
   file_sharing_started_ = true;
 
   if (!base::PathExists(file_config_.directory)) {
@@ -307,12 +310,15 @@ void ShareInfoFileHandler::OnFileStreamReadCompleted(
   num_bytes_read_ += base::checked_cast<uint64_t>(bytes_read);
   num_files_streamed_++;
 
-  // TODO(alanding): Update Chrome progress bar UI.
   const uint64_t expected_total_bytes = GetTotalSizeOfFiles();
   const size_t expected_total_files = GetNumberOfFiles();
   VLOG(1) << "Streamed " << num_bytes_read_ << " of " << expected_total_bytes
           << " bytes for " << num_files_streamed_ << " of "
           << expected_total_files << " files";
+  if (!update_callback_.is_null()) {
+    update_callback_.Run(base::checked_cast<double>(num_bytes_read_) /
+                         expected_total_bytes);
+  }
 
   if (num_files_streamed_ == expected_total_files &&
       num_bytes_read_ >= expected_total_bytes) {
