@@ -33,6 +33,11 @@ crbug.com/dawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_st
 
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,destroy:error_buffer:* [ Failure ]
 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,validation,buffer,destroy:* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:* [ Crash Failure ]
+
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read";access="read";atomic=false;baseType="f32";* [ Timeout ]
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read_write";access="read";atomic=false;baseType="f32";* [ Timeout ]
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="uniform";* [ Timeout ]
 
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,non_array:format="bc5-rg-snorm";* [ Crash ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rg8unorm";* [ Crash ]

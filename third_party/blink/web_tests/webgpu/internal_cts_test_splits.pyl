@@ -55,4 +55,12 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBufferOffset_and_attributeOffset:format="uint8x2";*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:nonZeroArrayStride_and_attributeOffset:format="uint8x2";*',
+
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read";access="read";atomic=false;baseType="i32";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read";access="read";atomic=false;baseType="u32";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read";access="read";atomic=false;baseType="f32";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read_write";access="read";atomic=false;baseType="i32";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read_write";access="read";atomic=false;baseType="u32";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read_write";access="read";atomic=false;baseType="f32";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read_write";access="read";atomic=true;*',
 ]

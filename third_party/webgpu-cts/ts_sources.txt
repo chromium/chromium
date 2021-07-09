@@ -37,6 +37,7 @@ src/common/tools/gen_listings.ts
 src/common/tools/gen_wpt_cts_html.ts
 src/common/tools/version.ts
 src/common/util/collect_garbage.ts
+src/common/util/data_tables.ts
 src/common/util/preprocessor.ts
 src/unittests/unit_test.ts
 src/demo/a.spec.ts
@@ -163,7 +164,11 @@ src/webgpu/api/validation/encoding/cmds/index_access.spec.ts
 src/webgpu/api/validation/encoding/cmds/render_pass.spec.ts
 src/webgpu/api/validation/encoding/cmds/setBindGroup.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/dynamic_state.spec.ts
-src/webgpu/api/validation/encoding/cmds/render/other.spec.ts
+src/webgpu/api/validation/encoding/cmds/render/render.ts
+src/webgpu/api/validation/encoding/cmds/render/indirect_draw.spec.ts
+src/webgpu/api/validation/encoding/cmds/render/setIndexBuffer.spec.ts
+src/webgpu/api/validation/encoding/cmds/render/setPipeline.spec.ts
+src/webgpu/api/validation/encoding/cmds/render/setVertexBuffer.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/state_tracking.spec.ts
 src/webgpu/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
 src/webgpu/api/validation/encoding/queries/common.ts
@@ -191,6 +196,8 @@ src/webgpu/api/validation/resource_usages/texture/in_render_misc.spec.ts
 src/webgpu/api/validation/texture/destroy.spec.ts
 src/webgpu/idl/idl_test.ts
 src/webgpu/idl/constants/flags.spec.ts
+src/webgpu/shader/types.ts
+src/webgpu/shader/execution/robust_access.spec.ts
 src/webgpu/shader/execution/robust_access_vertex.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/variable_and_const.spec.ts
