@@ -78,8 +78,9 @@ class FontAccessManagerImplBrowserTest
 
 #if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
 
+// Disabled test: https://crbug.com/1224238
 IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserBase,
-                       RendererInterfaceIsBound) {
+                       DISABLED_RendererInterfaceIsBound) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
   // This tests that the renderer interface is bound even if the kFontAccess
   // feature flag is disabled.
