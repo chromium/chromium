@@ -693,11 +693,14 @@ SimpleDeprecatingPolicyHandler::~SimpleDeprecatingPolicyHandler() = default;
 bool SimpleDeprecatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
-  // TODO(crbug/1102492): When the legacy policy value is ignored, do you think
-  // it's a good idea to add the "Ignore" error to it: IDS_POLICY_LABEL_IGNORED
-  // && IDS_POLICY_OVERRIDDEN.
-  if (policies.Get(new_policy_handler_->policy_name()))
+  if (policies.Get(new_policy_handler_->policy_name())) {
+    if (policies.Get(legacy_policy_handler_->policy_name())) {
+      errors->AddError(legacy_policy_handler_->policy_name(),
+                       IDS_POLICY_OVERRIDDEN,
+                       new_policy_handler_->policy_name());
+    }
     return new_policy_handler_->CheckPolicySettings(policies, errors);
+  }
 
   // The new policy is not set, fall back to legacy ones.
   return legacy_policy_handler_->CheckPolicySettings(policies, errors);

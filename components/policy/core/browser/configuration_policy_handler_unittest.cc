@@ -1070,7 +1070,7 @@ TEST(SimpleDeprecatingPolicyHandlerTest, CheckDeprecatedUsedWhenNoNewValue) {
                  POLICY_SOURCE_CLOUD, base::Value(1337), nullptr);
   errors.Clear();
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
-  EXPECT_TRUE(errors.empty());
+  EXPECT_FALSE(errors.empty());
   prefs.Clear();
   handler.ApplyPolicySettingsWithParameters(policy_map, params, &prefs);
   expected = std::make_unique<base::Value>(1337);
