@@ -314,10 +314,6 @@ size_t VP9VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
 
 bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!ApplyPendingUpdateRates())
-    return false;
-
   if (svc_layers_) {
     if (svc_layers_->UpdateEncodeJob(encode_job->IsKeyframeRequested(),
                                      current_params_.kf_period_frames)) {
