@@ -27,7 +27,6 @@
 #include "third_party/blink/public/common/native_io/native_io_utils.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -153,7 +152,7 @@ void NativeIOManager::BindReceiver(
     bool insert_succeeded;
     std::tie(it, insert_succeeded) = hosts_.emplace(
         storage_key, std::make_unique<NativeIOHost>(
-                         storage_key.origin(), std::move(storage_key_root_path),
+                         storage_key, std::move(storage_key_root_path),
 #if defined(OS_MAC)
                          allow_set_length_ipc_,
 #endif  // defined(OS_MAC)
@@ -173,14 +172,13 @@ void NativeIOManager::MaybeDeleteHost(NativeIOHost* host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(host != nullptr);
 
-  const blink::StorageKey& storage_key = blink::StorageKey(host->origin());
-  DCHECK(hosts_.count(storage_key) > 0);
-  DCHECK_EQ(hosts_[storage_key].get(), host);
+  DCHECK(hosts_.count(host->storage_key()) > 0);
+  DCHECK_EQ(hosts_[host->storage_key()].get(), host);
 
   if (!host->has_empty_receiver_set() || host->delete_all_data_in_progress())
     return;
 
-  hosts_.erase(storage_key);
+  hosts_.erase(host->storage_key());
 }
 
 void NativeIOManager::OnDeleteStorageKeyDataCompleted(
@@ -222,7 +220,7 @@ void NativeIOManager::DeleteStorageKeyData(
     // the removal process.
     std::tie(it, insert_succeeded) = hosts_.emplace(
         storage_key, std::make_unique<NativeIOHost>(
-                         storage_key.origin(), std::move(storage_key_root_path),
+                         storage_key, std::move(storage_key_root_path),
 #if defined(OS_MAC)
                          allow_set_length_ipc_,
 #endif  // defined(OS_MAC)

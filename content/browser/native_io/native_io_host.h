@@ -15,8 +15,8 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
-#include "url/origin.h"
 
 namespace base {
 class TaskRunner;
@@ -27,14 +27,14 @@ namespace content {
 class NativeIOManager;
 class NativeIOFileHost;
 
-// Implements the NativeIO Web Platform feature for an origin.
+// Implements the NativeIO Web Platform feature for a storage key.
 //
-// NativeIOManager owns an instance of this class for each origin that is
+// NativeIOManager owns an instance of this class for each storage key that is
 // actively using NativeIO.
 //
 // This class is not thread-safe, so all access to an instance must happen on
-// the same sequence. However, origins are completely isolated from each other,
-// so different NativeIOHost instances can safely be used on different
+// the same sequence. However, storage keys are completely isolated from each
+// other, so different NativeIOHost instances can safely be used on different
 // sequences, if desired.
 class NativeIOHost : public blink::mojom::NativeIOHost {
  public:
@@ -44,7 +44,7 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // `allow_set_length_ipc` gates NativeIOFileHost::SetLength(), which works
   // around a sandboxing limitation on macOS < 10.15. This is plumbed as a flag
   // all the from NativeIOManager to facilitate testing.
-  explicit NativeIOHost(const url::Origin& origin,
+  explicit NativeIOHost(const blink::StorageKey& storage_key,
                         base::FilePath root_path,
 #if defined(OS_MAC)
                         bool allow_set_length_ipc,
@@ -57,7 +57,7 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   ~NativeIOHost() override;
 
   // Binds |receiver| to the NativeIOHost. The |receiver| must belong to a frame
-  // or worker for this host's origin.
+  // or worker for this host's storage key.
   void BindReceiver(mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver);
 
   // True if there are no receivers connected to this host.
@@ -66,8 +66,8 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // when it isn't serving any receivers.
   bool has_empty_receiver_set() const { return receivers_.empty(); }
 
-  // The origin served by this host.
-  const url::Origin& origin() const { return origin_; }
+  // The storage key served by this host.
+  const blink::StorageKey& storage_key() const { return storage_key_; }
 
   // True if this host's data is currently being deleted.
   bool delete_all_data_in_progress() const {
@@ -90,14 +90,14 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   void RequestCapacityChange(int64_t capacity_delta,
                              RequestCapacityChangeCallback callback) override;
 
-  // Removes all data stored for the host's origin from disk. All mojo
+  // Removes all data stored for the host's storage key from disk. All mojo
   // connections for open files are closed.
   void DeleteAllData(DeleteAllDataCallback callback);
 
-  // Called when one of the open files for this origin closes.
+  // Called when one of the open files for this storage key closes.
   //
-  // |file_host| must be owned by this origin host. This method should only be
-  // called by NativeIOFileHost.
+  // |file_host| must be owned by this storage key host. This method should only
+  // be called by NativeIOFileHost.
   void OnFileClose(NativeIOFileHost* file_host);
 
  private:
@@ -127,15 +127,15 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // The origin served by this host.
-  const url::Origin origin_;
+  // The storage key served by this host.
+  const blink::StorageKey storage_key_;
 
   // Deletion requests issued during an ongoing deletion are coalesced with that
   // deletion request. All coalesced callbacks are stored and invoked
   // together.
   std::vector<DeleteAllDataCallback> delete_all_data_callbacks_;
 
-  // The directory holding all the files for this origin.
+  // The directory holding all the files for this storage key.
   const base::FilePath root_path_;
 
 #if defined(OS_MAC)
@@ -149,8 +149,8 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // Schedules all operations involving file I/O done by this NativeIOHost.
   const scoped_refptr<base::TaskRunner> file_task_runner_;
 
-  // All receivers for frames and workers whose origin is `origin_` associated
-  // with the StoragePartition that owns `manager_`.
+  // All receivers for frames and workers whose storage key is `storage_key_`
+  // associated with the StoragePartition that owns `manager_`.
   mojo::ReceiverSet<blink::mojom::NativeIOHost> receivers_;
 
   // The names of files that have pending I/O tasks.
