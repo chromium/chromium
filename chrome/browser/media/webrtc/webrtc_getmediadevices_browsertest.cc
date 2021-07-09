@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -18,6 +19,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/common/content_features.h"
@@ -25,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/media_switches.h"
@@ -332,4 +336,62 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
 
   EXPECT_EQ(devices.size(), devices2.size());
   CheckEnumerationsAreDifferent(devices, devices2);
+}
+
+class WebRtcGetMediaDevicesPrerenderingBrowserTest
+    : public WebRtcGetMediaDevicesBrowserTest {
+ public:
+  WebRtcGetMediaDevicesPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &WebRtcGetMediaDevicesPrerenderingBrowserTest::web_contents,
+            base::Unretained(this))) {}
+  ~WebRtcGetMediaDevicesPrerenderingBrowserTest() override = default;
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesPrerenderingBrowserTest,
+                       EnumerateDevicesInPrerendering) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Loads a simple page as a primary page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  // Loads a page in the prerender.
+  auto prerender_url = embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage);
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+
+  base::RunLoop run_loop;
+  permissions::PermissionRequestObserver observer(web_contents());
+  prerender_rfh->ExecuteJavaScriptForTests(
+      u"doGetUserMedia({audio: true, video: true});", base::NullCallback());
+
+  // The prerendering page should not show a permission request's bubble UI.
+  EXPECT_FALSE(observer.request_shown());
+
+  // Activates the page from the prerendering.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  observer.Wait();
+
+  // Makes sure that the page is activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // The prerendered page should show the permission request's bubble UI.
+  EXPECT_TRUE(observer.request_shown());
 }

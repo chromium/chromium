@@ -161,6 +161,10 @@ bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
     const extensions::Extension* extension) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
+
+  DCHECK_EQ(render_frame_host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   ContentSettingsType content_settings_type =
