@@ -90,7 +90,6 @@ TabSearchPageHandler::TabSearchPageHandler(
           kTabsChangeDelay,
           base::BindRepeating(&TabSearchPageHandler::NotifyTabsChanged,
                               base::Unretained(this)))) {
-  Observe(web_ui_->GetWebContents());
   browser_tab_strip_tracker_.Init();
 }
 
@@ -457,7 +456,7 @@ void TabSearchPageHandler::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (webui_hidden_ ||
+  if (!IsWebContentsVisible() ||
       browser_tab_strip_tracker_.is_processing_initial_browsers()) {
     return;
   }
@@ -476,7 +475,7 @@ void TabSearchPageHandler::OnTabStripModelChanged(
 void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
                                         int index,
                                         TabChangeType change_type) {
-  if (webui_hidden_)
+  if (!IsWebContentsVisible())
     return;
   // TODO(crbug.com/1112496): Support more values for TabChangeType and filter
   // out the changes we are not interested in.
@@ -495,17 +494,21 @@ void TabSearchPageHandler::ScheduleDebounce() {
 }
 
 void TabSearchPageHandler::NotifyTabsChanged() {
+  if (!IsWebContentsVisible())
+    return;
   page_->TabsChanged(CreateProfileData());
   debounce_timer_->Stop();
+}
+
+bool TabSearchPageHandler::IsWebContentsVisible() {
+  auto visibility = web_ui_->GetWebContents()->GetVisibility();
+  return visibility == content::Visibility::VISIBLE ||
+         visibility == content::Visibility::OCCLUDED;
 }
 
 bool TabSearchPageHandler::ShouldTrackBrowser(Browser* browser) {
   return browser->profile() == Profile::FromWebUI(web_ui_) &&
          browser->type() == Browser::Type::TYPE_NORMAL;
-}
-
-void TabSearchPageHandler::OnVisibilityChanged(content::Visibility visibility) {
-  webui_hidden_ = visibility == content::Visibility::HIDDEN;
 }
 
 void TabSearchPageHandler::SetTimerForTesting(

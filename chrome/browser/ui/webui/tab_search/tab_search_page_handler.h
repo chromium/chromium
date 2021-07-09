@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,8 +32,7 @@ enum class TabSearchCloseAction {
 
 class TabSearchPageHandler : public tab_search::mojom::PageHandler,
                              public TabStripModelObserver,
-                             public BrowserTabStripTrackerDelegate,
-                             public content::WebContentsObserver {
+                             public BrowserTabStripTrackerDelegate {
  public:
   TabSearchPageHandler(
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
@@ -68,8 +66,9 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;
 
-  // content::WebContentsObserver:
-  void OnVisibilityChanged(content::Visibility visibility) override;
+  // Returns true if the WebContents hosting the WebUI is visible to the user
+  // (in either a fully visible or partially occluded state).
+  bool IsWebContentsVisible();
 
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
@@ -135,7 +134,6 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   ui::MojoBubbleWebUIController* const webui_controller_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;
-  bool webui_hidden_ = false;
 
   // Tracks how many times |CloseTab()| has been evoked for the currently open
   // instance of Tab Search for logging in UMA.

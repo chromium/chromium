@@ -192,6 +192,11 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
                                         base::ASCIIToUTF16(title));
   }
 
+  void HideWebContents() {
+    web_contents_->WasHidden();
+    ASSERT_FALSE(handler_->IsWebContentsVisible());
+  }
+
   testing::StrictMock<MockPage> page_;
 
  private:
@@ -503,6 +508,29 @@ TEST_F(TabSearchPageHandlerTest, TabsChanged) {
   browser1()->tab_strip_model()->CloseWebContentsAt(
       0, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
   ASSERT_FALSE(IsTimerRunning());
+}
+
+// Assert that no browser -> renderer messages are sent when the WebUI is not
+// visible.
+TEST_F(TabSearchPageHandlerTest, EventsDoNotPropagatedWhenWebUIIsHidden) {
+  HideWebContents();
+  EXPECT_CALL(page_, TabsChanged(_)).Times(0);
+  EXPECT_CALL(page_, TabUpdated(_)).Times(0);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
+  FireTimer();
+
+  // Inserting tabs should not cause the debounce timer to start running.
+  ASSERT_FALSE(IsTimerRunning());
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  ASSERT_FALSE(IsTimerRunning());
+
+  // Adding the following tab would usually trigger TabUpdated() for the first
+  // tab since the tab index will change from 0 to 1
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+
+  // Closing a tab would usually result in a call to TabsRemoved().
+  browser1()->tab_strip_model()->CloseWebContentsAt(
+      0, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 // Ensure that tab model changes in a browser with a different profile
