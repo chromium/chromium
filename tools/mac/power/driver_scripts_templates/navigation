@@ -1,0 +1,52 @@
+{%- from 'macros' import input with context -%}
+{{ hash_bang }}
+
+-- Copyright 2021 The Chromium Authors. All rights reserved.
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- This script cycles through a set of N sites staying on each site for
+-- |per_navigation_delay| seconds before moving on to the next site. The full
+-- set of sites of visited |navigation_cycles| times before the script exits.
+-- Navigation happens by creating a new tab and then closing it.
+
+tell application "{{ browser }}"
+
+    -- If {{ browser }} is already started then just bring
+    -- it to the forefront otherwise open it.
+    if it is running then
+      reopen
+    else
+      activate
+    end if
+
+    if it is running then
+      activate
+      set w to first window
+      set bounds of front window to {0, 0, 1920, 1080}
+
+      -- Ensure a tab stays live all the time so the window doesn't go away.
+      open location "about:blank"
+
+      -- Each cycles takes about 2 mins. Aim for a test that takes an hour.
+      repeat with i from 1 to {{ navigation_cycles }}
+
+        set sites to {"https://amazon.com", "https://www.youtube.com"} & ¬
+          {"https://www.google.com", "https://github.com/chromium/chromium"}
+
+        repeat with site in sites
+          open location site
+
+          delay {{ per_navigation_delay }}
+
+          tell active tab of w
+            close
+          end tell
+        end repeat
+
+      end repeat
+
+      activate
+    end if
+
+end tell

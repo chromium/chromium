@@ -1,0 +1,41 @@
+{%- from 'macros' import input with context -%}
+{{ hash_bang }}
+
+-- Copyright 2021 The Chromium Authors. All rights reserved.
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- This site opens all sites identified in |background_sites| and then waits
+-- |delay| on the last tab opened.
+
+tell application "{{ browser }}"
+
+  if it is running then
+    reopen
+  else
+    activate
+  end if
+
+  if it is running then
+    activate
+    set w to first window
+    set bounds of front window to {0, 0, 1920, 1080}
+
+    set sites to { {{ background_sites }} }
+    repeat with site in sites
+      open location site
+
+      -- Wait for the page to be fully loaded.
+      tell active tab of w
+        repeat while (loading)
+            delay 1
+        end repeat
+      end tell
+
+    end repeat
+
+    delay {{ delay }}
+
+  end if
+
+end tell

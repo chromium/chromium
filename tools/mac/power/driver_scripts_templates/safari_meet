@@ -1,0 +1,36 @@
+{%- from 'macros' import input with context -%}
+{{ hash_bang }}
+
+-- Copyright 2021 The Chromium Authors. All rights reserved.
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- For behavior description see meet file. Differs from the generic template
+-- because for Safari Javascript is invoked differently and tabs are accessed
+-- differently.
+
+set myURL to "https://meet.google.com/{{ meeting_id }}"
+
+tell application "Safari"
+  -- If Safari is already started then just bring
+  -- it to the forefront otherwise open it.
+  if it is running then
+    reopen
+  else
+    activate
+  end if
+
+  set w to first window
+  set bounds of w to {0, 0, 1920, 1080}
+
+  open location {myURL}
+  tell document 1
+    repeat while document 1's source = ""
+      delay 0.5
+    end repeat
+
+    do JavaScript "b=document.getElementsByClassName('uArJ5e UQuaGc Y5sE8d uyXBBb xKiqt')[0];b.click();"
+  end tell
+
+  delay 1800
+end tell

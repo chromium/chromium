@@ -1,0 +1,30 @@
+{%- from 'macros' import input with context -%}
+{{ hash_bang }}
+
+-- Copyright 2021 The Chromium Authors. All rights reserved.
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- For behavior description see idle_on_site file. The only difference with the
+-- generic template is that the way to access windows is different.
+
+tell application "Safari"
+  -- If Safari is already started then just bring
+  -- it to the forefront otherwise open it.
+  if it is running then
+    reopen
+  else
+    activate
+  end if
+
+  set w to first window
+  set bounds of w to {0, 0, 1920, 1080}
+
+  delay 10
+
+  open location "{{ idle_site }}"
+
+  delay {{ delay }}
+
+  activate
+end tell
