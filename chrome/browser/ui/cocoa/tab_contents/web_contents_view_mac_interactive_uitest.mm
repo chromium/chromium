@@ -58,7 +58,10 @@ class TabRemovedWaiter : public TabStripModelObserver {
 
 // Integration test for a <select> popup run by the Mac-specific
 // content::PopupMenuHelper, owned by a WebContentsViewMac.
-IN_PROC_BROWSER_TEST_F(WebContentsViewMacInteractiveTest, SelectMenuLifetime) {
+// TODO(crbug.com/1193978): this test is flaking on the bots. Re-enable it when
+// it's fixed.
+IN_PROC_BROWSER_TEST_F(WebContentsViewMacInteractiveTest,
+                       DISABLED_SelectMenuLifetime) {
   EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   EXPECT_TRUE(embedded_test_server()->Start());
 
