@@ -151,4 +151,33 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoTopLevelSnapAreas) {
                         expected_container);
 }
 
+TEST_F(InspectorHighlightTest,
+       BuildContainerQueryContainerInfoWithoutChildren) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #container {
+        width: 400px;
+        height: 500px;
+      }
+    </style>
+    <div id="container"></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* container = GetDocument().getElementById("container");
+  auto info = BuildContainerQueryContainerInfo(
+      container, InspectorContainerQueryContainerHighlightConfig(), 1.0f);
+  EXPECT_TRUE(info);
+
+  protocol::ErrorSupport errors;
+  std::string expected_container = R"JSON(
+    {
+      "containerBorder":["M",8,8,"L",408,8,"L",408,508,"L",8,508,"Z"],
+      "containerQueryContainerHighlightConfig": {}
+    }
+  )JSON";
+  AssertValueEqualsJSON(protocol::ValueConversions<protocol::Value>::fromValue(
+                            info.get(), &errors),
+                        expected_container);
+}
+
 }  // namespace blink

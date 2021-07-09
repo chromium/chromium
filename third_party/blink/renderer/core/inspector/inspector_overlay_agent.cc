@@ -785,6 +785,38 @@ Response InspectorOverlayAgent::setShowScrollSnapOverlays(
   return Response::Success();
 }
 
+Response InspectorOverlayAgent::setShowContainerQueryOverlays(
+    std::unique_ptr<
+        protocol::Array<protocol::Overlay::ContainerQueryHighlightConfig>>
+        container_query_highlight_configs) {
+  if (!persistent_tool_) {
+    persistent_tool_ =
+        MakeGarbageCollected<PersistentTool>(this, GetFrontend());
+  }
+
+  Vector<std::pair<
+      Member<Node>,
+      std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>>>
+      configs;
+
+  for (std::unique_ptr<protocol::Overlay::ContainerQueryHighlightConfig>&
+           config : *container_query_highlight_configs) {
+    Node* node = nullptr;
+    Response response = dom_agent_->AssertNode(config->getNodeId(), node);
+    if (!response.IsSuccess())
+      return response;
+    configs.push_back(std::make_pair(
+        node, InspectorOverlayAgent::ToContainerQueryContainerHighlightConfig(
+                  config->getContainerQueryContainerHighlightConfig())));
+  }
+
+  persistent_tool_->SetContainerQueryConfigs(std::move(configs));
+
+  PickTheRightTool();
+
+  return Response::Success();
+}
+
 Response InspectorOverlayAgent::highlightSourceOrder(
     std::unique_ptr<protocol::Overlay::SourceOrderConfig>
         source_order_inspector_object,
@@ -1624,6 +1656,22 @@ InspectorOverlayAgent::ToScrollSnapContainerHighlightConfig(
 }
 
 // static
+std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>
+InspectorOverlayAgent::ToContainerQueryContainerHighlightConfig(
+    protocol::Overlay::ContainerQueryContainerHighlightConfig* config) {
+  if (!config) {
+    return nullptr;
+  }
+  std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>
+      highlight_config =
+          std::make_unique<InspectorContainerQueryContainerHighlightConfig>();
+  highlight_config->container_border =
+      InspectorOverlayAgent::ToLineStyle(config->getContainerBorder(nullptr));
+
+  return highlight_config;
+}
+
+// static
 std::unique_ptr<InspectorFlexItemHighlightConfig>
 InspectorOverlayAgent::ToFlexItemHighlightConfig(
     protocol::Overlay::FlexItemHighlightConfig* config) {
@@ -1738,6 +1786,10 @@ InspectorOverlayAgent::ToHighlightConfig(
   highlight_config->flex_item_highlight_config =
       InspectorOverlayAgent::ToFlexItemHighlightConfig(
           config->getFlexItemHighlightConfig(nullptr));
+
+  highlight_config->container_query_container_highlight_config =
+      InspectorOverlayAgent::ToContainerQueryContainerHighlightConfig(
+          config->getContainerQueryContainerHighlightConfig(nullptr));
 
   return highlight_config;
 }
