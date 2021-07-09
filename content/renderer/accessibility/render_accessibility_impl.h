@@ -56,6 +56,16 @@ class RenderAccessibilityManager;
 
 using BlinkAXTreeSerializer = ui::AXTreeSerializer<blink::WebAXObject>;
 
+struct AXDirtyObject {
+  AXDirtyObject();
+  AXDirtyObject(const AXDirtyObject& other);
+  ~AXDirtyObject();
+  blink::WebAXObject obj;
+  ax::mojom::EventFrom event_from;
+  ax::mojom::Action event_from_action;
+  std::vector<ui::AXEventIntent> event_intents;
+};
+
 // The browser process implements native accessibility APIs, allowing assistive
 // technology (e.g., screen readers, magnifiers) to access and control the web
 // contents with high-level APIs. These APIs are also used by automation tools,
@@ -152,16 +162,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   int GetDeferredEventsDelay();
 
  private:
-  struct DirtyObject {
-    DirtyObject();
-    DirtyObject(const DirtyObject& other);
-    ~DirtyObject();
-    blink::WebAXObject obj;
-    ax::mojom::EventFrom event_from;
-    ax::mojom::Action event_from_action;
-    std::vector<ui::AXEventIntent> event_intents;
-  };
-
   enum class EventScheduleMode { kDeferEvents, kProcessEventsImmediately };
 
   enum class EventScheduleStatus {
@@ -174,6 +174,15 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
     // Events are not scheduled and we are not waiting for an ack.
     kNotWaiting
   };
+
+  // Add an AXDirtyObject to the dirty_objects_ queue.
+  // Returns an iterator pointing just after the newly inserted object.
+  std::list<std::unique_ptr<AXDirtyObject>>::iterator EnqueueDirtyObject(
+      const blink::WebAXObject& obj,
+      ax::mojom::EventFrom event_from,
+      ax::mojom::Action event_from_action,
+      std::vector<ui::AXEventIntent> event_intents,
+      std::list<std::unique_ptr<AXDirtyObject>>::iterator insertion_point);
 
   // Callback that will be called from the browser upon handling the message
   // previously sent to it via SendPendingAccessibilityEvents().
@@ -208,12 +217,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Whether an event should mark its associated object dirty.
   bool ShouldSerializeNodeForEvent(const blink::WebAXObject& obj,
                                    const ui::AXEvent& event) const;
-
-  // Add a DirtyObject to the dirty_objects_ queue.
-  void EnqueueDirtyObject(const blink::WebAXObject& obj,
-                          ax::mojom::EventFrom event_from,
-                          ax::mojom::Action event_from_action,
-                          std::vector<ui::AXEventIntent> event_intents);
 
   // If we are calling this from a task, scheduling is allowed even if there is
   // a running task
@@ -271,7 +274,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Objects that need to be re-serialized, the next time
   // we send an event bundle to the browser - but don't specifically need
   // an event fired.
-  std::list<std::unique_ptr<DirtyObject>> dirty_objects_;
+  std::list<std::unique_ptr<AXDirtyObject>> dirty_objects_;
 
   // The adapter that exposes Blink's accessibility tree to AXTreeSerializer.
   std::unique_ptr<BlinkAXTreeSource> tree_source_;

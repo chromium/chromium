@@ -455,7 +455,7 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     ax::mojom::Action event_from_action,
     std::vector<ui::AXEventIntent> event_intents) {
   EnqueueDirtyObject(obj, ax::mojom::EventFrom::kAction, event_from_action,
-                     event_intents);
+                     event_intents, dirty_objects_.end());
 
   if (subtree)
     serializer_->InvalidateSubtree(obj);
@@ -627,17 +627,20 @@ bool RenderAccessibilityImpl::ShouldSerializeNodeForEvent(
   return true;
 }
 
-void RenderAccessibilityImpl::EnqueueDirtyObject(
+std::list<std::unique_ptr<AXDirtyObject>>::iterator
+RenderAccessibilityImpl::EnqueueDirtyObject(
     const blink::WebAXObject& obj,
     ax::mojom::EventFrom event_from,
     ax::mojom::Action event_from_action,
-    std::vector<ui::AXEventIntent> event_intents) {
-  DirtyObject* dirty_object = new DirtyObject();
+    std::vector<ui::AXEventIntent> event_intents,
+    std::list<std::unique_ptr<AXDirtyObject>>::iterator insertion_point) {
+  AXDirtyObject* dirty_object = new AXDirtyObject();
   dirty_object->obj = obj;
   dirty_object->event_from = event_from;
   dirty_object->event_from_action = event_from_action;
   dirty_object->event_intents = event_intents;
-  dirty_objects_.push_back(base::WrapUnique<DirtyObject>(dirty_object));
+  return std::next(dirty_objects_.insert(
+      insertion_point, base::WrapUnique<AXDirtyObject>(dirty_object)));
 }
 
 int RenderAccessibilityImpl::GetDeferredEventsDelay() {
@@ -818,11 +821,32 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
             << " on node id " << event.id;
   }
 
-  // Now serialize all dirty objects. Keep track of IDs serialized
-  // so we don't have to serialize the same node twice.
+  // Dirty objects can be added as a result of serialization. For example,
+  // as children are iterated during depth first traversal in the serializer,
+  // the children sometimes need to be created. The initialization of these
+  // new children can lead to the discovery of parenting changes via
+  // aria-owns, or name changes on an ancestor that collects its name its from
+  // contents. In some cases this has led to an infinite loop, as the
+  // serialization of new dirty objects keeps adding new dirty objects to
+  // consider. The infinite loop is avoided by tracking the number of dirty
+  // objects that can be serialized from the loop, which is the initial
+  // number of dirty objects + kMaxExtraDirtyObjectsToSerialize.
+  // Allowing kMaxExtraDirtyObjectsToSerialize ensures that most important
+  // additional related changes occur at the same time, and that dump event
+  // tests have consistent results (the results change when dirty objects are
+  // processed in separate batches).
+  constexpr int kMaxExtraDirtyObjectsToSerialize = 100;
+  size_t num_remaining_objects_to_serialize =
+      dirty_objects_.size() + kMaxExtraDirtyObjectsToSerialize;
+
+  // Keep track of IDs serialized so we don't serialize the same node twice.
   std::set<int32_t> already_serialized_ids;
-  while (!dirty_objects_.empty()) {
-    std::unique_ptr<DirtyObject> current_dirty_object =
+
+  // Serialize all dirty objects in the list at this point in time, stopping
+  // either when the queue is empty, or the number of remaining objects to
+  // serialize has been reached.
+  while (!dirty_objects_.empty() && --num_remaining_objects_to_serialize > 0) {
+    std::unique_ptr<AXDirtyObject> current_dirty_object =
         std::move(dirty_objects_.front());
     dirty_objects_.pop_front();
     auto obj = current_dirty_object->obj;
@@ -858,6 +882,8 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     // mark all ancestors along the way as dirty.
     if (obj.AccessibilityIsIgnored()) {
       WebAXObject ancestor = obj;
+      std::list<std::unique_ptr<AXDirtyObject>>::iterator insertion_point =
+          std::next(dirty_objects_.begin());
       for (; !ancestor.IsDetached() && ancestor.AccessibilityIsIgnored();
            ancestor = ancestor.ParentObject()) {
         // There are 3 states of nodes that we care about here.
@@ -885,13 +911,22 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
         // Similarly, during Event::kTextChanged, if any Ignored,
         // but included in tree ancestor uses NameFrom::kContents,
         // they must also be re-serialized in case the name changed.
-        EnqueueDirtyObject(ancestor, current_dirty_object->event_from,
-                           current_dirty_object->event_from_action,
-                           current_dirty_object->event_intents);
+        //
+        // Insert just after the object currently being serialized.
+        insertion_point = EnqueueDirtyObject(
+            ancestor, current_dirty_object->event_from,
+            current_dirty_object->event_from_action,
+            current_dirty_object->event_intents, insertion_point);
+        // Increment remaining objects to serialize to ensure that it's
+        // serialized now, not in a subsequent message.
+        ++num_remaining_objects_to_serialize;
       }
       EnqueueDirtyObject(ancestor, current_dirty_object->event_from,
                          current_dirty_object->event_from_action,
-                         current_dirty_object->event_intents);
+                         current_dirty_object->event_intents, insertion_point);
+      // Increment remaining objects to serialize to ensure that it's
+      // serialized now, not in a subsequent message.
+      ++num_remaining_objects_to_serialize;
     }
 
     ui::AXTreeUpdate update;
@@ -1472,9 +1507,8 @@ void RenderAccessibilityImpl::ResetUKMData() {
   last_ukm_url_ = "";
 }
 
-RenderAccessibilityImpl::DirtyObject::DirtyObject() = default;
-RenderAccessibilityImpl::DirtyObject::DirtyObject(const DirtyObject& other) =
-    default;
-RenderAccessibilityImpl::DirtyObject::~DirtyObject() = default;
+AXDirtyObject::AXDirtyObject() = default;
+AXDirtyObject::AXDirtyObject(const AXDirtyObject& other) = default;
+AXDirtyObject::~AXDirtyObject() = default;
 
 }  // namespace content
