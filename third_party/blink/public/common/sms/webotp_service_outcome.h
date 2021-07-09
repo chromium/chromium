@@ -19,7 +19,8 @@ enum class WebOTPServiceOutcome {
   kTimeout = 5,
   kUserCancelled = 6,
   kBackendNotAvailable = 7,
-  kMaxValue = kBackendNotAvailable
+  kCrossDeviceFailure = 8,
+  kMaxValue = kCrossDeviceFailure
 };
 
 }  // namespace blink

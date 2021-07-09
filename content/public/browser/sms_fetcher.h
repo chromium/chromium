@@ -30,7 +30,11 @@ enum class SmsFetchFailureType {
 
   // The underlying API is not available
   kBackendNotAvailable = 6,
-  kMaxValue = kBackendNotAvailable,
+
+  // Failure type when using WebOTP on desktop
+  kCrossDeviceFailure = 7,
+
+  kMaxValue = kCrossDeviceFailure,
 };
 
 // TODO(yigu): Do not use anonymous namespace in header.

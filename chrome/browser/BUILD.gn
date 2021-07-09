@@ -1573,6 +1573,8 @@ static_library("browser") {
     "sharing/sms/sms_flags.h",
     "sharing/sms/sms_remote_fetcher.cc",
     "sharing/sms/sms_remote_fetcher.h",
+    "sharing/sms/sms_remote_fetcher_metrics.cc",
+    "sharing/sms/sms_remote_fetcher_metrics.h",
     "sharing/vapid_key_manager.cc",
     "sharing/vapid_key_manager.h",
     "sharing/web_push/json_web_token_util.cc",

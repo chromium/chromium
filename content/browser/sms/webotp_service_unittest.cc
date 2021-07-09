@@ -1210,4 +1210,17 @@ TEST_F(WebOTPServiceTest, RecordCancelledAsOutcome) {
   ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kCancelled);
 }
 
+TEST_F(WebOTPServiceTest,
+       RecordCrossDeviceFailureAsOutcomeUponPreviousRequestCancelled) {
+  RecordFailureOutcomeUponPreviousRequestCancelled(
+      FailureType::kCrossDeviceFailure,
+      blink::WebOTPServiceOutcome::kCrossDeviceFailure);
+}
+
+TEST_F(WebOTPServiceTest, RecordCrossDeviceFailureAsOutcomeUponDestruction) {
+  RecordFailureOutcomeUponDestruction(
+      FailureType::kCrossDeviceFailure,
+      blink::WebOTPServiceOutcome::kCrossDeviceFailure);
+}
+
 }  // namespace content

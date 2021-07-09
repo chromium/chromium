@@ -81,6 +81,46 @@ bool IsCrossOriginFrame(RenderFrameHost* rfh) {
   return false;
 }
 
+Outcome FailureTypeToOutcome(SmsFetchFailureType failure_type) {
+  switch (failure_type) {
+    case SmsFetchFailureType::kPromptTimeout:
+      return Outcome::kTimeout;
+    case SmsFetchFailureType::kPromptCancelled:
+      return Outcome::kUserCancelled;
+    case SmsFetchFailureType::kCrossDeviceFailure:
+      return Outcome::kCrossDeviceFailure;
+    default:
+      NOTREACHED();
+      return Outcome::kTimeout;
+  }
+}
+
+Outcome SmsStatusToOutcome(SmsStatus status) {
+  switch (status) {
+    case SmsStatus::kSuccess:
+      return Outcome::kSuccess;
+    case SmsStatus::kUnhandledRequest:
+      return Outcome::kUnhandledRequest;
+    case SmsStatus::kAborted:
+      return Outcome::kAborted;
+    case SmsStatus::kCancelled:
+      return Outcome::kCancelled;
+    case SmsStatus::kBackendNotAvailable:
+      // Records when the backend is not available AND the request gets
+      // cancelled. i.e. client specifies GmsBackend.VERIFICATION but it's
+      // unavailable. If client specifies GmsBackend.AUTO and the verification
+      // backend is not available, we fall back to the user consent backend and
+      // the request will be handled accordingly. e.g. if the user declined the
+      // prompt, we record it as |kUserCancelled|.
+      return Outcome::kBackendNotAvailable;
+    default:
+      // The status |kTimeout| has been handled as part of the
+      // |delayed_rejection_reason_| handling logic.
+      NOTREACHED();
+      return Outcome::kTimeout;
+  }
+}
+
 }  // namespace
 
 WebOTPService::WebOTPService(
@@ -153,7 +193,7 @@ void WebOTPService::Receive(ReceiveCallback callback) {
   start_time_ = base::TimeTicks::Now();
   callback_ = std::move(callback);
   timeout_timer_.Reset();
-  prompt_failure_.reset();
+  delayed_rejection_reason_.reset();
 
   // |one_time_code_| and prompt are still present from the previous request so
   // a new subscription is unnecessary. Note that it is only safe for us to use
@@ -209,30 +249,6 @@ void WebOTPService::OnReceive(const OriginList& origin_list,
 void WebOTPService::OnFailure(FailureType failure_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  switch (failure_type) {
-    case FailureType::kPromptTimeout:
-    case FailureType::kPromptCancelled:
-      // We do not complete the request here and instead rely on |OnTimeout| to
-      // complete the request. This delays the promise resolution for privacy
-      // reasons. e.g. if a promise gets resolved right after a user declines
-      // the prompt, sites would know that the SMS did reach the user and they
-      // could use such information for targeting. By using a timeout in all
-      // cases, it is not possible to distinguish between sms not being received
-      // and received but not shared.
-      // Note that we still unsubscribe it from the fetcher and |Unsubscribe|
-      // will be called again during the normal |CompleteRequest| process but it
-      // should be no-op.
-      prompt_failure_ = failure_type;
-      fetcher_->Unsubscribe(origin_list_, this);
-      return;
-    case FailureType::kBackendNotAvailable:
-      CompleteRequest(SmsStatus::kBackendNotAvailable);
-      return;
-    default: /* do nothing as it is handled below. */
-      break;
-  }
-
-  // Records Sms parsing failures.
   SmsParser::SmsParsingStatus status = SmsParsingStatus::kParsed;
   switch (failure_type) {
     case FailureType::kSmsNotParsed_OTPFormatRegexNotMatch:
@@ -246,11 +262,28 @@ void WebOTPService::OnFailure(FailureType failure_type) {
       break;
     case FailureType::kPromptTimeout:
     case FailureType::kPromptCancelled:
+    case FailureType::kCrossDeviceFailure:
+      // We do not complete the request here and instead rely on |OnTimeout| to
+      // complete the request. This delays the promise resolution for privacy
+      // reasons. e.g. if a promise gets resolved right after a user declines
+      // the prompt, sites would know that the SMS did reach the user and they
+      // could use such information for targeting. By using a timeout in all
+      // cases, it is not possible to distinguish between sms not being received
+      // and received but not shared.
+      // Note that we still unsubscribe it from the fetcher and |Unsubscribe|
+      // will be called again during the normal |CompleteRequest| process but it
+      // should be no-op.
+      delayed_rejection_reason_ = failure_type;
+      fetcher_->Unsubscribe(origin_list_, this);
+      return;
     case FailureType::kBackendNotAvailable:
+      CompleteRequest(SmsStatus::kBackendNotAvailable);
+      return;
     case FailureType::kNoFailure:
       NOTREACHED();
-      break;
   }
+
+  // Records Sms parsing failures.
   DCHECK(status != SmsParsingStatus::kParsed);
   RecordSmsParsingStatus(status, render_frame_host()->GetPageUkmSourceId());
 }
@@ -309,7 +342,7 @@ void WebOTPService::CleanUp() {
   }
   start_time_ = base::TimeTicks();
   callback_.Reset();
-  prompt_failure_.reset();
+  delayed_rejection_reason_.reset();
   fetcher_->Unsubscribe(origin_list_, this);
 }
 
@@ -351,8 +384,8 @@ void WebOTPService::RecordMetrics(blink::mojom::SmsStatus status) {
     if (status == SmsStatus::kSuccess) {
       DCHECK(!receive_time_.is_null());
       RecordContinueOnSuccessTime(base::TimeTicks::Now() - receive_time_);
-    } else if (prompt_failure_ &&
-               prompt_failure_.value() == FailureType::kPromptCancelled) {
+    } else if (delayed_rejection_reason_ && delayed_rejection_reason_.value() ==
+                                                FailureType::kPromptCancelled) {
       DCHECK(!receive_time_.is_null());
       RecordCancelOnSuccessTime(base::TimeTicks::Now() - receive_time_);
     }
@@ -376,49 +409,30 @@ void WebOTPService::RecordMetrics(blink::mojom::SmsStatus status) {
   //   4. before the timeout if the request is cancelled in favor of a new
   //   request by the website.
   // In 2, 3 and 4, there is a different SmsStatus when trying to record metrics
-  // so we need to do it based on prompt_failure_.
-  if (prompt_failure_) {
+  // so we need to do it based on delayed_rejection_reason_.
+  if (delayed_rejection_reason_) {
     DCHECK_NE(status, SmsStatus::kSuccess);
-    if (prompt_failure_.value() == FailureType::kPromptCancelled) {
-      RecordSmsOutcome(Outcome::kUserCancelled, source_id, recorder,
-                       is_cross_origin_frame);
+    // Records Outcome for requests which we reject with delay.
+    RecordSmsOutcome(FailureTypeToOutcome(delayed_rejection_reason_.value()),
+                     source_id, recorder, is_cross_origin_frame);
+
+    if (delayed_rejection_reason_.value() == FailureType::kPromptCancelled) {
       RecordSmsUserCancelTime(base::TimeTicks::Now() - start_time_, source_id,
                               recorder);
-    } else if (prompt_failure_.value() == FailureType::kPromptTimeout) {
-      RecordSmsOutcome(Outcome::kTimeout, source_id, recorder,
-                       is_cross_origin_frame);
     }
-    prompt_failure_.reset();
+    delayed_rejection_reason_.reset();
     return;
   }
 
+  // Records Outcome for requests which we resolve / reject immediately.
+  RecordSmsOutcome(SmsStatusToOutcome(status), source_id, recorder,
+                   is_cross_origin_frame);
   if (status == SmsStatus::kSuccess) {
-    RecordSmsOutcome(Outcome::kSuccess, source_id, recorder,
-                     is_cross_origin_frame);
     RecordSmsSuccessTime(base::TimeTicks::Now() - start_time_, source_id,
                          recorder);
-  } else if (status == SmsStatus::kUnhandledRequest) {
-    RecordSmsOutcome(Outcome::kUnhandledRequest, source_id, recorder,
-                     is_cross_origin_frame);
-  } else if (status == SmsStatus::kAborted) {
-    RecordSmsOutcome(Outcome::kAborted, source_id, recorder,
-                     is_cross_origin_frame);
   } else if (status == SmsStatus::kCancelled) {
-    RecordSmsOutcome(Outcome::kCancelled, source_id, recorder,
-                     is_cross_origin_frame);
     RecordSmsCancelTime(base::TimeTicks::Now() - start_time_);
-  } else if (status == SmsStatus::kBackendNotAvailable) {
-    // Records when the backend is not available AND the request gets cancelled.
-    // i.e. client specifies GmsBackend.VERIFICATION but it's unavailable. If
-    // client specifies GmsBackend.AUTO and the verification backend is not
-    // available, we fall back to the user consent backend and the request will
-    // be handled accordingly. e.g. if the user declined the prompt, we record
-    // it as |kUserCancelled|.
-    RecordSmsOutcome(Outcome::kBackendNotAvailable, source_id, recorder,
-                     is_cross_origin_frame);
   }
-  // The status |kTimeout| has been handled as part of the |prompt_failure_|
-  // handling logic.
 }
 
 void WebOTPService::OnUserConsentComplete(UserConsentResult result) {

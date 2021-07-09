@@ -12,6 +12,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_dialog.h"
+#include "chrome/browser/sharing/sms/sms_remote_fetcher_metrics.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
@@ -85,9 +86,10 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
     SharingSendMessageResult result,
     std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
   if (result != SharingSendMessageResult::kSuccessful) {
-    // TODO(crbug.com/1015645): We should have a new category for remote
-    // failures.
-    std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
+    std::move(callback).Run(absl::nullopt, absl::nullopt,
+                            content::SmsFetchFailureType::kCrossDeviceFailure);
+    RecordWebOTPCrossDeviceFailure(
+        WebOTPCrossDeviceFailure::kSharingMessageFailure);
     return;
   }
 
@@ -97,6 +99,8 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
     std::move(callback).Run(absl::nullopt, absl::nullopt,
                             static_cast<content::SmsFetchFailureType>(
                                 response->sms_fetch_response().failure_type()));
+    RecordWebOTPCrossDeviceFailure(
+        WebOTPCrossDeviceFailure::kAPIFailureOnAndroid);
     return;
   }
   auto origin_strings = response->sms_fetch_response().origins();
@@ -107,6 +111,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
   std::move(callback).Run(std::move(origin_list),
                           response->sms_fetch_response().one_time_code(),
                           absl::nullopt);
+  RecordWebOTPCrossDeviceFailure(WebOTPCrossDeviceFailure::kNoFailure);
 }
 
 base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
@@ -118,10 +123,9 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
                                 /*value_max=*/20);
 
   if (devices.empty()) {
-    // No devices available to call.
-    // TODO(crbug.com/1015645): We should have a new category for remote
-    // failures.
-    std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
+    std::move(callback).Run(absl::nullopt, absl::nullopt,
+                            content::SmsFetchFailureType::kCrossDeviceFailure);
+    RecordWebOTPCrossDeviceFailure(WebOTPCrossDeviceFailure::kNoRemoteDevice);
     return base::NullCallback();
   }
 
