@@ -173,8 +173,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!StateResult>}
    */
   updateChrome() {
-    return this.getNextStateForMethod_(
-      'updateChrome', RmaState.kUpdateChrome);
+    return this.getNextStateForMethod_('updateChrome', RmaState.kUpdateChrome);
   }
 
   /**
@@ -182,7 +181,7 @@ export class FakeShimlessRmaService {
    */
   updateChromeSkipped() {
     return this.getNextStateForMethod_(
-      'updateChromeSkipped', RmaState.kUpdateChrome);
+        'updateChromeSkipped', RmaState.kUpdateChrome);
   }
 
   /**
@@ -264,7 +263,7 @@ export class FakeShimlessRmaService {
    */
   setComponentList(components) {
     return this.getNextStateForMethod_(
-      'setComponentList', RmaState.kSelectComponents);
+        'setComponentList', RmaState.kSelectComponents);
   }
 
   /**
@@ -393,7 +392,7 @@ export class FakeShimlessRmaService {
   setDeviceInformation(serialNumber, regionIndex, skuIndex) {
     // TODO(gavindodd): Validate range of region and sku.
     return this.getNextStateForMethod_(
-      'setDeviceInformation', RmaState.kUpdateDeviceInformation);
+        'setDeviceInformation', RmaState.kUpdateDeviceInformation);
   }
 
   /**
@@ -401,7 +400,7 @@ export class FakeShimlessRmaService {
    */
   finalizeAndReboot() {
     return this.getNextStateForMethod_(
-      'finalizeAndReboot', RmaState.kRepairComplete);
+        'finalizeAndReboot', RmaState.kRepairComplete);
   }
 
   /**
@@ -409,7 +408,7 @@ export class FakeShimlessRmaService {
    */
   finalizeAndShutdown() {
     return this.getNextStateForMethod_(
-      'finalizeAndShutdown', RmaState.kRepairComplete);
+        'finalizeAndShutdown', RmaState.kRepairComplete);
   }
 
   /**
@@ -417,7 +416,7 @@ export class FakeShimlessRmaService {
    */
   cutoffBattery() {
     return this.getNextStateForMethod_(
-      'cutoffBattery', RmaState.kRepairComplete);
+        'cutoffBattery', RmaState.kRepairComplete);
   }
 
   /**
@@ -570,11 +569,12 @@ export class FakeShimlessRmaService {
    * @template T
    */
   triggerObserverAfterMs(method, result, delayMs) {
-    let setDataTriggerAndResolve = function (service, resolve) {
+    let setDataTriggerAndResolve = function(service, resolve) {
       service.observables_.setObservableData(method, [result]);
       service.observables_.trigger(method);
       resolve();
-    }
+    };
+
     return new Promise((resolve) => {
       if (delayMs === 0) {
         setDataTriggerAndResolve(this, resolve);
