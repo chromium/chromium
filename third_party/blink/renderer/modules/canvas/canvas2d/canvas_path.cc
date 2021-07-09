@@ -456,10 +456,9 @@ void CanvasPath::roundRect(
     ExceptionState& exception_state) {
   const int num_radii = radii.size();
   if (num_radii < 1 || num_radii > 4) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
+    exception_state.ThrowRangeError(
         String::Number(num_radii) +
-            " radii provided. Between one and four radii are necessary.");
+        " radii provided. Between one and four radii are necessary.");
   }
 
   float x = base::saturated_cast<float>(double_x);
@@ -484,13 +483,11 @@ void CanvasPath::roundRect(
         if (UNLIKELY(!std::isfinite(r_x)) || UNLIKELY(!std::isfinite(r_y)))
           return;
         if (UNLIKELY(r_x < 0.0f)) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kIndexSizeError,
+          exception_state.ThrowRangeError(
               "X-radius value " + String::Number(r_x) + " is negative.");
         }
         if (UNLIKELY(r_y < 0.0f)) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kIndexSizeError,
+          exception_state.ThrowRangeError(
               "Y-radius value " + String::Number(r_y) + " is negative.");
         }
         r[i] = FloatSize(base::saturated_cast<float>(p->x()),
@@ -504,9 +501,8 @@ void CanvasPath::roundRect(
         if (UNLIKELY(!std::isfinite(a)))
           return;
         if (UNLIKELY(a < 0.0f)) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kIndexSizeError,
-              "Radius value " + String::Number(a) + " is negative.");
+          exception_state.ThrowRangeError("Radius value " + String::Number(a) +
+                                          " is negative.");
         }
         r[i] = FloatSize(a, a);
         break;
