@@ -9,7 +9,11 @@ import android.util.Pair;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
+import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 
 /**
  * Central class that determines the state of the toolbar button based on finch configuration,
@@ -17,6 +21,12 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.Adap
  * segmentation experiment.
  */
 public class AdaptiveToolbarStatePredictor {
+    /**
+     * Key used to lookup segmentation results for adaptive toolbar. Must be kept in sync with
+     * components/segmentation_platform/internal/constants.cc.
+     */
+    private static final String ADAPTIVE_TOOLBAR_SEGMENTATION_KEY = "adaptive_toolbar";
+
     private static Pair<Boolean, Integer> sSegmentationResultsForTesting;
 
     /**
@@ -157,9 +167,36 @@ public class AdaptiveToolbarStatePredictor {
             callback.onResult(sSegmentationResultsForTesting);
             return;
         }
-        // TODO(shaktisahu): Hookup to backend which would pass in the segmentation result and
-        // whether the backend is ready with valid results.
-        callback.onResult(new Pair(true, AdaptiveToolbarButtonVariant.UNKNOWN));
+
+        // TODO(shaktisahu): Try decoupling profile from this class.
+        SegmentationPlatformService segmentationPlatformService =
+                SegmentationPlatformServiceFactory.getForProfile(
+                        Profile.getLastUsedRegularProfile());
+        segmentationPlatformService.getSelectedSegment(
+                ADAPTIVE_TOOLBAR_SEGMENTATION_KEY, result -> {
+                    callback.onResult(new Pair<>(result.isReady,
+                            getAdaptiveToolbarButtonVariantFromOptimizationTarget(
+                                    result.selectedSegment)));
+                });
+    }
+
+    /**
+     * Conversion method between {@link OptimizationTarget} and {@link
+     * AdaptiveToolbarButtonVariant}.
+     */
+    @VisibleForTesting
+    static @AdaptiveToolbarButtonVariant int getAdaptiveToolbarButtonVariantFromOptimizationTarget(
+            OptimizationTarget optimizationTarget) {
+        switch (optimizationTarget) {
+            case OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
+                return AdaptiveToolbarButtonVariant.NEW_TAB;
+            case OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
+                return AdaptiveToolbarButtonVariant.SHARE;
+            case OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
+                return AdaptiveToolbarButtonVariant.VOICE;
+            default:
+                return AdaptiveToolbarButtonVariant.UNKNOWN;
+        }
     }
 
     /** For testing only. */

@@ -192,6 +192,7 @@ java_library("junit") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/feature_engagement:feature_engagement_java",
+    "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:robolectric_all_java",

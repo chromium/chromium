@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredicto
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
 
 /** Unit tests for the {@code AdaptiveToolbarStatePredictor} */
 @Config(manifest = Config.NONE)
@@ -204,6 +205,26 @@ public class AdaptiveToolbarStatePredictorTest {
         expected = new UiState(true, AdaptiveToolbarButtonVariant.SHARE,
                 AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.SHARE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
+    }
+
+    @Test
+    @SmallTest
+    public void testOptimizationTargetToAdaptiveToolbarButtonVariantConversion() {
+        Assert.assertEquals(AdaptiveToolbarButtonVariant.NEW_TAB,
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
+                        OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+        Assert.assertEquals(AdaptiveToolbarButtonVariant.SHARE,
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
+                        OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+        Assert.assertEquals(AdaptiveToolbarButtonVariant.VOICE,
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
+                        OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
+        Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
+                        OptimizationTarget.OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+        Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
+                        OptimizationTarget.OPTIMIZATION_TARGET_UNKNOWN));
     }
 
     private AdaptiveToolbarStatePredictor buildStatePredictor(boolean toolbarSettingsToggleEnabled,
