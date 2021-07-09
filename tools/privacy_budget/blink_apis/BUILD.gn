@@ -19,6 +19,7 @@ action("blink_apis") {
 
   inputs = [
     web_idl_database_filepath,
+    "//third_party/blink/renderer/build/scripts/blinkbuild/name_style_converter.py",
     "blink_api_proto.py",
     "generate_blink_api_db.py",
     "web_feature.py",
