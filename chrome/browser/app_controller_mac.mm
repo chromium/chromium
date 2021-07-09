@@ -1244,18 +1244,14 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     return;
 
   NSInteger tag = [sender tag];
+  // The task manager can be shown without profile.
+  if (tag == IDC_TASK_MANAGER) {
+    chrome::OpenTaskManager(nullptr);
+    return;
+  }
 
-  // If there are no browser windows, and we are trying to open a browser
-  // for a locked profile or the system profile or the guest profile but
-  // guest mode is disabled, we have to show the User Manager instead as the
-  // locked profile needs authentication and the system profile cannot have a
-  // browser.
-  const PrefService* prefService = g_browser_process->local_state();
-  bool is_last_profile_guest =
-      lastProfile->IsGuestSession() || lastProfile->IsEphemeralGuestProfile();
-  if (IsProfileSignedOut(lastProfile) || lastProfile->IsSystemProfile() ||
-      (is_last_profile_guest && prefService &&
-       !prefService->GetBoolean(prefs::kBrowserGuestModeEnabled))) {
+  if (!lastProfile) {
+    // The profile is disallowed by policy (locked or guest mode disabled).
     ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
     return;
   }
@@ -1338,9 +1334,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
         chrome::ShowHelp(browser, chrome::HELP_SOURCE_MENU);
       else
         chrome::OpenHelpWindow(lastProfile, chrome::HELP_SOURCE_MENU);
-      break;
-    case IDC_TASK_MANAGER:
-      chrome::OpenTaskManager(NULL);
       break;
     case IDC_OPTIONS:
       [self showPreferences:sender];
@@ -1580,20 +1573,18 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (!profile)
     return nullptr;
 
+  DCHECK(!profile->IsSystemProfile());
+  if (profile->IsGuestSession() && !profiles::IsGuestModeEnabled())
+    return nullptr;
+
+  if (IsProfileSignedOut(profile))
+    return nullptr;  // Profile is locked.
+
   // When opening a Guest session or if incognito is forced.
   if (ProfileManager::IsOffTheRecordModeForced(profile))
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   return profile;
-}
-
-// Returns true if a browser window may be opened for the last active profile.
-- (bool)canOpenNewBrowser {
-  Profile* profile = [self safeProfileForNewWindows:[self lastProfile]];
-
-  const PrefService* prefs = g_browser_process->local_state();
-  return (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) ||
-         prefs->GetBoolean(prefs::kBrowserGuestModeEnabled);
 }
 
 - (void)getUrl:(NSAppleEventDescriptor*)event
@@ -1644,34 +1635,23 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 // Show the preferences window, or bring it to the front if it's already
 // visible.
 - (IBAction)showPreferences:(id)sender {
-  Profile* lastProfile = [self lastProfile];
-  if (Browser* browser = ActivateBrowser(lastProfile)) {
-    // Show options tab in the active browser window.
+  Profile* profile = [self safeProfileForNewWindows:[self lastProfileIfLoaded]];
+  DCHECK(profile);
+  // Re-use an existing browser, or create a new one.
+  if (Browser* browser = ActivateBrowser(profile))
     chrome::ShowSettings(browser);
-  } else if ([self canOpenNewBrowser]) {
-    // No browser window, so create one for the options tab.
-    chrome::OpenOptionsWindow([self safeProfileForNewWindows:lastProfile]);
-  } else {
-    // No way to create a browser, default to the Profile Picker. On profile
-    // selection, it opens the profile on the settings page.
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kUnableToCreateBrowser,
-                        GURL(chrome::kChromeUISettingsURL));
-  }
+  else
+    chrome::OpenOptionsWindow(profile);
 }
 
 - (IBAction)orderFrontStandardAboutPanel:(id)sender {
-  Profile* lastProfile = [self lastProfile];
-  if (Browser* browser = ActivateBrowser(lastProfile)) {
+  Profile* profile = [self safeProfileForNewWindows:[self lastProfileIfLoaded]];
+  DCHECK(profile);
+  // Re-use an existing browser, or create a new one.
+  if (Browser* browser = ActivateBrowser(profile))
     chrome::ShowAboutChrome(browser);
-  } else if ([self canOpenNewBrowser]) {
-    // No browser window, so create one for the options tab.
-    chrome::OpenAboutWindow([self safeProfileForNewWindows:lastProfile]);
-  } else {
-    // No way to create a browser, default to the User Manager. On profile
-    // selection, it opens the profile on chrome help page.
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kUnableToCreateBrowser,
-                        GURL(chrome::kChromeUIHelpURL));
-  }
+  else
+    chrome::OpenAboutWindow(profile);
 }
 
 - (IBAction)toggleConfirmToQuit:(id)sender {
@@ -2005,6 +1985,11 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
     return;
   DCHECK(profile);
   profile = [controller safeProfileForNewWindows:profile];
+  if (!profile) {
+    // The profile is disallowed by policy (locked or guest mode disabled).
+    ProfilePicker::Show(ProfilePicker::EntryPoint::kUnableToCreateBrowser);
+    return;
+  }
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   int startupIndex = TabStripModel::kNoTab;
   content::WebContents* startupContent = nullptr;

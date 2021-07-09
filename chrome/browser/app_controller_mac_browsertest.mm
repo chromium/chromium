@@ -454,11 +454,10 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
-                       AboutChromeForcesUserManager) {
+                       AboutChromeGuestDisallowed) {
   AppController* ac = base::mac::ObjCCast<AppController>(
       [[NSApplication sharedApplication] delegate]);
   ASSERT_TRUE(ac);
-
   // Create the guest profile, and set it as the last used profile so the
   // app controller can use it on init.
   CreateAndWaitForSystemProfile();
@@ -466,26 +465,18 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kProfileLastUsed,
                          guest_profile_path.BaseName().value());
-
-  // Prohibiting guest mode forces the user manager flow for About Chrome.
+  // Disallow guest by policy.
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
-
   Profile* profile = [ac lastProfile];
   ASSERT_TRUE(profile);
   EXPECT_EQ(guest_profile_path, profile->GetPath());
   EXPECT_TRUE(profile->IsGuestSession());
-
-  // Tell the browser to open About Chrome.
-  EXPECT_EQ(1u, active_browser_list()->size());
-  [ac orderFrontStandardAboutPanel:NSApp];
-
-  base::RunLoop().RunUntilIdle();
-
-  // No new browser is opened; the User Manager opens instead.
-  EXPECT_EQ(1u, active_browser_list()->size());
-  EXPECT_TRUE(ProfilePicker::IsActive());
-
-  ProfilePicker::Hide();
+  // "About Chrome" is not available in the menu.
+  base::scoped_nsobject<NSMenuItem> about_menu_item(
+      [[[[NSApp mainMenu] itemWithTag:IDC_CHROME_MENU] submenu]
+          itemWithTag:IDC_ABOUT],
+      base::scoped_policy::RETAIN);
+  EXPECT_FALSE([ac validateUserInterfaceItem:about_menu_item]);
 }
 
 // Test that for a regular last profile, a reopen event opens a browser.
@@ -531,6 +522,37 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   EXPECT_EQ(1u, active_browser_list()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());
   ProfilePicker::Hide();
+}
+
+// "About Chrome" does not unlock the profile (regression test for
+// https://crbug.com/1226844).
+IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
+                       AboutPanelDoesNotUnlockProfile) {
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
+  // The User Manager uses the system profile as its underlying profile. To
+  // minimize flakiness due to the scheduling/descheduling of tasks on the
+  // different threads, pre-initialize the guest profile before it is needed.
+  CreateAndWaitForSystemProfile();
+  AppController* ac = base::mac::ObjCCastStrict<AppController>(
+      [[NSApplication sharedApplication] delegate]);
+  // Lock the active profile.
+  Profile* profile = [ac lastProfile];
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
+  entry->LockForceSigninProfile(true);
+  EXPECT_TRUE(entry->IsSigninRequired());
+  EXPECT_EQ(1u, active_browser_list()->size());
+  Browser* browser = active_browser_list()->get(0);
+  EXPECT_FALSE(browser->profile()->IsGuestSession());
+  // "About Chrome" is not available in the menu.
+  base::scoped_nsobject<NSMenuItem> about_menu_item(
+      [[[[NSApp mainMenu] itemWithTag:IDC_CHROME_MENU] submenu]
+          itemWithTag:IDC_ABOUT],
+      base::scoped_policy::RETAIN);
+  EXPECT_FALSE([ac validateUserInterfaceItem:about_menu_item]);
 }
 
 // Test that for a guest last profile, a reopen event opens the ProfilePicker.
