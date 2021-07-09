@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset=utf-8>
+  <title>Test cookie attribute size restrictions</title>
+  <meta name=help href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis#section-5.4">
+  <meta name="timeout" content="long">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/cookies/resources/cookie-test.js"></script>
+</head>
+
+<body>
+  <div id=log></div>
+  <script>
+    const host = "{{host}}";
+    const attrSizeTests = [
+      {
+        cookie: `test=1; path=/cookies/size; path=/cookies/siz${"e".repeat(1024)}`,
+        expected: "test=1",
+        name: "Too long path attribute (>1024 bytes) is ignored; previous valid path wins.",
+        defaultPath: false,
+      },
+      {
+        cookie: `test=2; path=/cookies/siz${"e".repeat(1024)}; path=/cookies/size`,
+        expected: "test=2",
+        name: "Too long path attribute (>1024 bytes) is ignored; next valid path wins.",
+        defaultPath: false,
+      },
+      {
+        // This page opens on the www subdomain, so we set domain to {{host}}
+        // to see if anything works as expected.
+        cookie: `test=3; domain=${host}; domain=${"a".repeat(1024)}.com`,
+        expected: "test=3",
+        name: "Too long domain attribute (>1024 bytes) is ignored; previous valid domain wins."
+      },
+      {
+        cookie: `test=4; domain=${"a".repeat(1024)}.com; domain=${host}`,
+        expected: "test=4",
+        name: "Too long domain attribute (>1024 bytes) is ignored; next valid domain wins."
+      }
+    ];
+
+    for (const test of attrSizeTests) {
+      httpCookieTest(test.cookie, test.expected, test.name, test.defaultPath);
+    }
+  </script>
+</body>
+
+</html>

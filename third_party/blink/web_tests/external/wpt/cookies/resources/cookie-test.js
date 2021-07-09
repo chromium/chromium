@@ -166,3 +166,12 @@ function getCtlCharacters() {
     CTLS: ctlCodes.map(i => ({code: i, chr: String.fromCharCode(i)}))
   };
 }
+
+// Returns a cookie string with name set to "t" * nameLength and value
+// set to "1" * valueLength. Passing in 0 for either allows for creating
+// a name- or value-less cookie.
+//
+// Note: Cookie length checking should ignore the "=".
+function cookieStringWithNameAndValueLengths(nameLength, valueLength) {
+  return `${"t".repeat(nameLength)}=${"1".repeat(valueLength)}`;
+}

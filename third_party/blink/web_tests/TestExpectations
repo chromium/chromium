@@ -4591,6 +4591,10 @@ crbug.com/1074441 virtual/legacy-samesite/external/wpt/cookies/samesite/iframe.h
 crbug.com/1162205 [ Win ] virtual/schemeful-same-site/external/wpt/cookies/attributes/path-redirect.html [ Crash Pass ]
 crbug.com/1162205 [ Win ] external/wpt/cookies/attributes/path-redirect.html [ Crash Pass ]
 
+# Temporarily disable failing Cookie size tests (until we implement the latest spec changes)
+crbug.com/1225342 external/wpt/cookies/size/attributes.www.sub.html [ Failure ]
+crbug.com/1225342 external/wpt/cookies/size/name-and-value.html [ Failure ]
+
 # The virtual tests run with Schemeful Same-Site disabled. These should fail to ensure the disabled feature code paths work.
 crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-websockets.sub.tentative.html [ Failure ]
 crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-iframe-subresource.tentative.html [ Failure ]
