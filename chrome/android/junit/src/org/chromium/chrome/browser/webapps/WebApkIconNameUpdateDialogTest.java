@@ -185,8 +185,9 @@ public class WebApkIconNameUpdateDialogTest {
             boolean clickAccept, String shortAppName, String expectedTitle) throws Exception {
         int callCount = mOnActionCallback.getCallCount();
 
-        WebApkUpdateReportAbuseDialog dialog = new WebApkUpdateReportAbuseDialog(
-                mDialogManager, /* packageName= */ "", shortAppName, this::onAbuseDialogResult);
+        WebApkUpdateReportAbuseDialog dialog =
+                new WebApkUpdateReportAbuseDialog(mDialogManager, /* packageName= */ "",
+                        shortAppName, /* showAbuseCheckbox= */ true, this::onAbuseDialogResult);
         dialog.show();
 
         Assert.assertEquals(expectedTitle, getDialogTitle());

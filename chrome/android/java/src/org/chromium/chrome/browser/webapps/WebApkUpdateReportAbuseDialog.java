@@ -45,6 +45,9 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     // The package name for the app the user is uninstalling.
     private String mAppPackageName;
 
+    // Whether to show the checkbox for reporting abuse.
+    private boolean mShowAbuseCheckbox;
+
     // When checked, the app will not just be uninstalled, but also reported for abuse.
     private CheckBox mReportAbuseCheckBox;
 
@@ -52,10 +55,11 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     private Callback mOnUninstallCallback;
 
     public WebApkUpdateReportAbuseDialog(ModalDialogManager manager, String appPackageName,
-            String appShortName, Callback callback) {
+            String appShortName, boolean showAbuseCheckbox, Callback callback) {
         mModalDialogManager = manager;
         mAppPackageName = appPackageName;
         mAppShortName = appShortName;
+        mShowAbuseCheckbox = showAbuseCheckbox;
         mOnUninstallCallback = callback;
     }
 
@@ -66,23 +70,24 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
         Context context = ContextUtils.getApplicationContext();
         Resources resources = context.getResources();
 
-        View dialogCustomView = LayoutInflaterUtils.inflate(
-                context, R.layout.webapk_update_report_abuse_custom_view, null);
-        mReportAbuseCheckBox = dialogCustomView.findViewById(R.id.report_abuse);
-
         String title =
                 resources.getString(R.string.webapk_report_abuse_dialog_title, mAppShortName);
-        PropertyModel dialogModel =
+        PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
                         .with(ModalDialogProperties.TITLE, title)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, dialogCustomView)
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.webapk_report_abuse_confirm)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                R.string.webapk_report_abuse_cancel)
-                        .build();
+                                R.string.webapk_report_abuse_cancel);
+        if (mShowAbuseCheckbox) {
+            View dialogCustomView = LayoutInflaterUtils.inflate(
+                    context, R.layout.webapk_update_report_abuse_custom_view, null);
+            mReportAbuseCheckBox = dialogCustomView.findViewById(R.id.report_abuse);
+            builder = builder.with(ModalDialogProperties.CUSTOM_VIEW, dialogCustomView);
+        }
+        PropertyModel dialogModel = builder.build();
 
         mModalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);
     }
@@ -108,7 +113,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
             mOnUninstallCallback.onUninstall();
 
-            if (mReportAbuseCheckBox.isChecked()) {
+            if (mShowAbuseCheckbox && mReportAbuseCheckBox.isChecked()) {
                 // TODO(finnur): Implement sending info to the SafeBrowsing team.
                 Log.i(TAG, "Send report to SafeBrowsing");
             }

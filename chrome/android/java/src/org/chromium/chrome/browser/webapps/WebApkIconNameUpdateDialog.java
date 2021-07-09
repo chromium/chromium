@@ -124,7 +124,8 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
                 break;
             case ModalDialogProperties.ButtonType.NEGATIVE:
                 WebApkUpdateReportAbuseDialog reportAbuseDialog = new WebApkUpdateReportAbuseDialog(
-                        mModalDialogManager, mPackageName, mOldAppShortName, this::onUninstall);
+                        mModalDialogManager, mPackageName, mOldAppShortName,
+                        /* showAbuseCheckbox= */ false, this::onUninstall);
                 reportAbuseDialog.show();
                 break;
             default:
