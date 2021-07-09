@@ -105,6 +105,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   void MaybeReStartTimer(const base::TimeDelta& delay);
 
+  void StopRestore();
+
   // Returns [0, 100] as percentage of device CPU usage rate.
   int GetCpuUsageRate();
 
@@ -146,6 +148,9 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   // A repeating timer to check whether we can restore the ARC apps.
   std::unique_ptr<base::RepeatingTimer> app_launch_timer_;
+
+  // A one shot timer to stop the restoration process.
+  std::unique_ptr<base::OneShotTimer> stop_restore_timer_;
 
   // The timer delay.
   base::TimeDelta current_delay_;

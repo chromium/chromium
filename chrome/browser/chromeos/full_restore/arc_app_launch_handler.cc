@@ -41,18 +41,14 @@ constexpr base::TimeDelta kAppLaunchCheckingDelay =
 // Delay between each app launching.
 constexpr base::TimeDelta kAppLaunchDelay = base::TimeDelta::FromSeconds(3);
 
-}  // namespace
-
-namespace chromeos {
-namespace full_restore {
-
-namespace {
-
 constexpr int kCpuUsageRefreshIntervalInSeconds = 1;
 constexpr int kCpuUsageCountWindowLength =
     6 * kCpuUsageRefreshIntervalInSeconds;
 
 }  // namespace
+
+namespace chromeos {
+namespace full_restore {
 
 ArcAppLaunchHandler::ArcAppLaunchHandler() = default;
 ArcAppLaunchHandler::~ArcAppLaunchHandler() = default;
@@ -401,8 +397,7 @@ void ArcAppLaunchHandler::MaybeReStartTimer(const base::TimeDelta& delay) {
 
   // If there is no window to be launched, stop the timer.
   if (!HasRestoreData()) {
-    if (app_launch_timer_->IsRunning())
-      app_launch_timer_->Stop();
+    StopRestore();
     return;
   }
 
@@ -418,6 +413,16 @@ void ArcAppLaunchHandler::MaybeReStartTimer(const base::TimeDelta& delay) {
       FROM_HERE, current_delay_,
       base::BindRepeating(&ArcAppLaunchHandler::MaybeLaunchApp,
                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcAppLaunchHandler::StopRestore() {
+  if (app_launch_timer_ && app_launch_timer_->IsRunning())
+    app_launch_timer_->Stop();
+  app_launch_timer_.reset();
+
+  if (stop_restore_timer_ && stop_restore_timer_->IsRunning())
+    stop_restore_timer_->Stop();
+  stop_restore_timer_.reset();
 }
 
 int ArcAppLaunchHandler::GetCpuUsageRate() {
