@@ -74,8 +74,8 @@ void AwRenderViewHostExt::DocumentHasImages(DocumentHasImagesResult result) {
     return;
   }
 
-  if (local_main_frame_remote_) {
-    local_main_frame_remote_->DocumentHasImage(std::move(result));
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote()) {
+    local_main_frame_remote->DocumentHasImage(std::move(result));
   } else {
     // Still have to respond to the API call WebView#docuemntHasImages.
     // Otherwise the listener of the response may be starved.
@@ -98,8 +98,8 @@ void AwRenderViewHostExt::RequestNewHitTestDataAt(
   // We only need to get blink::WebView on the renderer side to invoke the
   // blink hit test Mojo method, so sending this message via LocalMainFrame
   // interface is enough.
-  if (local_main_frame_remote_)
-    local_main_frame_remote_->HitTest(touch_center, touch_area);
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
+    local_main_frame_remote->HitTest(touch_center, touch_area);
 }
 
 const mojom::HitTestData& AwRenderViewHostExt::GetLastHitTestData() const {
@@ -109,20 +109,20 @@ const mojom::HitTestData& AwRenderViewHostExt::GetLastHitTestData() const {
 
 void AwRenderViewHostExt::SetTextZoomFactor(float factor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (local_main_frame_remote_)
-    local_main_frame_remote_->SetTextZoomFactor(factor);
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
+    local_main_frame_remote->SetTextZoomFactor(factor);
 }
 
 void AwRenderViewHostExt::ResetScrollAndScaleState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (local_main_frame_remote_)
-    local_main_frame_remote_->ResetScrollAndScaleState();
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
+    local_main_frame_remote->ResetScrollAndScaleState();
 }
 
 void AwRenderViewHostExt::SetInitialPageScale(double page_scale_factor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (local_main_frame_remote_)
-    local_main_frame_remote_->SetInitialPageScale(page_scale_factor);
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
+    local_main_frame_remote->SetInitialPageScale(page_scale_factor);
 }
 
 void AwRenderViewHostExt::SetWillSuppressErrorPage(bool suppress) {
@@ -132,35 +132,8 @@ void AwRenderViewHostExt::SetWillSuppressErrorPage(bool suppress) {
 void AwRenderViewHostExt::SmoothScroll(int target_x,
                                        int target_y,
                                        base::TimeDelta duration) {
-  if (local_main_frame_remote_)
-    local_main_frame_remote_->SmoothScroll(target_x, target_y, duration);
-}
-
-void AwRenderViewHostExt::ResetLocalMainFrameRemote(
-    content::RenderFrameHost* frame_host) {
-  local_main_frame_remote_.reset();
-  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-      local_main_frame_remote_.BindNewEndpointAndPassReceiver());
-}
-
-void AwRenderViewHostExt::RenderFrameCreated(
-    content::RenderFrameHost* frame_host) {
-  // Only handle the active main frame, neither speculative ones nor subframes.
-  if (frame_host != web_contents()->GetMainFrame())
-    return;
-
-  ResetLocalMainFrameRemote(frame_host);
-}
-
-void AwRenderViewHostExt::RenderFrameHostChanged(
-    content::RenderFrameHost* old_host,
-    content::RenderFrameHost* new_host) {
-  // Since we skipped speculative main frames in RenderFrameCreated, we must
-  // watch for them being swapped in by watching for RenderFrameHostChanged().
-  if (new_host != web_contents()->GetMainFrame())
-    return;
-
-  ResetLocalMainFrameRemote(new_host);
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
+    local_main_frame_remote->SmoothScroll(target_x, target_y, duration);
 }
 
 void AwRenderViewHostExt::DidStartNavigation(
@@ -224,6 +197,33 @@ void AwRenderViewHostExt::ShouldOverrideUrlLoading(
       FROM_HERE, base::BindOnce(&ShouldOverrideUrlLoadingOnUI, web_contents(),
                                 url, has_user_gesture, is_redirect,
                                 is_main_frame, std::move(callback)));
+}
+
+mojom::LocalMainFrame* AwRenderViewHostExt::GetLocalMainFrameRemote() {
+  // Validate the local main frame matches what we have stored for the current
+  // main frame. Previously `local_main_frame_remote_` was adjusted in
+  // RenderFrameCreated/RenderFrameHostChanged events but the timings of when
+  // this class gets called vs others using this class might cause a TOU
+  // problem, so we validate it each time before use.
+  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  content::GlobalRenderFrameHostId main_frame_id = main_frame->GetGlobalId();
+  if (main_frame_global_id_ == main_frame_id) {
+    return local_main_frame_remote_.get();
+  }
+
+  local_main_frame_remote_.reset();
+
+  // Avoid accessing GetRemoteAssociatedInterfaces until the renderer is
+  // created.
+  if (!main_frame->IsRenderFrameCreated()) {
+    main_frame_global_id_ = content::GlobalRenderFrameHostId();
+    return nullptr;
+  }
+
+  main_frame_global_id_ = main_frame_id;
+  main_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+      local_main_frame_remote_.BindNewEndpointAndPassReceiver());
+  return local_main_frame_remote_.get();
 }
 
 }  // namespace android_webview
