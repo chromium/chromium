@@ -474,6 +474,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   // 4) Expect that A is in the back forward cache.
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 5) Ensure that the runtime.onConnect listener in the restored page still
+  // works.
+  constexpr char kScript[] =
+      R"HTML(
+      var p;
+      chrome.tabs.query({}, (t) => {
+        p = chrome.tabs.connect(t[0].id);
+        p.onMessage.addListener(
+         (m) => {window.domAutomationController.send(m)}
+        );
+      });
+    )HTML";
+  EXPECT_EQ("connected",
+            ExecuteScriptInBackgroundPage(extension->id(), kScript));
 }
 
 // Test if the chrome.runtime.connect is called then disconnected, the page is
