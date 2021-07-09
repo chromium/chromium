@@ -15,6 +15,12 @@ const DELIM_END = '---------- END ----------';
 // Limit file size to 10 MiB to prevent hanging on accidental upload.
 const MAX_FILE_SIZE = 10485760;
 
+// <if expr="chromeos">
+// Link to markdown doc with documentation for Chrome OS.
+const CROS_MD_DOC_URL =
+    'https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/debugd/docs/log_entries.md';
+// </if>
+
 function getValueDivForButton(button) {
   return $(button.id.substr(0, button.id.length - 4));
 }
@@ -118,9 +124,24 @@ function createNodeForLogEntry(log) {
   nameCell.className = 'name';
   const nameDiv = document.createElement('div');
   nameDiv.className = 'stat-name';
+
+  // Add an anchor link that links to the log entry.
+  const anchor = document.createElement('a');
+  anchor.href = `#${log.statName}`;
+  anchor.text = '🔗';
+  nameDiv.appendChild(anchor);
+
   const a = document.createElement('a');
   a.className = 'stat-name-link';
-  a.href = `#${log.statName}`;
+
+  // Let URL be anchor to the section of this page by default.
+  let urlPrefix = '';
+  // <if expr="chromeos">
+  // Link to the markdown doc with documentation for the entry for Chrome OS
+  // instead.
+  urlPrefix = CROS_MD_DOC_URL;
+  // </if>
+  a.href = `${urlPrefix}#${log.statName}`;
   a.name = a.text = log.statName;
   nameDiv.appendChild(a);
   nameCell.appendChild(nameDiv);
