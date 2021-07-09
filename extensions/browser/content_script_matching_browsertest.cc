@@ -340,9 +340,11 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
   // Main frame should be matched.
   EXPECT_TRUE(DoContentScriptsMatch_Tab1_FooFrame());
 
-  // Subframe should not be matched (even though the patterns in the manifest do
-  // match bar.com).
-  EXPECT_FALSE(DoContentScriptsMatch_Tab1_BarFrame());
+  // Based on the `all_frames` from the manifest the subframe should not be
+  // matched (even though the patterns in the manifest do match bar.com).  OTOH,
+  // the URL Pattern matching in ContentScriptTracker ignroes `all_frames` and
+  // accepts additional false positives to solve extra corner cases.
+  EXPECT_TRUE(DoContentScriptsMatch_Tab1_BarFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,

@@ -168,7 +168,8 @@ GURL GetEffectiveDocumentURL(
 // This function approximates a subset of checks from
 // UserScriptSet::GetInjectionForScript (which runs in the renderer process).
 // Unlike the renderer version, the code below doesn't consider ability to
-// create an injection host or the results of ScriptInjector::CanExecuteOnFrame.
+// create an injection host, nor the results of
+// ScriptInjector::CanExecuteOnFrame, nor the path of `url_patterns`.
 // Additionally the `effective_url` calculations are also only an approximation.
 // This is okay, because the top-level doc comment for ContentScriptTracker
 // documents that false positives are expected and why they are okay.
@@ -182,8 +183,7 @@ bool DoesContentScriptMatch(const UserScript& user_script,
 
   GURL effective_url = GetEffectiveDocumentURL(
       frame, url, user_script.match_origin_as_fallback());
-  bool is_subframe = frame->GetParent();
-  return user_script.MatchesDocument(effective_url, is_subframe);
+  return user_script.url_patterns().MatchesSecurityOrigin(effective_url);
 }
 
 void HandleProgrammaticContentScriptInjection(
