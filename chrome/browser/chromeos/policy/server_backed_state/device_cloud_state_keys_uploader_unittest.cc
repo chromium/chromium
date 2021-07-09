@@ -140,7 +140,8 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeys) {
   run_loop_.Run();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
-  EXPECT_THAT(uploader_->state_keys_to_upload(), testing::ElementsAre("1"));
+  EXPECT_THAT(uploader_->state_keys_to_upload_for_testing(),
+              testing::ElementsAre("1"));
 }
 
 // Expects to successfully upload state keys with unrealistically delayed DM
@@ -157,17 +158,18 @@ TEST_F(DeviceCloudStateKeysUploaderTest,
 
   // Expect state keys to be uploaded, but client not registered yet
   // (DM Token retrieval still pending).
-  EXPECT_THAT(uploader_->state_keys_to_upload(), testing::ElementsAre("1"));
-  EXPECT_FALSE(uploader_->IsClientRegistered());
+  EXPECT_THAT(uploader_->state_keys_to_upload_for_testing(),
+              testing::ElementsAre("1"));
+  EXPECT_FALSE(uploader_->IsClientRegisteredForTesting());
 
-  // Set new state keys and fast-foward time so state keys update is triggered
+  // Set new state keys and fast-forward time so state keys update is triggered
   // during DM Token retrieval (which should be still pending).
   SetStateKeys(2);
   task_environment_.FastForwardBy(
       ServerBackedStateKeysBroker::GetPollIntervalForTesting());
-  EXPECT_THAT(uploader_->state_keys_to_upload(),
+  EXPECT_THAT(uploader_->state_keys_to_upload_for_testing(),
               testing::ElementsAre("1", "2"));
-  EXPECT_FALSE(uploader_->IsClientRegistered());
+  EXPECT_FALSE(uploader_->IsClientRegisteredForTesting());
 
   // Expect DM Token retrieval and registration to be completed
   // and a successful state keys upload (via policy fetch).
@@ -178,7 +180,7 @@ TEST_F(DeviceCloudStateKeysUploaderTest,
                       service_.SendJobOKAsync(policy_response)));
   ExpectSuccess(true);
   run_loop_.Run();
-  EXPECT_TRUE(uploader_->IsClientRegistered());
+  EXPECT_TRUE(uploader_->IsClientRegisteredForTesting());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
 }
@@ -198,7 +200,8 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysMultipleTimes) {
   run_loop_.Run();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
-  EXPECT_THAT(uploader_->state_keys_to_upload(), testing::ElementsAre("1"));
+  EXPECT_THAT(uploader_->state_keys_to_upload_for_testing(),
+              testing::ElementsAre("1"));
 
   // Set new state keys and fast-forward time to trigger state keys update.
   ExpectSuccess(true);
@@ -207,7 +210,7 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysMultipleTimes) {
       ServerBackedStateKeysBroker::GetPollIntervalForTesting());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
-  EXPECT_THAT(uploader_->state_keys_to_upload(),
+  EXPECT_THAT(uploader_->state_keys_to_upload_for_testing(),
               testing::ElementsAre("1", "2"));
 
   // Set new state keys and fast-forward time to trigger state keys update.
@@ -217,7 +220,7 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysMultipleTimes) {
       ServerBackedStateKeysBroker::GetPollIntervalForTesting());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
-  EXPECT_THAT(uploader_->state_keys_to_upload(),
+  EXPECT_THAT(uploader_->state_keys_to_upload_for_testing(),
               testing::ElementsAre("1", "2", "3"));
 }
 
@@ -227,8 +230,9 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysEmptyTokenFailure) {
   InitUploader(/*dm_token=*/"");
   ExpectSuccess(false);
   run_loop_.Run();
-  EXPECT_FALSE(uploader_->IsClientRegistered());
-  EXPECT_THAT(uploader_->state_keys_to_upload(), testing::ElementsAre("1"));
+  EXPECT_FALSE(uploader_->IsClientRegisteredForTesting());
+  EXPECT_THAT(uploader_->state_keys_to_upload_for_testing(),
+              testing::ElementsAre("1"));
 }
 
 // Expect to fail when uploading state keys without initializing them first.
@@ -236,8 +240,9 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysEmptyStateKeysFailure) {
   InitUploader("test-dm-token");
   ExpectSuccess(false);
   run_loop_.Run();
-  EXPECT_FALSE(uploader_->IsClientRegistered());
-  EXPECT_THAT(uploader_->state_keys_to_upload(), testing::IsEmpty());
+  EXPECT_FALSE(uploader_->IsClientRegisteredForTesting());
+  EXPECT_THAT(uploader_->state_keys_to_upload_for_testing(),
+              testing::IsEmpty());
 }
 
 }  // namespace policy

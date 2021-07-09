@@ -47,7 +47,7 @@ void DeviceCloudStateKeysUploader::SetStatusCallbackForTesting(
   status_callback_for_testing_ = std::move(callback);
 }
 
-bool DeviceCloudStateKeysUploader::IsClientRegistered() const {
+bool DeviceCloudStateKeysUploader::IsClientRegisteredForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(cloud_policy_client_);

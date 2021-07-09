@@ -54,10 +54,10 @@ class DeviceCloudStateKeysUploader : public CloudPolicyClient::Observer {
 
   // Returns cloud policy client registration state. This should be only used in
   // tests.
-  bool IsClientRegistered() const;
+  bool IsClientRegisteredForTesting() const;
 
   // Returns state keys to upload. This should be only used in tests.
-  const std::vector<std::string>& state_keys_to_upload() const {
+  const std::vector<std::string>& state_keys_to_upload_for_testing() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return state_keys_to_upload_;
