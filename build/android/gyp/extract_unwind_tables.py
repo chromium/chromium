@@ -268,7 +268,7 @@ def main():
       help='The path of the dump_syms binary')
 
   args = parser.parse_args()
-  cmd = ['./' + args.dump_syms_path, args.input_path]
+  cmd = ['./' + args.dump_syms_path, args.input_path, '-v']
   proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
   cfi_data = _GetAllCfiRows(proc.stdout)
   if proc.wait():
