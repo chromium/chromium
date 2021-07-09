@@ -81,6 +81,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcReadHandler {
   // Removes AppRestoreData for |restore_window_id|.
   void RemoveAppRestoreData(int32_t restore_window_id);
 
+  // Finds the window from `arc_window_candidates_` for `task_id`, and remove
+  // the window from `arc_window_candidates_`.
+  void UpdateWindowCandidates(int32_t task_id, int32_t restore_window_id);
+
   // The user profile path for ARC app windows.
   base::FilePath profile_path_;
 
@@ -101,6 +105,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcReadHandler {
   // windows, whose tasks have not been created. Once the task for the window is
   // created, the window is removed from |arc_window_candidates_|.
   std::set<aura::Window*> arc_window_candidates_;
+
+  // ARC app tasks could be created before the window initialized.
+  // `not_restored_task_ids_` is used to record tasks not created by the restore
+  // process. Once the window is created for the task, the window can be removed
+  // from the hidden container.
+  std::set<int32_t> not_restored_task_ids_;
 };
 
 }  // namespace full_restore

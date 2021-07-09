@@ -1173,6 +1173,97 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   TestFullRestoreInfoObserver test_full_restore_info_observer_;
 };
 
+// Test the not restored ARC window is not added to the hidden container.
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
+                       NotHideArcWindow) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, false);
+
+  const std::string app_id = GetTestApp1Id(kTestAppPackage);
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
+      test_full_restore_info_observer());
+
+  SaveAppLaunchInfo(app_id, session_id1);
+
+  // Create the window for app1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  views::Widget* widget = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window = widget->GetNativeWindow();
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/0);
+  VerifyWindowProperty(window, kTaskId1, /*restore_window_id=*/0,
+                       /*hidden=*/false);
+
+  // Simulate creating the task.
+  CreateTask(app_id, kTaskId1, session_id1);
+
+  VerifyObserver(window, /*launch_count=*/1, /*init_count=*/0);
+
+  SaveWindowInfo(window);
+
+  WaitForAppLaunchInfoSaved();
+
+  Restore();
+  widget->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+
+  int32_t session_id2 = 1;
+
+  // Create the window to simulate launching the ARC app.
+  int32_t kTaskId2 = 200;
+  widget = CreateExoWindow("org.chromium.arc.200");
+  window = widget->GetNativeWindow();
+
+  // The task is not ready, so the window is currently in a hidden container.
+  EXPECT_EQ(ash::Shell::GetContainer(window->GetRootWindow(),
+                                     ash::kShellWindowId_UnparentedContainer),
+            window->parent());
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/1);
+  VerifyWindowProperty(window, kTaskId2,
+                       ::full_restore::kParentToHiddenContainer,
+                       /*hidden=*/true);
+
+  // Simulate creating the task for the ARC app window.
+  CreateTask(app_id, kTaskId2, session_id2);
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/1);
+  VerifyWindowProperty(window, kTaskId2,
+                       ::full_restore::kParentToHiddenContainer,
+                       /*hidden=*/false);
+
+  // Destroy the task and close the window.
+  app_host()->OnTaskDestroyed(kTaskId2);
+  widget->CloseNow();
+
+  int32_t session_id3 = 2;
+  int32_t kTaskId3 = 300;
+  // Simulate creating the task before the window is created.
+  CreateTask(app_id, kTaskId3, session_id3);
+
+  // Create the window to simulate launching the ARC app.
+  widget = CreateExoWindow("org.chromium.arc.300");
+  window = widget->GetNativeWindow();
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/0);
+  // The window should not be hidden.
+  VerifyWindowProperty(window, kTaskId3,
+                       /*restore_window_id=*/0,
+                       /*hidden=*/false);
+
+  // Destroy the task and close the window.
+  app_host()->OnTaskDestroyed(kTaskId3);
+  widget->CloseNow();
+
+  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
+      test_full_restore_info_observer());
+  StopInstance();
+}
+
 // Test restoration when the ARC window is created before OnTaskCreated is
 // called.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
