@@ -25,6 +25,7 @@ component("capture_switches") {
     "capture_switches.cc",
     "capture_switches.h",
   ]
+  deps = [ "//base" ]
 }
 
 # Things needed by //media/capture/mojom/video_capture_types.mojom.
@@ -120,6 +121,8 @@ component("capture_lib") {
     "video/video_capture_buffer_pool.h",
     "video/video_capture_buffer_pool_impl.cc",
     "video/video_capture_buffer_pool_impl.h",
+    "video/video_capture_buffer_pool_util.cc",
+    "video/video_capture_buffer_pool_util.h",
     "video/video_capture_buffer_tracker.cc",
     "video/video_capture_buffer_tracker.h",
     "video/video_capture_buffer_tracker_factory.h",
@@ -143,6 +146,7 @@ component("capture_lib") {
   public_deps = [
     ":capture_base",
     ":capture_device_specific",
+    ":capture_switches",
   ]
 
   deps = [

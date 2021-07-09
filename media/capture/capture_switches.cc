@@ -4,6 +4,8 @@
 
 #include "media/capture/capture_switches.h"
 
+#include "base/command_line.h"
+
 namespace switches {
 
 // Enables GpuMemoryBuffer-based buffer pool.
@@ -19,5 +21,12 @@ const char kVideoCaptureUseGpuMemoryBuffer[] =
 // Disabled : Force to disable kVideoCaptureUseGpuMemoryBuffer.
 const char kDisableVideoCaptureUseGpuMemoryBuffer[] =
     "disable-video-capture-use-gpu-memory-buffer";
+
+CAPTURE_EXPORT bool IsVideoCaptureUseGpuMemoryBufferEnabled() {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kVideoCaptureUseGpuMemoryBuffer);
+}
 
 }  // namespace switches

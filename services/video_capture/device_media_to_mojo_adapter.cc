@@ -6,12 +6,11 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/command_line.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
-#include "media/capture/capture_switches.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
+#include "media/capture/video/video_capture_buffer_pool_util.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -179,39 +178,7 @@ void DeviceMediaToMojoAdapter::OnClientConnectionErrorOrClose() {
 
 // static
 int DeviceMediaToMojoAdapter::max_buffer_pool_buffer_count() {
-  // The maximum number of video frame buffers in-flight at any one time.
-  // If all buffers are still in use by consumers when new frames are produced
-  // those frames get dropped.
-  static int kMaxBufferCount = 4;
-
-#if defined(OS_MAC)
-  // On macOS, we allow a few more buffers as it's routinely observed that it
-  // runs out of three when just displaying 60 FPS media in a video element.
-  kMaxBufferCount = 10;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS with MIPI cameras running on HAL v3, there can be four
-  // concurrent streams of camera pipeline depth ~6. We allow at most 36 buffers
-  // here to take into account the delay caused by the consumer (e.g. display or
-  // video encoder).
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kVideoCaptureUseGpuMemoryBuffer)) {
-    kMaxBufferCount = 36;
-  }
-#elif defined(OS_WIN)
-  // On Windows, for GMB backed zero-copy more buffers are needed because it's
-  // routinely observed that it runs out of default buffer count when just
-  // displaying 60 FPS media in a video element
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kVideoCaptureUseGpuMemoryBuffer)) {
-    kMaxBufferCount = 30;
-  }
-#endif
-
-  return kMaxBufferCount;
+  return media::DeviceVideoCaptureMaxBufferPoolSize();
 }
 
 }  // namespace video_capture

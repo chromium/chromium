@@ -29,6 +29,7 @@ namespace media {
 class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
     : public VideoCaptureBufferPool {
  public:
+  explicit VideoCaptureBufferPoolImpl(VideoCaptureBufferType buffer_type);
   explicit VideoCaptureBufferPoolImpl(
       VideoCaptureBufferType buffer_type,
       int count);

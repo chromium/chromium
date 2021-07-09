@@ -18,8 +18,6 @@
 
 namespace {
 
-static const int kMaxBufferCount = 3;
-
 class FakeLaunchedVideoCaptureDevice
     : public content::LaunchedVideoCaptureDevice {
  public:
@@ -79,7 +77,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   auto device = system_->CreateDevice(device_id);
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
       new media::VideoCaptureBufferPoolImpl(
-          media::VideoCaptureBufferType::kSharedMemory, kMaxBufferCount));
+          media::VideoCaptureBufferType::kSharedMemory));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       media::VideoCaptureBufferType::kSharedMemory,
