@@ -77,5 +77,8 @@ specific_include_rules = {
   ],
   "password_requirements_spec_fetcher_unittest\.cc": [
     "+services/network/test",
-  ]
+  ],
+  "autofill_image_fetcher(_unittest)?\.cc": [
+    "+components/image_fetcher",
+  ],
 }

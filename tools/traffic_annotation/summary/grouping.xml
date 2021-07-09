@@ -357,6 +357,7 @@ hidden="true" so that these annotations don't show up in the document.
   </group>
   <group name="User Experience">
     <sender name="Autofill">
+      <traffic_annotation unique_id="autofill_image_fetcher_card_art_image"/>
       <traffic_annotation unique_id="autofill_query"/>
       <traffic_annotation unique_id="autofill_upload"/>
       <traffic_annotation unique_id="load_autofill_gstatic_data"/>

@@ -7833,6 +7833,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Showing cache patterns only for AnswerSuggestions."/>
   <suffix name="AssistantDetails"
       label="Showing cache patterns only for AssistantDetails."/>
+  <suffix name="AutofillImageFetcher"
+      label="Show customized card art image for credit card."/>
   <suffix name="ContextualSuggestions"
       label="Showing cache patterns only for ContextualSuggestions."/>
   <suffix name="Cryptids" label="Asset fetcher for cryptid rendering."/>
