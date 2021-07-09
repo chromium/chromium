@@ -772,9 +772,9 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
   DVLOGF(4);
 
   std::vector<gfx::Size> spatial_layer_resolutions =
-      encoder_->GetSVCLayerResoltuions();
+      encoder_->GetSVCLayerResolutions();
   if (spatial_layer_resolutions.empty()) {
-    VLOGF(1) << " Failed to get SVC layer resoltuions";
+    VLOGF(1) << " Failed to get SVC layer resolutions";
     return;
   }
 

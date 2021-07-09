@@ -194,7 +194,7 @@ class MockVP9VaapiVideoEncoderDelegate : public VP9VaapiVideoEncoderDelegate {
   MOCK_METHOD2(GetMetadata, BitstreamBufferMetadata(EncodeJob*, size_t));
   MOCK_METHOD1(PrepareEncodeJob, bool(EncodeJob*));
   MOCK_METHOD1(BitrateControlUpdate, void(uint64_t));
-  MOCK_METHOD0(GetSVCLayerResoltuions, std::vector<gfx::Size>());
+  MOCK_METHOD0(GetSVCLayerResolutions, std::vector<gfx::Size>());
   bool UpdateRates(const VideoBitrateAllocation&, uint32_t) override {
     return false;
   }
@@ -255,7 +255,7 @@ class VaapiVideoEncodeAcceleratorTest
     } else {
       svc_resolutions = {kDefaultEncodeSize};
     }
-    ON_CALL(*mock_encoder_, GetSVCLayerResoltuions())
+    ON_CALL(*mock_encoder_, GetSVCLayerResolutions())
         .WillByDefault(Return(svc_resolutions));
   }
 

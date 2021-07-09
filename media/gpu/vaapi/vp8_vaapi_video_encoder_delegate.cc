@@ -134,7 +134,7 @@ size_t VP8VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
   return kNumVp8ReferenceBuffers;
 }
 
-std::vector<gfx::Size> VP8VaapiVideoEncoderDelegate::GetSVCLayerResoltuions() {
+std::vector<gfx::Size> VP8VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
   return {visible_size_};
 }
 

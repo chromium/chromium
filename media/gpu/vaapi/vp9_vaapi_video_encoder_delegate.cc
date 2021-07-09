@@ -363,7 +363,7 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
   return metadata;
 }
 
-std::vector<gfx::Size> VP9VaapiVideoEncoderDelegate::GetSVCLayerResoltuions() {
+std::vector<gfx::Size> VP9VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
   if (!ApplyPendingUpdateRates()) {
     DLOG(ERROR) << __func__ << " ApplyPendingUpdateRates failed";
     return {};

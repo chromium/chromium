@@ -348,7 +348,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
   EXPECT_TRUE(encoder_->Initialize(config, ave_config));
   EXPECT_EQ(num_temporal_layers > 1u || num_spatial_layers > 1u,
             !!encoder_->svc_layers_);
-  EXPECT_EQ(encoder_->GetSVCLayerResoltuions(), svc_layer_size);
+  EXPECT_EQ(encoder_->GetSVCLayerResolutions(), svc_layer_size);
 }
 
 void VP9VaapiVideoEncoderDelegateTest::

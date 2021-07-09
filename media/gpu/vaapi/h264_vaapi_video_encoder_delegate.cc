@@ -202,7 +202,7 @@ size_t H264VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
   return curr_params_.max_num_ref_frames;
 }
 
-std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResoltuions() {
+std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
   return {visible_size_};
 }
 
