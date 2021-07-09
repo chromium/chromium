@@ -1289,6 +1289,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DNS.Request.Failure.HostSafetyStatus"
     enum="HostSafetyStatus" expires_after="2021-08-30">
+  <obsolete>
+    Removed from code 2021-07.
+  </obsolete>
   <owner>mmenke@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1299,6 +1302,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DNS.Request.Success.HostSafetyStatus"
     enum="HostSafetyStatus" expires_after="2021-08-30">
+  <obsolete>
+    Removed from code 2021-07.
+  </obsolete>
   <owner>mmenke@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1776,6 +1782,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.File.Request.Failure.HostSafetyStatus"
     enum="HostSafetyStatus" expires_after="2021-08-30">
+  <obsolete>
+    Removed from code 2021-07.
+  </obsolete>
   <owner>mmenke@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1786,6 +1795,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.File.Request.Success.HostSafetyStatus"
     enum="HostSafetyStatus" expires_after="2021-08-30">
+  <obsolete>
+    Removed from code 2021-07.
+  </obsolete>
   <owner>mmenke@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5584,6 +5596,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.Url.HostSafetyStatus" enum="HostSafetyStatus"
     expires_after="2021-08-30">
+  <obsolete>
+    Removed from code 2021-07.
+  </obsolete>
   <owner>mmenke@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

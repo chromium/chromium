@@ -102,8 +102,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
-#include "url/third_party/mozilla/url_parse.h"
-#include "url/url_canon_ip.h"
 
 #if BUILDFLAG(ENABLE_MDNS)
 #include "net/dns/mdns_client_impl.h"
@@ -786,17 +784,6 @@ class HostResolverManager::RequestImpl
   void LogFinishRequest(int net_error, bool async_completion) {
     source_net_log_.EndEventWithNetErrorCode(
         NetLogEventType::HOST_RESOLVER_IMPL_REQUEST, net_error);
-
-    base::StringPiece hostname = GetHostname(request_host_);
-    url::HostSafetyStatus host_safety_status = url::CheckHostnameSafety(
-        hostname.data(), url::Component(0, hostname.size()));
-    if (net_error == net::OK) {
-      UMA_HISTOGRAM_ENUMERATION("Net.DNS.Request.Success.HostSafetyStatus",
-                                host_safety_status);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION("Net.DNS.Request.Failure.HostSafetyStatus",
-                                host_safety_status);
-    }
 
     if (!parameters_.is_speculative) {
       DCHECK(!request_time_.is_null());

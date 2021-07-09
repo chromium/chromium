@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
-#include "url/url_canon_ip.h"
 
 namespace url {
 
@@ -379,16 +377,6 @@ void DoHost(const CHAR* spec,
     if (host_info->IsIPAddress()) {
       output->set_length(output_begin);
       output->Append(canon_ip.data(), canon_ip.length());
-    } else if (host_info->family == CanonHostInfo::NEUTRAL) {
-      // Only need to call CheckHostnameSafety() for valid hosts that aren't IP
-      // addresses and aren't broken.
-      HostSafetyStatus host_safety_status = CheckHostnameSafety(spec, host);
-      // Don't record kOK.  Ratio of OK to not-OK statuses is not meaningful at
-      // this layer, and hostnames are canonicalized a lot.
-      if (host_safety_status != HostSafetyStatus::kOk) {
-        UMA_HISTOGRAM_ENUMERATION("Net.Url.HostSafetyStatus",
-                                  host_safety_status);
-      }
     }
   } else {
     // Canonicalization failed. Set BROKEN to notify the caller.

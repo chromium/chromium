@@ -6,7 +6,6 @@
 #define URL_URL_CANON_IP_H_
 
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 
@@ -82,48 +81,6 @@ COMPONENT_EXPORT(URL)
 bool IPv6AddressToNumber(const char16_t* spec,
                          const Component& host,
                          unsigned char address[16]);
-
-// Temporary enum for collecting histograms at the DNS and URL level about
-// hostname validity, for potentially updating the URL spec.
-//
-// This is used in histograms, so old values should not be reused, and new
-// values should be added at the bottom.
-//
-// TODO(https://crbug.com/1149194): Remove this once the bug is fixed.
-enum class HostSafetyStatus {
-  // Any canonical hostname that doesn't fit into any other class. IPv4
-  // hostnames, hostnames that don't have numeric eTLDs, etc. Hostnames that are
-  // broken are also considered OK.
-  kOk = 0,
-
-  // The top level domain looks numeric. This is basically means it either
-  // parses as a number per the URL spec, or is entirely numeric ("09" doesn't
-  // currently parse as a number, since the leading "0" indicates an octal
-  // value).
-  kTopLevelDomainIsNumeric = 1,
-
-  // Both the top level domain and the next level domain look like a number,
-  // using the above definition. This is the case that is actually concerning -
-  // for these domains, the eTLD+1 is purely numeric, which means putting it as
-  // the hostname of a URL will potentially result in an IPv4 hostname. This is
-  // logically a subset of kTopLevelDomainIsNumeric, but when both apply, this
-  // label will be returned instead.
-  kTwoHighestLevelDomainsAreNumeric = 2,
-
-  kMaxValue = kTwoHighestLevelDomainsAreNumeric,
-};
-
-// Calculates the HostSafetyStatus of a hostname. Hostname should have been
-// canonicalized. This function is only intended to be temporary, to inform
-// decisions around tightening up what the URL parser considers valid hostnames.
-//
-// TODO(https://crbug.com/1149194): Remove this once the bug is fixed.
-COMPONENT_EXPORT(URL)
-HostSafetyStatus CheckHostnameSafety(const char* hostname,
-                                     const Component& host);
-COMPONENT_EXPORT(URL)
-HostSafetyStatus CheckHostnameSafety(const char16_t* hostname,
-                                     const Component& host);
 
 }  // namespace url
 
