@@ -101,6 +101,12 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
   void Layout() override;
+  Views GetChildrenInZOrder() override;
+
+  // Inserts the passed client view into this NonClientFrameView. Subclasses can
+  // override this method to indicate a specific insertion spot for the client
+  // view.
+  virtual void InsertClientView(ClientView* client_view);
 
  private:
 #if defined(OS_WIN)
