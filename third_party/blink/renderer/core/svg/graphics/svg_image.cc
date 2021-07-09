@@ -851,11 +851,14 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   // SVG Images are transparent.
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);
 
-  page_ = page;
-
   TRACE_EVENT0("blink", "SVGImage::dataChanged::load");
 
   frame->ForceSynchronousDocumentInstall("image/svg+xml", Data());
+
+  // Set up our Page reference after installing our document. This avoids
+  // tripping on a non-existing (null) Document if a GC is triggered during the
+  // set up and ends up collecting the last owner/observer of this image.
+  page_ = page;
 
   // Intrinsic sizing relies on computed style (e.g. font-size and
   // writing-mode).
