@@ -32,7 +32,7 @@ class StubWebFeedSubscriptions : public WebFeedSubscriptions {
       override {}
   void RefreshSubscriptions(
       base::OnceCallback<void(RefreshResult)> callback) override {}
-  bool IsWebFeedSubscriber() override;
+  void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) override {}
 };
 
 }  // namespace feed

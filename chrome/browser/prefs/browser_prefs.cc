@@ -1461,8 +1461,8 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kDataReductionProxyLastConfigRetrievalTime);
   profile_prefs->ClearPref(kDataReductionProxyConfig);
 
-  // Added 02/2021
 #if defined(OS_ANDROID)
+  // Added 02/2021
   feed::MigrateObsoleteProfilePrefsFeb_2021(profile_prefs);
 #endif  // defined(OS_ANDROID)
   syncer::ClearObsoletePassphrasePromptPrefs(profile_prefs);
@@ -1552,6 +1552,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kHintsFetcherTopHostBlocklistState);
   profile_prefs->ClearPref(kHintsFetcherTopHostBlocklistMinimumEngagementScore);
   profile_prefs->ClearPref(kTimeHintsFetcherTopHostBlocklistLastInitialized);
+
+#if defined(OS_ANDROID)
+  // Added 06/2021
+  feed::MigrateObsoleteProfilePrefsJune_2021(profile_prefs);
+#endif  // defined(OS_ANDROID)
 
   // Added 07/2021
 #if defined(OS_MAC)

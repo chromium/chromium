@@ -64,7 +64,8 @@ enum class LoadStreamStatus {
   kDataInStoreIsForAnotherUser = 23,
   kAbortWithPendingClearAll = 24,
   kAlreadyHaveUnreadContent = 25,
-  kMaxValue = kAlreadyHaveUnreadContent,
+  kNotAWebFeedSubscriber = 26,
+  kMaxValue = kNotAWebFeedSubscriber,
 };
 
 // Were we able to load fresh Feed data. This should be 'true' unless some kind

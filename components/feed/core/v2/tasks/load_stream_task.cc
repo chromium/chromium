@@ -28,6 +28,7 @@
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 namespace {
@@ -74,9 +75,27 @@ LoadStreamTask::LoadStreamTask(const Options& options,
 LoadStreamTask::~LoadStreamTask() = default;
 
 void LoadStreamTask::Run() {
+  if (!CheckPreconditions())
+    return;
+
+  if (options_.stream_type.IsWebFeed()) {
+    Suspend();
+    // Unretained is safe because `stream_` owns both this and
+    // `subscriptions()`.
+    stream_.subscriptions().IsWebFeedSubscriber(base::BindOnce(
+        &LoadStreamTask::CheckIfSubscriberComplete, base::Unretained(this)));
+    return;
+  }
+
+  PassedPreconditions();
+}
+
+bool LoadStreamTask::CheckPreconditions() {
   if (stream_.ClearAllInProgress()) {
-    return Done({LoadStreamStatus::kAbortWithPendingClearAll,
-                 feedwire::DiscoverLaunchResult::CLEAR_ALL_IN_PROGRESS});
+    // TODO(iwells): add a DiscoverLaunchResult for this case?
+    Done({LoadStreamStatus::kAbortWithPendingClearAll,
+          feedwire::DiscoverLaunchResult::CLEAR_ALL_IN_PROGRESS});
+    return false;
   }
   latencies_->StepComplete(LoadLatencyTimes::kTaskExecution);
   // Phase 1: Try to load from persistent storage.
@@ -90,7 +109,8 @@ void LoadStreamTask::Run() {
                                 /*model_loading=*/true);
   if (should_not_attempt_reason.load_stream_status !=
       LoadStreamStatus::kNoStatus) {
-    return Done(should_not_attempt_reason);
+    Done(should_not_attempt_reason);
+    return false;
   }
 
   if (options_.abort_if_unread_content &&
@@ -98,11 +118,32 @@ void LoadStreamTask::Run() {
     // TODO(iwells): add a DiscoverLaunchResult for this case
     Done({LoadStreamStatus::kAlreadyHaveUnreadContent,
           feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED});
+    return false;
+  }
+
+  return true;
+}
+
+void LoadStreamTask::CheckIfSubscriberComplete(bool is_web_feed_subscriber) {
+  if (!is_web_feed_subscriber) {
+    Done({LoadStreamStatus::kNotAWebFeedSubscriber,
+          feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED});
     return;
   }
 
-  launch_reliability_logger_.LogCacheReadStart();
+  Resume(
+      base::BindOnce(&LoadStreamTask::ResumeAtStart, base::Unretained(this)));
+}
 
+void LoadStreamTask::ResumeAtStart() {
+  // When the task is resumed, we need to ensure the preconditions are still
+  // met.
+  if (CheckPreconditions())
+    PassedPreconditions();
+}
+
+void LoadStreamTask::PassedPreconditions() {
+  launch_reliability_logger_.LogCacheReadStart();
   // Use |kLoadNoContent| to short-circuit loading from store if we don't
   // need the full stream state.
   auto load_from_store_type =

@@ -21,6 +21,7 @@ namespace feed {
 namespace test {
 namespace {
 class FeedApiNoticeCardTest : public FeedApiTest {
+ public:
   void SetUp() override {
     FeedApiTest::SetUp();
     model_generator_.privacy_notice_fulfilled = true;
@@ -31,10 +32,14 @@ class FeedApiNoticeCardTest : public FeedApiTest {
 };
 
 class FeedStreamConditionalActionsUploadTest : public FeedApiNoticeCardTest {
-  void SetupFeatures() override {
+ public:
+  FeedStreamConditionalActionsUploadTest() {
     scoped_feature_list_.InitAndEnableFeature(
         feed::kInterestFeedV2ClicksAndViewsConditionalUpload);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FeedApiNoticeCardTest, LoadStreamSendsNoticeCardAcknowledgement) {
@@ -80,6 +85,9 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   //   that should be dropped => (5) Simulate the backgrounding of the app to
   //   enable actions upload => (6) Trigger an upload which will upload the
   //   stored ThereAndBackAgain action.
+
+  // WebFeed stream is only fetched when there's a subscription.
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   response_translator_.InjectResponse(model_generator_.MakeFirstPage());
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();

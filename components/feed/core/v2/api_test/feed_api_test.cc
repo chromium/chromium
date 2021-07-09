@@ -39,6 +39,7 @@
 #include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
 namespace test {
@@ -662,6 +663,9 @@ void FakeRefreshTaskScheduler::Clear() {
 TestMetricsReporter::TestMetricsReporter(PrefService* prefs)
     : MetricsReporter(prefs) {}
 TestMetricsReporter::~TestMetricsReporter() = default;
+TestMetricsReporter::StreamMetrics::StreamMetrics() = default;
+TestMetricsReporter::StreamMetrics::~StreamMetrics() = default;
+
 void TestMetricsReporter::ContentSliceViewed(const StreamType& stream_type,
                                              int index_in_stream,
                                              int stream_slice_count) {
@@ -698,8 +702,20 @@ void TestMetricsReporter::OnLoadMore(LoadStreamStatus final_status) {
 void TestMetricsReporter::OnBackgroundRefresh(const StreamType& stream_type,
                                               LoadStreamStatus final_status) {
   background_refresh_status = final_status;
+  Stream(stream_type).background_refresh_status = final_status;
   MetricsReporter::OnBackgroundRefresh(stream_type, final_status);
 }
+
+TestMetricsReporter::StreamMetrics& TestMetricsReporter::Stream(
+    const StreamType& stream_type) {
+  if (stream_type.IsForYou())
+    return for_you;
+  if (stream_type.IsWebFeed())
+    return web_feed;
+  ADD_FAILURE() << stream_type << " case not supported here";
+  return for_you;
+}
+
 void TestMetricsReporter::OnClearAll(base::TimeDelta time_since_last_clear) {
   this->time_since_last_clear = time_since_last_clear;
   MetricsReporter::OnClearAll(time_since_last_clear);
@@ -709,10 +725,11 @@ void TestMetricsReporter::OnUploadActions(UploadActionsStatus status) {
   MetricsReporter::OnUploadActions(status);
 }
 
-FeedApiTest::FeedApiTest() = default;
+FeedApiTest::FeedApiTest() {
+  scoped_feature_list_.InitAndEnableFeature(kWebFeed);
+}
 FeedApiTest::~FeedApiTest() = default;
 void FeedApiTest::SetUp() {
-  SetupFeatures();
   kTestTimeEpoch = base::Time::Now();
 
   // Reset to default config, since tests can change it.
@@ -834,7 +851,7 @@ std::string FeedApiTest::DumpStoreState(bool print_keys) {
     if (print_keys)
       ss << '"' << item.first << "\": ";
 
-    ss << item.second << '\n';
+    ss << item.second;
   }
   return ss.str();
 }
@@ -860,6 +877,13 @@ RefreshTaskId FeedStreamTestForAllStreamTypes::GetRefreshTaskId() const {
   RefreshTaskId id;
   CHECK(GetStreamType().GetRefreshTaskId(id));
   return id;
+}
+
+void FeedStreamTestForAllStreamTypes::SetUp() {
+  // Enable web feeds and inject a subscription so that we attempt to load
+  // the web feed stream.
+  FeedApiTest::SetUp();
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 }
 
 }  // namespace test

@@ -45,7 +45,6 @@ void WriteRecommendedFeeds(
 class FeedApiSubscriptionsTest : public FeedApiTest {
  public:
   void SetUp() override {
-    subscription_feature_list_.InitAndEnableFeature(kWebFeed);
     FeedApiTest::SetUp();
   }
 
@@ -112,21 +111,9 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
     network_.InjectResponse(response);
   }
 
-  void InjectListWebFeedsResponse(
-      std::vector<feedwire::webfeed::WebFeed> web_feeds) {
-    feedwire::webfeed::ListWebFeedsResponse response;
-    for (const auto& feed : web_feeds) {
-      *response.add_web_feeds() = feed;
-    }
-    network_.InjectResponse(response);
-  }
-
   WebFeedSubscriptionCoordinator& subscriptions() {
     return stream_->subscriptions();
   }
-
- private:
-  base::test::ScopedFeatureList subscription_feature_list_;
 };
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
@@ -789,7 +776,7 @@ TEST_F(FeedApiSubscriptionsTest,
 
 TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreFetchedAfterStartup) {
   SetUpWithDefaultConfig();
-  InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
   // Wait until the delayed task runs, and verify the network request was sent.
   task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
@@ -810,14 +797,13 @@ TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreFetchedAfterStartup) {
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
       PrintToString(CheckAllSubscriptions()));
-  EXPECT_TRUE(subscriptions().IsWebFeedSubscriber());
 }
 
 TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreClearedOnSignOut) {
   // Populate web feeds at startup for a signed-in users.
   {
     SetUpWithDefaultConfig();
-    InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+    network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
     // Wait until the delayed task runs, and verify the network request was
     // sent.
@@ -837,14 +823,13 @@ TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreClearedOnSignOut) {
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
-  EXPECT_FALSE(subscriptions().IsWebFeedSubscriber());
 }
 
 TEST_F(FeedApiSubscriptionsTest,
        SubscribedWebFeedsAreFetchedAfterSignInButNotSignOut) {
   SetUpWithDefaultConfig();
-  InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-  InjectListWebFeedsResponse({MakeWireWebFeed("dogs")});
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("dogs")});
 
   // Wait until the delayed task runs, and verify the network request was sent.
   task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
@@ -877,7 +862,7 @@ TEST_F(FeedApiSubscriptionsTest,
   // SubscribedWebFeedsAreFetchedAfterStartup.
   {
     SetUpWithDefaultConfig();
-    InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+    network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
                                     base::TimeDelta::FromSeconds(1));
@@ -901,7 +886,7 @@ TEST_F(FeedApiSubscriptionsTest,
   {
     task_environment_.FastForwardBy(
         GetFeedConfig().subscribed_feeds_staleness_threshold);
-    InjectListWebFeedsResponse({MakeWireWebFeed("catsv2")});
+    network_.InjectListWebFeedsResponse({MakeWireWebFeed("catsv2")});
     CreateStream();
 
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
@@ -923,7 +908,7 @@ TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsSuccess) {
   }
   base::HistogramTester histograms;
   CallbackReceiver<WebFeedSubscriptions::RefreshResult> result;
-  InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
   subscriptions().RefreshSubscriptions(result.Bind());
 
@@ -958,7 +943,7 @@ TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsFail) {
 TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsDuringRefresh) {
   CallbackReceiver<WebFeedSubscriptions::RefreshResult> result1;
   CallbackReceiver<WebFeedSubscriptions::RefreshResult> result2;
-  InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   subscriptions().RefreshSubscriptions(result1.Bind());
   subscriptions().RefreshSubscriptions(result2.Bind());
 

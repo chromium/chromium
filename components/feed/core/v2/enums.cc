@@ -67,6 +67,8 @@ std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
       return out << "kAbortWithPendingClearAll";
     case LoadStreamStatus::kAlreadyHaveUnreadContent:
       return out << "kAlreadyHaveUnreadContent";
+    case LoadStreamStatus::kNotAWebFeedSubscriber:
+      return out << "kNotAWebFeedSubscriber";
   }
 #else
   return out << (static_cast<int>(value));
@@ -103,6 +105,7 @@ bool IsLoadingSuccessfulAndFresh(LoadStreamStatus status) {
     case LoadStreamStatus::kDataInStoreIsForAnotherUser:
     case LoadStreamStatus::kAbortWithPendingClearAll:
     case LoadStreamStatus::kAlreadyHaveUnreadContent:
+    case LoadStreamStatus::kNotAWebFeedSubscriber:
       return false;
   }
 }

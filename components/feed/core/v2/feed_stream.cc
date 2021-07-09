@@ -134,7 +134,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   has_stored_data_.Init(feed::prefs::kHasStoredData, profile_prefs);
 
   web_feed_subscription_coordinator_ =
-      std::make_unique<WebFeedSubscriptionCoordinator>(profile_prefs, this);
+      std::make_unique<WebFeedSubscriptionCoordinator>(this);
 
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.
@@ -270,8 +270,7 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
   // no unread content.
   if (base::FeatureList::IsEnabled(kWebFeed)) {
     if (result.stream_type.IsForYou()) {
-      if (!HasUnreadContent(kWebFeedStream) &&
-          subscriptions().IsWebFeedSubscriber()) {
+      if (!HasUnreadContent(kWebFeedStream)) {
         LoadStreamTask::Options options;
         options.load_type = LoadStreamTask::LoadType::kBackgroundRefresh;
         options.stream_type = kWebFeedStream;

@@ -17,7 +17,6 @@
 #include "components/feed/core/v2/web_feed_subscriptions/unsubscribe_from_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 
-class PrefService;
 namespace feed {
 namespace internal {
 class WebFeedSubscriptionModel;
@@ -29,8 +28,7 @@ class FeedStream;
 // Coordinates the state of subscription to web feeds.
 class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
  public:
-  explicit WebFeedSubscriptionCoordinator(PrefService* profile_prefs,
-                                          FeedStream* feed_stream);
+  explicit WebFeedSubscriptionCoordinator(FeedStream* feed_stream);
   virtual ~WebFeedSubscriptionCoordinator();
   WebFeedSubscriptionCoordinator(const WebFeedSubscriptionCoordinator&) =
       delete;
@@ -63,7 +61,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       base::OnceCallback<void(std::vector<WebFeedMetadata>)> callback) override;
   void RefreshSubscriptions(
       base::OnceCallback<void(RefreshResult)> callback) override;
-  bool IsWebFeedSubscriber() override;
+  void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) override;
 
   // Types / functions exposed for task implementations.
 
@@ -152,19 +150,20 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void FetchRecommendedWebFeedsComplete(
       FetchRecommendedWebFeedsTask::Result result);
 
-  void FetchSubscribedWebFeedsIfStale();
+  void FetchSubscribedWebFeedsIfStale(base::OnceClosure callback);
   void FetchSubscribedWebFeedsStart();
   void FetchSubscribedWebFeedsComplete(
       FetchSubscribedWebFeedsTask::Result result);
   void CallRefreshCompleteCallbacks(RefreshResult);
-  void UpdateIsSubscriberPref();
+  void IsWebFeedSubscriberDone(base::OnceCallback<void(bool)> callback);
 
   FeedStream* feed_stream_;  // Always non-null, it owns this.
-  PrefService* profile_prefs_;
 
   WebFeedIndex index_;
   // Whether `Populate()` has been called.
   bool populated_ = false;
+  std::vector<base::OnceClosure> on_populated_;
+
   // A model of subscriptions. In memory only while needed.
   // TODO(harringtond): Unload the model eventually.
   std::unique_ptr<WebFeedSubscriptionModel> model_;

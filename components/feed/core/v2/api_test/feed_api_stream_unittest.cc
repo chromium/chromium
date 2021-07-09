@@ -13,6 +13,7 @@
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
@@ -106,7 +107,7 @@ TEST_F(FeedApiTest, BackgroundRefreshNotAttemptedWhenModelIsLoading) {
   stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ(metrics_reporter_->background_refresh_status,
+  EXPECT_EQ(metrics_reporter_->Stream(kForYouStream).background_refresh_status,
             LoadStreamStatus::kModelAlreadyLoaded);
 }
 
@@ -283,6 +284,7 @@ TEST_F(FeedApiTest, FetchImage) {
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
   {
+    WaitForIdleTaskQueue();
     auto metadata = stream_->GetMetadata();
     metadata.set_consistency_token("token");
     stream_->SetMetadata(metadata);
@@ -307,6 +309,13 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
   // Verify the data was written to the store.
   EXPECT_STRINGS_EQUAL(ModelStateFor(MakeTypicalInitialModelState()),
                        ModelStateFor(GetStreamType(), store_.get()));
+}
+
+TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptions) {
+  TestWebFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("loading -> no-subscriptions", surface.DescribeUpdates());
 }
 
 // Test that we use QueryInteractiveFeedDiscoverApi and QueryNextPageDiscoverApi
@@ -345,7 +354,7 @@ TEST_P(FeedNetworkEndpointTest, TestAllNetworkEndpointConfigs) {
   features.InitWithFeatures(enabled_features, disabled_features);
 
   // WebFeed stream is only fetched when there's a subscription.
-  FollowWebFeed(MakeWebFeedPageInformation("https://cats.com"));
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
   // Force a refresh that results in a successful load of both feed types.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -392,12 +401,8 @@ TEST_F(FeedApiTest, BackgroundRefreshDiscoFeedEnabled) {
 }
 
 TEST_F(FeedApiTest, ForceRefreshForDebugging) {
-  // Enable WebFeed and subscribe to a page, so that we can check if the WebFeed
-  // is refreshed by ForceRefreshForDebugging.
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kWebFeed);
   // WebFeed stream is only fetched when there's a subscription.
-  FollowWebFeed(MakeWebFeedPageInformation("https://cats.com"));
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
   // Force a refresh that results in a successful load of both feed types.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -741,6 +746,9 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
 }
 
 TEST_F(FeedApiTest, WebFeedUsesSignedInRequestAfterHistoryIsDeleted) {
+  // WebFeed stream is only fetched when there's a subscription.
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+
   stream_->OnAllHistoryDeleted();
 
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -1333,8 +1341,14 @@ TEST_F(FeedApiTest, ClearAllWipesAllState) {
 
   ASSERT_EQ("loading -> 2 slices -> loading -> cant-refresh",
             surface.DescribeUpdates());
-
-  EXPECT_EQ("{\n}\n\n", DumpStoreState());
+  EXPECT_EQ(R"("m": {
+}
+"recommendedIndex": {
+}
+"subs": {
+}
+)",
+            DumpStoreState(true));
   EXPECT_EQ("", stream_->GetMetadata().consistency_token());
   EXPECT_FALSE(stream_->IsActivityLoggingEnabled(kForYouStream));
 }
@@ -1702,7 +1716,7 @@ TEST_F(FeedApiTest, ClearAllWhenDatabaseInitializedForWrongUser) {
   // Creating a stream should init database.
   CreateStream();
 
-  EXPECT_EQ("{\n}\n\n", DumpStoreState());
+  EXPECT_EQ("{\n}\n", DumpStoreState());
   EXPECT_EQ("", stream_->GetMetadata().consistency_token());
 }
 
@@ -2062,6 +2076,9 @@ TEST_F(FeedApiTest, PersistentKeyValueStoreIsClearedOnClearAll) {
 TEST_F(FeedApiTest, LoadMultipleStreams) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  // WebFeed stream is only fetched when there's a subscription.
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+
   TestForYouSurface for_you_surface(stream_.get());
   TestWebFeedSurface web_feed_surface(stream_.get());
 
@@ -2072,6 +2089,9 @@ TEST_F(FeedApiTest, LoadMultipleStreams) {
 }
 
 TEST_F(FeedApiTest, UnloadOnlyOneOfMultipleModels) {
+  // WebFeed stream is only fetched when there's a subscription.
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+
   Config config;
   config.model_unload_timeout = base::TimeDelta::FromSeconds(1);
   SetFeedConfigForTesting(config);
@@ -2182,11 +2202,8 @@ TEST_F(FeedApiTest, HasUnreadContentIsFalseAfterSliceView) {
 
 TEST_F(FeedApiTest,
        LoadingForYouStreamTriggersWebFeedRefreshIfNoUnreadContent) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kWebFeed);
-
   // WebFeed stream is only fetched when there's a subscription.
-  FollowWebFeed(MakeWebFeedPageInformation("https://cats.com"));
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
   // Both streams should be fetched.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -2209,9 +2226,6 @@ TEST_F(FeedApiTest,
 
 TEST_F(FeedApiTest,
        LoadingForYouStreamDoesNotTriggerWebFeedRefreshIfNoSubscriptions) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kWebFeed);
-
   // Only for-you feed is fetched on load.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
@@ -2220,16 +2234,16 @@ TEST_F(FeedApiTest,
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
+  EXPECT_EQ(
+      LoadStreamStatus::kNotAWebFeedSubscriber,
+      metrics_reporter_->Stream(kWebFeedStream).background_refresh_status);
 }
 
 TEST_F(
     FeedApiTest,
     LoadForYouStreamDoesNotTriggerWebFeedRefreshContentIfIsAlreadyAvailable) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kWebFeed);
-
   // WebFeed stream is only fetched when there's a subscription.
-  FollowWebFeed(MakeWebFeedPageInformation("https://cats.com"));
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
   // Both streams should be fetched because there is no unread web-feed content.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());

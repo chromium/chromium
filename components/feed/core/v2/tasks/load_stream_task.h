@@ -102,7 +102,10 @@ class LoadStreamTask : public offline_pages::Task {
   base::WeakPtr<LoadStreamTask> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
-
+  void CheckIfSubscriberComplete(bool is_web_feed_subscriber);
+  void ResumeAtStart();
+  bool CheckPreconditions();
+  void PassedPreconditions();
   void LoadFromStoreComplete(LoadStreamFromStoreTask::Result result);
   void UploadActionsComplete(UploadActionsTask::Result result);
   void QueryApiRequestComplete(

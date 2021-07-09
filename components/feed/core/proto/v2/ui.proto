@@ -57,6 +57,8 @@ message ZeroStateSlice {
     NO_CARDS_AVAILABLE = 1;
     // An error indicating there were problems refreshing the feed.
     CANT_REFRESH = 2;
+    // There is no content because there are no web feed subscriptions.
+    NO_WEB_FEED_SUBSCRIPTIONS = 3;
   };
   Type type = 1;
 }

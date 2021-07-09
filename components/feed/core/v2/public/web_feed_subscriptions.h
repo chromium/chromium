@@ -72,10 +72,10 @@ class WebFeedSubscriptions {
   virtual void RefreshSubscriptions(
       base::OnceCallback<void(RefreshResult)> callback) = 0;
 
-  // Whether the user has subscribed to at least one web feed.
-  // Because this function returns synchronously, it may return the wrong value.
-  // TODO(crbug.com/1152592): Update this and its callers to use an async call.
-  virtual bool IsWebFeedSubscriber() = 0;
+  // Whether the user has subscribed to at least one web feed. May require
+  // fetching data from the server if cached data is not fresh. If fetching
+  // fails, returns the last-known state.
+  virtual void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace feed

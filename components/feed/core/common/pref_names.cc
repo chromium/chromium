@@ -43,7 +43,6 @@ const char kExperiments[] = "feedv2.experiments";
 const char kEnableWebFeedFollowIntroDebug[] =
     "webfeed_follow_intro_debug.enable";
 const char kReliabilityLoggingIdSalt[] = "feedv2.reliability_logging_id_salt";
-const char kIsWebFeedSubscriber[] = "webfeed.is_subscriber";
 const char kHasStoredData[] = "feedv2.has_stored_data";
 
 }  // namespace prefs
@@ -64,8 +63,9 @@ const char kUserClassifierLastTimeToViewSuggestions[] =
 const char kUserClassifierLastTimeToUseSuggestions[] =
     "feed.user_classifier.last_time_to_use_suggestions";
 
-// Deprecated 05/2021 (can be removed along with 02/2021)
+// Deprecated May/June 2021
 const char kEnableWebFeedUI[] = "webfeed_ui.enable";
+const char kIsWebFeedSubscriber[] = "webfeed.is_subscriber";
 
 void RegisterObsoletePrefsFeb_2021(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLastRefreshWasSignedIn, false);
@@ -80,8 +80,13 @@ void RegisterObsoletePrefsFeb_2021(PrefRegistrySimple* registry) {
                              base::Time());
   registry->RegisterTimePref(kUserClassifierLastTimeToUseSuggestions,
                              base::Time());
-  registry->RegisterBooleanPref(kEnableWebFeedUI, false);
 }
+
+void RegisterObsoletePrefsJune_2021(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kEnableWebFeedUI, false);
+  registry->RegisterBooleanPref(kIsWebFeedSubscriber, false);
+}
+
 }  // namespace
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -107,7 +112,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(feed::prefs::kEnableWebFeedFollowIntroDebug,
                                 false);
   registry->RegisterUint64Pref(feed::prefs::kReliabilityLoggingIdSalt, 0);
-  registry->RegisterBooleanPref(feed::prefs::kIsWebFeedSubscriber, false);
   registry->RegisterBooleanPref(feed::prefs::kHasStoredData, false);
 
 #if defined(OS_IOS)
@@ -116,6 +120,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #endif  // defined(OS_IOS)
 
   RegisterObsoletePrefsFeb_2021(registry);
+  RegisterObsoletePrefsJune_2021(registry);
 }
 
 void MigrateObsoleteProfilePrefsFeb_2021(PrefService* prefs) {
@@ -127,7 +132,11 @@ void MigrateObsoleteProfilePrefsFeb_2021(PrefService* prefs) {
   prefs->ClearPref(kUserClassifierAverageSuggestionsUsedPerHour);
   prefs->ClearPref(kUserClassifierLastTimeToViewSuggestions);
   prefs->ClearPref(kUserClassifierLastTimeToUseSuggestions);
+}
+
+void MigrateObsoleteProfilePrefsJune_2021(PrefService* prefs) {
   prefs->ClearPref(kEnableWebFeedUI);
+  prefs->ClearPref(kIsWebFeedSubscriber);
 }
 
 }  // namespace feed

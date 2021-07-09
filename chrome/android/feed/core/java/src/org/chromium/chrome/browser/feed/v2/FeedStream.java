@@ -798,8 +798,11 @@ public class FeedStream implements Stream {
             return new NtpListContentManager.NativeViewContent(
                     sliceId, org.chromium.chrome.R.layout.no_connection);
         }
+        // TODO(crbug/1152592): Add new UI for NO_WEB_FEED_SUBSCRIPTIONS.
         assert slice.getZeroStateSlice().getType()
-                == FeedUiProto.ZeroStateSlice.Type.NO_CARDS_AVAILABLE;
+                        == FeedUiProto.ZeroStateSlice.Type.NO_CARDS_AVAILABLE
+                || slice.getZeroStateSlice().getType()
+                        == FeedUiProto.ZeroStateSlice.Type.NO_WEB_FEED_SUBSCRIPTIONS;
         return new NtpListContentManager.NativeViewContent(
                 sliceId, org.chromium.chrome.R.layout.no_content_v2);
     }

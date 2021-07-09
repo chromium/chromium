@@ -194,9 +194,8 @@ class WebFeedSubscriptionModel {
 }  // namespace internal
 
 WebFeedSubscriptionCoordinator::WebFeedSubscriptionCoordinator(
-    PrefService* profile_prefs,
     FeedStream* feed_stream)
-    : feed_stream_(feed_stream), profile_prefs_(profile_prefs) {
+    : feed_stream_(feed_stream) {
   base::TimeDelta delay = GetFeedConfig().fetch_web_feed_info_delay;
   if (IsSignedInAndWebFeedsEnabled() && !delay.is_zero()) {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -205,11 +204,12 @@ WebFeedSubscriptionCoordinator::WebFeedSubscriptionCoordinator(
             &WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsIfStale,
             GetWeakPtr()),
         delay);
+    base::OnceClosure do_nothing = base::DoNothing();
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsIfStale,
-            GetWeakPtr()),
+            GetWeakPtr(), std::move(do_nothing)),
         delay);
   }
 }
@@ -227,15 +227,17 @@ void WebFeedSubscriptionCoordinator::Populate(
   index_.Populate(startup_data.subscribed_web_feeds);
   populated_ = true;
 
-  UpdateIsSubscriberPref();
+  auto on_populated = std::move(on_populated_);
+  for (base::OnceClosure& callback : on_populated) {
+    std::move(callback).Run();
+  }
 }
 
 void WebFeedSubscriptionCoordinator::ClearAllFinished() {
   index_.Clear();
   model_.reset();
-  UpdateIsSubscriberPref();
   FetchRecommendedWebFeedsIfStale();
-  FetchSubscribedWebFeedsIfStale();
+  FetchSubscribedWebFeedsIfStale(base::DoNothing());
 }
 
 void WebFeedSubscriptionCoordinator::FollowWebFeed(
@@ -644,18 +646,36 @@ void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsComplete(
     model_->UpdateRecommendedFeeds(std::move(result.recommended_web_feeds));
 }
 
-void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsIfStale() {
-  if (!IsSignedInAndWebFeedsEnabled())
+void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsIfStale(
+    base::OnceClosure callback) {
+  if (!populated_) {
+    on_populated_.push_back(base::BindOnce(
+        &WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsIfStale,
+        base::Unretained(this), std::move(callback)));
     return;
+  }
+
+  if (!IsSignedInAndWebFeedsEnabled()) {
+    std::move(callback).Run();
+    return;
+  }
 
   base::TimeDelta staleness =
       base::Time::Now() - index_.GetSubscribedFeedsUpdateTime();
   if (staleness > GetFeedConfig().subscribed_feeds_staleness_threshold ||
       staleness < -base::TimeDelta::FromHours(1)) {
     fetching_subscribed_web_feeds_because_stale_ = true;
+    auto callback_adaptor = [](base::OnceClosure callback, RefreshResult) {
+      std::move(callback).Run();
+    };
+    on_refresh_subscriptions_.push_back(
+        base::BindOnce(callback_adaptor, std::move(callback)));
+
     WithModel(base::BindOnce(
         &WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsStart,
         base::Unretained(this)));
+  } else {
+    std::move(callback).Run();
   }
 }
 
@@ -687,7 +707,6 @@ void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsComplete(
   if (result.status == WebFeedRefreshStatus::kSuccess)
     model_->UpdateSubscribedFeeds(std::move(result.subscribed_web_feeds));
 
-  UpdateIsSubscriberPref();
   CallRefreshCompleteCallbacks(
       RefreshResult{result.status == WebFeedRefreshStatus::kSuccess});
 }
@@ -701,22 +720,17 @@ void WebFeedSubscriptionCoordinator::CallRefreshCompleteCallbacks(
   }
 }
 
-// Ideally, this function would be async so that we can determine with more
-// certainty that the user is a web feed subscriber. Until the UI can be
-// updated, we need to return an answer right away, so we cache a boolean in
-// prefs.
-bool WebFeedSubscriptionCoordinator::IsWebFeedSubscriber() {
-  if (populated_) {
-    return IsSignedInAndWebFeedsEnabled() && index_.HasSubscriptions();
-  } else {
-    return profile_prefs_->GetBoolean(feed::prefs::kIsWebFeedSubscriber);
-  }
+void WebFeedSubscriptionCoordinator::IsWebFeedSubscriber(
+    base::OnceCallback<void(bool)> callback) {
+  FetchSubscribedWebFeedsIfStale(
+      base::BindOnce(&WebFeedSubscriptionCoordinator::IsWebFeedSubscriberDone,
+                     base::Unretained(this), std::move(callback)));
 }
 
-void WebFeedSubscriptionCoordinator::UpdateIsSubscriberPref() {
-  profile_prefs_->SetBoolean(
-      feed::prefs::kIsWebFeedSubscriber,
-      IsSignedInAndWebFeedsEnabled() && index_.HasSubscriptions());
+void WebFeedSubscriptionCoordinator::IsWebFeedSubscriberDone(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(IsSignedInAndWebFeedsEnabled() &&
+                          index_.HasSubscriptions());
 }
 
 }  // namespace feed

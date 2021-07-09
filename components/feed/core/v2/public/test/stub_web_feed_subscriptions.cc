@@ -6,8 +6,4 @@
 
 namespace feed {
 
-bool StubWebFeedSubscriptions::IsWebFeedSubscriber() {
-  return {};
-}
-
 }  // namespace feed

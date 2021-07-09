@@ -181,11 +181,6 @@ public class WebFeedBridge {
         WebFeedBridgeJni.get().unfollowWebFeed(webFeedId, callback);
     }
 
-    /** Returns whether the user subscribes to at least one Web Feed. */
-    public static boolean isWebFeedSubscriber() {
-        return WebFeedBridgeJni.get().isWebFeedSubscriber();
-    }
-
     /** This is deprecated, do not use. */
     @Deprecated
     public static class FollowedIds {
@@ -235,6 +230,5 @@ public class WebFeedBridge {
         void getAllSubscriptions(Callback<Object[]> callback);
         void refreshSubscriptions(Callback<Boolean> callback);
         void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
-        boolean isWebFeedSubscriber();
     }
 }

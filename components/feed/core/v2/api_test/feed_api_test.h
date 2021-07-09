@@ -247,6 +247,16 @@ class TestFeedNetwork : public FeedNetwork {
   void InjectResponse(feedwire::webfeed::ListWebFeedsResponse response) {
     InjectApiResponse<ListWebFeedsDiscoverApi>(std::move(response));
   }
+
+  void InjectListWebFeedsResponse(
+      std::vector<feedwire::webfeed::WebFeed> web_feeds) {
+    feedwire::webfeed::ListWebFeedsResponse response;
+    for (const auto& feed : web_feeds) {
+      *response.add_web_feeds() = feed;
+    }
+    InjectResponse(response);
+  }
+
   void InjectEmptyActionRequestResult();
 
   template <typename API>
@@ -383,8 +393,17 @@ class TestMetricsReporter : public MetricsReporter {
   void OnClearAll(base::TimeDelta time_since_last_clear) override;
   void OnUploadActions(UploadActionsStatus status) override;
 
-  // Test access.
+  struct StreamMetrics {
+    StreamMetrics();
+    ~StreamMetrics();
+    StreamMetrics(const StreamMetrics&) = delete;
+    StreamMetrics& operator=(const StreamMetrics&) = delete;
+    absl::optional<LoadStreamStatus> background_refresh_status;
+  };
 
+  StreamMetrics& Stream(const StreamType& stream_type);
+
+  // Test access.
   absl::optional<int> slice_viewed_index;
   absl::optional<LoadStreamStatus> load_stream_status;
   absl::optional<LoadStreamStatus> load_stream_from_store_status;
@@ -393,6 +412,9 @@ class TestMetricsReporter : public MetricsReporter {
   absl::optional<LoadStreamStatus> background_refresh_status;
   absl::optional<base::TimeDelta> time_since_last_clear;
   absl::optional<UploadActionsStatus> upload_action_status;
+
+  StreamMetrics web_feed;
+  StreamMetrics for_you;
 };
 
 class FeedApiTest : public testing::Test, public FeedStream::Delegate {
@@ -400,9 +422,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   FeedApiTest();
   ~FeedApiTest() override;
   void SetUp() override;
-
-  virtual void SetupFeatures() {}
-
   void TearDown() override;
 
   // FeedStream::Delegate.
@@ -459,10 +478,12 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool is_eula_accepted_ = true;
   bool is_offline_ = false;
   std::string signed_in_gaia_ = "examplegaia";
-  base::test::ScopedFeatureList scoped_feature_list_;
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class FeedStreamTestForAllStreamTypes
@@ -476,7 +497,11 @@ class FeedStreamTestForAllStreamTypes
         : TestSurfaceBase(FeedStreamTestForAllStreamTypes::GetStreamType(),
                           stream) {}
   };
+  void SetUp() override;
   RefreshTaskId GetRefreshTaskId() const;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class FeedNetworkEndpointTest
