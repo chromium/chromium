@@ -241,6 +241,8 @@ class RemoteTest(object):
       run_results.AddResult(suite_result)
       with open(self._test_launcher_summary_output, 'w') as f:
         json.dump(json_results.GenerateResultsDict([run_results]), f)
+      if self._rdb_client:
+        self._rdb_client.Post(self.suite_name, result, None, None, None)
 
   @staticmethod
   def get_artifacts(path):
@@ -452,8 +454,13 @@ class TastTest(RemoteTest):
         # inside as an RDB 'artifact'. (This could include system logs, screen
         # shots, etc.)
         artifacts = self.get_artifacts(test['outDir'])
-        self._rdb_client.Post(test['name'], result, duration_ms, error_log,
-                              artifacts)
+        self._rdb_client.Post(
+            test['name'],
+            result,
+            duration_ms,
+            error_log,
+            None,
+            artifacts=artifacts)
 
     if self._rdb_client and self._logs_dir:
       # Attach artifacts from the device that don't apply to a single test.
