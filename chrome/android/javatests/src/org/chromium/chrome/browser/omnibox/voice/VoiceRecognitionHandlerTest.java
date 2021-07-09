@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -425,7 +424,8 @@ public class VoiceRecognitionHandlerTest {
             // clang-format off
             super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider,
                     () -> mModalDialogManager, null, null, mDataProvider,
-                    mProfileSupplier, (tab) -> {}, null, (url) -> false, new DummyJankTracker());
+                    mProfileSupplier, (tab) -> {}, null, (url) -> false, new DummyJankTracker(),
+                    (pixelSize, callback) -> {});
             // clang-format on
         }
 

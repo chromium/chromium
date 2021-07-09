@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.clipboard.ClipboardSugges
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tiles.TileSuggestionProcessor;
@@ -59,17 +60,19 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable ImageFetcher mImageFetcher;
     private @Nullable LargeIconBridge mIconBridge;
     private @NonNull BookmarkState mBookmarkState;
+    private @NonNull ExploreIconProvider mExploreIconProvider;
     @Px
     private int mDropdownHeight;
     private boolean mEnableAdaptiveSuggestionsCount;
     private boolean mBuiltListHasFullyConcealedElements;
 
-    DropdownItemViewInfoListBuilder(
-            @NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState) {
+    DropdownItemViewInfoListBuilder(@NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState,
+            @NonNull ExploreIconProvider exploreIconProvider) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mActivityTabSupplier = tabSupplier;
         mBookmarkState = bookmarkState;
+        mExploreIconProvider = exploreIconProvider;
     }
 
     /**
@@ -103,8 +106,8 @@ class DropdownItemViewInfoListBuilder {
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
         registerSuggestionProcessor(
                 new TileSuggestionProcessor(context, queryTileSuggestionCallback));
-        registerSuggestionProcessor(
-                new MostVisitedTilesProcessor(context, host, iconBridgeSupplier));
+        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, iconBridgeSupplier,
+                mExploreIconProvider, GlobalDiscardableReferencePool.getReferencePool()));
         registerSuggestionProcessor(new BasicSuggestionProcessor(
                 context, host, textProvider, iconBridgeSupplier, mBookmarkState));
     }
