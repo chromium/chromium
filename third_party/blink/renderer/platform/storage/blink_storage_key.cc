@@ -4,7 +4,7 @@
 
 #include <ostream>
 
-#include "third_party/blink/renderer/modules/storage/blink_storage_key.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
 namespace blink {
 

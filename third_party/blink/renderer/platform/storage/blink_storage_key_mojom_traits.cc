@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/storage/blink_storage_key_mojom_traits.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h"
 
 #include "third_party/blink/renderer/platform/mojo/security_origin_mojom_traits.h"
 

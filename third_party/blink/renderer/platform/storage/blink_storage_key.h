@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_BLINK_STORAGE_KEY_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_BLINK_STORAGE_KEY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_STORAGE_BLINK_STORAGE_KEY_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_STORAGE_BLINK_STORAGE_KEY_H_
 
 #include <iosfwd>
 
-#include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -19,7 +19,7 @@ namespace blink {
 // CachedStorageAreas.
 // It is typemapped to blink.mojom.StorageKey, and should stay in sync with
 // blink::StorageKey (third_party/blink/public/common/storage_key/storage_key.h)
-class COMPONENT_EXPORT(MODULES_STORAGE_BLINK_STORAGE_KEY) BlinkStorageKey {
+class PLATFORM_EXPORT BlinkStorageKey {
   DISALLOW_NEW();
 
  public:
@@ -47,13 +47,13 @@ class COMPONENT_EXPORT(MODULES_STORAGE_BLINK_STORAGE_KEY) BlinkStorageKey {
   scoped_refptr<const SecurityOrigin> origin_;
 };
 
-COMPONENT_EXPORT(MODULES_STORAGE_BLINK_STORAGE_KEY)
+PLATFORM_EXPORT
 bool operator==(const BlinkStorageKey&, const BlinkStorageKey&);
-COMPONENT_EXPORT(MODULES_STORAGE_BLINK_STORAGE_KEY)
+PLATFORM_EXPORT
 bool operator!=(const BlinkStorageKey&, const BlinkStorageKey&);
-COMPONENT_EXPORT(MODULES_STORAGE_BLINK_STORAGE_KEY)
+PLATFORM_EXPORT
 std::ostream& operator<<(std::ostream&, const BlinkStorageKey&);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_BLINK_STORAGE_KEY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_STORAGE_BLINK_STORAGE_KEY_H_

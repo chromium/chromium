@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/storage/blink_storage_key_mojom_traits.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h"
 
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/storage_key/storage_key_mojom_traits.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom-blink.h"
-#include "third_party/blink/renderer/modules/storage/blink_storage_key.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "url/gurl.h"

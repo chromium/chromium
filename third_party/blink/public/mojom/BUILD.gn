@@ -186,6 +186,7 @@ mojom("mojom_platform") {
     "speech/speech_recognizer.mojom",
     "speech/speech_synthesis.mojom",
     "storage_access/storage_access_automation.mojom",
+    "storage_key/storage_key.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
     "timing/worker_timing_container.mojom",
@@ -817,6 +818,15 @@ mojom("android_mojo_bindings") {
         "//device/fido",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.StorageKey"
+          cpp = "::blink::StorageKey"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/storage_key/storage_key_mojom_traits.h" ]
+    },
   ]
 
   blink_cpp_typemaps = [
@@ -829,6 +839,15 @@ mojom("android_mojo_bindings") {
         },
       ]
       traits_headers = [ "//third_party/blink/renderer/platform/blob/serialized_blob_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.StorageKey"
+          cpp = "::blink::BlinkStorageKey"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h" ]
     },
   ]
 
@@ -1047,16 +1066,12 @@ mojom("mojom_core") {
 # to a type in renderer/modules. This also means these interfaces are not
 # available from renderer/platform or renderer/core.
 mojom("mojom_modules") {
-  sources = [
-    "indexeddb/indexeddb.mojom",
-    "storage_key/storage_key.mojom",
-  ]
+  sources = [ "indexeddb/indexeddb.mojom" ]
 
   public_deps = [
     ":android_mojo_bindings",
     ":mojom_core",
     "//mojo/public/mojom/base",
-    "//url/mojom:url_mojom_origin",
   ]
 
   overridden_deps_blink = [
@@ -1125,17 +1140,6 @@ mojom("mojom_modules") {
       ]
       traits_deps = [ "//third_party/blink/renderer/platform/wtf" ]
     },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.StorageKey"
-          cpp = "::blink::BlinkStorageKey"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/renderer/modules/storage/blink_storage_key_mojom_traits.h" ]
-      traits_public_deps =
-          [ "//third_party/blink/renderer/modules/storage:blink_storage_key" ]
-    },
   ]
 
   cpp_typemaps = [
@@ -1184,15 +1188,6 @@ mojom("mojom_modules") {
         "//third_party/blink/public/common/indexeddb/web_idb_types.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/indexeddb/indexed_db_default_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.StorageKey"
-          cpp = "::blink::StorageKey"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/storage_key/storage_key_mojom_traits.h" ]
     },
   ]
 }

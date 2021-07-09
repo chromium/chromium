@@ -27,33 +27,9 @@ blink_modules_sources("storage") {
   ]
 }
 
-component("blink_storage_key") {
-  visibility = [
-    ":*",
-    "//third_party/blink/public/mojom:mojom_modules_blink",
-  ]
-
-  sources = [
-    "blink_storage_key.cc",
-    "blink_storage_key.h",
-    "blink_storage_key_mojom_traits.cc",
-    "blink_storage_key_mojom_traits.h",
-  ]
-
-  defines = [ "IS_MODULES_STORAGE_BLINK_STORAGE_KEY_IMPL" ]
-
-  deps = [
-    "//third_party/blink/public/mojom:mojom_modules_shared",
-    "//third_party/blink/renderer/platform",
-    "//url/mojom:url_mojom_origin",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "blink_storage_key_mojom_traits_test.cc",
-    "blink_storage_key_test.cc",
     "cached_storage_area_test.cc",
     "storage_area_map_test.cc",
     "storage_controller_test.cc",
@@ -70,8 +46,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":blink_storage_key",
-    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
