@@ -56,6 +56,8 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using testing::_;
 using testing::AnyNumber;
@@ -179,8 +181,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
                       false),
         random_generator_(0),
         user_agent_(kUserAgent),
-        proxy_host_port_(kProxyHost, kProxyPort),
-        endpoint_host_port_(kOriginHost, kOriginPort),
+        proxy_endpoint_(url::kHttpsScheme, kProxyHost, kProxyPort),
+        destination_endpoint_(url::kHttpsScheme, kOriginHost, kOriginPort),
         http_auth_cache_(
             false /* key_server_entries_by_network_isolation_key */),
         host_resolver_(new MockCachingHostResolver()),
@@ -283,8 +285,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
 
     writer->set_delegate(session_.get());
 
-    session_handle_ =
-        session_->CreateHandle(HostPortPair("mail.example.org", 80));
+    session_handle_ = session_->CreateHandle(
+        url::SchemeHostPort(url::kHttpsScheme, "mail.example.org", 80));
 
     session_->Initialize();
 
@@ -307,10 +309,16 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
 
     sock_ = std::make_unique<QuicProxyClientSocket>(
         std::move(stream_handle), std::move(session_handle_),
-        ProxyServer(ProxyServer::SCHEME_HTTPS, proxy_host_port_), user_agent_,
-        endpoint_host_port_, net_log_.bound(),
-        new HttpAuthController(HttpAuth::AUTH_PROXY,
-                               GURL("https://" + proxy_host_port_.ToString()),
+        // TODO(crbug.com/1206799) Construct `ProxyServer` with plain
+        // `proxy_endpoint_` once it supports `url::SchemeHostPort`.
+        ProxyServer(ProxyServer::SCHEME_HTTPS,
+                    HostPortPair::FromSchemeHostPort(proxy_endpoint_)),
+        user_agent_,
+        // TODO(crbug.com/1206799) Construct `QuicProxyClientSocket` with plain
+        // `proxy_endpoint_` once it supports `url::SchemeHostPort`.
+        HostPortPair::FromSchemeHostPort(destination_endpoint_),
+        net_log_.bound(),
+        new HttpAuthController(HttpAuth::AUTH_PROXY, proxy_endpoint_.GetURL(),
                                NetworkIsolationKey(), &http_auth_cache_,
                                http_auth_handler_factory_.get(),
                                host_resolver_.get()),
@@ -321,7 +329,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
 
   void PopulateConnectRequestIR(spdy::Http2HeaderBlock* block) {
     (*block)[":method"] = "CONNECT";
-    (*block)[":authority"] = endpoint_host_port_.ToString();
+    (*block)[":authority"] =
+        HostPortPair::FromSchemeHostPort(destination_endpoint_).ToString();
     (*block)["user-agent"] = kUserAgent;
   }
 
@@ -380,7 +389,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
       RequestPriority request_priority = LOWEST) {
     spdy::Http2HeaderBlock block;
     block[":method"] = "CONNECT";
-    block[":authority"] = endpoint_host_port_.ToString();
+    block[":authority"] =
+        HostPortPair::FromSchemeHostPort(destination_endpoint_).ToString();
     for (const auto& header : extra_headers) {
       block[header.first] = header.second;
     }
@@ -625,8 +635,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
 
   std::string user_agent_;
-  HostPortPair proxy_host_port_;
-  HostPortPair endpoint_host_port_;
+  url::SchemeHostPort proxy_endpoint_;
+  url::SchemeHostPort destination_endpoint_;
   HttpAuthCache http_auth_cache_;
   std::unique_ptr<MockHostResolverBase> host_resolver_;
   std::unique_ptr<HttpAuthHandlerRegistryFactory> http_auth_handler_factory_;
@@ -668,7 +678,10 @@ TEST_P(QuicProxyClientSocketTest, ConnectSendsCorrectRequest) {
 
 TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
   proxy_delegate_ = std::make_unique<TestProxyDelegate>();
-  ProxyServer proxy_server(ProxyServer::SCHEME_HTTPS, proxy_host_port_);
+  // TODO(crbug.com/1206799) Construct `ProxyServer` with plain
+  // `proxy_endpoint_` once it supports `url::SchemeHostPort`.
+  ProxyServer proxy_server(ProxyServer::SCHEME_HTTPS,
+                           HostPortPair::FromSchemeHostPort(proxy_endpoint_));
 
   const char kResponseHeaderName[] = "foo";
   const char kResponseHeaderValue[] = "testing";

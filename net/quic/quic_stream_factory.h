@@ -45,6 +45,7 @@
 #include "net/third_party/quiche/src/quic/core/quic_crypto_stream.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quic/core/quic_server_id.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class Value;
@@ -122,7 +123,7 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
   // When |use_dns_aliases| is true, any DNS aliases found in host resolution
   // are stored in the |dns_aliases_by_session_key_| map. |use_dns_aliases|
   // should be false in the case of a proxy.
-  int Request(const HostPortPair& destination,
+  int Request(url::SchemeHostPort destination,
               quic::ParsedQuicVersion quic_version,
               PrivacyMode privacy_mode,
               RequestPriority priority,
@@ -214,15 +215,15 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   class NET_EXPORT_PRIVATE QuicSessionAliasKey {
    public:
     QuicSessionAliasKey() = default;
-    QuicSessionAliasKey(const HostPortPair& destination,
-                        const QuicSessionKey& session_key);
+    QuicSessionAliasKey(url::SchemeHostPort destination,
+                        QuicSessionKey session_key);
     ~QuicSessionAliasKey() = default;
 
     // Needed to be an element of std::set.
     bool operator<(const QuicSessionAliasKey& other) const;
     bool operator==(const QuicSessionAliasKey& other) const;
 
-    const HostPortPair& destination() const { return destination_; }
+    const url::SchemeHostPort& destination() const { return destination_; }
     const quic::QuicServerId& server_id() const {
       return session_key_.server_id();
     }
@@ -231,7 +232,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
     // Returns the estimate of dynamically allocated memory in bytes.
 
    private:
-    HostPortPair destination_;
+    url::SchemeHostPort destination_;
     QuicSessionKey session_key_;
   };
 
@@ -254,7 +255,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // request can be pooled to an existing session to the IP address of
   // |destination|.
   bool CanUseExistingSession(const QuicSessionKey& session_key,
-                             const HostPortPair& destination);
+                             const url::SchemeHostPort& destination);
 
   // Fetches a QuicChromiumClientSession to |host_port_pair| which will be
   // owned by |request|.
@@ -265,7 +266,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // are stored in the |dns_aliases_by_session_key_| map. |use_dns_aliases|
   // should be false in the case of a proxy.
   int Create(const QuicSessionKey& session_key,
-             const HostPortPair& destination,
+             url::SchemeHostPort destination,
              quic::ParsedQuicVersion quic_version,
              RequestPriority priority,
              bool use_dns_aliases,

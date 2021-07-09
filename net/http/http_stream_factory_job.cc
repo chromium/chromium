@@ -852,17 +852,18 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 }
 
 int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
-  HostPortPair destination;
+  url::SchemeHostPort destination;
   SSLConfig* ssl_config;
   GURL url(request_info_.url);
   if (proxy_info_.is_quic()) {
-    // A proxy's certificate is expected to be valid for the proxy hostname.
-    destination = proxy_info_.proxy_server().host_port_pair();
     ssl_config = &proxy_ssl_config_;
     GURL::Replacements replacements;
     replacements.SetSchemeStr(url::kHttpsScheme);
-    replacements.SetHostStr(destination.host());
-    const std::string new_port = base::NumberToString(destination.port());
+    const HostPortPair& proxy_endpoint =
+        proxy_info_.proxy_server().host_port_pair();
+    // A proxy's certificate is expected to be valid for the proxy hostname.
+    replacements.SetHostStr(proxy_endpoint.host());
+    const std::string new_port = base::NumberToString(proxy_endpoint.port());
     replacements.SetPortStr(new_port);
     replacements.ClearUsername();
     replacements.ClearPassword();
@@ -870,17 +871,17 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
     replacements.ClearQuery();
     replacements.ClearRef();
     url = url.ReplaceComponents(replacements);
+    destination = url::SchemeHostPort(url);
   } else {
     DCHECK(using_ssl_);
     // The certificate of a QUIC alternative server is expected to be valid
     // for the origin of the request (in addition to being valid for the
     // server itself).
-    destination = HostPortPair::FromSchemeHostPort(destination_);
+    destination = destination_;
     ssl_config = &server_ssl_config_;
   }
   DCHECK(url.SchemeIs(url::kHttpsScheme));
 
-  // TODO(crbug.com/1206799): Pass scheme to QUIC request.
   int rv = quic_request_.Request(
       std::move(destination), quic_version_, request_info_.privacy_mode,
       priority_, request_info_.socket_tag, request_info_.network_isolation_key,

@@ -70,6 +70,8 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using testing::_;
 
@@ -144,7 +146,7 @@ class QuicChromiumClientSessionTest
                      SocketTag(),
                      NetworkIsolationKey(),
                      SecureDnsPolicy::kAllow),
-        destination_(kServerHostname, kServerPort),
+        destination_(url::kHttpsScheme, kServerHostname, kServerPort),
         default_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
         client_maker_(version_,
                       quic::QuicUtils::CreateRandomConnectionId(&random_),
@@ -308,7 +310,7 @@ class QuicChromiumClientSessionTest
   std::unique_ptr<TransportSecurityState> transport_security_state_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   QuicSessionKey session_key_;
-  HostPortPair destination_;
+  url::SchemeHostPort destination_;
   std::unique_ptr<TestingQuicChromiumClientSession> session_;
   NetworkChangeNotifier::NetworkHandle default_network_;
   std::unique_ptr<QuicConnectivityMonitor> connectivity_monitor_;

@@ -62,6 +62,8 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -463,7 +465,9 @@ class BidirectionalStreamQuicImplTest
                       false),
         random_generator_(0),
         printer_(version_),
-        destination_(kDefaultServerHostName, kDefaultServerPort) {
+        destination_(url::kHttpsScheme,
+                     kDefaultServerHostName,
+                     kDefaultServerPort) {
     quic::QuicEnableVersion(version_);
     FLAGS_quic_enable_http3_grease_randomness = false;
     IPAddress ip(192, 0, 2, 33);
@@ -845,7 +849,7 @@ class BidirectionalStreamQuicImplTest
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   std::unique_ptr<StaticSocketDataProvider> socket_data_;
   std::vector<PacketToWrite> writes_;
-  HostPortPair destination_;
+  url::SchemeHostPort destination_;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
 };
 

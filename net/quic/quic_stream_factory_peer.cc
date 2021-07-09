@@ -17,6 +17,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_client_config.h"
+#include "url/scheme_host_port.h"
 
 using std::string;
 
@@ -53,10 +54,11 @@ bool QuicStreamFactoryPeer::HasActiveJob(QuicStreamFactory* factory,
 QuicChromiumClientSession* QuicStreamFactoryPeer::GetPendingSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
-    const HostPortPair& destination) {
+    url::SchemeHostPort destination) {
   QuicSessionKey session_key(server_id, SocketTag(), NetworkIsolationKey(),
                              SecureDnsPolicy::kAllow);
-  QuicStreamFactory::QuicSessionAliasKey key(destination, session_key);
+  QuicStreamFactory::QuicSessionAliasKey key(std::move(destination),
+                                             session_key);
   DCHECK(factory->HasActiveJob(session_key));
   DCHECK_EQ(factory->all_sessions_.size(), 1u);
   DCHECK(key == factory->all_sessions_.begin()->second);
@@ -75,12 +77,12 @@ QuicChromiumClientSession* QuicStreamFactoryPeer::GetActiveSession(
 
 bool QuicStreamFactoryPeer::HasLiveSession(
     QuicStreamFactory* factory,
-    const HostPortPair& destination,
+    url::SchemeHostPort destination,
     const quic::QuicServerId& server_id) {
   QuicSessionKey session_key = QuicSessionKey(
       server_id, SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
-  QuicStreamFactory::QuicSessionAliasKey alias_key =
-      QuicStreamFactory::QuicSessionAliasKey(destination, session_key);
+  QuicStreamFactory::QuicSessionAliasKey alias_key(std::move(destination),
+                                                   session_key);
   for (auto it = factory->all_sessions_.begin();
        it != factory->all_sessions_.end(); ++it) {
     if (it->second == alias_key)

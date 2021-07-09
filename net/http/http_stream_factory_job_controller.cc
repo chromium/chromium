@@ -1098,9 +1098,8 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     }
     RewriteUrlWithHostMappingRules(destination);
 
-    // TODO(crbug.com/1206799): Pass scheme to CanUseExistingSession().
     if (session_->quic_stream_factory()->CanUseExistingSession(
-            session_key, HostPortPair::FromURL(destination)))
+            session_key, url::SchemeHostPort(destination)))
       return alternative_service_info;
 
     if (!IsQuicAllowedForHost(destination.host()))

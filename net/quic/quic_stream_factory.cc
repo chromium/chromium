@@ -72,6 +72,7 @@
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
 using NetworkHandle = net::NetworkChangeNotifier::NetworkHandle;
@@ -973,7 +974,7 @@ QuicStreamRequest::~QuicStreamRequest() {
 }
 
 int QuicStreamRequest::Request(
-    const HostPortPair& destination,
+    url::SchemeHostPort destination,
     quic::ParsedQuicVersion quic_version,
     PrivacyMode privacy_mode,
     RequestPriority priority,
@@ -1000,9 +1001,9 @@ int QuicStreamRequest::Request(
       QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
                      network_isolation_key, secure_dns_policy);
 
-  int rv =
-      factory_->Create(session_key_, destination, quic_version, priority,
-                       use_dns_aliases, cert_verify_flags, url, net_log, this);
+  int rv = factory_->Create(session_key_, std::move(destination), quic_version,
+                            priority, use_dns_aliases, cert_verify_flags, url,
+                            net_log, this);
   if (rv == ERR_IO_PENDING) {
     net_log_ = net_log;
     callback_ = std::move(callback);
@@ -1071,9 +1072,10 @@ void QuicStreamRequest::SetSession(
 }
 
 QuicStreamFactory::QuicSessionAliasKey::QuicSessionAliasKey(
-    const HostPortPair& destination,
-    const QuicSessionKey& session_key)
-    : destination_(destination), session_key_(session_key) {}
+    url::SchemeHostPort destination,
+    QuicSessionKey session_key)
+    : destination_(std::move(destination)),
+      session_key_(std::move(session_key)) {}
 
 bool QuicStreamFactory::QuicSessionAliasKey::operator<(
     const QuicSessionAliasKey& other) const {
@@ -1083,7 +1085,7 @@ bool QuicStreamFactory::QuicSessionAliasKey::operator<(
 
 bool QuicStreamFactory::QuicSessionAliasKey::operator==(
     const QuicSessionAliasKey& other) const {
-  return destination_.Equals(other.destination_) &&
+  return destination_ == other.destination_ &&
          session_key_ == other.session_key_;
 }
 
@@ -1172,14 +1174,15 @@ QuicStreamFactory::~QuicStreamFactory() {
   }
 }
 
-bool QuicStreamFactory::CanUseExistingSession(const QuicSessionKey& session_key,
-                                              const HostPortPair& destination) {
+bool QuicStreamFactory::CanUseExistingSession(
+    const QuicSessionKey& session_key,
+    const url::SchemeHostPort& destination) {
   if (base::Contains(active_sessions_, session_key))
     return true;
 
   for (const auto& key_value : active_sessions_) {
     QuicChromiumClientSession* session = key_value.second;
-    if (destination.Equals(all_sessions_[session].destination()) &&
+    if (destination == all_sessions_[session].destination() &&
         session->CanPool(session_key.host(), session_key)) {
       return true;
     }
@@ -1189,7 +1192,7 @@ bool QuicStreamFactory::CanUseExistingSession(const QuicSessionKey& session_key,
 }
 
 int QuicStreamFactory::Create(const QuicSessionKey& session_key,
-                              const HostPortPair& destination,
+                              url::SchemeHostPort destination,
                               quic::ParsedQuicVersion quic_version,
                               RequestPriority priority,
                               bool use_dns_aliases,
@@ -1212,7 +1215,7 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
     if (!promised)
       continue;
     DCHECK_EQ(promised->session(), session.second);
-    request->SetSession(session.second->CreateHandle(destination));
+    request->SetSession(session.second->CreateHandle(std::move(destination)));
     ++num_push_streams_created_;
     return OK;
   }
@@ -1221,7 +1224,7 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
   auto active_session = active_sessions_.find(session_key);
   if (active_session != active_sessions_.end()) {
     QuicChromiumClientSession* session = active_session->second;
-    request->SetSession(session->CreateHandle(destination));
+    request->SetSession(session->CreateHandle(std::move(destination)));
     return OK;
   }
 
@@ -1243,9 +1246,9 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
   if (!active_sessions_.empty()) {
     for (const auto& key_value : active_sessions_) {
       QuicChromiumClientSession* session = key_value.second;
-      if (destination.Equals(all_sessions_[session].destination()) &&
+      if (destination == all_sessions_[session].destination() &&
           session->CanPool(session_key.server_id().host(), session_key)) {
-        request->SetSession(session->CreateHandle(destination));
+        request->SetSession(session->CreateHandle(std::move(destination)));
         return OK;
       }
     }
@@ -1280,7 +1283,7 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
     if (it == active_sessions_.end())
       return ERR_QUIC_PROTOCOL_ERROR;
     QuicChromiumClientSession* session = it->second;
-    request->SetSession(session->CreateHandle(destination));
+    request->SetSession(session->CreateHandle(std::move(destination)));
   }
   return rv;
 }

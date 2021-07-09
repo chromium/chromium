@@ -41,6 +41,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -688,8 +689,12 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   quic::ParsedQuicVersion quic_version =
       common_connect_job_params()->quic_supported_versions->front();
   return quic_stream_request_->Request(
-      proxy_server, quic_version, ssl_params->privacy_mode(),
-      kH2QuicTunnelPriority, socket_tag(), params_->network_isolation_key(),
+      // TODO(crbug.com/1206799) Pass the destination directly once it's
+      // converted to contain scheme.
+      url::SchemeHostPort(url::kHttpsScheme, proxy_server.host(),
+                          proxy_server.port()),
+      quic_version, ssl_params->privacy_mode(), kH2QuicTunnelPriority,
+      socket_tag(), params_->network_isolation_key(),
       ssl_params->GetDirectConnectionParams()->secure_dns_policy(),
       /*use_dns_aliases=*/false, ssl_params->ssl_config().GetCertVerifyFlags(),
       GURL("https://" + proxy_server.ToString()), net_log(),
