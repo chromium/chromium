@@ -35,6 +35,13 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
   // ShelfSpinnerItemController:
   void SetHost(const base::WeakPtr<ShelfSpinnerController>& host) override;
 
+  // ash::ShelfItemDelegate overrides:
+  void ItemSelected(std::unique_ptr<ui::Event> event,
+                    int64_t display_id,
+                    ash::ShelfLaunchSource source,
+                    ItemSelectedCallback callback,
+                    const ItemFilterPredicate& filter_predicate) override;
+
   // ArcAppListPrefs::Observer:
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;

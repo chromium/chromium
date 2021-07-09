@@ -67,6 +67,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   void OnAppConnectionReady();
 
+  void LaunchApp(const std::string& app_id);
+
  private:
   friend ArcAppLaunchHandlerArcAppBrowserTest;
 
@@ -94,8 +96,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   void LaunchApp(const std::string& app_id, int32_t window_id);
 
-  // Invoked when the app of the given `app_id` is removed.
-  void RemoveApp(const std::string& app_id);
+  // Removes windows related with `app_id`.
+  void RemoveWindowsForApp(const std::string& app_id);
 
   // Returns [0, 100] as percentage of device CPU usage rate.
   int GetCpuUsageRate();

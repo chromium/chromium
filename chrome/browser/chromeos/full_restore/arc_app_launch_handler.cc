@@ -83,7 +83,7 @@ void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
     return;
 
   if (!apps_util::IsInstalled(update.Readiness())) {
-    RemoveApp(update.AppId());
+    RemoveWindowsForApp(update.AppId());
     return;
   }
 
@@ -120,6 +120,26 @@ void ArcAppLaunchHandler::OnAppConnectionReady() {
   }
 
   StartCpuUsageCount();
+}
+
+void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
+  if (!IsAppReady(app_id))
+    return;
+
+  DCHECK(handler_);
+  const auto it = handler_->restore_data_->app_id_to_launch_list().find(app_id);
+  if (it == handler_->restore_data_->app_id_to_launch_list().end())
+    return;
+
+  if (it->second.empty()) {
+    handler_->restore_data_->RemoveApp(app_id);
+    return;
+  }
+
+  for (const auto& data_it : it->second)
+    LaunchApp(app_id, data_it.first);
+
+  RemoveWindowsForApp(app_id);
 }
 
 void ArcAppLaunchHandler::LoadRestoreData() {
@@ -293,7 +313,7 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
   }
 }
 
-void ArcAppLaunchHandler::RemoveApp(const std::string& app_id) {
+void ArcAppLaunchHandler::RemoveWindowsForApp(const std::string& app_id) {
   app_ids_.erase(app_id);
   std::vector<int32_t> window_stacks;
   for (auto& it : windows_) {
