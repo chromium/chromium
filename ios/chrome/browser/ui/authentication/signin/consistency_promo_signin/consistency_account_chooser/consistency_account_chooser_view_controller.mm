@@ -70,11 +70,8 @@
 
 - (ConsistencyAccountChooserTableViewController*)tableViewController {
   if (!_tableViewController) {
-    UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                                 ? ChromeTableViewStyle()
-                                 : UITableViewStylePlain;
     _tableViewController = [[ConsistencyAccountChooserTableViewController alloc]
-        initWithStyle:style];
+        initWithStyle:UITableViewStyleInsetGrouped];
   }
   return _tableViewController;
 }
