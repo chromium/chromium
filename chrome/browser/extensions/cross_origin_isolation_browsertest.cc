@@ -21,6 +21,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
@@ -40,6 +41,12 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
   ~CrossOriginIsolationTest() override = default;
   CrossOriginIsolationTest(const CrossOriginIsolationTest&) = delete;
   CrossOriginIsolationTest& operator=(const CrossOriginIsolationTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
 
   const Extension* LoadExtension(TestExtensionDir& dir,
                                  const char* coep_value,
@@ -62,7 +69,8 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
         "web_accessible_resources": ["test.html"],
         "browser_action": {
           "default_title": "foo"
-        }
+        },
+        "permissions": ["http://foo.test:*/*"]
       }
     )";
 
@@ -141,8 +149,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, CrossOriginIsolation) {
 // Tests that a web accessible frame from a cross origin isolated extension is
 // not cross origin isolated.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   RestrictProcessCount();
 
   TestExtensionDir coi_test_dir;
@@ -217,6 +223,35 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
                   coi_extension, extension_iframe->GetProcess()->GetID(), url));
   }
 
+  // Ensure both cross-origin-isolated and non-cross-origin-isolated extension
+  // contexts inherit extension's cross-origin privileges.
+  {
+    auto execute_fetch = [](content::RenderFrameHost* host, const GURL& url) {
+      const char* kScript = R"(
+        fetch('%s')
+          .then(response => response.text())
+          .then(text => window.domAutomationController.send(text))
+          .catch(err => window.domAutomationController.send(
+            "Fetch error: " + err));
+      )";
+      std::string script = base::StringPrintf(kScript, url.spec().c_str());
+      std::string result;
+      if (!content::ExecuteScriptAndExtractString(host, script, &result))
+        return std::string("Error executing script");
+      return result;
+    };
+    // Sanity check that fetching a url the extension doesn't have access to,
+    // leads to a fetch error.
+    const char* kPath = "/extensions/test_file.txt";
+    GURL disallowed_url = embedded_test_server()->GetURL("bar.test", kPath);
+    EXPECT_THAT(execute_fetch(coi_background_rfh, disallowed_url),
+                ::testing::HasSubstr("Fetch error:"));
+
+    GURL allowed_url = embedded_test_server()->GetURL("foo.test", kPath);
+    EXPECT_EQ("Hello!", execute_fetch(coi_background_rfh, allowed_url));
+    EXPECT_EQ("Hello!", execute_fetch(extension_iframe, allowed_url));
+  }
+
   // Finally make some extension API calls to ensure both cross-origin-isolated
   // and non-cross-origin-isolated extension contexts are considered "blessed".
   {
@@ -246,8 +281,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
 // Test that an extension service worker for a cross origin isolated extension
 // is not cross origin isolated. See crbug.com/1131404.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   RestrictProcessCount();
 
   constexpr char kServiceWorkerScript[] = R"(
@@ -311,8 +344,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
 // isolated contexts.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        WebAccessibleFrame_WindowApis) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   TestExtensionDir coi_test_dir;
   const Extension* coi_extension =
       LoadExtension(coi_test_dir, "require-corp", "same-origin");
@@ -396,8 +427,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 // Tests extension messaging between cross origin isolated and
 // non-cross-origin-isolated frames of an extension.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   RestrictProcessCount();
 
   constexpr char kTestJs[] = R"(
@@ -487,8 +516,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
 // a different process).
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        ExtensionMessaging_ServiceWorker) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   RestrictProcessCount();
 
   constexpr char kTestJs[] = R"(
