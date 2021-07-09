@@ -1686,4 +1686,44 @@ TEST_F(AudioRendererImplTest, HighLatencyHint) {
   EXPECT_EQ(buffer_playback_threshold().value, high_latency_playback_threshold);
 }
 
+TEST_F(AudioRendererImplTest, PlayUnmuted) {
+  // Setting the volume to a non-zero value does not count as unmuted until the
+  // audio is played.
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 0);
+  renderer_->SetVolume(1);
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 0);
+
+  Initialize();
+  Preroll();
+  StartTicking();
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
+}
+
+TEST_F(AudioRendererImplTest, UnmuteWhilePlaying) {
+  ConfigureWithMockSink(hardware_params_);
+  EXPECT_CALL(*mock_sink_, SetVolume(0));
+  renderer_->SetVolume(0);
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 0);
+
+  EXPECT_CALL(*mock_sink_, Start());
+  EXPECT_CALL(*mock_sink_, Play());
+  Initialize();
+  Preroll();
+  StartTicking();
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 0);
+
+  EXPECT_CALL(*mock_sink_, SetVolume(1));
+  renderer_->SetVolume(1);
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
+
+  // Muting should pause the sink.
+  EXPECT_CALL(*mock_sink_, SetVolume(0));
+  EXPECT_CALL(*mock_sink_, Pause());
+  renderer_->SetVolume(0);
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
+
+  StopTicking();
+  EXPECT_CALL(*mock_sink_, Stop());
+}
+
 }  // namespace media

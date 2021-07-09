@@ -136,7 +136,7 @@ void AudioRendererImpl::StartRendering_Locked() {
   lock_.AssertAcquired();
 
   sink_playing_ = true;
-
+  was_unmuted_ = was_unmuted_ || volume_ != 0;
   base::AutoUnlock auto_unlock(lock_);
   if (volume_ || !null_sink_)
     sink_->Play();
@@ -731,7 +731,13 @@ void AudioRendererImpl::OnWaiting(WaitingReason reason) {
 
 void AudioRendererImpl::SetVolume(float volume) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  was_unmuted_ = was_unmuted_ || volume != 0;
+
+  // Only consider audio as unmuted if the volume is set to a non-zero value
+  // when the state is kPlaying.
+  if (state_ == kPlaying) {
+    was_unmuted_ = was_unmuted_ || volume != 0;
+  }
+
   if (state_ == kUninitialized || state_ == kInitializing) {
     volume_ = volume;
     return;

@@ -108,6 +108,7 @@ class MEDIA_EXPORT AudioRendererImpl
   void OnResume() override;
 
   void SetPlayDelayCBForTesting(PlayDelayCBForTesting cb);
+  bool was_unmuted_for_testing() const { return was_unmuted_; }
 
  private:
   friend class AudioRendererImplTest;
