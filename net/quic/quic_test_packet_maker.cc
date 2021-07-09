@@ -1214,7 +1214,7 @@ QuicTestPacketMaker::MakeStatelessResetPacket() {
 void QuicTestPacketMaker::RemoveSavedStreamFrames(
     quic::QuicStreamId stream_id) {
   for (auto& kv : saved_frames_) {
-    auto it = kv.second.begin();
+    auto* it = kv.second.begin();
     while (it != kv.second.end()) {
       if (it->type == quic::STREAM_FRAME &&
           it->stream_frame.stream_id == stream_id) {
