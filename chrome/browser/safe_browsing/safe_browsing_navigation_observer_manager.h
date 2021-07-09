@@ -179,6 +179,7 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   static void SanitizeReferrerChain(ReferrerChain* referrer_chain);
 
   explicit SafeBrowsingNavigationObserverManager(PrefService* pref_service);
+  ~SafeBrowsingNavigationObserverManager() override;
 
   // Adds |nav_event| to |navigation_event_list_|. Object pointed to by
   // |nav_event| will be no longer accessible after this function.
@@ -292,8 +293,6 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   typedef std::unordered_map<content::WebContents*, base::Time> UserGestureMap;
   typedef std::unordered_map<std::string, std::vector<ResolvedIPAddress>>
       HostToIpMap;
-
-  ~SafeBrowsingNavigationObserverManager() override;
 
   NavigationEventList* navigation_event_list() {
     return &navigation_event_list_;

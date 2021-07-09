@@ -7,43 +7,46 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace safe_browsing {
 
-class SBNavigationObserverTest : public BrowserWithTestWindowTest {
+class SBNavigationObserverTest : public ChromeRenderViewHostTestHarness {
  public:
   SBNavigationObserverTest() {}
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    AddTab(browser(), GURL("http://foo/0"));
-    Profile* profile = Profile::FromBrowserContext(
-        browser()->tab_strip_model()->GetWebContentsAt(0)->GetBrowserContext());
+    ChromeRenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL("http://foo/0"));
+
+    HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
+    settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
+        &pref_service_, false /* is_off_the_record */,
+        false /* store_last_modified */, false /* restore_session*/);
+
     navigation_observer_manager_ =
-        SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
-            profile);
-    navigation_observer_ = new SafeBrowsingNavigationObserver(
-        browser()->tab_strip_model()->GetWebContentsAt(0),
-        HostContentSettingsMapFactory::GetForProfile(profile),
-        navigation_observer_manager_);
+        std::make_unique<SafeBrowsingNavigationObserverManager>(&pref_service_);
+
+    navigation_observer_ =
+        new SafeBrowsingNavigationObserver(web_contents(), settings_map_.get(),
+                                           navigation_observer_manager_.get());
   }
   void TearDown() override {
     delete navigation_observer_;
-    BrowserWithTestWindowTest::TearDown();
+    settings_map_->ShutdownOnUIThread();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
   void VerifyNavigationEvent(
       const GURL& expected_source_url,
@@ -110,7 +113,10 @@ class SBNavigationObserverTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  SafeBrowsingNavigationObserverManager* navigation_observer_manager_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  scoped_refptr<HostContentSettingsMap> settings_map_;
+  std::unique_ptr<SafeBrowsingNavigationObserverManager>
+      navigation_observer_manager_;
   SafeBrowsingNavigationObserver* navigation_observer_;
 
  private:
@@ -165,13 +171,8 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
 
 TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
   // Navigation in current tab.
-  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
-  browser()->OpenURL(
-      content::OpenURLParams(GURL("http://foo/1"), content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_AUTO_BOOKMARK, false));
-  CommitPendingLoad(&web_contents->GetController());
-  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
+  NavigateAndCommit(GURL("http://foo/1"), ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
   auto* nav_list = navigation_event_list();
   ASSERT_EQ(1U, nav_list->NavigationEventsSize());
   VerifyNavigationEvent(GURL(),                // source_url
@@ -188,11 +189,9 @@ TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
 
 TEST_F(SBNavigationObserverTest, ServerRedirect) {
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("http://foo/3"),
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+      GURL("http://foo/3"), web_contents()->GetMainFrame());
   auto* nav_list = navigation_event_list();
-  SessionID tab_id = sessions::SessionTabHelper::IdForTab(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
 
   navigation->Start();
   ASSERT_EQ(1U, nav_list->PendingNavigationEventsSize());
@@ -261,10 +260,8 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
       base::Time::FromDoubleT(now.ToDoubleT() + 60.0 * 60.0);  // Invalid
   GURL url_0("http://foo/0");
   GURL url_1("http://foo/1");
-  content::MockNavigationHandle handle_0(
-      url_0, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
-  content::MockNavigationHandle handle_1(
-      url_1, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
+  content::MockNavigationHandle handle_0(url_0, web_contents()->GetMainFrame());
+  content::MockNavigationHandle handle_1(url_1, web_contents()->GetMainFrame());
   navigation_event_list()->RecordNavigationEvent(
       CreateNavigationEventUniquePtr(url_0, in_an_hour));
   navigation_event_list()->RecordNavigationEvent(
@@ -305,17 +302,16 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleUserGestures) {
       base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 3);  // Stale
   base::Time in_an_hour =
       base::Time::FromDoubleT(now.ToDoubleT() + 60.0 * 60.0);  // Invalid
-  AddTab(browser(), GURL("http://foo/1"));
-  AddTab(browser(), GURL("http://foo/2"));
-  content::WebContents* content0 =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
-  content::WebContents* content1 =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  content::WebContents* content2 =
-      browser()->tab_strip_model()->GetWebContentsAt(2);
+  content::WebContents* content0 = web_contents();
+  auto content1 = CreateTestWebContents();
+  content::WebContentsTester::For(content1.get())
+      ->NavigateAndCommit(GURL("http://foo/1"));
+  auto content2 = CreateTestWebContents();
+  content::WebContentsTester::For(content2.get())
+      ->NavigateAndCommit(GURL("http://foo/2"));
   user_gesture_map()->insert(std::make_pair(content0, now));
-  user_gesture_map()->insert(std::make_pair(content1, three_minutes_ago));
-  user_gesture_map()->insert(std::make_pair(content2, in_an_hour));
+  user_gesture_map()->insert(std::make_pair(content1.get(), three_minutes_ago));
+  user_gesture_map()->insert(std::make_pair(content2.get(), in_an_hour));
   ASSERT_EQ(3U, user_gesture_map()->size());
 
   // Cleans up user_gesture_map()
@@ -398,8 +394,7 @@ TEST_F(SBNavigationObserverTest, TestContentSettingChange) {
   user_gesture_map()->clear();
   ASSERT_EQ(0U, user_gesture_map()->size());
 
-  content::WebContents* web_content =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+  content::WebContents* web_content = web_contents();
 
   // Simulate content setting change via page info UI.
   navigation_observer_->OnContentSettingChanged(
@@ -590,12 +585,9 @@ TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
   base::Time one_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 60.0);
   base::Time two_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 120.0);
   GURL url("http://foo/0");
-  content::MockNavigationHandle handle_0(
-      url, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
-  content::MockNavigationHandle handle_1(
-      url, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
-  content::MockNavigationHandle handle_2(
-      url, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
+  content::MockNavigationHandle handle_0(url, web_contents()->GetMainFrame());
+  content::MockNavigationHandle handle_1(url, web_contents()->GetMainFrame());
+  content::MockNavigationHandle handle_2(url, web_contents()->GetMainFrame());
   navigation_event_list()->RecordPendingNavigationEvent(
       &handle_0, CreateNavigationEventUniquePtr(url, one_minute_ago));
   navigation_event_list()->RecordPendingNavigationEvent(
