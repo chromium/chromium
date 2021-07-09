@@ -4,13 +4,16 @@
 
 #include "chrome/browser/printing/print_backend_service_manager.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -18,9 +21,11 @@
 #include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#include "components/crash/core/common/crash_keys.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "printing/backend/print_backend.h"
 
 namespace printing {
 
@@ -249,6 +254,18 @@ void PrintBackendServiceManager::FetchCapabilities(
 
   SaveCallback(GetRemoteSavedFetchCapabilitiesCallbacks(is_sandboxed_service_),
                remote_id, saved_callback_id, std::move(callback));
+
+  if (!sandboxed_service_remote_for_test_) {
+    // TODO(1227561)  Remove local call for driver info, don't want any
+    // residual accesses left into the printer drivers from the browser
+    // process.
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    scoped_refptr<PrintBackend> print_backend =
+        PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
+    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+        print_backend->GetPrinterDriverInfo(printer_name));
+  }
 
   DVLOG(1) << "Sending FetchCapabilities on remote `" << remote_id
            << "`, saved callback ID of " << saved_callback_id;

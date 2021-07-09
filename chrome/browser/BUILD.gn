@@ -5675,7 +5675,10 @@ static_library("browser") {
         "printing/print_backend_service_manager.cc",
         "printing/print_backend_service_manager.h",
       ]
-      deps += [ "//chrome/services/printing/public/mojom" ]
+      deps += [
+        "//chrome/services/printing/public/mojom",
+        "//components/crash/core/common",
+      ]
     }
     if (is_win || enable_print_preview) {
       deps += [ "//chrome/services/printing/public/mojom" ]

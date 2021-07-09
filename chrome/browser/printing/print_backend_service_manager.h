@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINT_BACKEND_SERVICE_MANAGER_H_
 #define CHROME_BROWSER_PRINTING_PRINT_BACKEND_SERVICE_MANAGER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -13,6 +14,10 @@
 #include "base/unguessable_token.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace crash_keys {
+class ScopedPrinterInfo;
+}
 
 namespace printing {
 
@@ -209,6 +214,11 @@ class PrintBackendServiceManager {
   // that (and thus fail with access denied errors) then we need to fallback to
   // performing the operation with modified restrictions.
   base::flat_set<std::string> drivers_requiring_elevated_privilege_;
+
+  // Crash key is kept at class level so that we can obtain printer driver
+  // information for a prior call should the process be terminated due to Mojo
+  // message response validation.
+  std::unique_ptr<crash_keys::ScopedPrinterInfo> crash_keys_;
 
   // Override of service to use for testing.
   mojo::Remote<printing::mojom::PrintBackendService>*
