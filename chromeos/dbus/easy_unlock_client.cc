@@ -45,6 +45,8 @@ void AppendStringAsByteArray(const std::string& data,
 class EasyUnlockClientImpl : public EasyUnlockClient {
  public:
   EasyUnlockClientImpl() : proxy_(nullptr) {}
+  EasyUnlockClientImpl(const EasyUnlockClientImpl&) = delete;
+  EasyUnlockClientImpl& operator=(const EasyUnlockClientImpl&) = delete;
 
   ~EasyUnlockClientImpl() override = default;
 
@@ -180,8 +182,6 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<EasyUnlockClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockClientImpl);
 };
 
 }  // namespace

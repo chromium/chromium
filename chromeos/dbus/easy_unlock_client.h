@@ -42,6 +42,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) EasyUnlockClient : public DBusClient {
   // Parameters used to create a secure message.
   struct CreateSecureMessageOptions {
     CreateSecureMessageOptions();
+    CreateSecureMessageOptions(const CreateSecureMessageOptions&) = delete;
+    CreateSecureMessageOptions& operator=(const CreateSecureMessageOptions&) =
+        delete;
+
     ~CreateSecureMessageOptions();
 
     // The key used to sign, and if needed, encrypt the message. If encryption
@@ -70,14 +74,15 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) EasyUnlockClient : public DBusClient {
 
     // The algorithm to use to sign the message.
     std::string signature_type;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CreateSecureMessageOptions);
   };
 
   // Parameters used to unwrap a securemessage.
   struct UnwrapSecureMessageOptions {
     UnwrapSecureMessageOptions();
+    UnwrapSecureMessageOptions(const UnwrapSecureMessageOptions&) = delete;
+    UnwrapSecureMessageOptions& operator=(const UnwrapSecureMessageOptions&) =
+        delete;
+
     ~UnwrapSecureMessageOptions();
 
     // The key used to authenticate message signature and, if needed, decrypt
@@ -93,9 +98,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) EasyUnlockClient : public DBusClient {
 
     // The algorithm that should be used to verify the message signature.
     std::string signature_type;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UnwrapSecureMessageOptions);
   };
 
   // Generates ECDSA key pair using P256 curve.
@@ -148,9 +150,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) EasyUnlockClient : public DBusClient {
  protected:
   // Create() should be used instead.
   EasyUnlockClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockClient);
+  EasyUnlockClient(const EasyUnlockClient&) = delete;
+  EasyUnlockClient& operator=(const EasyUnlockClient&) = delete;
 };
 
 }  // namespace chromeos
