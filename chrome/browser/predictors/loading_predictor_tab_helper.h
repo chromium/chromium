@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/render_document_host_user_data.h"
@@ -27,7 +27,7 @@ class OptimizationMetadata;
 }  // namespace optimization_guide
 
 namespace predictors {
-using NavigationId = util::IdType64<content::NavigationHandle>;
+using NavigationId = base::IdType64<content::NavigationHandle>;
 
 class LoadingPredictor;
 

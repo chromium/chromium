@@ -4,10 +4,10 @@
 
 #include <limits>
 
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace base {
 
 namespace {
 
@@ -110,4 +110,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            123,
                                            std::numeric_limits<int>::max()));
 
-}  // namespace util
+}  // namespace base

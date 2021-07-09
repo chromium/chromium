@@ -20,7 +20,7 @@ namespace device {
 // be passed over mojo. The Ids should be directly exposable from blink if
 // desired.
 // Note that IdType must be constructable from a uint64_t, and should most often
-// be a util::IdTypeU64 type.
+// be a base::IdTypeU64 type.
 template <typename IdType>
 class AddressToIdMap {
  public:

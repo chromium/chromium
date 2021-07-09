@@ -44,8 +44,8 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
+#include "base/types/id_type.h"
 #include "base/types/pass_key.h"
-#include "base/util/type_safety/id_type.h"
 
 namespace performance_manager {
 namespace voting {
@@ -83,7 +83,7 @@ class Vote final {
 
 // Identifies a VotingChannel.
 template <typename VoteImpl>
-using VoterId = util::IdTypeU32<VoteImpl>;
+using VoterId = base::IdTypeU32<VoteImpl>;
 
 template <class VoteImpl>
 class VoteObserver {

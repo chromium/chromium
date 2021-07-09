@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/type_safety/token_type.h"
+#include "base/types/token_type.h"
 
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace base {
 
 using FooToken = TokenType<class Foo>;
 
@@ -37,11 +37,10 @@ TEST(TokenType, TokenApi) {
   EXPECT_TRUE(token1 != token4);
 
   // Test hasher.
-  EXPECT_EQ(FooToken::Hasher()(token2),
-            base::UnguessableTokenHash()(token2.value()));
+  EXPECT_EQ(FooToken::Hasher()(token2), UnguessableTokenHash()(token2.value()));
 
   // Test string representation.
   EXPECT_EQ(token2.ToString(), token2.value().ToString());
 }
 
-}  // namespace util
+}  // namespace base

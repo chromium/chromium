@@ -10,7 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "base/values.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/enums.h"
@@ -28,10 +28,10 @@ using ::feed::WebFeedSubscriptionStatus;
 
 // Uniquely identifies a revision of a |feedstore::Content|. If Content changes,
 // it is assigned a new revision number.
-using ContentRevision = util::IdTypeU32<class ContentRevisionClass>;
+using ContentRevision = base::IdTypeU32<class ContentRevisionClass>;
 
 // ID for a stored pending action.
-using LocalActionId = util::IdType32<class LocalActionIdClass>;
+using LocalActionId = base::IdType32<class LocalActionIdClass>;
 
 std::string ToString(ContentRevision c);
 ContentRevision ToContentRevision(const std::string& str);

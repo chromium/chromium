@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/types.h"
@@ -19,7 +19,7 @@ namespace feed {
 namespace stream_model {
 
 // Uniquely identifies a feedwire::ContentId. Provided by |ContentMap|.
-using ContentTag = util::IdTypeU32<class ContentTagClass>;
+using ContentTag = base::IdTypeU32<class ContentTagClass>;
 using ContentRevision = feed::ContentRevision;
 
 // Owns instances of feedstore::Content pointed to by the feature tree, and

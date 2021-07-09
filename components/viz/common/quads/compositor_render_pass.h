@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/hash/hash.h"
 #include "base/macros.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "cc/base/list_container.h"
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -43,7 +43,7 @@ class DrawQuad;
 class CompositorRenderPass;
 class CompositorRenderPassDrawQuad;
 
-using CompositorRenderPassId = util::IdTypeU64<CompositorRenderPass>;
+using CompositorRenderPassId = base::IdTypeU64<CompositorRenderPass>;
 
 // This class represents a render pass that is submitted from the UI or renderer
 // compositor to viz. It is mojo-serializable and typically has a unique

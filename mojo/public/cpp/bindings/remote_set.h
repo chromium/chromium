@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,7 +27,7 @@ namespace internal {
 struct RemoteSetElementIdTypeTag {};
 }  // namespace internal
 
-using RemoteSetElementId = util::IdTypeU32<internal::RemoteSetElementIdTypeTag>;
+using RemoteSetElementId = base::IdTypeU32<internal::RemoteSetElementIdTypeTag>;
 
 // Shared implementation of a set of remotes, used by both RemoteSet and
 // AssociatedRemoteSet aliases (see below).

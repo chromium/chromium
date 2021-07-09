@@ -236,7 +236,6 @@ component("bindings") {
     ":bindings_base",
     ":struct_traits",
     "//base",
-    "//base/util/type_safety",
     "//ipc:message_support",
     "//ipc:param_traits",
     "//mojo/public/cpp/system",

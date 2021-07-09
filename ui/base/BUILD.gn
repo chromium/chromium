@@ -442,10 +442,10 @@ component("base") {
 
   deps = [
     ":locales_list",
+    "//base",
     "//base:base_static",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
-    "//base/util/type_safety:type_safety",
     "//build:chromeos_buildflags",
     "//net",
     "//third_party/brotli:dec",

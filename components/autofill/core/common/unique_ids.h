@@ -9,15 +9,15 @@
 #include <limits>
 #include <ostream>
 
+#include "base/types/id_type.h"
 #include "base/unguessable_token.h"
-#include "base/util/type_safety/id_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
 namespace internal {
 
-// TokenType wraps an base::UnguessableToken just like util::TokenType but
+// TokenType wraps an base::UnguessableToken just like base::TokenType but
 // initializes to zero by default. We use it to define our own versions of
 // LocalFrameToken and RemoteFrameToken to avoid dependencies on blink here and
 // in the mojo code, since iOS depends on this code.
@@ -54,8 +54,8 @@ using FrameToken = absl::variant<RemoteFrameToken, LocalFrameToken>;
 
 namespace internal {
 
-using FormRendererIdType = ::util::IdTypeU32<class FormRendererIdMarker>;
-using FieldRendererIdType = ::util::IdTypeU32<class FieldRendererIdMarker>;
+using FormRendererIdType = ::base::IdTypeU32<class FormRendererIdMarker>;
+using FieldRendererIdType = ::base::IdTypeU32<class FieldRendererIdMarker>;
 
 }  // namespace internal
 

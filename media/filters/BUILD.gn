@@ -84,7 +84,7 @@ source_set("filters") {
   ]
 
   deps = [
-    "//base/util/type_safety:type_safety",
+    "//base",
     "//build:chromeos_buildflags",
     "//cc/base",  # For MathUtil.
     "//media:media_buildflags",

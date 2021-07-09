@@ -14,8 +14,8 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "base/types/id_type.h"
 #include "base/unguessable_token.h"
-#include "base/util/type_safety/id_type.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -1029,8 +1029,8 @@ struct FuzzTraits<gfx::Vector2dF> {
 };
 
 template <typename TypeMarker, typename WrappedType, WrappedType kInvalidValue>
-struct FuzzTraits<util::IdType<TypeMarker, WrappedType, kInvalidValue>> {
-  using param_type = util::IdType<TypeMarker, WrappedType, kInvalidValue>;
+struct FuzzTraits<base::IdType<TypeMarker, WrappedType, kInvalidValue>> {
+  using param_type = base::IdType<TypeMarker, WrappedType, kInvalidValue>;
   static bool Fuzz(param_type* id, Fuzzer* fuzzer) {
     WrappedType raw_value = id->GetUnsafeValue();
     if (!FuzzParam(&raw_value, fuzzer))

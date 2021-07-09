@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_TYPE_SAFETY_ID_TYPE_H_
-#define BASE_UTIL_TYPE_SAFETY_ID_TYPE_H_
+#ifndef BASE_TYPES_ID_TYPE_H_
+#define BASE_TYPES_ID_TYPE_H_
 
 #include <cstdint>
 #include <type_traits>
 
 #include "base/types/strong_alias.h"
 
-namespace util {
+namespace base {
 
 // A specialization of StrongAlias for integer-based identifiers.
 //
@@ -51,7 +51,7 @@ template <typename TypeMarker,
           typename WrappedType,
           WrappedType kInvalidValue,
           WrappedType kFirstGeneratedId = kInvalidValue + 1>
-class IdType : public base::StrongAlias<TypeMarker, WrappedType> {
+class IdType : public StrongAlias<TypeMarker, WrappedType> {
  public:
   static_assert(
       std::is_unsigned<WrappedType>::value || kInvalidValue <= 0,
@@ -67,7 +67,7 @@ class IdType : public base::StrongAlias<TypeMarker, WrappedType> {
                 "invalid value so that the monotonically increasing "
                 "GenerateNextId method will never return the invalid value.");
 
-  using base::StrongAlias<TypeMarker, WrappedType>::StrongAlias;
+  using StrongAlias<TypeMarker, WrappedType>::StrongAlias;
 
   // This class can be used to generate unique IdTypes. It keeps an internal
   // counter that is continually increased by one every time an ID is generated.
@@ -88,8 +88,7 @@ class IdType : public base::StrongAlias<TypeMarker, WrappedType> {
 
   // Default-construct in the null state.
   constexpr IdType()
-      : base::StrongAlias<TypeMarker, WrappedType>::StrongAlias(kInvalidValue) {
-  }
+      : StrongAlias<TypeMarker, WrappedType>::StrongAlias(kInvalidValue) {}
 
   constexpr bool is_null() const { return this->value() == kInvalidValue; }
   constexpr explicit operator bool() const { return !is_null(); }
@@ -112,6 +111,7 @@ template <typename TypeMarker>
 using IdType64 = IdType<TypeMarker, std::int64_t, 0>;
 template <typename TypeMarker>
 using IdTypeU64 = IdType<TypeMarker, std::uint64_t, 0>;
-}  // namespace util
 
-#endif  // BASE_UTIL_TYPE_SAFETY_ID_TYPE_H_
+}  // namespace base
+
+#endif  // BASE_TYPES_ID_TYPE_H_

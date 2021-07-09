@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/hash/hash.h"
 #include "base/macros.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "cc/base/list_container.h"
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -33,7 +33,7 @@ class AggregatedRenderPass;
 class CompositorRenderPassDrawQuad;
 class AggregatedRenderPassDrawQuad;
 
-using AggregatedRenderPassId = util::IdTypeU64<AggregatedRenderPass>;
+using AggregatedRenderPassId = base::IdTypeU64<AggregatedRenderPass>;
 
 // This class represents a render pass that is a result of aggregating render
 // passes from all of the relevant surfaces. It is _not_ mojo-serializable since

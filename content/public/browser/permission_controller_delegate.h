@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/devtools_permission_overrides.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -21,7 +21,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   using PermissionOverrides = DevToolsPermissionOverrides::PermissionOverrides;
 
   // Identifier for an active subscription.
-  using SubscriptionId = util::IdType64<PermissionControllerDelegate>;
+  using SubscriptionId = base::IdType64<PermissionControllerDelegate>;
 
   virtual ~PermissionControllerDelegate() = default;
 

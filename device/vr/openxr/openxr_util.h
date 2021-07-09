@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -17,7 +17,7 @@
 #include "ui/gfx/transform.h"
 #include "ui/gfx/transform_util.h"
 
-using AnchorId = util::IdTypeU64<class AnchorTag>;
+using AnchorId = base::IdTypeU64<class AnchorTag>;
 constexpr AnchorId kInvalidAnchorId;
 
 namespace device {

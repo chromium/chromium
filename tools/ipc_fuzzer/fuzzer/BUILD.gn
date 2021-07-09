@@ -20,7 +20,7 @@ executable("ipc_fuzzer") {
     "rand_util.h",
   ]
   deps = [
-    "//base/util/type_safety",
+    "//base",
     "//components/viz/common",
     "//printing/mojom:mojom_shared_cpp_sources",
     "//services/device/public/mojom:mojom_headers",

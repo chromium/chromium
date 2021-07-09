@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_H_
 
 #include "base/supports_user_data.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_type.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -24,7 +24,7 @@ class CONTENT_EXPORT PermissionController
   // Identifier for an active subscription. This is intentionally a distinct
   // type from PermissionControllerDelegate::SubscriptionId as the concrete
   // identifier values may be different.
-  using SubscriptionId = util::IdType64<PermissionController>;
+  using SubscriptionId = base::IdType64<PermissionController>;
 
   ~PermissionController() override {}
 

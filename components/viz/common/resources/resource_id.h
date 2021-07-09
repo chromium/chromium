@@ -12,7 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 
 namespace viz {
 
@@ -20,7 +20,7 @@ struct ResourceIdTypeMarker {};
 
 // Note that if you need to generate new ResourceIds, please use
 // ResourceIdGenerator below, since it will skip generating reserved ids.
-using ResourceId = util::IdTypeU32<ResourceIdTypeMarker>;
+using ResourceId = base::IdTypeU32<ResourceIdTypeMarker>;
 using ResourceIdSet = base::flat_set<ResourceId>;
 constexpr ResourceId kInvalidResourceId(0);
 constexpr ResourceId kVizReservedRangeStartId(

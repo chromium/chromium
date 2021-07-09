@@ -3,7 +3,7 @@
 ## Overview
 
 This directory contains strongly-typed wrappers (using
-[`util::TokenType<...>`](/base/util/type_safety/token_type.h)) of
+[`base::TokenType<...>`](/base/types/token_type.h)) of
 [`base::UnguessableToken`](/base/unguessable_token.h)
 for tokens that are commonly passed between browsers and renderers. The strong
 typing is to prevent type confusion as these tokens are passed around. To support

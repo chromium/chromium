@@ -11,7 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
@@ -29,7 +29,7 @@ namespace predictors {
 class LoadingStatsCollector;
 struct OptimizationGuidePrediction;
 class ResourcePrefetchPredictor;
-using NavigationId = util::IdType64<content::NavigationHandle>;
+using NavigationId = base::IdType64<content::NavigationHandle>;
 
 // Data collected for origin-based prediction, for a single origin during a
 // page load (see PageRequestSummary).

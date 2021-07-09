@@ -9,7 +9,7 @@
 
 namespace device {
 
-using HitTestSubscriptionId = util::IdTypeU64<class HitTestSubscriptionTag>;
+using HitTestSubscriptionId = base::IdTypeU64<class HitTestSubscriptionTag>;
 
 struct COMPONENT_EXPORT(DEVICE_VR_UTIL) HitTestSubscriptionData {
   mojom::XRNativeOriginInformationPtr native_origin_information;

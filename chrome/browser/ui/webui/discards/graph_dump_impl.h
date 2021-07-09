@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -207,7 +207,7 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // The favicon requests happen on the UI thread. This helper class
   // maintains the state required to do that.
   class FaviconRequestHelper;
-  using NodeId = util::IdType64<class NodeIdTag>;
+  using NodeId = base::IdType64<class NodeIdTag>;
 
   void AddNode(const performance_manager::Node* node);
   void RemoveNode(const performance_manager::Node* node);

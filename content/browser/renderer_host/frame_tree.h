@@ -194,7 +194,7 @@ class CONTENT_EXPORT FrameTree {
   }
   PageDelegate* page_delegate() { return page_delegate_; }
 
-  using RenderViewHostMapId = util::IdType32<class RenderViewHostMap>;
+  using RenderViewHostMapId = base::IdType32<class RenderViewHostMap>;
   using RenderViewHostMap = std::unordered_map<RenderViewHostMapId,
                                                RenderViewHostImpl*,
                                                RenderViewHostMapId::Hasher>;

@@ -16,7 +16,6 @@ source_set("leak_detection_interface_headers") {
   ]
   deps = [
     "//base",
-    "//base/util/type_safety",
     "//url",
   ]
 }

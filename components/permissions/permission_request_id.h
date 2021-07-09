@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -24,7 +24,7 @@ namespace permissions {
 class PermissionRequestID {
  public:
   // Uniquely identifies a request (at least) within a given frame.
-  using RequestLocalId = util::IdType64<PermissionRequestID>;
+  using RequestLocalId = base::IdType64<PermissionRequestID>;
 
   PermissionRequestID(content::RenderFrameHost* render_frame_host,
                       RequestLocalId request_local_id);

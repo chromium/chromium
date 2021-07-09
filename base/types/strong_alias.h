@@ -68,10 +68,10 @@ namespace base {
 // See also
 // - //styleguide/c++/blink-c++.md which provides recommendation and examples of
 //   using StrongAlias<Tag, bool> instead of a bare bool.
-// - util::IdType<...> which provides helpers for specializing
-//   StrongAlias to be used as an id.
-// - util::TokenType<...> which provides helpers for specializing StrongAlias
-//   to be used as a wrapper of base::UnguessableToken.
+// - IdType<...> which provides helpers for specializing StrongAlias to be
+//   used as an id.
+// - TokenType<...> which provides helpers for specializing StrongAlias to be
+//   used as a wrapper of base::UnguessableToken.
 template <typename TagType, typename UnderlyingType>
 class StrongAlias {
  public:

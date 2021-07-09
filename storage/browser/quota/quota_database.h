@@ -19,7 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"

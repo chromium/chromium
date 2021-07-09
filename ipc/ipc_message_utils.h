@@ -31,7 +31,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "ipc/ipc_param_traits.h"
 #include "ipc/ipc_sync_message.h"
@@ -1063,8 +1063,8 @@ struct ParamTraits<absl::optional<P>> {
 // base/util types ParamTraits
 
 template <typename TypeMarker, typename WrappedType, WrappedType kInvalidValue>
-struct ParamTraits<util::IdType<TypeMarker, WrappedType, kInvalidValue>> {
-  using param_type = util::IdType<TypeMarker, WrappedType, kInvalidValue>;
+struct ParamTraits<base::IdType<TypeMarker, WrappedType, kInvalidValue>> {
+  using param_type = base::IdType<TypeMarker, WrappedType, kInvalidValue>;
   static void Write(base::Pickle* m, const param_type& p) {
     WriteParam(m, p.GetUnsafeValue());
   }

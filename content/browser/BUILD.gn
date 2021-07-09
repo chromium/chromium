@@ -270,8 +270,8 @@ source_set("browser") {
   }
 
   public_deps = [
+    "//base",
     "//base/util/memory_pressure",
-    "//base/util/type_safety",
     "//ipc",
     "//media/mojo/mojom:remoting",
     "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings",

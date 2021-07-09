@@ -9,7 +9,6 @@ test("base_util_unittests") {
     "enum_set:unittests",
     "memory_pressure:unittests",
     "timer:unittests",
-    "type_safety:tests",
     "values:unittests",
     "//base/test:run_all_unittests",
   ]

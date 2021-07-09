@@ -7,8 +7,8 @@
 
 #include <map>
 
+#include "base/types/id_type.h"
 #include "base/types/pass_key.h"
-#include "base/util/type_safety/id_type.h"
 #include "device/vr/android/arcore/address_to_id_map.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
@@ -20,7 +20,7 @@ namespace device {
 
 class ArCoreImpl;
 
-using AnchorId = util::IdTypeU64<class AnchorTag>;
+using AnchorId = base::IdTypeU64<class AnchorTag>;
 
 class ArCoreAnchorManager {
  public:

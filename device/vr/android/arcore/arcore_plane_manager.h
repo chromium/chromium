@@ -7,8 +7,8 @@
 
 #include <map>
 
+#include "base/types/id_type.h"
 #include "base/types/pass_key.h"
-#include "base/util/type_safety/id_type.h"
 #include "device/vr/android/arcore/address_to_id_map.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
@@ -20,7 +20,7 @@ namespace device {
 class ArCoreImpl;
 class ArCoreAnchorManager;
 
-using PlaneId = util::IdTypeU64<class PlaneTag>;
+using PlaneId = base::IdTypeU64<class PlaneTag>;
 
 std::pair<gfx::Quaternion, gfx::Point3F> GetPositionAndOrientationFromArPose(
     const ArSession* session,

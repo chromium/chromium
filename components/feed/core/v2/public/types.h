@@ -11,7 +11,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "base/version.h"
 #include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,9 +39,9 @@ struct DisplayMetrics {
 };
 
 // A unique ID for an ephemeral change.
-using EphemeralChangeId = util::IdTypeU32<class EphemeralChangeIdClass>;
-using SurfaceId = util::IdTypeU32<class SurfaceIdClass>;
-using ImageFetchId = util::IdTypeU32<class ImageFetchIdClass>;
+using EphemeralChangeId = base::IdTypeU32<class EphemeralChangeIdClass>;
+using SurfaceId = base::IdTypeU32<class SurfaceIdClass>;
+using ImageFetchId = base::IdTypeU32<class ImageFetchIdClass>;
 
 // A map of trial names (key) to group names (value) that is
 // sent from the server.
@@ -171,7 +171,7 @@ enum class WebFeedSubscriptionRequestStatus {
 std::ostream& operator<<(std::ostream& out,
                          WebFeedSubscriptionRequestStatus value);
 
-using NetworkRequestId = util::IdTypeU32<class NetworkRequestIdClass>;
+using NetworkRequestId = base::IdTypeU32<class NetworkRequestIdClass>;
 
 }  // namespace feed
 

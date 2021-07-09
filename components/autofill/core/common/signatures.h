@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #include "base/strings/string_piece.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 
 namespace autofill {
 
@@ -17,8 +17,8 @@ struct FormData;
 struct FormFieldData;
 
 namespace internal {
-using FormSignatureType = ::util::IdTypeU64<class FormSignatureMarker>;
-using FieldSignatureType = ::util::IdTypeU32<class FieldSignatureMarker>;
+using FormSignatureType = ::base::IdTypeU64<class FormSignatureMarker>;
+using FieldSignatureType = ::base::IdTypeU32<class FieldSignatureMarker>;
 }  // namespace internal
 
 // The below strong aliases are defined as subclasses instead of typedefs in

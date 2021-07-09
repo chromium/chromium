@@ -12,8 +12,8 @@
 #include <cstring>
 #include <type_traits>
 
+#include "base/types/token_type.h"
 #include "base/unguessable_token.h"
-#include "base/util/type_safety/token_type.h"
 
 namespace blink {
 
@@ -46,7 +46,7 @@ struct MultiTokenVariantCount<> {
 ////////////////////////////////////////////////////////////////////////////////
 // MultiTokenVariantIsTokenType
 //
-// Ensures if a QueryType is a a util::TokenType<>.
+// Ensures if a QueryType is a a base::TokenType<>.
 
 // Default case.
 template <typename QueryType>
@@ -54,9 +54,9 @@ struct MultiTokenVariantIsTokenType {
   static constexpr bool kValue = false;
 };
 
-// Specialization for util::TokenType<>.
+// Specialization for base::TokenType<>.
 template <typename TokenTypeTag>
-struct MultiTokenVariantIsTokenType<::util::TokenType<TokenTypeTag>> {
+struct MultiTokenVariantIsTokenType<::base::TokenType<TokenTypeTag>> {
   static constexpr bool kValue = true;
 
   // We expect an identical layout, which allows us to reinterpret_cast between
@@ -64,19 +64,19 @@ struct MultiTokenVariantIsTokenType<::util::TokenType<TokenTypeTag>> {
   // we can check whether or not the compiler is sane (and if the behaviour is
   // safe) at compile-time.
   static_assert(
-      sizeof(::util::TokenType<TokenTypeTag>) ==
+      sizeof(::base::TokenType<TokenTypeTag>) ==
           sizeof(::base::UnguessableToken),
-      "util::TokenType must have the same sizeof as base::UnguessableToken");
+      "base::TokenType must have the same sizeof as base::UnguessableToken");
   static_assert(
-      alignof(::util::TokenType<TokenTypeTag>) ==
+      alignof(::base::TokenType<TokenTypeTag>) ==
           alignof(::base::UnguessableToken),
-      "util::TokenType must have the same alignof as base::UnguessableToken");
+      "base::TokenType must have the same alignof as base::UnguessableToken");
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // MultiTokenAllVariantsAreTokenType
 //
-// Ensures that all variants are of type util::TokenType.
+// Ensures that all variants are of type base::TokenType.
 
 template <typename... VariantTypes>
 struct MultiTokenAllVariantsAreTokenType;
@@ -187,11 +187,11 @@ class MultiTokenBase {
   using AnyRepeated = internal::MultiTokenAnyTypeRepeated<TokenVariants...>;
   static_assert(!AnyRepeated::kValue, "input types must not be repeated");
 
-  // Ensures that all variants are instances of util::TokenType.
+  // Ensures that all variants are instances of base::TokenType.
   using AllVariantsAreTokenType =
       internal::MultiTokenAllVariantsAreTokenType<TokenVariants...>;
   static_assert(AllVariantsAreTokenType::kValue,
-                "input types must be instances of util::TokenType");
+                "input types must be instances of base::TokenType");
 
   // Counts the number of variants.
   using VariantCount = internal::MultiTokenVariantCount<TokenVariants...>;

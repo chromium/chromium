@@ -10,7 +10,6 @@ component("buckets") {
 
   public_deps = [
     "//base",
-    "//base/util/type_safety",
     "//third_party/blink/public/common",
   ]
 

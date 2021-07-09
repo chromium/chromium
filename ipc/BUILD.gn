@@ -90,7 +90,7 @@ component("ipc") {
     ":mojom",
     ":native_handle_type_converters",
     ":param_traits",
-    "//base/util/type_safety",
+    "//base",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",

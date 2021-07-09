@@ -11,7 +11,7 @@ namespace blink {
 
 // Defines Mojo StructTraits that convert between the given |MojomDataViewType|
 // and the given |TokenType|. It is assumed that TokenType is an instance of
-// util::TokenType<...> and that MojomDataViewType is a simple mojom struct
+// base::TokenType<...> and that MojomDataViewType is a simple mojom struct
 // containing only a "base.mojom.UnguessableToken value" field.
 template <typename MojomDataViewType, typename TokenType>
 struct TokenMojomTraitsHelper {

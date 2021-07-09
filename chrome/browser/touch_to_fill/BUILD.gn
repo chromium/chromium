@@ -29,7 +29,6 @@ source_set("factory") {
 source_set("public") {
   deps = [
     "//base",
-    "//base/util/type_safety",
     "//url",
   ]
 

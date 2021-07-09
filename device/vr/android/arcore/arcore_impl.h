@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "device/vr/android/arcore/arcore.h"
 #include "device/vr/android/arcore/arcore_anchor_manager.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
@@ -22,7 +22,7 @@ namespace device {
 
 class ArCorePlaneManager;
 
-using AnchorId = util::IdTypeU64<class AnchorTag>;
+using AnchorId = base::IdTypeU64<class AnchorTag>;
 
 class CreateAnchorRequest {
  public:
