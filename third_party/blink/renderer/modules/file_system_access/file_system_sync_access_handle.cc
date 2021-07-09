@@ -6,11 +6,13 @@
 
 namespace blink {
 
-FileSystemSyncAccessHandle::FileSystemSyncAccessHandle(base::File backing_file)
-    : backing_file_(std::move(backing_file)) {}
+FileSystemSyncAccessHandle::FileSystemSyncAccessHandle(
+    FileSystemAccessFileDelegate* file_delegate)
+    : file_delegate_(file_delegate) {}
 
 void FileSystemSyncAccessHandle::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  visitor->Trace(file_delegate_);
 }
 
 }  // namespace blink

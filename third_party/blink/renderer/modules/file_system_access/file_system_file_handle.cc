@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_sync_access_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_writable_file_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -109,15 +111,35 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
 
   mojo_ptr_->OpenAccessHandle(WTF::Bind(
       [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result,
-         base::File file) {
+         mojom::blink::FileSystemAccessAccessHandleFilePtr file) {
         if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
           file_system_access_error::Reject(resolver, *result);
           return;
         }
-        DCHECK(file.IsValid()) << "File should be valid when result is OK";
+        DCHECK(!file.is_null());
 
-        resolver->Resolve(
-            MakeGarbageCollected<FileSystemSyncAccessHandle>(std::move(file)));
+        FileSystemAccessFileDelegate* file_delegate = nullptr;
+        if (file->is_regular_file()) {
+          file_delegate = FileSystemAccessFileDelegate::Create(
+              std::move(file->get_regular_file()));
+        } else if (file->is_incognito_file_delegate()) {
+          ExecutionContext* context = resolver->GetExecutionContext();
+          if (!context)
+            return;
+          file_delegate = FileSystemAccessFileDelegate::CreateForIncognito(
+              context, std::move(file->get_incognito_file_delegate()));
+        }
+
+        if (!file_delegate || !file_delegate->IsValid()) {
+          file_system_access_error::Reject(
+              resolver,
+              *mojom::blink::FileSystemAccessError::New(
+                  mojom::blink::FileSystemAccessStatus::kFileError,
+                  base::File::Error::FILE_ERROR_FAILED, "File not valid"));
+          return;
+        }
+        resolver->Resolve(MakeGarbageCollected<FileSystemSyncAccessHandle>(
+            std::move(file_delegate)));
       },
       WrapPersistent(resolver)));
 

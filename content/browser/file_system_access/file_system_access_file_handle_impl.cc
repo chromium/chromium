@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/logging.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
 using blink::mojom::FileSystemAccessStatus;
@@ -152,10 +154,11 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
 
   if (!IsAccessHandleEnabled()) {
     mojo::ReportBadMessage("File System Access Access Handle not enabled");
-    std::move(callback).Run(file_system_access_error::FromStatus(
-                                FileSystemAccessStatus::kInvalidState,
-                                "File System Access Access Handle not enabled"),
-                            base::File());
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            FileSystemAccessStatus::kInvalidState,
+            "File System Access Access Handle not enabled"),
+        blink::mojom::FileSystemAccessAccessHandleFilePtr());
     return;
   }
 
@@ -164,18 +167,43 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
         file_system_access_error::FromStatus(
             FileSystemAccessStatus::kInvalidState,
             "Access handles may only be created on temporary file systems"),
-        base::File());
+        blink::mojom::FileSystemAccessAccessHandleFilePtr());
     return;
   }
 
+  auto open_file_callback =
+      file_system_context()->is_incognito()
+          ? base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenIncognitoFile,
+                           weak_factory_.GetWeakPtr())
+          : base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenFile,
+                           weak_factory_.GetWeakPtr());
   RunWithWritePermission(
-      base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenFile,
-                     weak_factory_.GetWeakPtr()),
+      std::move(open_file_callback),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         OpenAccessHandleCallback callback) {
-        std::move(callback).Run(std::move(result), base::File());
+        std::move(callback).Run(
+            std::move(result),
+            blink::mojom::FileSystemAccessAccessHandleFilePtr());
       }),
       std::move(callback));
+}
+
+void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
+    OpenAccessHandleCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(GetWritePermissionStatus(),
+            blink::mojom::PermissionStatus::GRANTED);
+  // TODO(crbug.com/1225653): Actually do something with the receiver.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileDelegateHost>
+      file_delegate_host_remote;
+  mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
+      file_delegate_host_receiver =
+          file_delegate_host_remote.InitWithNewPipeAndPassReceiver();
+
+  std::move(callback).Run(
+      file_system_access_error::Ok(),
+      blink::mojom::FileSystemAccessAccessHandleFile::NewIncognitoFileDelegate(
+          std::move(file_delegate_host_remote)));
 }
 
 void FileSystemAccessFileHandleImpl::DoOpenFile(
@@ -200,7 +228,10 @@ void FileSystemAccessFileHandleImpl::DidOpenFile(
 
   blink::mojom::FileSystemAccessErrorPtr result =
       file_system_access_error::FromFileError(file.error_details());
-  std::move(callback).Run(std::move(result), std::move(file));
+  std::move(callback).Run(
+      std::move(result),
+      blink::mojom::FileSystemAccessAccessHandleFile::NewRegularFile(
+          std::move(file)));
 }
 
 void FileSystemAccessFileHandleImpl::IsSameEntry(

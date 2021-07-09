@@ -86,6 +86,7 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       bool auto_close,
       CreateFileWriterCallback callback,
       base::File::Error result);
+  void DoOpenIncognitoFile(OpenAccessHandleCallback callback);
   void DoOpenFile(OpenAccessHandleCallback callback);
 
   void DidOpenFile(OpenAccessHandleCallback callback,
