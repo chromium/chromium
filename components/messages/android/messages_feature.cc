@@ -12,13 +12,16 @@ const base::Feature kMessagesForAndroidInfrastructure{
 const base::Feature kMessagesForAndroidPasswords{
     "MessagesForAndroidPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
 
-extern const base::Feature kMessagesForAndroidPopupBlocked{
+const base::Feature kMessagesForAndroidPopupBlocked{
     "MessagesForAndroidPopupBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
 
-extern const base::Feature kMessagesForAndroidSafetyTip{
+const base::Feature kMessagesForAndroidReaderMode{
+    "MessagesForAndroidReaderMode", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kMessagesForAndroidSafetyTip{
     "MessagesForAndroidSafetyTip", base::FEATURE_DISABLED_BY_DEFAULT};
 
-extern const base::Feature kMessagesForAndroidSaveCard{
+const base::Feature kMessagesForAndroidSaveCard{
     "MessagesForAndroidSaveCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidUpdatePassword{

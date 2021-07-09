@@ -1859,6 +1859,9 @@ extern const char kMessagesForAndroidPasswordsDescription[];
 extern const char kMessagesForAndroidPopupBlockedName[];
 extern const char kMessagesForAndroidPopupBlockedDescription[];
 
+extern const char kMessagesForAndroidReaderModeName[];
+extern const char kMessagesForAndroidReaderModeDescription[];
+
 extern const char kMessagesForAndroidSafetyTipName[];
 extern const char kMessagesForAndroidSafetyTipDescription[];
 

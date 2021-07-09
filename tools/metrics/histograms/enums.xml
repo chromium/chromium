@@ -50375,6 +50375,7 @@ from previous Chrome versions.
   <int value="1435251818" label="AutofillNoLocalSaveOnUploadSuccess:enabled"/>
   <int value="1436454450" label="InterestFeedV2:disabled"/>
   <int value="1437413720" label="CooperativeScheduling:disabled"/>
+  <int value="1438417722" label="MessagesForAndroidReaderMode:enabled"/>
   <int value="1440618113" label="EnableNetworkingInDiagnosticsApp:disabled"/>
   <int value="1440881073" label="DesktopPWAsAppIconShortcutsMenuUI:enabled"/>
   <int value="1441897340" label="AndroidSpellCheckerNonLowEnd:enabled"/>
@@ -51191,6 +51192,7 @@ from previous Chrome versions.
   <int value="2114894984" label="DelayCompetingLowPriorityRequests:enabled"/>
   <int value="2115848376" label="LacrosSupport:disabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>
+  <int value="2118374092" label="MessagesForAndroidReaderMode:disabled"/>
   <int value="2119964154" label="enable-download-resumption"/>
   <int value="2120659210" label="BackForwardCache:enabled"/>
   <int value="2121056855" label="IncreaseInputAudioBufferSize:disabled"/>
@@ -54230,6 +54232,7 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="MerchantTrust"/>
   <int value="8" label="AddToHomescreenIPH"/>
   <int value="9" label="SendTabToSelf"/>
+  <int value="10" label="ReaderMode"/>
 </enum>
 
 <enum name="MessageLoopProblems">

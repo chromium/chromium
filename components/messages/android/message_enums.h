@@ -80,6 +80,7 @@ enum class MessageIdentifier {
   MERCHANT_TRUST = 7,
   ADD_TO_HOMESCREEN_IPH = 8,
   SEND_TAB_TO_SELF = 9,
+  READER_MODE = 10,
 
   // Insert new values before this line.
   COUNT

@@ -3239,6 +3239,10 @@ const char kMessagesForAndroidPopupBlockedName[] = "Popup Blocked Messages UI";
 const char kMessagesForAndroidPopupBlockedDescription[] =
     "When enabled, popup blocked prompt will use the new Messages UI.";
 
+const char kMessagesForAndroidReaderModeName[] = "Reader Mode Messages UI";
+const char kMessagesForAndroidReaderModeDescription[] =
+    "When enabled, reader mode prompt will use the new Messages UI.";
+
 const char kMessagesForAndroidSafetyTipName[] = "Safety Tip Messages UI";
 const char kMessagesForAndroidSafetyTipDescription[] =
     "When enabled, safety tip prompt will use the new Messages UI.";

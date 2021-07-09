@@ -22,6 +22,10 @@ extern const base::Feature kMessagesForAndroidPasswords;
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidPopupBlocked;
 
+// Feature that controls whether "reader mode" prompts use Messages or
+// Infobars infrastructure.
+extern const base::Feature kMessagesForAndroidReaderMode;
+
 // Feature that controls whether "safety tip" prompts use Messages or
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidSafetyTip;
