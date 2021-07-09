@@ -9,6 +9,7 @@
 #include <map>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
@@ -16,6 +17,11 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace apps {
 class AppUpdate;
@@ -44,7 +50,10 @@ struct CpuTick {
 // 2. Add app launch policy.
 // 3. Check whether the ARC app is ready before launch the ARC apps.
 class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
-                            public chromeos::ResourcedClient::Observer {
+                            public chromeos::ResourcedClient::Observer,
+                            public wm::ActivationChangeObserver,
+                            public aura::EnvObserver,
+                            public aura::WindowObserver {
  public:
   struct WindowInfo {
     std::string app_id;
@@ -68,6 +77,18 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   void OnAppConnectionReady();
 
   void LaunchApp(const std::string& app_id);
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(
+      ::wm::ActivationChangeObserver::ActivationReason reason,
+      aura::Window* new_active,
+      aura::Window* old_active) override;
+
+  // aura::EnvObserver:
+  void OnWindowInitialized(aura::Window* window) override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
   friend ArcAppLaunchHandlerArcAppBrowserTest;
@@ -100,8 +121,13 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   void LaunchApp(const std::string& app_id, int32_t window_id);
 
-  // Removes windows related with `app_id`.
+  // Removes all windows records related with `app_id` from `windows_`,
+  // `no_stack_windows_`, and `pending_windows_`.
   void RemoveWindowsForApp(const std::string& app_id);
+
+  // Removes the window record related with `app_id` and `window_id` from
+  // `windows_`, `no_stack_windows_`, or `pending_windows_`.
+  void RemoveWindow(const std::string& app_id, int32_t window_id);
 
   void MaybeReStartTimer(const base::TimeDelta& delay);
 
@@ -154,6 +180,11 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   // The timer delay.
   base::TimeDelta current_delay_;
+
+  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
+
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observed_windows_{this};
 
   chromeos::ResourcedClient::PressureLevel pressure_level_ =
       chromeos::ResourcedClient::PressureLevel::MODERATE;
