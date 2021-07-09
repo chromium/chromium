@@ -13,10 +13,22 @@
 #include "chrome/common/extensions/api/scripting.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
+#include "extensions/common/mojom/code_injection.mojom.h"
 #include "extensions/common/user_script.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
+
+// A simple helper struct to represent a read file (either CSS or JS) to be
+// injected.
+struct InjectedFileSource {
+  InjectedFileSource(std::string file_name, std::unique_ptr<std::string> data);
+  InjectedFileSource(InjectedFileSource&&);
+  ~InjectedFileSource();
+
+  std::string file_name;
+  std::unique_ptr<std::string> data;
+};
 
 class ScriptingExecuteScriptFunction : public ExtensionFunction {
  public:
@@ -34,15 +46,13 @@ class ScriptingExecuteScriptFunction : public ExtensionFunction {
  private:
   ~ScriptingExecuteScriptFunction() override;
 
-  // Called when the resource file to be injected has been loaded.
-  void DidLoadResource(std::vector<std::unique_ptr<std::string>> data,
-                       absl::optional<std::string> load_error);
+  // Called when the resource files to be injected has been loaded.
+  void DidLoadResources(std::vector<InjectedFileSource> file_sources,
+                        absl::optional<std::string> load_error);
 
-  // Triggers the execution of `code_to_execute` in the appropriate context.
+  // Triggers the execution of `sources` in the appropriate context.
   // Returns true on success; on failure, populates `error`.
-  bool Execute(std::string code_to_execute,
-               GURL script_url,
-               std::string* error);
+  bool Execute(std::vector<mojom::JSSourcePtr> sources, std::string* error);
 
   // Invoked when script execution is complete.
   void OnScriptExecuted(std::vector<ScriptExecutor::FrameResult> frame_results);
@@ -65,15 +75,13 @@ class ScriptingInsertCSSFunction : public ExtensionFunction {
  private:
   ~ScriptingInsertCSSFunction() override;
 
-  // Called when the resource file to be injected has been loaded.
-  void DidLoadResource(std::vector<std::unique_ptr<std::string>> data,
-                       absl::optional<std::string> load_error);
+  // Called when the resource files to be injected has been loaded.
+  void DidLoadResources(std::vector<InjectedFileSource> file_sources,
+                        absl::optional<std::string> load_error);
 
-  // Triggers the execution of `code_to_execute` in the appropriate context.
+  // Triggers the execution of `sources` in the appropriate context.
   // Returns true on success; on failure, populates `error`.
-  bool Execute(std::string code_to_execute,
-               GURL script_url,
-               std::string* error);
+  bool Execute(std::vector<mojom::CSSSourcePtr> sources, std::string* error);
 
   // Called when the CSS insertion is complete.
   void OnCSSInserted(std::vector<ScriptExecutor::FrameResult> results);

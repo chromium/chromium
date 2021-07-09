@@ -4,7 +4,6 @@
 
 const NEW_TITLE_FROM_FUNCTION = 'Hello, world!';
 const NEW_TITLE_FROM_FILE = 'Goodnight';
-const EXACTLY_ONE_FILE_ERROR = 'Error: Exactly one file must be specified.';
 
 function injectedFunction() {
   // NOTE(devlin): We currently need to (re)hard-code this title, since the
@@ -213,6 +212,28 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function multipleFilesSpecified() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    // Double-check that the title is not the one from the script file to be
+    // injected.
+    chrome.test.assertFalse(tab.title == NEW_TITLE_FROM_FILE);
+    const results = await chrome.scripting.executeScript({
+      target: {
+        tabId: tab.id,
+      },
+      files: ['script_file.js', 'script_file2.js'],
+    });
+    // The call injected two scripts; the first changes the title, and the
+    // second reports it plus a suffix. This checks that both scripts inject
+    // and that the order was preserved (since the first sets the title used
+    // in the second).
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(NEW_TITLE_FROM_FILE + ' From Second Script',
+                         results[0].result);
+    chrome.test.succeed();
+  },
+
   async function onlyOneOfFunctionAndFunc() {
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
@@ -267,11 +288,11 @@ chrome.test.runTests([
           },
           files: [],
         }),
-        EXACTLY_ONE_FILE_ERROR);
+        'Error: At least one file must be specified.');
     chrome.test.succeed();
   },
 
-  async function multipleFilesSpecified() {
+  async function duplicateFilesSpecified() {
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
     await chrome.test.assertPromiseRejects(
@@ -279,9 +300,19 @@ chrome.test.runTests([
           target: {
             tabId: tab.id,
           },
-          files: ['script_file.js', 'script_file2.js'],
+          files: ['script_file.js', 'script_file.js'],
         }),
-        EXACTLY_ONE_FILE_ERROR);
+        `Error: Duplicate file specified: 'script_file.js'.`);
+
+    // Try again with a preceding slash.
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id,
+          },
+          files: ['script_file.js', '/script_file.js'],
+        }),
+        `Error: Duplicate file specified: '/script_file.js'.`);
     chrome.test.succeed();
   },
 

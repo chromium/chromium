@@ -40,6 +40,8 @@ namespace extensions {
 namespace {
 
 constexpr char kCouldNotLoadFileError[] = "Could not load file: '*'.";
+constexpr char kDuplicateFileSpecifiedError[] =
+    "Duplicate file specified: '*'.";
 constexpr char kExactlyOneOfCssAndFilesError[] =
     "Exactly one of 'css' and 'files' must be specified.";
 
@@ -76,26 +78,164 @@ mojom::CSSOrigin ConvertStyleOriginToCSSOrigin(
   return css_origin;
 }
 
-// Checks `files` and populates `resource_out` with the appropriate extension
-// resource. Returns true on success; on failure, populates `error_out`.
-bool GetFileResource(const std::vector<std::string>& files,
-                     const Extension& extension,
-                     ExtensionResource* resource_out,
-                     std::string* error_out) {
-  if (files.size() != 1) {
-    constexpr char kExactlyOneFileError[] =
-        "Exactly one file must be specified.";
-    *error_out = kExactlyOneFileError;
-    return false;
+std::string InjectionKeyForCode(const mojom::HostID& host_id,
+                                const std::string& code) {
+  return ScriptExecutor::GenerateInjectionKey(host_id, /*script_url=*/GURL(),
+                                              code);
+}
+
+std::string InjectionKeyForFile(const mojom::HostID& host_id,
+                                const GURL& resource_url) {
+  return ScriptExecutor::GenerateInjectionKey(host_id, resource_url,
+                                              /*code=*/std::string());
+}
+
+// Constructs an array of file sources from the read file `data`.
+std::vector<InjectedFileSource> ConstructFileSources(
+    std::vector<std::unique_ptr<std::string>> data,
+    std::vector<std::string> file_names) {
+  // Note: CHECK (and not DCHECK) because if it fails, we have an out-of-bounds
+  // access.
+  CHECK_EQ(data.size(), file_names.size());
+  const size_t num_sources = data.size();
+  std::vector<InjectedFileSource> sources;
+  sources.reserve(num_sources);
+  for (size_t i = 0; i < num_sources; ++i)
+    sources.emplace_back(std::move(file_names[i]), std::move(data[i]));
+
+  return sources;
+}
+
+std::vector<mojom::JSSourcePtr> FileSourcesToJSSources(
+    const Extension& extension,
+    std::vector<InjectedFileSource> file_sources) {
+  std::vector<mojom::JSSourcePtr> js_sources;
+  js_sources.reserve(file_sources.size());
+  for (auto& file_source : file_sources) {
+    js_sources.push_back(
+        mojom::JSSource::New(std::move(*file_source.data),
+                             extension.GetResourceURL(file_source.file_name)));
   }
-  ExtensionResource resource = extension.GetResource(files[0]);
-  if (resource.extension_root().empty() || resource.relative_path().empty()) {
-    *error_out =
-        ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, files[0]);
+
+  return js_sources;
+}
+
+std::vector<mojom::CSSSourcePtr> FileSourcesToCSSSources(
+    const Extension& extension,
+    std::vector<InjectedFileSource> file_sources) {
+  mojom::HostID host_id(mojom::HostID::HostType::kExtensions, extension.id());
+
+  std::vector<mojom::CSSSourcePtr> css_sources;
+  css_sources.reserve(file_sources.size());
+  for (auto& file_source : file_sources) {
+    css_sources.push_back(mojom::CSSSource::New(
+        std::move(*file_source.data),
+        InjectionKeyForFile(host_id,
+                            extension.GetResourceURL(file_source.file_name))));
+  }
+
+  return css_sources;
+}
+
+// Checks `files` and populates `resources_out` with the appropriate extension
+// resource. Returns true on success; on failure, populates `error_out`.
+bool GetFileResources(const std::vector<std::string>& files,
+                      const Extension& extension,
+                      std::vector<ExtensionResource>* resources_out,
+                      std::string* error_out) {
+  if (files.empty()) {
+    static constexpr char kAtLeastOneFileError[] =
+        "At least one file must be specified.";
+    *error_out = kAtLeastOneFileError;
     return false;
   }
 
-  *resource_out = std::move(resource);
+  std::vector<ExtensionResource> resources;
+  for (const auto& file : files) {
+    ExtensionResource resource = extension.GetResource(file);
+    if (resource.extension_root().empty() || resource.relative_path().empty()) {
+      *error_out = ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, file);
+      return false;
+    }
+
+    // ExtensionResource doesn't implement an operator==.
+    auto existing = base::ranges::find_if(
+        resources, [&resource](const ExtensionResource& other) {
+          return resource.relative_path() == other.relative_path();
+        });
+
+    if (existing != resources.end()) {
+      // Disallow duplicates. Note that we could allow this, if we wanted (and
+      // there *might* be reason to with JS injection, to perform an operation
+      // twice?). However, this matches content script behavior, and injecting
+      // twice can be done by chaining calls to executeScript() / insertCSS().
+      // This isn't a robust check, and could probably be circumvented by
+      // passing two paths that look different but are the same - but in that
+      // case, we just try to load and inject the script twice, which is
+      // inefficient, but safe.
+      *error_out =
+          ErrorUtils::FormatErrorMessage(kDuplicateFileSpecifiedError, file);
+      return false;
+    }
+
+    resources.push_back(std::move(resource));
+  }
+
+  resources_out->swap(resources);
+  return true;
+}
+
+using ResourcesLoadedCallback =
+    base::OnceCallback<void(std::vector<InjectedFileSource>,
+                            absl::optional<std::string>)>;
+
+// Checks the loaded content of extension resources. Invokes `callback` with
+// the constructed file sources on success or with an error on failure.
+void CheckLoadedResources(std::vector<std::string> file_names,
+                          ResourcesLoadedCallback callback,
+                          std::vector<std::unique_ptr<std::string>> file_data,
+                          absl::optional<std::string> load_error) {
+  if (load_error) {
+    std::move(callback).Run({}, std::move(load_error));
+    return;
+  }
+
+  std::vector<InjectedFileSource> file_sources =
+      ConstructFileSources(std::move(file_data), std::move(file_names));
+
+  for (const auto& source : file_sources) {
+    DCHECK(source.data);
+    // TODO(devlin): What necessitates this encoding requirement? Is it needed
+    // for blink injection?
+    if (!base::IsStringUTF8(*source.data)) {
+      static constexpr char kBadFileEncodingError[] =
+          "Could not load file '*'. It isn't UTF-8 encoded.";
+      std::string error = ErrorUtils::FormatErrorMessage(kBadFileEncodingError,
+                                                         source.file_name);
+      std::move(callback).Run({}, std::move(error));
+      return;
+    }
+  }
+
+  std::move(callback).Run(std::move(file_sources), absl::nullopt);
+}
+
+// Checks the specified `files` for validity, and attempts to load and localize
+// them, invoking `callback` with the result. Returns true on success; on
+// failure, populates `error`.
+bool CheckAndLoadFiles(std::vector<std::string> files,
+                       const Extension& extension,
+                       bool requires_localization,
+                       ResourcesLoadedCallback callback,
+                       std::string* error) {
+  std::vector<ExtensionResource> resources;
+  if (!GetFileResources(files, extension, &resources, error))
+    return false;
+
+  LoadAndLocalizeResources(
+      extension, resources, requires_localization,
+      base::BindOnce(&CheckLoadedResources, std::move(files),
+                     std::move(callback)));
   return true;
 }
 
@@ -197,40 +337,6 @@ bool CanAccessTarget(const PermissionsData& permissions,
   return true;
 }
 
-// Returns true if the loaded resource is valid for injection.
-bool CheckLoadedResource(std::string* data,
-                         const std::string& file_name,
-                         std::string* error) {
-  DCHECK(data);
-  // TODO(devlin): What necessitates this encoding requirement? Is it needed for
-  // blink injection?
-  if (!base::IsStringUTF8(*data)) {
-    constexpr char kBadFileEncodingError[] =
-        "Could not load file '*'. It isn't UTF-8 encoded.";
-    *error = ErrorUtils::FormatErrorMessage(kBadFileEncodingError, file_name);
-    return false;
-  }
-
-  return true;
-}
-
-// Checks the specified `files` for validity, and attempts to load and localize
-// them, invoking `callback` with the result. Returns true on success; on
-// failure, populates `error`.
-bool CheckAndLoadFiles(const std::vector<std::string>& files,
-                       const Extension& extension,
-                       bool requires_localization,
-                       LoadAndLocalizeResourcesCallback callback,
-                       std::string* error) {
-  ExtensionResource resource;
-  if (!GetFileResource(files, extension, &resource, error))
-    return false;
-
-  LoadAndLocalizeResources(extension, {std::move(resource)},
-                           requires_localization, std::move(callback));
-  return true;
-}
-
 std::unique_ptr<UserScript> ParseUserScript(
     const Extension& extension,
     const api::scripting::RegisteredContentScript& content_script,
@@ -284,6 +390,12 @@ ValidateContentScriptsResult ValidateParsedScriptsOnFileThread(
 
 }  // namespace
 
+InjectedFileSource::InjectedFileSource(std::string file_name,
+                                       std::unique_ptr<std::string> data)
+    : file_name(std::move(file_name)), data(std::move(data)) {}
+InjectedFileSource::InjectedFileSource(InjectedFileSource&&) = default;
+InjectedFileSource::~InjectedFileSource() = default;
+
 ScriptingExecuteScriptFunction::ScriptingExecuteScriptFunction() = default;
 ScriptingExecuteScriptFunction::~ScriptingExecuteScriptFunction() = default;
 
@@ -318,8 +430,8 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
     constexpr bool kRequiresLocalization = false;
     std::string error;
     if (!CheckAndLoadFiles(
-            *injection_.files, *extension(), kRequiresLocalization,
-            base::BindOnce(&ScriptingExecuteScriptFunction::DidLoadResource,
+            std::move(*injection_.files), *extension(), kRequiresLocalization,
+            base::BindOnce(&ScriptingExecuteScriptFunction::DidLoadResources,
                            this),
             &error)) {
       return RespondNow(Error(std::move(error)));
@@ -349,41 +461,36 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   std::string code_to_execute = base::StringPrintf(
       "(%s)(%s)", injection_.func->c_str(), args_expression.c_str());
 
+  std::vector<mojom::JSSourcePtr> sources;
+  sources.push_back(mojom::JSSource::New(std::move(code_to_execute), GURL()));
+
   std::string error;
-  if (!Execute(std::move(code_to_execute), /*script_src=*/GURL(), &error))
+  if (!Execute(std::move(sources), &error))
     return RespondNow(Error(std::move(error)));
 
   return RespondLater();
 }
 
-void ScriptingExecuteScriptFunction::DidLoadResource(
-    std::vector<std::unique_ptr<std::string>> data,
+void ScriptingExecuteScriptFunction::DidLoadResources(
+    std::vector<InjectedFileSource> file_sources,
     absl::optional<std::string> load_error) {
-  DCHECK(injection_.files);
-  DCHECK_EQ(1u, injection_.files->size());
-
   if (load_error) {
     Respond(Error(std::move(*load_error)));
     return;
   }
 
-  // TODO(devlin): Remove this DCHECK when multiple files are supported.
-  DCHECK_EQ(1u, data.size());
-  auto file_data = std::move(data.front());
-  std::string error;
-  if (!CheckLoadedResource(file_data.get(), injection_.files->at(0), &error)) {
-    Respond(Error(std::move(error)));
-    return;
-  }
+  DCHECK(!file_sources.empty());
 
-  GURL script_url = extension()->GetResourceURL(injection_.files->at(0));
-  if (!Execute(std::move(*file_data), std::move(script_url), &error))
+  std::string error;
+  if (!Execute(FileSourcesToJSSources(*extension(), std::move(file_sources)),
+               &error)) {
     Respond(Error(std::move(error)));
+  }
 }
 
-bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
-                                             GURL script_url,
-                                             std::string* error) {
+bool ScriptingExecuteScriptFunction::Execute(
+    std::vector<mojom::JSSourcePtr> sources,
+    std::string* error) {
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   std::set<int> frame_ids;
@@ -393,9 +500,6 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
     return false;
   }
 
-  std::vector<mojom::JSSourcePtr> sources;
-  sources.push_back(
-      mojom::JSSource::New(std::move(code_to_execute), std::move(script_url)));
   script_executor->ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
       mojom::CodeInjection::NewJs(mojom::JSInjection::New(std::move(sources),
@@ -463,8 +567,8 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
     constexpr bool kRequiresLocalization = true;
     std::string error;
     if (!CheckAndLoadFiles(
-            *injection_.files, *extension(), kRequiresLocalization,
-            base::BindOnce(&ScriptingInsertCSSFunction::DidLoadResource, this),
+            std::move(*injection_.files), *extension(), kRequiresLocalization,
+            base::BindOnce(&ScriptingInsertCSSFunction::DidLoadResources, this),
             &error)) {
       return RespondNow(Error(std::move(error)));
     }
@@ -473,42 +577,42 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
 
   DCHECK(injection_.css);
 
+  mojom::HostID host_id(mojom::HostID::HostType::kExtensions,
+                        extension()->id());
+
+  std::vector<mojom::CSSSourcePtr> sources;
+  sources.push_back(
+      mojom::CSSSource::New(std::move(*injection_.css),
+                            InjectionKeyForCode(host_id, *injection_.css)));
+
   std::string error;
-  if (!Execute(std::move(*injection_.css), /*script_url=*/GURL(), &error)) {
+  if (!Execute(std::move(sources), &error)) {
     return RespondNow(Error(std::move(error)));
   }
 
   return RespondLater();
 }
 
-void ScriptingInsertCSSFunction::DidLoadResource(
-    std::vector<std::unique_ptr<std::string>> data,
+void ScriptingInsertCSSFunction::DidLoadResources(
+    std::vector<InjectedFileSource> file_sources,
     absl::optional<std::string> load_error) {
-  DCHECK(injection_.files);
-  DCHECK_EQ(1u, injection_.files->size());
-
   if (load_error) {
     Respond(Error(std::move(*load_error)));
     return;
   }
 
-  // TODO(devlin): Remove this DCHECK when multiple files are supported.
-  DCHECK_EQ(1u, data.size());
-  std::string error;
-  auto& file_data = data.front();
-  if (!CheckLoadedResource(file_data.get(), injection_.files->at(0), &error)) {
-    Respond(Error(std::move(error)));
-    return;
-  }
+  DCHECK(!file_sources.empty());
+  std::vector<mojom::CSSSourcePtr> sources =
+      FileSourcesToCSSSources(*extension(), std::move(file_sources));
 
-  GURL script_url = extension()->GetResourceURL(injection_.files->at(0));
-  if (!Execute(std::move(*file_data), std::move(script_url), &error))
+  std::string error;
+  if (!Execute(std::move(sources), &error))
     Respond(Error(std::move(error)));
 }
 
-bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
-                                         GURL script_url,
-                                         std::string* error) {
+bool ScriptingInsertCSSFunction::Execute(
+    std::vector<mojom::CSSSourcePtr> sources,
+    std::string* error) {
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   std::set<int> frame_ids;
@@ -519,16 +623,8 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
   }
   DCHECK(script_executor);
 
-  mojom::HostID host_id(mojom::HostID::HostType::kExtensions,
-                        extension()->id());
-  std::string injection_key = ScriptExecutor::GenerateInjectionKey(
-      host_id, script_url, code_to_execute);
-
-  std::vector<mojom::CSSSourcePtr> sources;
-  sources.push_back(mojom::CSSSource::New(std::move(code_to_execute),
-                                          std::move(injection_key)));
   script_executor->ExecuteScript(
-      std::move(host_id),
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
       mojom::CodeInjection::NewCss(mojom::CSSInjection::New(
           std::move(sources), ConvertStyleOriginToCSSOrigin(injection_.origin),
           mojom::CSSInjection::Operation::kAdd)),
@@ -567,25 +663,10 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
     return RespondNow(Error(kExactlyOneOfCssAndFilesError));
   }
 
-  GURL script_url;
-  std::string error;
-  std::string code;
-  if (injection.files) {
-    // Note: Since we're just removing the CSS, we don't actually need to load
-    // the file here. It's okay for `code` to be empty in this case.
-    ExtensionResource resource;
-    if (!GetFileResource(*injection.files, *extension(), &resource, &error))
-      return RespondNow(Error(std::move(error)));
-
-    script_url = extension()->GetResourceURL(injection.files->at(0));
-  } else {
-    DCHECK(injection.css);
-    code = std::move(*injection.css);
-  }
-
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   std::set<int> frame_ids;
+  std::string error;
   if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
                        browser_context(), include_incognito_information(),
                        &script_executor, &frame_scope, &frame_ids, &error)) {
@@ -593,16 +674,32 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
   }
   DCHECK(script_executor);
 
-  DCHECK(code.empty() || !script_url.is_valid());
-
   mojom::HostID host_id(mojom::HostID::HostType::kExtensions,
                         extension()->id());
-  std::string injection_key =
-      ScriptExecutor::GenerateInjectionKey(host_id, script_url, code);
-
   std::vector<mojom::CSSSourcePtr> sources;
-  sources.push_back(
-      mojom::CSSSource::New(std::move(code), std::move(injection_key)));
+
+  if (injection.files) {
+    std::vector<ExtensionResource> resources;
+    if (!GetFileResources(*injection.files, *extension(), &resources, &error))
+      return RespondNow(Error(std::move(error)));
+
+    // Note: Since we're just removing the CSS, we don't actually need to load
+    // the file here. It's okay for `code` to be empty in this case.
+    const std::string empty_code;
+    sources.reserve(injection.files->size());
+
+    for (const auto& file : *injection.files) {
+      sources.push_back(mojom::CSSSource::New(
+          empty_code,
+          InjectionKeyForFile(host_id, extension()->GetResourceURL(file))));
+    }
+  } else {
+    DCHECK(injection.css);
+    sources.push_back(
+        mojom::CSSSource::New(std::move(*injection.css),
+                              InjectionKeyForCode(host_id, *injection.css)));
+  }
+
   script_executor->ExecuteScript(
       std::move(host_id),
       mojom::CodeInjection::NewCss(mojom::CSSInjection::New(

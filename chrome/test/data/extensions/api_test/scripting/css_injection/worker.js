@@ -12,8 +12,6 @@ const CSS_CYAN = 'body { background-color: cyan !important }';
 const CYAN = 'rgb(0, 255, 255)';
 const YELLOW = 'rgb(255, 255, 0)';
 
-const EXACTLY_ONE_FILE_ERROR = 'Error: Exactly one file must be specified.';
-
 function getBodyColor() {
   const hostname = (new URL(location.href)).hostname;
   return hostname + ' ' + getComputedStyle(document.body).backgroundColor;
@@ -126,6 +124,36 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function multipleFilesSpecified() {
+    const query = {url: 'http://example.com/*'};
+    const tab = await getSingleTab(query);
+    const target = {tabId: tab.id};
+    // Inject multiple files. css_file2.css sets the background color to purple
+    // and also sets font size to 1337px. Then, css_file.css sets the background
+    // to yellow.
+    // Since stylesheets inject in-order, the end result should be that the
+    // font size is 1337px (from css_file2.css) and the background is yellow
+    // (from css_file.css, the last to run).
+    const results = await chrome.scripting.insertCSS({
+      target: target,
+      files: ['css_file2.css', 'css_file.css'],
+    });
+    chrome.test.assertEq(undefined, results);
+    const colors = await getBodyColorsForTab(tab.id);
+    chrome.test.assertEq(1, colors.length);
+    chrome.test.assertEq(`example.com ${YELLOW}`, colors[0]);
+
+    const fontSizes = await chrome.scripting.executeScript({
+      target: target,
+      func: function() { return getComputedStyle(document.body).fontSize; },
+    });
+
+    chrome.test.assertEq(1, fontSizes.length);
+    chrome.test.assertEq('1337px', fontSizes[0].result);
+
+    chrome.test.succeed();
+  },
+
   async function noSuchTab() {
     const nonExistentTabId = 99999;
     await chrome.test.assertPromiseRejects(
@@ -158,27 +186,37 @@ chrome.test.runTests([
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
     await chrome.test.assertPromiseRejects(
-        chrome.scripting.executeScript({
+        chrome.scripting.insertCSS({
           target: {
             tabId: tab.id,
           },
           files: [],
         }),
-        EXACTLY_ONE_FILE_ERROR);
+        'Error: At least one file must be specified.');
     chrome.test.succeed();
   },
 
-  async function multipleFilesSpecified() {
+  async function duplicateFilesSpecified() {
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
     await chrome.test.assertPromiseRejects(
-        chrome.scripting.executeScript({
+        chrome.scripting.insertCSS({
           target: {
             tabId: tab.id,
           },
-          files: ['css_file.css', 'css_file2.css'],
+          files: ['css_file.js', 'css_file.js'],
         }),
-        EXACTLY_ONE_FILE_ERROR);
+        `Error: Duplicate file specified: 'css_file.js'.`);
+
+    // Try again with a preceding slash.
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.insertCSS({
+          target: {
+            tabId: tab.id,
+          },
+          files: ['css_file.js', '/css_file.js'],
+        }),
+        `Error: Duplicate file specified: '/css_file.js'.`);
     chrome.test.succeed();
   },
 
