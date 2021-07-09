@@ -101,6 +101,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
       (mojo::EnumTraits<mojom::RmaState, rmad::RmadState::StateCase>::ToMojom(
           rmad::RmadState::STATE_NOT_SET)));
   TestProtoToMojo(enums);
+  TestMojoToProto(enums);
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
@@ -175,6 +176,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
         rmad::RmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA}});
 
   TestProtoToMojo(enums);
+  TestMojoToProto(enums);
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, RepairComponentsMatch) {
@@ -222,6 +224,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, CalibrationComponentsMatch) {
             RMAD_CALIBRATION_COMPONENT_ACCELEROMETER}});
 
   TestProtoToMojo(enums);
+  TestMojoToProto(enums);
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStepsMatch) {
@@ -234,6 +237,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStepsMatch) {
             rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_COMPLETE}});
 
   TestProtoToMojo(enums);
+  TestMojoToProto(enums);
 }
 
 }  // namespace shimless_rma

@@ -13,6 +13,34 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "ash.shimless_rma.mojom.CalibrationComponent"
+          cpp = "::rmad::CalibrateComponentsState_CalibrationComponent"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.ComponentRepairState"
+          cpp = "::rmad::ComponentRepairState_RepairState"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.ComponentType"
+          cpp = "::rmad::ComponentRepairState_Component"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.Component"
+          cpp = "::rmad::ComponentRepairState"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.ProvisioningStep"
+          cpp = "::rmad::ProvisionDeviceState_ProvisioningStep"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.RmaState"
+          cpp = "::rmad::RmadState::StateCase"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.RmadErrorCode"
+          cpp = "::rmad::RmadErrorCode"
+        },
+        {
           mojom = "media.mojom.CdmKeyInformation"
           cpp = "::std::unique_ptr<::media::CdmKeyInformation>"
           move_only = true
@@ -22,7 +50,10 @@ mojom("mojom") {
           cpp = "::media::CdmKeyInformation::KeyStatus"
         },
       ]
-      traits_headers = [ "shimless_rma_mojom_traits.h" ]
+      traits_headers = [
+        "shimless_rma_mojom_traits.h",
+        "//chromeos/dbus/rmad/rmad.pb.h",
+      ]
       traits_sources = [ "shimless_rma_mojom_traits.cc" ]
       traits_public_deps = [ "//chromeos/dbus/rmad:rmad_proto" ]
     },

@@ -52,8 +52,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       SetRsuDisableWriteProtectCodeCallback callback) override;
 
   void GetComponentList(GetComponentListCallback callback) override;
-  void SetComponentList(std::vector<mojom::ComponentPtr> component_list,
-                        SetComponentListCallback callback) override;
+  void SetComponentList(
+      const std::vector<::rmad::ComponentRepairState>& component_list,
+      SetComponentListCallback callback) override;
   void ReworkMainboard(ReworkMainboardCallback callback) override;
 
   void ReimageRequired(ReimageRequiredCallback callback) override;

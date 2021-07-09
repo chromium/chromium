@@ -18,11 +18,11 @@ using MojomRmadErrorCode = ash::shimless_rma::mojom::RmadErrorCode;
 using ProtoRmadErrorCode = rmad::RmadErrorCode;
 
 using MojomComponentType = ash::shimless_rma::mojom::ComponentType;
-using ProtoComponentType = rmad::ComponentRepairState::Component;
+using ProtoComponentType = rmad::ComponentRepairState_Component;
 
 using MojomComponentRepairState =
     ash::shimless_rma::mojom::ComponentRepairState;
-using ProtoComponentRepairState = rmad::ComponentRepairState::RepairState;
+using ProtoComponentRepairState = rmad::ComponentRepairState_RepairState;
 
 using MojomCalibrationComponent =
     ash::shimless_rma::mojom::CalibrationComponent;
@@ -79,6 +79,60 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
 // static
 bool EnumTraits<MojomRmaState, ProtoRmadState>::FromMojom(MojomRmaState state,
                                                           ProtoRmadState* out) {
+  switch (state) {
+    case MojomRmaState::kWelcomeScreen:
+      *out = ProtoRmadState::kWelcome;
+      return true;
+    case MojomRmaState::kConfigureNetwork:
+      *out = ProtoRmadState::kSelectNetwork;
+      return true;
+    case MojomRmaState::kUpdateChrome:
+      *out = ProtoRmadState::kUpdateChrome;
+      return true;
+    case MojomRmaState::kSelectComponents:
+      *out = ProtoRmadState::kComponentsRepair;
+      return true;
+    case MojomRmaState::kChooseDestination:
+      *out = ProtoRmadState::kDeviceDestination;
+      return true;
+    case MojomRmaState::kChooseWriteProtectDisableMethod:
+      *out = ProtoRmadState::kWpDisableMethod;
+      return true;
+    case MojomRmaState::kEnterRSUWPDisableCode:
+      *out = ProtoRmadState::kWpDisableRsu;
+      return true;
+    case MojomRmaState::kWaitForManualWPDisable:
+      *out = ProtoRmadState::kWpDisablePhysical;
+      return true;
+    case MojomRmaState::kWPDisableComplete:
+      *out = ProtoRmadState::kWpDisableComplete;
+      return true;
+    case MojomRmaState::kChooseFirmwareReimageMethod:
+      *out = ProtoRmadState::kUpdateRoFirmware;
+      return true;
+    case MojomRmaState::kRestock:
+      *out = ProtoRmadState::kRestock;
+      return true;
+    case MojomRmaState::kUpdateDeviceInformation:
+      *out = ProtoRmadState::kUpdateDeviceInfo;
+      return true;
+    case MojomRmaState::kCalibrateComponents:
+      *out = ProtoRmadState::kCalibrateComponents;
+      return true;
+    case MojomRmaState::kProvisionDevice:
+      *out = ProtoRmadState::kProvisionDevice;
+      return true;
+    case MojomRmaState::kWaitForManualWPEnable:
+      *out = ProtoRmadState::kWpEnablePhysical;
+      return true;
+    case MojomRmaState::kRepairComplete:
+      *out = ProtoRmadState::kFinalize;
+      return true;
+
+    case MojomRmaState::kUnknown:
+      *out = ProtoRmadState::STATE_NOT_SET;
+      return true;
+  }
   NOTREACHED();
   return false;
 }
@@ -170,6 +224,118 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
 bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
     MojomRmadErrorCode error,
     ProtoRmadErrorCode* out) {
+  switch (error) {
+    case MojomRmadErrorCode::kOk:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_OK;
+      return true;
+    case MojomRmadErrorCode::KWait:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_WAIT;
+      return true;
+    case MojomRmadErrorCode::KNeedReboot:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_NEED_REBOOT;
+      return true;
+    case MojomRmadErrorCode::kRmaNotRequired:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_RMA_NOT_REQUIRED;
+      return true;
+    case MojomRmadErrorCode::kStateHandlerMissing:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_STATE_HANDLER_MISSING;
+      return true;
+    case MojomRmadErrorCode::kStateHandlerInitializationFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_STATE_HANDLER_INITIALIZATION_FAILED;
+      return true;
+    case MojomRmadErrorCode::kRequestInvalid:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REQUEST_INVALID;
+      return true;
+    case MojomRmadErrorCode::kRequestArgsMissing:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REQUEST_ARGS_MISSING;
+      return true;
+    case MojomRmadErrorCode::kRequestArgsViolation:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REQUEST_ARGS_VIOLATION;
+      return true;
+    case MojomRmadErrorCode::kTransitionFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_TRANSITION_FAILED;
+      return true;
+    case MojomRmadErrorCode::kAbortFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_ABORT_FAILED;
+      return true;
+    case MojomRmadErrorCode::kMissingComponent:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_MISSING_COMPONENT;
+      return true;
+    case MojomRmadErrorCode::kWriteProtectDisableRsuNoChallenge:
+      *out =
+          ProtoRmadErrorCode::RMAD_ERROR_WRITE_PROTECT_DISABLE_RSU_NO_CHALLENGE;
+      return true;
+    case MojomRmadErrorCode::kWriteProtectDisableRsuCodeInvalid:
+      *out =
+          ProtoRmadErrorCode::RMAD_ERROR_WRITE_PROTECT_DISABLE_RSU_CODE_INVALID;
+      return true;
+    case MojomRmadErrorCode::kWriteProtectDisableBatteryNotDisconnected:
+      *out = ProtoRmadErrorCode::
+          RMAD_ERROR_WRITE_PROTECT_DISABLE_BATTERY_NOT_DISCONNECTED;
+      return true;
+    case MojomRmadErrorCode::kWriteProtectSignalNotDetected:
+      *out = ProtoRmadErrorCode::
+          RMAD_ERROR_WRITE_PROTECT_DISABLE_SIGNAL_NOT_DETECTED;
+      return true;
+    case MojomRmadErrorCode::kReimagingDownloadNoNetwork:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REIMAGING_DOWNLOAD_NO_NETWORK;
+      return true;
+    case MojomRmadErrorCode::kReimagingDownloadNetworkError:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REIMAGING_DOWNLOAD_NETWORK_ERROR;
+      return true;
+    case MojomRmadErrorCode::kReimagingDownloadCancelled:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REIMAGING_DOWNLOAD_CANCELLED;
+      return true;
+    case MojomRmadErrorCode::kReimagingUsbNotFound:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REIMAGING_USB_NOT_FOUND;
+      return true;
+    case MojomRmadErrorCode::kReimagingUsbTooManyFound:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REIMAGING_USB_TOO_MANY_FOUND;
+      return true;
+    case MojomRmadErrorCode::kReimagingUsbInvalidImage:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REIMAGING_USB_INVALID_IMAGE;
+      return true;
+    case MojomRmadErrorCode::kReimagingImagingFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REIMAGING_IMAGING_FAILED;
+      return true;
+    case MojomRmadErrorCode::kReimagingUnknownFailure:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE;
+      return true;
+    case MojomRmadErrorCode::kDeviceInfoInvalid:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_DEVICE_INFO_INVALID;
+      return true;
+    case MojomRmadErrorCode::kCalibrationFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_FAILED;
+      return true;
+    case MojomRmadErrorCode::kProvisioningFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_PROVISIONING_FAILED;
+      return true;
+    case MojomRmadErrorCode::kPowerwashFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_POWERWASH_FAILED;
+      return true;
+    case MojomRmadErrorCode::kFinalizationFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_FINALIZATION_FAILED;
+      return true;
+    case MojomRmadErrorCode::kLogUploadFtpServerCannotConnect:
+      *out =
+          ProtoRmadErrorCode::RMAD_ERROR_LOG_UPLOAD_FTP_SERVER_CANNOT_CONNECT;
+      return true;
+    case MojomRmadErrorCode::kLogUploadFtpServerConnectionRejected:
+      *out = ProtoRmadErrorCode::
+          RMAD_ERROR_LOG_UPLOAD_FTP_SERVER_CONNECTION_REJECTED;
+      return true;
+    case MojomRmadErrorCode::kLogUploadFtpServerTransferFailed:
+      *out =
+          ProtoRmadErrorCode::RMAD_ERROR_LOG_UPLOAD_FTP_SERVER_TRANSFER_FAILED;
+      return true;
+    case MojomRmadErrorCode::kCannotCancelRma:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA;
+      return true;
+
+    case MojomRmadErrorCode::kNotSet:
+      NOTREACHED();
+      return false;
+  }
   NOTREACHED();
   return false;
 }
@@ -299,6 +465,15 @@ EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::ToMojom(
 bool EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::
     FromMojom(MojomCalibrationComponent component,
               ProtoCalibrationComponent* out) {
+  switch (component) {
+    case MojomCalibrationComponent::kAccelerometer:
+      *out = rmad::CalibrateComponentsState::
+          RMAD_CALIBRATION_COMPONENT_ACCELEROMETER;
+      return true;
+    case MojomCalibrationComponent::kCalibrateUnknown:
+      NOTREACHED();
+      return false;
+  }
   NOTREACHED();
   return false;
 }
@@ -326,7 +501,32 @@ EnumTraits<MojomProvisioningStep, ProtoProvisioningStep>::ToMojom(
 bool EnumTraits<MojomProvisioningStep, ProtoProvisioningStep>::FromMojom(
     MojomProvisioningStep step,
     ProtoProvisioningStep* out) {
+  switch (step) {
+    case MojomProvisioningStep::kInProgress:
+      *out = rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS;
+      return true;
+    case MojomProvisioningStep::kProvisioningComplete:
+      *out = rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_COMPLETE;
+      return true;
+    case MojomProvisioningStep::kProvisioningUnknown:
+      NOTREACHED();
+      return false;
+  }
   NOTREACHED();
+  return false;
+}
+
+bool StructTraits<ash::shimless_rma::mojom::ComponentDataView,
+                  rmad::ComponentRepairState>::
+    Read(ash::shimless_rma::mojom::ComponentDataView data,
+         rmad::ComponentRepairState* out) {
+  rmad::ComponentRepairState_Component name;
+  rmad::ComponentRepairState_RepairState repair_state;
+  if (data.ReadComponent(&name) && data.ReadState(&repair_state)) {
+    out->set_name(name);
+    out->set_repair_state(repair_state);
+    return true;
+  }
   return false;
 }
 

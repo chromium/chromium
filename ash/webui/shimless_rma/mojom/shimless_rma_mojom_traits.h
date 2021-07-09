@@ -33,22 +33,22 @@ struct EnumTraits<ash::shimless_rma::mojom::RmadErrorCode,
 
 template <>
 struct EnumTraits<ash::shimless_rma::mojom::ComponentType,
-                  rmad::ComponentRepairState::Component> {
+                  rmad::ComponentRepairState_Component> {
   static ash::shimless_rma::mojom::ComponentType ToMojom(
-      rmad::ComponentRepairState::Component key_status);
+      rmad::ComponentRepairState_Component key_status);
 
   static bool FromMojom(ash::shimless_rma::mojom::ComponentType input,
-                        rmad::ComponentRepairState::Component* out);
+                        rmad::ComponentRepairState_Component* out);
 };
 
 template <>
 struct EnumTraits<ash::shimless_rma::mojom::ComponentRepairState,
-                  rmad::ComponentRepairState::RepairState> {
+                  rmad::ComponentRepairState_RepairState> {
   static ash::shimless_rma::mojom::ComponentRepairState ToMojom(
-      rmad::ComponentRepairState::RepairState key_status);
+      rmad::ComponentRepairState_RepairState key_status);
 
   static bool FromMojom(ash::shimless_rma::mojom::ComponentRepairState input,
-                        rmad::ComponentRepairState::RepairState* out);
+                        rmad::ComponentRepairState_RepairState* out);
 };
 
 template <>
@@ -71,6 +71,25 @@ struct EnumTraits<ash::shimless_rma::mojom::ProvisioningStep,
   static bool FromMojom(ash::shimless_rma::mojom::ProvisioningStep input,
                         rmad::ProvisionDeviceState::ProvisioningStep* out);
 };
+
+template <>
+class StructTraits<ash::shimless_rma::mojom::ComponentDataView,
+                   rmad::ComponentRepairState> {
+ public:
+  static rmad::ComponentRepairState_Component component(
+      const rmad::ComponentRepairState& component) {
+    return component.name();
+  }
+
+  static rmad::ComponentRepairState_RepairState state(
+      const rmad::ComponentRepairState& component) {
+    return component.repair_state();
+  }
+
+  static bool Read(ash::shimless_rma::mojom::ComponentDataView data,
+                   rmad::ComponentRepairState* out);
+};
+
 }  // namespace mojo
 
 #endif  // ASH_WEBUI_SHIMLESS_RMA_MOJOM_SHIMLESS_RMA_MOJOM_TRAITS_H_
