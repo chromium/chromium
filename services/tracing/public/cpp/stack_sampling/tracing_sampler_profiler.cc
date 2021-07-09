@@ -343,7 +343,7 @@ TracingSamplerProfiler::TracingProfileBuilder::TracingProfileBuilder(
     const base::RepeatingClosure& sample_callback_for_testing)
     : sampled_thread_id_(sampled_thread_id),
       trace_writer_(std::move(trace_writer)),
-      should_enable_filtering_(should_enable_filtering),
+      stack_profile_writer_(should_enable_filtering),
       sample_callback_for_testing_(sample_callback_for_testing) {}
 
 TracingSamplerProfiler::TracingProfileBuilder::~TracingProfileBuilder() {
@@ -403,12 +403,7 @@ void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
   }
 
   if (reset_incremental_state_) {
-    interned_callstacks_.ResetEmittedState();
-    interned_frames_.ResetEmittedState();
-    interned_frame_names_.ResetEmittedState();
-    interned_module_names_.ResetEmittedState();
-    interned_module_ids_.ResetEmittedState();
-    interned_modules_.ResetEmittedState();
+    stack_profile_writer_.ResetEmittedState();
 
     auto trace_packet = trace_writer_->NewTracePacket();
     trace_packet->set_sequence_flags(
@@ -431,7 +426,8 @@ void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
   // Delta encoded timestamps and interned data require incremental state.
   trace_packet->set_sequence_flags(
       perfetto::protos::pbzero::TracePacket::SEQ_NEEDS_INCREMENTAL_STATE);
-  auto callstack_id = GetCallstackIDAndMaybeEmit(frames, &trace_packet);
+  auto callstack_id =
+      stack_profile_writer_.GetCallstackIDAndMaybeEmit(frames, &trace_packet);
   auto* streaming_profile_packet = trace_packet->set_streaming_profile_packet();
   streaming_profile_packet->add_callstack_iid(callstack_id);
 
@@ -451,8 +447,13 @@ void TracingSamplerProfiler::TracingProfileBuilder::SetTraceWriter(
   trace_writer_ = std::move(writer);
 }
 
+TracingSamplerProfiler::StackProfileWriter::StackProfileWriter(
+    bool enable_filtering)
+    : should_enable_filtering_(enable_filtering) {}
+TracingSamplerProfiler::StackProfileWriter::~StackProfileWriter() = default;
+
 InterningID
-TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit(
+TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
     const std::vector<base::Frame>& frames,
     perfetto::TraceWriter::TracePacketHandle* trace_packet) {
   size_t ip_hash = 0;
@@ -582,6 +583,15 @@ TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit(
     callstack_entry->add_frame_ids(frame_id);
 
   return interned_callstack.id;
+}
+
+void TracingSamplerProfiler::StackProfileWriter::ResetEmittedState() {
+  interned_callstacks_.ResetEmittedState();
+  interned_frames_.ResetEmittedState();
+  interned_frame_names_.ResetEmittedState();
+  interned_module_names_.ResetEmittedState();
+  interned_module_ids_.ResetEmittedState();
+  interned_modules_.ResetEmittedState();
 }
 
 // static

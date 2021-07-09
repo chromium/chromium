@@ -58,6 +58,36 @@ class LoaderLockSamplingThread;
 // field |profiler_| to be thread-safe.
 class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
  public:
+  class StackProfileWriter {
+   public:
+    explicit StackProfileWriter(bool should_enable_filtering);
+    ~StackProfileWriter();
+
+    StackProfileWriter(const StackProfileWriter&) = delete;
+    StackProfileWriter& operator=(const StackProfileWriter&) = delete;
+
+    InterningID GetCallstackIDAndMaybeEmit(
+        const std::vector<base::Frame>& frames,
+        perfetto::TraceWriter::TracePacketHandle* trace_packet);
+
+    void ResetEmittedState();
+
+   private:
+    const bool should_enable_filtering_;
+    InterningIndex<TypeList<size_t>, SizeList<1024>> interned_callstacks_{};
+    InterningIndex<TypeList<std::pair<std::string, std::string>,
+                            std::pair<uintptr_t, std::string>>,
+                   SizeList<1024, 1024>>
+        interned_frames_{};
+    InterningIndex<TypeList<std::string>, SizeList<1024>>
+        interned_frame_names_{};
+    InterningIndex<TypeList<std::string>, SizeList<1024>>
+        interned_module_names_{};
+    InterningIndex<TypeList<std::string>, SizeList<1024>>
+        interned_module_ids_{};
+    InterningIndex<TypeList<uintptr_t>, SizeList<1024>> interned_modules_{};
+  };
+
   // This class will receive the sampling profiler stackframes and output them
   // to the chrome trace via an event. Exposed for testing.
   class COMPONENT_EXPORT(TRACING_CPP) TracingProfileBuilder
@@ -92,9 +122,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
       DISALLOW_COPY_AND_ASSIGN(BufferedSample);
     };
 
-    InterningID GetCallstackIDAndMaybeEmit(
-        const std::vector<base::Frame>& frames,
-        perfetto::TraceWriter::TracePacketHandle* trace_packet);
     void WriteSampleToTrace(const BufferedSample& sample);
 
     // We usually sample at 50ms, and expect that tracing should have started in
@@ -106,22 +133,10 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     const base::PlatformThreadId sampled_thread_id_;
     base::Lock trace_writer_lock_;
     std::unique_ptr<perfetto::TraceWriter> trace_writer_;
-    InterningIndex<TypeList<size_t>, SizeList<1024>> interned_callstacks_{};
-    InterningIndex<TypeList<std::pair<std::string, std::string>,
-                            std::pair<uintptr_t, std::string>>,
-                   SizeList<1024, 1024>>
-        interned_frames_{};
-    InterningIndex<TypeList<std::string>, SizeList<1024>>
-        interned_frame_names_{};
-    InterningIndex<TypeList<std::string>, SizeList<1024>>
-        interned_module_names_{};
-    InterningIndex<TypeList<std::string>, SizeList<1024>>
-        interned_module_ids_{};
-    InterningIndex<TypeList<uintptr_t>, SizeList<1024>> interned_modules_{};
+    StackProfileWriter stack_profile_writer_;
     bool reset_incremental_state_ = true;
     uint32_t last_incremental_state_reset_id_ = 0;
     base::TimeTicks last_timestamp_;
-    const bool should_enable_filtering_;
     base::RepeatingClosure sample_callback_for_testing_;
   };
 
