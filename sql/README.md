@@ -154,7 +154,9 @@ disabled in Chrome. In addition, the
 [`EXPLAIN`](https://www.sqlite.org/lang_explain.html) and
 [`EXPLAIN QUERY PLAN`](https://www.sqlite.org/eqp.html) statements show the
 results of SQLite's query planner and optimizer, which are very helpful for
-reasoning about the performance of complex queries.
+reasoning about the performance of complex queries. The SQLite shell directive
+`.eqp on` automatically issues `EXPLAIN QUERY PLAN` for all future commands.
+
 
 The following commands set up SQLite shells using Chrome's build of SQLite.
 
