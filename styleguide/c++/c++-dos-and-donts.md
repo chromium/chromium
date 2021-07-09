@@ -318,6 +318,12 @@ void ExpensiveStuff() { ... }  // No problem.
 // The ExpensiveStuff() call will not happen in official release builds. No need
 // to use checks for DCHECK_IS_ON() anywhere.
 DCHECK(ExpensiveStuff());
+
+std::string ExpensiveDebugMessage() { ... }  // No problem.
+
+// Calls in stream operators are also dead code in official release builds (not
+// called with the result discarded). This is fine.
+DCHECK(...) << ExpensiveDebugMessage();
 ```
 
 This code will probably do expensive things that are not needed in official
