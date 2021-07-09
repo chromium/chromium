@@ -1273,7 +1273,7 @@ void PipelineImpl::Stop() {
 }
 
 void PipelineImpl::Seek(base::TimeDelta time, PipelineStatusCallback seek_cb) {
-  DVLOG(2) << __func__ << " to " << time.InMicroseconds();
+  DVLOG(2) << __func__ << " to " << time;
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(seek_cb);
 

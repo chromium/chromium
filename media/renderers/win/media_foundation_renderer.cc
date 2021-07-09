@@ -505,6 +505,8 @@ HRESULT MediaFoundationRenderer::PopulateStatistics(
   base::win::ScopedPropVariant frames_dropped;
   RETURN_IF_FAILED(media_engine_ex->GetStatistics(
       MF_MEDIA_ENGINE_STATISTIC_FRAMES_DROPPED, frames_dropped.Receive()));
+  DVLOG_FUNC(3) << "video_frames_decoded=" << frames_rendered.get().ulVal
+                << ", video_frames_dropped=" << frames_dropped.get().ulVal;
   statistics.video_frames_decoded = frames_rendered.get().ulVal;
   statistics.video_frames_dropped = frames_dropped.get().ulVal;
   return S_OK;
@@ -514,7 +516,7 @@ void MediaFoundationRenderer::SendStatistics() {
   PipelineStatistics new_stats = {};
   HRESULT hr = PopulateStatistics(new_stats);
   if (FAILED(hr)) {
-    DVLOG(3) << "Unable to populate pipeline stats: " << PrintHr(hr);
+    DVLOG_FUNC(3) << "Unable to populate pipeline stats: " << PrintHr(hr);
     return;
   }
 
@@ -525,6 +527,7 @@ void MediaFoundationRenderer::SendStatistics() {
 }
 
 void MediaFoundationRenderer::StartSendingStatistics() {
+  DVLOG_FUNC(2);
   const auto kPipelineStatsPollingPeriod =
       base::TimeDelta::FromMilliseconds(500);
   statistics_timer_.Start(FROM_HERE, kPipelineStatsPollingPeriod, this,
@@ -532,6 +535,7 @@ void MediaFoundationRenderer::StartSendingStatistics() {
 }
 
 void MediaFoundationRenderer::StopSendingStatistics() {
+  DVLOG_FUNC(2);
   statistics_timer_.Stop();
 }
 

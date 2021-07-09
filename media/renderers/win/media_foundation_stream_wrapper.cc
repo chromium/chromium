@@ -150,8 +150,6 @@ HRESULT MediaFoundationStreamWrapper::RuntimeClassInitialize(
     int stream_id,
     IMFMediaSource* parent_source,
     DemuxerStream* demuxer_stream) {
-  DVLOG_FUNC(1);
-
   {
     base::AutoLock auto_lock(lock_);
     parent_source_ = parent_source;
@@ -159,6 +157,10 @@ HRESULT MediaFoundationStreamWrapper::RuntimeClassInitialize(
   demuxer_stream_ = demuxer_stream;
   stream_id_ = stream_id;
   stream_type_ = demuxer_stream_->type();
+
+  DVLOG_FUNC(1) << "stream_id=" << stream_id
+                << ", stream_type=" << DemuxerStream::GetTypeName(stream_type_);
+
   RETURN_IF_FAILED(GenerateStreamDescriptor());
   RETURN_IF_FAILED(MFCreateEventQueue(&mf_media_event_queue_));
   return S_OK;
@@ -232,7 +234,7 @@ void MediaFoundationStreamWrapper::SetFlushed(bool flushed) {
 }
 
 bool MediaFoundationStreamWrapper::HasEnded() const {
-  DVLOG_FUNC(2);
+  DVLOG_FUNC(2) << "stream_ended_=" << stream_ended_;
 
   return stream_ended_;
 }
