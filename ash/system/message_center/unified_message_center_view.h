@@ -135,10 +135,6 @@ class ASH_EXPORT UnifiedMessageCenterView
 
   bool collapsed() { return collapsed_; }
 
-  UnifiedMessageListView* message_list_view_for_test() {
-    return message_list_view_;
-  }
-
  private:
   friend class UnifiedMessageCenterViewTest;
   friend class UnifiedMessageCenterBubbleTest;

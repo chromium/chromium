@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_LIST_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -70,7 +69,7 @@ class ASH_EXPORT UnifiedMessageListView
   // Returns the total number of pinned notifications in the list.
   int GetTotalPinnedNotificationCount() const;
 
-  // Returns true if `animation_` is currently in progress.
+  // Returns true if an animation is currently in progress.
   bool IsAnimating() const;
 
   // Called when a notification is slid out so we can run the MOVE_DOWN
@@ -119,8 +118,8 @@ class ASH_EXPORT UnifiedMessageListView
   class Background;
   class MessageViewContainer;
 
-  // UnifiedMessageListView always runs a single animation at one time. When
-  // `state_` is IDLE, `animation_->is_animating()` is always false and vice
+  // UnifiedMessageListView always runs single animation at one time. When
+  // |state_| is IDLE, animation_->is_animating() is always false and vice
   // versa.
   enum class State {
     // No animation is running.
@@ -200,9 +199,6 @@ class ASH_EXPORT UnifiedMessageListView
   // Manages notification closing animation. UnifiedMessageListView does not use
   // implicit animation.
   const std::unique_ptr<gfx::LinearAnimation> animation_;
-
-  // Measure animation smoothness metrics for `animation_`.
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
 
   State state_ = State::IDLE;
 
