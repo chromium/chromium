@@ -6,7 +6,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const base::Feature kDiceWebSigninInterceptionFeature{
-    "DiceWebSigninInterception", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DiceWebSigninInterception", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // ENABLE_DICE_SUPPORT
 
 // Enables the client-side processing of the HTTP response header
