@@ -47,7 +47,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Scheduler.DOMScheduler.QueueingDurationPerPriority" units="ms"
-    expires_after="2020-12-01">
+    expires_after="2022-12-01">
 <!-- Name completed by histogram_suffixes name="Scheduler.DOMScheduler.Priority" -->
 
   <owner>kdillon@chromium.org</owner>
@@ -60,7 +60,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scheduler.DOMScheduler.TaskSignalPriorityWasChanged"
-    enum="PriorityChangeStatus" expires_after="2020-12-01">
+    enum="PriorityChangeStatus" expires_after="2022-12-01">
   <owner>kdillon@chromium.org</owner>
   <owner>shaseley@chromium.org</owner>
   <summary>
