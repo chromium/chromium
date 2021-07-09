@@ -130,7 +130,8 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
 
 // Verifies that RequestShow() is not called redundantly if the virtual
 // keyboard is reported as visible.
-IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
+// TODO(https://crbug.com/1226757): Flaky on Fuchsia-x64.
+IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, DISABLED_ShowAndHideWithVisibility) {
   testing::InSequence s;
 
   // Alphanumeric field click.
