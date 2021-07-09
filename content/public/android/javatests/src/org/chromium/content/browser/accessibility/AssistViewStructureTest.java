@@ -279,9 +279,10 @@ public class AssistViewStructureTest {
         Assert.assertNotNull(metadata);
         Assert.assertEquals(4, metadata.size());
         Assert.assertEquals("<title>Hello World</title>", metadata.get(0));
-        Assert.assertEquals("<meta charset=utf-8></meta>", metadata.get(1));
-        Assert.assertEquals("<link ref=canonical href=https://abc.com></link>", metadata.get(2));
-        Assert.assertEquals("<script type=application/ld+json>{}</script>", metadata.get(3));
+        Assert.assertEquals("<meta charset=\"utf-8\"></meta>", metadata.get(1));
+        Assert.assertEquals(
+                "<link ref=\"canonical\" href=\"https://abc.com\"></link>", metadata.get(2));
+        Assert.assertEquals("<script type=\"application/ld+json\">{}</script>", metadata.get(3));
     }
 
     /**

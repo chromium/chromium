@@ -552,11 +552,12 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Metadata) {
       /* timeout= */ {});
   waiter.Wait();
 
-  EXPECT_THAT(waiter.snapshot().tree_data.metadata,
-              testing::ElementsAre(
-                  "<title>Hello World</title>", "<meta charset=utf-8></meta>",
-                  "<link ref=canonical href=https://abc.com></link>",
-                  "<script type=application/ld+json>{}</script>"));
+  EXPECT_THAT(
+      waiter.snapshot().tree_data.metadata,
+      testing::ElementsAre(
+          "<title>Hello World</title>", "<meta charset=\"utf-8\"></meta>",
+          "<link ref=\"canonical\" href=\"https://abc.com\"></link>",
+          "<script type=\"application/ld+json\">{}</script>"));
 }
 
 }  // namespace content
