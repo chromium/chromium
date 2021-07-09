@@ -49,8 +49,6 @@ source_set("test_support") {
   sources = [
     "test_chrome_browser_provider.h",
     "test_chrome_browser_provider.mm",
-    "test_chrome_provider_initializer.h",
-    "test_chrome_provider_initializer.mm",
     "test_text_zoom_provider.h",
     "test_text_zoom_provider.mm",
   ]
@@ -70,5 +68,28 @@ source_set("test_support") {
     "//ios/public/provider/chrome/browser/voice",
     "//ios/public/provider/chrome/browser/voice:test_support",
     "//testing/gtest",
+  ]
+}
+
+source_set("test_provider_factory") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_chrome_browser_provider_factory.mm" ]
+  deps = [
+    ":browser",
+    ":test_support",
+  ]
+}
+
+group("test_providers") {
+  testonly = true
+  deps = [
+    # The target providing the ChromeBrowserProvider factory.
+    ":test_provider_factory",
+
+    # The provider API needs to provide MaterialDesignComponent API (as the
+    # internal provider provides an alternate implementation).
+    "//ios/third_party/material_components_ios:material_components_ios+bundle",
+    "//ios/third_party/material_components_ios:material_components_ios+link",
   ]
 }

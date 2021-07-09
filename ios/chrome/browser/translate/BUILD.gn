@@ -97,7 +97,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common",
-    "//ios/public/provider/chrome/browser:test_support",
     "//ios/web/public",
     "//ios/web/public/test:util",
     "//skia",

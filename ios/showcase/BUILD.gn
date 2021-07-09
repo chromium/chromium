@@ -14,6 +14,9 @@ ios_app_bundle("showcase") {
   deps = [
     ":features",
     "//ios/showcase/core:main",
+
+    # Use the chromium implementation of the provider API.
+    "//ios/chrome/browser/providers:chromium_providers",
   ]
   bundle_deps = [ "//ios/showcase/core/resources" ]
   if (ios_enable_credential_provider_extension) {
@@ -58,6 +61,9 @@ ios_eg2_test_app_host("ios_showcase_eg2tests") {
     "//ios/showcase/core:main_eg2",
     "//ios/showcase/test:eg_app_support+eg2",
     "//ios/testing/earl_grey:eg_app_support+eg2",
+
+    # Use the chromium implementation of the provider API.
+    "//ios/chrome/browser/providers:chromium_providers",
   ]
   bundle_deps = [
     "//ios/chrome/app/resources",

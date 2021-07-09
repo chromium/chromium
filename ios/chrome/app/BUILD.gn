@@ -484,6 +484,9 @@ ios_app_bundle("chrome") {
   deps = [
     ":main",
     ":tests_fake_hook",
+
+    # Use the provider API controlled by args.gn.
+    ios_provider_target,
   ]
 
   if (current_toolchain == default_toolchain) {

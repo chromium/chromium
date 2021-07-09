@@ -15,7 +15,6 @@
 #include "ios/chrome/test/testing_application_context.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/test_chrome_provider_initializer.h"
 #import "ios/web/public/web_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -35,8 +34,10 @@ class IOSChromeUnitTestSuiteInitializer
   ~IOSChromeUnitTestSuiteInitializer() override {}
 
   void OnTestStart(const testing::TestInfo& test_info) override {
-    test_ios_chrome_provider_initializer_.reset(
-        new ios::TestChromeProviderInitializer());
+    chrome_browser_provider_ = ios::CreateChromeBrowserProvider();
+    ios::ChromeBrowserProvider* previous_provider =
+        ios::SetChromeBrowserProvider(chrome_browser_provider_.get());
+    DCHECK(!previous_provider);
 
     DCHECK(!GetApplicationContext());
     application_context_.reset(new TestingApplicationContext);
@@ -46,12 +47,14 @@ class IOSChromeUnitTestSuiteInitializer
     DCHECK_EQ(GetApplicationContext(), application_context_.get());
     application_context_.reset();
 
-    test_ios_chrome_provider_initializer_.reset();
+    ios::ChromeBrowserProvider* previous_provider =
+        ios::SetChromeBrowserProvider(nullptr);
+    DCHECK_EQ(previous_provider, chrome_browser_provider_.get());
+    chrome_browser_provider_.reset();
   }
 
  private:
-  std::unique_ptr<ios::TestChromeProviderInitializer>
-      test_ios_chrome_provider_initializer_;
+  std::unique_ptr<ios::ChromeBrowserProvider> chrome_browser_provider_;
   std::unique_ptr<ApplicationContext> application_context_;
 
   DISALLOW_COPY_AND_ASSIGN(IOSChromeUnitTestSuiteInitializer);

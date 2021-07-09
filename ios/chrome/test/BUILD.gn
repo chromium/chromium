@@ -31,8 +31,6 @@ source_set("test_support") {
     "ios_chrome_scoped_testing_chrome_browser_state_manager.h",
     "ios_chrome_scoped_testing_local_state.cc",
     "ios_chrome_scoped_testing_local_state.h",
-    "ios_chrome_unit_test_suite.h",
-    "ios_chrome_unit_test_suite.mm",
     "root_view_controller_test.h",
     "root_view_controller_test.mm",
     "scoped_key_window.h",
@@ -109,10 +107,36 @@ source_set("block_cleanup_test") {
   ]
 }
 
+source_set("ios_chrome_unit_test_suite") {
+  testonly = true
+  sources = [
+    "ios_chrome_unit_test_suite.h",
+    "ios_chrome_unit_test_suite.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/content_settings/core/common",
+    "//ios/chrome/browser:chrome_paths",
+    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser/browser_state:browser_state_impl",
+    "//ios/chrome/test:test_support",
+    "//ios/components/webui:url_constants",
+    "//ios/public/provider/chrome/browser",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("run_all_unittests") {
   testonly = true
   sources = [ "run_all_unittests.cc" ]
   deps = [
+    ":ios_chrome_unit_test_suite",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -141,6 +165,9 @@ test("ios_chrome_perftests") {
     "//ios/chrome/app/resources:packed_resources",
     "//ios/chrome/browser/ui/main",
 
+    # Use the same provider as Chromium.app to have meaningful perf numbers.
+    ios_provider_target,
+
     # Add perf_tests target here.
     "//ios/chrome/browser/ui/ntp:perf_tests",
     "//ios/chrome/browser/ui/omnibox:perf_tests",
@@ -162,6 +189,9 @@ test("ios_chrome_unittests") {
     ":run_all_unittests",
     "//ios/chrome/app:tests_fake_hook",
     "//ios/chrome/app/resources:packed_resources",
+
+    # Use the test implementation of the provider API.
+    "//ios/public/provider/chrome/browser:test_providers",
 
     # Add unit_tests target here.
     "//ios/chrome/app:unit_tests",

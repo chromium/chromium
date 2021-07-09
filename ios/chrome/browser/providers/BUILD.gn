@@ -36,7 +36,7 @@ source_set("providers") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-source_set("provider_factory") {
+source_set("chromium_provider_factory") {
   sources = [ "chromium_browser_provider_factory.mm" ]
   deps = [
     ":providers",
@@ -44,4 +44,16 @@ source_set("provider_factory") {
     "//ios/public/provider/chrome/browser",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+group("chromium_providers") {
+  deps = [
+    # The target providing the ChromeBrowserProvider factory.
+    ":chromium_provider_factory",
+
+    # The provider API needs to provide MaterialDesignComponent API (as the
+    # internal provider provides an alternate implementation).
+    "//ios/third_party/material_components_ios:material_components_ios+bundle",
+    "//ios/third_party/material_components_ios:material_components_ios+link",
+  ]
 }

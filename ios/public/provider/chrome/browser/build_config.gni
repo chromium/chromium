@@ -18,9 +18,9 @@ declare_args() {
   ios_launchscreen_assets_target =
       "//ios/chrome/app/resources:launchscreen_assets"
 
-  # Label of the target providing implementation for ChromeBrowserProvider.
-  # Overridden when using the Google-internal repository to build Chrome on iOS.
-  ios_provider_target = "//ios/chrome/browser/providers:provider_factory"
+  # Label of the target providing the "Provider API". Overridden when using
+  # the Google internal repository to build Chrome on iOS.
+  ios_provider_target = "//ios/chrome/browser/providers:chromium_providers"
 
   # This defines targets to include resources needed by the providers which are
   # copied to the application bundle.

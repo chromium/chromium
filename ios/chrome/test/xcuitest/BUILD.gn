@@ -7,6 +7,10 @@ import("//ios/chrome/test/xcuitest/ios_chrome_xcuitest_app_host.gni")
 
 ios_chrome_xcuitest_app_host("ios_chrome_xcuitests") {
   use_default_test_hooks = true
+  deps = [
+    # Use the chromium implementation of the provider API.
+    "//ios/chrome/browser/providers:chromium_providers",
+  ]
 }
 
 ios_xcuitest_test("ios_chrome_device_check_xcuitests_module") {

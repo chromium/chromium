@@ -90,7 +90,6 @@ source_set("startup") {
     "//ios/public/provider/chrome/browser",
     "//ios/web",
     "//ios/web/public/init",
-    ios_provider_target,
   ]
 }
 

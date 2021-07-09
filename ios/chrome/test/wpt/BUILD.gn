@@ -18,7 +18,12 @@ group("all_tests") {
 }
 
 ios_chrome_xcuitest_app_host("ios_cwt_chromedriver_tests") {
-  deps = [ ":app_support" ]
+  deps = [
+    ":app_support",
+
+    # Use the chromium implementation of the provider API.
+    "//ios/chrome/browser/providers:chromium_providers",
+  ]
   bundle_deps = [ "//ios/third_party/gtx:gtx+bundle" ]
 }
 

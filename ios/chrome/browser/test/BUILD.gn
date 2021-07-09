@@ -35,10 +35,6 @@ source_set("perf_test_support") {
     "//ios/chrome/test/base:perf_test_support",
     "//ios/public/provider/chrome/browser",
     "//ios/web/public/test",
-
-    # Perf tests can run with any provider, but the resulting numbers will only
-    # be meaningful if ChromeBrowserProviderImpl is used.
-    ios_provider_target,
   ]
   frameworks = [ "UIKit.framework" ]
 }

@@ -103,6 +103,9 @@ template("chrome_ios_eg2_test_app_host") {
       "//ios/chrome/test/earl_grey:hooks",
       "//ios/testing:http_server_bundle_data",
       "//ios/third_party/earl_grey2:app_framework+link",
+
+      # Use the same provider API as Chromium.app.
+      ios_provider_target,
     ]
 
     if (!defined(bundle_deps)) {
