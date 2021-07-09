@@ -273,6 +273,9 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // GetIDForPrintPreviewUI() everywhere.
   absl::optional<int32_t> id_;
 
+  // This UI's client ID with the print backend service manager.
+  uint32_t service_manager_client_id_;
+
   // Weak pointer to the WebUI handler.
   PrintPreviewHandler* const handler_;
 

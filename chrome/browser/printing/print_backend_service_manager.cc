@@ -34,8 +34,10 @@ constexpr char kPrintBackendRequiresElevatedPrivilegeHistogramName[] =
     "Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered";
 
 // Amount of idle time to wait before resetting the connection to the service.
-constexpr base::TimeDelta kResetOnIdleTimeout =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kNoClientsRegisteredResetOnIdleTimeout =
+    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kClientsRegisteredResetOnIdleTimeout =
+    base::TimeDelta::FromSeconds(120);
 
 PrintBackendServiceManager* g_print_backend_service_manager_singleton = nullptr;
 
@@ -47,6 +49,84 @@ PrintBackendServiceManager::~PrintBackendServiceManager() = default;
 
 bool PrintBackendServiceManager::ShouldSandboxPrintBackendService() const {
   return is_sandboxed_service_;
+}
+
+uint32_t PrintBackendServiceManager::RegisterClient() {
+  uint32_t client_id = ++last_client_id_;
+
+  VLOG(1) << "Registering a client with ID " << client_id
+          << " for print backend service.";
+  clients_.emplace(client_id);
+
+  // A new client registration is a signal of impending activity to a print
+  // backend service.  Performance can be improved if we ensure that an initial
+  // service is ready for when the first Mojo call should happen shortly after
+  // this registration.
+  // It is possible that there might have been prior clients registered that
+  // persisted for a long time (e.g., a tab with a Print Preview left open
+  // indefinitely).  We use a long timeout against idleness for that scenario,
+  // so we want to perform this optimization check every time regardless of
+  // number of clients registered.
+  // We don't know if a particular printer might be needed, so for now just
+  // start for the blank `printer_name` which would cover queries like getting
+  // the default printer and enumerating the list of printers.
+  constexpr char kEmptyPrinterName[] = "";
+  std::string remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
+  auto iter = sandboxed_remotes_.find(remote_id);
+  if (iter == sandboxed_remotes_.end()) {
+    // Service not already available, so launch it now so that it will be
+    // ready by the time the client gets to point of invoking a Mojo call.
+    GetService(kEmptyPrinterName);
+  } else {
+    // Service already existed, possibly was recently marked for being reset
+    // with a short timeout.  Ensure it has the long timeout to be available
+    // across user interactions but to also get reclaimed should the user leave
+    // it unused indefinitely.
+    // Safe to use base::Unretained(this) since `this` is a global singleton
+    // which never goes away.
+    DVLOG(1) << "Updating to long idle timeout for print backend service id `"
+             << remote_id << "`";
+    mojo::Remote<printing::mojom::PrintBackendService>& service = iter->second;
+    service.set_idle_handler(
+        kClientsRegisteredResetOnIdleTimeout,
+        base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
+                            base::Unretained(this), /*sandboxed=*/true,
+                            remote_id));
+
+    // TODO(crbug.com/1225111)  Maybe need to issue a quick call here to get
+    // adjusted timeout to take effect?  Ideally not, since there is supposed
+    // to be an expected call "soon" after having registered.
+  }
+
+  return client_id;
+}
+
+void PrintBackendServiceManager::UnregisterClient(uint32_t id) {
+  if (!clients_.erase(id)) {
+    DVLOG(1) << "Unknown client ID " << id
+             << ", is client being unregistered multiple times?";
+    return;
+  }
+  VLOG(1) << "Unregistering client with ID " << id
+          << " from print backend service.";
+
+  if (!clients_.empty())
+    return;
+
+  // No more clients means that there is an opportunity to more aggressively
+  // reclaim resources by letting service processes terminate.  Register a
+  // short idle timeout with services.  This is preferred to just resetting
+  // them immediately here, in case a user immediately reopens a Print Preview.
+  for (auto& iter : sandboxed_remotes_) {
+    const std::string& remote_id = iter.first;
+    mojo::Remote<printing::mojom::PrintBackendService>& service = iter.second;
+    UpdateServiceToShortIdleTimeout(service, /*sandboxed=*/true, remote_id);
+  }
+  for (auto& iter : unsandboxed_remotes_) {
+    const std::string& remote_id = iter.first;
+    mojo::Remote<printing::mojom::PrintBackendService>& service = iter.second;
+    UpdateServiceToShortIdleTimeout(service, /*sandboxed=*/false, remote_id);
+  }
 }
 
 const mojo::Remote<printing::mojom::PrintBackendService>&
@@ -65,6 +145,10 @@ PrintBackendServiceManager::GetService(const std::string& printer_name) {
 
     return *sandboxed_service_remote_for_test_;
   }
+
+  // Performance is improved if a service is launched ahead of the time it will
+  // be needed by client callers.
+  DCHECK(!clients_.empty());
 
   RemotesMap& remote =
       is_sandboxed_service_ ? sandboxed_remotes_ : unsandboxed_remotes_;
@@ -106,18 +190,15 @@ PrintBackendServiceManager::GetService(const std::string& printer_name) {
         &PrintBackendServiceManager::OnRemoteDisconnected,
         base::Unretained(this), is_sandboxed_service_, remote_id));
 
-    // TODO(crbug.com/809738) Interactions with the service should be expected
-    // as long as any Print Preview dialogs are open (and there could be more
-    // than one preview open at a time).  Keeping the service present as long
-    // as those are open would help provide a more responsive experience for
-    // the user.  For now, to ensure that this process doesn't stick around
-    // forever we make it go away after a short delay of idleness, but that
-    // should be adjusted to happen only after all UI references have been
-    // removed.
+    // Beware of case where a user leaves a tab with a Print Preview open
+    // indefinitely.  Use a long timeout against idleness to reclaim the unused
+    // resources of an idle print backend service for this case.
     // Safe to use base::Unretained(this) since `this` is a global singleton
     // which never goes away.
+    DVLOG(1) << "Updating to long idle timeout for print backend service id `"
+             << remote_id << "`";
     service.set_idle_handler(
-        kResetOnIdleTimeout,
+        kClientsRegisteredResetOnIdleTimeout,
         base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
                             base::Unretained(this), is_sandboxed_service_,
                             remote_id));
@@ -270,6 +351,24 @@ std::string PrintBackendServiceManager::GetRemoteIdForPrinterName(
 #else
   return std::string();
 #endif
+}
+
+void PrintBackendServiceManager::UpdateServiceToShortIdleTimeout(
+    mojo::Remote<printing::mojom::PrintBackendService>& service,
+    bool sandboxed,
+    const std::string& remote_id) {
+  DVLOG(1) << "Updating to short idle timeout for "
+           << (sandboxed ? "sandboxed" : "unsandboxed")
+           << " print backend service id `" << remote_id << "`";
+  service.set_idle_handler(
+      kNoClientsRegisteredResetOnIdleTimeout,
+      base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
+                          base::Unretained(this), sandboxed, remote_id));
+
+  // TODO(crbug.com/1225111)  Make a superfluous call to the service, just to
+  // cause an IPC that will in turn make the adjusted timeout value actually
+  // take effect.
+  service->Poke();
 }
 
 void PrintBackendServiceManager::OnIdleTimeout(bool sandboxed,

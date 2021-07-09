@@ -33,6 +33,7 @@
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/printing/pdf_nup_converter_client.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_preview_data_service.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
@@ -69,6 +70,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/nup_parameters.h"
 #include "printing/print_job_constants.h"
+#include "printing/printing_features.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -469,6 +471,14 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui,
       initial_preview_start_time_(base::TimeTicks::Now()),
       handler_(handler.get()) {
   web_ui->AddMessageHandler(std::move(handler));
+
+  // Register with print backend service manager; it is beneficial to have a
+  // the print backend service be present and ready for at least as long as
+  // this UI is around.
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    service_manager_client_id_ =
+        PrintBackendServiceManager::GetInstance().RegisterClient();
+  }
 }
 
 PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui)
@@ -486,9 +496,21 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui)
 
   // Set up the chrome://theme/ source.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
+
+  // Register with print backend service manager; it is beneficial to have a
+  // the print backend service be present and ready for at least as long as
+  // this UI is around.
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    service_manager_client_id_ =
+        PrintBackendServiceManager::GetInstance().RegisterClient();
+  }
 }
 
 PrintPreviewUI::~PrintPreviewUI() {
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    PrintBackendServiceManager::GetInstance().UnregisterClient(
+        service_manager_client_id_);
+  }
   ClearPreviewUIId();
 }
 

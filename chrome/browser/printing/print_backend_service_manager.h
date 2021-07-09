@@ -26,6 +26,14 @@ class PrintBackendServiceManager {
   // otherwise.
   bool ShouldSandboxPrintBackendService() const;
 
+  // Register as a client of PrintBackendServiceManager.  This acts as a signal
+  // of impending activity enabling possible optimizations within the manager.
+  uint32_t RegisterClient();
+
+  // Notify the manager that this client is no longer needing print backend
+  // services.  This signal might alter the manager's internal optimizations.
+  void UnregisterClient(uint32_t id);
+
   // Acquires a remote handle to the Print Backend Service instance, launching a
   // process to host the service if necessary.
   const mojo::Remote<printing::mojom::PrintBackendService>& GetService(
@@ -103,6 +111,12 @@ class PrintBackendServiceManager {
   // Determine the remote ID that is used for the specified `printer_name`.
   std::string GetRemoteIdForPrinterName(const std::string& printer_name) const;
 
+  // Help function to reset idle timeout duration to a short value.
+  void UpdateServiceToShortIdleTimeout(
+      mojo::Remote<printing::mojom::PrintBackendService>& service,
+      bool sandboxed,
+      const std::string& remote_id);
+
   // Callback when predetermined idle timeout occurs indicating no in-flight
   // messages for a short period of time.  `sandboxed` is used to distinguish
   // which mapping of remotes the timeout applies to.
@@ -165,6 +179,12 @@ class PrintBackendServiceManager {
   // Keep separate mapping of remotes for sandboxed vs. unsandboxed services.
   RemotesMap sandboxed_remotes_;
   RemotesMap unsandboxed_remotes_;
+
+  // Set of IDs for clients actively engaged in printing.  This could include
+  // tabs in print preview as well as an active system print.  Retention of a
+  // service process can have benefit so long as there are active clients.
+  base::flat_set<uint32_t> clients_;
+  uint32_t last_client_id_ = 0;
 
   // Track the saved callbacks for each remote.
   RemoteSavedEnumeratePrintersCallbacks

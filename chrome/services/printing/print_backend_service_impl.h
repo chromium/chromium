@@ -35,6 +35,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
   // mojom::PrintBackendService implementation:
   void Init(const std::string& locale) override;
+  void Poke() override;
   void EnumeratePrinters(
       mojom::PrintBackendService::EnumeratePrintersCallback callback) override;
   void GetDefaultPrinterName(

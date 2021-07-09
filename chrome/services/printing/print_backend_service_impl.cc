@@ -34,6 +34,10 @@ void PrintBackendServiceImpl::Init(const std::string& locale) {
   print_backend_ = PrintBackend::CreateInstance(locale);
 }
 
+// TODO(crbug.com/1225111)  Do nothing, this is just to assist an idle timeout
+// change by providing a low-cost call to ensure it is applied.
+void PrintBackendServiceImpl::Poke() {}
+
 void PrintBackendServiceImpl::EnumeratePrinters(
     mojom::PrintBackendService::EnumeratePrintersCallback callback) {
   if (!print_backend_) {

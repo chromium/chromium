@@ -359,6 +359,10 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
   if (IsCrashed())
     return false;
 
+  // TODO(crbug.com/809738)  Register with `PrintBackendServiceManager` when
+  // system print is enabled out-of-process.  A corresponding unregister should
+  // go in `ReleasePrintJob()`.
+
   SetPrintingRFH(rfh);
   GetPrintRenderFrame(rfh)->PrintRequestedPages();
   return true;

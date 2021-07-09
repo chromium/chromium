@@ -52,6 +52,10 @@ interface PrintBackendService {
   // interface to the underlying data source.
   Init(string locale);
 
+  // TODO(crbug.com/1225111)  Message with no arguments and no reply that is
+  // useful to ensure that an idle timeout change takes effect.
+  Poke();
+
   // Enumerates the list of installed local and network printers.
   EnumeratePrinters()
     => (PrinterListResult printer_list);
