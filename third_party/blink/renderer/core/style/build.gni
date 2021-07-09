@@ -92,6 +92,8 @@ blink_core_sources_style = [
   "style_ray.h",
   "style_reflection.h",
   "style_self_alignment_data.h",
+  "style_svg_resource.cc",
+  "style_svg_resource.h",
   "style_variables.cc",
   "style_variables.h",
   "svg_dash_array.cc",
