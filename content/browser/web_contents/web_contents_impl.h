@@ -1710,7 +1710,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Prints a console warning when visiting a localhost site with a bad
   // certificate via --allow-insecure-localhost.
-  void ShowInsecureLocalhostWarningIfNeeded();
+  void ShowInsecureLocalhostWarningIfNeeded(PageImpl& page);
 
   // Format of |headers| is a new line separated list of key value pairs:
   // "<key1>: <value1>\r\n<key2>: <value2>".

@@ -7338,7 +7338,8 @@ void WebContentsImpl::DocumentOnLoadCompleted(
     RenderFrameHostImpl* render_frame_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DocumentOnLoadCompleted",
                         "render_frame_host", render_frame_host);
-  ShowInsecureLocalhostWarningIfNeeded();
+  DCHECK(render_frame_host->is_main_frame());
+  ShowInsecureLocalhostWarningIfNeeded(render_frame_host->GetPage());
 
   observers_.NotifyObservers(
       &WebContentsObserver::DocumentOnLoadCompletedInMainFrame,
@@ -8749,29 +8750,31 @@ void WebContentsImpl::RemoveReceiverSet(const std::string& interface_name) {
     receiver_sets_.erase(it);
 }
 
-void WebContentsImpl::ShowInsecureLocalhostWarningIfNeeded() {
+void WebContentsImpl::ShowInsecureLocalhostWarningIfNeeded(PageImpl& page) {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::ShowInsecureLocalhostWarningIfNeeded");
+
   bool allow_localhost = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAllowInsecureLocalhost);
   if (!allow_localhost)
     return;
 
-  content::NavigationEntry* entry = GetController().GetLastCommittedEntry();
+  RenderFrameHostImpl& frame = page.GetMainDocument();
+  NavigationEntry* entry =
+      frame.frame_tree()->controller().GetLastCommittedEntry();
   if (!entry || !net::IsLocalhost(entry->GetURL()))
     return;
 
-  content::SSLStatus ssl_status = entry->GetSSL();
+  SSLStatus ssl_status = entry->GetSSL();
   if (!net::IsCertStatusError(ssl_status.cert_status))
     return;
 
-  GetMainFrame()->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kWarning,
-      base::StringPrintf("This site does not have a valid SSL "
-                         "certificate! Without SSL, your site's and "
-                         "visitors' data is vulnerable to theft and "
-                         "tampering. Get a valid SSL certificate before"
-                         " releasing your website to the public."));
+  frame.AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
+                            "This site does not have a valid SSL "
+                            "certificate! Without SSL, your site's and "
+                            "visitors' data is vulnerable to theft and "
+                            "tampering. Get a valid SSL certificate before "
+                            " releasing your website to the public.");
 }
 
 bool WebContentsImpl::IsShowingContextMenuOnPage() const {
