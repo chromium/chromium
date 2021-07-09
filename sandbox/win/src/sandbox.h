@@ -55,7 +55,10 @@ class TargetServices;
 //  // -- later you can call:
 //  broker->WaitForAllTargets(option);
 //
-class BrokerServices {
+// We need [[clang::lto_visibility_public]] because instances of this class are
+// passed across module boundaries. This means different modules must have
+// compatible definitions of the class even when LTO is enabled.
+class [[clang::lto_visibility_public]] BrokerServices {
  public:
   // Initializes the broker. Must be called before any other on this class.
   // returns ALL_OK if successful. All other return values imply failure.

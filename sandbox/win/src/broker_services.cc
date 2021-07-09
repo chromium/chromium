@@ -29,6 +29,10 @@
 #include "sandbox/win/src/threadpool.h"
 #include "sandbox/win/src/win_utils.h"
 
+#if DCHECK_IS_ON()
+#include "base/win/current_module.h"
+#endif
+
 namespace {
 
 // Utility function to associate a completion port to a job object.
@@ -437,6 +441,14 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
                                            ResultCode* last_warning,
                                            DWORD* last_error,
                                            PROCESS_INFORMATION* target_info) {
+#if DCHECK_IS_ON()
+  // This code should only be called from the exe, ensure that this is always
+  // the case.
+  HMODULE exe_module = nullptr;
+  CHECK(::GetModuleHandleEx(NULL, exe_path, &exe_module));
+  DCHECK_EQ(CURRENT_MODULE(), exe_module);
+#endif
+
   if (!exe_path)
     return SBOX_ERROR_BAD_PARAMS;
 
