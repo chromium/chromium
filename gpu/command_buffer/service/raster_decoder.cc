@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -2875,27 +2876,66 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     return;
   }
 
-  size_t y_size = dst_height * y_stride;
-  uint8_t* y_out =
-      GetSharedMemoryAs<uint8_t*>(shm_id, shm_offset + y_offset, y_size);
+  // Large plane strides or heights could potentially overflow the unsigned int
+  // parameters of GetSharedMemoryAs() below. We use base::CheckedNumeric to
+  // prevent using any values that overflowed which could cause us to request
+  // incorrect shared memory regions.
+  base::CheckedNumeric<unsigned int> checked_shm_offset(shm_offset);
+  base::CheckedNumeric<unsigned int> checked_dst_height(dst_height);
+
+  base::CheckedNumeric<unsigned int> y_size = checked_dst_height * y_stride;
+  base::CheckedNumeric<unsigned int> y_plane_offset =
+      checked_shm_offset + y_offset;
+  if (!y_size.IsValid() || !y_plane_offset.IsValid()) {
+    LOCAL_SET_GL_ERROR(
+        GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
+        "y plane size or offset too large. Both must fit in unsigned int.");
+    return;
+  }
+
+  // |y_plane_offset| and |y_size| are guaranteed valid by the checks above and
+  // won't die here. Same with the u and v planes below.
+  uint8_t* y_out = GetSharedMemoryAs<uint8_t*>(
+      shm_id, y_plane_offset.ValueOrDie(), y_size.ValueOrDie());
   if (!y_out) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
                        "Failed to get memory for y plane output");
     return;
   }
 
-  size_t u_size = ((dst_height + 1) / 2) * u_stride;
-  uint8_t* u_out =
-      GetSharedMemoryAs<uint8_t*>(shm_id, shm_offset + u_offset, u_size);
+  base::CheckedNumeric<unsigned int> checked_uv_plane_height =
+      (checked_dst_height + 1) / 2;
+
+  base::CheckedNumeric<unsigned int> u_size =
+      checked_uv_plane_height * u_stride;
+  base::CheckedNumeric<unsigned int> u_plane_offset =
+      checked_shm_offset + u_offset;
+  if (!u_size.IsValid() || !u_plane_offset.IsValid()) {
+    LOCAL_SET_GL_ERROR(
+        GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
+        "u plane size or offset too large. Both must fit in unsigned int.");
+    return;
+  }
+  uint8_t* u_out = GetSharedMemoryAs<uint8_t*>(
+      shm_id, u_plane_offset.ValueOrDie(), u_size.ValueOrDie());
   if (!u_out) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
                        "Failed to get memory for u plane output");
     return;
   }
 
-  size_t v_size = ((dst_height + 1) / 2) * v_stride;
-  uint8_t* v_out =
-      GetSharedMemoryAs<uint8_t*>(shm_id, shm_offset + v_offset, v_size);
+  base::CheckedNumeric<unsigned int> v_size =
+      checked_uv_plane_height * v_stride;
+  base::CheckedNumeric<unsigned int> v_plane_offset =
+      checked_shm_offset + v_offset;
+  if (!v_size.IsValid() || !v_plane_offset.IsValid()) {
+    LOCAL_SET_GL_ERROR(
+        GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
+        "v plane size or offset too large. Both must fit in unsigned int.");
+    return;
+  }
+  uint8_t* v_out = GetSharedMemoryAs<uint8_t*>(
+      shm_id, v_plane_offset.ValueOrDie(), v_size.ValueOrDie());
   if (!v_out) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
                        "Failed to get memory for v plane output");
