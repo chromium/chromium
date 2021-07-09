@@ -2726,6 +2726,9 @@ extern const char kImeAssistEmojiEnhancedDescription[];
 extern const char kImeAssistMultiWordName[];
 extern const char kImeAssistMultiWordDescription[];
 
+extern const char kImeAssistMultiWordExpandedName[];
+extern const char kImeAssistMultiWordExpandedDescription[];
+
 extern const char kImeAssistPersonalInfoName[];
 extern const char kImeAssistPersonalInfoDescription[];
 

@@ -121,6 +121,11 @@ const base::Feature kAssistEmojiEnhanced{"AssistEmojiEnhanced",
 const base::Feature kAssistMultiWord{"AssistMultiWord",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable assistive multi word suggestions on an expanded
+// list of surfaces.
+const base::Feature kAssistMultiWordExpanded{"AssistMultiWordExpanded",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable assistive personal information.
 const base::Feature kAssistPersonalInfo{"AssistPersonalInfo",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

@@ -4739,6 +4739,11 @@ const char kImeAssistMultiWordName[] =
 const char kImeAssistMultiWordDescription[] =
     "Enable assistive multi word suggestions for native IME";
 
+const char kImeAssistMultiWordExpandedName[] =
+    "Enable expanded assistive multi word suggestions";
+const char kImeAssistMultiWordExpandedDescription[] =
+    "Enable expanded assistive multi word suggestions for native IME";
+
 const char kImeAssistPersonalInfoName[] = "Enable assistive personal info";
 const char kImeAssistPersonalInfoDescription[] =
     "Enable auto-complete suggestions on personal infomation for native IME.";
