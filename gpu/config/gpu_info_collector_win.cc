@@ -89,6 +89,48 @@ inline D3D12FeatureLevel ConvertToHistogramFeatureLevel(
   }
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class D3D12ShaderModel {
+  kUnknownOrNoD3D12Devices = 0,
+  kD3DShaderModel_5_1 = 1,
+  kD3DShaderModel_6_0 = 2,
+  kD3DShaderModel_6_1 = 3,
+  kD3DShaderModel_6_2 = 4,
+  kD3DShaderModel_6_3 = 5,
+  kD3DShaderModel_6_4 = 6,
+  kD3DShaderModel_6_5 = 7,
+  kD3DShaderModel_6_6 = 8,
+  kMaxValue = kD3DShaderModel_6_6,
+};
+
+D3D12ShaderModel ConvertToHistogramShaderVersion(uint32_t version) {
+  switch (version) {
+    case 0:
+      return D3D12ShaderModel::kUnknownOrNoD3D12Devices;
+    case D3D_SHADER_MODEL_5_1:
+      return D3D12ShaderModel::kD3DShaderModel_5_1;
+    case D3D_SHADER_MODEL_6_0:
+      return D3D12ShaderModel::kD3DShaderModel_6_0;
+    case D3D_SHADER_MODEL_6_1:
+      return D3D12ShaderModel::kD3DShaderModel_6_1;
+    case D3D_SHADER_MODEL_6_2:
+      return D3D12ShaderModel::kD3DShaderModel_6_2;
+    case D3D_SHADER_MODEL_6_3:
+      return D3D12ShaderModel::kD3DShaderModel_6_3;
+    case D3D_SHADER_MODEL_6_4:
+      return D3D12ShaderModel::kD3DShaderModel_6_4;
+    case D3D_SHADER_MODEL_6_5:
+      return D3D12ShaderModel::kD3DShaderModel_6_5;
+    case D3D_SHADER_MODEL_6_6:
+      return D3D12ShaderModel::kD3DShaderModel_6_6;
+
+    default:
+      NOTREACHED();
+      return D3D12ShaderModel::kUnknownOrNoD3D12Devices;
+  }
+}
+
 OverlaySupport FlagsToOverlaySupport(bool overlays_supported, UINT flags) {
   if (flags & DXGI_OVERLAY_SUPPORT_FLAG_SCALING)
     return OverlaySupport::kScaling;
@@ -251,13 +293,18 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
 }
 
 // DirectX 12 are included with Windows 10 and Server 2016.
-uint32_t GetGpuSupportedD3D12Version() {
+void GetGpuSupportedD3D12Version(uint32_t& d3d12_feature_level,
+                                 uint32_t& highest_shader_model_version) {
   TRACE_EVENT0("gpu", "GetGpuSupportedD3D12Version");
+
+  // Initialize to 0 to indicated an unknown type in UMA.
+  d3d12_feature_level = 0;
+  highest_shader_model_version = 0;
 
   base::ScopedNativeLibrary d3d12_library(
       base::FilePath(FILE_PATH_LITERAL("d3d12.dll")));
   if (!d3d12_library.is_valid())
-    return 0;
+    return;
 
   // The order of feature levels to attempt to create in D3D CreateDevice
   const D3D_FEATURE_LEVEL_CHROMIUM feature_levels[] = {
@@ -268,18 +315,29 @@ uint32_t GetGpuSupportedD3D12Version() {
   PFN_D3D12_CREATE_DEVICE_CHROMIUM D3D12CreateDevice =
       reinterpret_cast<PFN_D3D12_CREATE_DEVICE_CHROMIUM>(
           d3d12_library.GetFunctionPointer("D3D12CreateDevice"));
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
   if (D3D12CreateDevice) {
     // For the default adapter only. (*pAdapter == nullptr)
-    // Check to see if the adapter supports Direct3D 12, but don't create the
-    // actual device yet. (**ppDevice == nullptr)
+    // Check to see if the adapter supports Direct3D 12.
     for (auto level : feature_levels) {
       if (SUCCEEDED(D3D12CreateDevice(nullptr, level, _uuidof(ID3D12Device),
-                                      nullptr))) {
-        return level;
+                                      &d3d12_device))) {
+        d3d12_feature_level = level;
+        break;
       }
     }
   }
-  return 0;
+
+  // Query the maximum supported shader model version.
+  if (d3d12_device) {
+    D3D12_FEATURE_DATA_SHADER_MODEL shader_model_data = {};
+    shader_model_data.HighestShaderModel = D3D_SHADER_MODEL_6_6;
+    if (SUCCEEDED(d3d12_device->CheckFeatureSupport(
+            D3D12_FEATURE_SHADER_MODEL, &shader_model_data,
+            sizeof(shader_model_data)))) {
+      highest_shader_model_version = shader_model_data.HighestShaderModel;
+    }
+  }
 }
 
 // The old graphics drivers are installed to the Windows system directory
@@ -499,13 +557,19 @@ uint32_t GetGpuSupportedVulkanVersion(
   return 0;
 }
 
-void RecordGpuSupportedDx12VersionHistograms(uint32_t d3d12_feature_level) {
+void RecordGpuSupportedDx12VersionHistograms(
+    uint32_t d3d12_feature_level,
+    uint32_t highest_shader_model_version) {
   bool supports_dx12 =
       (d3d12_feature_level >= D3D_FEATURE_LEVEL_12_0) ? true : false;
   UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDX12", supports_dx12);
   UMA_HISTOGRAM_ENUMERATION(
       "GPU.D3D12FeatureLevel",
       ConvertToHistogramFeatureLevel(d3d12_feature_level));
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "GPU.D3D12HighestShaderModel",
+      ConvertToHistogramShaderVersion(highest_shader_model_version));
 }
 
 bool CollectD3D11FeatureInfo(D3D_FEATURE_LEVEL* d3d11_feature_level,

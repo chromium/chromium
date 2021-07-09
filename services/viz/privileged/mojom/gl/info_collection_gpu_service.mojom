@@ -23,6 +23,7 @@ interface InfoCollectionGpuService {
   [EnableIf=is_win]
   GetGpuSupportedDx12VersionAndDevicePerfInfo()
       => (uint32 d3d12_feature_level,
+          uint32 highest_shader_model_version,
           gpu.mojom.DevicePerfInfo device_perf_info);
 
   // Requests Vulkan version

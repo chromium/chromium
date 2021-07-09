@@ -357,6 +357,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.D3D12HighestShaderModel" enum="D3DShaderModel"
+    expires_after="2022-01-07">
+  <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <summary>
+    The maximum supported D3D shader model version on a D3D12 device. It is
+    recorded in the browser process 120 seconds after the browser launch.
+  </summary>
+</histogram>
+
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
     expires_after="2021-08-29">
   <owner>jonahr@google.com</owner>

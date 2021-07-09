@@ -18084,6 +18084,18 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="5" label="D3D_FEATURE_LEVEL_11_1"/>
 </enum>
 
+<enum name="D3DShaderModel">
+  <int value="0" label="UNKNOWN_OR_NO_SUPPORTED_DEVICES"/>
+  <int value="1" label="D3D_SHADER_MODEL_5_1"/>
+  <int value="2" label="D3D_SHADER_MODEL_6_0"/>
+  <int value="3" label="D3D_SHADER_MODEL_6_1"/>
+  <int value="4" label="D3D_SHADER_MODEL_6_2"/>
+  <int value="5" label="D3D_SHADER_MODEL_6_3"/>
+  <int value="6" label="D3D_SHADER_MODEL_6_4"/>
+  <int value="7" label="D3D_SHADER_MODEL_6_5"/>
+  <int value="8" label="D3D_SHADER_MODEL_6_6"/>
+</enum>
+
 <enum name="DailyEventIntervalType">
   <int value="0" label="First Run"/>
   <int value="1" label="Day Elapsed"/>

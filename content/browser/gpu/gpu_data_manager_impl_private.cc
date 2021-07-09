@@ -731,6 +731,7 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
         host->info_collection_gpu_service()
             ->GetGpuSupportedDx12VersionAndDevicePerfInfo(
                 base::BindOnce([](uint32_t d3d12_feature_level,
+                                  uint32_t highest_shader_model_version,
                                   const gpu::DevicePerfInfo& device_perf_info) {
                   GpuDataManagerImpl* manager =
                       GpuDataManagerImpl::GetInstance();
@@ -741,7 +742,7 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
                   manager->UpdateDevicePerfInfo(device_perf_info);
                   manager->TerminateInfoCollectionGpuProcess();
                   gpu::RecordGpuSupportedDx12VersionHistograms(
-                      d3d12_feature_level);
+                      d3d12_feature_level, highest_shader_model_version);
                 }));
       },
       delta);
