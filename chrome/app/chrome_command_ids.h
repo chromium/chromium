@@ -125,6 +125,7 @@
 #define IDC_SHARING_HUB                 35028
 #define IDC_SHARING_HUB_MENU            35029
 #define IDC_VIRTUAL_CARD_MANUAL_FALLBACK 35030
+#define IDC_SHARING_HUB_SCREENSHOT      35031
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.

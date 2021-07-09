@@ -14,6 +14,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/share/core/share_targets.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -77,6 +78,13 @@ void SharingHubModel::PopulateFirstPartyActions() {
   first_party_action_list_.push_back(
       {IDC_COPY_URL, l10n_util::GetStringUTF16(IDS_SHARING_HUB_COPY_LINK_LABEL),
        kCopyIcon, true});
+
+  if (DesktopScreenshotsFeatureEnabled()) {
+    first_party_action_list_.push_back(
+        {IDC_SHARING_HUB_SCREENSHOT,
+         l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL),
+         kSharingHubScreenshotIcon, true});
+  }
 
   first_party_action_list_.push_back(
       {IDC_SEND_TAB_TO_SELF,

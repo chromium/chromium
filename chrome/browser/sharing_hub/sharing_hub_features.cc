@@ -36,11 +36,18 @@ bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
          IsEnterprisePolicyEnabled(context);
 }
 
+bool DesktopScreenshotsFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kDesktopScreenshots);
+}
+
 const base::Feature kSharingHubDesktopAppMenu{
     "SharingHubDesktopAppMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSharingHubDesktopOmnibox{
     "SharingHubDesktopOmnibox", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDesktopScreenshots{"DesktopScreenshots",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {

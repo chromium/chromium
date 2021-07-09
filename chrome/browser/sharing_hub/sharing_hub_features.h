@@ -24,12 +24,22 @@ bool SharingHubAppMenuEnabled(content::BrowserContext* context);
 // Windows/Mac/Linux.
 bool SharingHubOmniboxEnabled(content::BrowserContext* context);
 
+// Returns true if the desktop screenshots feature is enabled.
+// This feature is only accessed through the sharing hub. It allows the user to
+// select and capture a region of a page, and optionally to edit it with an
+// image editor before sharing.
+bool DesktopScreenshotsFeatureEnabled();
+
 // Feature flag to enable the 3-dot menu entry point for the desktop sharing
 // hub.
 extern const base::Feature kSharingHubDesktopAppMenu;
 
 // Feature flag to enable the omnibox entry point for the desktop sharing hub.
 extern const base::Feature kSharingHubDesktopOmnibox;
+
+// Feature flag to enable the screenshots feature, currently accessed only
+// through the sharing hub.
+extern const base::Feature kDesktopScreenshots;
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
