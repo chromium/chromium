@@ -73,11 +73,6 @@ Once Lacros launches, the plan to use Lacros vs Chrome will be finalized.
 
 ## GN var and C++ macros
 
-*Note* that this will take effect once target_os flip of lacros-chrome is landed
-with patch [crrev.com/c/2644407](https://crrev.com/c/2644407). For a short while
-please keep using `BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS`
-and `is_chromeos_ash || is_chromeos_lacros` to target both binaries.
-
 Both lacros and ash are built with gn arg `target_os="chromeos"`. This means
 that C++ macro defined(OS_CHROMEOS) and gn variable is_chromeos are set true for
 both lacros and ash.
