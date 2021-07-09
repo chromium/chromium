@@ -1874,7 +1874,6 @@
         ],
       },
       'ToTWin': {
-        'mixins': ['chrome-tester-service-account'],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
