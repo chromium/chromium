@@ -105,6 +105,12 @@ public class LocationBarModelTest {
             model.mDisplayUrl = "foo.com";
             model.mFullUrl = "https://foo.com";
             assertDisplayAndEditText(model, "foo.com", "https://foo.com");
+
+            // https://crbug.com/1214481
+            model.mUrl = "";
+            model.mDisplayUrl = "about:blank";
+            model.mFullUrl = "about:blank";
+            assertDisplayAndEditText(model, "about:blank", "about:blank");
         });
     }
 
