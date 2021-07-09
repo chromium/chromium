@@ -18,6 +18,7 @@ class SignInPromoBubbleController;
 
 // A view that can show up after saving a password without being signed in to
 // offer signing users in so they can access their credentials across devices.
+// TODO(crbug.com/1108738): This class is unused; delete it.
 class PasswordSignInPromoView : public views::View {
  public:
   METADATA_HEADER(PasswordSignInPromoView);

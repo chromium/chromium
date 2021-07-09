@@ -38,6 +38,7 @@ void RecordAutoSignInPromptFirstRunExperienceWasShown(PrefService* prefs);
 void TurnOffAutoSignin(PrefService* prefs);
 
 // Returns true if the Chrome Sign In promo should be shown.
+// TODO(crbug.com/1108738): This is unused; remove it and its prefs.
 bool ShouldShowChromeSignInPasswordPromo(
     PrefService* prefs,
     const syncer::SyncService* sync_service);

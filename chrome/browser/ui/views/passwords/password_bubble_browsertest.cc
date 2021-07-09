@@ -20,17 +20,10 @@
 
 using base::StartsWith;
 
-// Test params:
-//  - bool : whether to enable account storage feature or not.
 class PasswordBubbleBrowserTest
-    : public SupportsTestDialog<ManagePasswordsTest>,
-      public testing::WithParamInterface<bool> {
+    : public SupportsTestDialog<ManagePasswordsTest> {
  public:
-  PasswordBubbleBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        password_manager::features::kEnablePasswordsAccountStorage, GetParam());
-  }
-
+  PasswordBubbleBrowserTest() = default;
   ~PasswordBubbleBrowserTest() override = default;
 
   void ShowUi(const std::string& name) override {
@@ -44,8 +37,7 @@ class PasswordBubbleBrowserTest
                           base::CompareCase::SENSITIVE)) {
       // Set test form to be account-stored. Otherwise, there is no indicator.
       test_form()->in_store =
-          GetParam() ? password_manager::PasswordForm::Store::kAccountStore
-                     : password_manager::PasswordForm::Store::kProfileStore;
+          password_manager::PasswordForm::Store::kAccountStore;
       SetupManagingPasswords();
       ExecuteManagePasswordsCommand();
     } else if (StartsWith(name, "AutoSignin", base::CompareCase::SENSITIVE)) {
@@ -72,49 +64,41 @@ class PasswordBubbleBrowserTest
       return;
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, PasswordBubbleBrowserTest, ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest,
                        InvokeUi_PendingPasswordBubble) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest,
                        InvokeUi_AutomaticPasswordBubble) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest,
                        InvokeUi_ManagePasswordBubble) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_AutoSignin) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, InvokeUi_AutoSignin) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_SafeState) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, InvokeUi_SafeState) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest,
                        InvokeUi_MoveToAccountStoreBubble) {
-  if (!GetParam()) {
-    return;  // No moving bubble available without the flag.
-  }
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("ManagePasswordBubble");

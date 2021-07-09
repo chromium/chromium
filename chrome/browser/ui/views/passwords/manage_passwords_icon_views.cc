@@ -84,7 +84,6 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     case password_manager::ui::CONFIRMATION_STATE:
     case password_manager::ui::CREDENTIAL_REQUEST_STATE:
     case password_manager::ui::AUTO_SIGNIN_STATE:
-    case password_manager::ui::CHROME_SIGN_IN_PROMO_STATE:
     case password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE:
     case password_manager::ui::MANAGE_STATE:
     case password_manager::ui::PASSWORD_UPDATED_SAFE_STATE:

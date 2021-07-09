@@ -27,6 +27,7 @@ class FeaturePromoControllerViews;
 // a username and password field, and in case of a saving a destination picker.
 // In addition, it contains a "Save"/"Update" button and a "Never"/"Nope"
 // button.
+// TODO(crbug.com/1108738): Rename to PasswordSaveUpdateView.
 class PasswordSaveUpdateWithAccountStoreView
     : public PasswordBubbleViewBase,
       public views::WidgetObserver,

@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
-#include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_with_account_store_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -55,19 +54,9 @@ bool IsBubbleShowing() {
 }
 
 views::View* GetUsernameTextfield(const PasswordBubbleViewBase* bubble) {
-  // Depending on the state of kEnablePasswordsAccountStorage, |bubble| is
-  // either a PasswordSaveUpdateView or a
-  // PasswordSaveUpdateWithAccountStoreView.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    const PasswordSaveUpdateWithAccountStoreView* save_bubble =
-        static_cast<const PasswordSaveUpdateWithAccountStoreView*>(bubble);
-    return save_bubble->GetUsernameTextfieldForTest();
-  } else {
-    const PasswordSaveUpdateView* save_bubble =
-        static_cast<const PasswordSaveUpdateView*>(bubble);
-    return save_bubble->GetUsernameTextfieldForTest();
-  }
+  const PasswordSaveUpdateWithAccountStoreView* save_bubble =
+      static_cast<const PasswordSaveUpdateWithAccountStoreView*>(bubble);
+  return save_bubble->GetUsernameTextfieldForTest();
 }
 
 }  // namespace

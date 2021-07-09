@@ -23,6 +23,7 @@ class ImageModel;
 
 // This controller provides data and actions for the
 // PasswordSaveUpdateWithAccountStoreView.
+// TODO(crbug.com/1108738): Rename to SaveUpdateBubbleController.
 class SaveUpdateWithAccountStoreBubbleController
     : public PasswordBubbleControllerBase {
  public:
