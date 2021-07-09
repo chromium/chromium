@@ -123,7 +123,8 @@ void ShowCastAction::ScrollToElement(
   action_delegate_util::AddOptionalStep(
       wait_for_stable_element,
       base::BindOnce(&WebController::ScrollIntoViewIfNeeded,
-                     delegate_->GetWebController()->GetWeakPtr(), true),
+                     delegate_->GetWebController()->GetWeakPtr(),
+                     /* center= */ true),
       actions.get());
   action_delegate_util::AddOptionalStep(
       wait_for_stable_element,
@@ -136,9 +137,14 @@ void ShowCastAction::ScrollToElement(
                          base::TimeDelta::FromMilliseconds(
                              proto_.show_cast().stable_check_interval_ms()))),
       actions.get());
-  actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollToElementPosition,
-                                       delegate_->GetWeakPtr(), selector,
-                                       top_padding, std::move(container)));
+  action_delegate_util::AddStepWithoutCallback(
+      base::BindOnce(&ActionDelegate::StoreScrolledToElement,
+                     delegate_->GetWeakPtr()),
+      actions.get());
+  actions->emplace_back(
+      base::BindOnce(&WebController::ScrollToElementPosition,
+                     delegate_->GetWebController()->GetWeakPtr(),
+                     std::move(container), top_padding));
 
   action_delegate_util::FindElementAndPerform(
       delegate_, selector,

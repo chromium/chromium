@@ -104,12 +104,8 @@ class MockActionDelegate : public ActionDelegate {
            base::OnceCallback<void(const ClientStatus&,
                                    const autofill::FormData&,
                                    const autofill::FormFieldData&)> callback));
-  MOCK_METHOD5(ScrollToElementPosition,
-               void(const Selector& selector,
-                    const TopPadding& top_padding,
-                    std::unique_ptr<ElementFinder::Result> scrollable_element,
-                    const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD1(StoreScrolledToElement,
+               void(const ElementFinder::Result& element));
   MOCK_METHOD1(SetTouchableElementArea,
                void(const ElementAreaProto& touchable_element_area));
   MOCK_METHOD1(CollectUserData,

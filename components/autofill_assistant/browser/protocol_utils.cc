@@ -235,9 +235,14 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<PresaveGeneratedPasswordAction>(delegate, action);
     case ActionProto::ActionInfoCase::kGetElementStatus:
       return std::make_unique<GetElementStatusAction>(delegate, action);
-    case ActionProto::ActionInfoCase::kScrollIntoView:
-      return PerformOnSingleElementAction::WithClientId(
-          delegate, action, action.scroll_into_view().client_id(),
+    case ActionProto::ActionInfoCase::kScrollIntoView: {
+      auto actions =
+          std::make_unique<element_action_util::ElementActionVector>();
+      action_delegate_util::AddStepWithoutCallback(
+          base::BindOnce(&ActionDelegate::StoreScrolledToElement,
+                         delegate->GetWeakPtr()),
+          actions.get());
+      actions->emplace_back(
           base::BindOnce(&WebController::ScrollIntoView,
                          delegate->GetWebController()->GetWeakPtr(),
                          action.scroll_into_view().animation(),
@@ -247,6 +252,10 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
                          action.scroll_into_view().has_horizontal_alignment()
                              ? action.scroll_into_view().horizontal_alignment()
                              : "center"));
+      return PerformOnSingleElementAction::WithClientId(
+          delegate, action, action.scroll_into_view().client_id(),
+          base::BindOnce(&element_action_util::PerformAll, std::move(actions)));
+    }
     case ActionProto::ActionInfoCase::kWaitForDocumentToBecomeInteractive:
       return PerformOnSingleElementAction::WithOptionalClientIdTimed(
           delegate, action,

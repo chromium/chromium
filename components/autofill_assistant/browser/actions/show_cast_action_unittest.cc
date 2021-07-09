@@ -66,6 +66,7 @@ TEST_F(ShowCastActionTest, ActionFailsForNonExistentElement) {
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT),
                                    base::TimeDelta::FromSeconds(0)));
+  EXPECT_CALL(mock_action_delegate_, StoreScrolledToElement(_)).Times(0);
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_)).Times(0);
 
   EXPECT_CALL(callback_,
@@ -91,9 +92,11 @@ TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(2)));
   EXPECT_CALL(mock_action_delegate_,
-              ScrollToElementPosition(expected_selector, _, Eq(nullptr),
+              StoreScrolledToElement(EqualsElement(expected_element)));
+  EXPECT_CALL(mock_web_controller_,
+              ScrollToElementPosition(Eq(nullptr), _,
                                       EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
 
   ProcessedActionProto capture;
@@ -126,12 +129,13 @@ TEST_F(ShowCastActionTest, ScrollContainerIfSpecified) {
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(2)));
+  EXPECT_CALL(mock_action_delegate_,
+              StoreScrolledToElement(EqualsElement(expected_element)));
   EXPECT_CALL(
-      mock_action_delegate_,
-      ScrollToElementPosition(expected_selector, _,
-                              Pointee(EqualsElement(expected_container)),
+      mock_web_controller_,
+      ScrollToElementPosition(Pointee(EqualsElement(expected_container)), _,
                               EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
 
   ProcessedActionProto capture;
@@ -169,9 +173,10 @@ TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(1)));
   EXPECT_CALL(mock_action_delegate_,
-              ScrollToElementPosition(expected_selector, _, _,
-                                      EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+              StoreScrolledToElement(EqualsElement(expected_element)));
+  EXPECT_CALL(mock_web_controller_,
+              ScrollToElementPosition(_, _, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
 
   ProcessedActionProto capture;
@@ -190,8 +195,9 @@ TEST_F(ShowCastActionTest, SetsTitleIfSpecified) {
   ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
       .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
                                         base::TimeDelta::FromSeconds(0)));
-  ON_CALL(mock_action_delegate_, ScrollToElementPosition(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_, StoreScrolledToElement(_));
+  ON_CALL(mock_web_controller_, ScrollToElementPosition(_, _, _, _))
+      .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
 
   Selector selector({"#focus"});
   *proto_.mutable_element_to_present() = selector.proto;

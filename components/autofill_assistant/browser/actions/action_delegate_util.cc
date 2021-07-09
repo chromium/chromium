@@ -59,6 +59,14 @@ void RunAndIgnoreTiming(
                         base::BindOnce(&IgnoreTimingResult, std::move(done)));
 }
 
+void RunAndCallSuccessCallback(
+    base::OnceCallback<void(const ElementFinder::Result&)> step,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> done) {
+  std::move(step).Run(element);
+  std::move(done).Run(OkClientStatus());
+}
+
 // Call |done| with a successful status, no matter what |status|.
 //
 // Note that the status details, if any, filled in |status| are conserved.
@@ -199,6 +207,13 @@ void AddStepIgnoreTiming(
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> step,
     element_action_util::ElementActionVector* actions) {
   actions->emplace_back(base::BindOnce(&RunAndIgnoreTiming, std::move(step)));
+}
+
+void AddStepWithoutCallback(
+    base::OnceCallback<void(const ElementFinder::Result&)> step,
+    element_action_util::ElementActionVector* actions) {
+  actions->emplace_back(
+      base::BindOnce(&RunAndCallSuccessCallback, std::move(step)));
 }
 
 void FindElementAndPerform(const ActionDelegate* delegate,

@@ -133,9 +133,7 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
   EXPECT_CALL(*mock_delegate, WaitUntilDocumentIsInReadyState(_, _, _, _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(*mock_delegate, ScrollToElementPosition(
-                                  _, _, _, EqualsElement(expected_element), _))
-      .Times(0);
+  // No second call to WaitUntilDocumentIsInReadyState.
   EXPECT_CALL(*this, MockDone(_)).Times(0);
 
   auto actions = std::make_unique<element_action_util::ElementActionVector>();
@@ -153,9 +151,11 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
         std::move(done).Run(OkClientStatus());
       },
       base::BindLambdaForTesting([&]() { mock_delegate.reset(); })));
-  actions->emplace_back(base::BindOnce(
-      &ActionDelegate::ScrollToElementPosition, mock_delegate->GetWeakPtr(),
-      Selector({"#element"}), TopPadding(), nullptr));
+  AddStepIgnoreTiming(
+      base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
+                     mock_delegate->GetWeakPtr(),
+                     base::TimeDelta::FromMilliseconds(0), DOCUMENT_COMPLETE),
+      actions.get());
 
   FindElementAndPerform(
       mock_delegate.get(), expected_selector,

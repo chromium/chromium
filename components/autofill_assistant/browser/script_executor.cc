@@ -509,16 +509,9 @@ void ScriptExecutor::RetrieveElementFormAndFieldData(
       selector, std::move(callback));
 }
 
-void ScriptExecutor::ScrollToElementPosition(
-    const Selector& selector,
-    const TopPadding& top_padding,
-    std::unique_ptr<ElementFinder::Result> container,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  last_focused_element_selector_ = selector;
-  last_focused_element_top_padding_ = top_padding;
-  delegate_->GetWebController()->ScrollToElementPosition(
-      std::move(container), top_padding, element, std::move(callback));
+void ScriptExecutor::StoreScrolledToElement(
+    const ElementFinder::Result& element) {
+  last_focused_element_ = element.dom_object;
 }
 
 void ScriptExecutor::SetTouchableElementArea(
@@ -1347,24 +1340,31 @@ void ScriptExecutor::WaitForDomOperation::RestoreStatusMessage() {
 void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
   if (!saved_pre_interrupt_state_)
     return;
+  if (!main_script_->last_focused_element_.has_value())
+    return;
 
-  if (!main_script_->last_focused_element_selector_.empty()) {
-    auto actions = std::make_unique<element_action_util::ElementActionVector>();
-    action_delegate_util::AddStepIgnoreTiming(
-        base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
-                       main_script_->GetWeakPtr(),
-                       delegate_->GetSettings().document_ready_check_timeout,
-                       DOCUMENT_INTERACTIVE),
-        actions.get());
-    actions->emplace_back(base::BindOnce(
-        &ActionDelegate::ScrollToElementPosition, main_script_->GetWeakPtr(),
-        main_script_->last_focused_element_selector_,
-        main_script_->last_focused_element_top_padding_, nullptr));
-    action_delegate_util::FindElementAndPerform(
-        main_script_, main_script_->last_focused_element_selector_,
-        base::BindOnce(&element_action_util::PerformAll, std::move(actions)),
-        base::DoNothing());
+  auto element = std::make_unique<ElementFinder::Result>();
+  if (!main_script_->GetElementStore()
+           ->RestoreElement(*main_script_->last_focused_element_, element.get())
+           .ok()) {
+    return;
   }
+
+  auto actions = std::make_unique<element_action_util::ElementActionVector>();
+  action_delegate_util::AddStepIgnoreTiming(
+      base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
+                     main_script_->GetWeakPtr(),
+                     delegate_->GetSettings().document_ready_check_timeout,
+                     DOCUMENT_INTERACTIVE),
+      actions.get());
+  actions->emplace_back(
+      base::BindOnce(&WebController::ScrollIntoViewIfNeeded,
+                     main_script_->GetWebController()->GetWeakPtr(),
+                     /* center= */ true));
+  element_action_util::TakeElementAndPerform(
+      base::BindOnce(&element_action_util::PerformAll, std::move(actions)),
+      /* done= */ base::DoNothing(), /* element_status= */ OkClientStatus(),
+      std::move(element));
 }
 
 ScriptExecutor::CurrentActionData::CurrentActionData() = default;

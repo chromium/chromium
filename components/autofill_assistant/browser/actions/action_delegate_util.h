@@ -65,6 +65,11 @@ void AddStepIgnoreTiming(
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> step,
     element_action_util::ElementActionVector* actions);
 
+// Adds a step to the |actions| that does not have a callback.
+void AddStepWithoutCallback(
+    base::OnceCallback<void(const ElementFinder::Result&)> step,
+    element_action_util::ElementActionVector* actions);
+
 void ClickOrTapElement(const ActionDelegate* delegate,
                        const Selector& selector,
                        ClickType click_type,

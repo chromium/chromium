@@ -34,6 +34,11 @@ class MockWebController : public WebController {
                void(const Selector& selector,
                     ElementFinder::Callback& callback));
 
+  MOCK_METHOD4(ScrollToElementPosition,
+               void(std::unique_ptr<ElementFinder::Result>,
+                    const TopPadding&,
+                    const ElementFinder::Result&,
+                    base::OnceCallback<void(const ClientStatus&)>));
   MOCK_METHOD5(ScrollIntoView,
                void(const std::string&,
                     const std::string&,

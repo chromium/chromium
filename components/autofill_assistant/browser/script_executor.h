@@ -27,6 +27,7 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
+#include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 
@@ -197,12 +198,7 @@ class ScriptExecutor : public ActionDelegate,
                               const autofill::FormData& form_data,
                               const autofill::FormFieldData& field_data)>
           callback) override;
-  void ScrollToElementPosition(
-      const Selector& selector,
-      const TopPadding& top_padding,
-      std::unique_ptr<ElementFinder::Result> container,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
+  void StoreScrolledToElement(const ElementFinder::Result& element) override;
   void SetTouchableElementArea(
       const ElementAreaProto& touchable_element_area) override;
   void ExpectNavigation() override;
@@ -491,8 +487,7 @@ class ScriptExecutor : public ActionDelegate,
   bool should_clean_contextual_ui_on_finish_ = false;
   ActionProto::ActionInfoCase previous_action_type_ =
       ActionProto::ACTION_INFO_NOT_SET;
-  Selector last_focused_element_selector_;
-  TopPadding last_focused_element_top_padding_;
+  absl::optional<DomObjectFrameStack> last_focused_element_;
   std::unique_ptr<ElementAreaProto> touchable_element_area_;
 
   // Steps towards the requirements for calling |on_expected_navigation_done_|
