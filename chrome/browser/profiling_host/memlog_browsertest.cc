@@ -56,8 +56,8 @@ class MemlogBrowserTest : public PlatformBrowserTest,
   }
 };
 
-// Flaky on Android: crbug.com/1223739.
-#if defined(OS_ANDROID)
+// Flaky on Android and Mac: crbug.com/1223739.
+#if defined(OS_ANDROID) || defined(OS_MAC)
 #define MAYBE_EndToEnd DISABLED_EndToEnd
 #else
 #define MAYBE_EndToEnd EndToEnd
