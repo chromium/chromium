@@ -31,8 +31,7 @@ namespace file_tasks {
 
 class WebFileTasksTest : public ::testing::Test {
  protected:
-  WebFileTasksTest() {
-  }
+  WebFileTasksTest() {}
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
@@ -89,6 +88,8 @@ class WebFileTasksTest : public ::testing::Test {
     return file_handler_manager_;
   }
 
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -97,7 +98,22 @@ class WebFileTasksTest : public ::testing::Test {
   web_app::TestFileHandlerManager* file_handler_manager_;
 };
 
-TEST_F(WebFileTasksTest, WebAppFileHandlingCanBeDisabledByFlag) {
+class WebFileTasksFileHandlingEnabledTests : public WebFileTasksTest {
+ public:
+  WebFileTasksFileHandlingEnabledTests() {
+    feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
+  }
+};
+
+class WebFileTasksFileHandlingDisabledTests : public WebFileTasksTest {
+ public:
+  WebFileTasksFileHandlingDisabledTests() {
+    feature_list_.InitWithFeatures({}, {blink::features::kFileHandlingAPI});
+  }
+};
+
+TEST_F(WebFileTasksFileHandlingDisabledTests,
+       WebAppFileHandlingCanBeDisabledByFlag) {
   const char kGraphrId[] = "graphr-app-id";
   const char kGraphrAction[] = "https://graphr.tld/csv";
   InstallFileHandler(kGraphrId, GURL(kGraphrAction), {{"text/csv", {".csv"}}});
@@ -109,39 +125,43 @@ TEST_F(WebFileTasksTest, WebAppFileHandlingCanBeDisabledByFlag) {
 
   std::vector<FullTaskDescriptor> tasks;
 
-  {
-    // Web Apps should not be able to handle files unless kFileHandlingAPI is
-    // enabled.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({},
-                                         {blink::features::kFileHandlingAPI});
-    FindWebTasks(profile(), entries, &tasks);
-    EXPECT_EQ(0u, tasks.size());
-    tasks.clear();
-  }
-
-  {
-    // When the flag is enabled, it should be possible to handle files from
-    // bookmark apps.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({blink::features::kFileHandlingAPI},
-                                         {});
-
-    // Note: FileHandlers aren't enabled while the flag is off.
-    file_handler_manager()->EnableAndRegisterOsFileHandlers(kGraphrId);
-
-    // Test that when enabled, bookmark apps can handle files
-    FindWebTasks(profile(), entries, &tasks);
-    // Graphr should be a valid handler.
-    ASSERT_EQ(1u, tasks.size());
-    EXPECT_EQ(kGraphrId, tasks[0].task_descriptor.app_id);
-    EXPECT_EQ(kGraphrAction, tasks[0].task_descriptor.action_id);
-    EXPECT_EQ(file_tasks::TaskType::TASK_TYPE_WEB_APP,
-              tasks[0].task_descriptor.task_type);
-  }
+  // Web Apps should not be able to handle files unless kFileHandlingAPI is
+  // enabled.
+  FindWebTasks(profile(), entries, &tasks);
+  EXPECT_EQ(0u, tasks.size());
+  tasks.clear();
 }
 
-TEST_F(WebFileTasksTest, DisabledFileHandlersAreNotVisible) {
+TEST_F(WebFileTasksFileHandlingEnabledTests,
+       WebAppFileHandlingCanBeEnabledByFlag) {
+  const char kGraphrId[] = "graphr-app-id";
+  const char kGraphrAction[] = "https://graphr.tld/csv";
+  InstallFileHandler(kGraphrId, GURL(kGraphrAction), {{"text/csv", {".csv"}}});
+
+  std::vector<extensions::EntryInfo> entries;
+  entries.emplace_back(
+      util::GetMyFilesFolderForProfile(profile()).AppendASCII("foo.csv"),
+      "text/csv", false);
+
+  std::vector<FullTaskDescriptor> tasks;
+
+  // When the flag is enabled, it should be possible to handle files from
+  // bookmark apps.
+  // Note: FileHandlers aren't enabled while the flag is off.
+  file_handler_manager()->EnableAndRegisterOsFileHandlers(kGraphrId);
+
+  // Test that when enabled, bookmark apps can handle files
+  FindWebTasks(profile(), entries, &tasks);
+  // Graphr should be a valid handler.
+  ASSERT_EQ(1u, tasks.size());
+  EXPECT_EQ(kGraphrId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(kGraphrAction, tasks[0].task_descriptor.action_id);
+  EXPECT_EQ(file_tasks::TaskType::TASK_TYPE_WEB_APP,
+            tasks[0].task_descriptor.task_type);
+}
+
+TEST_F(WebFileTasksFileHandlingEnabledTests,
+       DisabledFileHandlersAreNotVisible) {
   const char kGraphrId[] = "graphr-app-id";
   const char kGraphrAction[] = "https://graphr.tld/csv";
 
@@ -150,9 +170,6 @@ TEST_F(WebFileTasksTest, DisabledFileHandlersAreNotVisible) {
 
   // Web Apps should not be able to handle files unless kFileHandlingAPI is
   // enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
-
   InstallFileHandler(kGraphrId, GURL(kGraphrAction), {{"text/csv", {".csv"}}});
   InstallFileHandler(kFooId, GURL(kFooAction), {{"text/csv", {".csv"}}});
 
@@ -177,9 +194,7 @@ TEST_F(WebFileTasksTest, DisabledFileHandlersAreNotVisible) {
   EXPECT_EQ(kFooId, tasks[0].task_descriptor.app_id);
 }
 
-TEST_F(WebFileTasksTest, FindWebFileHandlerTasks) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
+TEST_F(WebFileTasksFileHandlingEnabledTests, FindWebFileHandlerTasks) {
   const char kFooId[] = "foo-app-id";
   const char kFooAction[] = "https://foo.tld/files";
 
@@ -225,10 +240,7 @@ TEST_F(WebFileTasksTest, FindWebFileHandlerTasks) {
   FindWebTasks(profile(), entries, &tasks);
 }
 
-TEST_F(WebFileTasksTest, FindWebFileHandlerTask_Generic) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
-
+TEST_F(WebFileTasksFileHandlingEnabledTests, FindWebFileHandlerTask_Generic) {
   const char kBarId[] = "bar-app-id";
   const char kBarAction[] = "https://bar.tld/files";
 
