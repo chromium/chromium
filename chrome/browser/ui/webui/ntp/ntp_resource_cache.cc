@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -79,10 +79,6 @@ const char kLearnMoreGuestSessionUrl[] =
 #else
     "https://support.google.com/chrome/?p=ui_guest";
 #endif
-
-// The URL for the Learn More page shown on ephermal guest session new tab.
-const char kLearnMoreEphemeralGuestSessionUrl[] =
-    "https://support.google.com/chrome/?p=ui_guest";
 
 std::string ReplaceTemplateExpressions(
     const scoped_refptr<base::RefCountedMemory>& bytes,
@@ -158,8 +154,9 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
 NTPResourceCache::~NTPResourceCache() = default;
 
 NTPResourceCache::WindowType NTPResourceCache::GetWindowType(
-    Profile* profile, content::RenderProcessHost* render_host) {
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
+    Profile* profile,
+    content::RenderProcessHost* render_host) {
+  if (profile->IsGuestSession())
     return GUEST;
 
   // Sometimes the |profile| is the parent (non-incognito) version of the user
@@ -176,17 +173,8 @@ NTPResourceCache::WindowType NTPResourceCache::GetWindowType(
 }
 
 base::RefCountedMemory* NTPResourceCache::GetNewTabGuestHTML() {
-  // TODO(crbug.com/1134111): For full launch of ephemeral Guest profiles,
-  // instead of the below code block, use IdentityManager for ephemeral Guest
-  // profiles to check sign in status and return either
-  // |CreateNewTabEphemeralGuestSignedInHTML()| or
-  // |CreateNewTabEphemeralGuestSignedOutHTML()|.
-  if (!new_tab_guest_html_) {
-    GuestNTPInfo guest_ntp_info{kLearnMoreGuestSessionUrl, IDR_GUEST_TAB_HTML,
-                                IDS_NEW_TAB_GUEST_SESSION_HEADING,
-                                IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION};
-    new_tab_guest_html_ = CreateNewTabGuestHTML(guest_ntp_info);
-  }
+  if (!new_tab_guest_html_)
+    CreateNewTabGuestHTML();
 
   return new_tab_guest_html_.get();
 }
@@ -265,7 +253,6 @@ void NTPResourceCache::Invalidate() {
   new_tab_incognito_css_ = nullptr;
   new_tab_css_ = nullptr;
   new_tab_guest_html_ = nullptr;
-  new_tab_guest_signed_in_html_ = nullptr;
 }
 
 void NTPResourceCache::CreateNewTabIncognitoHTML() {
@@ -337,47 +324,15 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
   new_tab_incognito_html_ = base::RefCountedString::TakeString(&full_html);
 }
 
-base::RefCountedMemory*
-NTPResourceCache::CreateNewTabEphemeralGuestSignedInHTML() {
-  if (!new_tab_guest_signed_in_html_) {
-    GuestNTPInfo guest_ntp_info{
-        kLearnMoreEphemeralGuestSessionUrl,
-        IDR_EPHEMERAL_GUEST_TAB_HTML,
-        IDS_NEW_TAB_EPHEMERAL_GUEST_SESSION_HEADING_SIGNED_IN,
-        IDS_NEW_TAB_EPHEMERAL_GUEST_SESSION_DESCRIPTION_SIGNED_IN,
-        IDS_NEW_TAB_EPHEMERAL_GUEST_NOT_SAVED_SIGNED_IN,
-        IDS_NEW_TAB_EPHEMERAL_GUEST_SAVED};
-    new_tab_guest_signed_in_html_ = CreateNewTabGuestHTML(guest_ntp_info);
-  }
-
-  return new_tab_guest_signed_in_html_.get();
-}
-
-base::RefCountedMemory*
-NTPResourceCache::CreateNewTabEphemeralGuestSignedOutHTML() {
-  // Clear cached signed in HTML on sign out to avoid loading previously cached
-  // user name from other signed in guest sessions.
-  new_tab_guest_signed_in_html_ = nullptr;
-
-  if (!new_tab_guest_signed_out_html_) {
-    GuestNTPInfo guest_ntp_info{
-        kLearnMoreEphemeralGuestSessionUrl,
-        IDR_EPHEMERAL_GUEST_TAB_HTML,
-        IDS_NEW_TAB_EPHEMERAL_GUEST_SESSION_HEADING_SIGNED_OUT,
-        IDS_NEW_TAB_EPHEMERAL_GUEST_SESSION_DESCRIPTION_SIGNED_OUT,
-        IDS_NEW_TAB_EPHEMERAL_GUEST_NOT_SAVED_SIGNED_OUT,
-        IDS_NEW_TAB_EPHEMERAL_GUEST_SAVED};
-    new_tab_guest_signed_out_html_ = CreateNewTabGuestHTML(guest_ntp_info);
-  }
-  return new_tab_guest_signed_out_html_.get();
-}
-
-scoped_refptr<base::RefCountedString> NTPResourceCache::CreateNewTabGuestHTML(
-    const GuestNTPInfo& guest_ntp_info) {
+void NTPResourceCache::CreateNewTabGuestHTML() {
   base::DictionaryValue localized_strings;
   localized_strings.SetString("title",
-      l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
-  int guest_tab_idr = guest_ntp_info.html_idr;
+                              l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
+  const char* guest_tab_link = kLearnMoreGuestSessionUrl;
+  int guest_tab_idr = IDR_GUEST_TAB_HTML;
+  int guest_tab_description_ids = IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION;
+  int guest_tab_heading_ids = IDS_NEW_TAB_GUEST_SESSION_HEADING;
+  int guest_tab_link_ids = IDS_LEARN_MORE;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   guest_tab_idr = IDR_GUEST_SESSION_TAB_HTML;
@@ -413,28 +368,14 @@ scoped_refptr<base::RefCountedString> NTPResourceCache::CreateNewTabGuestHTML(
   }
 #endif
 
-  if (guest_ntp_info.features_ids != -1) {
-    localized_strings.SetString(
-        "guestTabFeatures",
-        l10n_util::GetStringUTF16(guest_ntp_info.features_ids));
-  }
-
-  if (guest_ntp_info.warnings_ids != -1) {
-    localized_strings.SetString(
-        "guestTabWarning",
-        l10n_util::GetStringUTF16(guest_ntp_info.warnings_ids));
-  }
-
   localized_strings.SetString(
       "guestTabDescription",
-      l10n_util::GetStringUTF16(guest_ntp_info.description_ids));
-  // TODO(crbug.com/1134111): Replace placeholder with user's name in the
-  // greeting message when the guest sign in functionality is implemented.
-  localized_strings.SetString(
-      "guestTabHeading", l10n_util::GetStringUTF16(guest_ntp_info.heading_ids));
+      l10n_util::GetStringUTF16(guest_tab_description_ids));
+  localized_strings.SetString("guestTabHeading",
+                              l10n_util::GetStringUTF16(guest_tab_heading_ids));
   localized_strings.SetString("learnMore",
-                              l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  localized_strings.SetString("learnMoreLink", guest_ntp_info.learn_more_link);
+                              l10n_util::GetStringUTF16(guest_tab_link_ids));
+  localized_strings.SetString("learnMoreLink", guest_tab_link);
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
@@ -449,7 +390,7 @@ scoped_refptr<base::RefCountedString> NTPResourceCache::CreateNewTabGuestHTML(
   std::string full_html =
       ReplaceTemplateExpressions(*guest_tab_html, replacements);
 
-  return base::RefCountedString::TakeString(&full_html);
+  new_tab_guest_html_ = base::RefCountedString::TakeString(&full_html);
 }
 
 void NTPResourceCache::CreateNewTabIncognitoCSS(
@@ -510,9 +451,7 @@ void NTPResourceCache::CreateNewTabCSS(
   // BookmarkBarView::Paint for how we do this for the bookmark bar
   // borders.
   SkColor color_section_border =
-      SkColorSetARGB(80,
-                     SkColorGetR(color_header),
-                     SkColorGetG(color_header),
+      SkColorSetARGB(80, SkColorGetR(color_header), SkColorGetG(color_header),
                      SkColorGetB(color_header));
 
   // Generate the replacements.

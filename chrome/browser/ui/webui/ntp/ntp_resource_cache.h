@@ -25,7 +25,7 @@ class Profile;
 namespace base {
 class RefCountedMemory;
 class Value;
-}
+}  // namespace base
 
 namespace content {
 class RenderProcessHost;
@@ -75,32 +75,10 @@ class NTPResourceCache : public ThemeServiceObserver,
   // ThemeServiceObserver:
   void OnThemeChanged() override;
 
-  static WindowType GetWindowType(
-      Profile* profile, content::RenderProcessHost* render_host);
+  static WindowType GetWindowType(Profile* profile,
+                                  content::RenderProcessHost* render_host);
 
  private:
-  struct GuestNTPInfo {
-    explicit GuestNTPInfo(const char* learn_more_link,
-                          int html_idr,
-                          int heading_ids,
-                          int description_ids,
-                          int features_ids = -1,
-                          int warnings_ids = -1)
-        : learn_more_link(learn_more_link),
-          html_idr(html_idr),
-          heading_ids(heading_ids),
-          description_ids(description_ids),
-          features_ids(features_ids),
-          warnings_ids(warnings_ids) {}
-
-    const char* learn_more_link;
-    int html_idr;
-    int heading_ids;
-    int description_ids;
-    int features_ids;
-    int warnings_ids;
-  };
-
   // KeyedService:
   void Shutdown() override;
 
@@ -126,13 +104,7 @@ class NTPResourceCache : public ThemeServiceObserver,
   void CreateNewTabIncognitoHTML();
   void CreateNewTabIncognitoCSS(const content::WebContents::Getter wc_getter);
 
-  scoped_refptr<base::RefCountedString> CreateNewTabGuestHTML(
-      const GuestNTPInfo& guest_ntp_info);
-  // TODO(crbug.com/1125474): Rename to CreateNewTabGuestSigned{In|Out}HTML once
-  // all audit is done and all instances of non-ephemeral Guest profiles are
-  // deprecated.
-  base::RefCountedMemory* CreateNewTabEphemeralGuestSignedInHTML();
-  base::RefCountedMemory* CreateNewTabEphemeralGuestSignedOutHTML();
+  void CreateNewTabGuestHTML();
 
   void SetDarkKey(base::Value* dict);
 
@@ -140,8 +112,6 @@ class NTPResourceCache : public ThemeServiceObserver,
 
   scoped_refptr<base::RefCountedMemory> new_tab_css_;
   scoped_refptr<base::RefCountedMemory> new_tab_guest_html_;
-  scoped_refptr<base::RefCountedMemory> new_tab_guest_signed_in_html_;
-  scoped_refptr<base::RefCountedMemory> new_tab_guest_signed_out_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_css_;
   scoped_refptr<base::RefCountedMemory> new_tab_non_primary_otr_html_;

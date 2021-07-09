@@ -70,8 +70,7 @@ void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessages() {
 
 bool ChromeNTPTilesInternalsMessageHandlerClient::SupportsNTPTiles() {
   Profile* profile = Profile::FromWebUI(web_ui());
-  return !(profile->IsGuestSession() || profile->IsEphemeralGuestProfile() ||
-           profile->IsOffTheRecord());
+  return !(profile->IsGuestSession() || profile->IsOffTheRecord());
 }
 
 bool ChromeNTPTilesInternalsMessageHandlerClient::DoesSourceExist(

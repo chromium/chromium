@@ -5,24 +5,9 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 
-#include "base/supports_user_data.h"
-
 class Profile;
 
 namespace signin_util {
-
-// TODO(crbug.com/1134111): Remove GuestSignedInUserData when Ephemeral Guest
-// sign in functioncality is implemented.
-class GuestSignedInUserData : public base::SupportsUserData::Data {
- public:
-  static void SetIsSignedIn(Profile* profile, bool is_signed_in);
-  static bool IsSignedIn(Profile* profile);
-
- private:
-  static GuestSignedInUserData* GetForProfile(Profile* profile);
-
-  bool is_signed_in_ = false;
-};
 
 // This class calls ResetForceSigninForTesting when destroyed, so that
 // ForcedSigning doesn't leak across tests.

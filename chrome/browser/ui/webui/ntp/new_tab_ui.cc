@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
 #include "chrome/browser/ui/webui/ntp/core_app_launcher_handler.h"
-#include "chrome/browser/ui/webui/ntp/ephemeral_guest_signin_handler.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
@@ -67,15 +66,12 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
           : IDS_NEW_TAB_TITLE;
   web_ui->OverrideTitle(l10n_util::GetStringUTF16(title_resource_id));
 
-  if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
+  if (!profile->IsGuestSession()) {
     web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
     if (profile->IsOffTheRecord()) {
       web_ui->AddMessageHandler(
           std::make_unique<CookieControlsHandler>(profile));
     }
-  } else if (profile->IsEphemeralGuestProfile()) {
-    web_ui->AddMessageHandler(
-        std::make_unique<EphemeralGuestSigninHandler>(profile));
   }
 
   // content::URLDataSource assumes the ownership of the html source.
@@ -147,8 +143,7 @@ Profile* NewTabUI::GetProfile() const {
 // NewTabHTMLSource
 
 NewTabUI::NewTabHTMLSource::NewTabHTMLSource(Profile* profile)
-    : profile_(profile) {
-}
+    : profile_(profile) {}
 
 std::string NewTabUI::NewTabHTMLSource::GetSource() {
   return chrome::kChromeUINewTabHost;
@@ -172,11 +167,11 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
   content::WebContents* web_contents = wc_getter.Run();
   content::RenderProcessHost* render_host =
       web_contents ? web_contents->GetMainFrame()->GetProcess() : nullptr;
-  NTPResourceCache::WindowType win_type = NTPResourceCache::GetWindowType(
-      profile_, render_host);
+  NTPResourceCache::WindowType win_type =
+      NTPResourceCache::GetWindowType(profile_, render_host);
   scoped_refptr<base::RefCountedMemory> html_bytes(
-      NTPResourceCacheFactory::GetForProfile(profile_)->
-      GetNewTabHTML(win_type));
+      NTPResourceCacheFactory::GetForProfile(profile_)->GetNewTabHTML(
+          win_type));
 
   std::move(callback).Run(html_bytes.get());
 }
