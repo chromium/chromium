@@ -657,8 +657,9 @@ TEST_F(UDPSocketTest, JoinMulticastGroup) {
   socket.Close();
 }
 
-#if defined(OS_IOS)
-// TODO(https://crbug.com/947115): failing on device on iOS 12.2.
+// TODO(https://crbug.com/947115): failing on device on iOS 12.2. 
+// TODO(https://crbug.com/1227554): flaky on Mac 11.
+#if defined(OS_IOS) || defined (OS_MAC)
 #define MAYBE_SharedMulticastAddress DISABLED_SharedMulticastAddress
 #else
 #define MAYBE_SharedMulticastAddress SharedMulticastAddress
