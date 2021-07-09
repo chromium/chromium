@@ -112,7 +112,7 @@ void ManagementTransitionScreenHandler::Show() {
 
   base::DictionaryValue data;
   data.SetInteger("arcTransition",
-                  static_cast<int>(arc::GetSupervisionTransition(profile)));
+                  static_cast<int>(arc::GetManagementTransition(profile)));
   data.SetString(
       "managementEntity",
       chrome::GetAccountManagerIdentity(profile).value_or(std::string()));

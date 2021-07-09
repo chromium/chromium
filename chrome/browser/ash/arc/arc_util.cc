@@ -577,12 +577,12 @@ void UpdateArcFileSystemCompatibilityPrefIfNeeded(
                      std::move(callback)));
 }
 
-ArcSupervisionTransition GetSupervisionTransition(const Profile* profile) {
+ArcManagementTransition GetManagementTransition(const Profile* profile) {
   DCHECK(profile);
   DCHECK(profile->GetPrefs());
 
-  const ArcSupervisionTransition supervision_transition =
-      static_cast<ArcSupervisionTransition>(
+  const ArcManagementTransition management_transition =
+      static_cast<ArcManagementTransition>(
           profile->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
   const bool is_child_to_regular_enabled =
       base::FeatureList::IsEnabled(kEnableChildToRegularTransitionFeature);
@@ -591,23 +591,23 @@ ArcSupervisionTransition GetSupervisionTransition(const Profile* profile) {
   const bool is_unmanaged_to_managed_enabled =
       base::FeatureList::IsEnabled(kEnableUnmanagedToManagedTransitionFeature);
 
-  switch (supervision_transition) {
-    case ArcSupervisionTransition::NO_TRANSITION:
+  switch (management_transition) {
+    case ArcManagementTransition::NO_TRANSITION:
       // Do nothing.
       break;
-    case ArcSupervisionTransition::CHILD_TO_REGULAR:
+    case ArcManagementTransition::CHILD_TO_REGULAR:
       if (!is_child_to_regular_enabled)
-        return ArcSupervisionTransition::NO_TRANSITION;
+        return ArcManagementTransition::NO_TRANSITION;
       break;
-    case ArcSupervisionTransition::REGULAR_TO_CHILD:
+    case ArcManagementTransition::REGULAR_TO_CHILD:
       if (!is_regular_to_child_enabled)
-        return ArcSupervisionTransition::NO_TRANSITION;
+        return ArcManagementTransition::NO_TRANSITION;
       break;
-    case ArcSupervisionTransition::UNMANAGED_TO_MANAGED:
+    case ArcManagementTransition::UNMANAGED_TO_MANAGED:
       if (!is_unmanaged_to_managed_enabled)
-        return ArcSupervisionTransition::NO_TRANSITION;
+        return ArcManagementTransition::NO_TRANSITION;
   }
-  return supervision_transition;
+  return management_transition;
 }
 
 bool IsPlayStoreAvailable() {

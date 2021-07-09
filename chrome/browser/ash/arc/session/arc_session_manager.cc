@@ -64,9 +64,9 @@
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_data_remover.h"
 #include "components/arc/session/arc_instance_mode.h"
+#include "components/arc/session/arc_management_transition.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/arc_session_runner.h"
-#include "components/arc/session/arc_supervision_transition.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -872,8 +872,8 @@ void ArcSessionManager::Initialize() {
     ArcAndroidManagementChecker::StartClient();
 
   // Request removing data if enabled for a regular->child transition.
-  if (GetSupervisionTransition(profile_) ==
-          ArcSupervisionTransition::REGULAR_TO_CHILD &&
+  if (GetManagementTransition(profile_) ==
+          ArcManagementTransition::REGULAR_TO_CHILD &&
       base::FeatureList::IsEnabled(
           kCleanArcDataOnRegularToChildTransitionFeature)) {
     LOG(WARNING) << "User transited from regular to child, deleting ARC data";
@@ -1213,7 +1213,7 @@ void ArcSessionManager::RequestArcDataRemoval() {
   data_remover_->Schedule();
   profile_->GetPrefs()->SetInteger(
       prefs::kArcManagementTransition,
-      static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
+      static_cast<int>(ArcManagementTransition::NO_TRANSITION));
   // To support 1) case above, maybe start data removal.
   if (state_ == State::STOPPED)
     MaybeStartArcDataRemoval();
@@ -1474,7 +1474,7 @@ void ArcSessionManager::OnFirstPoliciesLoadedOrTimeout() {
     // which is eventually passed to ARC via ArcSession parameters.
     profile_->GetPrefs()->SetInteger(
         arc::prefs::kArcManagementTransition,
-        static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
+        static_cast<int>(arc::ArcManagementTransition::UNMANAGED_TO_MANAGED));
 
     // Restart ARC to perform managed re-provisioning.
     // kArcIsManaged and kArcSignedIn are not reset during the restart.
@@ -1533,7 +1533,7 @@ void ArcSessionManager::StartArc() {
         demo_session->resources()->GetDemoAppsPath();
   }
 
-  params.supervision_transition = GetSupervisionTransition(profile_);
+  params.management_transition = GetManagementTransition(profile_);
   params.locale = locale;
   // Empty |preferred_languages| is converted to empty array.
   params.preferred_languages = base::SplitString(

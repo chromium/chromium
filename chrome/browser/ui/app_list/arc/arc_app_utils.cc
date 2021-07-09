@@ -317,13 +317,12 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     return false;
   }
 
-  // In case supervision transition is in progress ARC++ is not available.
-  const ArcSupervisionTransition supervision_transition =
-      GetSupervisionTransition(profile);
-  if (supervision_transition != ArcSupervisionTransition::NO_TRANSITION) {
-    VLOG(1) << "Attempt to launch " << app_id
-            << " while supervision transition " << supervision_transition
-            << " is in progress.";
+  // In case management transition is in progress ARC++ is not available.
+  const ArcManagementTransition management_transition =
+      GetManagementTransition(profile);
+  if (management_transition != ArcManagementTransition::NO_TRANSITION) {
+    VLOG(1) << "Attempt to launch " << app_id << " while management transition "
+            << management_transition << " is in progress.";
     arc::ShowManagementTransitionNotification(profile);
     return false;
   }

@@ -149,7 +149,7 @@
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
-#include "components/arc/session/arc_supervision_transition.h"
+#include "components/arc/session/arc_management_transition.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -1199,19 +1199,19 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
       const bool arc_signed_in =
           profile->GetPrefs()->GetBoolean(arc::prefs::kArcSignedIn);
 
-      arc::ArcSupervisionTransition transition;
+      arc::ArcManagementTransition transition;
       if (!arc_signed_in) {
         // No transition is necessary if user never enabled ARC.
-        transition = arc::ArcSupervisionTransition::NO_TRANSITION;
+        transition = arc::ArcManagementTransition::NO_TRANSITION;
       } else if (profile_is_child != user_is_child) {
         transition = user_is_child
-                         ? arc::ArcSupervisionTransition::REGULAR_TO_CHILD
-                         : arc::ArcSupervisionTransition::CHILD_TO_REGULAR;
+                         ? arc::ArcManagementTransition::REGULAR_TO_CHILD
+                         : arc::ArcManagementTransition::CHILD_TO_REGULAR;
       } else if (profile_is_managed && !arc_is_managed) {
-        transition = arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED;
+        transition = arc::ArcManagementTransition::UNMANAGED_TO_MANAGED;
       } else {
         // User state has not changed.
-        transition = arc::ArcSupervisionTransition::NO_TRANSITION;
+        transition = arc::ArcManagementTransition::NO_TRANSITION;
       }
 
       profile->GetPrefs()->SetInteger(arc::prefs::kArcManagementTransition,

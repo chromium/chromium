@@ -20,7 +20,7 @@
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
-#include "components/arc/session/arc_supervision_transition.h"
+#include "components/arc/session/arc_management_transition.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,11 +31,11 @@ namespace arc {
 namespace {
 
 struct TransitionNotificationParams {
-  TransitionNotificationParams(ArcSupervisionTransition arc_transition,
+  TransitionNotificationParams(ArcManagementTransition arc_transition,
                                const gfx::VectorIcon* notification_icon)
       : arc_transition(arc_transition), notification_icon(notification_icon) {}
 
-  ArcSupervisionTransition arc_transition;
+  ArcManagementTransition arc_transition;
   const gfx::VectorIcon* notification_icon;
 };
 
@@ -78,9 +78,7 @@ class ArcManagementTransitionNotificationTest
     return GetParam().notification_icon;
   }
 
-  ArcSupervisionTransition arc_transition() {
-    return GetParam().arc_transition;
-  }
+  ArcManagementTransition arc_transition() { return GetParam().arc_transition; }
 
  private:
   std::unique_ptr<TestingProfile> profile_;
@@ -96,14 +94,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ArcManagementTransitionNotificationTest,
     ::testing::Values(
-        TransitionNotificationParams(ArcSupervisionTransition::NO_TRANSITION,
+        TransitionNotificationParams(ArcManagementTransition::NO_TRANSITION,
                                      nullptr),
-        TransitionNotificationParams(ArcSupervisionTransition::CHILD_TO_REGULAR,
+        TransitionNotificationParams(ArcManagementTransition::CHILD_TO_REGULAR,
                                      &kNotificationFamilyLinkIcon),
-        TransitionNotificationParams(ArcSupervisionTransition::REGULAR_TO_CHILD,
+        TransitionNotificationParams(ArcManagementTransition::REGULAR_TO_CHILD,
                                      &kNotificationFamilyLinkIcon),
         TransitionNotificationParams(
-            ArcSupervisionTransition::UNMANAGED_TO_MANAGED,
+            ArcManagementTransition::UNMANAGED_TO_MANAGED,
             &chromeos::kEnterpriseIcon)));
 
 TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
@@ -126,7 +124,7 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
 
   // In case no management transition in progress notification is not
   // triggered.
-  if (arc_transition() == ArcSupervisionTransition::NO_TRANSITION) {
+  if (arc_transition() == ArcManagementTransition::NO_TRANSITION) {
     EXPECT_FALSE(display_service()->GetNotification(
         kManagementTransitionNotificationId));
     // Last launch is set, indicating that launch attempt was not blocked.
@@ -151,7 +149,7 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
   // Finishing transition automatically dismisses notification.
   profile()->GetPrefs()->SetInteger(
       prefs::kArcManagementTransition,
-      static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
+      static_cast<int>(ArcManagementTransition::NO_TRANSITION));
   EXPECT_FALSE(
       display_service()->GetNotification(kManagementTransitionNotificationId));
 

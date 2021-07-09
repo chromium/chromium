@@ -735,10 +735,10 @@ TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOn) {
 
   profile()->GetPrefs()->SetInteger(
       arc::prefs::kArcManagementTransition,
-      static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
+      static_cast<int>(arc::ArcManagementTransition::UNMANAGED_TO_MANAGED));
 
-  EXPECT_EQ(GetSupervisionTransition(profile()),
-            arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED);
+  EXPECT_EQ(GetManagementTransition(profile()),
+            arc::ArcManagementTransition::UNMANAGED_TO_MANAGED);
 }
 
 TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOff) {
@@ -748,10 +748,10 @@ TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOff) {
 
   profile()->GetPrefs()->SetInteger(
       arc::prefs::kArcManagementTransition,
-      static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
+      static_cast<int>(arc::ArcManagementTransition::UNMANAGED_TO_MANAGED));
 
-  EXPECT_EQ(GetSupervisionTransition(profile()),
-            arc::ArcSupervisionTransition::NO_TRANSITION);
+  EXPECT_EQ(GetManagementTransition(profile()),
+            arc::ArcManagementTransition::NO_TRANSITION);
 }
 
 class ArcOobeTest : public ChromeArcUtilTest {

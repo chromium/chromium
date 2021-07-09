@@ -71,7 +71,7 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
-#include "components/arc/session/arc_supervision_transition.h"
+#include "components/arc/session/arc_management_transition.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -963,7 +963,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildOnFirstSignIn) {
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
-      static_cast<int>(arc::ArcSupervisionTransition::NO_TRANSITION));
+      static_cast<int>(arc::ArcManagementTransition::NO_TRANSITION));
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
             supervised_users::kChildAccountSUID);
 }
@@ -976,7 +976,7 @@ TEST_F(ProfileManagerTest, InitProfileForRegularToChildTransition) {
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
-      static_cast<int>(arc::ArcSupervisionTransition::REGULAR_TO_CHILD));
+      static_cast<int>(arc::ArcManagementTransition::REGULAR_TO_CHILD));
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
             supervised_users::kChildAccountSUID);
 }
@@ -989,7 +989,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildToRegularTransition) {
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
-      static_cast<int>(arc::ArcSupervisionTransition::CHILD_TO_REGULAR));
+      static_cast<int>(arc::ArcManagementTransition::CHILD_TO_REGULAR));
   EXPECT_TRUE(profile->GetPrefs()->GetString(prefs::kSupervisedUserId).empty());
 }
 
@@ -1005,7 +1005,7 @@ TEST_F(ProfileManagerTest, InitProfileForUnmanagedToManagedTransition) {
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
-      static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
+      static_cast<int>(arc::ArcManagementTransition::UNMANAGED_TO_MANAGED));
 }
 
 TEST_F(ProfileManagerTest, InitProfileForManagedUserOnFirstSignIn) {
@@ -1020,7 +1020,7 @@ TEST_F(ProfileManagerTest, InitProfileForManagedUserOnFirstSignIn) {
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
-      static_cast<int>(arc::ArcSupervisionTransition::NO_TRANSITION));
+      static_cast<int>(arc::ArcManagementTransition::NO_TRANSITION));
 }
 
 TEST_F(ProfileManagerTest,
@@ -1032,7 +1032,7 @@ TEST_F(ProfileManagerTest,
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
-      static_cast<int>(arc::ArcSupervisionTransition::NO_TRANSITION));
+      static_cast<int>(arc::ArcManagementTransition::NO_TRANSITION));
   EXPECT_TRUE(profile->GetPrefs()->GetString(prefs::kSupervisedUserId).empty());
 }
 

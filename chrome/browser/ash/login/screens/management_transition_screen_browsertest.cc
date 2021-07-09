@@ -24,8 +24,8 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
+#include "components/arc/session/arc_management_transition.h"
 #include "components/arc/session/arc_session_runner.h"
-#include "components/arc/session/arc_supervision_transition.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, SuccessfulTransition) {
 
   ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetInteger(
       arc::prefs::kArcManagementTransition,
-      static_cast<int>(arc::ArcSupervisionTransition::NO_TRANSITION));
+      static_cast<int>(arc::ArcManagementTransition::NO_TRANSITION));
 
   EXPECT_FALSE(ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
       arc::prefs::kArcDataRemoveRequested));

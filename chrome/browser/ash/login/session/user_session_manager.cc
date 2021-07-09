@@ -1792,8 +1792,8 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
 
       return false;
     } else if (!user_manager->IsCurrentUserNew() &&
-               arc::GetSupervisionTransition(profile) !=
-                   arc::ArcSupervisionTransition::NO_TRANSITION) {
+               arc::GetManagementTransition(profile) !=
+                   arc::ArcManagementTransition::NO_TRANSITION) {
       LoginDisplayHost::default_host()
           ->GetSigninUI()
           ->StartManagementTransition();

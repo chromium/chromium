@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_SESSION_ARC_SUPERVISION_TRANSITION_H_
-#define COMPONENTS_ARC_SESSION_ARC_SUPERVISION_TRANSITION_H_
+#ifndef COMPONENTS_ARC_SESSION_ARC_MANAGEMENT_TRANSITION_H_
+#define COMPONENTS_ARC_SESSION_ARC_MANAGEMENT_TRANSITION_H_
 
 #include <ostream>
 
 namespace arc {
 
 // These values must be kept in sync with
-// UpgradeArcInstanceRequest.SupervisionTransition in
+// UpgradeArcContainerRequest.ManagementTransition in
 // third_party/cros_system_api/dbus/arc.proto.
-enum class ArcSupervisionTransition : int {
+enum class ArcManagementTransition : int {
   // No transition necessary.
   NO_TRANSITION = 0,
   // Child user is transitioning to a regular account, need to lift
@@ -27,8 +27,8 @@ enum class ArcSupervisionTransition : int {
 };
 
 std::ostream& operator<<(std::ostream& os,
-                         ArcSupervisionTransition supervisionTransition);
+                         ArcManagementTransition managementTransition);
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_SESSION_ARC_SUPERVISION_TRANSITION_H_
+#endif  // COMPONENTS_ARC_SESSION_ARC_MANAGEMENT_TRANSITION_H_

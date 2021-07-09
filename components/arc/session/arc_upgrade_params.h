@@ -12,7 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "components/arc/session/arc_supervision_transition.h"
+#include "components/arc/session/arc_management_transition.h"
 
 namespace arc {
 
@@ -71,8 +71,8 @@ struct UpgradeParams {
   // The supervision transition state for this account. Indicates whether
   // child account should become regular, regular account should become child
   // or neither.
-  ArcSupervisionTransition supervision_transition =
-      ArcSupervisionTransition::NO_TRANSITION;
+  ArcManagementTransition management_transition =
+      ArcManagementTransition::NO_TRANSITION;
 
   // Define language configuration set during Android container boot.
   // |preferred_languages| may be empty.

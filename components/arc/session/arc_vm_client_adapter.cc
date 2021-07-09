@@ -164,7 +164,7 @@ std::vector<std::string> GenerateUpgradeProps(
                          upgrade_params.is_demo_session),
       base::StringPrintf(
           "%s.supervision.transition=%d", prefix.c_str(),
-          static_cast<int>(upgrade_params.supervision_transition)),
+          static_cast<int>(upgrade_params.management_transition)),
       base::StringPrintf("%s.serialno=%s", prefix.c_str(),
                          serial_number.c_str()),
   };

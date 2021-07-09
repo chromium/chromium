@@ -69,8 +69,8 @@ class NotificationDelegate : public message_center::NotificationDelegate,
 
   // Called in case transition state is changed.
   void OnTransitionChanged() {
-    DCHECK_EQ(ArcSupervisionTransition::NO_TRANSITION,
-              GetSupervisionTransition(profile_));
+    DCHECK_EQ(ArcManagementTransition::NO_TRANSITION,
+              GetManagementTransition(profile_));
     Dismiss();
   }
 
@@ -83,9 +83,8 @@ class NotificationDelegate : public message_center::NotificationDelegate,
   DISALLOW_COPY_AND_ASSIGN(NotificationDelegate);
 };
 
-const gfx::VectorIcon& GetNotificationIcon(
-    ArcSupervisionTransition transition) {
-  if (transition == ArcSupervisionTransition::UNMANAGED_TO_MANAGED) {
+const gfx::VectorIcon& GetNotificationIcon(ArcManagementTransition transition) {
+  if (transition == ArcManagementTransition::UNMANAGED_TO_MANAGED) {
     return chromeos::kEnterpriseIcon;
   } else {
     return kNotificationFamilyLinkIcon;
@@ -98,10 +97,10 @@ const char kManagementTransitionNotificationId[] =
     "arc_management_transition/notification";
 
 void ShowManagementTransitionNotification(Profile* profile) {
-  const ArcSupervisionTransition transition = GetSupervisionTransition(profile);
-  DCHECK(transition == ArcSupervisionTransition::CHILD_TO_REGULAR ||
-         transition == ArcSupervisionTransition::REGULAR_TO_CHILD ||
-         transition == ArcSupervisionTransition::UNMANAGED_TO_MANAGED);
+  const ArcManagementTransition transition = GetManagementTransition(profile);
+  DCHECK(transition == ArcManagementTransition::CHILD_TO_REGULAR ||
+         transition == ArcManagementTransition::REGULAR_TO_CHILD ||
+         transition == ArcManagementTransition::UNMANAGED_TO_MANAGED);
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId);

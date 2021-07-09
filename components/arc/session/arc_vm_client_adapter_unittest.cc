@@ -87,7 +87,7 @@ UpgradeParams GetPopulatedUpgradeParams() {
   params.skip_boot_completed_broadcast = true;
   params.packages_cache_mode = UpgradeParams::PackageCacheMode::COPY_ON_INIT;
   params.skip_gms_core_cache = true;
-  params.supervision_transition = ArcSupervisionTransition::CHILD_TO_REGULAR;
+  params.management_transition = ArcManagementTransition::CHILD_TO_REGULAR;
   params.locale = "en-US";
   params.preferred_languages = {"en_US", "en", "ja"};
   params.is_demo_session = true;
@@ -1189,7 +1189,7 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_VariousParams2) {
   // Use slightly different params than StartUpgradeArc_VariousParams.
   params.packages_cache_mode =
       UpgradeParams::PackageCacheMode::SKIP_SETUP_COPY_ON_INIT;
-  params.supervision_transition = ArcSupervisionTransition::REGULAR_TO_CHILD;
+  params.management_transition = ArcManagementTransition::REGULAR_TO_CHILD;
   params.preferred_languages = {"en_US"};
 
   UpgradeArcWithParams(true, std::move(params));

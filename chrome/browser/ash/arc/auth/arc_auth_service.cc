@@ -40,7 +40,7 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_supervision_transition.h"
+#include "components/arc/session/arc_management_transition.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/user_manager/user_manager.h"
@@ -384,7 +384,7 @@ void ArcAuthService::ReportManagementChangeStatus(
     case mojom::ManagementChangeStatus::CLOUD_DPC_ALREADY_ENABLED:
       profile_->GetPrefs()->SetInteger(
           prefs::kArcManagementTransition,
-          static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
+          static_cast<int>(ArcManagementTransition::NO_TRANSITION));
       // TODO(brunokim): notify potential observers.
       break;
     case mojom::ManagementChangeStatus::CLOUD_DPC_DISABLING_FAILED:

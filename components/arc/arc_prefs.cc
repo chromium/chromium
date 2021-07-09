@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/arc/arc_prefs.h"
-#include "components/arc/session/arc_supervision_transition.h"
+#include "components/arc/session/arc_management_transition.h"
 
 #include <string>
 
@@ -166,7 +166,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(
       kArcManagementTransition,
-      static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
+      static_cast<int>(ArcManagementTransition::NO_TRANSITION));
 
   registry->RegisterBooleanPref(kArcIsManaged, false);
 

@@ -203,10 +203,10 @@ static_library("arc_base_enums") {
   sources = [
     "session/arc_instance_mode.cc",
     "session/arc_instance_mode.h",
+    "session/arc_management_transition.cc",
+    "session/arc_management_transition.h",
     "session/arc_stop_reason.cc",
     "session/arc_stop_reason.h",
-    "session/arc_supervision_transition.cc",
-    "session/arc_supervision_transition.h",
   ]
 
   deps = [ "//base" ]

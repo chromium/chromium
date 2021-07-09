@@ -793,15 +793,15 @@ TEST_F(ArcSessionImplTest, SupervisionTransitionShouldGraduate) {
   arc_session->StartMiniInstance();
 
   UpgradeParams params;
-  params.supervision_transition = ArcSupervisionTransition::CHILD_TO_REGULAR;
+  params.management_transition = ArcManagementTransition::CHILD_TO_REGULAR;
   params.locale = kDefaultLocale;
   arc_session->RequestUpgrade(std::move(params));
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(ArcSupervisionTransition::CHILD_TO_REGULAR,
+  EXPECT_EQ(ArcManagementTransition::CHILD_TO_REGULAR,
             GetClient(arc_session.get())
                 ->last_upgrade_params()
-                .supervision_transition);
+                .management_transition);
   EXPECT_EQ(160, GetClient(arc_session.get())->last_start_params().lcd_density);
 }
 
