@@ -2470,11 +2470,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   ASSERT_TRUE(db.Init());
 
 #if defined(OS_MAC)
-  testing_local_state().registry()->RegisterTimePref(prefs::kPasswordRecovery,
-                                                     base::Time());
-  db.InitPasswordRecoveryUtil(std::make_unique<PasswordRecoveryUtilMac>(
-      &testing_local_state(), base::ThreadTaskRunnerHandle::Get()));
-
   // Make sure that we can't get any logins when database is corrupted.
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_FALSE(db.GetAutofillableLogins(&result));
@@ -2494,9 +2489,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   EXPECT_THAT(result, UnorderedElementsAre(Pointee(form1), Pointee(form3)));
 
   RunUntilIdle();
-
-  // Make sure that password recovery pref is set.
-  ASSERT_TRUE(testing_local_state().HasPrefPath(prefs::kPasswordRecovery));
 #else
   EXPECT_EQ(DatabaseCleanupResult::kSuccess, db.DeleteUndecryptableLogins());
 #endif
@@ -2525,17 +2517,11 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init());
 
-  testing_local_state().registry()->RegisterTimePref(prefs::kPasswordRecovery,
-                                                     base::Time());
-  db.InitPasswordRecoveryUtil(std::make_unique<PasswordRecoveryUtilMac>(
-      &testing_local_state(), base::ThreadTaskRunnerHandle::Get()));
-
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_FALSE(db.GetAutofillableLogins(&result));
   EXPECT_TRUE(result.empty());
 
   RunUntilIdle();
-  EXPECT_FALSE(testing_local_state().HasPrefPath(prefs::kPasswordRecovery));
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {

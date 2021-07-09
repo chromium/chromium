@@ -28,7 +28,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -97,13 +96,6 @@ PasswordStoreFactory::BuildServiceInstanceFor(
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForProfileStorage(
           profile->GetPath()));
-#if defined(OS_MAC)
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  login_db->InitPasswordRecoveryUtil(
-      std::make_unique<password_manager::PasswordRecoveryUtilMac>(
-          local_state, base::ThreadTaskRunnerHandle::Get()));
-#endif
 
   scoped_refptr<PasswordStore> ps;
 #if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID) || \

@@ -829,13 +829,6 @@ bool LoginDatabase::Init() {
   return true;
 }
 
-#if defined(OS_MAC)
-void LoginDatabase::InitPasswordRecoveryUtil(
-    std::unique_ptr<PasswordRecoveryUtilMac> password_recovery_util) {
-  password_recovery_util_ = std::move(password_recovery_util);
-}
-#endif
-
 base::StringPiece LoginDatabase::GetMetricsSuffixForStore() const {
   // Note: For historic reasons, the profile store does not use a suffix, only
   // the account store does.
@@ -1810,8 +1803,6 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessNoDeletions);
   } else {
-    DCHECK(password_recovery_util_);
-    password_recovery_util_->RecordPasswordRecovery();
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted);
     UMA_HISTOGRAM_COUNTS_100("PasswordManager.CleanedUpPasswords",
@@ -2105,11 +2096,6 @@ FormRetrievalResult LoginDatabase::StatementToForms(
     if (RemoveLogin(form, nullptr)) {
       count_removed_logins++;
     }
-  }
-  if (count_removed_logins == forms_to_be_deleted.size() &&
-      count_removed_logins > 0) {
-    DCHECK(password_recovery_util_);
-    password_recovery_util_->RecordPasswordRecovery();
   }
 #endif
 

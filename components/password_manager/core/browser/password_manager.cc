@@ -249,10 +249,6 @@ void PasswordManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(prefs::kOsPasswordLastChanged, 0);
   registry->RegisterBooleanPref(prefs::kOsPasswordBlank, false);
 #endif
-
-#if defined(OS_MAC)
-  registry->RegisterTimePref(prefs::kPasswordRecovery, base::Time());
-#endif
 }
 
 PasswordManager::PasswordManager(PasswordManagerClient* client)

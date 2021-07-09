@@ -616,6 +616,11 @@ const char kTimeHintsFetcherTopHostBlocklistLastInitialized[] =
 const char kHintsFetcherTopHostBlocklistMinimumEngagementScore[] =
     "optimization_guide.hintsfetcher.top_host_blacklist_min_engagement_score";
 
+// Deprecated 07/2021.
+#if defined(OS_MAC)
+const char kPasswordRecovery[] = "password_manager.password_recovery";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -780,6 +785,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDoublePref(
       kHintsFetcherTopHostBlocklistMinimumEngagementScore, 0,
       PrefRegistry::LOSSY_PREF);
+
+#if defined(OS_MAC)
+  registry->RegisterTimePref(kPasswordRecovery, base::Time());
+#endif
 }
 
 }  // namespace
@@ -1543,6 +1552,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kHintsFetcherTopHostBlocklistState);
   profile_prefs->ClearPref(kHintsFetcherTopHostBlocklistMinimumEngagementScore);
   profile_prefs->ClearPref(kTimeHintsFetcherTopHostBlocklistLastInitialized);
+
+  // Added 07/2021
+#if defined(OS_MAC)
+  profile_prefs->ClearPref(kPasswordRecovery);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -31,10 +31,6 @@
 #include "base/gtest_prod_util.h"
 #endif
 
-#if defined(OS_MAC)
-#include "components/password_manager/core/browser/password_recovery_util_mac.h"
-#endif
-
 namespace password_manager {
 
 class SQLTableBuilder;
@@ -66,12 +62,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // Actually creates/opens the database. If false is returned, no other method
   // should be called.
   virtual bool Init();
-
-#if defined(OS_MAC)
-  // Registers utility which is used to save password recovery status on MacOS.
-  void InitPasswordRecoveryUtil(
-      std::unique_ptr<PasswordRecoveryUtilMac> password_recovery_util);
-#endif
 
   // Reports usage metrics to UMA.
   void ReportMetrics(const std::string& sync_username,
@@ -369,10 +359,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   std::string blocklisted_statement_;
   std::string encrypted_password_statement_by_id_;
   std::string id_and_password_statement_;
-
-#if defined(OS_MAC)
-  std::unique_ptr<PasswordRecoveryUtilMac> password_recovery_util_;
-#endif
 
 #if defined(OS_POSIX) && !defined(OS_APPLE)
   // Whether password values should be encrypted.

@@ -348,11 +348,7 @@ static_library("browser") {
   }
 
   if (is_mac) {
-    sources += [
-      "login_database_mac.cc",
-      "password_recovery_util_mac.cc",
-      "password_recovery_util_mac.h",
-    ]
+    sources += [ "login_database_mac.cc" ]
   }
 
   if (is_ios) {

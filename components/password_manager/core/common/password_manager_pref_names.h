@@ -37,11 +37,6 @@ extern const char kOsPasswordLastChanged[];
 // The current status of migrating the passwords from the Keychain to the
 // database. Stores a value from MigrationStatus.
 extern const char kKeychainMigrationStatus[];
-
-// The date of when passwords were cleaned up for MacOS users who previously
-// lost access to their password because of encryption key modification in
-// Keychain.
-extern const char kPasswordRecovery[];
 #endif
 
 // Boolean that indicated whether first run experience for the auto sign-in
