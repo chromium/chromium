@@ -37,7 +37,7 @@ class MockSigninUI : public SigninUI {
               (override));
   MOCK_METHOD(void,
               ShowSigninError,
-              (SigninError, const std::string&, int),
+              (SigninError, const std::string&),
               (override));
   MOCK_METHOD(void, StartBrowserDataMigration, (), (override));
 };

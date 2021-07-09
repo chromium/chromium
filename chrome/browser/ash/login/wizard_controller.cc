@@ -753,7 +753,15 @@ void WizardController::ShowSignInFatalErrorScreen(
 
 void WizardController::OnSignInFatalErrorScreenExit() {
   OnScreenExit(SignInFatalErrorView::kScreenId, kDefaultExitReason);
-  AdvanceToSigninScreen();
+  // It's possible to get on the SignInFatalError screen both from the user pods
+  // and from the Gaia sign-in screen. The screen exits when user presses
+  // "try again". Go to the previous screen if it is set. Otherwise go to the
+  // login screen with pods.
+  if (previous_screen_) {
+    SetCurrentScreen(previous_screen_);
+    return;
+  }
+  ShowLoginScreen();
 }
 
 void WizardController::ShowLoginScreen() {

@@ -537,8 +537,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
       params.SetString("frameUrl", public_saml_url_fetcher_->GetRedirectUrl());
     } else {
       LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-          SigninError::kFailedToFetchSamlRedirect, /*details=*/std::string(),
-          /*login_attempts=*/1);
+          SigninError::kFailedToFetchSamlRedirect, /*details=*/std::string());
       return;
     }
   }
@@ -827,7 +826,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
           *extension_provided_client_cert_usage_observer_,
           pending_user_context_.get(), &error)) {
     LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-        error, /*details=*/std::string(), /*login_attempts=*/1);
+        error, /*details=*/std::string());
     pending_user_context_.reset();
     return;
   }
@@ -848,8 +847,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
 void GaiaScreenHandler::OnCookieWaitTimeout() {
   LoadAuthExtension(true /* force */);
   LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-      SigninError::kCookieWaitTimeout, /*details=*/std::string(),
-      /*login_attempts=*/1);
+      SigninError::kCookieWaitTimeout, /*details=*/std::string());
 }
 
 void GaiaScreenHandler::HandleCompleteLogin(const std::string& gaia_id,
@@ -1048,7 +1046,7 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
           *extension_provided_client_cert_usage_observer_, &user_context,
           &error)) {
     LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-        error, /*details=*/std::string(), /*login_attempts=*/1);
+        error, /*details=*/std::string());
     return;
   }
 

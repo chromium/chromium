@@ -143,8 +143,19 @@ IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
                                 FakeGaiaMixin::kFakeUserPassword,
                                 FakeGaiaMixin::kEmptyUserServices);
   OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
   test::ClickSignInFatalScreenActionButton();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenShown) {
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  chromeos::FakeUserDataAuthClient::Get()->set_cryptohome_error(
+      user_data_auth::CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED);
+  ash::LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
+                                          /*check_if_submittable=*/false);
+  OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 class LoginOfflineManagedTest : public LoginManagerTest {

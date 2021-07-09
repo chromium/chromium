@@ -447,10 +447,8 @@ void LoginDisplayHostCommon::StartEncryptionMigration(
 }
 
 void LoginDisplayHostCommon::ShowSigninError(SigninError error,
-                                             const std::string& details,
-                                             int login_attempts) {
-  VLOG(1) << "Show error, error_id: " << static_cast<int>(error)
-          << ", attempts:" << login_attempts;
+                                             const std::string& details) {
+  VLOG(1) << "Show error, error_id: " << static_cast<int>(error);
 
   std::string error_text;
   switch (error) {
@@ -479,13 +477,11 @@ void LoginDisplayHostCommon::ShowSigninError(SigninError error,
     }
   }
 
-  std::string help_link_text;
-  if (login_attempts > 1)
-    help_link_text = l10n_util::GetStringUTF8(IDS_LEARN_MORE);
+  std::string help_link_text = l10n_util::GetStringUTF8(IDS_LEARN_MORE);
 
   GetWizardController()->GetScreen<SignInFatalErrorScreen>()->SetCustomError(
       error_text, keyboard_hint, details, help_link_text);
-  GetWizardController()->AdvanceToScreen(SignInFatalErrorView::kScreenId);
+  StartWizard(SignInFatalErrorView::kScreenId);
 }
 
 void LoginDisplayHostCommon::OnBrowserAdded(Browser* browser) {

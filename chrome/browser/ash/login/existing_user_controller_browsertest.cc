@@ -274,7 +274,7 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
   void ExpectLoginFailure() {
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(false)).Times(1);
     EXPECT_CALL(*mock_signin_ui_,
-                ShowSigninError(SigninError::kOwnerKeyLost, std::string(), 1))
+                ShowSigninError(SigninError::kOwnerKeyLost, std::string()))
         .Times(1);
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(true)).Times(1);
   }
@@ -947,7 +947,7 @@ class ExistingUserControllerActiveDirectoryTest
     EXPECT_CALL(
         *mock_signin_ui_,
         ShowSigninError(SigninError::kGoogleAccountNotAllowed,
-                        "Google accounts are not allowed on this device", 1))
+                        "Google accounts are not allowed on this device"))
         .Times(1);
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(true)).Times(1);
   }

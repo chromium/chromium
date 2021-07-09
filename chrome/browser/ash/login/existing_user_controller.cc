@@ -20,7 +20,6 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -232,8 +231,8 @@ bool IsUpdateRequiredDeadlineReached() {
 }
 
 void RecordPasswordChangeFlow(LoginPasswordChangeFlow flow) {
-  UMA_HISTOGRAM_ENUMERATION("Login.PasswordChangeFlow", flow,
-                            LOGIN_PASSWORD_CHANGE_FLOW_COUNT);
+  base::UmaHistogramEnumeration("Login.PasswordChangeFlow", flow,
+                                LOGIN_PASSWORD_CHANGE_FLOW_COUNT);
 }
 
 bool IsTestingMigrationUI() {
@@ -946,9 +945,10 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
   login_performer_->set_delegate(nullptr);
   ignore_result(login_performer_.release());
 
-  if (user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE)
-    UMA_HISTOGRAM_COUNTS_100("Login.OfflineSuccess.Attempts",
-                             num_login_attempts_);
+  if (user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE) {
+    base::UmaHistogramCounts100("Login.OfflineSuccess.Attempts",
+                                num_login_attempts_);
+  }
 
   const bool is_enterprise_managed = g_browser_process->platform_part()
                                          ->browser_policy_connector_chromeos()
@@ -1509,7 +1509,7 @@ void ExistingUserController::ShowError(SigninError error,
     // being deprecated anyway.
     return;
   }
-  signin_ui->ShowSigninError(error, details, num_login_attempts_);
+  signin_ui->ShowSigninError(error, details);
 }
 
 void ExistingUserController::SendAccessibilityAlert(

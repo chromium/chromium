@@ -148,7 +148,7 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
                << AccountId::AccountTypeToString(account_id.GetAccountType());
     LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
         SigninError::kOfflineFailedNetworkNotConnected,
-        /*details=*/std::string(), /*login_attempts=*/1);
+        /*details=*/std::string());
     return;
   }
 

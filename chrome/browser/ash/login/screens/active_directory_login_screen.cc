@@ -167,8 +167,7 @@ void ActiveDirectoryLoginScreen::OnAdAuthResult(
       view_->SetErrorState(username,
                            static_cast<int>(ActiveDirectoryErrorState::NONE));
       LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-          GetSigninError(error), /*details=*/std::string(),
-          /*login_attempts=*/1);
+          GetSigninError(error), /*details=*/std::string());
   }
 }
 
