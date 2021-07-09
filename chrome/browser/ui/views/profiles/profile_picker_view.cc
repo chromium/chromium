@@ -409,9 +409,8 @@ void ProfilePickerView::ShowScreenInSystemContents(
 }
 
 void ProfilePickerView::CreateToolbarBackButton() {
-  // The sign-in profile is needed to obtain the ThemeProvider which is needed
-  // by ToolbarButton on construction.
-  DCHECK(sign_in_->profile());
+  // ThemeProvider is needed by ToolbarButton on construction.
+  DCHECK(GetThemeProvider());
   auto back_button = std::make_unique<SimpleBackButton>(base::BindRepeating(
       &ProfilePickerView::BackButtonPressed, base::Unretained(this)));
   toolbar_->AddChildView(std::move(back_button));
@@ -609,8 +608,7 @@ void ProfilePickerView::SwitchToSignIn(
 void ProfilePickerView::CancelSignIn() {
   DCHECK(sign_in_);
 
-  g_browser_process->profile_manager()->ScheduleProfileForDeletion(
-      sign_in_->profile()->GetPath(), base::DoNothing());
+  sign_in_->Cancel();
 
   switch (entry_point_) {
     case ProfilePicker::EntryPoint::kOnStartup:
@@ -630,9 +628,7 @@ void ProfilePickerView::CancelSignIn() {
       return;
     }
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile: {
-      // Finished here, avoid aborting the flow in the destructor (which is
-      // called as a result of Clear()).
-      sign_in_->Cancel();
+      // This results in destroying `this` incl. `sign_in_`.
       Clear();
       return;
     }
@@ -745,8 +741,7 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     case IDC_RELOAD_CLEARING_CACHE: {
       // Sign-in may fail due to connectivity issues, allow reloading.
       if (GetSigningIn()) {
-        sign_in_->contents()->GetController().Reload(
-            content::ReloadType::BYPASSING_CACHE, true);
+        sign_in_->ReloadSignInPage();
       }
       break;
     }
@@ -794,8 +789,7 @@ void ProfilePickerView::BuildLayout() {
 }
 
 void ProfilePickerView::UpdateToolbarColor() {
-  // The sign-in profile is needed to obtain the ThemeProvider.
-  DCHECK(sign_in_->profile());
+  DCHECK(GetThemeProvider());
   SkColor background_color =
       GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
   toolbar_->SetBackground(views::CreateSolidBackground(background_color));

@@ -145,14 +145,13 @@ ProfilePickerSignInFlowController::~ProfilePickerSignInFlowController() {
   if (contents())
     contents()->SetDelegate(nullptr);
 
-  // Abort unfinished signed-in profile creation.
+  // Record unfinished signed-in profile creation.
   if (!is_finished_) {
-    // TODO(crbug.com/1196290): Schedule the profile for deletion here, it's not
+    // TODO(crbug.com/1227699): Schedule the profile for deletion here, it's not
     // needed any more. This triggers a crash if the browser is shutting down
     // completely. Figure a way how to delete the profile only if that does not
     // compete with a shutdown.
 
-    // Log profile creation flow abortion.
     if (IsSigningIn()) {
       ProfileMetrics::LogProfileAddSignInFlowOutcome(
           ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedBeforeSignIn);
@@ -173,12 +172,12 @@ void ProfilePickerSignInFlowController::Init() {
 
   // Listen for sign-in getting completed.
   identity_manager_observation_.Observe(
-      IdentityManagerFactory::GetForProfile(profile()));
+      IdentityManagerFactory::GetForProfile(profile_));
 
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile()->GetPath());
+          .GetProfileAttributesWithPath(profile_->GetPath());
   if (!entry) {
     NOTREACHED();
     return;
@@ -195,7 +194,7 @@ void ProfilePickerSignInFlowController::Init() {
 
   // Apply the default theme to get consistent colors for toolbars (this matters
   // for linux where the 'system' theme is used for new profiles).
-  auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
   theme_service->UseDefaultTheme();
 
   // Make sure the web contents used for sign-in has proper background to match
@@ -212,8 +211,22 @@ void ProfilePickerSignInFlowController::Init() {
 }
 
 void ProfilePickerSignInFlowController::Cancel() {
-  // Finished here, avoid aborting the flow in the destructor later on.
+  if (is_finished_)
+    return;
+
   is_finished_ = true;
+
+  // TODO(crbug.com/1227699): Consider moving this into the destructor so that
+  // unfinished (and unaborted) flows also get the profile deleted right away.
+  g_browser_process->profile_manager()->ScheduleProfileForDeletion(
+      profile_->GetPath(), base::DoNothing());
+}
+
+void ProfilePickerSignInFlowController::ReloadSignInPage() {
+  if (contents() && IsSigningIn()) {
+    contents()->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
+                                       true);
+  }
 }
 
 void ProfilePickerSignInFlowController::SetProfileColor(SkColor color) {
@@ -236,7 +249,7 @@ bool ProfilePickerSignInFlowController::IsSigningIn() const {
 
 const ui::ThemeProvider* ProfilePickerSignInFlowController::GetThemeProvider()
     const {
-  return &ThemeService::GetThemeProviderForProfile(profile());
+  return &ThemeService::GetThemeProviderForProfile(profile_);
 }
 
 std::string ProfilePickerSignInFlowController::GetUserDomain() const {
@@ -356,12 +369,12 @@ void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
 
   // DiceTurnSyncOnHelper deletes itself once done.
   new DiceTurnSyncOnHelper(
-      profile(), signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      profile_, signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       signin_metrics::Reason::kSigninPrimaryAccount, account_info.account_id,
       DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
       std::make_unique<ProfilePickerTurnSyncOnDelegate>(
-          weak_ptr_factory_.GetWeakPtr(), profile()),
+          weak_ptr_factory_.GetWeakPtr(), profile_),
       std::move(sync_consent_completed_closure));
 }
 
@@ -386,7 +399,7 @@ void ProfilePickerSignInFlowController::OnExtendedAccountInfoTimeout(
 void ProfilePickerSignInFlowController::OnProfileNameAvailable() {
   // Stop listening to further changes.
   DCHECK(identity_manager_observation_.IsObservingSource(
-      IdentityManagerFactory::GetForProfile(profile())));
+      IdentityManagerFactory::GetForProfile(profile_)));
   identity_manager_observation_.Reset();
 
   if (on_profile_name_available_)
@@ -447,14 +460,14 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile()->GetPath());
+          .GetProfileAttributesWithPath(profile_->GetPath());
   if (!entry) {
     NOTREACHED();
     return;
   }
 
   entry->SetIsOmitted(false);
-  if (!profile()->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
     // Unmark this profile ephemeral so that it isn't deleted upon next startup.
     // Profiles should never be made non-ephemeral if ephemeral mode is forced
     // by policy.
@@ -469,13 +482,13 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
   // consent), apply a new color to the profile (otherwise, a more complicated
   // logic gets triggered in ShowCustomizationBubble()).
   if (!enterprise_sync_consent_needed &&
-      !ProfileCustomizationBubbleSyncController::CanThemeSyncStart(profile())) {
-    auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
+      !ProfileCustomizationBubbleSyncController::CanThemeSyncStart(profile_)) {
+    auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
     theme_service->BuildAutogeneratedThemeFromColor(profile_color_);
   }
 
   // Skip the FRE for this profile as it's replaced by profile creation flow.
-  profile()->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
 
   // TODO(crbug.com/1126913): Change the callback of
   // profiles::OpenBrowserWindowForProfile() to be a OnceCallback as it is only
@@ -489,7 +502,7 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
                                      // extensions because we only open browser
                                      // window if the Profile is not locked.
                                      // Hence there is no extension blocked.
-      profile(), Profile::CREATE_STATUS_INITIALIZED);
+      profile_, Profile::CREATE_STATUS_INITIALIZED);
 }
 
 void ProfilePickerSignInFlowController::FinishAndOpenBrowserForSAML() {

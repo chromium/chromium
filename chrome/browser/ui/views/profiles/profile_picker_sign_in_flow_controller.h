@@ -59,6 +59,11 @@ class ProfilePickerSignInFlowController
   // must take care of logging the outcome of the flow on its own.
   void Cancel();
 
+  // Reloads the sign-in page if applicable.
+  void ReloadSignInPage();
+
+  // TODO(crbug.com/1227029): Make private as an implementation detail of the
+  // DICe flow.
   content::WebContents* contents() const { return contents_.get(); }
 
   // Updates the profile color provided in the constructor.
@@ -74,8 +79,6 @@ class ProfilePickerSignInFlowController
   // Returns the domain of the email of the signed-in user or an empty string
   // if the user is not signed-in.
   std::string GetUserDomain() const;
-
-  Profile* profile() const { return profile_; }
 
   // Getter of the path of profile which is displayed on the profile switch
   // screen. Returns an empty path if no such screen has been displayed.

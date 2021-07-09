@@ -1344,6 +1344,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
                            /*is_consented_primary_account=*/true);
 
   Profile* profile_being_created = StartSigninFlow();
+  base::FilePath profile_path = profile_being_created->GetPath();
 
   // Simulate a successful Gaia sign-in.
   SignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");
@@ -1373,12 +1374,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
 
-  // Profile creation shouldn't be finished.
+  // Profile should be already deleted.
   ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(profile_being_created->GetPath());
-  EXPECT_NE(entry, nullptr);
-  EXPECT_TRUE(entry->IsEphemeral());
-  EXPECT_TRUE(entry->IsOmitted());
+      storage.GetProfileAttributesWithPath(profile_path);
+  EXPECT_EQ(entry, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
