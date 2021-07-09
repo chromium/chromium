@@ -85999,6 +85999,8 @@ Called by update_scheduler_enums.py.-->
   <int value="17" label="Forget site dialog opened"/>
   <int value="18" label="Forget site data cleared"/>
   <int value="19" label="History page opened"/>
+  <int value="20" label="History page individual entry removed"/>
+  <int value="21" label="History page individual entry clicked"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">

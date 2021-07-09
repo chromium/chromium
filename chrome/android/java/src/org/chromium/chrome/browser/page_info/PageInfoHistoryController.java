@@ -96,14 +96,14 @@ public class PageInfoHistoryController
     // HistoryContentManager.Observer
     @Override
     public void onItemClicked(HistoryItem item) {
-        // TODO(crbug.com/1173154): Add metrics for item clicked.
+        mMainController.recordAction(PageInfoAction.PAGE_INFO_HISTORY_ENTRY_CLICKED);
         return;
     }
 
     // HistoryContentManager.Observer
     @Override
     public void onItemRemoved(HistoryItem item) {
-        // TODO(crbug.com/1173154): Add metrics for item removed.
+        mMainController.recordAction(PageInfoAction.PAGE_INFO_HISTORY_ENTRY_REMOVED);
         return;
     }
 
