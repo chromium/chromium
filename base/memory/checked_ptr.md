@@ -324,7 +324,7 @@ Possible solutions (in no particular order):
 
 #### Past-the-end pointers with non-PA allocations
 
-If we increment a `CheckedPtr` pointing at a non-PA allocation until it points past the end of the allocation, that pointer may happen to be pointing at the beginning of a PA superpage. Advancing the pointer through `operator+=()` assumes that the pointer stays within an allocation. So when this happens, it is as if we skipped an `AddRef()`, and `Release()` may decrement a non-existent ref count field.
+Pointers past the end of an allocation are supported only if they point exactly to the end of the allocation. Anything beyond that runs into a risk of modifying ref-count of the next allocation, or in the rare case, confusing the ref-counting logic entirely when an allocation is on the border of GigaCage. This could lead to obscure, hard to debug crashes.
 
 #### Pointers to address in another process
 
