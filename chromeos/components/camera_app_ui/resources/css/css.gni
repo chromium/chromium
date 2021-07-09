@@ -9,4 +9,5 @@ css_files = [
   "ptz_panel.css",
   "ptz_toast.css",
   "ripple.css",
+  "scanner.css",
 ]

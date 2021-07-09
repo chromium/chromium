@@ -378,6 +378,7 @@ export class Camera extends View {
     });
 
     this.initVideoEncoderOptions_();
+    await this.initScannerMode_();
   }
 
   /**
@@ -435,6 +436,17 @@ export class Camera extends View {
     });
     options.initialize();
   }
+
+  /**
+   * @private
+   */
+  async initScannerMode_() {
+    const helper = await ChromeHelper.getInstance();
+    state.set(
+        state.State.PLATFORM_SUPPORT_SCAN_DOCUMENT,
+        await helper.isDocumentModeSupported());
+  }
+
 
   /**
    * @param {function(): *} listener

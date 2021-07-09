@@ -17,6 +17,7 @@ export const State = {
   CAMERA_CONFIGURING: 'camera-configuring',
   CAMERA_SWITCHING: 'camera-switching',
   CUSTOM_VIDEO_PARAMETERS: 'custom-video-parameters',
+  ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS: 'enable-document-mode-on-all-cameras',
   ENABLE_MULTISTREAM_RECORDING: 'enable-multistream-recording',
   ENABLE_PTZ: 'enable-ptz',
   EXPERT: 'expert',
@@ -40,6 +41,7 @@ export const State = {
   MULTI_CAMERA: 'multi-camera',
   MULTI_FPS: 'multi-fps',
   NO_RESOLUTION_SETTINGS: 'no-resolution-settings',
+  PLATFORM_SUPPORT_SCAN_DOCUMENT: 'platform-support-scan-document',
   PLAYING_RESULT_VIDEO: 'playing-result-video',
   PRINT_PERFORMANCE_LOGS: 'print-performance-logs',
   // Starts/Ends when start/stop event of MediaRecorder is triggered.
@@ -55,6 +57,7 @@ export const State = {
   SCAN_BARCODE: 'scan-barcode',
   SHOULD_HANDLE_INTENT_RESULT: 'should-handle-intent-result',
   SHOW_METADATA: 'show-metadata',
+  SHOW_SCAN_DOCUMENT_OPTIONS: 'show-scan-document-options',
   SCREEN_OFF_AUTO: 'screen-off-auto',
   STREAMING: 'streaming',
   SUSPEND: 'suspend',
