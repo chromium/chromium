@@ -55,6 +55,8 @@ const DlpContentRestrictionSet kPrivacyScreenReported(
 const DlpContentRestrictionSet kPrintingRestricted(
     DlpContentRestriction::kPrint,
     DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kPrintingWarning(DlpContentRestriction::kPrint,
+                                                DlpRulesManager::Level::kWarn);
 
 class MockPrivacyScreenHelper : public ash::PrivacyScreenDlpHelper {
  public:
@@ -414,6 +416,29 @@ TEST_F(DlpContentManagerTest, PrintingRestricted) {
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 2);
+}
+
+TEST_F(DlpContentManagerTest, PrintingWarning) {
+  LoginFakeUser();
+
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kEmptyRestrictionSet);
+
+  EXPECT_FALSE(GetManager()->ShouldWarnBeforePrinting(web_contents.get()));
+
+  SetupDlpRulesManager();
+
+  helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarning);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kPrintingWarning);
+  EXPECT_TRUE(GetManager()->ShouldWarnBeforePrinting(web_contents.get()));
+  EXPECT_FALSE(GetManager()->IsPrintingRestricted(web_contents.get()));
+
+  helper_.DestroyWebContents(web_contents.get());
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kEmptyRestrictionSet);
+  EXPECT_FALSE(GetManager()->ShouldWarnBeforePrinting(web_contents.get()));
 }
 
 }  // namespace policy

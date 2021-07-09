@@ -65,6 +65,9 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // Returns whether printing should be restricted.
   bool IsPrintingRestricted(content::WebContents* web_contents) const;
 
+  // Returns whether the user should be warned before printing.
+  bool ShouldWarnBeforePrinting(content::WebContents* web_contents) const;
+
   // Returns whether screen capture of the defined content should be restricted.
   virtual bool IsScreenCaptureRestricted(
       const content::DesktopMediaID& media_id) const;
@@ -194,6 +197,11 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // Get the delay before switching privacy screen off.
   static base::TimeDelta GetPrivacyScreenOffDelayForTesting();
+
+  // Returns which level and url of printing restriction is currently enforced
+  // for |web_contents|.
+  RestrictionLevelAndUrl GetPrintingRestrictionInfo(
+      content::WebContents* web_contents) const;
 
   // Map from currently known confidential WebContents to the restrictions.
   base::flat_map<content::WebContents*, DlpContentRestrictionSet>

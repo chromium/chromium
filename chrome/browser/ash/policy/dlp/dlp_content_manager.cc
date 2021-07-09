@@ -122,16 +122,8 @@ bool DlpContentManager::IsVideoCaptureRestricted(
 
 bool DlpContentManager::IsPrintingRestricted(
     content::WebContents* web_contents) const {
-  // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedded
-  // WebContents.
-  auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
-  web_contents =
-      guest_view ? guest_view->embedder_web_contents() : web_contents;
-
   RestrictionLevelAndUrl restriction_info =
-      GetConfidentialRestrictions(web_contents)
-          .GetRestrictionLevelAndUrl(DlpContentRestriction::kPrint);
+      GetPrintingRestrictionInfo(web_contents);
   const bool is_blocked =
       restriction_info.level == DlpRulesManager::Level::kBlock;
   DlpBooleanHistogram(dlp::kPrintingBlockedUMA, is_blocked);
@@ -143,6 +135,14 @@ bool DlpContentManager::IsPrintingRestricted(
   }
 
   return is_blocked;
+}
+
+bool DlpContentManager::ShouldWarnBeforePrinting(
+    content::WebContents* web_contents) const {
+  RestrictionLevelAndUrl restriction_info =
+      GetPrintingRestrictionInfo(web_contents);
+  // TODO(crbug.com/1227700): Add reporting and metrics for WARN
+  return restriction_info.level == DlpRulesManager::Level::kWarn;
 }
 
 bool DlpContentManager::IsScreenCaptureRestricted(
@@ -601,6 +601,19 @@ void DlpContentManager::SetReportingManagerForTesting(
 // static
 base::TimeDelta DlpContentManager::GetPrivacyScreenOffDelayForTesting() {
   return kPrivacyScreenOffDelay;
+}
+
+RestrictionLevelAndUrl DlpContentManager::GetPrintingRestrictionInfo(
+    content::WebContents* web_contents) const {
+  // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedded
+  // WebContents.
+  auto* guest_view =
+      extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
+  web_contents =
+      guest_view ? guest_view->embedder_web_contents() : web_contents;
+
+  return GetConfidentialRestrictions(web_contents)
+      .GetRestrictionLevelAndUrl(DlpContentRestriction::kPrint);
 }
 
 // ScopedDlpContentManagerForTesting
