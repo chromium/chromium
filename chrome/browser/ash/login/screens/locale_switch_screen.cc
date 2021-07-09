@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -23,9 +24,18 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kLocaleWaitTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kWaitTimeout = base::TimeDelta::FromSeconds(5);
 
+// Returns whether all information needed (locale and account capabilities)
+// has been fetched.
+bool IsAllInfoFetched(const AccountInfo& info) {
+  bool result = !info.locale.empty();
+  if (features::IsMinorModeRestrictionEnabled())
+    result &= info.capabilities.AreAllCapabilitiesKnown();
+  return result;
 }
+
+}  // namespace
 
 // static
 std::string LocaleSwitchScreen::GetResultString(Result result) {
@@ -88,35 +98,32 @@ void LocaleSwitchScreen::ShowImpl() {
 
   DCHECK(user->HasGaiaAccount());
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
+  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager_) {
     NOTREACHED();
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return;
   }
 
   CoreAccountId primary_account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  refresh_token_loaded_ =
+      identity_manager_->HasAccountWithRefreshToken(primary_account_id);
 
-  if (!identity_manager->HasAccountWithRefreshToken(primary_account_id)) {
-    exit_callback_.Run(Result::LOCALE_FETCH_FAILED);
-    return;
-  }
-
-  if (identity_manager->GetErrorStateOfRefreshTokenForAccount(
+  if (identity_manager_->GetErrorStateOfRefreshTokenForAccount(
           primary_account_id) != GoogleServiceAuthError::AuthErrorNone()) {
     exit_callback_.Run(Result::LOCALE_FETCH_FAILED);
     return;
   }
 
-  identity_manager_observer_.Observe(identity_manager);
+  identity_manager_observer_.Observe(identity_manager_);
 
   gaia_id_ = user->GetAccountId().GetGaiaId();
   const AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id_);
-  if (account_info.locale.empty()) {
+      identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id_);
+  if (!refresh_token_loaded_ || !IsAllInfoFetched(account_info)) {
     // Will continue from observer.
-    timeout_waiter_.Start(FROM_HERE, kLocaleWaitTimeout,
+    timeout_waiter_.Start(FROM_HERE, kWaitTimeout,
                           base::BindOnce(&LocaleSwitchScreen::OnTimeout,
                                          weak_factory_.GetWeakPtr()));
     return;
@@ -148,9 +155,19 @@ void LocaleSwitchScreen::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void LocaleSwitchScreen::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
-  if (account_info.gaia != gaia_id_ || account_info.locale.empty())
+  if (account_info.gaia != gaia_id_ || !refresh_token_loaded_ ||
+      !IsAllInfoFetched(account_info)) {
     return;
+  }
   SwitchLocale(account_info.locale);
+}
+
+void LocaleSwitchScreen::OnRefreshTokensLoaded() {
+  // Account information can only be guaranteed correct after refresh tokens
+  // are loaded.
+  refresh_token_loaded_ = true;
+  OnExtendedAccountInfoUpdated(
+      identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id_));
 }
 
 void LocaleSwitchScreen::SwitchLocale(std::string locale) {
@@ -189,11 +206,19 @@ void LocaleSwitchScreen::ResetState() {
 }
 
 void LocaleSwitchScreen::OnTimeout() {
-  ResetState();
-  // If it happens during the tests - something is wrong with the test
-  // configuration. Thus making it debug log.
-  DLOG(ERROR) << "Timeout of the locale fetch";
-  exit_callback_.Run(Result::LOCALE_FETCH_TIMEOUT);
+  const AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id_);
+  if (refresh_token_loaded_ && !account_info.locale.empty()) {
+    // We should switch locale if locale is fetched but it timed out while
+    // waiting for other account information (e.g. capabilities).
+    SwitchLocale(account_info.locale);
+  } else {
+    ResetState();
+    // If it happens during the tests - something is wrong with the test
+    // configuration. Thus making it debug log.
+    DLOG(ERROR) << "Timeout of the locale fetch";
+    exit_callback_.Run(Result::LOCALE_FETCH_TIMEOUT);
+  }
 }
 
 }  // namespace ash

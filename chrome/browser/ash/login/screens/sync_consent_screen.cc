@@ -23,6 +23,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -50,6 +51,20 @@ syncer::SyncService* GetSyncService(Profile* profile) {
 void RecordUmaReviewFollowingSetup(bool value) {
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.ReviewFollowingSetup",
                             value);
+}
+
+// Returns true if the user is in minor mode (e.g. under age of 18). The value
+// is read from account capabilities. We assume user is in minor mode if
+// capability value is unknown.
+bool IsMinorMode(Profile* profile, const user_manager::User* user) {
+  if (!features::IsMinorModeRestrictionEnabled())
+    return false;
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  std::string gaia_id = user->GetAccountId().GetGaiaId();
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+  return account_info.capabilities.can_offer_extended_chrome_sync_promos() !=
+         AccountCapabilities::Tribool::kTrue;
 }
 
 }  // namespace
@@ -151,6 +166,7 @@ void SyncConsentScreen::ShowImpl() {
     if (service)
       sync_service_observation_.Observe(service);
   }
+  PrepareScreenBasedOnCapability();
   // Show the entire screen.
   // If SyncScreenBehavior is show, this should show the sync consent screen.
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
@@ -178,14 +194,7 @@ void SyncConsentScreen::OnNonSplitSettingsContinue(
                 consent_description, consent_confirmation);
   profile_->GetPrefs()->SetBoolean(::prefs::kShowSyncSettingsOnSessionStart,
                                    review_sync);
-
-  syncer::SyncService* sync_service = GetSyncService(profile_);
-  CHECK(sync_service);
-  syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
-  if (opted_in != sync_settings->IsSyncEverythingEnabled()) {
-    syncer::UserSelectableTypeSet empty_set;
-    sync_settings->SetSelectedTypes(opted_in, empty_set);
-  }
+  SetSyncEverythingEnabled(opted_in);
   Finish(Result::NEXT);
 }
 
@@ -246,11 +255,8 @@ void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
 }
 
 void SyncConsentScreen::MaybeEnableSyncForSkip() {
-  // Prior to SplitSettingsSync, sync is autostarted during SyncService
-  // creation, so sync is already in the right state.
-  if (!features::IsSplitSettingsSyncEnabled())
-    return;
-
+  // "sync everything" toggle is disabled during SyncService creation. We need
+  // to turn it on if sync service needs to be enabled.
   switch (behavior_) {
     case SyncScreenBehavior::kUnknown:
     case SyncScreenBehavior::kShow:
@@ -264,7 +270,14 @@ void SyncConsentScreen::MaybeEnableSyncForSkip() {
     case SyncScreenBehavior::kSkipAndEnableNonBrandedBuild:
     case SyncScreenBehavior::kSkipAndEnableEmphemeralUser:
     case SyncScreenBehavior::kSkipAndEnableScreenPolicy:
-      UpdateSyncSettings(/*enable_sync=*/true);
+      // Prior to SplitSettingsSync, sync is autostarted during SyncService
+      // with "sync everything" toggle off. We need to turn it on here. For
+      // SplitSettingsSync, we also need to update other sync-related flags.
+      if (features::IsSplitSettingsSyncEnabled()) {
+        UpdateSyncSettings(/*enable_sync=*/true);
+      } else {
+        SetSyncEverythingEnabled(/*enabled=*/true);
+      }
       return;
   }
 }
@@ -330,6 +343,7 @@ void SyncConsentScreen::UpdateScreen() {
     return;
 
   if (behavior_ == SyncScreenBehavior::kShow) {
+    PrepareScreenBasedOnCapability();
     view_->SetThrobberVisible(false /*visible*/);
     GetSyncService(profile_)->RemoveObserver(this);
   } else {
@@ -378,6 +392,23 @@ bool SyncConsentScreen::IsProfileSyncEngineInitialized() const {
     return test_sync_engine_initialized_.value();
   const syncer::SyncService* sync_service = GetSyncService(profile_);
   return sync_service->IsEngineInitialized();
+}
+
+void SyncConsentScreen::PrepareScreenBasedOnCapability() {
+  bool is_minor_mode = IsMinorMode(profile_, user_);
+  // Turn on "sync everything" toggle for non-minor users; turn off all data
+  // types for minor users.
+  SetSyncEverythingEnabled(!is_minor_mode);
+  view_->SetIsMinorMode(is_minor_mode);
+}
+
+void SyncConsentScreen::SetSyncEverythingEnabled(bool enabled) {
+  syncer::SyncService* sync_service = GetSyncService(profile_);
+  syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+  if (enabled != sync_settings->IsSyncEverythingEnabled()) {
+    syncer::UserSelectableTypeSet empty_set;
+    sync_settings->SetSelectedTypes(enabled, empty_set);
+  }
 }
 
 void SyncConsentScreen::SetProfileSyncDisabledByPolicyForTesting(bool value) {

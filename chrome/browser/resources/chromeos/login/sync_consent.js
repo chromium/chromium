@@ -57,10 +57,14 @@ Polymer({
      */
     optInButtonTextKey_: {
       type: String,
+      computed: 'getOptInButtonTextKey_(isMinorMode_)',
     }
   },
 
-  EXTERNAL_API: ['setThrobberVisible'],
+  EXTERNAL_API: [
+    'setThrobberVisible',
+    'setIsMinorMode',
+  ],
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
@@ -74,11 +78,6 @@ Polymer({
   onBeforeShow(data) {
     this.setIsChildAccount(data['isChildAccount']);
     this.splitSettingsSyncEnabled_ = data['splitSettingsSyncEnabled'];
-    this.isMinorMode_ = data['isMinorMode'];
-    this.optInButtonTextKey_ = this.isMinorMode_ ?
-        'syncConsentTurnOnSync' :
-        'syncConsentAcceptAndContinue';
-    this.setUIStep(this.defaultUIStep());
   },
 
   /**
@@ -127,6 +126,15 @@ Polymer({
     } else {
       this.setUIStep(this.getDefaultUIStep_());
     }
+  },
+
+  /**
+   * Set the minor mode flag, which controls whether we could use nudge
+   * techinuque on the UI.
+   * @param {boolean} isMinorMode
+   */
+  setIsMinorMode(isMinorMode) {
+    this.isMinorMode_ = isMinorMode;
   },
 
   /**
@@ -223,6 +231,15 @@ Polymer({
         .map(element => element.innerHTML.trim());
     assert(consentDescription);
     return consentDescription;
+  },
+
+  /**
+   * @param {boolean} isMinorMode
+   * @return {string} The text key of the accept button.
+   */
+  getOptInButtonTextKey_(isMinorMode) {
+    return isMinorMode ? 'syncConsentTurnOnSync' :
+                         'syncConsentAcceptAndContinue';
   },
 });
 })();

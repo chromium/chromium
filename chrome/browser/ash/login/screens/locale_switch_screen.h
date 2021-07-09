@@ -20,7 +20,8 @@
 
 namespace ash {
 
-// This screen handles OOBE locale switch for the post-login screens.
+// This screen waits for account information (locale and account capabilities)
+// to be fetched and handles OOBE locale switch for the post-login screens.
 class LocaleSwitchScreen : public BaseScreen,
                            public signin::IdentityManager::Observer {
  public:
@@ -47,6 +48,7 @@ class LocaleSwitchScreen : public BaseScreen,
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+  void OnRefreshTokensLoaded() override;
 
  private:
   // BaseScreen:
@@ -65,11 +67,14 @@ class LocaleSwitchScreen : public BaseScreen,
 
   std::string gaia_id_;
   ScreenExitCallback exit_callback_;
+  signin::IdentityManager* identity_manager_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
 
   base::OneShotTimer timeout_waiter_;
+
+  bool refresh_token_loaded_ = false;
 
   base::WeakPtrFactory<LocaleSwitchScreen> weak_factory_{this};
 };

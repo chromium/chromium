@@ -65,8 +65,6 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 
   ParentalHandoffScreen* GetParentalHandoffScreen();
 
-  void ExitSyncConsentScreen();
-
   void SkipToParentalHandoffScreen();
 
   const absl::optional<ParentalHandoffScreen::Result>& result() const {
@@ -133,29 +131,9 @@ ParentalHandoffScreenBrowserTest::GetParentalHandoffScreen() {
       ->GetScreen<ParentalHandoffScreen>();
 }
 
-void ParentalHandoffScreenBrowserTest::ExitSyncConsentScreen() {
-  test::OobeJS().CreateVisibilityWaiter(true, {"sync-consent"})->Wait();
-
-  const std::string button_name = features::IsSplitSettingsSyncEnabled()
-                                      ? "acceptButton"
-                                      : "nonSplitSettingsAcceptButton";
-  test::OobeJS().ExpectEnabledPath({"sync-consent", button_name});
-  test::OobeJS().CreateFocusWaiter({"sync-consent", button_name})->Wait();
-  test::OobeJS().TapOnPath({"sync-consent", button_name});
-
-  OobeScreenExitWaiter waiter(SyncConsentScreenView::kScreenId);
-  waiter.Wait();
-}
-
 void ParentalHandoffScreenBrowserTest::SkipToParentalHandoffScreen() {
-  WizardController* wizard = WizardController::default_controller();
-
-  // Wait for sync consent screen and exit from it.
-  OobeScreenWaiter sync_consent_waiter(SyncConsentScreenView ::kScreenId);
-  sync_consent_waiter.Wait();
-  EXPECT_EQ(wizard->current_screen()->screen_id(),
-            SyncConsentScreenView::kScreenId);
-  ExitSyncConsentScreen();
+  LoginDisplayHost::default_host()->StartWizard(
+      ParentalHandoffScreenView::kScreenId);
 }
 
 void ParentalHandoffScreenBrowserTest::HandleScreenExit(
@@ -197,18 +175,7 @@ class ParentalHandoffScreenChildBrowserTest
     login_manager_mixin().LoginAsNewChildUser();
 
     WizardControllerExitWaiter(UserCreationView::kScreenId).Wait();
-    WizardControllerExitWaiter(LocaleSwitchView::kScreenId).Wait();
-    base::RunLoop().RunUntilIdle();
-
-    ASSERT_EQ(
-        WizardController::default_controller()->current_screen()->screen_id(),
-        EduCoexistenceLoginScreen::kScreenId);
-
-    // Current screen is EduCoexistenceLoginScreen. Close it.
-    GetEduCoexistenceLoginDialog()->Close();
-
     SkipToParentalHandoffScreen();
-
     OobeScreenWaiter parental_handoff_waiter(
         ParentalHandoffScreenView::kScreenId);
     parental_handoff_waiter.Wait();

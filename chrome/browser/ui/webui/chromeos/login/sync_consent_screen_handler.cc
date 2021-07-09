@@ -168,10 +168,6 @@ void SyncConsentScreenHandler::Show() {
   data.SetBoolean("isChildAccount", user_manager->IsLoggedInAsChildUser());
   data.SetBoolean("splitSettingsSyncEnabled",
                   chromeos::features::IsSplitSettingsSyncEnabled());
-  // TODO(https://crbug.com/1222010): read actual minor mode signal from account
-  // capability.
-  data.SetBoolean("isMinorMode",
-                  chromeos::features::IsMinorModeRestrictionEnabled());
   ShowScreenWithData(kScreenId, &data);
 }
 
@@ -179,6 +175,10 @@ void SyncConsentScreenHandler::Hide() {}
 
 void SyncConsentScreenHandler::SetThrobberVisible(bool visible) {
   CallJS("login.SyncConsentScreen.setThrobberVisible", visible);
+}
+
+void SyncConsentScreenHandler::SetIsMinorMode(bool value) {
+  CallJS("login.SyncConsentScreen.setIsMinorMode", value);
 }
 
 void SyncConsentScreenHandler::Initialize() {}

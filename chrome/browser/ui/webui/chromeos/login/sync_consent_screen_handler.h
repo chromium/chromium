@@ -36,6 +36,10 @@ class SyncConsentScreenView {
   // Controls if the loading throbber is visible. This is used when
   // SyncScreenBehavior is unknown.
   virtual void SetThrobberVisible(bool visible) = 0;
+
+  // Set the minor mode flag, which controls whether we could use nudge
+  // techinuque on the UI.
+  virtual void SetIsMinorMode(bool value) = 0;
 };
 
 // The sole implementation of the SyncConsentScreenView, using WebUI.
@@ -60,6 +64,7 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
   void Show() override;
   void Hide() override;
   void SetThrobberVisible(bool visible) override;
+  void SetIsMinorMode(bool value) override;
 
  private:
   // BaseScreenHandler:

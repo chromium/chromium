@@ -148,6 +148,15 @@ class SyncConsentScreen : public BaseScreen,
   // Returns true if profile sync has finished initialization.
   bool IsProfileSyncEngineInitialized() const;
 
+  // This function does two things based on account capability: turn on "sync
+  // everything" toggle for non-minor users; pass the minor mode signal to
+  // the front end, which controls whether nudge techniques could be used.
+  void PrepareScreenBasedOnCapability();
+
+  // Set "sync everything" toggle to be on or off. We also turn off all data
+  // types when the toggle is off.
+  void SetSyncEverythingEnabled(bool enabled);
+
   // Controls screen appearance.
   // Spinner is shown until sync status has been decided.
   SyncScreenBehavior behavior_ = SyncScreenBehavior::kUnknown;

@@ -1919,7 +1919,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == SignInFatalErrorView::kScreenId ||
              screen_id == LocaleSwitchView::kScreenId ||
              screen_id == OfflineLoginView::kScreenId ||
-             screen_id == OsInstallScreenView::kScreenId) {
+             screen_id == OsInstallScreenView::kScreenId ||
+             screen_id == ParentalHandoffScreenView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();
