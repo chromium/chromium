@@ -222,7 +222,7 @@ void MessageService::OpenChannelToExtension(
         weak_factory_.GetWeakPtr(), source_port_id,
         source_endpoint.extension_id ? *source_endpoint.extension_id
                                      : ExtensionId(),
-        source, false /* include_child_frames */);
+        source);
   }
   if (!opener_port->IsValidPort())
     return;
@@ -376,8 +376,7 @@ void MessageService::OpenChannelToNativeApp(
 
   std::unique_ptr<ExtensionMessagePort> opener_port =
       ExtensionMessagePort::CreateForEndpoint(
-          weak_factory_.GetWeakPtr(), source_port_id, extension->id(), source,
-          false /* include_child_frames */);
+          weak_factory_.GetWeakPtr(), source_port_id, extension->id(), source);
   if (!opener_port->IsValidPort())
     return;
 
@@ -458,8 +457,7 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
 
   std::unique_ptr<ExtensionMessagePort> opener_port =
       ExtensionMessagePort::CreateForEndpoint(
-          weak_factory_.GetWeakPtr(), source_port_id, extension_id, source,
-          false /* include_child_frames */);
+          weak_factory_.GetWeakPtr(), source_port_id, extension_id, source);
   if (!opener_port->IsValidPort())
     return;
 

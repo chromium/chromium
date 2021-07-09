@@ -62,8 +62,7 @@ class ExtensionMessagePort : public MessagePort {
       base::WeakPtr<ChannelDelegate> channel_delegate,
       const PortId& port_id,
       const std::string& extension_id,
-      const ChannelEndpoint& endpoint,
-      bool include_child_frames);
+      const ChannelEndpoint& endpoint);
 
   ~ExtensionMessagePort() override;
 

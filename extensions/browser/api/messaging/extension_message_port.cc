@@ -219,14 +219,12 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
     const std::string& extension_id,
-    const ChannelEndpoint& endpoint,
-    bool include_child_frames) {
+    const ChannelEndpoint& endpoint) {
   if (endpoint.is_for_render_frame()) {
     return std::make_unique<ExtensionMessagePort>(
         channel_delegate, port_id, extension_id, endpoint.GetRenderFrameHost(),
-        include_child_frames);
+        /*include_child_frames=*/false);
   }
-  DCHECK(!include_child_frames);
   // NOTE: We don't want all the workers within the extension, so we cannot
   // reuse other constructor from above.
   std::unique_ptr<ExtensionMessagePort> port(new ExtensionMessagePort(
