@@ -5,32 +5,30 @@
 package org.chromium.chrome.browser.tab;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.AdvancedMockContext;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /** Tests for the TabIdManager. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class TabIdManagerTest {
-    Context mContext;
+    @Mock
+    private Context mContext;
 
     @Before
     public void setUp() {
-        mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
+        MockitoAnnotations.initMocks(this);
         TabIdManager.resetInstanceForTesting();
     }
 
@@ -41,8 +39,6 @@ public class TabIdManagerTest {
 
     /** Tests that IDs are stored and generated properly. */
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testBasic() {
         SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         prefs.writeInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, 11684);
@@ -57,8 +53,6 @@ public class TabIdManagerTest {
 
     /** Tests that the max ID is updated properly. */
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testIncrementIdCounterTo() {
         SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         prefs.writeInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, 11684);

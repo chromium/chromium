@@ -541,7 +541,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/RepostFormWarningTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/SadTabTest.java",
-  "javatests/src/org/chromium/chrome/browser/tab/TabIdManagerTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/TabStateTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/TabUmaTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/TabViewManagerTest.java",

@@ -19,6 +19,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabCreationState.java",
     "java/src/org/chromium/chrome/browser/tab/TabDelegateFactory.java",
     "java/src/org/chromium/chrome/browser/tab/TabHidingType.java",
+    "java/src/org/chromium/chrome/browser/tab/TabIdManager.java",
     "java/src/org/chromium/chrome/browser/tab/TabLifecycle.java",
     "java/src/org/chromium/chrome/browser/tab/TabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/TabResolver.java",
@@ -69,6 +70,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/page_annotations/android:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -139,6 +141,7 @@ android_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
+    "java/src/org/chromium/chrome/browser/tab/TabIdManagerTest.java",
   ]
 
   deps = [
@@ -146,6 +149,7 @@ android_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/preferences:java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",

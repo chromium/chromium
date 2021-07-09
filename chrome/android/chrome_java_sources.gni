@@ -1138,7 +1138,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
   "java/src/org/chromium/chrome/browser/tab/TabGestureStateListener.java",
   "java/src/org/chromium/chrome/browser/tab/TabHelpers.java",
-  "java/src/org/chromium/chrome/browser/tab/TabIdManager.java",
   "java/src/org/chromium/chrome/browser/tab/TabImpl.java",
   "java/src/org/chromium/chrome/browser/tab/TabImportanceManager.java",
   "java/src/org/chromium/chrome/browser/tab/TabParentIntent.java",

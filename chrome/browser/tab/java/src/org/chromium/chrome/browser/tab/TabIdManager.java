@@ -12,15 +12,14 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Maintains a monotonically increasing ID that is used for uniquely identifying {@link Tab}s.  This
- * class is responsible for ensuring that Tabs created in the same process, across every
- * {@link TabModel}, are allocated a unique ID.  Note that only the browser process should be
- * generating Tab IDs to prevent collisions.
+ * class is responsible for ensuring that Tabs created in the same process, across every TabModel,
+ * are allocated a unique ID.  Note that only the browser process should be generating Tab IDs to
+ * prevent collisions.
  *
  * Calling {@link TabIdManager#incrementIdCounterTo(int)} will ensure new {@link Tab}s get IDs
  * greater than or equal to the parameter passed to that method.  This should be used when doing
@@ -31,7 +30,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  *                    started first.  Unify the ways the maximum Tab ID is set (crbug.com/502384).
  */
 public class TabIdManager {
-
     private static final Object INSTANCE_LOCK = new Object();
     @SuppressLint("StaticFieldLeak")
     private static TabIdManager sInstance;
