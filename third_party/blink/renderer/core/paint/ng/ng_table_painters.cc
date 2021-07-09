@@ -13,11 +13,11 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
-#include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
@@ -527,7 +527,7 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
     } else {
       box_side = edge.IsInlineAxis() ? BoxSide::kLeft : BoxSide::kTop;
     }
-    ObjectPainter::DrawBoxSide(
+    BoxBorderPainter::DrawBoxSide(
         paint_info.context, PixelSnappedIntRect(physical_border_rect), box_side,
         edge.BorderColor(), edge.BorderStyle());
   }

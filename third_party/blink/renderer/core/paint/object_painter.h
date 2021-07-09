@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OBJECT_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OBJECT_PAINTER_H_
 
-#include "third_party/blink/renderer/core/paint/object_painter_base.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -15,7 +14,7 @@ class LayoutObject;
 struct PaintInfo;
 struct PhysicalOffset;
 
-class ObjectPainter : public ObjectPainterBase {
+class ObjectPainter {
   STACK_ALLOCATED();
 
  public:

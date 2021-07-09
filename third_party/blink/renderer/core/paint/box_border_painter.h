@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 
@@ -15,7 +16,6 @@ namespace blink {
 class ComputedStyle;
 class GraphicsContext;
 class Path;
-struct PaintInfo;
 struct PhysicalRect;
 
 typedef unsigned BorderEdgeFlags;
@@ -24,19 +24,66 @@ class BoxBorderPainter {
   STACK_ALLOCATED();
 
  public:
-  BoxBorderPainter(const PhysicalRect& border_rect,
+  static void PaintBorder(GraphicsContext& context,
+                          const PhysicalRect& border_rect,
+                          const ComputedStyle& style,
+                          BackgroundBleedAvoidance bleed_avoidance,
+                          PhysicalBoxSides sides_to_include) {
+    BoxBorderPainter(context, border_rect, style, bleed_avoidance,
+                     sides_to_include)
+        .Paint();
+  }
+
+  static void PaintSingleRectOutline(GraphicsContext& context,
+                                     const ComputedStyle& style,
+                                     const PhysicalRect& outer,
+                                     const PhysicalRect& inner,
+                                     const BorderEdge& edge) {
+    BoxBorderPainter(context, style, outer, inner, edge).Paint();
+  }
+
+  static void DrawBoxSide(GraphicsContext& context,
+                          const IntRect& snapped_edge_rect,
+                          BoxSide side,
+                          Color color,
+                          EBorderStyle style) {
+    DrawLineForBoxSide(context, snapped_edge_rect.X(), snapped_edge_rect.Y(),
+                       snapped_edge_rect.MaxX(), snapped_edge_rect.MaxY(), side,
+                       color, style, 0, 0, true);
+  }
+
+  // TODO(crbug.com/1201762): The float parameters are truncated to int in the
+  // function, which implicitly snaps to whole pixels perhaps unexpectedly. To
+  // avoid the problem, we should use the above function which requires the
+  // caller to snap to whole pixels explicitly.
+  static void DrawLineForBoxSide(GraphicsContext&,
+                                 float x1,
+                                 float y1,
+                                 float x2,
+                                 float y2,
+                                 BoxSide,
+                                 Color,
+                                 EBorderStyle,
+                                 int adjacent_edge_width1,
+                                 int adjacent_edge_width2,
+                                 bool antialias = false);
+
+ private:
+  // For PaintBorder().
+  BoxBorderPainter(GraphicsContext&,
+                   const PhysicalRect& border_rect,
                    const ComputedStyle&,
                    BackgroundBleedAvoidance,
                    PhysicalBoxSides sides_to_include);
-
-  BoxBorderPainter(const ComputedStyle&,
+  // For PaintSingleRectOutline().
+  BoxBorderPainter(GraphicsContext&,
+                   const ComputedStyle&,
                    const PhysicalRect& outer,
                    const PhysicalRect& inner,
-                   const BorderEdge& uniform_edge_info);
+                   const BorderEdge&);
 
-  void PaintBorder(const PaintInfo&, const PhysicalRect& border_rect) const;
+  void Paint() const;
 
- private:
   struct ComplexBorderInfo;
   enum MiterType {
     kNoMiter,
@@ -46,17 +93,14 @@ class BoxBorderPainter {
 
   void ComputeBorderProperties();
 
-  BorderEdgeFlags PaintOpacityGroup(GraphicsContext&,
-                                    const ComplexBorderInfo&,
+  BorderEdgeFlags PaintOpacityGroup(const ComplexBorderInfo&,
                                     unsigned index,
                                     float accumulated_opacity) const;
-  void PaintSide(GraphicsContext&,
-                 const ComplexBorderInfo&,
+  void PaintSide(const ComplexBorderInfo&,
                  BoxSide,
                  unsigned alpha,
                  BorderEdgeFlags) const;
-  void PaintOneBorderSide(GraphicsContext&,
-                          const FloatRect& side_rect,
+  void PaintOneBorderSide(const FloatRect& side_rect,
                           BoxSide,
                           BoxSide adjacent_side1,
                           BoxSide adjacent_side2,
@@ -64,48 +108,34 @@ class BoxBorderPainter {
                           bool antialias,
                           Color,
                           BorderEdgeFlags) const;
-  bool PaintBorderFastPath(GraphicsContext&,
-                           const PhysicalRect& border_rect) const;
-  void DrawDoubleBorder(GraphicsContext&,
-                        const PhysicalRect& border_rect) const;
+  bool PaintBorderFastPath() const;
+  void DrawDoubleBorder() const;
 
-  void DrawBoxSideFromPath(GraphicsContext&,
-                           const PhysicalRect&,
-                           const Path&,
+  void DrawBoxSideFromPath(const Path&,
                            float thickness,
                            float draw_thickness,
                            BoxSide,
                            Color,
                            EBorderStyle) const;
-  void DrawDashedDottedBoxSideFromPath(GraphicsContext&,
-                                       const PhysicalRect&,
-                                       float thickness,
+  void DrawDashedDottedBoxSideFromPath(float thickness,
                                        float draw_thickness,
                                        Color,
                                        EBorderStyle) const;
-  void DrawWideDottedBoxSideFromPath(GraphicsContext&,
-                                     const Path&,
-                                     float thickness) const;
-  void DrawDoubleBoxSideFromPath(GraphicsContext&,
-                                 const PhysicalRect&,
-                                 const Path&,
+  void DrawWideDottedBoxSideFromPath(const Path&, float thickness) const;
+  void DrawDoubleBoxSideFromPath(const Path&,
                                  float thickness,
                                  float draw_thickness,
                                  BoxSide,
                                  Color) const;
-  void DrawRidgeGrooveBoxSideFromPath(GraphicsContext&,
-                                      const PhysicalRect&,
-                                      const Path&,
+  void DrawRidgeGrooveBoxSideFromPath(const Path&,
                                       float thickness,
                                       float draw_thickness,
                                       BoxSide,
                                       Color,
                                       EBorderStyle) const;
-  void ClipBorderSidePolygon(GraphicsContext&,
-                             BoxSide,
-                             MiterType miter1,
-                             MiterType miter2) const;
-  void ClipBorderSideForComplexInnerPath(GraphicsContext&, BoxSide) const;
+  void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
+  FloatRect CalculateSideRectIncludingInner(BoxSide) const;
+  void ClipBorderSideForComplexInnerPath(BoxSide) const;
 
   MiterType ComputeMiter(BoxSide,
                          BoxSide adjacent_side,
@@ -116,12 +146,26 @@ class BoxBorderPainter {
                                     EBorderStyle,
                                     bool antialias);
 
+  LayoutRectOutsets DoubleStripeInsets(
+      BorderEdge::DoubleBorderStripe stripe) const;
+  LayoutRectOutsets CenterInsets() const;
+
+  bool ColorsMatchAtCorner(BoxSide side, BoxSide adjacent_side) const;
+
   const BorderEdge& FirstEdge() const {
     DCHECK(visible_edge_set_);
     return edges_[first_visible_edge_];
   }
 
+  BorderEdge& Edge(BoxSide side) { return edges_[static_cast<unsigned>(side)]; }
+  const BorderEdge& Edge(BoxSide side) const {
+    return edges_[static_cast<unsigned>(side)];
+  }
+
+  GraphicsContext& context_;
+
   // const inputs
+  const PhysicalRect border_rect_;
   const ComputedStyle& style_;
   const BackgroundBleedAvoidance bleed_avoidance_;
   const PhysicalBoxSides sides_to_include_;

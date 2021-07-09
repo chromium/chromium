@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
@@ -1285,8 +1286,8 @@ void NGBoxFragmentPainter::PaintColumnRules(
 
     rule.Move(paint_offset);
     IntRect snapped_rule = PixelSnappedIntRect(rule);
-    ObjectPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
-                               rule_color, rule_style);
+    BoxBorderPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
+                                  rule_color, rule_style);
     recorder.UniteVisualRect(snapped_rule);
 
     previous_column = current_column;

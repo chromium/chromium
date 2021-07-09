@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_fragment_painter.h"
 
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
+#include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -35,7 +36,8 @@ void NGFragmentPainter::PaintOutline(const PaintInfo& paint_info,
   visual_rect.Inflate(style_to_use.OutlineOutsetExtent());
   DrawingRecorder recorder(paint_info.context, display_item_client,
                            paint_info.phase, visual_rect);
-  PaintOutlineRects(paint_info, outline_rects, style_to_use);
+  OutlinePainter::PaintOutlineRects(paint_info.context, outline_rects,
+                                    style_to_use);
 }
 
 void NGFragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,

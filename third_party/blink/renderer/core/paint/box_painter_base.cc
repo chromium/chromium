@@ -1043,9 +1043,8 @@ void BoxPainterBase::PaintBorder(const ImageResourceObserver& obj,
     return;
   }
 
-  const BoxBorderPainter border_painter(rect, style, bleed_avoidance,
-                                        sides_to_include);
-  border_painter.PaintBorder(info, rect);
+  BoxBorderPainter::PaintBorder(info.context, rect, style, bleed_avoidance,
+                                sides_to_include);
 }
 
 void BoxPainterBase::PaintMaskImages(const PaintInfo& paint_info,

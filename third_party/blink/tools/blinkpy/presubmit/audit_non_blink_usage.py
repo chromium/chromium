@@ -1305,7 +1305,7 @@ _CONFIG = [
         'paths': [
             'third_party/blink/renderer/core/layout/layout_theme.cc',
             'third_party/blink/renderer/core/layout/layout_theme_mac.mm',
-            'third_party/blink/renderer/core/paint/object_painter_base.cc',
+            'third_party/blink/renderer/core/paint/outline_painter.cc',
             'third_party/blink/renderer/core/paint/theme_painter.cc',
             'third_party/blink/renderer/core/paint/theme_painter_default.cc',
         ],
