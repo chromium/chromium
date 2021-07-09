@@ -221,6 +221,9 @@ class PermissionManager : public KeyedService,
 
   bool is_shutting_down_ = false;
 
+  // This is false when not processing a permission change and true otherwise
+  bool is_processing_permission_change_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(PermissionManager);
 };
 

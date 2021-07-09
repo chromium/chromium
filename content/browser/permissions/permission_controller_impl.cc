@@ -380,8 +380,15 @@ void PermissionControllerImpl::ResetPermission(PermissionType permission,
 }
 
 void PermissionControllerImpl::OnDelegatePermissionStatusChange(
-    Subscription* subscription,
+    SubscriptionId subscription_id,
     blink::mojom::PermissionStatus status) {
+  Subscription* subscription = subscriptions_.Lookup(subscription_id);
+  DCHECK(subscription);
+  // TODO(crbug.com/1223407) Adding this block to prevent crashes while we
+  // investigate the root cause of the crash. This block will be removed as the
+  // CHECK() above should be enough.
+  if (!subscription)
+    return;
   absl::optional<blink::mojom::PermissionStatus> status_override =
       devtools_permission_overrides_.Get(
           url::Origin::Create(subscription->requesting_origin),
@@ -416,6 +423,7 @@ PermissionControllerImpl::SubscribePermissionStatusChange(
     subscription->render_process_id = -1;
   }
 
+  auto id = subscription_id_generator_.GenerateNextId();
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (delegate) {
@@ -424,10 +432,8 @@ PermissionControllerImpl::SubscribePermissionStatusChange(
             permission, render_frame_host, requesting_origin,
             base::BindRepeating(
                 &PermissionControllerImpl::OnDelegatePermissionStatusChange,
-                base::Unretained(this), subscription.get()));
+                base::Unretained(this), id));
   }
-
-  auto id = subscription_id_generator_.GenerateNextId();
   subscriptions_.AddWithID(std::move(subscription), id);
   return id;
 }

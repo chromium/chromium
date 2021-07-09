@@ -93,7 +93,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   SubscriptionsStatusMap GetSubscriptionsStatuses(
       const absl::optional<GURL>& origin = absl::nullopt);
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
-  void OnDelegatePermissionStatusChange(Subscription* subscription,
+  void OnDelegatePermissionStatusChange(SubscriptionId subscription_id,
                                         blink::mojom::PermissionStatus status);
   void UpdateDelegateOverridesForDevTools(
       const absl::optional<url::Origin>& origin);
