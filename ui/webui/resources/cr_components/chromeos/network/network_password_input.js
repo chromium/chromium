@@ -58,11 +58,24 @@ Polymer({
       value: '',
     },
 
+    /** @private */
+    tooltipPosition_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private */
     showPolicyIndicator_: {
       type: Boolean,
       value: false,
       computed: 'getDisabled_(disabled, property)',
     },
+  },
+
+  /** @override */
+  attached() {
+    this.tooltipPosition_ =
+        window.getComputedStyle(this).direction === 'rtl' ? 'right' : 'left';
   },
 
   /** @private */
