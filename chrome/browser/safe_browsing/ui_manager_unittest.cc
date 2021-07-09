@@ -608,4 +608,13 @@ TEST_F(SafeBrowsingUIManagerTest, NoInterstitialInExtensions) {
 }
 #endif
 
+TEST_F(SafeBrowsingUIManagerTest, InvalidRenderFrameHostId) {
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResourceAndStartNavigation(kBadURL);
+  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
+      web_contents()->GetMainFrame()->GetProcess()->GetID(), -1);
+
+  EXPECT_FALSE(IsAllowlisted(resource));
+}
+
 }  // namespace safe_browsing

@@ -127,10 +127,16 @@ bool BaseUIManager::IsAllowlisted(const UnsafeResource& resource) {
   if (resource.is_subresource) {
     entry = GetNavigationEntryForResource(resource);
   }
+
+  WebContents* web_contents = resource.web_contents_getter.Run();
+  // |web_contents_getter| can return null after RenderFrameHost is destroyed.
+  if (!web_contents)
+    return false;
+
   SBThreatType unused_threat_type;
   return IsUrlAllowlistedOrPendingForWebContents(
-      resource.url, resource.is_subresource, entry,
-      resource.web_contents_getter.Run(), true, &unused_threat_type);
+      resource.url, resource.is_subresource, entry, web_contents, true,
+      &unused_threat_type);
 }
 
 // Check if the user has already seen and/or ignored a SB warning for this

@@ -208,6 +208,9 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
     SafeBrowsingAction action,
     bool reporting) {
   content::WebContents* web_contents = resource.web_contents_getter.Run();
+  // |web_contents_getter| can return null after RenderFrameHost is destroyed.
+  if (!web_contents)
+    return;
 
   if (!reporting) {
     AwBrowserContext* browser_context =
