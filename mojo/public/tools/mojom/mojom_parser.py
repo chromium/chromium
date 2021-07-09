@@ -255,6 +255,7 @@ def _Shard(target_func, arg_list, processes=None):
 def _ParseMojoms(mojom_files,
                  input_root_paths,
                  output_root_path,
+                 module_root_paths,
                  enabled_features,
                  module_metadata,
                  allowed_imports=None):
@@ -270,6 +271,8 @@ def _ParseMojoms(mojom_files,
         are based on the mojom's relative path, rebased onto this path.
         Additionally, the script expects this root to contain already-generated
         modules for any transitive dependencies not listed in mojom_files.
+    module_root_paths: A list of absolute filesystem paths which contain
+        already-generated modules for any non-transitive dependencies.
     enabled_features: A list of enabled feature names, controlling which AST
         nodes are filtered by [EnableIf] attributes.
     module_metadata: A list of 2-tuples representing metadata key-value pairs to
@@ -320,8 +323,8 @@ def _ParseMojoms(mojom_files,
         # be parsed and have a module file sitting in a corresponding output
         # location.
         module_path = _GetModuleFilename(imp.import_filename)
-        module_abspath = _ResolveRelativeImportPath(module_path,
-                                                    [output_root_path])
+        module_abspath = _ResolveRelativeImportPath(
+            module_path, module_root_paths + [output_root_path])
         with open(module_abspath, 'rb') as module_file:
           loaded_modules[import_abspath] = module.Module.Load(module_file)
 
@@ -396,6 +399,15 @@ already present in the provided output root.""")
       'ROOT is also searched for existing modules of any transitive imports '
       'which were not included in the set of inputs.')
   arg_parser.add_argument(
+      '--module-root',
+      default=[],
+      action='append',
+      metavar='ROOT',
+      dest='module_root_paths',
+      help='Adds ROOT to the set of root paths to search for existing modules '
+      'of non-transitive imports. Provided root paths are always searched in '
+      'order from longest absolute path to shortest.')
+  arg_parser.add_argument(
       '--mojoms',
       nargs='+',
       dest='mojom_files',
@@ -461,6 +473,7 @@ already present in the provided output root.""")
   mojom_files = list(map(os.path.abspath, args.mojom_files))
   input_roots = list(map(os.path.abspath, args.input_root_paths))
   output_root = os.path.abspath(args.output_root_path)
+  module_roots = list(map(os.path.abspath, args.module_root_paths))
 
   if args.build_metadata_filename:
     allowed_imports = _CollectAllowedImportsFromBuildMetadata(
@@ -470,8 +483,8 @@ already present in the provided output root.""")
 
   module_metadata = list(
       map(lambda kvp: tuple(kvp.split('=')), args.module_metadata))
-  _ParseMojoms(mojom_files, input_roots, output_root, args.enabled_features,
-               module_metadata, allowed_imports)
+  _ParseMojoms(mojom_files, input_roots, output_root, module_roots,
+               args.enabled_features, module_metadata, allowed_imports)
   logging.info('Finished')
   # Exit without running GC, which can save multiple seconds due the large
   # number of object created.
