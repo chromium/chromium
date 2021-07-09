@@ -4695,7 +4695,7 @@
     },
     {
       'name': 'ExtensionInstallBlacklist',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['lazyboy@chromium.org', 'file://extensions/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4721,7 +4721,7 @@
     {
 
       'name': 'ExtensionInstallBlocklist',
-      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
+      'owners': ['lazyboy@chromium.org', 'file://extensions/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4745,7 +4745,7 @@
     },
     {
       'name': 'ExtensionInstallAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
+      'owners': ['rdevlin.cronin@chromium.org', 'file://extensions/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4769,7 +4769,7 @@
     },
     {
       'name': 'ExtensionInstallWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['rdevlin.cronin@chromium.org', 'file://extensions/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4792,7 +4792,7 @@
     },
     {
       'name': 'ExtensionInstallForcelist',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['karandeepb@chromium.org', 'file://extensions/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4827,7 +4827,7 @@
     },
     {
       'name': 'ExtensionInstallSources',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['dbertoni@chromium.org', 'file://extensions/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4873,7 +4873,7 @@
     },
     {
       'name': 'ExtensionAllowedTypes',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['benwells@chromium.org', 'file://extensions/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4926,7 +4926,7 @@
     },
     {
       'name': 'ExtensionSettings',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['finnur@chromium.org', 'file://extensions/OWNERS'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -5084,7 +5084,7 @@
     },
     {
       'name': 'BlockExternalExtensions',
-      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
+      'owners': ['reillyg@chromium.org', 'file://extensions/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-'],
