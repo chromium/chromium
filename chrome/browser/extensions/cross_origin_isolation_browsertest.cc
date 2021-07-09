@@ -59,7 +59,10 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
         "cross_origin_opener_policy": {
           "value": "%s"
         },
-        "web_accessible_resources": ["test.html"]
+        "web_accessible_resources": ["test.html"],
+        "browser_action": {
+          "default_title": "foo"
+        }
       }
     )";
 
@@ -212,6 +215,31 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
     EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT,
               process_map->GetMostLikelyContextType(
                   coi_extension, extension_iframe->GetProcess()->GetID(), url));
+  }
+
+  // Finally make some extension API calls to ensure both cross-origin-isolated
+  // and non-cross-origin-isolated extension contexts are considered "blessed".
+  {
+    auto verify_is_blessed_context = [](content::RenderFrameHost* host) {
+      std::string result;
+      const char* kScript = R"(
+        chrome.browserAction.getTitle({}, title => {
+          window.domAutomationController.send(title);
+        });
+      )";
+      ASSERT_TRUE(
+          content::ExecuteScriptAndExtractString(host, kScript, &result));
+      EXPECT_EQ("foo", result);
+    };
+
+    {
+      SCOPED_TRACE("Verifying coi extension background is a blessed context.");
+      verify_is_blessed_context(coi_background_rfh);
+    }
+    {
+      SCOPED_TRACE("Verifying non-coi extension iframe is a blessed context.");
+      verify_is_blessed_context(extension_iframe);
+    }
   }
 }
 
