@@ -95,6 +95,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/same_party_context.h"
 #include "net/filter/gzip_header.h"
 #include "net/filter/gzip_source_stream.h"
 #include "net/filter/mock_source_stream.h"
@@ -1975,7 +1976,7 @@ bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
                net::CookieOptions::SameSiteCookieContext context,
-               net::CookieOptions::SamePartyCookieContextType party_context) {
+               net::SamePartyContext::Type party_context) {
   bool result = false;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
@@ -1989,7 +1990,7 @@ bool SetCookie(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(context);
-  options.set_same_party_cookie_context_type(party_context);
+  options.set_same_party_context(net::SamePartyContext(party_context));
   cookie_manager->SetCanonicalCookie(
       *cc.get(), url, options,
       base::BindOnce(

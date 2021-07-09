@@ -15,6 +15,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/same_party_context.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request.h"
 #include "services/network/cookie_manager.h"
@@ -254,12 +255,11 @@ bool NetworkServiceNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
-    net::CookieOptions::SamePartyCookieContextType
-        same_party_cookie_context_type) const {
+    net::SamePartyContext::Type same_party_context_type) const {
   return network_context_->cookie_manager()
       ->cookie_settings()
       .IsPrivacyModeEnabled(url, site_for_cookies.RepresentativeUrl(),
-                            top_frame_origin, same_party_cookie_context_type);
+                            top_frame_origin, same_party_context_type);
 }
 
 bool NetworkServiceNetworkDelegate::

@@ -176,6 +176,26 @@ class NET_EXPORT CookieInclusionStatus {
     // TODO(crbug.com/1166211): Remove when no longer needed.
     WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211 = 12,
 
+    // This cookie was SameSite=None and was included, but would have been
+    // excluded if it had been SameParty and the SameParty context had been
+    // computed using *either* top & current or the whole ancestor tree.
+    WARN_SAMESITE_NONE_REQUIRED = 13,
+    // This cookie was SameSite=None, was included, would have been included if
+    // it had been SameParty and the SameParty context type had been computed
+    // with only the top frame & resource URL, but would have been excluded if
+    // the SameParty context type had been computed using all ancestor frames.
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE = 14,
+    // This cookie was SameSite=None, was included, and would have been included
+    // if it had been SameParty and the SameParty context type had been computed
+    // using all ancestor frames.
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS = 15,
+    // This cookie was SameSite=None, was included, and would have been included
+    // if it had been SameSite=Lax.
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX = 16,
+    // This cookie was SameSite=None, was included, and would have been included
+    // if it had been SameSite=Strict.
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT = 17,
+
     // This should be kept last.
     NUM_WARNING_REASONS
   };
@@ -214,6 +234,8 @@ class NET_EXPORT CookieInclusionStatus {
   explicit CookieInclusionStatus(ExclusionReason reason);
   // Makes a status that contains the given exclusion reason and warning.
   CookieInclusionStatus(ExclusionReason reason, WarningReason warning);
+  // Makes a status that contains the given warning.
+  explicit CookieInclusionStatus(WarningReason warning);
 
   bool operator==(const CookieInclusionStatus& other) const;
   bool operator!=(const CookieInclusionStatus& other) const;

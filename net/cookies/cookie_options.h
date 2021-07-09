@@ -13,6 +13,7 @@
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -157,16 +158,6 @@ class NET_EXPORT CookieOptions {
     ContextMetadata schemeful_metadata_;
   };
 
-  // Computed in URLRequestHttpJob for every cookie access attempt but is only
-  // relevant for SameParty cookies.
-  enum class SamePartyCookieContextType {
-    // The opposite to kSameParty. Should be the default value.
-    kCrossParty = 0,
-    // If the request URL is in the same First-Party Sets as the top-frame site
-    // and each member of the isolation_info.party_context.
-    kSameParty = 1,
-  };
-
   // Creates a CookieOptions object which:
   //
   // * Excludes HttpOnly cookies
@@ -211,14 +202,11 @@ class NET_EXPORT CookieOptions {
   void unset_return_excluded_cookies() { return_excluded_cookies_ = false; }
   bool return_excluded_cookies() const { return return_excluded_cookies_; }
 
-  // How trusted is the current browser environment when it comes to accessing
-  // SameParty cookies. Default is not trusted, e.g. kCrossParty.
-  void set_same_party_cookie_context_type(
-      SamePartyCookieContextType context_type) {
-    same_party_cookie_context_type_ = context_type;
+  void set_same_party_context(const SamePartyContext& context) {
+    same_party_context_ = context;
   }
-  SamePartyCookieContextType same_party_cookie_context_type() const {
-    return same_party_cookie_context_type_;
+  const SamePartyContext& same_party_context() const {
+    return same_party_context_;
   }
 
   // Getter/setter of |full_party_context_size_| for logging purposes.
@@ -250,8 +238,8 @@ class NET_EXPORT CookieOptions {
   bool update_access_time_ = true;
   bool return_excluded_cookies_ = false;
 
-  SamePartyCookieContextType same_party_cookie_context_type_ =
-      SamePartyCookieContextType::kCrossParty;
+  SamePartyContext same_party_context_;
+
   // The size of the isolation_info.party_context plus the top-frame site.
   // Stored for logging purposes.
   uint32_t full_party_context_size_ = 0;

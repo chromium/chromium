@@ -315,7 +315,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
 }
 
 TEST(CookieManagerTraitsTest, Roundtrips_SamePartyCookieContextType) {
-  using ContextType = net::CookieOptions::SamePartyCookieContextType;
+  using ContextType = net::SamePartyContext::Type;
   for (ContextType context_type :
        {ContextType::kCrossParty, ContextType::kSameParty}) {
     ContextType roundtrip;
@@ -343,8 +343,12 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
             net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
         copy.same_site_cookie_context());
     EXPECT_TRUE(copy.return_excluded_cookies());
-    EXPECT_EQ(net::CookieOptions::SamePartyCookieContextType::kCrossParty,
-              copy.same_party_cookie_context_type());
+    EXPECT_EQ(net::SamePartyContext::Type::kCrossParty,
+              copy.same_party_context().context_type());
+    EXPECT_EQ(net::SamePartyContext::Type::kCrossParty,
+              copy.same_party_context().ancestors_for_metrics_only());
+    EXPECT_EQ(net::SamePartyContext::Type::kCrossParty,
+              copy.same_party_context().top_resource_for_metrics_only());
     EXPECT_EQ(10u, copy.full_party_context_size());
     EXPECT_TRUE(copy.is_in_nontrivial_first_party_set());
   }
@@ -354,8 +358,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     very_trusted.set_include_httponly();
     very_trusted.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-    very_trusted.set_same_party_cookie_context_type(
-        net::CookieOptions::SamePartyCookieContextType::kSameParty);
+    very_trusted.set_same_party_context(
+        net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
     very_trusted.set_full_party_context_size(1u);
     very_trusted.set_is_in_nontrivial_first_party_set(true);
 
@@ -365,8 +369,12 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     EXPECT_EQ(net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
               copy.same_site_cookie_context());
     EXPECT_FALSE(copy.return_excluded_cookies());
-    EXPECT_EQ(net::CookieOptions::SamePartyCookieContextType::kSameParty,
-              copy.same_party_cookie_context_type());
+    EXPECT_EQ(net::SamePartyContext::Type::kSameParty,
+              copy.same_party_context().context_type());
+    EXPECT_EQ(net::SamePartyContext::Type::kSameParty,
+              copy.same_party_context().ancestors_for_metrics_only());
+    EXPECT_EQ(net::SamePartyContext::Type::kSameParty,
+              copy.same_party_context().top_resource_for_metrics_only());
     EXPECT_EQ(1u, copy.full_party_context_size());
     EXPECT_TRUE(copy.is_in_nontrivial_first_party_set());
   }

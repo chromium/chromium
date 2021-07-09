@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -42,14 +43,24 @@ class FirstPartySets {
       base::StringPiece raw_sets);
 
   // Returns whether the `site` is same-party with the `party_context`, and
-  // `top_frame_site` (if it is not nullopt). That is, is the `site`'s owner the
+  // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
   // same as the owners of every member of `party_context` and of
   // `top_frame_site`? Note: if `site` is not a member of a First-Party Set
   // (with more than one member), then this returns false. If `top_frame_site`
-  // is nullopt, then it is ignored.
+  // is nullptr, then it is ignored.
   bool IsContextSamePartyWithSite(
       const net::SchemefulSite& site,
-      const absl::optional<net::SchemefulSite>& top_frame_site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      bool infer_singleton_sets) const;
+
+  // Computes the SameParty context, indicating whether `site` is same-party
+  // with `top_frame_site` (if not nullptr) and `party_context`. The context
+  // includes the real context type, plus some additional "hypothetical" context
+  // types for metrics.
+  net::SamePartyContext ComputeContext(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const;
 
   // Computes the "type" of the context. I.e., categorizes contexts based on
@@ -77,6 +88,12 @@ class FirstPartySets {
   base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> Sets() const;
 
  private:
+  // Returns a pointer to `site`'s owner (optionally inferring a singleton set
+  // if necessary), or `nullptr` if `site` has no owner. Must not return
+  // `nullptr` if `infer_singleton_sets` is true.
+  const net::SchemefulSite* FindOwner(const net::SchemefulSite& site,
+                                      bool infer_singleton_sets) const;
+
   // We must ensure there's no intersection between the manually-specified set
   // and the sets that came from Component Updater. (When reconciling the
   // manually-specified set and `sets_`, entries in the manually-specified set

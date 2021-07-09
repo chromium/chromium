@@ -4103,7 +4103,9 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
       {true, true, "A=B",  // not-recently-set session cookie.
        CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE, kLongAge},
       // Cookie set from a secure URL with SameSite=None and Secure is set.
-      {true, true, "A=B; SameSite=None; Secure", CookieInclusionStatus(),
+      {true, true, "A=B; SameSite=None; Secure",
+       CookieInclusionStatus(
+           CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED),
        CookieEffectiveSameSite::NO_RESTRICTION},
       // Cookie set from a secure URL with SameSite=None but not specifying
       // Secure is rejected.
@@ -4137,15 +4139,20 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
       {false, true, "A=B",  // not-recently-set session cookie.
        CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE, kLongAge},
       // Cookie set from a secure URL with SameSite=None and Secure is set.
-      {false, true, "A=B; SameSite=None; Secure", CookieInclusionStatus(),
+      {false, true, "A=B; SameSite=None; Secure",
+       CookieInclusionStatus(
+           CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED),
        CookieEffectiveSameSite::NO_RESTRICTION},
       // Cookie set from an insecure URL with SameSite=None (which can't ever be
       // secure because it's an insecure URL) is NOT rejected, because
       // CookiesWithoutSameSiteMustBeSecure is not enabled.
       {false, false, "A=B; SameSite=None",
        CookieInclusionStatus::MakeFromReasonsForTesting(
-           std::vector<CookieInclusionStatus::ExclusionReason>(),
-           {CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE}),
+           {},
+           {
+               CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
+               CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED,
+           }),
        CookieEffectiveSameSite::NO_RESTRICTION},
       // Cookie set from an insecure URL which is defaulted into Lax is not
       // rejected.

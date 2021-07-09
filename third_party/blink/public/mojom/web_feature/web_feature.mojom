@@ -3265,6 +3265,11 @@ enum WebFeature {
   kSanitizerAPIElementSetSanitized = 3950,
   kTextShadowInHighlightPseudo = 3951,
   kTextShadowNotNoneInHighlightPseudo = 3952,
+  kSameSiteNoneRequired = 3953,
+  kSameSiteNoneIncludedBySamePartyTopResource = 3954,
+  kSameSiteNoneIncludedBySamePartyAncestors = 3955,
+  kSameSiteNoneIncludedBySameSiteLax = 3956,
+  kSameSiteNoneIncludedBySameSiteStrict = 3957,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

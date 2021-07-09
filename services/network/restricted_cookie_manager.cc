@@ -69,10 +69,9 @@ net::CookieOptions MakeOptionsForSet(
   // SameParty cookies for requests in same-party contexts embedded in top-level
   // extension frames.
   bool force_ignore_top_frame_party = false;
-  options.set_same_party_cookie_context_type(
-      net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
-                                                cookie_access_delegate,
-                                                force_ignore_top_frame_party));
+  options.set_same_party_context(net::cookie_util::ComputeSamePartyContext(
+      request_site, isolation_info, cookie_access_delegate,
+      force_ignore_top_frame_party));
   if (isolation_info.party_context().has_value()) {
     // Count the top-frame site since it's not in the party_context.
     options.set_full_party_context_size(isolation_info.party_context()->size() +
@@ -120,10 +119,9 @@ net::CookieOptions MakeOptionsForGet(
   }
   net::SchemefulSite request_site(url);
   bool force_ignore_top_frame_party = false;
-  options.set_same_party_cookie_context_type(
-      net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
-                                                cookie_access_delegate,
-                                                force_ignore_top_frame_party));
+  options.set_same_party_context(net::cookie_util::ComputeSamePartyContext(
+      request_site, isolation_info, cookie_access_delegate,
+      force_ignore_top_frame_party));
   if (isolation_info.party_context().has_value()) {
     // Count the top-frame site since it's not in the party_context.
     options.set_full_party_context_size(isolation_info.party_context()->size() +

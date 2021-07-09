@@ -27,6 +27,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/same_party_context.h"
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/cookie_settings.h"
@@ -215,9 +216,8 @@ class RestrictedCookieManagerTest
       const net::CookieOptions::SameSiteCookieContext::ContextType
           same_site_cookie_context_type = net::CookieOptions::
               SameSiteCookieContext::ContextType::CROSS_SITE,
-      const net::CookieOptions::SamePartyCookieContextType
-          same_party_cookie_context_type =
-              net::CookieOptions::SamePartyCookieContextType::kCrossParty) {
+      const net::SamePartyContext::Type same_party_context_type =
+          net::SamePartyContext::Type::kCrossParty) {
     net::ResultSavingCookieCallback<net::CookieAccessResult> callback;
     net::CookieOptions options;
     if (can_modify_httponly)
@@ -225,7 +225,8 @@ class RestrictedCookieManagerTest
     net::CookieOptions::SameSiteCookieContext same_site_cookie_context(
         same_site_cookie_context_type, same_site_cookie_context_type);
     options.set_same_site_cookie_context(same_site_cookie_context);
-    options.set_same_party_cookie_context_type(same_party_cookie_context_type);
+    options.set_same_party_context(
+        net::SamePartyContext(same_party_context_type));
 
     cookie_monster_.SetCanonicalCookieAsync(
         std::make_unique<net::CanonicalCookie>(cookie),
@@ -346,7 +347,7 @@ class SamePartyEnabledRestrictedCookieManagerTest
             net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ true),
         "https", /* can_modify_httponly = */ true,
         net::CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_LAX,
-        net::CookieOptions::SamePartyCookieContextType::kSameParty));
+        net::SamePartyContext::Type::kSameParty));
   }
 
  private:
@@ -596,13 +597,19 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
             net::MatchesCookieNameValue("cookie-name", "cookie-value")));
   }
 
-  EXPECT_THAT(recorded_activity(),
-              ElementsAre(MatchesCookieOp(
-                  mojom::CookieAccessDetails::Type::kRead,
-                  "https://example.com/test/", "",
-                  CookieOrLine("cookie-name=cookie-value",
-                               mojom::CookieOrLine::Tag::COOKIE),
-                  testing::AllOf(net::IsInclude(), Not(net::ShouldWarn())))));
+  EXPECT_THAT(
+      recorded_activity(),
+      ElementsAre(MatchesCookieOp(
+          mojom::CookieAccessDetails::Type::kRead, "https://example.com/test/",
+          "",
+          CookieOrLine("cookie-name=cookie-value",
+                       mojom::CookieOrLine::Tag::COOKIE),
+          testing::AllOf(
+              net::IsInclude(),
+              net::HasExactlyWarningReasonsForTesting(
+                  std::vector<net::CookieInclusionStatus::WarningReason>{
+                      net::CookieInclusionStatus::
+                          WARN_SAMESITE_NONE_REQUIRED})))));
 
   // Disabing getting third-party cookies works correctly.
   cookie_settings_.set_block_third_party_cookies(true);
@@ -626,9 +633,9 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
               "https://example.com/test/", "",
               CookieOrLine("cookie-name=cookie-value",
                            mojom::CookieOrLine::Tag::COOKIE),
-              net::HasExactlyExclusionReasonsForTesting(
-                  std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}))));
+              net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                  {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
+                  {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicyWarnActual) {
@@ -685,52 +692,56 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
             net::MatchesCookieNameValue("cookie-name", "cookie-value")));
   }
   // Same Party. `party_context` contains fps site.
-    service_->OverrideIsolationInfoForTesting(net::IsolationInfo::Create(
-        net::IsolationInfo::RequestType::kOther, kDefaultOrigin, kDefaultOrigin,
-        net::SiteForCookies(),
-        std::set<net::SchemefulSite>{
-            net::SchemefulSite(GURL("https://member1.com"))}));
-    {
-      auto options = mojom::CookieManagerGetOptions::New();
-      options->name = "cookie-name";
-      options->match_type = mojom::CookieMatchType::STARTS_WITH;
+  service_->OverrideIsolationInfoForTesting(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, kDefaultOrigin, kDefaultOrigin,
+      net::SiteForCookies(),
+      std::set<net::SchemefulSite>{
+          net::SchemefulSite(GURL("https://member1.com"))}));
+  {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "cookie-name";
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
 
-      EXPECT_THAT(sync_service_->GetAllForUrl(
-                      kDefaultUrlWithPath, net::SiteForCookies(),
-                      kDefaultOrigin, std::move(options)),
-                  ElementsAre(net::MatchesCookieNameValue("cookie-name",
-                                                          "cookie-value")));
-    }
-    {
-      // Should still be blocked when third-party cookie blocking is enabled.
-      cookie_settings_.set_block_third_party_cookies(true);
-      auto options = mojom::CookieManagerGetOptions::New();
-      options->name = "cookie-name";
-      options->match_type = mojom::CookieMatchType::STARTS_WITH;
+    EXPECT_THAT(
+        sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
+                                    kDefaultOrigin, std::move(options)),
+        ElementsAre(
+            net::MatchesCookieNameValue("cookie-name", "cookie-value")));
+  }
+  {
+    // Should still be blocked when third-party cookie blocking is enabled.
+    cookie_settings_.set_block_third_party_cookies(true);
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "cookie-name";
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
 
-      EXPECT_THAT(sync_service_->GetAllForUrl(
-                      kDefaultUrlWithPath, net::SiteForCookies(),
-                      kDefaultOrigin, std::move(options)),
-                  IsEmpty());
+    EXPECT_THAT(
+        sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
+                                    kDefaultOrigin, std::move(options)),
+        IsEmpty());
 
-      // This checks that the cookie access is not double-reported due the
-      // warning reason and EXCLUDE_USER_PREFERENCES.
-      EXPECT_THAT(
-          recorded_activity(),
-          ElementsAre(
-              testing::_, testing::_,
-              MatchesCookieOp(
-                  mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
-                  "",
-                  CookieOrLine("cookie-name=cookie-value",
-                               mojom::CookieOrLine::Tag::COOKIE),
-                  net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                      {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
-                      {net::CookieInclusionStatus::
-                           WARN_TREATED_AS_SAMEPARTY}))));
+    // This checks that the cookie access is not double-reported due the
+    // warning reason and EXCLUDE_USER_PREFERENCES.
+    std::vector<net::CookieInclusionStatus::WarningReason> expected_warnings = {
+        net::CookieInclusionStatus::WARN_TREATED_AS_SAMEPARTY,
+        net::CookieInclusionStatus::
+            WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS,
+    };
+    EXPECT_THAT(
+        recorded_activity(),
+        ElementsAre(
+            testing::_, testing::_,
+            MatchesCookieOp(
+                mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+                "",
+                CookieOrLine("cookie-name=cookie-value",
+                             mojom::CookieOrLine::Tag::COOKIE),
+                net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                    {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
+                    expected_warnings))));
 
-      cookie_settings_.set_block_third_party_cookies(false);
-    }
+    cookie_settings_.set_block_third_party_cookies(false);
+  }
 
   // Cross Party
   {
@@ -885,7 +896,12 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
       ElementsAre(MatchesCookieOp(
           mojom::CookieAccessDetails::Type::kChange, "https://example.com/", "",
           CookieOrLine("A=B", mojom::CookieOrLine::Tag::COOKIE),
-          testing::AllOf(net::IsInclude(), Not(net::ShouldWarn())))));
+          testing::AllOf(
+              net::IsInclude(),
+              net::HasExactlyWarningReasonsForTesting(
+                  std::vector<net::CookieInclusionStatus::WarningReason>{
+                      net::CookieInclusionStatus::
+                          WARN_SAMESITE_NONE_REQUIRED})))));
 
   {
     // Not if third-party cookies are disabled, though.

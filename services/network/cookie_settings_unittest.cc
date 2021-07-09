@@ -523,18 +523,18 @@ TEST_F(CookieSettingsTest, IsPrivacyModeEnabled) {
   // Enabled for third-party requests.
   EXPECT_TRUE(settings.IsPrivacyModeEnabled(
       GURL(kURL), GURL(), url::Origin::Create(GURL(kOtherURL)),
-      net::CookieOptions::SamePartyCookieContextType::kCrossParty));
+      net::SamePartyContext::Type::kCrossParty));
 
   // Enabled for requests with a null site_for_cookies, even if the
   // top_frame_origin matches.
   EXPECT_TRUE(settings.IsPrivacyModeEnabled(
       GURL(kURL), GURL(), url::Origin::Create(GURL(kURL)),
-      net::CookieOptions::SamePartyCookieContextType::kCrossParty));
+      net::SamePartyContext::Type::kCrossParty));
 
   // Disabled for first-party requests, if no other rule applies.
   EXPECT_FALSE(settings.IsPrivacyModeEnabled(
       GURL(kURL), GURL(kURL), url::Origin::Create(GURL(kURL)),
-      net::CookieOptions::SamePartyCookieContextType::kSameParty));
+      net::SamePartyContext::Type::kSameParty));
 
   // Enabled if there's a site-specific rule that blocks access, regardless of
   // the kind of request.
@@ -543,15 +543,15 @@ TEST_F(CookieSettingsTest, IsPrivacyModeEnabled) {
   // Third-party requests:
   EXPECT_TRUE(settings.IsPrivacyModeEnabled(
       GURL(kURL), GURL(), url::Origin::Create(GURL(kOtherURL)),
-      net::CookieOptions::SamePartyCookieContextType::kCrossParty));
+      net::SamePartyContext::Type::kCrossParty));
   // Requests with a null site_for_cookies, but matching top_frame_origin.
   EXPECT_TRUE(settings.IsPrivacyModeEnabled(
       GURL(kURL), GURL(), url::Origin::Create(GURL(kURL)),
-      net::CookieOptions::SamePartyCookieContextType::kCrossParty));
+      net::SamePartyContext::Type::kCrossParty));
   // First-party requests.
   EXPECT_TRUE(settings.IsPrivacyModeEnabled(
       GURL(kURL), GURL(kURL), url::Origin::Create(GURL(kURL)),
-      net::CookieOptions::SamePartyCookieContextType::kSameParty));
+      net::SamePartyContext::Type::kSameParty));
 
   // No histogram samples should have been recorded.
   EXPECT_THAT(histogram_tester.GetAllSamples(
@@ -570,19 +570,19 @@ TEST_F(CookieSettingsTest, IsPrivacyModeEnabled_SamePartyConsideredFirstParty) {
   // Enabled for cross-party requests.
   EXPECT_TRUE(settings.IsPrivacyModeEnabled(
       GURL(kFPSMemberURL), GURL(), url::Origin::Create(GURL(kFPSOwnerURL)),
-      net::CookieOptions::SamePartyCookieContextType::kCrossParty));
+      net::SamePartyContext::Type::kCrossParty));
 
   // Disabled for cross-site, same-party requests.
   EXPECT_FALSE(settings.IsPrivacyModeEnabled(
       GURL(kFPSMemberURL), GURL(), url::Origin::Create(GURL(kFPSOwnerURL)),
-      net::CookieOptions::SamePartyCookieContextType::kSameParty));
+      net::SamePartyContext::Type::kSameParty));
 
   // Enabled for same-party requests if blocked by a site-specific rule.
   settings.set_content_settings(
       {CreateSetting(kFPSMemberURL, "*", CONTENT_SETTING_BLOCK)});
   EXPECT_TRUE(settings.IsPrivacyModeEnabled(
       GURL(kFPSMemberURL), GURL(), url::Origin::Create(GURL(kFPSOwnerURL)),
-      net::CookieOptions::SamePartyCookieContextType::kSameParty));
+      net::SamePartyContext::Type::kSameParty));
 
   // No histogram samples should have been recorded.
   EXPECT_THAT(histogram_tester.GetAllSamples(

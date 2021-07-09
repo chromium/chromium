@@ -19,6 +19,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/do_nothing_ct_verifier.h"
+#include "net/cookies/same_party_context.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_headers.h"
@@ -621,8 +622,7 @@ bool TestNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
-    CookieOptions::SamePartyCookieContextType same_party_cookie_context_type)
-    const {
+    SamePartyContext::Type same_party_context_type) const {
   return false;
 }
 
@@ -685,13 +685,12 @@ bool FilteringTestNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
-    CookieOptions::SamePartyCookieContextType same_party_cookie_context_type)
-    const {
+    SamePartyContext::Type same_party_context_type) const {
   if (force_privacy_mode_)
     return true;
 
   return TestNetworkDelegate::OnForcePrivacyMode(
-      url, site_for_cookies, top_frame_origin, same_party_cookie_context_type);
+      url, site_for_cookies, top_frame_origin, same_party_context_type);
 }
 
 bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(

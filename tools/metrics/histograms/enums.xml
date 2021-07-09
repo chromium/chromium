@@ -33928,6 +33928,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3950" label="SanitizerAPIElementSetSanitized"/>
   <int value="3951" label="TextShadowInHighlightPseudo"/>
   <int value="3952" label="TextShadowNotNoneInHighlightPseudo"/>
+  <int value="3953" label="SameSiteNoneRequired"/>
+  <int value="3954" label="SameSiteNoneIncludedBySamePartyTopResource"/>
+  <int value="3955" label="SameSiteNoneIncludedBySamePartyAncestors"/>
+  <int value="3956" label="SameSiteNoneIncludedBySameSiteLax"/>
+  <int value="3957" label="SameSiteNoneIncludedBySameSiteStrict"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -71296,6 +71301,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10"
       label="Lax to Cross context with Strict cookie; secure origin."/>
   <int value="11" label="Lax to Cross context with Lax cookie; secure origin."/>
+</enum>
+
+<enum name="SameSiteNonePartyContextType">
+  <summary>
+    Indicates the strictest cookie semantics that could have included the given
+    SameSite=None cookie on this access.
+  </summary>
+  <int value="0" label="Requires SameSite=None"/>
+  <int value="1"
+      label="Included under SameParty if using top frame and resource URL
+             only"/>
+  <int value="2" label="Included under SameParty if using all ancestor frames"/>
+  <int value="3" label="Included under SameSite=Lax"/>
+  <int value="4" label="Included under SameSite=Strict"/>
 </enum>
 
 <enum name="SamlChallengeKeyHandlerResult">

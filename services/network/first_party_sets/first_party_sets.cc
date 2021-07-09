@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/same_party_context.h"
 #include "services/network/first_party_sets/first_party_set_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -55,6 +56,11 @@ CanonicalizeSet(const std::vector<std::string>& origins) {
       std::make_pair(std::move(owner), std::move(members)));
 }
 
+net::SamePartyContext::Type ContextTypeFromBool(bool is_same_party) {
+  return is_same_party ? net::SamePartyContext::Type::kSameParty
+                       : net::SamePartyContext::Type::kCrossParty;
+}
+
 }  // namespace
 
 FirstPartySets::FirstPartySets() = default;
@@ -77,18 +83,20 @@ FirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
 
 bool FirstPartySets::IsContextSamePartyWithSite(
     const net::SchemefulSite& site,
-    const absl::optional<net::SchemefulSite>& top_frame_site,
-    const std::set<net::SchemefulSite>& party_context) const {
-  const auto it = sets_.find(site);
-  if (it == sets_.end())
+    const net::SchemefulSite* top_frame_site,
+    const std::set<net::SchemefulSite>& party_context,
+    bool infer_singleton_sets) const {
+  const net::SchemefulSite* site_owner = FindOwner(site, infer_singleton_sets);
+  if (!site_owner)
     return false;
-  const net::SchemefulSite& site_owner = it->second;
+
   const auto is_owned_by_site_owner =
-      [this, &site_owner](const net::SchemefulSite& context_site) {
-        const auto context_owner = sets_.find(context_site);
-        return context_owner != sets_.end() &&
-               context_owner->second == site_owner;
-      };
+      [this, site_owner,
+       infer_singleton_sets](const net::SchemefulSite& context_site) -> bool {
+    const net::SchemefulSite* context_owner =
+        FindOwner(context_site, infer_singleton_sets);
+    return context_owner && *context_owner == *site_owner;
+  };
 
   if (top_frame_site && !is_owned_by_site_owner(*top_frame_site))
     return false;
@@ -96,34 +104,56 @@ bool FirstPartySets::IsContextSamePartyWithSite(
   return base::ranges::all_of(party_context, is_owned_by_site_owner);
 }
 
+net::SamePartyContext FirstPartySets::ComputeContext(
+    const net::SchemefulSite& site,
+    const net::SchemefulSite* top_frame_site,
+    const std::set<net::SchemefulSite>& party_context) const {
+  net::SamePartyContext::Type context_type = ContextTypeFromBool(
+      IsContextSamePartyWithSite(site, top_frame_site, party_context,
+                                 false /* infer_singleton_sets */));
+  net::SamePartyContext::Type ancestors = ContextTypeFromBool(
+      IsContextSamePartyWithSite(site, top_frame_site, party_context,
+                                 true /* infer_singleton_sets */));
+  net::SamePartyContext::Type top_resource =
+      ContextTypeFromBool(IsContextSamePartyWithSite(
+          site, top_frame_site, {}, true /* infer_singleton_sets */));
+
+  return net::SamePartyContext(context_type, ancestors, top_resource);
+}
+
 net::FirstPartySetsContextType FirstPartySets::ComputeContextType(
     const net::SchemefulSite& site,
     const absl::optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
-  const auto owner_or_site =
-      [this](const net::SchemefulSite& site) -> const net::SchemefulSite& {
-    const auto it = sets_.find(site);
-    return it == sets_.end() ? site : it->second;
-  };
-  const net::SchemefulSite& site_owner = owner_or_site(site);
+  constexpr bool infer_singleton_sets = true;
+  const net::SchemefulSite* site_owner = FindOwner(site, infer_singleton_sets);
   // Note: the `party_context` consists of the intermediate frames (for frame
   // requests) or intermediate frames and current frame for subresource
   // requests.
   const bool is_homogeneous = base::ranges::all_of(
       party_context, [&](const net::SchemefulSite& middle_site) {
-        return owner_or_site(middle_site) == site_owner;
+        return *FindOwner(middle_site, infer_singleton_sets) == *site_owner;
       });
   if (!top_frame_site.has_value()) {
     return is_homogeneous
                ? net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous
                : net::FirstPartySetsContextType::kTopFrameIgnoredMixed;
   }
-  if (owner_or_site(*top_frame_site) != site_owner)
+  if (*FindOwner(*top_frame_site, infer_singleton_sets) != *site_owner)
     return net::FirstPartySetsContextType::kTopResourceMismatch;
 
   return is_homogeneous
              ? net::FirstPartySetsContextType::kHomogeneous
              : net::FirstPartySetsContextType::kTopResourceMatchMixed;
+}
+
+const net::SchemefulSite* FirstPartySets::FindOwner(
+    const net::SchemefulSite& site,
+    bool infer_singleton_sets) const {
+  const auto it = sets_.find(site);
+  if (it == sets_.end())
+    return infer_singleton_sets ? &site : nullptr;
+  return &it->second;
 }
 
 bool FirstPartySets::IsInNontrivialFirstPartySet(

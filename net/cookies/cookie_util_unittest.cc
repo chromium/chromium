@@ -16,6 +16,7 @@
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/same_party_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1483,9 +1484,9 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotInSet) {
                  CookieSameSite::STRICT_MODE,
                  CookieSameSite::UNSPECIFIED,
              }) {
-          for (CookieOptions::SamePartyCookieContextType party_context_type : {
-                   CookieOptions::SamePartyCookieContextType::kCrossParty,
-                   CookieOptions::SamePartyCookieContextType::kSameParty,
+          for (SamePartyContext::Type party_context_type : {
+                   SamePartyContext::Type::kCrossParty,
+                   SamePartyContext::Type::kSameParty,
                }) {
             base::Time now = base::Time::Now();
             std::unique_ptr<CanonicalCookie> cookie =
@@ -1494,7 +1495,8 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotInSet) {
                     secure, httponly, same_site,
                     CookiePriority::COOKIE_PRIORITY_DEFAULT, same_party);
 
-            options.set_same_party_cookie_context_type(party_context_type);
+            options.set_same_party_context(
+                SamePartyContext(party_context_type));
             EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                       cookie_util::GetSamePartyStatus(*cookie, options));
           }
@@ -1519,9 +1521,9 @@ TEST(CookieUtilTest, GetSamePartyStatus_FeatureDisabled) {
                  CookieSameSite::STRICT_MODE,
                  CookieSameSite::UNSPECIFIED,
              }) {
-          for (CookieOptions::SamePartyCookieContextType party_context_type : {
-                   CookieOptions::SamePartyCookieContextType::kCrossParty,
-                   CookieOptions::SamePartyCookieContextType::kSameParty,
+          for (SamePartyContext::Type party_context_type : {
+                   SamePartyContext::Type::kCrossParty,
+                   SamePartyContext::Type::kSameParty,
                }) {
             base::Time now = base::Time::Now();
             std::unique_ptr<CanonicalCookie> cookie =
@@ -1530,7 +1532,8 @@ TEST(CookieUtilTest, GetSamePartyStatus_FeatureDisabled) {
                     secure, httponly, same_site,
                     CookiePriority::COOKIE_PRIORITY_DEFAULT, same_party);
 
-            options.set_same_party_cookie_context_type(party_context_type);
+            options.set_same_party_context(
+                SamePartyContext(party_context_type));
             EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                       cookie_util::GetSamePartyStatus(*cookie, options));
           }
@@ -1554,9 +1557,9 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotSameParty) {
                CookieSameSite::STRICT_MODE,
                CookieSameSite::UNSPECIFIED,
            }) {
-        for (CookieOptions::SamePartyCookieContextType party_context_type : {
-                 CookieOptions::SamePartyCookieContextType::kCrossParty,
-                 CookieOptions::SamePartyCookieContextType::kSameParty,
+        for (SamePartyContext::Type party_context_type : {
+                 SamePartyContext::Type::kCrossParty,
+                 SamePartyContext::Type::kSameParty,
              }) {
           base::Time now = base::Time::Now();
           std::unique_ptr<CanonicalCookie> cookie =
@@ -1565,7 +1568,7 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotSameParty) {
                   httponly, same_site, CookiePriority::COOKIE_PRIORITY_DEFAULT,
                   false /* same_party */);
 
-          options.set_same_party_cookie_context_type(party_context_type);
+          options.set_same_party_context(SamePartyContext(party_context_type));
           EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                     cookie_util::GetSamePartyStatus(*cookie, options));
         }
@@ -1622,13 +1625,13 @@ TEST(CookieUtilTest, GetSamePartyStatus_SamePartySemantics) {
                   CookiePriority::COOKIE_PRIORITY_DEFAULT,
                   true /* same_party */);
 
-          options.set_same_party_cookie_context_type(
-              CookieOptions::SamePartyCookieContextType::kCrossParty);
+          options.set_same_party_context(
+              SamePartyContext(SamePartyContext::Type::kCrossParty));
           EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyExclude,
                     cookie_util::GetSamePartyStatus(*cookie, options));
 
-          options.set_same_party_cookie_context_type(
-              CookieOptions::SamePartyCookieContextType::kSameParty);
+          options.set_same_party_context(
+              SamePartyContext(SamePartyContext::Type::kSameParty));
           EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyInclude,
                     cookie_util::GetSamePartyStatus(*cookie, options));
         }

@@ -12,6 +12,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/same_party_context.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -119,12 +120,12 @@ struct StructTraits<network::mojom::CookieSameSiteContextDataView,
 
 template <>
 struct EnumTraits<network::mojom::SamePartyCookieContextType,
-                  net::CookieOptions::SamePartyCookieContextType> {
+                  net::SamePartyContext::Type> {
   static network::mojom::SamePartyCookieContextType ToMojom(
-      net::CookieOptions::SamePartyCookieContextType context_type);
+      net::SamePartyContext::Type context_type);
 
   static bool FromMojom(network::mojom::SamePartyCookieContextType context_type,
-                        net::CookieOptions::SamePartyCookieContextType* out);
+                        net::SamePartyContext::Type* out);
 };
 
 template <>
@@ -143,9 +144,8 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
     return o.return_excluded_cookies();
   }
 
-  static net::CookieOptions::SamePartyCookieContextType
-  same_party_cookie_context_type(const net::CookieOptions& o) {
-    return o.same_party_cookie_context_type();
+  static net::SamePartyContext same_party_context(const net::CookieOptions& o) {
+    return o.same_party_context();
   }
 
   static uint32_t full_party_context_size(const net::CookieOptions& o) {
@@ -291,6 +291,26 @@ struct StructTraits<network::mojom::CookieChangeInfoDataView,
   }
   static bool Read(network::mojom::CookieChangeInfoDataView info,
                    net::CookieChangeInfo* out);
+};
+
+template <>
+struct StructTraits<network::mojom::SamePartyContextDataView,
+                    net::SamePartyContext> {
+  static net::SamePartyContext::Type context_type(
+      const net::SamePartyContext& s) {
+    return s.context_type();
+  }
+  static net::SamePartyContext::Type ancestors_for_metrics_only(
+      const net::SamePartyContext& s) {
+    return s.ancestors_for_metrics_only();
+  }
+  static net::SamePartyContext::Type top_resource_for_metrics_only(
+      const net::SamePartyContext& s) {
+    return s.top_resource_for_metrics_only();
+  }
+
+  static bool Read(network::mojom::SamePartyContextDataView bundle,
+                   net::SamePartyContext* out);
 };
 
 }  // namespace mojo

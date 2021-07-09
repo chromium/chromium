@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "net/cookies/same_party_context.h"
 
 namespace mojo {
 
@@ -338,15 +339,15 @@ bool StructTraits<network::mojom::CookieSameSiteContextDataView,
 }
 
 bool EnumTraits<network::mojom::SamePartyCookieContextType,
-                net::CookieOptions::SamePartyCookieContextType>::
+                net::SamePartyContext::Type>::
     FromMojom(network::mojom::SamePartyCookieContextType context_type,
-              net::CookieOptions::SamePartyCookieContextType* out) {
+              net::SamePartyContext::Type* out) {
   switch (context_type) {
     case network::mojom::SamePartyCookieContextType::kCrossParty:
-      *out = net::CookieOptions::SamePartyCookieContextType::kCrossParty;
+      *out = net::SamePartyContext::Type::kCrossParty;
       return true;
     case network::mojom::SamePartyCookieContextType::kSameParty:
-      *out = net::CookieOptions::SamePartyCookieContextType::kSameParty;
+      *out = net::SamePartyContext::Type::kSameParty;
       return true;
   }
   return false;
@@ -354,12 +355,12 @@ bool EnumTraits<network::mojom::SamePartyCookieContextType,
 
 network::mojom::SamePartyCookieContextType
 EnumTraits<network::mojom::SamePartyCookieContextType,
-           net::CookieOptions::SamePartyCookieContextType>::
-    ToMojom(net::CookieOptions::SamePartyCookieContextType context_type) {
+           net::SamePartyContext::Type>::ToMojom(net::SamePartyContext::Type
+                                                     context_type) {
   switch (context_type) {
-    case net::CookieOptions::SamePartyCookieContextType::kCrossParty:
+    case net::SamePartyContext::Type::kCrossParty:
       return network::mojom::SamePartyCookieContextType::kCrossParty;
-    case net::CookieOptions::SamePartyCookieContextType::kSameParty:
+    case net::SamePartyContext::Type::kSameParty:
       return network::mojom::SamePartyCookieContextType::kSameParty;
   }
   NOTREACHED();
@@ -389,12 +390,10 @@ bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
   else
     cookie_options->unset_return_excluded_cookies();
 
-  net::CookieOptions::SamePartyCookieContextType same_party_cookie_context_type;
-  if (!mojo_options.ReadSamePartyCookieContextType(
-          &same_party_cookie_context_type))
+  net::SamePartyContext same_party_context;
+  if (!mojo_options.ReadSamePartyContext(&same_party_context))
     return false;
-  cookie_options->set_same_party_cookie_context_type(
-      same_party_cookie_context_type);
+  cookie_options->set_same_party_context(same_party_context);
 
   cookie_options->set_full_party_context_size(
       mojo_options.full_party_context_size());
@@ -543,6 +542,27 @@ bool StructTraits<
     return false;
 
   *out = net::CookieChangeInfo(cookie, access_result, cause);
+  return true;
+}
+
+bool StructTraits<network::mojom::SamePartyContextDataView,
+                  net::SamePartyContext>::
+    Read(network::mojom::SamePartyContextDataView context,
+         net::SamePartyContext* out) {
+  net::SamePartyContext::Type context_type;
+  if (!context.ReadContextType(&context_type))
+    return false;
+
+  net::SamePartyContext::Type ancestors_for_metrics_only;
+  if (!context.ReadAncestorsForMetricsOnly(&ancestors_for_metrics_only))
+    return false;
+
+  net::SamePartyContext::Type top_resource_for_metrics_only;
+  if (!context.ReadTopResourceForMetricsOnly(&top_resource_for_metrics_only))
+    return false;
+
+  *out = net::SamePartyContext(context_type, ancestors_for_metrics_only,
+                               top_resource_for_metrics_only);
   return true;
 }
 

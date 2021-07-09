@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
@@ -29,6 +30,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/same_party_context.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -724,23 +726,23 @@ bool IsFirstPartySetsEnabled() {
 // 1) `isolation_info` is not fully populated.
 // 2) `isolation_info.party_context` is null.
 // 3) `cookie_access_delegate.IsContextSamePartyWithSite` returns false.
-CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
+SamePartyContext ComputeSamePartyContext(
     const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
     const CookieAccessDelegate* cookie_access_delegate,
     bool force_ignore_top_frame_party) {
   if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
-      cookie_access_delegate &&
-      cookie_access_delegate->IsContextSamePartyWithSite(
-          request_site,
-          force_ignore_top_frame_party
-              ? absl::nullopt
-              : isolation_info.network_isolation_key().GetTopFrameSite(),
-          isolation_info.party_context().value())) {
-    return CookieOptions::SamePartyCookieContextType::kSameParty;
+      cookie_access_delegate) {
+    return cookie_access_delegate->ComputeSamePartyContext(
+        request_site,
+        force_ignore_top_frame_party
+            ? nullptr
+            : base::OptionalOrNullptr(
+                  isolation_info.network_isolation_key().GetTopFrameSite()),
+        isolation_info.party_context().value());
   }
 
-  return CookieOptions::SamePartyCookieContextType::kCrossParty;
+  return SamePartyContext();
 }
 
 CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,
@@ -750,10 +752,10 @@ CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,
     return CookieSamePartyStatus::kNoSamePartyEnforcement;
   }
 
-  switch (options.same_party_cookie_context_type()) {
-    case CookieOptions::SamePartyCookieContextType::kCrossParty:
+  switch (options.same_party_context().context_type()) {
+    case SamePartyContext::Type::kCrossParty:
       return CookieSamePartyStatus::kEnforceSamePartyExclude;
-    case CookieOptions::SamePartyCookieContextType::kSameParty:
+    case SamePartyContext::Type::kSameParty:
       return CookieSamePartyStatus::kEnforceSamePartyInclude;
   };
 }

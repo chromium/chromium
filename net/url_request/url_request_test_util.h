@@ -29,6 +29,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/same_party_context.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/ftp/ftp_network_layer.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -370,11 +371,11 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies,
       bool allowed_from_caller) override;
-  bool OnForcePrivacyMode(const GURL& url,
-                          const SiteForCookies& site_for_cookies,
-                          const absl::optional<url::Origin>& top_frame_origin,
-                          CookieOptions::SamePartyCookieContextType
-                              same_party_cookie_context_type) const override;
+  bool OnForcePrivacyMode(
+      const GURL& url,
+      const SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      SamePartyContext::Type same_party_context_type) const override;
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
                       CookieOptions* options,
@@ -457,11 +458,11 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
       net::CookieAccessResultList& excluded_cookies,
       bool allowed_from_caller) override;
 
-  bool OnForcePrivacyMode(const GURL& url,
-                          const SiteForCookies& site_for_cookies,
-                          const absl::optional<url::Origin>& top_frame_origin,
-                          CookieOptions::SamePartyCookieContextType
-                              same_party_cookie_context_type) const override;
+  bool OnForcePrivacyMode(
+      const GURL& url,
+      const SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      SamePartyContext::Type same_party_context_type) const override;
 
   void set_block_annotate_cookies() { block_annotate_cookies_ = true; }
 

@@ -29,6 +29,7 @@
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_store_test_helpers.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/same_party_context.h"
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/cookie_access_delegate_impl.h"
@@ -319,8 +320,7 @@ class CookieManagerTest : public testing::Test {
     net::CookieOptions options;
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-    options.set_same_party_cookie_context_type(
-        net::CookieOptions::SamePartyCookieContextType::kSameParty);
+    options.set_same_party_context(net::SamePartyContext::MakeInclusive());
     options.set_is_in_nontrivial_first_party_set(true);
     if (can_modify_httponly)
       options.set_include_httponly();
@@ -886,8 +886,8 @@ TEST_F(CookieManagerTest, GetCookieListSameParty) {
     net::CookieOptions options;
     options.set_return_excluded_cookies();
     options.set_is_in_nontrivial_first_party_set(true);
-    ASSERT_EQ(net::CookieOptions::SamePartyCookieContextType::kCrossParty,
-              options.same_party_cookie_context_type());
+    ASSERT_EQ(net::SamePartyContext::Type::kCrossParty,
+              options.same_party_context().context_type());
     ASSERT_EQ(
         net::CookieOptions::SameSiteCookieContext(
             net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
@@ -911,8 +911,8 @@ TEST_F(CookieManagerTest, GetCookieListSameParty) {
     // In a same-party, cross-site context, SameParty cookies should be
     // included, and non-SameParty cookies should be excluded based on SameSite
     // value.
-    options.set_same_party_cookie_context_type(
-        net::CookieOptions::SamePartyCookieContextType::kSameParty);
+    options.set_same_party_context(
+        net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
     EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
                 UnorderedElementsAre(
                     net::MatchesCookieWithName("SameParty-Unspecified"),
@@ -947,8 +947,8 @@ TEST_F(CookieManagerTest, GetCookieListSameParty) {
     options.set_return_excluded_cookies();
     // Default, but set for explicitness.
     options.set_is_in_nontrivial_first_party_set(false);
-    ASSERT_EQ(net::CookieOptions::SamePartyCookieContextType::kCrossParty,
-              options.same_party_cookie_context_type());
+    ASSERT_EQ(net::SamePartyContext::Type::kCrossParty,
+              options.same_party_context().context_type());
     ASSERT_EQ(
         net::CookieOptions::SameSiteCookieContext(
             net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
@@ -969,8 +969,8 @@ TEST_F(CookieManagerTest, GetCookieListSameParty) {
             net::MatchesCookieAccessWithName("nonSameParty-Lax")));
 
     // Same-party, cross-site.
-    options.set_same_party_cookie_context_type(
-        net::CookieOptions::SamePartyCookieContextType::kSameParty);
+    options.set_same_party_context(
+        net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
     EXPECT_THAT(
         service_wrapper()->GetCookieList(cookie_url, options),
         UnorderedElementsAre(net::MatchesCookieWithName("SameParty-None"),

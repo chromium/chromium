@@ -11,6 +11,7 @@
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/same_party_context.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -88,11 +89,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   // Returns true iff "privacy mode" should be enabled for the URL request in
   // question, according to the user's settings.
-  bool IsPrivacyModeEnabled(const GURL& url,
-                            const GURL& site_for_cookies,
-                            const absl::optional<url::Origin>& top_frame_origin,
-                            net::CookieOptions::SamePartyCookieContextType
-                                same_party_cookie_context_type) const;
+  bool IsPrivacyModeEnabled(
+      const GURL& url,
+      const GURL& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      net::SamePartyContext::Type same_party_context_type) const;
 
   // Returns true if the given cookie is accessible according to user
   // cookie-blocking settings. Assumes that the cookie is otherwise accessible

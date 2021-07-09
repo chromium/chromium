@@ -7,6 +7,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/same_party_context.h"
 
 namespace net {
 
@@ -34,11 +35,11 @@ bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(
   return true;
 }
 
-bool TestCookieAccessDelegate::IsContextSamePartyWithSite(
+SamePartyContext TestCookieAccessDelegate::ComputeSamePartyContext(
     const net::SchemefulSite& site,
-    const absl::optional<net::SchemefulSite>& top_frame_site,
+    const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
-  return false;
+  return SamePartyContext();
 }
 
 FirstPartySetsContextType

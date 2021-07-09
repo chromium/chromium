@@ -99,6 +99,15 @@ MATCHER_P(HasExactlyExclusionReasonsForTesting, reasons, "") {
       result_listener);
 }
 
+// Helper for checking that status.HasExactlyWarningReasonsForTesting(reasons)
+// == true.
+MATCHER_P(HasExactlyWarningReasonsForTesting, reasons, "") {
+  const CookieInclusionStatus status = arg;
+  return testing::ExplainMatchResult(
+      true, status.HasExactlyWarningReasonsForTesting(reasons),
+      result_listener);
+}
+
 MATCHER(ShouldWarn, "") {
   net::CookieInclusionStatus status = arg;
   return testing::ExplainMatchResult(true, status.ShouldWarn(),

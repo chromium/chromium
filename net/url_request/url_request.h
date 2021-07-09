@@ -32,6 +32,7 @@
 #include "net/base/request_priority.h"
 #include "net/base/upload_progress.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/same_party_context.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/filter/source_stream.h"
@@ -262,13 +263,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // The party_context_ of this leg of the request. This gets updated on
   // redirects.
-  CookieOptions::SamePartyCookieContextType same_party_cookie_context_type()
-      const {
-    return same_party_cookie_context_type_;
+  const SamePartyContext& same_party_context() const {
+    return same_party_context_;
   }
-  void set_same_party_cookie_context_type(
-      CookieOptions::SamePartyCookieContextType context_type) {
-    same_party_cookie_context_type_ = context_type;
+  void set_same_party_context(const SamePartyContext& context) {
+    same_party_context_ = context;
   }
 
   // Indicate whether SameSite cookies should be attached even though the
@@ -903,7 +902,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   IsolationInfo isolation_info_;
 
-  CookieOptions::SamePartyCookieContextType same_party_cookie_context_type_;
+  SamePartyContext same_party_context_;
 
   bool force_ignore_site_for_cookies_;
   bool force_ignore_top_frame_party_for_cookies_;

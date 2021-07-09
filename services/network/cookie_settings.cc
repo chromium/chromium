@@ -25,8 +25,7 @@
 namespace network {
 namespace {
 
-using SamePartyCookieContextType =
-    net::CookieOptions::SamePartyCookieContextType;
+using SamePartyCookieContextType = net::SamePartyContext::Type;
 
 bool IsExplicitSetting(const ContentSettingPatternSource& setting) {
   return !setting.primary_pattern.MatchesAllHosts() ||

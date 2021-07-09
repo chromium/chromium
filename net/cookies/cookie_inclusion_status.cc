@@ -31,6 +31,9 @@ CookieInclusionStatus::CookieInclusionStatus(ExclusionReason reason,
     : exclusion_reasons_(GetExclusionBitmask(reason)),
       warning_reasons_(GetWarningBitmask(warning)) {}
 
+CookieInclusionStatus::CookieInclusionStatus(WarningReason warning)
+    : warning_reasons_(GetWarningBitmask(warning)) {}
+
 bool CookieInclusionStatus::operator==(
     const CookieInclusionStatus& other) const {
   return exclusion_reasons_ == other.exclusion_reasons_ &&
@@ -259,6 +262,15 @@ std::string CookieInclusionStatus::GetDebugString() const {
             "WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE"},
            {WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211,
             "WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211"},
+           {WARN_SAMESITE_NONE_REQUIRED, "WARN_SAMESITE_NONE_REQUIRED"},
+           {WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE,
+            "WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE"},
+           {WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS,
+            "WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS"},
+           {WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX,
+            "WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX"},
+           {WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT,
+            "WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT"},
        }) {
     if (HasWarningReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});

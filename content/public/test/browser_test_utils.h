@@ -903,15 +903,15 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
     const GURL& url);
 
 // Sets a cookie for the given url. Uses inclusive SameSiteCookieContext and
-// SamePartyCookieContextType by default, which get cookies regardless of their
+// SamePartyContext::Type by default, which get cookies regardless of their
 // SameSite and SameParty attributes. Returns true on success.
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
                net::CookieOptions::SameSiteCookieContext context =
                    net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-               net::CookieOptions::SamePartyCookieContextType party_context =
-                   net::CookieOptions::SamePartyCookieContextType::kSameParty);
+               net::SamePartyContext::Type party_context =
+                   net::SamePartyContext::Type::kSameParty);
 
 // Deletes cookies matching the provided filter. Returns the number of cookies
 // that were deleted.
