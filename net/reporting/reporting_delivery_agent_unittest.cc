@@ -399,7 +399,7 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemove) {
   EXPECT_FALSE(cache()->IsReportDoomedForTesting(report));
 
   // Report should appear removed, even though the cache has doomed it.
-  cache()->RemoveReports(reports, ReportingReport::Outcome::UNKNOWN);
+  cache()->RemoveReports(reports);
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
   EXPECT_TRUE(cache()->IsReportDoomedForTesting(report));
@@ -431,7 +431,7 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemoveDuringPermissionsCheck) {
   EXPECT_FALSE(cache()->IsReportDoomedForTesting(report));
 
   // Report should appear removed, even though the cache has doomed it.
-  cache()->RemoveReports(reports, ReportingReport::Outcome::UNKNOWN);
+  cache()->RemoveReports(reports);
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
   EXPECT_TRUE(cache()->IsReportDoomedForTesting(report));

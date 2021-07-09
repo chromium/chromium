@@ -70,10 +70,8 @@ class ReportingGarbageCollectorImpl : public ReportingGarbageCollector,
 
     // Don't restart the timer on the garbage collector's own updates.
     context_->RemoveCacheObserver(this);
-    context_->cache()->RemoveReports(failed_reports,
-                                     ReportingReport::Outcome::ERASED_FAILED);
-    context_->cache()->RemoveReports(expired_reports,
-                                     ReportingReport::Outcome::ERASED_EXPIRED);
+    context_->cache()->RemoveReports(failed_reports);
+    context_->cache()->RemoveReports(expired_reports);
     context_->AddCacheObserver(this);
   }
 

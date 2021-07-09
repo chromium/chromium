@@ -56579,6 +56579,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="NetReportingReportOutcome">
+  <obsolete>
+    Removed from code, July 2021.
+  </obsolete>
   <int value="0" label="Unknown"/>
   <int value="1" label="Discarded: no URLRequestContext"/>
   <int value="2" label="Discarded: no ReportingService"/>

@@ -4814,6 +4814,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.Reporting.ReportOutcome" enum="NetReportingReportOutcome"
     expires_after="2021-06-25">
+  <obsolete>
+    Removed July 2021
+  </obsolete>
   <owner>chlily@chromium.org</owner>
   <owner>juliatuttle@chromium.org</owner>
   <summary>

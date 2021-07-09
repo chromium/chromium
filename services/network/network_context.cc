@@ -938,7 +938,6 @@ void NetworkContext::QueueReport(
       request_context->reporting_service();
   // TODO(paulmeyer): Remove this once the network service ships everywhere.
   if (!reporting_service) {
-    net::ReportingReport::RecordReportDiscardedForNoReportingService();
     return;
   }
 

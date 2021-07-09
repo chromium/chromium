@@ -85,13 +85,11 @@ class TestReportingCache : public ReportingCache {
                                    bool successful) override {
     NOTREACHED();
   }
-  void RemoveReports(const std::vector<const ReportingReport*>& reports,
-                     ReportingReport::Outcome outcome) override {
+  void RemoveReports(
+      const std::vector<const ReportingReport*>& reports) override {
     NOTREACHED();
   }
-  void RemoveAllReports(ReportingReport::Outcome outcome) override {
-    NOTREACHED();
-  }
+  void RemoveAllReports() override { NOTREACHED(); }
   size_t GetFullReportCountForTesting() const override {
     NOTREACHED();
     return 0;

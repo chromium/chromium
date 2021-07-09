@@ -24,22 +24,6 @@ namespace net {
 // An undelivered report.
 struct NET_EXPORT ReportingReport {
  public:
-  // Used in histograms; please add new items at end and do not reorder.
-  enum class Outcome {
-    UNKNOWN = 0,
-    DISCARDED_NO_URL_REQUEST_CONTEXT = 1,
-    DISCARDED_NO_REPORTING_SERVICE = 2,
-    ERASED_FAILED = 3,
-    ERASED_EXPIRED = 4,
-    ERASED_EVICTED = 5,
-    ERASED_NETWORK_CHANGED = 6,
-    ERASED_BROWSING_DATA_REMOVED = 7,
-    ERASED_REPORTING_SHUT_DOWN = 8,
-    DELIVERED = 9,
-
-    MAX
-  };
-
   enum class Status {
     // Report has been queued but no attempt has been made to deliver it yet.
     QUEUED,
@@ -63,7 +47,6 @@ struct NET_EXPORT ReportingReport {
                   base::TimeTicks queued,
                   int attempts);
 
-  // Records metrics about report outcome.
   ~ReportingReport();
 
   // Bundles together the NIK, origin of the report URL, and group name.
@@ -112,8 +95,6 @@ struct NET_EXPORT ReportingReport {
   // The number of delivery attempts made so far, not including an active
   // attempt. (Not included in the delivered report.)
   int attempts = 0;
-
-  Outcome outcome = Outcome::UNKNOWN;
 
   Status status = Status::QUEUED;
 

@@ -8,21 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "url/gurl.h"
 
 namespace net {
-
-namespace {
-
-void RecordReportOutcome(ReportingReport::Outcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION("Net.Reporting.ReportOutcome", outcome,
-                            ReportingReport::Outcome::MAX);
-}
-
-}  // namespace
 
 ReportingReport::ReportingReport(
     const NetworkIsolationKey& network_isolation_key,
@@ -44,23 +34,11 @@ ReportingReport::ReportingReport(
       queued(queued),
       attempts(attempts) {}
 
-ReportingReport::~ReportingReport() {
-  RecordReportOutcome(outcome);
-}
+ReportingReport::~ReportingReport() = default;
 
 ReportingEndpointGroupKey ReportingReport::GetGroupKey() const {
   return ReportingEndpointGroupKey(network_isolation_key,
                                    url::Origin::Create(url), group);
-}
-
-// static
-void ReportingReport::RecordReportDiscardedForNoURLRequestContext() {
-  RecordReportOutcome(Outcome::DISCARDED_NO_URL_REQUEST_CONTEXT);
-}
-
-// static
-void ReportingReport::RecordReportDiscardedForNoReportingService() {
-  RecordReportOutcome(Outcome::DISCARDED_NO_REPORTING_SERVICE);
 }
 
 bool ReportingReport::IsUploadPending() const {

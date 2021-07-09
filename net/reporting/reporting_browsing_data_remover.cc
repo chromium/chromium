@@ -27,9 +27,7 @@ void ReportingBrowsingDataRemover::RemoveBrowsingData(
         reports_to_remove.push_back(report);
     }
 
-    cache->RemoveReports(
-        reports_to_remove,
-        ReportingReport::Outcome::ERASED_BROWSING_DATA_REMOVED);
+    cache->RemoveReports(reports_to_remove);
   }
 
   if ((data_type_mask & DATA_TYPE_CLIENTS) != 0) {
@@ -46,8 +44,7 @@ void ReportingBrowsingDataRemover::RemoveAllBrowsingData(
     ReportingCache* cache,
     uint64_t data_type_mask) {
   if ((data_type_mask & DATA_TYPE_REPORTS) != 0) {
-    cache->RemoveAllReports(
-        ReportingReport::Outcome::ERASED_BROWSING_DATA_REMOVED);
+    cache->RemoveAllReports();
   }
   if ((data_type_mask & DATA_TYPE_CLIENTS) != 0) {
     cache->RemoveAllClients();

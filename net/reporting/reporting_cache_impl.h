@@ -58,9 +58,9 @@ class ReportingCacheImpl : public ReportingCache {
                                    const GURL& url,
                                    int reports_delivered,
                                    bool successful) override;
-  void RemoveReports(const std::vector<const ReportingReport*>& reports,
-                     ReportingReport::Outcome outcome) override;
-  void RemoveAllReports(ReportingReport::Outcome outcome) override;
+  void RemoveReports(
+      const std::vector<const ReportingReport*>& reports) override;
+  void RemoveAllReports() override;
   size_t GetFullReportCountForTesting() const override;
   bool IsReportPendingForTesting(const ReportingReport* report) const override;
   bool IsReportDoomedForTesting(const ReportingReport* report) const override;
