@@ -60,8 +60,8 @@ using base::UmaHistogramEnumeration;
 // The main consumer for this mediator.
 @property(nonatomic, weak) id<FormInputAccessoryConsumer> consumer;
 
-// The delegate for this object.
-@property(nonatomic, weak) id<FormInputAccessoryMediatorDelegate> delegate;
+// The handler for this object.
+@property(nonatomic, weak) id<FormInputAccessoryMediatorHandler> handler;
 
 // The object that manages the currently-shown custom accessory view.
 @property(nonatomic, weak) id<FormInputSuggestionsProvider> currentProvider;
@@ -71,7 +71,7 @@ using base::UmaHistogramEnumeration;
 
 // The form input handler. This is in charge of form navigation.
 @property(nonatomic, strong)
-    FormInputAccessoryViewHandler* formInputAccessoryHandler;
+    FormInputAccessoryViewHandler* formNavigationHandler;
 
 // The observer to determine when the keyboard dissapears and when it stays.
 @property(nonatomic, strong) KeyboardObserverHelper* keyboardObserver;
@@ -140,7 +140,7 @@ using base::UmaHistogramEnumeration;
 
 - (instancetype)
           initWithConsumer:(id<FormInputAccessoryConsumer>)consumer
-                  delegate:(id<FormInputAccessoryMediatorDelegate>)delegate
+                   handler:(id<FormInputAccessoryMediatorHandler>)handler
               webStateList:(WebStateList*)webStateList
        personalDataManager:(autofill::PersonalDataManager*)personalDataManager
              passwordStore:
@@ -152,7 +152,7 @@ using base::UmaHistogramEnumeration;
   if (self) {
     _consumer = consumer;
     _consumer.navigationDelegate = self;
-    _delegate = delegate;
+    _handler = handler;
     if (webStateList) {
       _webStateList = webStateList;
       _webStateListObserver =
@@ -174,8 +174,8 @@ using base::UmaHistogramEnumeration;
         webState->AddObserver(_webStateObserverBridge.get());
       }
     }
-    _formInputAccessoryHandler = [[FormInputAccessoryViewHandler alloc] init];
-    _formInputAccessoryHandler.webState = _webState;
+    _formNavigationHandler = [[FormInputAccessoryViewHandler alloc] init];
+    _formNavigationHandler.webState = _webState;
 
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self
@@ -287,7 +287,7 @@ using base::UmaHistogramEnumeration;
   }
   [self.consumer keyboardWillChangeToState:keyboardState];
   if (!keyboardState.isVisible) {
-    [self.delegate mediatorDidDetectKeyboardHide:self];
+    [self.handler mediatorDidDetectKeyboardHide:self];
   }
 }
 
@@ -333,7 +333,7 @@ using base::UmaHistogramEnumeration;
   }
   DCHECK(frameID.length);
 
-  [self.formInputAccessoryHandler setLastFocusFormActivityWebFrameID:frameID];
+  [self.formNavigationHandler setLastFocusFormActivityWebFrameID:frameID];
   [self synchronizeNavigationControls];
 
   // Don't look for suggestions in the next events.
@@ -350,17 +350,17 @@ using base::UmaHistogramEnumeration;
 #pragma mark - FormInputAccessoryViewDelegate
 
 - (void)formInputAccessoryViewDidTapNextButton:(FormInputAccessoryView*)sender {
-  [self.formInputAccessoryHandler selectNextElementWithButtonPress];
+  [self.formNavigationHandler selectNextElementWithButtonPress];
 }
 
 - (void)formInputAccessoryViewDidTapPreviousButton:
     (FormInputAccessoryView*)sender {
-  [self.formInputAccessoryHandler selectPreviousElementWithButtonPress];
+  [self.formNavigationHandler selectPreviousElementWithButtonPress];
 }
 
 - (void)formInputAccessoryViewDidTapCloseButton:
     (FormInputAccessoryView*)sender {
-  [self.formInputAccessoryHandler closeKeyboardWithButtonPress];
+  [self.formNavigationHandler closeKeyboardWithButtonPress];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -416,7 +416,7 @@ using base::UmaHistogramEnumeration;
   }
   [_currentProvider inputAccessoryViewControllerDidReset];
   _currentProvider = currentProvider;
-  _currentProvider.formInputNavigator = self.formInputAccessoryHandler;
+  _currentProvider.formInputNavigator = self.formNavigationHandler;
 }
 
 #pragma mark - Private
@@ -457,7 +457,7 @@ using base::UmaHistogramEnumeration;
 // handler state.
 - (void)synchronizeNavigationControls {
   __weak __typeof(self) weakSelf = self;
-  [self.formInputAccessoryHandler
+  [self.formNavigationHandler
       fetchPreviousAndNextElementsPresenceWithCompletionHandler:^(
           bool previousButtonEnabled, bool nextButtonEnabled) {
         weakSelf.consumer.formInputNextButtonEnabled = nextButtonEnabled;
@@ -483,7 +483,7 @@ using base::UmaHistogramEnumeration;
     if (tabHelper) {
       self.provider = tabHelper->GetAccessoryViewProvider();
     }
-    _formInputAccessoryHandler.webState = webState;
+    _formNavigationHandler.webState = webState;
   } else {
     self.webState = nullptr;
     self.provider = nil;
@@ -497,7 +497,7 @@ using base::UmaHistogramEnumeration;
   _hasLastSeenParams = NO;
 
   [self.consumer restoreOriginalKeyboardView];
-  [self.formInputAccessoryHandler reset];
+  [self.formNavigationHandler reset];
 
   self.suggestionsDisabled = NO;
   self.currentProvider = nil;
@@ -547,9 +547,9 @@ using base::UmaHistogramEnumeration;
   }
 }
 
-// Inform the delegate that the app went to the background.
+// Handle applicationDidEnterBackground NSNotification.
 - (void)applicationDidEnterBackground:(NSNotification*)notification {
-  [self.delegate mediatorDidDetectMovingToBackground:self];
+  [self.handler mediatorDidDetectMovingToBackground:self];
 }
 
 - (void)windowDidBecomeKey:(NSNotification*)notification {

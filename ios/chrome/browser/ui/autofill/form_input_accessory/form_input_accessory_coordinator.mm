@@ -50,7 +50,7 @@
 @interface FormInputAccessoryCoordinator () <
     AddressCoordinatorDelegate,
     CardCoordinatorDelegate,
-    FormInputAccessoryMediatorDelegate,
+    FormInputAccessoryMediatorHandler,
     ManualFillAccessoryViewControllerDelegate,
     PasswordCoordinatorDelegate,
     SecurityAlertCommands>
@@ -120,7 +120,7 @@
       self.browser->GetCommandDispatcher(), SecurityAlertCommands);
   self.formInputAccessoryMediator = [[FormInputAccessoryMediator alloc]
             initWithConsumer:self.formInputAccessoryViewController
-                    delegate:self
+                     handler:self
                 webStateList:self.browser->GetWebStateList()
          personalDataManager:personalDataManager
                passwordStore:passwordStore
@@ -214,7 +214,7 @@
   [self.childCoordinators addObject:addressCoordinator];
 }
 
-#pragma mark - FormInputAccessoryMediatorDelegate
+#pragma mark - FormInputAccessoryMediatorHandler
 
 - (void)mediatorDidDetectKeyboardHide:(FormInputAccessoryMediator*)mediator {
   // On iOS 13, beta 3, the popover is not dismissed when the keyboard hides.

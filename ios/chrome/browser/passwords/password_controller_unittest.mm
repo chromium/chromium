@@ -268,7 +268,7 @@ class PasswordControllerTest : public ChromeWebTest {
                  providers:@[ [passwordController_ suggestionProvider] ]];
       accessoryMediator_ =
           [[FormInputAccessoryMediator alloc] initWithConsumer:nil
-                                                      delegate:nil
+                                                       handler:nil
                                                   webStateList:nullptr
                                            personalDataManager:nullptr
                                                  passwordStore:nullptr

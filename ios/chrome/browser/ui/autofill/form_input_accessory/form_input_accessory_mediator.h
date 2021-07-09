@@ -31,8 +31,8 @@ class WebState;
 
 class WebStateList;
 
-// Delegate in charge of reacting to accessory mediator events.
-@protocol FormInputAccessoryMediatorDelegate
+// Handler in charge of accessory mediator events.
+@protocol FormInputAccessoryMediatorHandler
 
 // The mediator detected that the keyboard was hidden and it is no longer
 // present on the screen.
@@ -54,7 +54,7 @@ class WebStateList;
 // the passed consumer. `webSateList` can be nullptr and `consumer` can be nil.
 - (instancetype)
           initWithConsumer:(id<FormInputAccessoryConsumer>)consumer
-                  delegate:(id<FormInputAccessoryMediatorDelegate>)delegate
+                   handler:(id<FormInputAccessoryMediatorHandler>)handler
               webStateList:(WebStateList*)webStateList
        personalDataManager:(autofill::PersonalDataManager*)personalDataManager
              passwordStore:
