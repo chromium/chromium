@@ -28,9 +28,9 @@
 #include "components/permissions/android/bluetooth_chooser_android.h"
 #include "components/permissions/android/bluetooth_scanning_prompt_android.h"
 #else
-#include "chrome/browser/ui/bluetooth/bluetooth_chooser_desktop.h"
-#include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_desktop.h"
+#include "components/permissions/bluetooth_chooser_desktop.h"
 #include "components/permissions/bluetooth_scanning_prompt_controller.h"
+#include "components/permissions/bluetooth_scanning_prompt_desktop.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -78,7 +78,8 @@ ChromeBluetoothDelegate::RunBluetoothChooser(
 
   auto controller =
       std::make_unique<ChromeBluetoothChooserController>(frame, event_handler);
-  return std::make_unique<BluetoothChooserDesktop>(
+  auto controller_weak = controller->GetWeakPtr();
+  return std::make_unique<permissions::BluetoothChooserDesktop>(
       std::move(controller),
       base::BindOnce(chrome::ShowDeviceChooserDialog, frame));
 #endif
@@ -99,7 +100,7 @@ ChromeBluetoothDelegate::ShowBluetoothScanningPrompt(
     return nullptr;
   }
 
-  return std::make_unique<BluetoothScanningPromptDesktop>(
+  return std::make_unique<permissions::BluetoothScanningPromptDesktop>(
       frame, event_handler,
       CreateChooserTitle(frame, IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN,
                          IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN),

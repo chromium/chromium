@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_CHOOSER_DESKTOP_H_
-#define CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_CHOOSER_DESKTOP_H_
+#ifndef COMPONENTS_PERMISSIONS_BLUETOOTH_CHOOSER_DESKTOP_H_
+#define COMPONENTS_PERMISSIONS_BLUETOOTH_CHOOSER_DESKTOP_H_
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
 namespace permissions {
+
 class BluetoothChooserController;
 class ChooserController;
-}  // namespace permissions
 
 // Represents a Bluetooth chooser to ask the user to select a Bluetooth
 // device from a list of options. This implementation is for desktop.
@@ -28,6 +27,10 @@ class BluetoothChooserDesktop : public content::BluetoothChooser {
       base::OnceCallback<
           base::OnceClosure(std::unique_ptr<permissions::ChooserController>)>
           show_dialog_callback);
+
+  BluetoothChooserDesktop(const BluetoothChooserDesktop&) = delete;
+  BluetoothChooserDesktop& operator=(const BluetoothChooserDesktop&) = delete;
+
   ~BluetoothChooserDesktop() override;
 
   // BluetoothChooser:
@@ -42,14 +45,13 @@ class BluetoothChooserDesktop : public content::BluetoothChooser {
 
  private:
   // DeviceChooserContentView owns the controller.
-  base::WeakPtr<permissions::BluetoothChooserController>
-      bluetooth_chooser_controller_;
+  base::WeakPtr<BluetoothChooserController> bluetooth_chooser_controller_;
 
   // Closes the displayed UI if it is still open. Used to ensure the bubble
   // closes if this controller is torn down.
   base::ScopedClosureRunner close_closure_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothChooserDesktop);
 };
 
-#endif  // CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_CHOOSER_DESKTOP_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_BLUETOOTH_CHOOSER_DESKTOP_H_

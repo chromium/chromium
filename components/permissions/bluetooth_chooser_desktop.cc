@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/bluetooth/bluetooth_chooser_desktop.h"
+#include "components/permissions/bluetooth_chooser_desktop.h"
 
 #include "components/permissions/bluetooth_chooser_controller.h"
+
+namespace permissions {
 
 BluetoothChooserDesktop::BluetoothChooserDesktop(
     std::unique_ptr<permissions::BluetoothChooserController> controller,
@@ -47,3 +49,5 @@ void BluetoothChooserDesktop::AddOrUpdateDevice(
         is_paired, signal_strength_level);
   }
 }
+
+}  // namespace permissions

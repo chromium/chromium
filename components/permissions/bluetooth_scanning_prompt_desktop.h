@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_SCANNING_PROMPT_DESKTOP_H_
-#define CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_SCANNING_PROMPT_DESKTOP_H_
+#ifndef COMPONENTS_PERMISSIONS_BLUETOOTH_SCANNING_PROMPT_DESKTOP_H_
+#define COMPONENTS_PERMISSIONS_BLUETOOTH_SCANNING_PROMPT_DESKTOP_H_
 
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 
@@ -17,9 +16,9 @@ class RenderFrameHost;
 }  // namespace content
 
 namespace permissions {
+
 class BluetoothScanningPromptController;
 class ChooserController;
-}  // namespace permissions
 
 // Represents a Bluetooth scanning prompt to ask the user permission to
 // allow a site to receive Bluetooth advertisement packets from Bluetooth
@@ -36,6 +35,12 @@ class BluetoothScanningPromptDesktop : public content::BluetoothScanningPrompt {
       base::OnceCallback<
           base::OnceClosure(std::unique_ptr<permissions::ChooserController>)>
           show_dialog_callback);
+
+  BluetoothScanningPromptDesktop(const BluetoothScanningPromptDesktop&) =
+      delete;
+  BluetoothScanningPromptDesktop& operator=(
+      const BluetoothScanningPromptDesktop&) = delete;
+
   ~BluetoothScanningPromptDesktop() override;
 
   // content::BluetoothScanningPrompt:
@@ -45,14 +50,14 @@ class BluetoothScanningPromptDesktop : public content::BluetoothScanningPrompt {
 
  private:
   // DeviceChooserContentView owns the controller.
-  base::WeakPtr<permissions::BluetoothScanningPromptController>
+  base::WeakPtr<BluetoothScanningPromptController>
       bluetooth_scanning_prompt_controller_;
 
   // Closes the displayed UI, if there is one. This is used to ensure the UI
   // closes if this controller is destroyed.
   base::ScopedClosureRunner close_closure_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothScanningPromptDesktop);
 };
 
-#endif  // CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_SCANNING_PROMPT_DESKTOP_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_BLUETOOTH_SCANNING_PROMPT_DESKTOP_H_

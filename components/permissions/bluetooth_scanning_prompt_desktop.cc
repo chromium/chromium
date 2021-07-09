@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_desktop.h"
+#include "components/permissions/bluetooth_scanning_prompt_desktop.h"
 
 #include "components/permissions/bluetooth_scanning_prompt_controller.h"
+
+namespace permissions {
 
 BluetoothScanningPromptDesktop::BluetoothScanningPromptDesktop(
     content::RenderFrameHost* frame,
@@ -38,3 +40,5 @@ void BluetoothScanningPromptDesktop::AddOrUpdateDevice(
         device_id, should_update_name, device_name);
   }
 }
+
+}  // namespace permissions

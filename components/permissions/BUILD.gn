@@ -163,8 +163,12 @@ source_set("permissions") {
     sources += [
       "bluetooth_chooser_controller.cc",
       "bluetooth_chooser_controller.h",
+      "bluetooth_chooser_desktop.cc",
+      "bluetooth_chooser_desktop.h",
       "bluetooth_scanning_prompt_controller.cc",
       "bluetooth_scanning_prompt_controller.h",
+      "bluetooth_scanning_prompt_desktop.cc",
+      "bluetooth_scanning_prompt_desktop.h",
       "permission_prompt_impl.cc",
     ]
   }
