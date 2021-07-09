@@ -38,6 +38,8 @@
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/android/infobars/framebust_block_infobar.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -153,6 +155,9 @@ void TabWebContentsDelegateAndroid::PortalWebContentsCreated(
     content::WebContents* portal_contents) {
   WebContentsDelegateAndroid::PortalWebContentsCreated(portal_contents);
 
+  Profile* profile =
+      Profile::FromBrowserContext(portal_contents->GetBrowserContext());
+
   // This is a subset of the tab helpers that would be attached by
   // TabAndroid::AttachTabHelpers.
   //
@@ -174,7 +179,10 @@ void TabWebContentsDelegateAndroid::PortalWebContentsCreated(
   PrefsTabHelper::CreateForWebContents(portal_contents);
   DataReductionProxyTabHelper::CreateForWebContents(portal_contents);
   safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
-      portal_contents);
+      portal_contents, HostContentSettingsMapFactory::GetForProfile(profile),
+      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+          GetForBrowserContext(profile),
+      profile->GetPrefs(), g_browser_process->safe_browsing_service());
 }
 
 void TabWebContentsDelegateAndroid::RunFileChooser(

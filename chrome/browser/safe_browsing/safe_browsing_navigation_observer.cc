@@ -7,12 +7,7 @@
 #include <memory>
 
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -83,17 +78,20 @@ NavigationEvent::~NavigationEvent() {}
 
 // static
 void SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    HostContentSettingsMap* host_content_settings_map,
+    SafeBrowsingNavigationObserverManager* observer_manager,
+    PrefService* prefs,
+    SafeBrowsingServiceInterface* safe_browsing_service) {
   if (FromWebContents(web_contents))
     return;
 
   if (safe_browsing::SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())
-              ->GetPrefs(),
-          g_browser_process->safe_browsing_service())) {
+          prefs, safe_browsing_service)) {
     web_contents->SetUserData(
         kWebContentsUserDataKey,
-        std::make_unique<SafeBrowsingNavigationObserver>(web_contents));
+        std::make_unique<SafeBrowsingNavigationObserver>(
+            web_contents, host_content_settings_map, observer_manager));
   }
 }
 
@@ -105,11 +103,12 @@ SafeBrowsingNavigationObserver* SafeBrowsingNavigationObserver::FromWebContents(
 }
 
 SafeBrowsingNavigationObserver::SafeBrowsingNavigationObserver(
-    content::WebContents* contents)
-    : content::WebContentsObserver(contents) {
-  content_settings_observation_.Observe(
-      HostContentSettingsMapFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext())));
+    content::WebContents* contents,
+    HostContentSettingsMap* host_content_settings_map,
+    SafeBrowsingNavigationObserverManager* observer_manager)
+    : content::WebContentsObserver(contents),
+      observer_manager_(observer_manager) {
+  content_settings_observation_.Observe(host_content_settings_map);
 }
 
 SafeBrowsingNavigationObserver::~SafeBrowsingNavigationObserver() {}
@@ -319,18 +318,12 @@ void SafeBrowsingNavigationObserver::OnContentSettingChanged(
 
 SafeBrowsingNavigationObserverManager*
 SafeBrowsingNavigationObserver::GetObserverManager() {
-  if (observer_manager_for_testing_) {
-    return observer_manager_for_testing_;
-  }
-  content::BrowserContext* browser_context =
-      web_contents()->GetBrowserContext();
-  return safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-      GetForBrowserContext(browser_context);
+  return observer_manager_;
 }
 
 void SafeBrowsingNavigationObserver::SetObserverManagerForTesting(
     SafeBrowsingNavigationObserverManager* observer_manager) {
-  observer_manager_for_testing_ = observer_manager;
+  observer_manager_ = observer_manager;
 }
 
 }  // namespace safe_browsing

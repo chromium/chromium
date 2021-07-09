@@ -23,6 +23,7 @@ class NavigationHandle;
 
 namespace safe_browsing {
 class SafeBrowsingNavigationObserverManager;
+class SafeBrowsingServiceInterface;
 
 // Struct to record the details of a navigation event for any frame.
 // This information will be used to fill referrer chain info in various Safe
@@ -103,12 +104,19 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
                                        public content_settings::Observer {
  public:
   static void MaybeCreateForWebContents(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      HostContentSettingsMap* host_content_settings_map,
+      SafeBrowsingNavigationObserverManager* observer_manager,
+      PrefService* prefs,
+      SafeBrowsingServiceInterface* safe_browsing_service);
 
   static SafeBrowsingNavigationObserver* FromWebContents(
       content::WebContents* web_contents);
 
-  explicit SafeBrowsingNavigationObserver(content::WebContents* contents);
+  SafeBrowsingNavigationObserver(
+      content::WebContents* contents,
+      HostContentSettingsMap* host_content_settings_map,
+      SafeBrowsingNavigationObserverManager* observer_manager);
 
   ~SafeBrowsingNavigationObserver() override;
 
@@ -159,8 +167,7 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
 
-  SafeBrowsingNavigationObserverManager* observer_manager_for_testing_ =
-      nullptr;
+  SafeBrowsingNavigationObserverManager* observer_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingNavigationObserver);
 };

@@ -5,6 +5,8 @@
 #include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
@@ -23,13 +25,15 @@ class ClientSideDetectionDelegateTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("http://foo/0"));
-    content::BrowserContext* browser_context =
-        browser()->tab_strip_model()->GetWebContentsAt(0)->GetBrowserContext();
+    Profile* profile = Profile::FromBrowserContext(
+        browser()->tab_strip_model()->GetWebContentsAt(0)->GetBrowserContext());
     navigation_observer_manager_ =
         SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
-            browser_context);
+            profile);
     navigation_observer_ = new SafeBrowsingNavigationObserver(
-        browser()->tab_strip_model()->GetWebContentsAt(0));
+        browser()->tab_strip_model()->GetWebContentsAt(0),
+        HostContentSettingsMapFactory::GetForProfile(profile),
+        navigation_observer_manager_);
     scoped_feature_list_.InitAndEnableFeature(
         kClientSideDetectionReferrerChain);
   }

@@ -9,11 +9,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -181,7 +183,12 @@ class TestNavigationObserverManager
 
   void ObserveContents(content::WebContents* contents) {
     ASSERT_TRUE(contents);
-    auto observer = std::make_unique<SafeBrowsingNavigationObserver>(contents);
+    Profile* profile =
+        Profile::FromBrowserContext(contents->GetBrowserContext());
+    auto observer = std::make_unique<SafeBrowsingNavigationObserver>(
+        contents, HostContentSettingsMapFactory::GetForProfile(profile),
+        safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+            GetForBrowserContext(profile));
     observer->SetObserverManagerForTesting(this);
     observer_list_.push_back(std::move(observer));
     inner_contents_creation_observers_.push_back(

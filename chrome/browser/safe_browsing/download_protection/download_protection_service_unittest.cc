@@ -36,6 +36,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -54,6 +55,7 @@
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -3004,7 +3006,11 @@ TEST_F(DownloadProtectionServiceTest,
 
 TEST_F(DownloadProtectionServiceTest,
        VerifyReferrerChainLengthForExtendedReporting) {
-  SafeBrowsingNavigationObserver::MaybeCreateForWebContents(web_contents());
+  SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
+      web_contents(), HostContentSettingsMapFactory::GetForProfile(profile()),
+      SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+          profile()),
+      profile()->GetPrefs(), g_browser_process->safe_browsing_service());
 
   // Simulate 6 user interactions
   SimulateLinkClick(GURL("http://example.com/0"));
