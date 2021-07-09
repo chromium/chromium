@@ -149,6 +149,11 @@ public class ArImmersiveOverlay
             mSurfaceView.getHolder().addCallback(ArImmersiveOverlay.this);
             mSurfaceView.setKeepScreenOn(true);
 
+            // Exactly one surface view needs to call setZOrderMediaOverlay(true) otherwise the
+            // resulting z-order is undefined. The DOM content's surface will set it to true if
+            // |mDomSurfaceNeedsConfiguring| is set so we need to do the opposite here.
+            mSurfaceView.setZOrderMediaOverlay(!mDomSurfaceNeedsConfiguring);
+
             // Process touch input events for XR input. This consumes them, they'll be resent to
             // the compositor view via forwardMotionEvent.
             mSurfaceView.setOnTouchListener(ArImmersiveOverlay.this);
