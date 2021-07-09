@@ -157,7 +157,7 @@
 <translation id="5313967007315987356">Ajouter un site</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5335288049665977812">Autoriser les sites à exécuter JavaScript (recommandé)</translation>
-<translation id="534295439873310000">Appareils NFC</translation>
+<translation id="534295439873310000">Appareils CCP</translation>
 <translation id="5354152178998424783">Cette action effacera <ph name="DATASIZE" /> de données et de témoins qu'ont stockés des sites.</translation>
 <translation id="536508626067510330">Mettre à jour l'icône sur votre écran d'accueil?</translation>
 <translation id="5391532827096253100">Votre connexion à ce site n'est pas sécurisée. Renseignements sur le site</translation>
@@ -176,7 +176,7 @@
 <translation id="5677928146339483299">Bloqué</translation>
 <translation id="5689516760719285838">Lieu</translation>
 <translation id="5690795753582697420">L'appareil photo est désactivé dans les paramètres d'Android</translation>
-<translation id="5710871682236653961">Demander avant d'autoriser les sites à envoyer et à recevoir de l'information lorsque vous touchez des appareils NFC (recommandé)</translation>
+<translation id="5710871682236653961">Demander avant d'autoriser les sites à envoyer et à recevoir de l'information lorsque vous touchez des appareils CCP (recommandé)</translation>
 <translation id="5719847187258001597">Cette action entraînera la suppression de l'ensemble des données et des témoins stockés par <ph name="ORIGIN" /> ou son application installée sur votre écran d'accueil.</translation>
 <translation id="5771720122942595109">Autorisation <ph name="PERMISSION_1" /> bloquée</translation>
 <translation id="5804241973901381774">Autorisations</translation>
@@ -223,7 +223,7 @@
 <translation id="6766622839693428701">Glissez le doigt vers le bas pour fermer.</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
-<translation id="6864395892908308021">Cet appareil ne prend pas en charge la technologie NFC</translation>
+<translation id="6864395892908308021">Cet appareil ne prend pas en charge la technologie CCP</translation>
 <translation id="6910211073230771657">Supprimé</translation>
 <translation id="6912998170423641340">Empêcher les sites de lire du texte et des images du presse-papiers</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
@@ -248,7 +248,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un site utilise votre microphone</translation>
 <translation id="7561196759112975576">Toujours</translation>
-<translation id="7572498721684305250">Empêcher les sites d'envoyer et de recevoir de l'information lorsque vous touchez des appareils NFC</translation>
+<translation id="7572498721684305250">Empêcher les sites d'envoyer et de recevoir de l'information lorsque vous touchez des appareils CCP</translation>
 <translation id="757524316907819857">Empêcher les sites de lire du contenu protégé</translation>
 <translation id="7589445247086920869">Bloquer pour le moteur de recherche actuel</translation>
 <translation id="7649070708921625228">Aide</translation>
@@ -310,7 +310,7 @@
 <translation id="8847988622838149491">USB</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> sur <ph name="DURATION" /></translation>
-<translation id="8926666909099850184">La NFC est désactivée pour cet appareil. Activez-la dans le menu <ph name="BEGIN_LINK" />Paramètres Android<ph name="END_LINK" />.</translation>
+<translation id="8926666909099850184">La CCP est désactivée pour cet appareil. Activez-la dans le menu <ph name="BEGIN_LINK" />Paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Bloquer les témoins pour un site en particulier.</translation>
 <translation id="8959122750345127698">Navigation inaccessible : <ph name="URL" /></translation>
