@@ -1014,6 +1014,7 @@ interface OffscreenCanvasRenderingContext2D
     getter textWordSpacing
     method arc
     method arcTo
+    method beginLayer
     method beginPath
     method bezierCurveTo
     method clearRect
@@ -1028,6 +1029,7 @@ interface OffscreenCanvasRenderingContext2D
     method createRadialGradient
     method drawImage
     method ellipse
+    method endLayer
     method fill
     method fillRect
     method fillText

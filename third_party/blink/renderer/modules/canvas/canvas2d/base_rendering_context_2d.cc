@@ -119,12 +119,57 @@ void BaseRenderingContext2D::restore() {
 
   ValidateStateStack();
 
-  DCHECK_GE(state_stack_.size(), 1u);
+  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
   if (state_stack_.size() <= 1)
     return;
+
+  // Verify that the top of the stack was pushed with Save.
+  if (RuntimeEnabledFeatures::Canvas2dLayersEnabled() &&
+      state_stack_.back()->GetSaveType() !=
+          CanvasRenderingContext2DState::SaveType::kSaveRestore) {
+    return;
+  }
+
   // Verify that the current state's transform is invertible.
   if (GetState().IsTransformInvertible())
     path_.Transform(GetState().GetTransform());
+
+  PopAndRestore();
+}
+
+void BaseRenderingContext2D::beginLayer() {
+  // TODO(crbug.com/1220266): Implementation coming later.
+  return;
+}
+
+void BaseRenderingContext2D::endLayer() {
+  if (isContextLost())
+    return;
+
+  ValidateStateStack();
+
+  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
+  if (state_stack_.size() <= 1 || layer_count_ <= 0)
+    return;
+
+  // Verify that the current state's transform is invertible.
+  if (GetState().IsTransformInvertible())
+    path_.Transform(GetState().GetTransform());
+
+  // All saves performed since the last beginLayer are no-ops.
+  while (state_stack_.back()->GetSaveType() ==
+         CanvasRenderingContext2DState::SaveType::kSaveRestore) {
+    PopAndRestore();
+  }
+
+  DCHECK_GE(state_stack_.back()->GetSaveType(),
+            CanvasRenderingContext2DState::SaveType::kBeginEndLayer);
+  PopAndRestore();
+  layer_count_--;
+}
+
+void BaseRenderingContext2D::PopAndRestore() {
+  DCHECK_GE(state_stack_.size(), 1u);
 
   state_stack_.pop_back();
   state_stack_.back()->ClearResolvedFilter();
@@ -138,14 +183,6 @@ void BaseRenderingContext2D::restore() {
     c->restore();
 
   ValidateStateStack();
-}
-
-void BaseRenderingContext2D::beginLayer() {
-  // TODO(crbug.com/1220266): Implementation coming later.
-}
-
-void BaseRenderingContext2D::endLayer() {
-  // TODO(crbug.com/1220266): Implementation coming later.
 }
 
 void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {

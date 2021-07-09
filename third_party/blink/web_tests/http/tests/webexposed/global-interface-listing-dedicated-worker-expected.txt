@@ -1055,6 +1055,7 @@ Starting worker: resources/global-interface-listing-worker.js.php
 [Worker]     getter textWordSpacing
 [Worker]     method arc
 [Worker]     method arcTo
+[Worker]     method beginLayer
 [Worker]     method beginPath
 [Worker]     method bezierCurveTo
 [Worker]     method clearRect
@@ -1069,6 +1070,7 @@ Starting worker: resources/global-interface-listing-worker.js.php
 [Worker]     method createRadialGradient
 [Worker]     method drawImage
 [Worker]     method ellipse
+[Worker]     method endLayer
 [Worker]     method fill
 [Worker]     method fillRect
 [Worker]     method fillText

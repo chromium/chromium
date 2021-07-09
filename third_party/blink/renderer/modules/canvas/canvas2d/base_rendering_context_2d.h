@@ -449,6 +449,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                      DrawType);
 
   HeapVector<Member<CanvasRenderingContext2DState>> state_stack_;
+  // Counts how many states have been pushed with BeginLayer.
+  int layer_count_ = 0;
   AntiAliasingMode clip_antialiasing_;
 
   virtual void FinalizeFrame() {}
@@ -498,6 +500,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   IdentifiabilityStudyHelper identifiability_study_helper_;
 
  private:
+  // Pops from the top of the state stack, inverts transform, restores the
+  // PaintCanvas, and validates the state stack. Helper for Restore and
+  // EndLayer.
+  void PopAndRestore();
+
   bool ShouldDrawImageAntialiased(const FloatRect& dest_rect) const;
 
   // When the canvas is stroked or filled with a pattern, which is assumed to
