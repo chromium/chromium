@@ -54,6 +54,8 @@
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/unified_consent/pref_names.h"
 #elif defined(OS_WIN)
+#include <windows.h>
+
 #include <KnownFolders.h>
 #include <shlobj.h>
 #include "base/win/scoped_co_mem.h"
