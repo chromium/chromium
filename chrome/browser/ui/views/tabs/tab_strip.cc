@@ -3582,7 +3582,9 @@ int TabStrip::CalculateAvailableWidthForTabs() const {
 }
 
 int TabStrip::GetAvailableWidthForTabStrip() const {
-  return available_width_callback_ ? available_width_callback_.Run() : width();
+  return available_width_callback_
+             ? available_width_callback_.Run()
+             : parent()->GetAvailableSize(this).width().value();
 }
 
 void TabStrip::StartResizeLayoutAnimation() {

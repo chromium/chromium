@@ -128,7 +128,7 @@ views::SizeBounds OverflowView::GetAvailableSize(
   // but only if the overflow view would be shown.
   const gfx::Size required_size =
       GetSizeFromFlexRule(child, available).value_or(child->GetMinimumSize());
-  const gfx::Size overflow_size =
+  const gfx::Size indicator_size =
       GetSizeFromFlexRule(indicator_view_, views::SizeBounds())
           .value_or(indicator_view_->GetPreferredSize());
   switch (orientation_) {
@@ -138,7 +138,7 @@ views::SizeBounds OverflowView::GetAvailableSize(
         return available;
       }
       return views::SizeBounds(
-          std::max(0, available.width().value() - overflow_size.width()),
+          std::max(0, available.width().value() - indicator_size.width()),
           available.height());
     case views::LayoutOrientation::kVertical:
       if (!available.height().is_bounded() ||
@@ -147,7 +147,7 @@ views::SizeBounds OverflowView::GetAvailableSize(
       }
       return views::SizeBounds(
           available.width(),
-          std::max(0, available.height().value() - overflow_size.height()));
+          std::max(0, available.height().value() - indicator_size.height()));
   }
 }
 
