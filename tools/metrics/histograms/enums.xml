@@ -18130,12 +18130,37 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Dark theme"/>
 </enum>
 
+<enum name="DataChannelAggregateType">
+  <int value="0" label="Unreliable Unordered."/>
+  <int value="1" label="Unreliable Ordered"/>
+  <int value="2" label="Reliable Unordered."/>
+  <int value="3" label="Reliable Ordered"/>
+</enum>
+
 <enum name="DataChannelCounters">
   <int value="0" label="Channel created."/>
   <int value="1" label="Channel reached Open state."/>
   <int value="2" label="Channel is reliable."/>
   <int value="3" label="Channel is ordered."/>
   <int value="4" label="Channel is negotiated."/>
+</enum>
+
+<enum name="DataChannelSctpErrorCode">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="InvalidStreamIdentifier"/>
+  <int value="2" label="MissingMandatoryParameter"/>
+  <int value="3" label="StaleCookieError"/>
+  <int value="4" label="OutOfResource"/>
+  <int value="5" label="UnresolvableAddress"/>
+  <int value="6" label="UnspkUnrecognizedChunkTypeecified"/>
+  <int value="7" label="InvalidMandatoryParameter"/>
+  <int value="8" label="UnrecognizedParameters"/>
+  <int value="9" label="NoUserData"/>
+  <int value="10" label="CookieReceivedWhileShuttingDown"/>
+  <int value="11" label="RestartWithNewAddresses"/>
+  <int value="12" label="UserInitiatedAbort"/>
+  <int value="13" label="ProtocolViolation"/>
+  <int value="14" label="Other"/>
 </enum>
 
 <enum name="DataPackLoadErrors">

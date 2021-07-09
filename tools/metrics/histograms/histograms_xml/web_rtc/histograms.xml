@@ -1133,31 +1133,57 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.DataChannelCounters" enum="DataChannelCounters"
-    expires_after="2020-04-19">
-  <owner>perkj@chromium.org</owner>
+<histogram name="WebRTC.DataChannelAggregateType"
+    enum="DataChannelAggregateType" expires_after="2021-12-31">
+  <owner>orphis@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <summary>
-    Counters on creation, opening, and a few main attributes of data channels.
+    Recorded when a data channel is created. Counts the combination of reliable
+    and ordered modes in a data channel.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.DataChannelCounters" enum="DataChannelCounters"
+    expires_after="2021-12-31">
+  <owner>orphis@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
+  <summary>
+    Recorded when a data channel is created. Counts a few main attributes of
+    data channels. Expired in April 2020. Revived in M93.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.DataChannelMaxRetransmits" units="units"
-    expires_after="M85">
-  <owner>perkj@chromium.org</owner>
+    expires_after="2021-12-31">
+  <owner>orphis@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <summary>
-    The maximum number of retransmissions that are attempted in unreliable mode.
-    It is set to the value used in the configuration when a RTCDataChannel is
-    created.
+    Recorded when a data channel is created. The maximum number of
+    retransmissions that are attempted in unreliable mode. It is set to the
+    value used in the configuration when a RTCDataChannel is created. Expired in
+    M86. Revived in M93.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.DataChannelMaxRetransmitTime" units="ms"
-    expires_after="M77">
-  <owner>perkj@chromium.org</owner>
+    expires_after="2021-12-31">
+  <owner>orphis@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <summary>
-    The length of the time window during which transmissions and retransmissions
-    may occur in unreliable mode. It is set to the value used in the
-    configuration when a RTCDataChannel is created.
+    Recorded when a data channel is created. The length of the time window
+    during which transmissions and retransmissions may occur in unreliable mode.
+    It is set to the value used in the configuration when a RTCDataChannel is
+    created. Expired in M78. Revived in M93.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.DataChannelSctpErrorCode"
+    enum="DataChannelSctpErrorCode" expires_after="2021-12-31">
+  <owner>orphis@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
+  <summary>
+    Recorded when a data channel is closed unexpectedly and the error event is
+    dispatched. Contains the SCTP error code signaled by the transport.
   </summary>
 </histogram>
 

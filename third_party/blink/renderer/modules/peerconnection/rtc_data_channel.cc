@@ -29,6 +29,7 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
@@ -64,39 +65,60 @@ namespace blink {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class DataChannelCounters {
-  kCreated,
-  kOpened,
-  kReliable,
-  kOrdered,
-  kNegotiated,
-  kBoundary
+  kCreated = 0,
+  kOpened = 1,
+  kReliable = 2,
+  kOrdered = 3,
+  kNegotiated = 4,
+  kMaxValue = kNegotiated,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DataChannelAggregateType {
+  kUnReliableUnordered = 0,
+  kUnReliableOrdered = 1,
+  kReliableUnordered = 2,
+  kReliableOrdered = 3,
+  kMaxValue = kReliableOrdered,
 };
 
 void IncrementCounter(DataChannelCounters counter) {
-  UMA_HISTOGRAM_ENUMERATION("WebRTC.DataChannelCounters", counter,
-                            DataChannelCounters::kBoundary);
+  base::UmaHistogramEnumeration("WebRTC.DataChannelCounters", counter);
 }
 
 void IncrementCounters(const webrtc::DataChannelInterface& channel) {
+  int aggregate_type = 0;
+
   IncrementCounter(DataChannelCounters::kCreated);
-  if (channel.reliable())
+  if (channel.reliable()) {
     IncrementCounter(DataChannelCounters::kReliable);
-  if (channel.ordered())
+    aggregate_type += 2;
+  }
+  if (channel.ordered()) {
     IncrementCounter(DataChannelCounters::kOrdered);
+    aggregate_type += 1;
+  }
   if (channel.negotiated())
     IncrementCounter(DataChannelCounters::kNegotiated);
 
+  base::UmaHistogramEnumeration(
+      "WebRTC.DataChannelAggregateType",
+      static_cast<DataChannelAggregateType>(aggregate_type));
+
   // Only record max retransmits and max packet life time if set.
   if (channel.maxRetransmitsOpt()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.DataChannelMaxRetransmits",
-                                *(channel.maxRetransmitsOpt()), 1,
-                                std::numeric_limits<uint16_t>::max(), 50);
+    base::UmaHistogramCustomCounts("WebRTC.DataChannelMaxRetransmits",
+                                   *(channel.maxRetransmitsOpt()), 1,
+                                   std::numeric_limits<uint16_t>::max(), 50);
   }
   if (channel.maxPacketLifeTime()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.DataChannelMaxPacketLifeTime",
-                                *channel.maxPacketLifeTime(), 1,
-                                std::numeric_limits<uint16_t>::max(), 50);
+    base::UmaHistogramCustomCounts("WebRTC.DataChannelMaxPacketLifeTime",
+                                   *channel.maxPacketLifeTime(), 1,
+                                   std::numeric_limits<uint16_t>::max(), 50);
   }
 }
 
@@ -123,6 +145,40 @@ void RecordMessageSent(const webrtc::DataChannelInterface& channel,
                                 SafeCast<int>(num_bytes), 1, kMaxBucketSize,
                                 kNumBuckets);
   }
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DataChannelSctpErrorCode {
+  kUnspecified = 0,
+  kInvalidStreamIdentifier = 1,
+  kMissingMandatoryParameter = 2,
+  kStaleCookieError = 3,
+  kOutOfResource = 4,
+  kUnresolvableAddress = 5,
+  kUnrecognizedChunkType = 6,
+  kInvalidMandatoryParameter = 7,
+  kUnrecognizedParameters = 8,
+  kNoUserData = 9,
+  kCookieReceivedWhileShuttingDown = 10,
+  kRestartWithNewAddresses = 11,
+  kUserInitiatedAbort = 12,
+  kProtocolViolation = 13,
+  kOther = 14,
+  kMaxValue = kOther,
+};
+
+void IncrementErrorCounter(const webrtc::RTCError& error) {
+  DataChannelSctpErrorCode uma_code;
+  auto code = error.sctp_cause_code();
+  if (!code.has_value()) {
+    uma_code = DataChannelSctpErrorCode::kUnspecified;
+  } else if (*code >= static_cast<int>(DataChannelSctpErrorCode::kOther)) {
+    uma_code = DataChannelSctpErrorCode::kOther;
+  } else {
+    uma_code = static_cast<DataChannelSctpErrorCode>(*code);
+  }
+  base::UmaHistogramEnumeration("WebRTC.DataChannelSctpError", uma_code);
 }
 
 void SendOnSignalingThread(
@@ -547,14 +603,19 @@ void RTCDataChannel::OnStateChange(
         DispatchEvent(*Event::Create(event_type_names::kClosing));
       }
       break;
-    case webrtc::DataChannelInterface::kClosed:
+    case webrtc::DataChannelInterface::kClosed: {
       feature_handle_for_scheduler_.reset();
-      if (!channel()->error().ok()) {
+      auto error = channel()->error();
+      if (!error.ok()) {
+        LOG(ERROR) << "DataChannel error: \"" << error.message() << "\""
+                   << ", code: " << error.sctp_cause_code().value_or(-1);
+        IncrementErrorCounter(error);
         DispatchEvent(*MakeGarbageCollected<RTCErrorEvent>(
-            event_type_names::kError, channel()->error()));
+            event_type_names::kError, error));
       }
       DispatchEvent(*Event::Create(event_type_names::kClose));
       break;
+    }
     default:
       break;
   }
