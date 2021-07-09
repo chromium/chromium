@@ -95,6 +95,15 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
   void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Returns false on failure.
+  bool DeleteImpressions(const std::vector<int64_t>& impression_ids)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  // Deletes the conversion with `conversion_id` without checking the the DB
+  // initialization status or the number of deleted rows. Returns false on
+  // failure.
+  bool DeleteConversionInternal(int64_t conversion_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+
   bool HasCapacityForStoringImpression(const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
   int GetCapacityForStoringConversion(const std::string& serialized_origin)

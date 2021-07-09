@@ -226,18 +226,20 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
 
 bool RateLimitTable::ClearDataForImpressionIds(
     sql::Database* db,
-    const base::flat_set<int64_t>& impression_ids) {
+    const std::vector<int64_t>& impression_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(db);
   if (!transaction.Begin())
     return false;
 
+  static constexpr char kDeleteRateLimitSql[] =
+      "DELETE FROM rate_limits WHERE impression_id = ?";
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
+
   for (int64_t id : impression_ids) {
-    static constexpr char kDeleteRateLimitSql[] =
-        "DELETE FROM rate_limits WHERE impression_id = ?";
-    sql::Statement statement(
-        db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
+    statement.Reset(/*clear_bound_vars=*/true);
     statement.BindInt64(0, id);
     if (!statement.Run())
       return false;

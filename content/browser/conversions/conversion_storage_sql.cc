@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -329,12 +330,7 @@ ConversionStorageSql::MaybeReplaceLowerPriorityReport(
   }
 
   // Otherwise, delete the existing report with the lowest priority.
-  static constexpr char kDeleteConversionSql[] =
-      "DELETE FROM conversions WHERE conversion_id = ?";
-  sql::Statement delete_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteConversionSql));
-  delete_statement.BindInt64(0, conversion_id_with_min_priority);
-  return delete_statement.Run()
+  return DeleteConversionInternal(conversion_id_with_min_priority)
              ? ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
                    kReplaceOldReport
              : ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
@@ -506,23 +502,15 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   }
 
   // Delete all unattributed impressions.
-  static constexpr char kDeleteUnattributedImpressionsSql[] =
-      "DELETE FROM impressions WHERE impression_id = ?";
-  sql::Statement delete_impression_statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, kDeleteUnattributedImpressionsSql));
+  if (!DeleteImpressions(impression_ids_to_delete))
+    return false;
 
-  for (int64_t impression_id : impression_ids_to_delete) {
-    delete_impression_statement.Reset(/*clear_bound_vars=*/true);
-    delete_impression_statement.BindInt64(0, impression_id);
-    if (!delete_impression_statement.Run())
-      return false;
-    // Based on the deletion logic here and the fact that we delete impressions
-    // with |num_conversions > 1| when there is a new matching impression in
-    // |StoreImpression()|, we should be guaranteed that these impressions all
-    // have |num_conversions == 0|, and that they never contributed to a rate
-    // limit. Therefore, we don't need to call
-    // |RateLimitTable::ClearDataForImpressionIds()| here.
-  }
+  // Based on the deletion logic here and the fact that we delete impressions
+  // with |num_conversions > 1| when there is a new matching impression in
+  // |StoreImpression()|, we should be guaranteed that these impressions all
+  // have |num_conversions == 0|, and that they never contributed to a rate
+  // limit. Therefore, we don't need to call
+  // |RateLimitTable::ClearDataForImpressionIds()| here.
 
   if (create_report && !rate_limit_table_.AddRateLimit(db_.get(), report))
     return false;
@@ -661,18 +649,19 @@ bool ConversionStorageSql::DeleteConversion(int64_t conversion_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return false;
+  if (!DeleteConversionInternal(conversion_id))
+    return false;
+  return db_->GetLastChangeCount() > 0;
+}
 
+bool ConversionStorageSql::DeleteConversionInternal(int64_t conversion_id) {
   // Delete the row identified by |conversion_id|.
   static constexpr char kDeleteSentConversionSql[] =
       "DELETE FROM conversions WHERE conversion_id = ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSentConversionSql));
   statement.BindInt64(0, conversion_id);
-
-  if (!statement.Run())
-    return false;
-
-  return db_->GetLastChangeCount() > 0;
+  return statement.Run();
 }
 
 void ConversionStorageSql::ClearData(
@@ -723,17 +712,16 @@ void ConversionStorageSql::ClearData(
     }
   }
 
-  // Since multiple conversions can be associated with a single impression,
-  // |impression_ids_to_delete| may contain duplicates. Remove duplicates by
-  // converting the vector into a flat_set. Internally, this sorts the vector
-  // and then removes duplicates.
-  const base::flat_set<int64_t> unique_impression_ids_to_delete(
-      impression_ids_to_delete);
-
   // TODO(csharrison, johnidel): Should we consider poisoning the DB if some of
   // the delete operations fail?
   if (!statement.Succeeded())
     return;
+
+  // Since multiple conversions can be associated with a single impression,
+  // deduplicate impression IDs using a set to avoid redundant DB operations
+  // below.
+  impression_ids_to_delete =
+      base::flat_set<int64_t>(std::move(impression_ids_to_delete)).extract();
 
   // Delete the data in a transaction to avoid cases where the impression part
   // of a conversion is deleted without deleting the associated conversion, or
@@ -742,23 +730,11 @@ void ConversionStorageSql::ClearData(
   if (!transaction.Begin())
     return;
 
-  for (int64_t impression_id : unique_impression_ids_to_delete) {
-    static constexpr char kDeleteImpressionSql[] =
-        "DELETE FROM impressions WHERE impression_id = ?";
-    sql::Statement impression_statement(
-        db_->GetCachedStatement(SQL_FROM_HERE, kDeleteImpressionSql));
-    impression_statement.BindInt64(0, impression_id);
-    if (!impression_statement.Run())
-      return;
-  }
+  if (!DeleteImpressions(impression_ids_to_delete))
+    return;
 
   for (int64_t conversion_id : conversion_ids_to_delete) {
-    static constexpr char kDeleteConversionSql[] =
-        "DELETE FROM conversions WHERE conversion_id = ?";
-    sql::Statement conversion_statement(
-        db_->GetCachedStatement(SQL_FROM_HERE, kDeleteConversionSql));
-    conversion_statement.BindInt64(0, conversion_id);
-    if (!conversion_statement.Run())
+    if (!DeleteConversionInternal(conversion_id))
       return;
   }
 
@@ -771,7 +747,7 @@ void ConversionStorageSql::ClearData(
   // second conversion in limbo (it was not in the deletion time range).
   // Delete all unattributed conversions here to ensure everything is cleaned
   // up.
-  for (int64_t impression_id : unique_impression_ids_to_delete) {
+  for (int64_t impression_id : impression_ids_to_delete) {
     static constexpr char kDeleteVestigialConversionSql[] =
         "DELETE FROM conversions WHERE impression_id = ?";
     sql::Statement delete_vestigial_statement(
@@ -783,19 +759,20 @@ void ConversionStorageSql::ClearData(
     num_conversions_deleted += db_->GetLastChangeCount();
   }
 
-  if (!rate_limit_table_.ClearDataForImpressionIds(
-          db_.get(), unique_impression_ids_to_delete))
+  if (!rate_limit_table_.ClearDataForImpressionIds(db_.get(),
+                                                   impression_ids_to_delete)) {
     return;
+  }
 
   if (!rate_limit_table_.ClearDataForOriginsInRange(db_.get(), delete_begin,
-                                                    delete_end, filter))
+                                                    delete_end, filter)) {
     return;
+  }
 
   if (!transaction.Commit())
     return;
 
-  RecordImpressionsDeleted(
-      static_cast<int>(unique_impression_ids_to_delete.size()));
+  RecordImpressionsDeleted(static_cast<int>(impression_ids_to_delete.size()));
   RecordReportsDeleted(num_conversions_deleted);
 }
 
@@ -832,24 +809,16 @@ void ConversionStorageSql::ClearAllDataInRange(base::Time delete_begin,
   select_impressions_statement.BindTime(0, delete_begin);
   select_impressions_statement.BindTime(1, delete_end);
 
-  base::flat_set<int64_t> impression_ids_to_delete;
+  std::vector<int64_t> impression_ids_to_delete;
   while (select_impressions_statement.Step()) {
     int64_t impression_id = select_impressions_statement.ColumnInt64(0);
-    impression_ids_to_delete.insert(impression_id);
+    impression_ids_to_delete.push_back(impression_id);
   }
   if (!select_impressions_statement.Succeeded())
     return;
 
-  static constexpr char kDeleteImpressionSql[] =
-      "DELETE FROM impressions WHERE impression_id = ?";
-  sql::Statement delete_impression_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteImpressionSql));
-  for (int64_t impression_id : impression_ids_to_delete) {
-    delete_impression_statement.Reset(/*clear_bound_vars=*/true);
-    delete_impression_statement.BindInt64(0, impression_id);
-    if (!delete_impression_statement.Run())
-      return;
-  }
+  if (!DeleteImpressions(impression_ids_to_delete))
+    return;
 
   static constexpr char kDeleteConversionRangeSql[] =
       "DELETE FROM conversions WHERE(conversion_time BETWEEN ? AND ?)"
@@ -1348,6 +1317,15 @@ bool ConversionStorageSql::EnsureCapacityForPendingDestinationLimit(
       break;
   }
 
+  return DeleteImpressions(impression_ids_to_delete);
+
+  // Because this is limited to active impressions with `num_conversions = 0`,
+  // we should be guaranteed that there is not any corresponding data in the
+  // rate limit table or the report table.
+}
+
+bool ConversionStorageSql::DeleteImpressions(
+    const std::vector<int64_t>& impression_ids) {
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
     return false;
@@ -1357,16 +1335,12 @@ bool ConversionStorageSql::EnsureCapacityForPendingDestinationLimit(
   sql::Statement delete_impression_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteImpressionSql));
 
-  for (int64_t impression_id : impression_ids_to_delete) {
+  for (int64_t impression_id : impression_ids) {
     delete_impression_statement.Reset(/*clear_bound_vars=*/true);
     delete_impression_statement.BindInt64(0, impression_id);
     if (!delete_impression_statement.Run())
       return false;
   }
-
-  // Because this is limited to active impressions with `num_conversions = 0`,
-  // we should be guaranteed that there is not any corresponding data in the
-  // rate limit table or the report table.
 
   return transaction.Commit();
 }

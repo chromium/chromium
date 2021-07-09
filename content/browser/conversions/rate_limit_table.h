@@ -5,9 +5,10 @@
 #ifndef CONTENT_BROWSER_CONVERSIONS_RATE_LIMIT_TABLE_H_
 #define CONTENT_BROWSER_CONVERSIONS_RATE_LIMIT_TABLE_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -67,7 +68,7 @@ class CONTENT_EXPORT RateLimitTable {
       base::RepeatingCallback<bool(const url::Origin&)> filter)
       WARN_UNUSED_RESULT;
   bool ClearDataForImpressionIds(sql::Database* db,
-                                 const base::flat_set<int64_t>& impression_ids)
+                                 const std::vector<int64_t>& impression_ids)
       WARN_UNUSED_RESULT;
 
  private:
