@@ -19,9 +19,7 @@ js_library("module") {
 }
 
 js_library("task_module_handler_proxy") {
-  deps = [
-    "//chrome/browser/search/task_module:mojo_bindings_js_library_for_compile",
-  ]
+  deps = [ "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_js_library_for_compile" ]
 }
 
 html_to_js("web_components") {

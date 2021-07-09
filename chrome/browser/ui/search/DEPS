@@ -1,0 +1,4 @@
+include_rules = [
+  # Instant and WebUI NTPs should be independent from each other.
+  "-chrome/browser/new_tab_page"
+]

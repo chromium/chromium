@@ -7,10 +7,10 @@
 
 #include "base/macros.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
+#include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
+#include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
-#include "chrome/browser/search/drive/drive.mojom.h"
 #include "chrome/browser/search/instant_service_observer.h"
-#include "chrome/browser/search/task_module/task_module.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif

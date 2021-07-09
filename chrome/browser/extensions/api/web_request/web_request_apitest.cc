@@ -44,12 +44,12 @@
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_loader.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -1985,18 +1985,18 @@ IN_PROC_BROWSER_TEST_F(NTPInterceptionWebRequestAPITest,
 }
 
 // Test fixture testing that requests made for the OneGoogleBar on behalf of
-// the local NTP can't be intercepted by extensions.
-class LocalNTPInterceptionWebRequestAPITest
+// the WebUI NTP can't be intercepted by extensions.
+class WebUiNtpInterceptionWebRequestAPITest
     : public ExtensionApiTest,
       public OneGoogleBarServiceObserver {
  public:
-  LocalNTPInterceptionWebRequestAPITest()
+  WebUiNtpInterceptionWebRequestAPITest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   // ExtensionApiTest override:
   void SetUp() override {
     https_test_server_.RegisterRequestMonitor(base::BindRepeating(
-        &LocalNTPInterceptionWebRequestAPITest::MonitorRequest,
+        &WebUiNtpInterceptionWebRequestAPITest::MonitorRequest,
         base::Unretained(this)));
     ASSERT_TRUE(https_test_server_.InitializeAndListen());
     ExtensionApiTest::SetUp();
@@ -2063,10 +2063,10 @@ class LocalNTPInterceptionWebRequestAPITest
 
   base::Lock lock_;
 
-  DISALLOW_COPY_AND_ASSIGN(LocalNTPInterceptionWebRequestAPITest);
+  DISALLOW_COPY_AND_ASSIGN(WebUiNtpInterceptionWebRequestAPITest);
 };
 
-IN_PROC_BROWSER_TEST_F(LocalNTPInterceptionWebRequestAPITest,
+IN_PROC_BROWSER_TEST_F(WebUiNtpInterceptionWebRequestAPITest,
                        OneGoogleBarRequestsHidden) {
   // Loads an extension which tries to intercept requests to the OneGoogleBar.
   ExtensionTestMessageListener listener("ready", true /*will_reply*/);

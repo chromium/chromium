@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service_observer.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_observer.h"
 #include "content/public/browser/url_data_source.h"
 
 class Profile;

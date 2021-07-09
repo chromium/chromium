@@ -18,8 +18,7 @@ js_library("module") {
 }
 
 js_library("drive_module_proxy") {
-  deps =
-      [ "//chrome/browser/search/drive:mojo_bindings_js_library_for_compile" ]
+  deps = [ "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js_library_for_compile" ]
 }
 
 html_to_js("web_components") {
