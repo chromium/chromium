@@ -1266,6 +1266,8 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
 
   if (multiplier != 1)
     page_info_.has_autosized_ = true;
+
+  layout_object->ClearBaseComputedStyle();
 }
 
 bool TextAutosizer::IsWiderOrNarrowerDescendant(Cluster* cluster) {

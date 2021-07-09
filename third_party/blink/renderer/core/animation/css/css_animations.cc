@@ -1098,14 +1098,24 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   // Lazy evaluation of the before change style. We only need to update where
   // we are transitioning from if the final destination is changing.
   if (!state.before_change_style) {
-    // By calling GetBaseComputedStyleOrThis, we're using the style from the
-    // previous frame if no base style is found. Elements that have not been
-    // animated will not have a base style. Elements that were previously
-    // animated, but where all previously running animations have stopped may
-    // also be missing a base style. In both cases, the old style is equivalent
-    // to the base computed style.
-    state.before_change_style = CalculateBeforeChangeStyle(
-        state.animating_element, *state.old_style.GetBaseComputedStyleOrThis());
+    ElementAnimations* element_animations =
+        state.animating_element.GetElementAnimations();
+    if (element_animations) {
+      const ComputedStyle* base_style = element_animations->BaseComputedStyle();
+      if (base_style) {
+        state.before_change_style =
+            CalculateBeforeChangeStyle(state.animating_element, *base_style);
+      }
+    }
+    // Use the style from the previous frame if no base style is found.
+    // Elements that have not been animated will not have a base style.
+    // Elements that were previously animated, but where all previously running
+    // animations have stopped may also be missing a base style. In both cases,
+    // the old style is equivalent to the base computed style.
+    if (!state.before_change_style) {
+      state.before_change_style =
+          CalculateBeforeChangeStyle(state.animating_element, state.old_style);
+    }
   }
 
   if (ComputedValuesEqual(property, *state.before_change_style, state.style)) {

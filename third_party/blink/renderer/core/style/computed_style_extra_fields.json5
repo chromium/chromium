@@ -1113,17 +1113,5 @@
       field_group: "*",
       default_value: "false",
     },
-    {
-      name: "BaseData",
-      inherited: false,
-      field_group: "*",
-      field_template: "external",
-      type_name: "StyleBaseData",
-      include_paths: ["third_party/blink/renderer/core/style/style_base_data.h"],
-      default_value: "nullptr",
-      wrapper_pointer_name: "scoped_refptr",
-      custom_compare: true,
-      custom_copy: true,
-    },
   ],
 }

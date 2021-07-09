@@ -594,18 +594,6 @@ void ComputedStyle::ClearCachedPseudoElementStyles() const {
     cached_data_->pseudo_element_styles_->clear();
 }
 
-const ComputedStyle* ComputedStyle::GetBaseComputedStyle() const {
-  if (auto* base_data = BaseData().get())
-    return base_data->GetBaseComputedStyle();
-  return nullptr;
-}
-
-const CSSBitset* ComputedStyle::GetBaseImportantSet() const {
-  if (auto* base_data = BaseData().get())
-    return base_data->GetBaseImportantSet();
-  return nullptr;
-}
-
 bool ComputedStyle::InheritedEqual(const ComputedStyle& other) const {
   return IndependentInheritedEqual(other) &&
          NonIndependentInheritedEqual(other);
@@ -2114,9 +2102,6 @@ void ComputedStyle::SetLetterSpacing(float letter_spacing) {
 }
 
 void ComputedStyle::SetTextAutosizingMultiplier(float multiplier) {
-  if (TextAutosizingMultiplier() == multiplier)
-    return;
-
   SetTextAutosizingMultiplierInternal(multiplier);
 
   float size = SpecifiedFontSize();

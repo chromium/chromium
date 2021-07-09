@@ -31,7 +31,6 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/style_auto_color.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
@@ -396,22 +395,6 @@ class ComputedStyle : public ComputedStyleBase,
   const ComputedStyle* AddCachedPseudoElementStyle(
       scoped_refptr<const ComputedStyle>) const;
   void ClearCachedPseudoElementStyles() const;
-
-  // If this ComputedStyle is affected by animation/transitions, then the
-  // unanimated "base" style can be retrieved with this function.
-  //
-  // If this function returns nullptr, then this ComputedStyle is not
-  // affected by animations, and *is* the base style.
-  CORE_EXPORT const ComputedStyle* GetBaseComputedStyle() const;
-
-  // Indicates which properties are !important in the base style.
-  CORE_EXPORT const CSSBitset* GetBaseImportantSet() const;
-
-  CORE_EXPORT const ComputedStyle* GetBaseComputedStyleOrThis() const {
-    if (auto* base = GetBaseComputedStyle())
-      return base;
-    return this;
-  }
 
   /**
    * ComputedStyle properties

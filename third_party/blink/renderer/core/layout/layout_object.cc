@@ -2813,6 +2813,16 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
   }
 }
 
+void LayoutObject::ClearBaseComputedStyle() {
+  NOT_DESTROYED();
+  auto* element = DynamicTo<Element>(GetNode());
+  if (!element)
+    return;
+
+  if (ElementAnimations* animations = element->GetElementAnimations())
+    animations->ClearBaseComputedStyle();
+}
+
 static bool AreNonIdenticalCursorListsEqual(const ComputedStyle* a,
                                             const ComputedStyle* b) {
   DCHECK_NE(a->Cursors(), b->Cursors());
