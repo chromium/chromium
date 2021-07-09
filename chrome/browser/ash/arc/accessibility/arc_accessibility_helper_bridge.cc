@@ -374,12 +374,6 @@ void ArcAccessibilityHelperBridge::ExtensionListenerAdded() {
   tree_tracker_.InvalidateTrees();
 }
 
-aura::Window* ArcAccessibilityHelperBridge::GetFocusedArcWindow() const {
-  if (!exo::WMHelper::HasInstance())
-    return nullptr;
-  return FindArcWindow(exo::WMHelper::GetInstance()->GetFocusedWindow());
-}
-
 extensions::EventRouter* ArcAccessibilityHelperBridge::GetEventRouter() const {
   return extensions::EventRouter::Get(profile_);
 }

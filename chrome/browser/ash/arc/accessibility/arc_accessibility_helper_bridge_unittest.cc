@@ -32,8 +32,6 @@
 #include "components/arc/arc_util.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
-#include "components/exo/shell_surface.h"
-#include "components/exo/shell_surface_util.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -41,8 +39,6 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/test_event_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/client/aura_constants.h"
-#include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -75,16 +71,12 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
     TestArcAccessibilityHelperBridge(content::BrowserContext* browser_context,
                                      ArcBridgeService* arc_bridge_service)
         : ArcAccessibilityHelperBridge(browser_context, arc_bridge_service),
-          window_(new aura::Window(nullptr)),
           event_router_(
               extensions::CreateAndUseTestEventRouter(browser_context)) {
-      window_->Init(ui::LAYER_NOT_DRAWN);
-      window_->SetProperty(aura::client::kAppType,
-                           static_cast<int>(ash::AppType::ARC_APP));
       event_router_->AddEventObserver(this);
     }
 
-    ~TestArcAccessibilityHelperBridge() override { window_.reset(); }
+    ~TestArcAccessibilityHelperBridge() override = default;
 
     int GetEventCount(const std::string& event_name) const {
       return event_router_->GetEventCount(event_name);
@@ -97,15 +89,10 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
     void OnDispatchEventToExtension(const std::string& extension_id,
                                     const extensions::Event& event) override {}
 
-    std::unique_ptr<aura::Window> window_;
     std::unique_ptr<extensions::Event> last_event;
 
    private:
     // ArcAccessibilityHelperBridge overrides:
-    aura::Window* GetFocusedArcWindow() const override {
-      DCHECK(!window_ || ash::IsArcWindow(window_.get()));
-      return window_.get();
-    }
     extensions::EventRouter* GetEventRouter() const override {
       return event_router_;
     }

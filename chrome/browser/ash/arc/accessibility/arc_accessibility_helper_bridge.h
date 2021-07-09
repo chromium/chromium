@@ -109,7 +109,6 @@ class ArcAccessibilityHelperBridge
 
  private:
   // virtual for testing.
-  virtual aura::Window* GetFocusedArcWindow() const;
   virtual extensions::EventRouter* GetEventRouter() const;
   virtual arc::mojom::AccessibilityFilterType GetFilterType();
 
