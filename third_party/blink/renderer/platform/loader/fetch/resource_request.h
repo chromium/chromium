@@ -699,7 +699,7 @@ class PLATFORM_EXPORT ResourceRequestBody {
 // This class is thread-bound. Do not copy/pass an instance across threads.
 //
 // Although request consists head and body, ResourceRequest is implemented by
-// inheriting ResourceRequestHead due in order to make it possible to use
+// inheriting ResourceRequestHead in order to make it possible to use
 // property accessors through both ResourceRequestHead and ResourceRequest while
 // avoiding duplicate accessor definitions.
 // For those who want to add a new property in request, please implement its
