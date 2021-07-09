@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -81,7 +82,7 @@ GURL GetActiveTabURL() {
   if (!web_contents)
     return GURL();
 
-  return web_contents->GetURL();
+  return web_contents->GetVisibleURL();
 }
 
 void OpenURL(const GURL& url) {
@@ -106,6 +107,9 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
         browser_tab_strip_tracker_(absl::in_place, this, nullptr) {
     browser_tab_strip_tracker_->Init();
   }
+  WebUsbNotificationDelegate(const WebUsbNotificationDelegate&) = delete;
+  WebUsbNotificationDelegate& operator=(const WebUsbNotificationDelegate&) =
+      delete;
 
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -114,7 +118,7 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
     if (tab_strip_model->empty() || !selection.active_tab_changed())
       return;
 
-    if (base::StartsWith(selection.new_contents->GetURL().spec(),
+    if (base::StartsWith(selection.new_contents->GetVisibleURL().spec(),
                          landing_page_.spec(),
                          base::CompareCase::INSENSITIVE_ASCII)) {
       // If the disposition is not already set, go ahead and set it.
@@ -171,8 +175,6 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
   std::string notification_id_;
   WebUsbNotificationClosed disposition_;
   absl::optional<BrowserTabStripTracker> browser_tab_strip_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUsbNotificationDelegate);
 };
 
 }  // namespace

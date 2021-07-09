@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -60,7 +61,9 @@ const char* kLandingPage_1_fuzzed = "https://www.google.com/A/fuzzy";
 
 class WebUsbDetectorTest : public BrowserWithTestWindowTest {
  public:
-  WebUsbDetectorTest() {}
+  WebUsbDetectorTest() = default;
+  WebUsbDetectorTest(const WebUsbDetectorTest&) = delete;
+  WebUsbDetectorTest& operator=(const WebUsbDetectorTest&) = delete;
   ~WebUsbDetectorTest() override = default;
 
   TestingProfile* CreateProfile() override {
@@ -115,9 +118,6 @@ class WebUsbDetectorTest : public BrowserWithTestWindowTest {
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<WebUsbDetector> web_usb_detector_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebUsbDetectorTest);
 };
 
 TEST_F(WebUsbDetectorTest, UsbDeviceAddedAndRemoved) {
@@ -532,7 +532,7 @@ TEST_F(WebUsbDetectorTest,
   EXPECT_EQ(2, tab_strip_model->count());
   content::WebContents* web_contents =
       tab_strip_model->GetWebContentsAt(tab_strip_model->active_index());
-  EXPECT_EQ(landing_page_1, web_contents->GetURL());
+  EXPECT_EQ(landing_page_1, web_contents->GetLastCommittedURL());
   EXPECT_FALSE(display_service_->GetNotification(guid_1));
   histogram_tester.ExpectUniqueSample("WebUsb.NotificationClosed", 2, 1);
 }
@@ -559,7 +559,7 @@ TEST_F(WebUsbDetectorTest, NotificationClickedWhileNoTabUrlIsLandingPage) {
   EXPECT_EQ(1, tab_strip_model->count());
   content::WebContents* web_contents =
       tab_strip_model->GetWebContentsAt(tab_strip_model->active_index());
-  EXPECT_EQ(landing_page_1, web_contents->GetURL());
+  EXPECT_EQ(landing_page_1, web_contents->GetVisibleURL());
   EXPECT_FALSE(display_service_->GetNotification(guid_1));
   histogram_tester.ExpectUniqueSample("WebUsb.NotificationClosed", 2, 1);
 }
@@ -683,7 +683,7 @@ TEST_F(
   EXPECT_EQ(1, tab_strip_model->count());
   content::WebContents* web_contents =
       tab_strip_model->GetWebContentsAt(tab_strip_model->active_index());
-  EXPECT_EQ(landing_page_1, web_contents->GetURL());
+  EXPECT_EQ(landing_page_1, web_contents->GetVisibleURL());
   EXPECT_FALSE(display_service_->GetNotification(guid_1));
   histogram_tester.ExpectUniqueSample("WebUsb.NotificationClosed", 2, 1);
 
@@ -722,7 +722,7 @@ TEST_F(WebUsbDetectorTest,
   EXPECT_EQ(2, tab_strip_model->count());
   content::WebContents* web_contents =
       tab_strip_model->GetWebContentsAt(tab_strip_model->active_index());
-  EXPECT_EQ(landing_page_1_fuzzed, web_contents->GetURL());
+  EXPECT_EQ(landing_page_1_fuzzed, web_contents->GetLastCommittedURL());
   EXPECT_FALSE(display_service_->GetNotification(guid_1));
   histogram_tester.ExpectUniqueSample("WebUsb.NotificationClosed", 2, 1);
 }
