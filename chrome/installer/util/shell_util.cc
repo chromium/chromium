@@ -1662,7 +1662,7 @@ ShellUtil::ShortcutProperties::ShortcutProperties(ShellChange level_in)
 ShellUtil::ShortcutProperties::ShortcutProperties(
     const ShortcutProperties& other) = default;
 
-ShellUtil::ShortcutProperties::~ShortcutProperties() {}
+ShellUtil::ShortcutProperties::~ShortcutProperties() = default;
 
 ShellUtil::ApplicationInfo::ApplicationInfo() = default;
 

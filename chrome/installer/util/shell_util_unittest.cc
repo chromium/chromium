@@ -1066,7 +1066,9 @@ TEST_F(ShellUtilShortcutTest, DontRemoveChromeShortcutIfPointsToAnotherChrome) {
 
 class ShellUtilRegistryTest : public testing::Test {
  public:
-  ShellUtilRegistryTest() {}
+  ShellUtilRegistryTest() = default;
+  ShellUtilRegistryTest(const ShellUtilRegistryTest&) = delete;
+  ShellUtilRegistryTest& operator=(const ShellUtilRegistryTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -1103,8 +1105,6 @@ class ShellUtilRegistryTest : public testing::Test {
   registry_util::RegistryOverrideManager registry_overrides_;
   base::ScopedTempDir temp_dir_;
   base::FilePath chrome_exe_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellUtilRegistryTest);
 };
 
 TEST_F(ShellUtilRegistryTest, AddFileAssociations) {

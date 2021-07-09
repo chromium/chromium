@@ -24,7 +24,6 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -360,6 +359,9 @@ class ShellUtil {
 
   // Registry value name for the OpenWithProgids entry for file associations.
   static const wchar_t* kRegOpenWithProgids;
+
+  ShellUtil(const ShellUtil&) = delete;
+  ShellUtil& operator=(const ShellUtil&) = delete;
 
   // Returns true if |chrome_exe| is registered in HKLM with |suffix|.
   // Note: This only checks one deterministic key in HKLM for |chrome_exe| and
@@ -846,9 +848,6 @@ class ShellUtil {
       HKEY root,
       const std::vector<std::unique_ptr<RegistryEntry>>& entries,
       bool best_effort_no_rollback = false);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellUtil);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
