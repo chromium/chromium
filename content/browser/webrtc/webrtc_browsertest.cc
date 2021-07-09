@@ -4,7 +4,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -43,9 +42,6 @@ class MAYBE_WebRtcBrowserTest : public WebRtcContentBrowserTestBase {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
     // Automatically grant device permission.
     AppendUseFakeUIForMediaStreamFlag();
-    // Allow Plan B.
-    scoped_features_.InitAndEnableFeature(
-        blink::features::kRTCAllowPlanBOutsideDeprecationTrial);
   }
 
  protected:
@@ -60,8 +56,6 @@ class MAYBE_WebRtcBrowserTest : public WebRtcContentBrowserTestBase {
     // the javascript and waits for "OK".
     MakeTypicalCall(javascript, "/media/peerconnection-setConfiguration.html");
   }
-
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupAudioAndVideoCall) {

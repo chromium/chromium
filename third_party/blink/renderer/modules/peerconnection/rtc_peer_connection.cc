@@ -330,11 +330,10 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
             WebFeature::
                 kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial);
       } else {
-        // The deadline is not being extended (e.g. Deprecation Trial is not
-        // active). In this case, throw an exception unless the kill switch is
-        // enabled.
-        if (!base::FeatureList::IsEnabled(
-                features::kRTCAllowPlanBOutsideDeprecationTrial)) {
+        // The Deprecation Trial is not active. In this case, throw an exception
+        // if RTCDisallowPlanBOutsideDeprecationTrial is enabled.
+        if (base::FeatureList::IsEnabled(
+                features::kRTCDisallowPlanBOutsideDeprecationTrial)) {
           // Throw Plan B exception!
           UseCounter::Count(
               context, WebFeature::kRTCPeerConnectionPlanBThrewAnException);
@@ -344,11 +343,11 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
               "Description Protocol that has severe compatibility issues on "
               "modern browsers and is no longer supported. See "
               "https://www.chromestatus.com/feature/5823036655665152 for more "
-              "details, including the possibility of registering to a "
+              "details, including the possibility of registering for a "
               "Deprecation Trial in order to extend the Plan B deprecation "
               "deadline for a limited amount of time.");
         } else {
-          // The kill-switch prevented throwing.
+          // Throwing is not enabled, so just show a deprecation warning.
           Deprecation::CountDeprecation(
               context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
         }
