@@ -46,7 +46,7 @@ void PluginInstaller::OpenDownloadURL(const GURL& plugin_url,
                                       content::WebContents* web_contents) {
   web_contents->OpenURL(content::OpenURLParams(
       plugin_url,
-      content::Referrer(web_contents->GetURL(),
+      content::Referrer(web_contents->GetLastCommittedURL(),
                         network::mojom::ReferrerPolicy::kDefault),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_TYPED,
       false));

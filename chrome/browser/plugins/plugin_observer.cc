@@ -205,7 +205,7 @@ void PluginObserver::OpenPDF(const GURL& url) {
   }
 
   content::Referrer referrer = content::Referrer::SanitizeForRequest(
-      url, content::Referrer(web_contents()->GetURL(),
+      url, content::Referrer(web_contents()->GetLastCommittedURL(),
                              network::mojom::ReferrerPolicy::kDefault));
 
 #if BUILDFLAG(ENABLE_PLUGINS)
