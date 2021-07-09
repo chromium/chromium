@@ -24,10 +24,12 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
@@ -70,6 +72,8 @@ public class InterceptNavigationDelegateTest {
             BASE_PAGE + "navigation_from_image_onload.html";
     private static final String NAVIGATION_FROM_USER_GESTURE_IFRAME_PAGE =
             BASE_PAGE + "navigation_from_user_gesture_to_iframe_page.html";
+    private static final String NAVIGATION_FROM_PRERENDERING_PAGE =
+            BASE_PAGE + "navigation_from_prerender.html";
 
     private static final long DEFAULT_MAX_TIME_TO_WAIT_IN_MS = 3000;
     private static final long LONG_MAX_TIME_TO_WAIT_IN_MS = 20000;
@@ -214,5 +218,22 @@ public class InterceptNavigationDelegateTest {
         Assert.assertFalse(mNavParamHistory.get(2).isMainFrame);
         Assert.assertTrue(
                 mExternalNavParamHistory.get(2).getRedirectHandler().shouldStayInApp(true, false));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.PRERENDER2})
+    public void testExternalAppPrerenderingNavigation() throws TimeoutException {
+        // Ensure that a prerendering main frame doesn't call into the delegate.
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_PRERENDERING_PAGE));
+        Assert.assertEquals(1, mNavParamHistory.size());
+
+        // The click will reload the page with a user gesture. The delegate
+        // should still only hear about the navigation in the primary main
+        // frame, not the prerendering one.
+        DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "link");
+        waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
+        Assert.assertEquals(2, mNavParamHistory.size());
+        Assert.assertEquals(2, mExternalNavParamHistory.size());
     }
 }

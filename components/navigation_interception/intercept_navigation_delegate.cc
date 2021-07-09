@@ -13,6 +13,7 @@
 #include "components/navigation_interception/jni_headers/InterceptNavigationDelegate_jni.h"
 #include "components/navigation_interception/navigation_params_android.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -68,9 +69,24 @@ InterceptNavigationDelegate* InterceptNavigationDelegate::Get(
 
 // static
 std::unique_ptr<content::NavigationThrottle>
-InterceptNavigationDelegate::CreateThrottleFor(
+InterceptNavigationDelegate::MaybeCreateThrottleFor(
     content::NavigationHandle* handle,
     navigation_interception::SynchronyMode mode) {
+  // Navigations in a subframe or non-primary frame tree should not be
+  // intercepted. As examples of a non-primary frame tree, a navigation
+  // occurring in a Portal element or an unactivated prerendering page should
+  // not launch an app.
+  // TODO(bokan): This is a bit of a stopgap approach since we won't run
+  // throttles again when the prerender is activated which means links that are
+  // prerendered will avoid launching an app intent that a regular navigation
+  // would have. Longer term we'll want prerender activation to check for app
+  // intents, or have this throttle cancel the prerender if an intent would
+  // have been launched (without launching the intent). It's also not clear
+  // what the right behavior for <portal> elements is.
+  // https://crbug.com/1227659.
+  if (!handle->IsInPrimaryMainFrame())
+    return nullptr;
+
   return std::make_unique<InterceptNavigationThrottle>(
       handle, base::BindRepeating(&CheckIfShouldIgnoreNavigationOnUIThread),
       mode);

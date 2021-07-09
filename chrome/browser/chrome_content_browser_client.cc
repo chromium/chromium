@@ -4018,10 +4018,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   prerender::NoStatePrefetchContents* no_state_prefetch_contents =
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           handle->GetWebContents());
-  if (!no_state_prefetch_contents && handle->IsInMainFrame()) {
-    throttles.push_back(
-        navigation_interception::InterceptNavigationDelegate::CreateThrottleFor(
-            handle, navigation_interception::SynchronyMode::kAsync));
+  if (!no_state_prefetch_contents) {
+    MaybeAddThrottle(
+        navigation_interception::InterceptNavigationDelegate::
+            MaybeCreateThrottleFor(
+                handle, navigation_interception::SynchronyMode::kAsync),
+        &throttles);
   }
   throttles.push_back(InterceptOMADownloadNavigationThrottle::Create(handle));
 

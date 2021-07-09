@@ -30,8 +30,9 @@ class NavigationParams;
 // 1) the Java-side interface implementation must be associated (via the
 //    Associate method) with a WebContents for which URLRequests are to be
 //    intercepted,
-// 2) the NavigationThrottle obtained via CreateThrottleFor must be associated
-//    with the NavigationHandle in the ContentBrowserClient implementation.
+// 2) the NavigationThrottle obtained via MaybeCreateThrottleFor must be
+//    associated with the NavigationHandle in the ContentBrowserClient
+//    implementation.
 class InterceptNavigationDelegate : public base::SupportsUserData::Data {
  public:
   // Pass true for |escape_external_handler_value| to have
@@ -54,7 +55,7 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
 
   // Creates a InterceptNavigationThrottle that will direct all callbacks to
   // the InterceptNavigationDelegate.
-  static std::unique_ptr<content::NavigationThrottle> CreateThrottleFor(
+  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* handle,
       navigation_interception::SynchronyMode mode);
 

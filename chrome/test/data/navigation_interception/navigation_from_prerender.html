@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<!--
+
+Copyright (c) 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+-->
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+  </style>
+  <script type="speculationrules">
+    {
+      "prerender":[
+        {
+          "source": "list",
+          "urls": ["hello.html"]
+        }
+      ]
+    }
+   </script>
+</head>
+<body>
+  <div>
+    This page triggers a prerender of hello.html. Click to reload is so that we
+    get a user gesture.
+  </div>
+  <a id='link' href='navigation_from_prerender.html?clicked'>Click to Reload</a>
+</body>
+</html>

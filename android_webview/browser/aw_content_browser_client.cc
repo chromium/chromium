@@ -588,9 +588,14 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
     // doesn't actually call into an arbitrary client, it just posts a task to
     // call onPageStarted. shouldOverrideUrlLoading happens earlier (see
     // ContentBrowserClient::ShouldOverrideUrlLoading).
-    throttles.push_back(
-        navigation_interception::InterceptNavigationDelegate::CreateThrottleFor(
-            navigation_handle, navigation_interception::SynchronyMode::kSync));
+    std::unique_ptr<content::NavigationThrottle> intercept_navigation_throttle =
+        navigation_interception::InterceptNavigationDelegate::
+            MaybeCreateThrottleFor(
+                navigation_handle,
+                navigation_interception::SynchronyMode::kSync);
+    if (intercept_navigation_throttle)
+      throttles.push_back(std::move(intercept_navigation_throttle));
+
     throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
         navigation_handle,
         AwBrowserContext::FromWebContents(navigation_handle->GetWebContents()),
