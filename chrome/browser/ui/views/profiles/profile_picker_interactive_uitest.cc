@@ -205,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
 // Checks that both the signin web view and the main picker view are able to
 // process a back keyboard event.
-// TODO(https://crbug.com/1173544): Flaky on linux.
-#if defined(OS_LINUX)
+// TODO(https://crbug.com/1173544): Flaky on linux and Win7.
+#if defined(OS_LINUX) || defined(OS_WIN)
 #define MAYBE_NavigateBackWithKeyboard DISABLED_NavigateBackWithKeyboard
 #else
 #define MAYBE_NavigateBackWithKeyboard NavigateBackWithKeyboard
