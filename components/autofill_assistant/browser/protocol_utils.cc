@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/actions/configure_ui_state_action.h"
 #include "components/autofill_assistant/browser/actions/delete_password_action.h"
 #include "components/autofill_assistant/browser/actions/dispatch_js_event_action.h"
+#include "components/autofill_assistant/browser/actions/edit_password_action.h"
 #include "components/autofill_assistant/browser/actions/expect_navigation_action.h"
 #include "components/autofill_assistant/browser/actions/generate_password_for_form_field_action.h"
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
@@ -389,6 +390,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<SetTouchableAreaAction>(delegate, action);
     case ActionProto::ActionInfoCase::kDeletePassword:
       return std::make_unique<DeletePasswordAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kEditPassword:
+      return std::make_unique<EditPasswordAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);
