@@ -50,11 +50,8 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     private final int mThumbnailHeight;
     private final Paint mEmptyThumbnailPaint;
     private final Paint mThumbnailFramePaint;
-    private final Paint mThumbnailBasePaint;
     private final Paint mTextPaint;
     private final Paint mFaviconBackgroundPaint;
-    private final Paint mSelectedEmptyThumbnailPaint;
-    private final Paint mSelectedTextPaint;
     private final int mFaviconBackgroundPaintColor;
     private final List<Rect> mFaviconRects = new ArrayList<>(4);
     private final List<RectF> mThumbnailRects = new ArrayList<>(4);
@@ -67,7 +64,6 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         private final Callback<Bitmap> mFinalCallback;
         private final boolean mForceUpdate;
         private final boolean mWriteToCache;
-        private final boolean mIsTabSelected;
         private final List<PseudoTab> mTabs = new ArrayList<>(4);
         private final AtomicInteger mThumbnailsToFetch = new AtomicInteger();
 
@@ -76,17 +72,14 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         private String mText;
 
         /**
-         * Fetcher that get the thumbnail drawable depending on if the tab is selected.
          * @see TabContentManager#getTabThumbnailWithCallback
-         * @param isTabSelected Whether the thumbnail is for a currently selected tab.
          */
         MultiThumbnailFetcher(PseudoTab initialTab, Callback<Bitmap> finalCallback,
-                boolean forceUpdate, boolean writeToCache, boolean isTabSelected) {
+                boolean forceUpdate, boolean writeToCache) {
             mFinalCallback = finalCallback;
             mInitialTab = initialTab;
             mForceUpdate = forceUpdate;
             mWriteToCache = writeToCache;
-            mIsTabSelected = isTabSelected;
         }
 
         private void initializeAndStartFetching(PseudoTab tab) {
@@ -149,37 +142,34 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                     drawThumbnailBitmapOnCanvasWithFrame(null, i);
                     if (mText != null && i == 3) {
                         // Draw the text exactly centered on the thumbnail rect.
-                        Paint textPaint = mIsTabSelected ? mSelectedTextPaint : mTextPaint;
                         mCanvas.drawText(mText,
                                 (mThumbnailRects.get(i).left + mThumbnailRects.get(i).right) / 2,
                                 (mThumbnailRects.get(i).top + mThumbnailRects.get(i).bottom) / 2
                                         - ((mTextPaint.descent() + mTextPaint.ascent()) / 2),
-                                textPaint);
+                                mTextPaint);
                     }
                 }
             }
         }
 
         private void drawThumbnailBitmapOnCanvasWithFrame(Bitmap thumbnail, int index) {
-            if (thumbnail == null) {
-                Paint emptyThumbnailPaint =
-                        mIsTabSelected ? mSelectedEmptyThumbnailPaint : mEmptyThumbnailPaint;
-                mCanvas.drawRoundRect(
-                        mThumbnailRects.get(index), mRadius, mRadius, emptyThumbnailPaint);
-                return;
-            }
-
+            // Draw the rounded rect. If Bitmap is not null, this is used for XferMode.
             mCanvas.drawRoundRect(
-                    mThumbnailRects.get(index), mRadius, mRadius, mThumbnailBasePaint);
+                    mThumbnailRects.get(index), mRadius, mRadius, mEmptyThumbnailPaint);
+
+            if (thumbnail == null) return;
 
             thumbnail =
                     Bitmap.createScaledBitmap(thumbnail, (int) mThumbnailRects.get(index).width(),
                             (int) mThumbnailRects.get(index).height(), true);
-            mThumbnailBasePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
+            mEmptyThumbnailPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
             mCanvas.drawBitmap(thumbnail,
                     new Rect(0, 0, thumbnail.getWidth(), thumbnail.getHeight()),
-                    mThumbnailRects.get(index), mThumbnailBasePaint);
+                    mThumbnailRects.get(index), mEmptyThumbnailPaint);
             thumbnail.recycle();
+
+            mEmptyThumbnailPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
 
             mCanvas.drawRoundRect(
                     mThumbnailRects.get(index), mRadius, mRadius, mThumbnailFramePaint);
@@ -227,18 +217,9 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         // Initialize Paints to use.
         mEmptyThumbnailPaint = new Paint();
         mEmptyThumbnailPaint.setStyle(Paint.Style.FILL);
+        mEmptyThumbnailPaint.setColor(ApiCompatibilityUtils.getColor(
+                resource, R.color.tab_list_mini_card_default_background_color));
         mEmptyThumbnailPaint.setAntiAlias(true);
-        mEmptyThumbnailPaint.setColor(
-                TabUiColorProvider.getMiniThumbnailPlaceHolderColor(context, false, false));
-
-        mSelectedEmptyThumbnailPaint = new Paint(mEmptyThumbnailPaint);
-        mSelectedEmptyThumbnailPaint.setColor(
-                TabUiColorProvider.getMiniThumbnailPlaceHolderColor(context, false, true));
-
-        // Paint used to set base for thumbnails, in case mEmptyThumbnailPaint has transparency.
-        mThumbnailBasePaint = new Paint(mEmptyThumbnailPaint);
-        mThumbnailBasePaint.setColor(Color.BLACK);
-        mThumbnailBasePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 
         mThumbnailFramePaint = new Paint();
         mThumbnailFramePaint.setStyle(Paint.Style.STROKE);
@@ -255,11 +236,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         mTextPaint.setFakeBoldText(true);
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTextPaint.setColor(TabUiColorProvider.getTabGroupNumberTextColor(context, false, false));
-
-        mSelectedTextPaint = new Paint(mTextPaint);
-        mSelectedTextPaint.setColor(
-                TabUiColorProvider.getTabGroupNumberTextColor(context, false, true));
+        mTextPaint.setColor(ApiCompatibilityUtils.getColor(resource, R.color.default_text_color));
 
         mFaviconBackgroundPaintColor =
                 ApiCompatibilityUtils.getColor(resource, R.color.favicon_background_color);
@@ -320,20 +297,14 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 boolean isIncognito = newModel.isIncognito();
-                mEmptyThumbnailPaint.setColor(TabUiColorProvider.getMiniThumbnailPlaceHolderColor(
-                        context, isIncognito, false));
-                mTextPaint.setColor(
-                        TabUiColorProvider.getTabGroupNumberTextColor(context, isIncognito, false));
+                mEmptyThumbnailPaint.setColor(
+                        TabUiColorProvider.getMiniThumbnailPlaceHolderColor(context, isIncognito));
                 mThumbnailFramePaint.setColor(
                         TabUiColorProvider.getMiniThumbnailFrameColor(context, isIncognito));
+                mTextPaint.setColor(
+                        TabUiColorProvider.getTabGroupNumberTextColor(context, isIncognito));
                 mFaviconBackgroundPaint.setColor(
                         TabUiColorProvider.getFaviconBackgroundColor(context, isIncognito));
-
-                mSelectedEmptyThumbnailPaint.setColor(
-                        TabUiColorProvider.getMiniThumbnailPlaceHolderColor(
-                                context, isIncognito, true));
-                mSelectedTextPaint.setColor(
-                        TabUiColorProvider.getTabGroupNumberTextColor(context, isIncognito, true));
             }
         };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
@@ -362,8 +333,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                     tabId, finalCallback, forceUpdate, writeToCache);
             return;
         }
-        boolean isSelected = tabId == mTabModelSelector.getCurrentTabId();
-        new MultiThumbnailFetcher(tab, finalCallback, forceUpdate, writeToCache, isSelected)
-                .fetch();
+
+        new MultiThumbnailFetcher(tab, finalCallback, forceUpdate, writeToCache).fetch();
     }
 }
