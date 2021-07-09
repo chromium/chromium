@@ -47,6 +47,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
