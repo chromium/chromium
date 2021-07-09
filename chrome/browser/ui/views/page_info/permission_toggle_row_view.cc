@@ -92,10 +92,10 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
                                    row_view_->GetFirstLineHeight()});
   toggle_button->SetProperty(views::kMarginsKey,
                              gfx::Insets(0, icon_label_spacing));
-  // TODO(crbug.com/1225563): Replace with actual strings.
-  toggle_button->SetAccessibleName(
-      u"Select state for " +
-      PageInfoUI::PermissionTypeToUIString(permission_.type) + u" permission.");
+  toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_PAGE_INFO_SELECTOR_TOOLTIP,
+      PageInfoUI::PermissionTypeToUIString(permission_.type)));
+
   toggle_button_ = row_view_->AddControl(std::move(toggle_button));
 
   const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
@@ -109,6 +109,8 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
             },
             base::Unretained(this)),
         vector_icons::kSubmenuArrowIcon);
+    subpage_button->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP));
     views::InstallCircleHighlightPathGenerator(subpage_button.get());
     subpage_button->SetMinimumImageSize({icon_size, icon_size});
     row_view_->AddControl(std::move(subpage_button));

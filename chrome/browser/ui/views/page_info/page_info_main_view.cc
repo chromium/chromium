@@ -276,7 +276,6 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // base::Unretained(navigation_handler_) is safe because navigation_handler_
     // is the bubble view which is the owner of this view and therefore will
     // always exist when this view exists.
-    // TODO(crbug.com/1225563): Replace with actual strings.
     connection_button_ = security_container_view_->AddChildView(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
@@ -284,8 +283,8 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
             PageInfoViewFactory::GetConnectionSecureIcon(), 0, std::u16string(),
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION,
-            u"Open security subpage", std::u16string(),
-            PageInfoViewFactory::GetOpenSubpageIcon())
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_BUTTON),
+            std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon())
             .release());
     connection_button_->SetTitleText(security_description->summary);
   } else {

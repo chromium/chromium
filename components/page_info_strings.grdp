@@ -478,6 +478,12 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is not allowed (blocked or ask state) by any source (the user, the administrator, etc.).">
       Not allowed
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_IN_INCOGNITO" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is not allowed in incognito mode.">
+      Not allowed in Incognito
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_INSECURE" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is not allowed in non-secure sites.">
+      Not allowed for non-secure sites
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_MUTED" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the sound permission is blocked by any source (the user, the administrator, etc.).">
       Muted
     </message>
@@ -530,7 +536,7 @@
       Site settings
     </message>
     <message name="IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_SITE_SETTINGS_LINK.">
-      Open site settings
+      Go to site settings
     </message>
 
     <!-- Permission decision strings -->
@@ -718,13 +724,22 @@
   </message>
 
   <!-- Subpages headers -->
-  <message name="IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER" desc="The header label of the Security subpage in page info bubble.">
+  <message name="IDS_PAGE_INFO_SECURITY_SUBPAGE_BUTTON" desc="The label of the button to open the Security subpage in Page Info bubble.">
+    Show connection details
+  </message>
+  <message name="IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER" desc="The header label of the Security subpage in Page Info bubble.">
     Security
   </message>
 
   <!-- Permissions subpage -->
+  <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP" desc="The label of the button to open the Permissions subpage for a specific permission in Page Info bubble.">
+    Show permission details
+  </message>
   <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON" desc="The text on the button, that opens settings page for the permission, in permission's subpage in page info bubble.">
     Manage
+  </message>
+  <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP" desc="The label of the button to open settings from the Permissions subpage for a specific permission in Page Info bubble.">
+    Go to permission settings
   </message>
   <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_REMEMBER_THIS_SETTING" desc="The text near the checkbox, that controls if user's decision will be remembered for this permission, in permission's subpage in page info bubble.">
     Remember this setting

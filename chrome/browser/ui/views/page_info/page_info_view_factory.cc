@@ -159,8 +159,6 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
   back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button->SetProperty(views::kInternalPaddingKey,
                            back_button->GetInsets());
-  // TODO(crbug.com/1225563): Replace with actual strings.
-  back_button->SetTooltipText(u"Back to main page");
   header->AddChildView(std::move(back_button));
 
   auto* label_wrapper = header->AddChildView(CreateLabelWrapper());

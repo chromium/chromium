@@ -565,8 +565,8 @@ std::u16string PageInfoUI::PermissionStateToUIString(
                          ? IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT
                          : IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER;
       } else if (permission.setting == CONTENT_SETTING_DEFAULT) {
-        // TODO(crbug.com/1225563): Replace with actual strings.
-        return u"This site will ask before accessing";
+        // TODO(crbug.com/1225563): Replace with permission specific strings.
+        message_id = IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT;
       } else {
         message_id = IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED;
       }
@@ -604,6 +604,7 @@ std::u16string PageInfoUI::PermissionManagedTooltipToUIString(
       message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY;
       break;
     case content_settings::SettingSource::SETTING_SOURCE_EXTENSION:
+      // TODO(crbug.com/1225563): Consider "enforced" instead of "managed".
       message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION;
       break;
     default:

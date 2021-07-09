@@ -98,7 +98,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets(margin, 0));
 
   AddChildView(PageInfoViewFactory::CreateSeparator());
-  // TODO(crbug.com/1225563): Replace with actual strings.
+  // TODO(crbug.com/1225563): Consider to use permission specific text.
   AddChildView(std::make_unique<PageInfoHoverButton>(
       base::BindRepeating(
           [](PageInfoPermissionContentView* view) {
@@ -107,8 +107,9 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),
       IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON, std::u16string(), 0,
-      u"Open permission settings", std::u16string(),
-      PageInfoViewFactory::GetLaunchIcon()));
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP),
+      std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
 
   presenter_->InitializeUiState(this);
 }

@@ -12,8 +12,10 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if !defined(OS_ANDROID)
@@ -60,17 +62,18 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
     case ContentSettingsType::NOTIFICATIONS:
     case ContentSettingsType::IDLE_DETECTION: {
       if (profile_->IsOffTheRecord()) {
-        // TODO(crbug.com/1225563): Replace with actual strings.
-        return u"Not allowed in Incognito";
+        return l10n_util::GetStringUTF16(
+            IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_IN_INCOGNITO);
       }
       break;
     }
     // Media only supports CONTENT_SETTING_ALLOW for secure origins.
+    // TODO(crbug.com/1227679): This string can probably be removed.
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::MEDIASTREAM_CAMERA: {
       if (!network::IsUrlPotentiallyTrustworthy(site_url_)) {
-        // TODO(crbug.com/1225563): Replace with actual strings.
-        return u"Not allowed on non-secure connections";
+        return l10n_util::GetStringUTF16(
+            IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_INSECURE);
       }
       break;
     }
