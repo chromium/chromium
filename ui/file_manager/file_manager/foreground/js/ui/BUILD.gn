@@ -32,7 +32,6 @@ group("js_modules") {
     ":dialog_footer",
     ":directory_tree",
     ":drag_selector",
-    ":empty_folder",
     ":file_grid",
     ":file_list_selection_model",
     ":file_manager_dialog_base",
@@ -84,7 +83,6 @@ js_type_check("closure_compile_jsmodules") {
     ":dialog_footer",
     ":directory_tree",
     ":drag_selector",
-    ":empty_folder",
     ":file_grid",
     ":file_list_selection_model",
     ":file_manager_dialog_base",
@@ -271,10 +269,6 @@ js_library("drag_selector") {
   externs_list = [ "//ui/file_manager/file_manager/externs/drag_target.js" ]
 }
 
-js_library("empty_folder") {
-  deps = [ "//ui/webui/resources/js:util.m" ]
-}
-
 js_library("file_grid") {
   deps = [
     ":a11y_announce",
@@ -340,7 +334,6 @@ js_library("file_manager_ui") {
     ":default_task_dialog",
     ":dialog_footer",
     ":directory_tree",
-    ":empty_folder",
     ":file_grid",
     ":file_table",
     ":files_alert_dialog",

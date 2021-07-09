@@ -43,7 +43,6 @@ import {DirectoryModel} from './directory_model.js';
 import {DirectoryTreeNamingController} from './directory_tree_naming_controller.js';
 import {DriveDialogController} from './drive_dialog_controller.js';
 import {importElements} from './elements_importer.js';
-import {EmptyFolderController} from './empty_folder_controller.js';
 import {CommandHandler, CommandUtil} from './file_manager_commands.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
@@ -301,12 +300,6 @@ export class FileManager extends EventTarget {
      * @private {?ToolbarController}
      */
     this.toolbarController_ = null;
-
-    /**
-     * Empty folder controller.
-     * @private {EmptyFolderController}
-     */
-    this.emptyFolderController_ = null;
 
     /**
      * App state controller.
@@ -688,8 +681,6 @@ export class FileManager extends EventTarget {
         assert(this.ui_.locationLine), this.selectionHandler_,
         this.directoryModel_, this.volumeManager_, this.fileOperationManager_,
         /** @type {!A11yAnnounce} */ (this.ui_));
-    this.emptyFolderController_ = new EmptyFolderController(
-        this.ui_.emptyFolder, this.directoryModel_, this.ui_.alertDialog);
     this.actionsController_ = new ActionsController(
         this.volumeManager_, assert(this.metadataModel_), this.directoryModel_,
         assert(this.folderShortcutsModel_),

@@ -29,7 +29,6 @@ import {ComboButton} from './combobutton.js';
 import {DefaultTaskDialog} from './default_task_dialog.js';
 import {DialogFooter} from './dialog_footer.js';
 import {DirectoryTree} from './directory_tree.js';
-import {EmptyFolder} from './empty_folder.js';
 import {FileGrid} from './file_grid.js';
 import {FileTable} from './file_table.js';
 import {FilesAlertDialog} from './files_alert_dialog.js';
@@ -217,14 +216,6 @@ export class FileManagerUI {
         queryRequiredElement('#search-box', this.element),
         queryRequiredElement('#search-wrapper', this.element),
         queryRequiredElement('#search-button', this.element));
-
-    /**
-     * Empty folder UI.
-     * @type {!EmptyFolder}
-     * @const
-     */
-    this.emptyFolder =
-        new EmptyFolder(queryRequiredElement('#empty-folder', this.element));
 
     /**
      * Toggle-view button.

@@ -446,9 +446,8 @@ testcase.fileSearchNotFound = async () => {
   // Notify the element of the input.
   await remoteCall.callRemoteTestUtil(
       'fakeEvent', appId, ['#search-box cr-input', 'input']);
-  const element =
-      await remoteCall.waitForElement(appId, ['#empty-folder-label b']);
-  chrome.test.assertEq(element.text, '\"' + searchTerm + '\"');
+
+  await remoteCall.waitForFiles(appId, []);
 };
 
 /**

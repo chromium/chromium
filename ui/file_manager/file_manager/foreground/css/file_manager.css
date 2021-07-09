@@ -2527,10 +2527,6 @@ body[drive='error'] #unmounted-panel > .error,
   position: relative;
 }
 
-body.files-ng #empty-folder {
-  display: none;
-}
-
 #volume-space-info-contents {
   align-items: center;
   display: flex;
