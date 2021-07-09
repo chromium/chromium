@@ -47,7 +47,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -1063,20 +1062,8 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
 }
 #endif
 
-class GuestWebAppInstallTaskTest : public WebAppInstallTaskTest,
-                                   public ::testing::WithParamInterface<bool> {
- public:
-  GuestWebAppInstallTaskTest() {
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list_, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Default apps should be installable for guest profiles.
-TEST_P(GuestWebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
+TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
   SetInstallFinalizerForTesting();
 
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
@@ -1103,10 +1090,6 @@ TEST_P(GuestWebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
           }));
   run_loop.Run();
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestWebAppInstallTaskTest,
-                         /*is_ephemeral_guest=*/testing::Bool());
 
 TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_DisplayMode) {
   {
