@@ -14,13 +14,13 @@
 
 @interface MultiStoreCredentialStore ()
 
-@property(nonatomic, strong) NSArray<NSArray<id<CredentialStore>>*>* stores;
+@property(nonatomic, strong) NSArray<id<CredentialStore>>* stores;
 
 @end
 
 @implementation MultiStoreCredentialStore
 
-- (instancetype)initWithStores:(NSArray<NSArray<id<CredentialStore>>*>*)stores {
+- (instancetype)initWithStores:(NSArray<id<CredentialStore>>*)stores {
   DCHECK(stores);
   self = [super init];
   if (self) {
@@ -33,7 +33,7 @@
 
 - (NSArray<id<Credential>>*)credentials {
   return
-      [self.stores valueForKeyPath:@"credentials.@distinctUnionOfObjects.self"];
+      [self.stores valueForKeyPath:@"credentials.@distinctUnionOfArrays.self"];
 }
 
 - (id<Credential>)credentialWithRecordIdentifier:(NSString*)recordIdentifier {

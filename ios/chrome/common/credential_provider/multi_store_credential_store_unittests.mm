@@ -54,6 +54,12 @@ TEST_F(MultiStoreCredentialStoreTest, CombineData) {
   MultiStoreCredentialStore* credentialStore =
       [[MultiStoreCredentialStore alloc] initWithStores:TestStoreArray()];
   EXPECT_EQ(2u, credentialStore.credentials.count);
+
+  id<Credential> firstCredential =
+      TestStoreArray().firstObject.credentials.firstObject;
+
+  EXPECT_NSEQ(credentialStore.credentials[0], firstCredential);
+  EXPECT_NSEQ(credentialStore.credentials[0].user, @"store1user");
 }
 
 // Tests that MultiStoreCredentialStore don't duplicate data from stores.
