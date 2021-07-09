@@ -2951,6 +2951,42 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       AllowlistDomainsRemoved_ServerRedirect) {
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSingleFrameTestURL));
+  GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
+  GURL download_url = embedded_test_server()->GetURL(kDownloadItemURL);
+  GURL request_url =
+      embedded_test_server()->GetURL("/server-redirect?" + download_url.spec());
+  ui_test_utils::NavigateToURL(browser(), request_url);
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+
+  // Add URLs to the Safe Browsing allowlist.
+  base::ListValue allowlist;
+  allowlist.AppendString(initial_url.host());
+  allowlist.AppendString(download_url.host());
+  allowlist.AppendString(request_url.host());
+  browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
+                                        allowlist);
+
+  ReferrerChain referrer_chain;
+  IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
+  ASSERT_EQ(1, referrer_chain.size());
+  EXPECT_TRUE(referrer_chain.Get(0).is_url_removed_by_policy());
+  // All URL fields should be empty because they all match the allowlist.
+  VerifyReferrerChainEntry(GURL(),                         // url
+                           GURL(),                         // main_frame_url
+                           ReferrerChainEntry::EVENT_URL,  // type
+                           test_server_ip,                 // ip_address
+                           GURL(),                         // referrer_url
+                           GURL(),            // referrer_main_frame_url
+                           false,             // is_retargeting
+                           {GURL(), GURL()},  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(0));
+}
+
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                        AllowlistDomainsRemoved_RecentNavigation) {
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kSingleFrameTestURL));

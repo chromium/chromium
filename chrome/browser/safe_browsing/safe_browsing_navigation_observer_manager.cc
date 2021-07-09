@@ -808,6 +808,15 @@ void SafeBrowsingNavigationObserverManager::RemoveSafeBrowsingAllowlistDomains(
       entry.clear_referrer_main_frame_url();
       is_url_removed_by_policy = true;
     }
+    for (ReferrerChainEntry::ServerRedirect& server_redirect_entry :
+         *entry.mutable_server_redirect_chain()) {
+      if (IsURLAllowlistedByPolicy(GURL(server_redirect_entry.url()),
+                                   *pref_service_)) {
+        server_redirect_entry.clear_url();
+        is_url_removed_by_policy = true;
+      }
+    }
+
     entry.set_is_url_removed_by_policy(is_url_removed_by_policy);
   }
 }
