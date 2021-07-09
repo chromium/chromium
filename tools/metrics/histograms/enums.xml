@@ -20043,6 +20043,7 @@ Called by update_debug_scenarios.py.-->
   <int value="108" label="Extension install friction"/>
   <int value="109" label="File handling permission request"/>
   <int value="110" label="Enterprise confirmation"/>
+  <int value="111" label="App Identity Update Confirmation"/>
 </enum>
 
 <enum name="DialogOriginRelationship">
@@ -47657,6 +47658,7 @@ from previous Chrome versions.
   <int value="-880087793" label="OmniboxPedalsBatch2:enabled"/>
   <int value="-879055117" label="ClipboardContentSetting:enabled"/>
   <int value="-879031960" label="FetchKeepaliveTimeoutSetting:disabled"/>
+  <int value="-879024703" label="pwa-update-dialog-for-name-and-icon:enabled"/>
   <int value="-876773120" label="TabbedAppOverflowMenuActionBar:enabled"/>
   <int value="-876148583" label="ArcBootCompletedBroadcast:disabled"/>
   <int value="-875217114"
@@ -50557,6 +50559,7 @@ from previous Chrome versions.
   <int value="1569982806" label="BentoBar:enabled"/>
   <int value="1570178909" label="NewOverviewLayout:enabled"/>
   <int value="1571998166" label="DetectingHeavyPages:disabled"/>
+  <int value="1572464760" label="pwa-update-dialog-for-name-and-icon:disabled"/>
   <int value="1573860827" label="EnableImeSandbox:enabled"/>
   <int value="1575978252" label="PasswordLeakDetection:enabled"/>
   <int value="1577205328"
