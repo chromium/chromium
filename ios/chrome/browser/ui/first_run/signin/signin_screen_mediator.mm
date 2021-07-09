@@ -65,6 +65,8 @@
                   promoAction:signin_metrics::PromoAction::
                                   PROMO_ACTION_NO_SIGNIN_PROMO
         accountManagerService:accountManagerService];
+
+    [_logger logSigninStarted];
   }
   return self;
 }
