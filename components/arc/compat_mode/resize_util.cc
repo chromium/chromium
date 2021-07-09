@@ -8,14 +8,13 @@
 
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/toast_manager.h"
-#include "ash/public/cpp/window_properties.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/stl_util.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
+#include "components/arc/compat_mode/arc_window_property_util.h"
 #include "components/arc/compat_mode/resize_confirmation_dialog_view.h"
 #include "components/strings/grit/components_strings.h"
-#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,11 +37,6 @@ void ResizeToTablet(views::Widget* widget) {
   if (widget->IsMaximized())
     widget->Restore();
   widget->CenterWindow(kLandscapeTabletDp);
-}
-
-absl::optional<std::string> GetAppId(views::Widget* widget) {
-  const auto* app_id = widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
-  return base::OptionalFromPtr(app_id);
 }
 
 void TurnOnResizeLock(views::Widget* widget,

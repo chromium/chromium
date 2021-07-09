@@ -21,6 +21,7 @@
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
+#include "components/arc/compat_mode/arc_window_property_util.h"
 #include "components/arc/compat_mode/resize_toggle_menu.h"
 #include "components/arc/compat_mode/resize_util.h"
 #include "components/arc/vector_icons/vector_icons.h"
@@ -125,8 +126,7 @@ class AppIdObserver : public aura::WindowObserver {
 
   static void RunOnReady(aura::Window* window,
                          base::OnceCallback<void(aura::Window*)> on_ready) {
-    const std::string* app_id = window->GetProperty(ash::kAppIDKey);
-    if (app_id) {
+    if (GetAppId(window)) {
       std::move(on_ready).Run(window);
       return;
     }
@@ -147,8 +147,7 @@ class AppIdObserver : public aura::WindowObserver {
     DCHECK(observer_.IsObservingSource(window));
     if (key != ash::kAppIDKey)
       return;
-    const std::string* app_id = window->GetProperty(ash::kAppIDKey);
-    if (!app_id)
+    if (!GetAppId(window))
       return;
     observer_.Reset();
     std::move(on_ready_).Run(window);
@@ -262,7 +261,7 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
 
   bool is_first_launch = false;
 
-  const std::string* app_id = window->GetProperty(ash::kAppIDKey);
+  const auto app_id = GetAppId(window);
   DCHECK(app_id);
   // The state is |ArcResizeLockState::READY| only when we enable the resize
   // lock for an app for the first time.
@@ -316,7 +315,7 @@ void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
 void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
   DCHECK(ash::IsArcWindow(window));
 
-  const std::string* app_id = window->GetProperty(ash::kAppIDKey);
+  const auto app_id = GetAppId(window);
   if (!app_id)
     return;
   auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
