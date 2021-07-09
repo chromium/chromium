@@ -9,6 +9,9 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -17,15 +20,17 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
 #include "url/gurl.h"
+
+// TODO(https://crbug.com/1227477): move this class to chrome/browser/ui/views.
 
 namespace {
 
@@ -46,6 +51,31 @@ bool IsOAuth2RedirectURI(const GURL& url) {
   return url.host() == "google.com" && url.path() == "/generate_204";
 }
 
+gfx::NativeWindow FindMostRelevantContextWindow(
+    const content::WebContents* web_contents) {
+  // Can't just use web_contents->GetNativeView(): it results in a dialog that
+  // disappears upon browser going out of focus and cannot be re-activated or
+  // closed by user.
+  auto* browser =
+      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
+
+  // Back up methods are needed to find a window to attach the dialog to,
+  // because the |web_contents| from |download_item| is stored as a mapping
+  // inside of it and is not guaranteed to always exist or be valid. Example: if
+  // the original window got closed when download was still in progress; or if
+  // we need to resume file upload upon browser restart.
+  if (!browser) {
+    LOG(ERROR) << "Can't find window from download item; using active window";
+    browser = chrome::FindBrowserWithActiveWindow();
+  }
+  if (!browser) {
+    LOG(ERROR) << "Can't find active window; using last active window";
+    browser = chrome::FindLastActive();
+  }
+  DCHECK(browser);
+  return browser->window()->GetNativeWindow();
+}
+
 }  // namespace
 
 namespace enterprise_connectors {
@@ -60,7 +90,8 @@ FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
       web_view_(std::make_unique<views::WebView>(browser_context)),
       callback_(std::move(callback)) {
   SetHasWindowSizeControls(true);
-  SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
+  SetTitle(l10n_util::GetStringFUTF16(
+      IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_DIALOG_TITLE, GetProviderName()));
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_use_custom_frame(false);
 
@@ -103,16 +134,19 @@ void FileSystemSigninDialogDelegate::ShowDialog(
     const FileSystemSettings& settings,
     AuthorizationCompletedCallback callback) {
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  gfx::NativeView parent = web_contents->GetNativeView();
+  gfx::NativeWindow context = FindMostRelevantContextWindow(web_contents);
 
-  FileSystemSigninDialogDelegate* delegate = new FileSystemSigninDialogDelegate(
-      browser_context, settings, std::move(callback));
-  // Object will be deleted internally by widget via DeleteDelegate().
-  // TODO(https://crbug.com/1160012): use std::unique_ptr instead?
+  std::unique_ptr<FileSystemSigninDialogDelegate> delegate =
+      std::make_unique<FileSystemSigninDialogDelegate>(
+          browser_context, settings, std::move(callback));
 
-  views::DialogDelegate::CreateDialogWidget(delegate, nullptr, parent);
-  delegate->GetWidget()->Show();
-  // This only returns when the dialog is closed.
+  // We want a dialog whose lifetime is independent from that of |web_contents|,
+  // therefore using FindMostRelevantContextWindow() as context, instead of
+  // using web_contents->GetNativeView() as parent. This gives us a new
+  // top-level window.
+  auto* widget = views::DialogDelegate::CreateDialogWidget(
+      std::move(delegate), context, /* parent = */ nullptr);
+  widget->Show();
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -218,6 +252,11 @@ std::string FileSystemSigninDialogDelegate::GetProviderSpecificUrlParameters() {
   }
 
   return std::string();
+}
+
+std::u16string FileSystemSigninDialogDelegate::GetProviderName() const {
+  DCHECK_EQ(settings_.service_provider, kBoxProviderName);
+  return l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX);
 }
 
 BEGIN_METADATA(FileSystemSigninDialogDelegate, views::DialogDelegateView)

@@ -11387,6 +11387,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Google Drive
     </message>
 
+    <!-- Enterprise file system connector sign in dialog -->
+    <message name="IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_DIALOG_TITLE" desc="Title shown in dialog when prompting user to sign in to link a web drive account.">
+      Link <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph> account for Downloads
+    </message>
+
     <!-- App uninstall prompt title -->
     <message name="IDS_PROMPT_APP_UNINSTALL_TITLE" desc="Title text for uninstalling an app.">
       Uninstall "<ph name="APP_NAME">$1<ex>Gmail Checker</ex></ph>"?
