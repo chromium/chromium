@@ -30,6 +30,12 @@ const base::FeatureParam<std::string> kIdentifiabilityStudyPerSurfaceSettings =
 const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeSettings = {
     &kIdentifiabilityStudy, "TypeRate", ""};
 
+const base::FeatureParam<std::string> kIdentifiabilityStudyPerHashCost = {
+    &kIdentifiabilityStudy, "HashCost", ""};
+
+const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost = {
+    &kIdentifiabilityStudy, "TypeCost", ""};
+
 const base::FeatureParam<std::string>
     kIdentifiabilityStudySurfaceEquivalenceClasses = {&kIdentifiabilityStudy,
                                                       "Classes", ""};

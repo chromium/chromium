@@ -14,10 +14,12 @@ namespace features {
 
 // # Encoding of IdentifiableSurfaces:
 //
-// An IdentifiableSurface is encoded as the decimal representation of it's
-// ToUkmMetricHash() result.
+// When used in fieldtrial parameters, nn IdentifiableSurface is encoded as the
+// decimal representation of its ToUkmMetricHash() result. An
+// IdentifiableSurface::Type is encoded as the decimal representation of the
+// enum value.
 
-// Parent feature for all identifiability study logic.
+// Root feature for all identifiability study logic.
 //
 // If the feature is disabled, then this browser instance will not be
 // participating in the identifiability study. I.e. no identifiability metrics
@@ -140,6 +142,44 @@ extern const base::FeatureParam<std::string>
 //                type kCanvasReadback.
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyPerTypeSettings;
+
+// Per surface relative cost.
+//
+// Parameter name: "HashCost"
+// Parameter type: Comma separated list of <surface;cost> pairs.
+//
+// By default all surfaces cost 1 *average* surface. Exceptions are noted
+// individually and by type. This parameter contains individual costs.
+//
+// Costs are always specified in units of _average_ surface. The value can be
+// a float expressed in decimal.
+//
+// When specifying these values on the command-line, the commas and semicolons
+// should be escaped using URL encoding. I.e. '1;2,3;4' -> '1%3B2%2C3%3B4'.
+//
+// E.g.:
+//   * "261;0.5" : Sets the relative cost of 0.5 for surface with ID 261, which
+//   is a surface of type kWebFeature and token 1.
+extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerHashCost;
+
+// Per type relative cost.
+//
+// Parameter name: "TypeCost"
+// Parameter type: Comma separated list of <surface-type;cost> pairs.
+//
+// By default all surfaces cost 1 _average_ surface. Exceptions are noted
+// individually and by type. This parameter contains the per-type costs.
+//
+// Costs are always specified in units of _average_ surface. The value can be
+// a float expressed in decimal.
+//
+// When specifying these values on the command-line, the commas and semicolons
+// should be escaped using URL encoding. I.e. '1;2,3;4' -> '1%3B2%2C3%3B4'.
+//
+// E.g.:
+//   * "1;0.5" : Sets the relative cost of 0.5 for all surfaces of type
+//               kWebFeature.
+extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost;
 
 }  // namespace features
 

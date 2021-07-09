@@ -58,6 +58,8 @@ class ScopedPrivacyBudgetConfig {
     int max_surfaces = std::numeric_limits<int>::max();
     std::map<blink::IdentifiableSurface, int> per_surface_sampling_rate;
     std::map<blink::IdentifiableSurface::Type, int> per_type_sampling_rate;
+    IdentifiableSurfaceCostMap per_surface_cost;
+    IdentifiableSurfaceTypeCostMap per_type_cost;
     SurfaceSetEquivalentClassesList equivalence_classes;
   };
 

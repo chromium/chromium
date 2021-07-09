@@ -12,6 +12,8 @@ source_set("headers") {
     "privacy_budget_ukm_entry_filter.h",
     "representative_surface_set.h",
     "surface_set_equivalence.h",
+    "surface_set_valuation.h",
+    "surface_set_with_valuation.h",
   ]
 
   deps = [
@@ -33,6 +35,8 @@ source_set("privacy_budget") {
     "privacy_budget_ukm_entry_filter.cc",
     "representative_surface_set.cc",
     "surface_set_equivalence.cc",
+    "surface_set_valuation.cc",
+    "surface_set_with_valuation.cc",
   ]
 
   public_deps = [ ":headers" ]
@@ -61,6 +65,8 @@ source_set("unit_tests") {
     "privacy_budget_ukm_entry_filter_unittest.cc",
     "representative_surface_set_unittest.cc",
     "surface_set_equivalence_unittest.cc",
+    "surface_set_valuation_unittest.cc",
+    "surface_set_with_valuation_unittest.cc",
   ]
 
   deps = [

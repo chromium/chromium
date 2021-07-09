@@ -92,6 +92,16 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
                 EncodeIdentifiabilityFieldTrialParam(
                     parameters.per_type_sampling_rate)});
   }
+  if (!parameters.per_surface_cost.empty()) {
+    ftp.insert(
+        {features::kIdentifiabilityStudyPerHashCost.name,
+         EncodeIdentifiabilityFieldTrialParam(parameters.per_surface_cost)});
+  }
+  if (!parameters.per_type_cost.empty()) {
+    ftp.insert(
+        {features::kIdentifiabilityStudyPerTypeCost.name,
+         EncodeIdentifiabilityFieldTrialParam(parameters.per_type_cost)});
+  }
   if (!parameters.equivalence_classes.empty()) {
     ftp.insert(
         {features::kIdentifiabilityStudySurfaceEquivalenceClasses.name,
