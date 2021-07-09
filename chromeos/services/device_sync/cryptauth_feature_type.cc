@@ -8,7 +8,6 @@
 #include "base/base64url.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "crypto/sha2.h"
 
 namespace chromeos {

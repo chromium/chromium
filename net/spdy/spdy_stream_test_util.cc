@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "net/spdy/spdy_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"

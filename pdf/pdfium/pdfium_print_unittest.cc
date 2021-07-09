@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/pdfium/pdfium_engine.h"

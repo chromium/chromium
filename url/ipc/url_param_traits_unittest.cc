@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/stl_util.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

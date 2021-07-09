@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"

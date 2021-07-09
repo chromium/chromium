@@ -8,7 +8,6 @@
 #include <windows.foundation.h>
 #include <wrl/client.h>
 
-#include "base/stl_util.h"
 #include "base/test/gtest_util.h"
 #include "base/win/dispatch_stub.h"
 #include "base/win/scoped_safearray.h"

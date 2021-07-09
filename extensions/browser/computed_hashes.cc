@@ -15,7 +15,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "build/build_config.h"

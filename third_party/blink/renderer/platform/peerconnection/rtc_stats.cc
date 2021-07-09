@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_scoped_refptr_cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"

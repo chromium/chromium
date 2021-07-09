@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/protocol/unique_position.pb.h"

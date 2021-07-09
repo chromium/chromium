@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/sys_byteorder.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"

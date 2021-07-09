@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
