@@ -4994,10 +4994,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Customize and control <ph name="APP_NAME">$1<ex>GMail</ex></ph>
       </message>
       <message name="IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP">
-        Enable window controls overlay
+        Hide title bar
       </message>
       <message name="IDS_WEB_APP_DISABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP">
-        Disable window controls overlay
+        Show title bar
       </message>
 
       <!-- Components -->

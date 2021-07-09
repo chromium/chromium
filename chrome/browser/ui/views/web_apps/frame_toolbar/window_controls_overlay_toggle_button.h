@@ -21,10 +21,15 @@ class WindowControlsOverlayToggleButton : public ToolbarButton {
   ~WindowControlsOverlayToggleButton() override;
 
   void ButtonPressed(const ui::Event& event);
+  void SetColor(SkColor color);
+
+  // ToolbarButton:
+  void UpdateIcon() override;
 
  private:
   // The containing browser view.
   BrowserView* browser_view_;
+  SkColor icon_color_ = gfx::kPlaceholderColor;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WINDOW_CONTROLS_OVERLAY_TOGGLE_BUTTON_H_

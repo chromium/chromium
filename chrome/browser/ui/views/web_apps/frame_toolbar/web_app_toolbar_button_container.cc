@@ -85,6 +85,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
         std::make_unique<WindowControlsOverlayToggleButton>(browser_view_));
     views::SetHitTestComponent(window_controls_overlay_toggle_button_,
                                static_cast<int>(HTCLIENT));
+    ConfigureWebAppToolbarButton(window_controls_overlay_toggle_button_,
+                                 toolbar_button_provider_);
   }
 
   if (app_controller->HasTitlebarContentSettings()) {
@@ -168,10 +170,7 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
   if (web_app_origin_text_)
     web_app_origin_text_->SetTextColor(foreground_color_);
   if (window_controls_overlay_toggle_button_) {
-    window_controls_overlay_toggle_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kOverflowChevronIcon,
-                                       foreground_color_));
+    window_controls_overlay_toggle_button_->SetColor(foreground_color_);
   }
 
   if (content_settings_container_)
