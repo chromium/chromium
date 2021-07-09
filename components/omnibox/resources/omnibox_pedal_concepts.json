@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-07-02T01:23:17.277Z",
+  "time_generated": "2021-07-07T18:46:49.196Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -113,7 +113,7 @@
       "name": "CREATE_GOOGLE_SHEET",
       "enabled": true,
       "url": "https://docs.google.com/spreadsheets/u/0/create?usp=chrome_actions",
-      "description": "Create a new Google Sheet quickly (like sheet.new)\n",
+      "description": "Create a new Google Sheet quickly (like sheet.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET",
       "tags": "google"
     },
     {
@@ -121,7 +121,7 @@
       "name": "CREATE_GOOGLE_SLIDE",
       "enabled": true,
       "url": "https://docs.google.com/presentation/u/0/create?usp=chrome_actions",
-      "description": "Create new Google Slides quickly (like slide.new)",
+      "description": "Create new Google Slides quickly (like slide.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE",
       "tags": "google"
     },
     {
@@ -129,7 +129,7 @@
       "name": "CREATE_GOOGLE_CALENDAR_EVENT",
       "enabled": true,
       "url": "https://calendar.google.com/calendar/u/0/r/eventedit?usp=chrome_actions",
-      "description": "Create a new Google Calendar event quickly (like cal.new)",
+      "description": "Create a new Google Calendar event quickly (like cal.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT",
       "tags": "google"
     },
     {
@@ -137,7 +137,7 @@
       "name": "CREATE_GOOGLE_SITE",
       "enabled": true,
       "url": "https://sites.google.com/u/0/create?usp=chrome_actions",
-      "description": "Create a new Google Site quickly (like site.new)",
+      "description": "Create a new Google Site quickly (like site.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE",
       "tags": "google"
     },
     {
@@ -145,7 +145,7 @@
       "name": "CREATE_GOOGLE_KEEP_NOTE",
       "enabled": true,
       "url": "https://keep.google.com/u/0/?usp=chrome_actions#NEWNOTE",
-      "description": "Create a new Google Keep note quickly (like keep.new)",
+      "description": "Create a new Google Keep note quickly (like keep.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE",
       "tags": "google"
     },
     {
@@ -153,7 +153,7 @@
       "name": "CREATE_GOOGLE_FORM",
       "enabled": true,
       "url": "https://docs.google.com/forms/u/0/create?usp=chrome_actions",
-      "description": "Create a new Google Form quickly (like form.new)",
+      "description": "Create a new Google Form quickly (like form.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM",
       "tags": "google"
     },
     {
@@ -169,7 +169,7 @@
       "name": "SEE_CHROME_TIPS",
       "enabled": true,
       "url": "https://www.google.com/chrome/tips/",
-      "description": "Learn about new Chrome features",
+      "description": "Learn about new Chrome features\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_SEE_CHROME_TIPS_HINT\nIDS_OMNIBOX_PEDAL_SEE_CHROME_TIPS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_SEE_CHROME_TIPS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_SEE_CHROME_TIPS",
       "tags": ""
     },
     {
@@ -177,7 +177,7 @@
       "name": "MANAGE_GOOGLE_ACCOUNT",
       "enabled": true,
       "url": "https://myaccount.google.com/?utm_source=ga-chrome-actions&utm_medium=manageGA",
-      "description": "Manage your Google Account",
+      "description": "Manage your Google Account\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT",
       "tags": "google"
     },
     {
@@ -193,7 +193,7 @@
       "name": "CHANGE_GOOGLE_PASSWORD",
       "enabled": true,
       "url": "https://myaccount.google.com/signinoptions/password?utm_source=ga-chrome-actions&utm_medium=changePW",
-      "description": "Change the password for your Google Account",
+      "description": "Change the password for your Google Account\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_HINT\nIDS_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD",
       "tags": "google"
     },
     {
@@ -209,7 +209,7 @@
       "name": "CLOSE_INCOGNITO_WINDOWS",
       "enabled": true,
       "url": "",
-      "description": "Close incognito windows",
+      "description": "Close incognito windows\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_HINT\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS",
       "tags": "no_test,incognito"
     },
     {
@@ -217,7 +217,7 @@
       "name": "PLAY_CHROME_DINO_GAME",
       "enabled": true,
       "url": "chrome://dino",
-      "description": "Play the Chrome Dino running game",
+      "description": "Play the Chrome Dino running game\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_HINT\nIDS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME",
       "tags": ""
     }
   ],

@@ -316,7 +316,7 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     OmniboxPedal* pedal = pedal_iter->second.get();
     const base::Value* ui_strings =
         pedal_value.FindDictKey("omnibox_ui_strings");
-    if (ui_strings) {
+    if (ui_strings && pedal->GetLabelStrings().hint.empty()) {
       pedal->SetLabelStrings(*ui_strings);
     }
     const std::string* url = pedal_value.FindStringKey("url");
