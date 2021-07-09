@@ -438,49 +438,8 @@ void NGInlineLayoutAlgorithm::CreateLine(
 
   LayoutUnit block_offset = line_info->BfcOffset().block_offset;
   if (Node().HasRuby()) {
-    NGAnnotationMetrics annotation_metrics = ComputeAnnotationOverflow(
-        *line_box, line_box_metrics, LayoutUnit(), line_info->LineStyle());
-    LayoutUnit annotation_overflow_block_start;
-    LayoutUnit annotation_overflow_block_end;
-    LayoutUnit annotation_space_block_start;
-    LayoutUnit annotation_space_block_end;
-    if (!IsFlippedLinesWritingMode(line_info->LineStyle().GetWritingMode())) {
-      annotation_overflow_block_start = annotation_metrics.overflow_over;
-      annotation_overflow_block_end = annotation_metrics.overflow_under;
-      annotation_space_block_start = annotation_metrics.space_over;
-      annotation_space_block_end = annotation_metrics.space_under;
-    } else {
-      annotation_overflow_block_start = annotation_metrics.overflow_under;
-      annotation_overflow_block_end = annotation_metrics.overflow_over;
-      annotation_space_block_start = annotation_metrics.space_under;
-      annotation_space_block_end = annotation_metrics.space_over;
-    }
-
-    LayoutUnit block_offset_shift = annotation_overflow_block_start;
-    // If the previous line has block-end annotation overflow and this line has
-    // block-start annotation space, shift up the block offset of this line.
-    if (ConstraintSpace().BlockStartAnnotationSpace() < LayoutUnit() &&
-        annotation_space_block_start) {
-      const LayoutUnit overflow =
-          -ConstraintSpace().BlockStartAnnotationSpace();
-      block_offset_shift = -std::min(annotation_space_block_start, overflow);
-    }
-
-    // If this line has block-start annotation overflow and the previous line
-    // has block-end annotation space, borrow the block-end space of the
-    // previous line and shift down the block offset by |overflow - space|.
-    if (annotation_overflow_block_start &&
-        ConstraintSpace().BlockStartAnnotationSpace() > LayoutUnit()) {
-      block_offset_shift = (annotation_overflow_block_start -
-                            ConstraintSpace().BlockStartAnnotationSpace())
-                               .ClampNegativeToZero();
-    }
-    block_offset += block_offset_shift;
-
-    if (annotation_overflow_block_end)
-      container_builder_.SetAnnotationOverflow(annotation_overflow_block_end);
-    else if (annotation_space_block_end)
-      container_builder_.SetBlockEndAnnotationSpace(annotation_space_block_end);
+    block_offset +=
+        SetAnnotationOverflow(*line_info, *line_box, line_box_metrics);
   }
 
   if (line_info->UseFirstLineStyle())
@@ -967,6 +926,55 @@ LayoutUnit NGInlineLayoutAlgorithm::ApplyTextAlign(NGLineInfo* line_info) {
   }
 
   return LineOffsetForTextAlign(text_align, line_info->BaseDirection(), space);
+}
+
+LayoutUnit NGInlineLayoutAlgorithm::SetAnnotationOverflow(
+    const NGLineInfo& line_info,
+    const NGLogicalLineItems& line_box,
+    const FontHeight& line_box_metrics) {
+  NGAnnotationMetrics annotation_metrics = ComputeAnnotationOverflow(
+      line_box, line_box_metrics, LayoutUnit(), line_info.LineStyle());
+  LayoutUnit annotation_overflow_block_start;
+  LayoutUnit annotation_overflow_block_end;
+  LayoutUnit annotation_space_block_start;
+  LayoutUnit annotation_space_block_end;
+  if (!IsFlippedLinesWritingMode(line_info.LineStyle().GetWritingMode())) {
+    annotation_overflow_block_start = annotation_metrics.overflow_over;
+    annotation_overflow_block_end = annotation_metrics.overflow_under;
+    annotation_space_block_start = annotation_metrics.space_over;
+    annotation_space_block_end = annotation_metrics.space_under;
+  } else {
+    annotation_overflow_block_start = annotation_metrics.overflow_under;
+    annotation_overflow_block_end = annotation_metrics.overflow_over;
+    annotation_space_block_start = annotation_metrics.space_under;
+    annotation_space_block_end = annotation_metrics.space_over;
+  }
+
+  LayoutUnit block_offset_shift = annotation_overflow_block_start;
+  // If the previous line has block-end annotation overflow and this line has
+  // block-start annotation space, shift up the block offset of this line.
+  if (ConstraintSpace().BlockStartAnnotationSpace() < LayoutUnit() &&
+      annotation_space_block_start) {
+    const LayoutUnit overflow = -ConstraintSpace().BlockStartAnnotationSpace();
+    block_offset_shift = -std::min(annotation_space_block_start, overflow);
+  }
+
+  // If this line has block-start annotation overflow and the previous line
+  // has block-end annotation space, borrow the block-end space of the
+  // previous line and shift down the block offset by |overflow - space|.
+  if (annotation_overflow_block_start &&
+      ConstraintSpace().BlockStartAnnotationSpace() > LayoutUnit()) {
+    block_offset_shift = (annotation_overflow_block_start -
+                          ConstraintSpace().BlockStartAnnotationSpace())
+                             .ClampNegativeToZero();
+  }
+
+  if (annotation_overflow_block_end)
+    container_builder_.SetAnnotationOverflow(annotation_overflow_block_end);
+  else if (annotation_space_block_end)
+    container_builder_.SetBlockEndAnnotationSpace(annotation_space_block_end);
+
+  return block_offset_shift;
 }
 
 LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
