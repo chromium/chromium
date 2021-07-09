@@ -524,18 +524,6 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridHighlightConfigInfo(
   return grid_config_info;
 }
 
-std::unique_ptr<protocol::DictionaryValue>
-BuildContainerQueryContainerHighlightConfigInfo(
-    const InspectorContainerQueryContainerHighlightConfig& container_config) {
-  std::unique_ptr<protocol::DictionaryValue> container_config_info =
-      protocol::DictionaryValue::create();
-
-  AppendLineStyleConfig(container_config.container_border,
-                        container_config_info, "containerBorder");
-
-  return container_config_info;
-}
-
 // Swaps |left| and |top| of an offset.
 PhysicalOffset Transpose(PhysicalOffset& offset) {
   return PhysicalOffset(offset.top, offset.left);
@@ -1853,13 +1841,6 @@ void InspectorHighlight::AppendNodeHighlight(
           node, *(highlight_config.flex_item_highlight_config), scale_));
     }
   }
-
-  if (highlight_config.container_query_container_highlight_config) {
-    container_query_container_info_ = protocol::ListValue::create();
-    container_query_container_info_->pushValue(BuildContainerQueryContainerInfo(
-        node, *(highlight_config.container_query_container_highlight_config),
-        scale_));
-  }
 }
 
 std::unique_ptr<protocol::DictionaryValue> InspectorHighlight::AsProtocolValue()
@@ -1909,11 +1890,6 @@ std::unique_ptr<protocol::DictionaryValue> InspectorHighlight::AsProtocolValue()
     object->setValue("flexInfo", flex_container_info_->clone());
   if (flex_item_info_ && flex_item_info_->size() > 0)
     object->setValue("flexItemInfo", flex_item_info_->clone());
-  if (container_query_container_info_ &&
-      container_query_container_info_->size() > 0) {
-    object->setValue("containerQueryInfo",
-                     container_query_container_info_->clone());
-  }
   return object;
 }
 
@@ -2184,58 +2160,6 @@ std::unique_ptr<protocol::DictionaryValue> InspectorScrollSnapHighlight(
                               config.scroll_padding_color.Serialized());
 
   return scroll_snap_info;
-}
-
-std::unique_ptr<protocol::DictionaryValue> BuildContainerQueryContainerInfo(
-    Node* node,
-    const InspectorContainerQueryContainerHighlightConfig&
-        container_query_container_highlight_config,
-    float scale) {
-  if (!node)
-    return nullptr;
-
-  LayoutBox* layout_box = node->GetLayoutBox();
-  if (!layout_box)
-    return nullptr;
-
-  LocalFrameView* containing_view = node->GetDocument().View();
-  if (!containing_view)
-    return nullptr;
-
-  std::unique_ptr<protocol::DictionaryValue> container_query_container_info =
-      protocol::DictionaryValue::create();
-
-  PathBuilder container_builder;
-  auto content_box = layout_box->PhysicalContentBoxRect();
-  FloatQuad content_quad = layout_box->LocalRectToAbsoluteQuad(content_box);
-  FrameQuadToViewport(containing_view, content_quad);
-  container_builder.AppendPath(QuadToPath(content_quad), scale);
-  container_query_container_info->setValue("containerBorder",
-                                           container_builder.Release());
-
-  container_query_container_info->setValue(
-      "containerQueryContainerHighlightConfig",
-      BuildContainerQueryContainerHighlightConfigInfo(
-          container_query_container_highlight_config));
-
-  return container_query_container_info;
-}
-
-std::unique_ptr<protocol::DictionaryValue> InspectorContainerQueryHighlight(
-    Node* node,
-    const InspectorContainerQueryContainerHighlightConfig& config) {
-  LocalFrameView* frame_view = node->GetDocument().View();
-  if (!frame_view)
-    return nullptr;
-
-  std::unique_ptr<protocol::DictionaryValue> container_query_container_info =
-      BuildContainerQueryContainerInfo(node, config,
-                                       DeviceScaleFromFrameView(frame_view));
-
-  if (!container_query_container_info)
-    return nullptr;
-
-  return container_query_container_info;
 }
 
 // static

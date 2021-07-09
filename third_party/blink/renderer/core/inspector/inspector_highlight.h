@@ -115,15 +115,6 @@ struct CORE_EXPORT InspectorScrollSnapContainerHighlightConfig {
   Color scroll_padding_color;
 };
 
-struct CORE_EXPORT InspectorContainerQueryContainerHighlightConfig {
-  USING_FAST_MALLOC(InspectorContainerQueryContainerHighlightConfig);
-
- public:
-  InspectorContainerQueryContainerHighlightConfig() = default;
-
-  absl::optional<LineStyle> container_border;
-};
-
 struct CORE_EXPORT InspectorFlexItemHighlightConfig {
   USING_FAST_MALLOC(InspectorFlexItemHighlightConfig);
 
@@ -165,8 +156,6 @@ struct CORE_EXPORT InspectorHighlightConfig {
   std::unique_ptr<InspectorFlexContainerHighlightConfig>
       flex_container_highlight_config;
   std::unique_ptr<InspectorFlexItemHighlightConfig> flex_item_highlight_config;
-  std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>
-      container_query_container_highlight_config;
 };
 
 struct InspectorHighlightContrastInfo {
@@ -263,7 +252,6 @@ class CORE_EXPORT InspectorHighlight : public InspectorHighlightBase {
   std::unique_ptr<protocol::ListValue> grid_info_;
   std::unique_ptr<protocol::ListValue> flex_container_info_;
   std::unique_ptr<protocol::ListValue> flex_item_info_;
-  std::unique_ptr<protocol::ListValue> container_query_container_info_;
   bool show_rulers_;
   bool show_extension_lines_;
   bool show_accessibility_info_;
@@ -282,20 +270,9 @@ std::unique_ptr<protocol::DictionaryValue> InspectorScrollSnapHighlight(
     Node* node,
     const InspectorScrollSnapContainerHighlightConfig& config);
 
-std::unique_ptr<protocol::DictionaryValue> InspectorContainerQueryHighlight(
-    Node* node,
-    const InspectorContainerQueryContainerHighlightConfig& config);
-
-// CORE_EXPORT is required to make these functions available for unit tests.
+// CORE_EXPORT is required to make the function available for unit tests.
 std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
 BuildSnapContainerInfo(Node* node);
-
-std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
-BuildContainerQueryContainerInfo(
-    Node* node,
-    const InspectorContainerQueryContainerHighlightConfig&
-        container_query_container_highlight_config,
-    float scale);
 
 }  // namespace blink
 
