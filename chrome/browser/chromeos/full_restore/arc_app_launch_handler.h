@@ -92,6 +92,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // Returns true if the app is ready to be launched. Otherwise, returns false.
   bool IsAppReady(const std::string& app_id);
 
+  void LaunchApp(const std::string& app_id, int32_t window_id);
+
   // Invoked when the app of the given `app_id` is removed.
   void RemoveApp(const std::string& app_id);
 
@@ -119,6 +121,9 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // ARC app windows without the window stack info. This list is used to save
   // the windows to be restored.
   std::list<WindowInfo> no_stack_windows_;
+
+  std::map<int32_t, int32_t> window_id_to_session_id_;
+  std::map<int32_t, int32_t> session_id_to_window_id_;
 
   ArcWindowHandler* window_handler_ = nullptr;
 
