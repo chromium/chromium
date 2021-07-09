@@ -294,6 +294,10 @@ const base::Feature kDesktopPWAsTabStripLinkCapturing{
 const base::Feature kDesktopPWAsTabStripSettings{
     "DesktopPWAsTabStripSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Adds support for web bundles, making web apps able to be launched offline.
+const base::Feature kDesktopPWAsWebBundles{"DesktopPWAsWebBundles",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {
   "DnsOverHttps",

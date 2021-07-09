@@ -46049,6 +46049,7 @@ from previous Chrome versions.
   <int value="-2132161378" label="SendTabToSelfHistory:disabled"/>
   <int value="-2131746498"
       label="AutofillUseImprovedLabelDisambiguation:enabled"/>
+  <int value="-2130982324" label="DesktopPWAsWebBundles:disabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
   <int value="-2129013032" label="DocumentTransition:enabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
@@ -50760,6 +50761,7 @@ from previous Chrome versions.
   <int value="1775475563" label="malware-interstitial-v3"/>
   <int value="1775652804" label="OmniboxBookmarkPaths:disabled"/>
   <int value="1775730290" label="OmniboxKeywordSearchButton:enabled"/>
+  <int value="1776163541" label="DesktopPWAsWebBundles:enabled"/>
   <int value="1776475705" label="show-composited-layer-borders"/>
   <int value="1777059507" label="trust-autofill-server-name-types"/>
   <int value="1777241671" label="EnableAriaElementReflection:disabled"/>

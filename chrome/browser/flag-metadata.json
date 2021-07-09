@@ -1768,6 +1768,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-desktop-pwas-web-bundles",
+    "owners": [ "loyso@chromium.org", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-desktop-pwas-window-controls-overlay",
     "owners": [ "ambake@microsoft.com", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 96

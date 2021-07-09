@@ -835,6 +835,11 @@ const char kDesktopPWAsWindowControlsOverlayDescription[] =
     "override. Prototype implementation of: "
     "https://github.com/WICG/window-controls-overlay/blob/main/explainer.md";
 
+const char kDesktopPWAsWebBundlesName[] = "Desktop PWAs Web Bundles";
+const char kDesktopPWAsWebBundlesDescription[] =
+    "Adds support for web bundles, making web apps able to be launched "
+    "offline.";
+
 const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteName[] =
     "Migrate default G Suite Chrome apps to web apps";
 const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteDescription[] =

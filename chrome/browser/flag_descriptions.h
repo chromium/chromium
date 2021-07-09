@@ -495,6 +495,9 @@ extern const char kDesktopPWAsProtocolHandlingDescription[];
 extern const char kDesktopPWAsUrlHandlingName[];
 extern const char kDesktopPWAsUrlHandlingDescription[];
 
+extern const char kDesktopPWAsWebBundlesName[];
+extern const char kDesktopPWAsWebBundlesDescription[];
+
 extern const char kDesktopPWAsWindowControlsOverlayName[];
 extern const char kDesktopPWAsWindowControlsOverlayDescription[];
 
