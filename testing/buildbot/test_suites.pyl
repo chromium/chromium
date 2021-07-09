@@ -5554,6 +5554,20 @@
       'webview_ui_instrumentation_tests',
     ],
 
+    'android_12_emulator_gtests': [
+      'android_monochrome_smoke_tests',
+      'android_smoke_tests',
+      'android_specific_chromium_gtests',  # Already includes gl_gtests.
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'linux_flavor_specific_chromium_gtests',
+      'system_webview_shell_instrumentation_tests', # Not an experimental test
+      'weblayer_android_gtests',
+      'weblayer_gtests',
+      'webview_cts_tests_gtest',
+      'webview_ui_instrumentation_tests',
+    ],
+
     # This is the same as 'android_lollipop_marshmallow_gtests'
     # with the addition of 'webview_cts_tests_gtest' and
     # 'webview_ui_instrumentation_tests'
