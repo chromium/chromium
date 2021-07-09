@@ -258,6 +258,7 @@ ts_definitions("generate_definitions") {
   js_files = [
     "cr_components/managed_dialog/managed_dialog.js",
     "cr_elements/action_link_css.m.js",
+    "cr_elements/cr_a11y_announcer/cr_a11y_announcer.js",
     "cr_elements/cr_actionable_row_style.m.js",
     "cr_elements/cr_fingerprint/cr_fingerprint_icon.m.js",
     "cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js",

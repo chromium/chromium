@@ -155,6 +155,7 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "action_link_css.m.js",
+    "cr_a11y_announcer/cr_a11y_announcer.js",
     "cr_actionable_row_style.m.js",
     "cr_action_menu/cr_action_menu.m.js",
     "cr_button/cr_button.m.js",
@@ -251,6 +252,7 @@ group("closure_compile") {
 
     # Targets for auto-generated Polymer 3 JS Modules
     ":cr_elements_module_resources",
+    "cr_a11y_announcer:closure_compile",
     "cr_action_menu:closure_compile_module",
     "cr_button:closure_compile_module",
     "cr_checkbox:closure_compile_module",
@@ -379,6 +381,7 @@ group("polymer3_elements") {
     ":shared_style_css_module",
     ":shared_vars_css_module",
     ":web_components",
+    "cr_a11y_announcer:web_components",
     "cr_action_menu:cr_action_menu_module",
     "cr_button:cr_button_module",
     "cr_checkbox:cr_checkbox_module",
