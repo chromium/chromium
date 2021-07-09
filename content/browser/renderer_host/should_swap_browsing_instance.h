@@ -18,7 +18,9 @@ enum class ShouldSwapBrowsingInstance {
   kNo_HasRelatedActiveContents = 3,
   kNo_DoesNotHaveSite = 4,
   kNo_SourceURLSchemeIsNotHTTPOrHTTPS = 5,
-  kNo_DestinationURLSchemeIsNotHTTPOrHTTPS = 6,
+  // 6: kNo_DestinationURLSchemeIsNotHTTPOrHTTPS was removed as the scheme of
+  // the destination URL should not affect back-forward cache eligibility, so
+  // we don't need to avoid doing a proactive BrowsingInstance swap due to it.
   kNo_SameSiteNavigation = 7,
   kNo_ReloadingErrorPage = 8,
   kNo_AlreadyHasMatchingBrowsingInstance = 9,

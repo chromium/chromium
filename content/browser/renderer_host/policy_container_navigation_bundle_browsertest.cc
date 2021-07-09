@@ -212,15 +212,14 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
 // are ignored in favor of the policies from the entry.
 IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
                        FinalPoliciesAboutSrcDocWithParentAndHistory) {
-  RenderFrameHostImpl* root = root_frame_host();
-
   // First navigate to a local scheme with non-default policies. To do that, we
   // first navigate to a document with a public address space, then have that
   // document navigate itself to `about:blank`. The final blank document
   // inherits its policies from the first document, and stores them in its
   // frame navigation entry for restoring later.
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), PublicUrl()));
-  EXPECT_TRUE(NavigateToURLFromRenderer(root, AboutBlankUrl()));
+  EXPECT_TRUE(NavigateToURLFromRenderer(root_frame_host(), AboutBlankUrl()));
+  RenderFrameHostImpl* root = root_frame_host();
 
   // Embed another frame with different policies, to use as the "parent".
   std::string script_template = R"(

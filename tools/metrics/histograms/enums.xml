@@ -6802,7 +6802,7 @@ others/histograms.xml -->
   <int value="3" label="Has related active contents"/>
   <int value="4" label="Does not have a site"/>
   <int value="5" label="Source URL scheme is not HTTP(S)"/>
-  <int value="6" label="Destination URL scheme is not HTTP(S)"/>
+  <int value="6" label="Destination URL scheme is not HTTP(S) (removed)"/>
   <int value="7"
       label="Same site navigation, same-site proactive swap disabled"/>
   <int value="8" label="Error page"/>

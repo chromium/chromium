@@ -5207,8 +5207,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheHTTPDocumentOnly) {
 
     // 1) Navigate to.
     EXPECT_TRUE(NavigateToURL(shell(), test_case.url));
-    RenderFrameHostImpl* rfh = current_frame_host();
-    RenderFrameDeletedObserver delete_observer(rfh);
+    RenderFrameHostImplWrapper rfh(current_frame_host());
 
     // 2) Navigate away.
     hostname[0]++;
@@ -5216,22 +5215,22 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheHTTPDocumentOnly) {
     EXPECT_TRUE(NavigateToURL(shell(), reset_url));
 
     if (test_case.expectation == STORED) {
-      EXPECT_FALSE(delete_observer.deleted());
+      EXPECT_FALSE(rfh.IsRenderFrameDeleted());
       EXPECT_TRUE(rfh->IsInBackForwardCache());
       continue;
     }
 
-    // On Android, navigations to about:blank keeps the same RenderFrameHost.
-    // Obviously, it can't enter the BackForwardCache, because it is still used
-    // to display the current document.
-    if (test_case.url == blank_url && !AreStrictSiteInstancesEnabled()) {
-      EXPECT_FALSE(delete_observer.deleted());
+    if (rfh.get() == current_frame_host()) {
+      // If the RenderFrameHost is reused, it won't be deleted, so don't wait
+      // for deletion. Just check that it's not saved in the back-forward cache.
+      EXPECT_FALSE(rfh.IsRenderFrameDeleted());
       EXPECT_FALSE(rfh->IsInBackForwardCache());
-      EXPECT_EQ(rfh, current_frame_host());
       continue;
     }
 
-    delete_observer.WaitUntilDeleted();
+    // When the RenderFrameHost is not reused and it's not stored in the
+    // back-forward cache, it will eventually be deleted.
+    rfh.WaitUntilRenderFrameDeleted();
   }
 }
 
@@ -10768,9 +10767,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AboutBlankWillNotBeCached) {
       {}, {ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite}, {}, FROM_HERE);
 }
 
-// Check that the page is not cached when navigating to about:blank.
+// Check that an eligible page is cached when navigating to about:blank.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       NavigatingToAboutBlankPreventsCaching) {
+                       NavigatingToAboutBlankDoesNotPreventCaching) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a.com,
@@ -10785,16 +10784,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  // about:blank doesn't have a scheme http or https, and then this navigation
-  // doesn't swapt the browsing instance.
-  ExpectNotRestored(
-      {
-          BackForwardCacheMetrics::NotRestoredReason::
-              kBrowsingInstanceNotSwapped,
-      },
-      {},
-      {ShouldSwapBrowsingInstance::kNo_DestinationURLSchemeIsNotHTTPOrHTTPS},
-      {}, FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Check that browsing instances are not swapped when a navigation redirects

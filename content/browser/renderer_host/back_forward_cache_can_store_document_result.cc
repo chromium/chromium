@@ -43,8 +43,6 @@ const char* BrowsingInstanceSwapResultToString(
       return "BI not swapped - current SiteInstance does not have site";
     case ShouldSwapBrowsingInstance::kNo_SourceURLSchemeIsNotHTTPOrHTTPS:
       return "BI not swapped - source URL scheme is not HTTP(S)";
-    case ShouldSwapBrowsingInstance::kNo_DestinationURLSchemeIsNotHTTPOrHTTPS:
-      return "BI not swapped - destination URL scheme is not HTTP(S)";
     case ShouldSwapBrowsingInstance::kNo_SameSiteNavigation:
       return "BI not swapped - same site navigation";
     case ShouldSwapBrowsingInstance::kNo_ReloadingErrorPage:

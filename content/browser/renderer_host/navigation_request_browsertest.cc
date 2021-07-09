@@ -2490,9 +2490,15 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, StartToCommitMetrics) {
   }
   {
     base::HistogramTester histograms;
+    int previous_process_id =
+        shell()->web_contents()->GetMainFrame()->GetProcess()->GetID();
     EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-    check_navigation(histograms, ProcessType::kSame, FrameType::kMain,
-                     TransitionType::kNew);
+    bool process_changed =
+        (previous_process_id !=
+         shell()->web_contents()->GetMainFrame()->GetProcess()->GetID());
+    check_navigation(histograms,
+                     process_changed ? ProcessType::kCross : ProcessType::kSame,
+                     FrameType::kMain, TransitionType::kNew);
   }
 
   // Subframe tests. All of these tests just navigate a frame within

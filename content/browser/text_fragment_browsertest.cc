@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -815,6 +816,12 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, ScrollRestorationDisabled) {
   ASSERT_NO_FATAL_FAILURE(LoadScrollablePageWithContent("/index.html"));
 
   WebContents* main_contents = shell()->web_contents();
+  // This test expects the document is freshly loaded on the back navigation
+  // so that the document policy to force-load-at-top will run. This will not
+  // happen if the document is back-forward cached, so we need to disable it.
+  DisableBackForwardCacheForTesting(main_contents,
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+
   RenderFrameSubmissionObserver frame_observer(main_contents);
 
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));

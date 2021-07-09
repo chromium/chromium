@@ -239,9 +239,6 @@ ShouldSwapBrowsingInstanceToProto(ShouldSwapBrowsingInstance result) {
     case ShouldSwapBrowsingInstance::kNo_SourceURLSchemeIsNotHTTPOrHTTPS:
       return ProtoLevel::
           SHOULD_SWAP_BROWSING_INSTANCE_NO_SOURCE_URL_SCHEME_NOT_HTTP_OR_HTTPS;
-    case ShouldSwapBrowsingInstance::kNo_DestinationURLSchemeIsNotHTTPOrHTTPS:
-      return ProtoLevel::
-          SHOULD_SWAP_BROWSING_INSTANCE_NO_DESTINATION_URL_SCHEME_NOT_HTTP_OR_HTTPS;
     case ShouldSwapBrowsingInstance::kNo_SameSiteNavigation:
       return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_SAME_SITE_NAVIGATION;
     case ShouldSwapBrowsingInstance::kNo_ReloadingErrorPage:
@@ -1697,16 +1694,12 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   if (!current_instance->HasSite())
     return ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite;
 
-  // Exclude non http(s) schemes. Some tests don't expect navigations to
-  // data-URL or to about:blank to switch to a different BrowsingInstance.
+  // Do not do a proactive BrowsingInstance swap when the previous document's
+  // scheme is not HTTP/HTTPS, since only HTTP/HTTPS documents are eligible for
+  // back-forward cache.
   const GURL& current_url = render_frame_host_->GetLastCommittedURL();
   if (!current_url.SchemeIsHTTPOrHTTPS())
     return ShouldSwapBrowsingInstance::kNo_SourceURLSchemeIsNotHTTPOrHTTPS;
-
-  const GURL& destination_effective_url = SiteInstanceImpl::GetEffectiveURL(
-      current_instance->GetBrowserContext(), destination_url_info.url);
-  if (!destination_effective_url.SchemeIsHTTPOrHTTPS())
-    return ShouldSwapBrowsingInstance::kNo_DestinationURLSchemeIsNotHTTPOrHTTPS;
 
   // WebView guests currently need to stay in the same SiteInstance and
   // BrowsingInstance.

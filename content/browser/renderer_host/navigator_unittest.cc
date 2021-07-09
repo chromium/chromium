@@ -1168,7 +1168,6 @@ TEST_F(NavigatorTest, DataUrls) {
   navigation_to_data_url->Start();
   EXPECT_FALSE(main_test_rfh()->is_loading());
   EXPECT_TRUE(node->navigation_request());
-  EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
 }
 
 // Tests several cases for converting SiteInstanceDescriptors into

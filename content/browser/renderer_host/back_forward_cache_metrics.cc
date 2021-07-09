@@ -477,7 +477,6 @@ bool BackForwardCacheMetrics::DidSwapBrowsingInstance() const {
     case ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents:
     case ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite:
     case ShouldSwapBrowsingInstance::kNo_SourceURLSchemeIsNotHTTPOrHTTPS:
-    case ShouldSwapBrowsingInstance::kNo_DestinationURLSchemeIsNotHTTPOrHTTPS:
     case ShouldSwapBrowsingInstance::kNo_SameSiteNavigation:
     case ShouldSwapBrowsingInstance::kNo_ReloadingErrorPage:
     case ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance:
