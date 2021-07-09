@@ -107,7 +107,7 @@ public class ContinuousSearchTabObserverTest {
     public void testLoadNonSrpUrl() {
         InOrder inOrder = inOrder(mUserDataMock);
 
-        mObserver.onPageLoadStarted(mTabMock, mNonSrpUrl);
+        mObserver.onUpdateUrl(mTabMock, mNonSrpUrl);
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mNonSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mNonSrpUrl);
@@ -121,7 +121,7 @@ public class ContinuousSearchTabObserverTest {
     public void testLoadSrpUrl() {
         InOrder inOrder = inOrder(mUserDataMock, mProducerMock);
 
-        mObserver.onPageLoadStarted(mTabMock, mSrpUrl);
+        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
@@ -143,7 +143,7 @@ public class ContinuousSearchTabObserverTest {
     public void testLoadSrpUrlWithError() {
         InOrder inOrder = inOrder(mUserDataMock, mProducerMock);
 
-        mObserver.onPageLoadStarted(mTabMock, mSrpUrl);
+        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
@@ -162,7 +162,7 @@ public class ContinuousSearchTabObserverTest {
     public void testCloseContents() {
         InOrder inOrder = inOrder(mUserDataMock, mProducerMock);
 
-        mObserver.onPageLoadStarted(mTabMock, mSrpUrl);
+        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
@@ -181,7 +181,7 @@ public class ContinuousSearchTabObserverTest {
     public void testLoadSrpUrlThenCloseTab() {
         InOrder inOrder = inOrder(mUserDataMock, mProducerMock, mTabMock);
 
-        mObserver.onPageLoadStarted(mTabMock, mSrpUrl);
+        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
@@ -222,7 +222,7 @@ public class ContinuousSearchTabObserverTest {
         final long nativePtr = 123L;
         doReturn(nativePtr).when(mSearchResultExtractorProducerJniMock).create(any());
 
-        mObserver.onPageLoadStarted(mTabMock, mSrpUrl);
+        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
 
         Assert.assertEquals(1,

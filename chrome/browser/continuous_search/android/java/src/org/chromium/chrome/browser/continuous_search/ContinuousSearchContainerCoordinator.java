@@ -100,6 +100,10 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         if (mLayoutInitialized) return;
 
         mRootView = (ContinuousSearchViewResourceFrameLayout) mViewStub.inflate();
+        // Ensure the root view isn't shown until it is set by the property model. This avoids some
+        // animation jank when animations are off.
+        mRootView.setVisibility(View.INVISIBLE);
+
         mSceneLayer = new ContinuousSearchSceneLayer(
                 mResourceManager, mRootView, mRootView.getShadowHeight());
         mLayoutManager.addSceneOverlay(mSceneLayer);

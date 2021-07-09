@@ -162,20 +162,35 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
             int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+        updateState();
+    }
+
+    @Override
+    public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
+        // When animations are disabled {@link #onControlsOffsetChanged} isn't always called when
+        // navigating between pages as the topbar doesn't always move.
+        // TODO(crbug/1217105): updateState() should be calculated relative to the content offset
+        // rather than top offset to ensure this works properly regardless of whether this is
+        // animated.
+        updateState();
+    }
+
+    private void updateState() {
+        final int topControlsHeight = mBrowserControlsStateProvider.getTopControlsHeight();
+        final int topControlsMinHeight = mBrowserControlsStateProvider.getTopControlsMinHeight();
+
         // Whether container height is part of top controls height.
-        boolean isIncludedInHeight = mBrowserControlsStateProvider.getTopControlsHeight()
-                > mDefaultTopContainerHeightSupplier.get()
-                        + mBrowserControlsStateProvider.getTopControlsMinHeight();
+        boolean isIncludedInHeight =
+                topControlsHeight > mDefaultTopContainerHeightSupplier.get() + topControlsMinHeight;
+
+        final int topOffset = mBrowserControlsStateProvider.getTopControlOffset();
         // Whether the part of top controls that is not included in min height visible.
-        boolean isNonMinHeightTopControlsVisible = topOffset
-                        + mBrowserControlsStateProvider.getTopControlsHeight()
-                        - mBrowserControlsStateProvider.getTopControlsMinHeight()
-                > 0;
+        boolean isNonMinHeightTopControlsVisible =
+                (topOffset + topControlsHeight - topControlsMinHeight) > 0;
         // Whether container is at least partly visible.
         boolean isUiVisible = isIncludedInHeight && isNonMinHeightTopControlsVisible;
         final boolean uiFullyVisible = isUiVisible && topOffset == 0;
-        int yOffset = topOffset + mBrowserControlsStateProvider.getTopControlsMinHeight()
-                + mDefaultTopContainerHeightSupplier.get();
+        int yOffset = topOffset + topControlsMinHeight + mDefaultTopContainerHeightSupplier.get();
         mModel.set(ContinuousSearchContainerProperties.VERTICAL_OFFSET, yOffset);
 
         // Show the composited view when the UI is at least partly visible and native

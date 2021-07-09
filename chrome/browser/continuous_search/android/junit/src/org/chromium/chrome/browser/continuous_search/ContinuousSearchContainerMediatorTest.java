@@ -40,6 +40,7 @@ public class ContinuousSearchContainerMediatorTest {
     private int mCurrentTopControlsHeight;
     private int mCurrentTopControlsMinHeight;
     private int mCurrentExpectedHeight;
+    private int mCurrentTopOffset;
     private boolean mCanAnimateNative;
     private CallbackHelper mOnHidden;
     private static final int DEFAULT_MIN_HEIGHT = 40;
@@ -75,7 +76,7 @@ public class ContinuousSearchContainerMediatorTest {
 
                     @Override
                     public int getTopControlOffset() {
-                        return 0;
+                        return mCurrentTopOffset;
                     }
 
                     @Override
@@ -470,6 +471,7 @@ public class ContinuousSearchContainerMediatorTest {
             boolean expectedCompositedViewVisibility, int expectedAndroidViewVisibility) {
         mCurrentTopControlsHeight = topControlsHeight;
         mCurrentTopControlsMinHeight = minHeight;
+        mCurrentTopOffset = topOffset;
         mCanAnimateNative = canAnimate;
         mCurrentBrowserControlsObserver.onControlsOffsetChanged(topOffset, 0, 0, 0, true);
         assertModelVerticalOffset(expectedVerticalOffset);
