@@ -1060,6 +1060,97 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testShoppingFetcherActiveForForUngroupedTabs() {
+        prepareForPriceDrop();
+        resetWithRegularTabs(false);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.ShoppingPersistedTabDataFetcher.class));
+        assertThat(mModel.get(1).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.ShoppingPersistedTabDataFetcher.class));
+    }
+
+    @Test
+    public void testShoppingFetcherInactiveForForGroupedTabs() {
+        prepareForPriceDrop();
+        resetWithRegularTabs(true);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertNull(mModel.get(0).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER));
+        assertNull(mModel.get(1).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER));
+    }
+
+    @Test
+    public void testShoppingFetcherGroupedThenUngrouped() {
+        prepareForPriceDrop();
+        resetWithRegularTabs(true);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertNull(mModel.get(0).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER));
+        assertNull(mModel.get(1).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER));
+        resetWithRegularTabs(false);
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.ShoppingPersistedTabDataFetcher.class));
+        assertThat(mModel.get(1).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.ShoppingPersistedTabDataFetcher.class));
+    }
+
+    @Test
+    public void testShoppingFetcherUngroupedThenGrouped() {
+        prepareForPriceDrop();
+        resetWithRegularTabs(false);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.ShoppingPersistedTabDataFetcher.class));
+        assertThat(mModel.get(1).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.ShoppingPersistedTabDataFetcher.class));
+        resetWithRegularTabs(true);
+        assertThat(mModel.size(), equalTo(2));
+        assertNull(mModel.get(0).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER));
+        assertNull(mModel.get(1).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER));
+    }
+
+    /**
+     * Set flags and initialize for verifying price drop behavior
+     */
+    private void prepareForPriceDrop() {
+        PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PersistedTabDataConfiguration.setUseTestConfig(true);
+        initAndAssertAllProperties();
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER);
+    }
+
+    /**
+     * Reset mediator with non-incognito tabs which are optionally grouped
+     * @param isGrouped true if the tabs should be grouped
+     */
+    private void resetWithRegularTabs(boolean isGrouped) {
+        doReturn(mTab1).when(mTabModelFilter).getTabAt(0);
+        doReturn(mTab2).when(mTabModelFilter).getTabAt(1);
+        doReturn(2).when(mTabModelFilter).getCount();
+        doReturn(mTabModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
+        if (isGrouped) {
+            doReturn(Arrays.asList(mTab1, mTab2))
+                    .when(mTabModelFilter)
+                    .getRelatedTabList(eq(TAB1_ID));
+            doReturn(Arrays.asList(mTab1, mTab2))
+                    .when(mTabModelFilter)
+                    .getRelatedTabList(eq(TAB2_ID));
+        } else {
+            doReturn(Arrays.asList(mTab1)).when(mTabModelFilter).getRelatedTabList(eq(TAB1_ID));
+            doReturn(Arrays.asList(mTab2)).when(mTabModelFilter).getRelatedTabList(eq(TAB2_ID));
+        }
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        doReturn(false).when(mTab1).isIncognito();
+        doReturn(false).when(mTab2).isIncognito();
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
+    }
+
+    @Test
     public void tabMoveOutOfGroup_Dialog() {
         setUpForTabGroupOperation(TabListMediatorType.TAB_GRID_DIALOG);
 
@@ -1920,6 +2011,7 @@ public class TabListMediatorUnitTest {
             for (boolean priceTrackingEnabled : new boolean[] {false, true}) {
                 for (boolean incognito : new boolean[] {false, true}) {
                     TabListMediator mMediatorSpy = spy(mMediator);
+                    doReturn(true).when(mMediatorSpy).isUngroupedTab(anyInt());
                     PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(
                             signedInAndSyncEnabled);
                     PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
