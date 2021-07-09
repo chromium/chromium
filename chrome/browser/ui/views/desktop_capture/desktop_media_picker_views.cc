@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
-#include "chrome/browser/ui/views/desktop_capture/get_current_browsing_context_media_dialog.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -675,10 +674,5 @@ void DesktopMediaPickerViews::NotifyDialogResult(DesktopMediaID source) {
 // static
 std::unique_ptr<DesktopMediaPicker> DesktopMediaPicker::Create(
     const content::MediaStreamRequest* request) {
-  if (request && DesktopMediaList::kConfirmationOnlyDialogSupported &&
-      request->video_type ==
-          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
-    return std::make_unique<GetCurrentBrowsingContextMediaDialog>();
-  }
   return std::make_unique<DesktopMediaPickerViews>();
 }

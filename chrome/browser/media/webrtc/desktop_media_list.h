@@ -47,9 +47,6 @@ class DesktopMediaList {
 
   using UpdateCallback = base::OnceClosure;
 
-  // TODO(crbug.com/1136942): Add support for this flow.
-  static constexpr bool kConfirmationOnlyDialogSupported = false;
-
   virtual ~DesktopMediaList() {}
 
   // Sets time interval between updates. By default list of sources and their
