@@ -139,6 +139,7 @@ class LogoutConfirmationController;
 class LoginScreenController;
 class LoginUnlockThroughputRecorder;
 class MarkerController;
+class TabClusterUIController;
 class TabletModeController;
 class MediaControllerImpl;
 class MessageCenterAshImpl;
@@ -521,6 +522,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   SystemTrayNotifier* system_tray_notifier() {
     return system_tray_notifier_.get();
   }
+  TabClusterUIController* tab_cluster_ui_controller() const {
+    return tab_cluster_ui_controller_.get();
+  }
   TabletModeController* tablet_mode_controller() const {
     return tablet_mode_controller_.get();
   }
@@ -729,6 +733,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<LocaleUpdateControllerImpl> locale_update_controller_;
   std::unique_ptr<LoginScreenController> login_screen_controller_;
   std::unique_ptr<LogoutConfirmationController> logout_confirmation_controller_;
+  std::unique_ptr<TabClusterUIController> tab_cluster_ui_controller_;
   std::unique_ptr<TabletModeController> tablet_mode_controller_;
   std::unique_ptr<MessageCenterAshImpl> message_center_ash_impl_;
   std::unique_ptr<MediaControllerImpl> media_controller_;

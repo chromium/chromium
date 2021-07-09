@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
+#include "chrome/browser/ui/ash/tab_cluster_ui_client.h"
 #include "chrome/browser/ui/ash/tab_scrubber.h"
 #include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
@@ -184,6 +185,14 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   system_tray_client_ = std::make_unique<SystemTrayClientImpl>();
   network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
 
+  if (ash::features::IsTabClusterUIEnabled()) {
+    ash::TabClusterUIController* tab_cluster_ui_controller =
+        ash::Shell::Get()->tab_cluster_ui_controller();
+    DCHECK(tab_cluster_ui_controller);
+    tab_cluster_ui_client_ =
+        std::make_unique<TabClusterUIClient>(tab_cluster_ui_controller);
+  }
+
   tablet_mode_page_behavior_ = std::make_unique<TabletModePageBehavior>();
   vpn_list_forwarder_ = std::make_unique<VpnListForwarder>();
 
@@ -268,6 +277,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   wallpaper_controller_client_.reset();
   vpn_list_forwarder_.reset();
+
+  tab_cluster_ui_client_.reset();
 
   // Initialized in PostProfileInit (which may not get called in some tests).
   network_portal_notification_controller_.reset();

@@ -85,6 +85,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/views_text_services_context_menu_impl.h"
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -842,6 +843,8 @@ Shell::~Shell() {
   // the active desk is no longer needed.
   desks_controller_.reset();
 
+  tab_cluster_ui_controller_.reset();
+
   focus_rules_ = nullptr;
   focus_controller_.reset();
   screen_position_controller_.reset();
@@ -1038,6 +1041,9 @@ void Shell::Init(
 
   frame_throttling_controller_ =
       std::make_unique<FrameThrottlingController>(context_factory);
+
+  if (features::IsTabClusterUIEnabled())
+    tab_cluster_ui_controller_ = std::make_unique<TabClusterUIController>();
 
   window_tree_host_manager_->Start();
   AshWindowTreeHostInitParams ash_init_params;

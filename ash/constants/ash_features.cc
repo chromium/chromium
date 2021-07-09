@@ -962,6 +962,10 @@ const base::Feature kSystemLatinPhysicalTyping{
 const base::Feature kSystemProxyForSystemServices{
     "SystemProxyForSystemServices", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the UI to show tab cluster info.
+const base::Feature kTabClusterUI{"TabClusterUI",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Chrome OS Telemetry Extension.
 const base::Feature kTelemetryExtension{"TelemetryExtension",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1464,6 +1468,10 @@ bool IsStylusBatteryStatusEnabled() {
 bool IsSystemLatinPhysicalTypingEnabled() {
   return base::FeatureList::IsEnabled(kImeMojoDecoder) &&
          base::FeatureList::IsEnabled(kSystemLatinPhysicalTyping);
+}
+
+bool IsTabClusterUIEnabled() {
+  return base::FeatureList::IsEnabled(kTabClusterUI);
 }
 
 bool IsTrilinearFilteringEnabled() {
