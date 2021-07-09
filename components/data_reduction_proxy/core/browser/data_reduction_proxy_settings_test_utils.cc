@@ -57,10 +57,10 @@ void DataReductionProxySettingsTestBase::SetUp() {
   ListPrefUpdate received_update(test_context_->pref_service(),
                                  prefs::kDailyHttpReceivedContentLength);
   for (int64_t i = 0; i < kNumDaysInHistory; i++) {
-    original_update->Insert(
-        0, std::make_unique<base::Value>(base::NumberToString(2 * i)));
-    received_update->Insert(
-        0, std::make_unique<base::Value>(base::NumberToString(i)));
+    original_update->Insert(original_update->GetList().begin(),
+                            base::Value(base::NumberToString(2 * i)));
+    received_update->Insert(received_update->GetList().begin(),
+                            base::Value(base::NumberToString(i)));
   }
   last_update_time_ = base::Time::Now().LocalMidnight();
   pref_service->SetInt64(prefs::kDailyHttpContentLengthLastUpdateDate,
