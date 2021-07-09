@@ -1078,15 +1078,10 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, PRE_VersionChangeCrashResilience) {
 
 // Fails to cleanup GPU processes on swarming.
 // http://crbug.com/552543
-// Flaky on TSAN:
-// crbug.com/1061251
-#if defined(OS_WIN) || defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
-#define MAYBE_VersionChangeCrashResilience DISABLED_VersionChangeCrashResilience
-#else
-#define MAYBE_VersionChangeCrashResilience VersionChangeCrashResilience
-#endif
+// Flaky on TSAN: crbug.com/1061251
+// Flaky on mac, linux, cast, chromeos, lacros bots: crbug.com/1061251
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest,
-                       MAYBE_VersionChangeCrashResilience) {
+                       DISABLED_VersionChangeCrashResilience) {
   NavigateAndWaitForTitle(shell(), "version_change_crash.html", "#part3",
                           "pass - part3 - rolled back");
 }
