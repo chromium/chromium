@@ -24,6 +24,8 @@ class CORE_EXPORT BytesUploader
     : public GarbageCollected<BytesUploader>,
       public BytesConsumer::Client,
       public network::mojom::blink::ChunkedDataPipeGetter {
+  USING_PRE_FINALIZER(BytesUploader, Dispose);
+
  public:
   BytesUploader(
       BytesConsumer* consumer,
@@ -51,6 +53,8 @@ class CORE_EXPORT BytesUploader
   void Close();
   // TODO(yoichio): Add a string parameter and show it on console.
   void CloseOnError();
+
+  void Dispose();
 
   Member<BytesConsumer> consumer_;
   mojo::Receiver<network::mojom::blink::ChunkedDataPipeGetter> receiver_;
