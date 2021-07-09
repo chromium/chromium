@@ -99,7 +99,11 @@ void BindEnhancedNetworkTts(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>
         receiver) {
-  ash::EnhancedNetworkTtsImpl::GetInstance().BindReceiver(std::move(receiver));
+  ash::enhanced_network_tts::EnhancedNetworkTtsImpl::GetInstance()
+      .BindReceiverAndURLFactory(
+          std::move(receiver),
+          Profile::FromBrowserContext(render_frame_host->GetBrowserContext())
+              ->GetURLLoaderFactory());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
