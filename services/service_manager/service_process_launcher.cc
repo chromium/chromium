@@ -43,6 +43,8 @@
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
+
+#include <windows.h>
 #endif
 
 namespace service_manager {

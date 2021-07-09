@@ -27,6 +27,10 @@
 #include "base/mac/bundle_locations.h"
 #endif
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace {
 
 void WaitForDebuggerIfNecessary() {
