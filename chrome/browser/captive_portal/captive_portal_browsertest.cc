@@ -2969,12 +2969,19 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   EXPECT_EQ(2, NumTabs());
 }
 
+// Fails on Windows only, more frequently on Win7. https://crbug.com/1225823
+#if defined(OS_WIN)
+#define MAYBE_SlowLoadSecureDnsErrorAfterLogin \
+  DISABLED_SlowLoadSecureDnsErrorAfterLogin
+#else
+#define MAYBE_SlowLoadSecureDnsErrorAfterLogin SlowLoadSecureDnsErrorAfterLogin
+#endif
 // An HTTPS load happens slowly. The reloader triggers a captive portal check,
 // which finds a captive portal. After logging in, the HTTPS load finally
 // completes with a secure DNS error, which triggers another captive portal
 // check that should succeed.
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
-                       SlowLoadSecureDnsErrorAfterLogin) {
+                       MAYBE_SlowLoadSecureDnsErrorAfterLogin) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDnsOverHttpsTemplates,
                          "https://bar.test/dns-query{?dns}");
