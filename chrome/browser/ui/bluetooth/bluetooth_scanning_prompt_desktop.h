@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_SCANNING_PROMPT_DESKTOP_H_
 #define CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_SCANNING_PROMPT_DESKTOP_H_
 
-#include "base/callback.h"
+#include <string>
+
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
@@ -16,6 +18,7 @@ class RenderFrameHost;
 
 namespace permissions {
 class BluetoothScanningPromptController;
+class ChooserController;
 }  // namespace permissions
 
 // Represents a Bluetooth scanning prompt to ask the user permission to
@@ -23,9 +26,16 @@ class BluetoothScanningPromptController;
 // devices. This implementation is for desktop.
 class BluetoothScanningPromptDesktop : public content::BluetoothScanningPrompt {
  public:
-  explicit BluetoothScanningPromptDesktop(
+  // The OnceClosure returned by |show_dialog_callback| can be invoked to close
+  // the dialog. It should be a no-op to invoke the closure if the dialog has
+  // already been closed by the user.
+  BluetoothScanningPromptDesktop(
       content::RenderFrameHost* frame,
-      const content::BluetoothScanningPrompt::EventHandler& event_handler);
+      const content::BluetoothScanningPrompt::EventHandler& event_handler,
+      std::u16string title,
+      base::OnceCallback<
+          base::OnceClosure(std::unique_ptr<permissions::ChooserController>)>
+          show_dialog_callback);
   ~BluetoothScanningPromptDesktop() override;
 
   // content::BluetoothScanningPrompt:
@@ -40,7 +50,7 @@ class BluetoothScanningPromptDesktop : public content::BluetoothScanningPrompt {
 
   // Closes the displayed UI, if there is one. This is used to ensure the UI
   // closes if this controller is destroyed.
-  base::OnceClosure close_closure_;
+  base::ScopedClosureRunner close_closure_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothScanningPromptDesktop);
 };

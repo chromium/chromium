@@ -4,22 +4,21 @@
 
 #include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_desktop.h"
 
-#include "chrome/browser/chooser_controller/title_util.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "components/permissions/bluetooth_scanning_prompt_controller.h"
-#include "components/strings/grit/components_strings.h"
 
 BluetoothScanningPromptDesktop::BluetoothScanningPromptDesktop(
     content::RenderFrameHost* frame,
-    const content::BluetoothScanningPrompt::EventHandler& event_handler) {
+    const content::BluetoothScanningPrompt::EventHandler& event_handler,
+    std::u16string title,
+    base::OnceCallback<
+        base::OnceClosure(std::unique_ptr<permissions::ChooserController>)>
+        show_dialog_callback) {
   auto controller =
       std::make_unique<permissions::BluetoothScanningPromptController>(
-          frame, event_handler,
-          CreateChooserTitle(frame, IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN,
-                             IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN));
+          frame, event_handler, title);
   bluetooth_scanning_prompt_controller_ = controller->GetWeakPtr();
-  close_closure_ =
-      chrome::ShowDeviceChooserDialog(frame, std::move(controller));
+  close_closure_runner_.ReplaceClosure(
+      std::move(show_dialog_callback).Run(std::move(controller)));
 }
 
 BluetoothScanningPromptDesktop::~BluetoothScanningPromptDesktop() {
@@ -28,8 +27,6 @@ BluetoothScanningPromptDesktop::~BluetoothScanningPromptDesktop() {
   // BluetoothScanningPrompt instance.
   if (bluetooth_scanning_prompt_controller_)
     bluetooth_scanning_prompt_controller_->ResetEventHandler();
-  if (close_closure_)
-    std::move(close_closure_).Run();
 }
 
 void BluetoothScanningPromptDesktop::AddOrUpdateDevice(

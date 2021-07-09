@@ -4,18 +4,16 @@
 
 #include "chrome/browser/ui/bluetooth/bluetooth_chooser_desktop.h"
 
-#include "base/check.h"
-#include "chrome/browser/ui/bluetooth/chrome_bluetooth_chooser_controller.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "components/permissions/bluetooth_chooser_controller.h"
 
 BluetoothChooserDesktop::BluetoothChooserDesktop(
-    content::RenderFrameHost* frame,
-    const content::BluetoothChooser::EventHandler& event_handler) {
-  auto controller =
-      std::make_unique<ChromeBluetoothChooserController>(frame, event_handler);
+    std::unique_ptr<permissions::BluetoothChooserController> controller,
+    base::OnceCallback<
+        base::OnceClosure(std::unique_ptr<permissions::ChooserController>)>
+        show_dialog_callback) {
   bluetooth_chooser_controller_ = controller->GetWeakPtr();
-  close_closure_ =
-      chrome::ShowDeviceChooserDialog(frame, std::move(controller));
+  close_closure_runner_.ReplaceClosure(
+      std::move(show_dialog_callback).Run(std::move(controller)));
 }
 
 BluetoothChooserDesktop::~BluetoothChooserDesktop() {
@@ -24,8 +22,6 @@ BluetoothChooserDesktop::~BluetoothChooserDesktop() {
   // instance.
   if (bluetooth_chooser_controller_)
     bluetooth_chooser_controller_->ResetEventHandler();
-  if (close_closure_)
-    std::move(close_closure_).Run();
 }
 
 void BluetoothChooserDesktop::SetAdapterPresence(AdapterPresence presence) {

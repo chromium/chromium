@@ -5,17 +5,14 @@
 #ifndef CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_CHOOSER_DESKTOP_H_
 #define CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_CHOOSER_DESKTOP_H_
 
-#include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
-namespace content {
-class RenderFrameHost;
-}  // namespace content
-
 namespace permissions {
 class BluetoothChooserController;
+class ChooserController;
 }  // namespace permissions
 
 // Represents a Bluetooth chooser to ask the user to select a Bluetooth
@@ -23,9 +20,14 @@ class BluetoothChooserController;
 // BluetoothChooserAndroid implements the mobile part.
 class BluetoothChooserDesktop : public content::BluetoothChooser {
  public:
+  // The OnceClosure returned by |show_dialog_callback| can be invoked to close
+  // the dialog. It should be a no-op to invoke the closure if the dialog has
+  // already been closed by the user.
   BluetoothChooserDesktop(
-      content::RenderFrameHost* frame,
-      const content::BluetoothChooser::EventHandler& event_handler);
+      std::unique_ptr<permissions::BluetoothChooserController> controller,
+      base::OnceCallback<
+          base::OnceClosure(std::unique_ptr<permissions::ChooserController>)>
+          show_dialog_callback);
   ~BluetoothChooserDesktop() override;
 
   // BluetoothChooser:
@@ -45,7 +47,7 @@ class BluetoothChooserDesktop : public content::BluetoothChooser {
 
   // Closes the displayed UI if it is still open. Used to ensure the bubble
   // closes if this controller is torn down.
-  base::OnceClosure close_closure_;
+  base::ScopedClosureRunner close_closure_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothChooserDesktop);
 };
