@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_LIST_H_
 
+#include <cstring>  // memcpy, memset
+#include <type_traits>
+
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -219,6 +222,10 @@ class PLATFORM_EXPORT DisplayItemList {
 #endif  // DCHECK_IS_ON()
 
  private:
+  static_assert(std::is_trivially_copyable<value_type>::value,
+                "DisplayItemList uses `memcpy` in several member functions; "
+                "the `value_type` used by it must be trivially copyable");
+
   ItemSlot* AllocateItemSlot() {
     if (items_.IsEmpty())
       items_.ReserveCapacity(initial_capacity_);
