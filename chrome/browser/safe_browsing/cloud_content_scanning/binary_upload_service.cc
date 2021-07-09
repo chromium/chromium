@@ -655,6 +655,10 @@ void BinaryUploadService::Request::set_client_metadata(
   *content_analysis_request_.mutable_client_metadata() = std::move(metadata);
 }
 
+void BinaryUploadService::Request::set_content_type(const std::string& type) {
+  content_analysis_request_.mutable_request_data()->set_content_type(type);
+}
+
 enterprise_connectors::AnalysisConnector
 BinaryUploadService::Request::analysis_connector() {
   return content_analysis_request_.analysis_connector();

@@ -251,6 +251,9 @@ void DeepScanningRequest::PrepareRequest(
   if (item_->GetTabUrl().is_valid())
     request->set_tab_url(item_->GetTabUrl());
 
+  if (!item_->GetMimeType().empty())
+    request->set_content_type(item_->GetMimeType());
+
   for (const std::string& tag : analysis_settings_.tags)
     request->add_tag(tag);
 

@@ -342,6 +342,11 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
                   .request_data()
                   .url(),
               download_url_.spec());
+    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .request_data()
+                  .content_type(),
+              "application/octet-stream");
   }
 
   {
@@ -1002,6 +1007,11 @@ TEST_F(DeepScanningRequestTest, PopulatesRequest) {
                 .digest(),
             // Hex-encoding of 'hash'
             "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C");
+  EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                ->last_request()
+                .request_data()
+                .content_type(),
+            "application/octet-stream");
 }
 
 }  // namespace safe_browsing

@@ -41,6 +41,9 @@ message ContentMetaData {
   // Optional email address of user.  This field may be empty if the user
   // is not signed in.
   optional string email = 5;
+
+  // MimeType of the field as detected by Chrome.
+  optional string content_type = 6;
 }
 
 message ClientMetadata {

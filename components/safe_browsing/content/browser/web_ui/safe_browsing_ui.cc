@@ -1712,6 +1712,8 @@ std::string SerializeContentAnalysisRequest(
       request_data.SetStringKey(
           "csd", request.request_data().csd().SerializeAsString());
     }
+    request_data.SetStringKey("content_type",
+                              request.request_data().content_type());
     request_dict.SetKey("request_data", std::move(request_data));
   }
   if (tab_url.is_valid()) {
