@@ -704,31 +704,6 @@ TEST_F(AccessibilityTest, AXObjectUnignoredAncestorsIterator) {
   EXPECT_EQ(br->UnignoredAncestorsEnd(), ++iter);
 }
 
-TEST_F(AccessibilityTest, AXObjectInOrderTraversalIterator) {
-  SetBodyInnerHTML(R"HTML(<input type="checkbox" id="checkbox">)HTML");
-
-  AXObject* root = GetAXRootObject();
-  ASSERT_NE(nullptr, root);
-  AXObject* body = GetAXBodyObject();
-  ASSERT_NE(nullptr, root);
-  AXObject* checkbox = GetAXObjectByElementId("checkbox");
-  ASSERT_NE(nullptr, checkbox);
-
-  AXObject::InOrderTraversalIterator iter = body->GetInOrderTraversalIterator();
-  EXPECT_EQ(*body, *iter);
-  EXPECT_NE(GetAXObjectCache().InOrderTraversalEnd(), iter);
-  EXPECT_EQ(*checkbox, *++iter);
-  EXPECT_EQ(ax::mojom::Role::kCheckBox, iter->RoleValue());
-  EXPECT_EQ(*checkbox, *iter++);
-  EXPECT_EQ(GetAXObjectCache().InOrderTraversalEnd(), iter);
-  EXPECT_EQ(*checkbox, *--iter);
-  EXPECT_EQ(*checkbox, *iter--);
-  --iter;  // Skip the BODY element.
-  --iter;  // Skip the HTML element.
-  EXPECT_EQ(ax::mojom::Role::kRootWebArea, iter->RoleValue());
-  EXPECT_EQ(GetAXObjectCache().InOrderTraversalBegin(), iter);
-}
-
 TEST_F(AccessibilityTest, AxNodeObjectContainsHtmlAnchorElementUrl) {
   SetBodyInnerHTML(R"HTML(<a id="anchor" href="http://test.com">link</a>)HTML");
 

@@ -88,9 +88,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Iterators.
   //
 
-  AXObject::InOrderTraversalIterator InOrderTraversalBegin();
-  AXObject::InOrderTraversalIterator InOrderTraversalEnd();
-
   void SelectionChanged(Node*) override;
   void UpdateReverseRelations(const AXObject* relation_source,
                               const Vector<String>& target_ids);

@@ -176,98 +176,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
  public:
   typedef HeapVector<Member<AXObject>> AXObjectVector;
 
-  // Iterator for doing an in-order traversal of the accessibility tree.
-  //
-  // Includes objects that are ignored but included in the accessibility tree in
-  // the traversal.
-  class MODULES_EXPORT InOrderTraversalIterator final
-      : public GarbageCollected<InOrderTraversalIterator> {
-   public:
-    ~InOrderTraversalIterator() = default;
-
-    InOrderTraversalIterator(const InOrderTraversalIterator& other)
-        : current_(other.current_), previous_(other.previous_) {}
-
-    InOrderTraversalIterator& operator=(const InOrderTraversalIterator& other) {
-      current_ = other.current_;
-      previous_ = other.previous_;
-      return *this;
-    }
-
-    InOrderTraversalIterator& operator++() {
-      previous_ = current_;
-      current_ = (current_ && !current_->IsDetached())
-                     ? current_->NextInPreOrderIncludingIgnored()
-                     : nullptr;
-      return *this;
-    }
-
-    InOrderTraversalIterator operator++(int) {
-      InOrderTraversalIterator ret = *this;
-      ++*this;
-      return ret;
-    }
-
-    InOrderTraversalIterator& operator--() {
-      current_ = previous_;
-      previous_ = (current_ && !current_->IsDetached())
-                      ? current_->PreviousInPreOrderIncludingIgnored()
-                      : nullptr;
-      return *this;
-    }
-
-    InOrderTraversalIterator operator--(int) {
-      InOrderTraversalIterator ret = *this;
-      --*this;
-      return ret;
-    }
-
-    AXObject& operator*() const {
-      DCHECK(current_);
-      return *current_;
-    }
-
-    AXObject* operator->() const {
-      DCHECK(current_);
-      return static_cast<AXObject*>(current_);
-    }
-
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(current_);
-      visitor->Trace(previous_);
-    }
-
-    MODULES_EXPORT friend void swap(InOrderTraversalIterator& left,
-                                    InOrderTraversalIterator& right) {
-      std::swap(left.current_, right.current_);
-      std::swap(left.previous_, right.previous_);
-    }
-
-    MODULES_EXPORT friend bool operator==(
-        const InOrderTraversalIterator& left,
-        const InOrderTraversalIterator& right) {
-      return left.current_ == right.current_;
-    }
-
-    MODULES_EXPORT friend bool operator!=(
-        const InOrderTraversalIterator& left,
-        const InOrderTraversalIterator& right) {
-      return !(left == right);
-    }
-
-   private:
-    InOrderTraversalIterator() = default;
-
-    explicit InOrderTraversalIterator(AXObject& current)
-        : current_(&current), previous_(nullptr) {}
-
-    friend class AXObject;
-    friend class AXObjectCacheImpl;
-
-    Member<AXObject> current_;
-    Member<AXObject> previous_;
-  };
-
   // Iterator for the ancestors of an |AXObject|.
   // Walks through all the unignored parents of the object up to the root.
   // Does not include the object itself in the list of ancestors.
@@ -952,12 +860,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // that are unignored and included in the accessibility tree.
   AncestorsIterator UnignoredAncestorsBegin() const;
   AncestorsIterator UnignoredAncestorsEnd() const;
-
-  // Iterator for doing an in-order traversal of the accessibility tree.
-  //
-  // Includes nodes that are accessibility ignored but "included in tree" in the
-  // traversal.
-  InOrderTraversalIterator GetInOrderTraversalIterator();
 
   // Returns the number of children, including children that are included in the
   // accessibility tree but are accessibility ignored.

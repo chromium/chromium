@@ -1509,17 +1509,6 @@ AXObject* AXObjectCacheImpl::NearestExistingAncestor(Node* node) {
   return nullptr;
 }
 
-AXObject::InOrderTraversalIterator AXObjectCacheImpl::InOrderTraversalBegin() {
-  AXObject* root = Root();
-  if (root)
-    return AXObject::InOrderTraversalIterator(*root);
-  return InOrderTraversalEnd();
-}
-
-AXObject::InOrderTraversalIterator AXObjectCacheImpl::InOrderTraversalEnd() {
-  return AXObject::InOrderTraversalIterator();
-}
-
 void AXObjectCacheImpl::UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram() {
   UMA_HISTOGRAM_COUNTS_100000(
       "Blink.Accessibility.NumTreeUpdatesQueuedBeforeLayout",

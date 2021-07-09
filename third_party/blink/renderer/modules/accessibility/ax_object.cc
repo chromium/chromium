@@ -3812,10 +3812,6 @@ AXObject::AncestorsIterator AXObject::UnignoredAncestorsEnd() const {
   return AXObject::AncestorsIterator();
 }
 
-AXObject::InOrderTraversalIterator AXObject::GetInOrderTraversalIterator() {
-  return InOrderTraversalIterator(*this);
-}
-
 int AXObject::ChildCountIncludingIgnored() const {
   return static_cast<int>(ChildrenIncludingIgnored().size());
 }
