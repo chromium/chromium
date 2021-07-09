@@ -2358,9 +2358,6 @@ config("symbols") {
 
     # All configs using /DEBUG should include this:
     configs = [ ":win_pdbaltpath" ]
-
-    # TODO(crbug.com/1138553): Re-enable constructor homing on windows after
-    # libc++ fix is in.
   } else {
     cflags = []
     if (is_mac && enable_dsyms) {
@@ -2389,14 +2386,6 @@ config("symbols") {
     # gcc nacl is is_nacl && !is_clang, pnacl and nacl-clang are && is_clang.
     if (!is_nacl || is_clang) {
       cflags += [ "-g2" ]
-    }
-
-    # TODO(https://crbug.com/1050118): Investigate missing debug info on mac.
-    if (is_clang && !is_nacl && !use_xcode_clang && !is_apple) {
-      cflags += [
-        "-Xclang",
-        "-debug-info-kind=constructor",
-      ]
     }
 
     if (is_apple) {
@@ -2431,6 +2420,16 @@ config("symbols") {
       }
       ldflags += [ "-Wl,--gdb-index" ]
     }
+  }
+
+  # TODO(https://crbug.com/1050118): Investigate missing debug info on mac.
+  if (is_clang && !is_nacl && !use_xcode_clang && !is_apple) {
+    # Use constructor homing for debug info. This option reduces debug info
+    # by emitting class type info only when constructors are emitted.
+    cflags += [
+      "-Xclang",
+      "-fuse-ctor-homing",
+    ]
   }
 }
 
