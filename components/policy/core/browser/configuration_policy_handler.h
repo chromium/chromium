@@ -454,7 +454,7 @@ class POLICY_EXPORT LegacyPoliciesDeprecatingPolicyHandler
   LegacyPoliciesDeprecatingPolicyHandler(
       std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
           legacy_policy_handlers,
-      std::unique_ptr<SchemaValidatingPolicyHandler> new_policy_handler);
+      std::unique_ptr<NamedPolicyHandler> new_policy_handler);
   ~LegacyPoliciesDeprecatingPolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -472,7 +472,7 @@ class POLICY_EXPORT LegacyPoliciesDeprecatingPolicyHandler
  private:
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
       legacy_policy_handlers_;
-  std::unique_ptr<SchemaValidatingPolicyHandler> new_policy_handler_;
+  std::unique_ptr<NamedPolicyHandler> new_policy_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(LegacyPoliciesDeprecatingPolicyHandler);
 };

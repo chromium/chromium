@@ -634,7 +634,7 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::IsListSchema() const {
 LegacyPoliciesDeprecatingPolicyHandler::LegacyPoliciesDeprecatingPolicyHandler(
     std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
         legacy_policy_handlers,
-    std::unique_ptr<SchemaValidatingPolicyHandler> new_policy_handler)
+    std::unique_ptr<NamedPolicyHandler> new_policy_handler)
     : legacy_policy_handlers_(std::move(legacy_policy_handlers)),
       new_policy_handler_(std::move(new_policy_handler)) {}
 

@@ -19,10 +19,11 @@
 
 namespace policy {
 BrowserSigninPolicyHandler::BrowserSigninPolicyHandler(Schema chrome_schema)
-    : SchemaValidatingPolicyHandler(
-          key::kBrowserSignin,
-          chrome_schema.GetKnownProperty(key::kBrowserSignin),
-          SCHEMA_ALLOW_UNKNOWN) {}
+    : IntRangePolicyHandler(key::kBrowserSignin,
+                            prefs::kForceBrowserSignin,
+                            static_cast<int>(BrowserSigninMode::kDisabled),
+                            static_cast<int>(BrowserSigninMode::kForced),
+                            false /* clamp */) {}
 
 BrowserSigninPolicyHandler::~BrowserSigninPolicyHandler() {}
 
@@ -40,47 +41,36 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 #endif
 
   const base::Value* value = policies.GetValue(policy_name());
-  if (value && value->is_int()) {
-    // TODO(pastarmovj): Replace this with a int range handler once the
-    // deprecating handler can handle it.
-    if (static_cast<int>(BrowserSigninMode::kDisabled) > value->GetInt() ||
-        static_cast<int>(BrowserSigninMode::kForced) < value->GetInt()) {
-      SYSLOG(ERROR) << "Unexpected value for BrowserSigninMode: "
-                    << value->GetInt();
-      NOTREACHED();
-      return;
-    }
-    switch (static_cast<BrowserSigninMode>(value->GetInt())) {
-      case BrowserSigninMode::kForced:
+  switch (static_cast<BrowserSigninMode>(value->GetInt())) {
+    case BrowserSigninMode::kForced:
 #if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
-        prefs->SetValue(prefs::kForceBrowserSignin, base::Value(true));
+      prefs->SetValue(prefs::kForceBrowserSignin, base::Value(true));
 #endif
-        FALLTHROUGH;
-      case BrowserSigninMode::kEnabled:
-        prefs->SetValue(
+      FALLTHROUGH;
+    case BrowserSigninMode::kEnabled:
+      prefs->SetValue(
 #if defined(OS_ANDROID)
-            // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
-            // Keep the old kSigninAllowed pref for Android until the policy is
-            // fully deprecated in M71 and can be removed.
-            prefs::kSigninAllowed,
+          // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
+          // Keep the old kSigninAllowed pref for Android until the policy is
+          // fully deprecated in M71 and can be removed.
+          prefs::kSigninAllowed,
 #else
-            prefs::kSigninAllowedOnNextStartup,
+          prefs::kSigninAllowedOnNextStartup,
 #endif
-            base::Value(true));
-        break;
-      case BrowserSigninMode::kDisabled:
-        prefs->SetValue(
+          base::Value(true));
+      break;
+    case BrowserSigninMode::kDisabled:
+      prefs->SetValue(
 #if defined(OS_ANDROID)
-            // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
-            // Keep the old kSigninAllowed pref for Android until the policy is
-            // fully deprecated in M71 and can be removed.
-            prefs::kSigninAllowed,
+          // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
+          // Keep the old kSigninAllowed pref for Android until the policy is
+          // fully deprecated in M71 and can be removed.
+          prefs::kSigninAllowed,
 #else
-            prefs::kSigninAllowedOnNextStartup,
+          prefs::kSigninAllowedOnNextStartup,
 #endif
-            base::Value(false));
-        break;
-    }
+          base::Value(false));
+      break;
   }
 }
 
