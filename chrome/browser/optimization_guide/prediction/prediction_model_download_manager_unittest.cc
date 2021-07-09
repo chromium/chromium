@@ -554,16 +554,21 @@ TEST_F(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithGoodModelFiles);
   RunUntilIdle();
 
-  EXPECT_TRUE(observer.last_ready_model().has_value());
+  ASSERT_TRUE(observer.last_ready_model().has_value());
   EXPECT_EQ(observer.last_ready_model()->model_info().optimization_target(),
             proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_EQ(observer.last_ready_model()->model_info().version(), 123);
-  EXPECT_EQ(
-      GetFilePathFromPredictionModel(observer.last_ready_model().value())
-          .value()
-          .BaseName()
-          .value(),
-      FILE_PATH_LITERAL("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD_123.tflite"));
+  EXPECT_EQ(GetFilePathFromPredictionModel(observer.last_ready_model().value())
+                .value()
+                .DirName()
+                .BaseName()
+                .value(),
+            FILE_PATH_LITERAL("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD_123"));
+  EXPECT_EQ(GetFilePathFromPredictionModel(observer.last_ready_model().value())
+                .value()
+                .BaseName()
+                .value(),
+            FILE_PATH_LITERAL("model.tflite"));
   // Downloaded file should still be deleted.
   EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithGoodModelFiles)));

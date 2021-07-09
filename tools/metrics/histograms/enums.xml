@@ -60616,9 +60616,11 @@ Called by update_net_trust_anchors.py.-->
     The download was a valid CRX file but came from a publisher that is
     untrusted.
   </int>
-  <int value="11" label="Model directory does not exist">
-    The directory used to store models does not exist so the model could not be
-    stored for use.
+  <int value="11" label="OptGuide parent directory does not exist">
+    The parent directory used to store models does not exist.
+  </int>
+  <int value="12" label="Model directory could not be created">
+    The directory needed to store this model version could not be created.
   </int>
 </enum>
 

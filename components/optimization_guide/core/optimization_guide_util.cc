@@ -107,4 +107,8 @@ void SetFilePathInPredictionModel(const base::FilePath& file_path,
 #endif
 }
 
+base::FilePath GetBaseFileNameForModels() {
+  return base::FilePath(FILE_PATH_LITERAL("model.tflite"));
+}
+
 }  // namespace optimization_guide

@@ -2190,13 +2190,18 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::FilePath old_dir = temp_dir().AppendASCII("model_v1");
+  base::FilePath new_dir = temp_dir().AppendASCII("model_v2");
+  ASSERT_TRUE(base::CreateDirectory(old_dir));
+  ASSERT_TRUE(base::CreateDirectory(new_dir));
+
   base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
           optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
-  base::FilePath old_file_path = temp_dir().AppendASCII("oldfile");
+  base::FilePath old_file_path = old_dir.AppendASCII("model.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
@@ -2213,7 +2218,7 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
           update_time +
           optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data2);
-  base::FilePath new_file_path = temp_dir().AppendASCII("newfile");
+  base::FilePath new_file_path = new_dir.AppendASCII("model.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
   SeedPredictionModelUpdateData(update_data2.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
@@ -2223,6 +2228,70 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
 
   // Make sure old file is deleted when model updated for target.
   EXPECT_FALSE(base::PathExists(old_file_path));
+  EXPECT_FALSE(base::PathExists(old_dir));
+
+  EXPECT_TRUE(base::PathExists(new_file_path));
+  EXPECT_TRUE(base::PathExists(new_dir));
+}
+
+TEST_F(OptimizationGuideStoreTest,
+       BackwardCompatibilityForParentDirectoryStorage) {
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  base::FilePath old_dir = temp_dir().AppendASCII("OptGuideModels");
+  base::FilePath new_dir = old_dir.AppendASCII("foo_target_v2");
+  ASSERT_TRUE(base::CreateDirectory(old_dir));
+  ASSERT_TRUE(base::CreateDirectory(new_dir));
+
+  base::FilePath old_unassociated_model_path =
+      old_dir.AppendASCII("other_model.tflite");
+  ASSERT_EQ(static_cast<int32_t>(3),
+            base::WriteFile(old_unassociated_model_path, "boo", 3));
+
+  base::Time update_time = base::Time().Now();
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
+  ASSERT_TRUE(update_data);
+  base::FilePath old_file_path = old_dir.AppendASCII("model_v1.tflite");
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                old_file_path);
+  UpdatePredictionModels(std::move(update_data));
+
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  EXPECT_TRUE(success);
+
+  std::unique_ptr<StoreUpdateData> update_data2 =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
+  ASSERT_TRUE(update_data2);
+  base::FilePath new_file_path = new_dir.Append(GetBaseFileNameForModels());
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
+  SeedPredictionModelUpdateData(update_data2.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                new_file_path);
+  UpdatePredictionModels(std::move(update_data2));
+  RunUntilIdle();
+
+  // The old file should have been deleted, but not its containing directory
+  // because that is recognized as the OptGuideModel parent storage directory.
+  EXPECT_FALSE(base::PathExists(old_file_path));
+  EXPECT_TRUE(base::PathExists(old_dir));
+
+  // The other unassociated old-code model should not have been touched.
+  EXPECT_TRUE(base::PathExists(old_unassociated_model_path));
+
+  EXPECT_TRUE(base::PathExists(new_file_path));
+  EXPECT_TRUE(base::PathExists(new_dir));
 }
 
 TEST_F(OptimizationGuideStoreTest, RemovePredictionModelEntryKeyDeletesFile) {

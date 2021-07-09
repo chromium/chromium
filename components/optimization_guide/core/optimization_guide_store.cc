@@ -917,6 +917,11 @@ void OptimizationGuideStore::UpdatePredictionModels(
                      std::move(callback)));
 }
 
+// This method is called during browser startup when we need to check if any
+// models have expired. When this occurs, |update_vector| and |remove_vector|
+// will both be empty. Otherwise, this method may also be called whenever a
+// model is updated or its deletion is requested in which case one of or both
+// |update_vector| and |remove_vector| will have entries.
 void OptimizationGuideStore::OnLoadModelsToBeUpdated(
     std::unique_ptr<EntryVector> update_vector,
     std::unique_ptr<leveldb_proto::KeyVector> remove_vector,
@@ -934,8 +939,8 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
       !update_vector->empty() || !remove_vector->empty();
   for (const auto& entry : *entries) {
     bool should_delete_download_file = had_entries_to_update_or_remove;
-    // Only look to purge if we weren't explicitly passed in entries to update
-    // or remove.
+    // Only check expiry if we weren't explicitly passed in entries to update or
+    // remove.
     if (!had_entries_to_update_or_remove) {
       if (entry.second.has_expiry_time_secs()) {
         if (entry.second.expiry_time_secs() <= now_since_epoch) {
@@ -945,8 +950,8 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
                                     true);
         }
       } else {
-        // If we were purging and the entry did not have an expiration time
-        // associated with it, add one.
+        // If we were checking expiry and the entry did not have an expiration
+        // time associated with it, add one with a default TTL.
         update_vector->push_back(entry);
         update_vector->back().second.set_expiry_time_secs(
             now_since_epoch +
@@ -954,14 +959,41 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
       }
     }
 
-    // Delete models that are provided via file.
+    // Delete files (the model itself and any additional files) that are
+    // provided by the model in its directory.
     if (should_delete_download_file && entry.second.has_prediction_model() &&
         entry.second.prediction_model().model().has_download_url()) {
+      // |GetFilePathFromPredictionModel| never returns nullopt when
+      // |model().has_download_url()| is true.
+      base::FilePath model_file_path =
+          GetFilePathFromPredictionModel(entry.second.prediction_model())
+              .value();
+      base::FilePath path_to_delete;
+
+      // Backwards compatibility: Once upon a time (<M93), model files were
+      // stored as
+      // `$CHROME_DATA/OptGuideModels/${MODELTARGET}_${MODELVERSION}.tfl` but
+      // were later moved to
+      // `$CHROME_DATA/OptGuideModels/${MODELTARGET}_${MODELVERSION}/model.tfl`
+      // to support additional files to be packaged alongside the model. Since
+      // the current code needs to recursively delete the whole directory, we'd
+      // normally just take the directory name of the model file. However, doing
+      // this on a freshly updated browser to newer code would cause the entire
+      // OptGuide directory to be blown away, causing collateral damage to other
+      // downloaded models. This is detected by checking whether the base name
+      // of the model file is the old or new version, and acting accordingly.
+      if (model_file_path.BaseName() == GetBaseFileNameForModels()) {
+        path_to_delete = model_file_path.DirName();
+      } else {
+        path_to_delete = model_file_path;
+      }
+
+      // Note that the delete function doesn't care whether the target is a
+      // directory or file. But in the case of a directory, it is recursively
+      // deleted.
       store_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
-                                    GetFilePathFromPredictionModel(
-                                        entry.second.prediction_model())
-                                        .value()));
+          FROM_HERE, base::BindOnce(base::GetDeletePathRecursivelyCallback(),
+                                    path_to_delete));
     }
   }
 

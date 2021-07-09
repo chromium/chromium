@@ -41,6 +41,9 @@ absl::optional<base::FilePath> GetFilePathFromPredictionModel(
 void SetFilePathInPredictionModel(const base::FilePath& file_path,
                                   proto::PredictionModel* model);
 
+// Returns the base file name to use for storing all prediction models.
+base::FilePath GetBaseFileNameForModels();
+
 // Validates that the metadata stored in |any_metadata_| is of the same type
 // and is parseable as |T|. Will return metadata if all checks pass.
 template <class T,
