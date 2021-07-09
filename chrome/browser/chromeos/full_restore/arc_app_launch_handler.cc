@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/full_restore/app_launch_info.h"
@@ -224,6 +225,18 @@ bool ArcAppLaunchHandler::CanLaunchApp() {
     case chromeos::ResourcedClient::PressureLevel::CRITICAL:
       return false;
   }
+}
+
+bool ArcAppLaunchHandler::IsAppReady(const std::string& app_id) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(handler_->profile_);
+  if (!prefs)
+    return false;
+
+  std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
+  if (!app_info || app_info->suspended || !app_info->ready)
+    return false;
+
+  return true;
 }
 
 void ArcAppLaunchHandler::RemoveApp(const std::string& app_id) {

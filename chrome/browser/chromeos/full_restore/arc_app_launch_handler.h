@@ -89,6 +89,9 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // Returns true if the app can be launched. Otherwise, returns false.
   bool CanLaunchApp();
 
+  // Returns true if the app is ready to be launched. Otherwise, returns false.
+  bool IsAppReady(const std::string& app_id);
+
   // Invoked when the app of the given `app_id` is removed.
   void RemoveApp(const std::string& app_id);
 
