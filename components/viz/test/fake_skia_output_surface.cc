@@ -193,7 +193,8 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     const gfx::Size& surface_size,
     ResourceFormat format,
     bool mipmap,
-    sk_sp<SkColorSpace> color_space) {
+    sk_sp<SkColorSpace> color_space,
+    const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
   DCHECK_EQ(current_render_pass_id_, AggregatedRenderPassId{0u});
@@ -225,7 +226,8 @@ sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImageFromRenderPass(
     const gfx::Size& size,
     ResourceFormat format,
     bool mipmap,
-    sk_sp<SkColorSpace> color_space) {
+    sk_sp<SkColorSpace> color_space,
+    const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = sk_surfaces_.find(id);
@@ -249,7 +251,8 @@ void FakeSkiaOutputSurface::CopyOutput(
     AggregatedRenderPassId id,
     const copy_output::RenderPassGeometry& geometry,
     const gfx::ColorSpace& color_space,
-    std::unique_ptr<CopyOutputRequest> request) {
+    std::unique_ptr<CopyOutputRequest> request,
+    const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   DCHECK(sk_surfaces_.find(id) != sk_surfaces_.end());
@@ -303,6 +306,10 @@ void FakeSkiaOutputSurface::CopyOutput(
   bitmap.setPixelRef(std::move(pixels), origin.x(), origin.y());
   request->SendResult(std::make_unique<CopyOutputSkBitmapResult>(
       geometry.result_bounds, std::move(bitmap)));
+}
+
+gpu::SharedImageInterface* FakeSkiaOutputSurface::GetSharedImageInterface() {
+  return context_provider_->SharedImageInterface();
 }
 
 void FakeSkiaOutputSurface::AddContextLostObserver(

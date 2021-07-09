@@ -36,6 +36,7 @@ class VIZ_COMMON_EXPORT RendererSettings {
   int highp_threshold_min = 0;
   bool auto_resize_output_surface = true;
   bool requires_alpha_channel = false;
+  bool disable_render_pass_bypassing = false;
 
   int slow_down_compositing_scale_factor = 1;
 

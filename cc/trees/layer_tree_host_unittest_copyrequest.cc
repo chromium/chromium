@@ -1088,6 +1088,22 @@ class LayerTreeHostCopyRequestTestCountSharedImages
     }
   }
 
+  std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
+      const viz::RendererSettings& renderer_settings,
+      double refresh_rate,
+      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> worker_context_provider)
+      override {
+    // Since this test counts shared images and SkiaRenderer uses shared images
+    // for render passes, we need render pass allocation to be stable.
+    auto settings = renderer_settings;
+    settings.disable_render_pass_bypassing = true;
+    auto frame_sink = LayerTreeHostCopyRequestTest::CreateLayerTreeFrameSink(
+        settings, refresh_rate, std::move(compositor_context_provider),
+        std::move(worker_context_provider));
+    return frame_sink;
+  }
+
   void DisplayDidDrawAndSwapOnThread() override {
     auto* sii = display_context_provider_->SharedImageInterface();
     switch (num_swaps_++) {

@@ -43,6 +43,8 @@
 #include "components/viz/service/display/resource_fence.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/ext/opacity_filter_canvas.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -900,7 +902,7 @@ void SkiaRenderer::BindFramebufferToTexture(
   RenderPassBacking& backing = iter->second;
   current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
       render_pass_id, backing.size, backing.format, backing.generate_mipmap,
-      backing.color_space.ToSkColorSpace());
+      backing.color_space.ToSkColorSpace(), backing.mailbox);
 }
 
 void SkiaRenderer::SetScissorTestRect(const gfx::Rect& scissor_rect) {
@@ -1391,6 +1393,10 @@ bool SkiaRenderer::CanExplicitlyScissor(
 
 const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
     const AggregatedRenderPass* pass) {
+  // If render pass bypassing is disabled for testing
+  if (settings_->disable_render_pass_bypassing)
+    return nullptr;
+
   // TODO(michaelludwig) - For now, this only supports opaque, src-over quads
   // with invertible transforms and simple content (image or color only).
   // Can only collapse a single tile quad.
@@ -2612,7 +2618,8 @@ void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
   sk_sp<SkImage> content_image =
       skia_output_surface_->MakePromiseSkImageFromRenderPass(
           quad->render_pass_id, backing.size, backing.format,
-          backing.generate_mipmap, backing.color_space.ToSkColorSpace());
+          backing.generate_mipmap, backing.color_space.ToSkColorSpace(),
+          backing.mailbox);
   DLOG_IF(ERROR, !content_image)
       << "MakePromiseSkImageFromRenderPass() failed for render pass";
 
@@ -2656,13 +2663,18 @@ void SkiaRenderer::CopyDrawnRenderPass(
 
   // Root framebuffer uses id 0 in SkiaOutputSurface.
   AggregatedRenderPassId render_pass_id;
+  gpu::Mailbox mailbox;
   const auto* const render_pass = current_frame()->current_render_pass;
   if (render_pass != current_frame()->root_render_pass) {
     render_pass_id = render_pass->id;
+    auto it = render_pass_backings_.find(render_pass_id);
+    DCHECK(it != render_pass_backings_.end());
+    mailbox = it->second.mailbox;
   }
+
   skia_output_surface_->CopyOutput(render_pass_id, geometry,
                                    CurrentRenderPassColorSpace(),
-                                   std::move(request));
+                                   std::move(request), mailbox);
 }
 
 void SkiaRenderer::DidChangeVisibility() {
@@ -2741,6 +2753,8 @@ void SkiaRenderer::UpdateRenderPassTextures(
   // again.
   for (size_t i = 0; i < passes_to_delete.size(); ++i) {
     auto it = render_pass_backings_.find(passes_to_delete[i]);
+    skia_output_surface_->GetSharedImageInterface()->DestroySharedImage(
+        gpu::SyncToken(), it->second.mailbox);
     render_pass_backings_.erase(it);
   }
 
@@ -2765,10 +2779,18 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
   auto format = color_space.IsHDR()
                     ? RGBA_F16
                     : PlatformColor::BestSupportedTextureFormat(caps);
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY;
+  if (requirements.generate_mipmap)
+    usage |= gpu::SHARED_IMAGE_USAGE_MIPMAP;
+  auto mailbox =
+      skia_output_surface_->GetSharedImageInterface()->CreateSharedImage(
+          format, requirements.size, color_space,
+          GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
+          SkAlphaType::kPremul_SkAlphaType, usage, gpu::kNullSurfaceHandle);
   render_pass_backings_.emplace(
       render_pass_id,
       RenderPassBacking({requirements.size, requirements.generate_mipmap,
-                         color_space, format}));
+                         color_space, format, mailbox}));
 }
 
 void SkiaRenderer::FlushOutputSurface() {
@@ -2942,7 +2964,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     DCHECK(backing);
     auto content_image = skia_output_surface_->MakePromiseSkImageFromRenderPass(
         quad->render_pass_id, backing->size, backing->format,
-        backing->generate_mipmap, backing->color_space.ToSkColorSpace());
+        backing->generate_mipmap, backing->color_space.ToSkColorSpace(),
+        backing->mailbox);
     if (!content_image) {
       DLOG(ERROR)
           << "MakePromiseSkImageFromRenderPass() failed for render pass";

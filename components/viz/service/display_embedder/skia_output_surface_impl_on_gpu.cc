@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
+#include <memory>
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -41,6 +41,7 @@
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
@@ -444,44 +445,6 @@ CreateSharedImageRepresentationFactory(SkiaOutputSurfaceDependency* deps,
 
 }  // namespace
 
-// Offscreen surfaces for render passes. It can only be accessed on GPU
-// thread.
-class SkiaOutputSurfaceImplOnGpu::OffscreenSurface {
- public:
-  OffscreenSurface() = default;
-  OffscreenSurface(const OffscreenSurface& offscreen_surface) = delete;
-  OffscreenSurface(OffscreenSurface&& offscreen_surface) = default;
-  OffscreenSurface& operator=(const OffscreenSurface& offscreen_surface) =
-      delete;
-  OffscreenSurface& operator=(OffscreenSurface&& offscreen_surface) = default;
-  ~OffscreenSurface() = default;
-
-  SkSurface* surface() { return surface_.get(); }
-  void set_surface(sk_sp<SkSurface> surface) {
-    surface_ = std::move(surface);
-    promise_texture_ = {};
-  }
-
-  SkPromiseImageTexture* fulfill() {
-    DCHECK(surface_);
-    if (!promise_texture_) {
-      promise_texture_ =
-          SkPromiseImageTexture::Make(surface_->getBackendTexture(
-              SkSurface::kFlushRead_BackendHandleAccess));
-    }
-    return promise_texture_.get();
-  }
-
-  sk_sp<SkSurface> TakeSurface() {
-    promise_texture_ = {};
-    return std::move(surface_);
-  }
-
- private:
-  sk_sp<SkSurface> surface_;
-  sk_sp<SkPromiseImageTexture> promise_texture_;
-};
-
 SkiaOutputSurfaceImplOnGpu::ReleaseCurrent::ReleaseCurrent(
     scoped_refptr<gl::GLSurface> gl_surface,
     scoped_refptr<gpu::SharedContextState> context_state)
@@ -709,7 +672,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     if (!begin_semaphores.empty()) {
       auto result = scoped_output_device_paint_->Wait(
           begin_semaphores.size(), begin_semaphores.data(),
-          /*deleteSemaphoresAfterWait=*/false);
+          /*delete_semaphores_after_wait=*/false);
       DCHECK(result);
     }
 
@@ -789,7 +752,7 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped() {
 }
 
 void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
-    AggregatedRenderPassId id,
+    const gpu::Mailbox& mailbox,
     sk_sp<SkDeferredDisplayList> ddl,
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
@@ -806,12 +769,24 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     return;
   }
 
-  auto& offscreen = offscreen_surfaces_[id];
-  if (!offscreen.surface()) {
-    offscreen.set_surface(SkSurface::MakeRenderTarget(
-        gr_context(), ddl->characterization(), SkBudgeted::kNo));
-    DCHECK(offscreen.surface());
+  auto backing_representation =
+      shared_image_representation_factory_->ProduceSkia(mailbox,
+                                                        context_state_.get());
+  DCHECK(backing_representation);
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  auto scoped_access = backing_representation->BeginScopedWriteAccess(
+      /*final_msaa_count=*/0, ddl->characterization().surfaceProps(),
+      &begin_semaphores, &end_semaphores,
+      gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  if (!scoped_access) {
+    MarkContextLost(CONTEXT_LOST_UNKNOWN);
+    return;
   }
+
+  SkSurface* surface = scoped_access->surface();
+  DCHECK(surface);
 
   {
     absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
@@ -819,17 +794,16 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
     }
-    std::vector<GrBackendSemaphore> begin_semaphores;
-    std::vector<GrBackendSemaphore> end_semaphores;
     promise_image_access_helper_.BeginAccess(
         std::move(image_contexts), &begin_semaphores, &end_semaphores);
     if (!begin_semaphores.empty()) {
-      auto result = offscreen.surface()->wait(
-          begin_semaphores.size(), begin_semaphores.data(),
-          /*deleteSemaphoresAfterWait=*/false);
+      auto result =
+          surface->wait(begin_semaphores.size(), begin_semaphores.data(),
+                        /*deleteSemaphoresAfterWait=*/false);
       DCHECK(result);
     }
-    offscreen.surface()->draw(ddl);
+    surface->draw(ddl);
+    backing_representation->SetCleared();
     destroy_after_swap_.emplace_back(std::move(ddl));
 
     GrFlushInfo flush_info = {
@@ -840,7 +814,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
                                           &flush_info);
     if (on_finished)
       gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
-    auto result = offscreen.surface()->flush(flush_info);
+    auto result = surface->flush(flush_info);
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       // TODO(penghuang): handle vulkan device lost.
@@ -853,26 +827,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       gr_context()->submit(true);
     }
   }
-}
-
-void SkiaOutputSurfaceImplOnGpu::RemoveRenderPassResource(
-    std::vector<AggregatedRenderPassId> ids,
-    std::vector<std::unique_ptr<ImageContextImpl>> image_contexts) {
-  TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::RemoveRenderPassResource");
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!ids.empty());
-
-  for (AggregatedRenderPassId id : ids) {
-    // It's possible that |offscreen_surfaces_| won't contain an entry for the
-    // render pass if draw failed early.
-    auto it = offscreen_surfaces_.find(id);
-    if (it != offscreen_surfaces_.end()) {
-      DeleteSkSurface(context_state_.get(), it->second.TakeSurface());
-      offscreen_surfaces_.erase(it);
-    }
-  }
-
-  // |image_contexts| will go out of scope and be destroyed now.
 }
 
 static void PostTaskFromMainToImplThread(
@@ -888,7 +842,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     AggregatedRenderPassId id,
     copy_output::RenderPassGeometry geometry,
     const gfx::ColorSpace& color_space,
-    std::unique_ptr<CopyOutputRequest> request) {
+    std::unique_ptr<CopyOutputRequest> request,
+    const gpu::Mailbox& mailbox) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::CopyOutput");
   // TODO(crbug.com/898595): Do this on the GPU instead of CPU with Vulkan.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -899,11 +854,33 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   bool from_framebuffer = !id;
   DCHECK(scoped_output_device_paint_ || !from_framebuffer);
 
-  DCHECK(from_framebuffer ||
-         offscreen_surfaces_.find(id) != offscreen_surfaces_.end());
-  SkSurface* surface = from_framebuffer
-                           ? scoped_output_device_paint_->sk_surface()
-                           : offscreen_surfaces_[id].surface();
+  SkSurface* surface;
+  std::unique_ptr<gpu::SharedImageRepresentationSkia> backing_representation;
+  std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>
+      scoped_access;
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  if (from_framebuffer) {
+    surface = scoped_output_device_paint_->sk_surface();
+  } else {
+    backing_representation = shared_image_representation_factory_->ProduceSkia(
+        mailbox, context_state_.get());
+    DCHECK(backing_representation);
+
+    // TODO(crbug.com/1226672): Use BeginScopedReadAccess instead
+    scoped_access = backing_representation->BeginScopedWriteAccess(
+        /*final_msaa_count=*/0, skia::LegacyDisplayGlobals::GetSkSurfaceProps(),
+        &begin_semaphores, &end_semaphores,
+        gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    surface = scoped_access->surface();
+    if (!begin_semaphores.empty()) {
+      auto result =
+          surface->wait(begin_semaphores.size(), begin_semaphores.data(),
+                        /*deleteSemaphoresAfterWait=*/false);
+      DCHECK(result);
+    }
+  }
+
   // Do not support reading back from vulkan secondary command buffer.
   if (!surface)
     return;
@@ -1080,6 +1057,23 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   } else {
     NOTREACHED();
   }
+
+  if (!end_semaphores.empty()) {
+    GrFlushInfo flush_info;
+    flush_info.fNumSemaphores = end_semaphores.size();
+    flush_info.fSignalSemaphores = end_semaphores.data();
+    gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
+                                          &flush_info);
+    auto flush_result =
+        surface->flush(SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
+    if (flush_result != GrSemaphoresSubmitted::kYes &&
+        !(begin_semaphores.empty() && end_semaphores.empty())) {
+      // TODO(penghuang): handle vulkan device lost.
+      DLOG(ERROR) << "surface->flush() failed.";
+      return;
+    }
+  }
+
   ScheduleCheckReadbackCompletion();
 }
 
@@ -1103,32 +1097,19 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
 
   for (auto* context : image_contexts) {
     // Prepare for accessing render pass.
-    if (context->render_pass_id()) {
-      // We don't cache promise image for render pass, so the it should always
-      // be nullptr.
-      auto it = offscreen_surfaces_.find(context->render_pass_id());
-      DCHECK(it != offscreen_surfaces_.end());
-      context->set_promise_image_texture(sk_ref_sp(it->second.fulfill()));
-      if (!context->promise_image_texture()) {
-        DLOG(ERROR) << "Failed to fulfill the promise texture created from "
-                       "CompositorRenderPassId:"
-                    << context->render_pass_id();
-      }
-    } else {
-      context->BeginAccessIfNecessary(
-          context_state_.get(), shared_image_representation_factory_.get(),
-          dependency_->GetMailboxManager(), begin_semaphores, end_semaphores);
-      if (context->end_access_state())
-        image_contexts_with_end_access_state_.emplace(context);
+    context->BeginAccessIfNecessary(
+        context_state_.get(), shared_image_representation_factory_.get(),
+        dependency_->GetMailboxManager(), begin_semaphores, end_semaphores);
+    if (context->end_access_state())
+      image_contexts_with_end_access_state_.emplace(context);
 
-      // Texture parameters can be modified by concurrent reads so reset them
-      // before compositing from the texture. See https://crbug.com/1092080.
-      if (is_gl && context->maybe_concurrent_reads()) {
-        auto* promise_texture = context->promise_image_texture();
-        if (promise_texture) {
-          GrBackendTexture backend_texture = promise_texture->backendTexture();
-          backend_texture.glTextureParametersModified();
-        }
+    // Texture parameters can be modified by concurrent reads so reset them
+    // before compositing from the texture. See https://crbug.com/1092080.
+    if (is_gl && context->maybe_concurrent_reads()) {
+      auto* promise_texture = context->promise_image_texture();
+      if (promise_texture) {
+        GrBackendTexture backend_texture = promise_texture->backendTexture();
+        backend_texture.glTextureParametersModified();
       }
     }
   }

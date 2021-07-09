@@ -267,6 +267,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     bool generate_mipmap;
     gfx::ColorSpace color_space;
     ResourceFormat format;
+    gpu::Mailbox mailbox;
   };
   base::flat_map<AggregatedRenderPassId, RenderPassBacking>
       render_pass_backings_;

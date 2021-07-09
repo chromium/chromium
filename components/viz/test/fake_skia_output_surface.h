@@ -79,7 +79,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                                  const gfx::Size& surface_size,
                                  ResourceFormat format,
                                  bool mipmap,
-                                 sk_sp<SkColorSpace> color_space) override;
+                                 sk_sp<SkColorSpace> color_space,
+                                 const gpu::Mailbox& mailbox) override;
   void EndPaint(base::OnceClosure on_finished) override;
   void MakePromiseSkImage(ImageContext* image_context) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
@@ -87,7 +88,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       const gfx::Size& size,
       ResourceFormat format,
       bool mipmap,
-      sk_sp<SkColorSpace> color_space) override;
+      sk_sp<SkColorSpace> color_space,
+      const gpu::Mailbox& mailbox) override;
   void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids) override;
   void ScheduleOverlays(OverlayList overlays,
@@ -99,9 +101,11 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void CopyOutput(AggregatedRenderPassId id,
                   const copy_output::RenderPassGeometry& geometry,
                   const gfx::ColorSpace& color_space,
-                  std::unique_ptr<CopyOutputRequest> request) override;
+                  std::unique_ptr<CopyOutputRequest> request,
+                  const gpu::Mailbox& mailbox) override;
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
+  gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
 #if defined(OS_APPLE) || defined(USE_OZONE)
   SkCanvas* BeginPaintRenderPassOverlay(

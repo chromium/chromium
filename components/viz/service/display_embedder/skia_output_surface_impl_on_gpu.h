@@ -147,7 +147,7 @@ class SkiaOutputSurfaceImplOnGpu
   void SwapBuffersSkipped();
   void EnsureBackbuffer() { output_device_->EnsureBackbuffer(); }
   void DiscardBackbuffer() { output_device_->DiscardBackbuffer(); }
-  void FinishPaintRenderPass(AggregatedRenderPassId id,
+  void FinishPaintRenderPass(const gpu::Mailbox& mailbox,
                              sk_sp<SkDeferredDisplayList> ddl,
                              std::vector<ImageContextImpl*> image_contexts,
                              std::vector<gpu::SyncToken> sync_tokens,
@@ -160,7 +160,8 @@ class SkiaOutputSurfaceImplOnGpu
   void CopyOutput(AggregatedRenderPassId id,
                   copy_output::RenderPassGeometry geometry,
                   const gfx::ColorSpace& color_space,
-                  std::unique_ptr<CopyOutputRequest> request);
+                  std::unique_ptr<CopyOutputRequest> request,
+                  const gpu::Mailbox& mailbox);
 
   void BeginAccessImages(const std::vector<ImageContextImpl*>& image_contexts,
                          std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -228,7 +229,6 @@ class SkiaOutputSurfaceImplOnGpu
           pending_receiver);
 
  private:
-  class OffscreenSurface;
   class DisplayContext;
 
   bool Initialize();
@@ -354,8 +354,6 @@ class SkiaOutputSurfaceImplOnGpu
 
   absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       output_surface_plane_;
-
-  base::flat_map<AggregatedRenderPassId, OffscreenSurface> offscreen_surfaces_;
 
   // Micro-optimization to get to issuing GPU SwapBuffers as soon as possible.
   std::vector<sk_sp<SkDeferredDisplayList>> destroy_after_swap_;

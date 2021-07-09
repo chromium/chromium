@@ -115,7 +115,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                                  const gfx::Size& surface_size,
                                  ResourceFormat format,
                                  bool mipmap,
-                                 sk_sp<SkColorSpace> color_space) override;
+                                 sk_sp<SkColorSpace> color_space,
+                                 const gpu::Mailbox& mailbox) override;
   void EndPaint(base::OnceClosure on_finished) override;
   void MakePromiseSkImage(ImageContext* image_context) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
@@ -123,7 +124,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const gfx::Size& size,
       ResourceFormat format,
       bool mipmap,
-      sk_sp<SkColorSpace> color_space) override;
+      sk_sp<SkColorSpace> color_space,
+      const gpu::Mailbox& mailbox) override;
 
   void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids) override;
@@ -134,10 +136,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void CopyOutput(AggregatedRenderPassId id,
                   const copy_output::RenderPassGeometry& geometry,
                   const gfx::ColorSpace& color_space,
-                  std::unique_ptr<CopyOutputRequest> request) override;
+                  std::unique_ptr<CopyOutputRequest> request,
+                  const gpu::Mailbox& mailbox) override;
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
   void PreserveChildSurfaceControls() override;
+  gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
 
 #if defined(OS_APPLE) || defined(USE_OZONE)
@@ -240,11 +244,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
     explicit ScopedPaint(SkDeferredDisplayListRecorder* root_recorder);
     explicit ScopedPaint(SkSurfaceCharacterization characterization);
     ScopedPaint(SkSurfaceCharacterization characterization,
-                AggregatedRenderPassId render_pass_id);
+                AggregatedRenderPassId render_pass_id,
+                gpu::Mailbox mailbox);
     ~ScopedPaint();
 
     SkDeferredDisplayListRecorder* recorder() { return recorder_; }
     AggregatedRenderPassId render_pass_id() { return render_pass_id_; }
+    gpu::Mailbox mailbox() { return mailbox_; }
 
    private:
     // This is recorder being used for current paint
@@ -253,6 +259,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
     // it's stored here
     absl::optional<SkDeferredDisplayListRecorder> recorder_storage_;
     const AggregatedRenderPassId render_pass_id_;
+    const gpu::Mailbox mailbox_;
   };
 
   // Tracks damage across at most `number_of_buffers`. Note this implementation
