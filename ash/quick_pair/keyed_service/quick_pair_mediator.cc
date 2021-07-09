@@ -9,9 +9,32 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
+#include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
+#include "ash/quick_pair/scanning/scanner_broker_impl.h"
 
 namespace ash {
 namespace quick_pair {
+
+namespace {
+
+Mediator::Factory* g_test_factory = nullptr;
+
+}
+
+// static
+std::unique_ptr<Mediator> Mediator::Factory::Create() {
+  if (g_test_factory)
+    return g_test_factory->BuildInstance();
+
+  return std::make_unique<Mediator>(
+      std::make_unique<FeatureStatusTrackerImpl>(),
+      std::make_unique<ScannerBrokerImpl>());
+}
+
+// static
+void Mediator::Factory::SetFactoryForTesting(Factory* factory) {
+  g_test_factory = factory;
+}
 
 Mediator::Mediator(std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
                    std::unique_ptr<ScannerBroker> scanner_broker)

@@ -207,6 +207,10 @@ class ArcInputMethodBoundsTracker;
 
 enum class LoginStatus;
 
+namespace quick_pair {
+class Mediator;
+}  // namespace quick_pair
+
 // Shell is a singleton object that presents the Shell API and implements the
 // RootWindow's delegate interface.
 //
@@ -888,6 +892,8 @@ class ASH_EXPORT Shell : public SessionObserver,
       login_unlock_throughput_recorder_;
 
   std::unique_ptr<OcclusionTrackerPauser> occlusion_tracker_pauser_;
+
+  std::unique_ptr<quick_pair::Mediator> quick_pair_mediator_;
 
   base::ObserverList<ShellObserver>::Unchecked shell_observers_;
 

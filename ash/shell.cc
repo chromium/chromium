@@ -87,6 +87,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/views_text_services_context_menu_impl.h"
 #include "ash/quick_answers/quick_answers_controller_impl.h"
+#include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/root_window_controller.h"
 #include "ash/screenshot_delegate.h"
 #include "ash/session/session_controller_impl.h"
@@ -559,7 +560,8 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
       shell_delegate_(std::move(shell_delegate)),
       shutdown_controller_(std::make_unique<ShutdownControllerImpl>()),
       system_tray_notifier_(std::make_unique<SystemTrayNotifier>()),
-      native_cursor_manager_(nullptr) {
+      native_cursor_manager_(nullptr),
+      quick_pair_mediator_(quick_pair::Mediator::Factory::Create()) {
   AccelerometerReader::GetInstance()->Initialize();
 
   login_screen_controller_ =

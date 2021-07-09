@@ -20,6 +20,16 @@ namespace quick_pair {
 class Mediator : public FeatureStatusTracker::Observer,
                  public ScannerBroker::Observer {
  public:
+  class Factory {
+   public:
+    static std::unique_ptr<Mediator> Create();
+    static void SetFactoryForTesting(Factory* factory);
+    virtual ~Factory() = default;
+
+   private:
+    virtual std::unique_ptr<Mediator> BuildInstance() = 0;
+  };
+
   Mediator(std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
            std::unique_ptr<ScannerBroker> scanner_broker);
   Mediator(const Mediator&) = delete;

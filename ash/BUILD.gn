@@ -1842,6 +1842,7 @@ component("ash") {
     "//ash/login/resources:resources_grit",
     "//ash/public/cpp/ambient/proto",
     "//ash/quick_pair",
+    "//ash/quick_pair/keyed_service",
     "//ash/services/recording",
     "//ash/services/recording/public/mojom",
     "//ash/system/machine_learning:user_settings_event_proto",
