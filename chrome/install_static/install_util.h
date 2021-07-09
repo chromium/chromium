@@ -10,10 +10,10 @@
 #ifndef CHROME_INSTALL_STATIC_INSTALL_UTIL_H_
 #define CHROME_INSTALL_STATIC_INSTALL_UTIL_H_
 
-#include <windows.h>
-
 #include <string>
 #include <vector>
+
+#include "base/win/windows_types.h"
 
 namespace version_info {
 enum class Channel;
