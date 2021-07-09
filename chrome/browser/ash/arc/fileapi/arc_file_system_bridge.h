@@ -21,6 +21,7 @@
 #include "components/arc/mojom/file_system.mojom-forward.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
 class BrowserContextKeyedServiceFactory;
@@ -85,6 +86,8 @@ class ArcFileSystemBridge
                    GetFileNameCallback callback) override;
   void GetFileSize(const std::string& url,
                    GetFileSizeCallback callback) override;
+  void GetLastModified(const GURL& url,
+                       GetLastModifiedCallback callback) override;
   void GetFileType(const std::string& url,
                    GetFileTypeCallback callback) override;
   void OnDocumentChanged(int64_t watcher_id,
@@ -119,6 +122,11 @@ class ArcFileSystemBridge
   // Used to implement GetFileSize().
   void GetFileSizeInternal(const GURL& url_decoded,
                            GetFileSizeCallback callback);
+
+  // Used to implement GetFileSize() and GetLastModified().
+  void GetMetadata(const GURL& url_decoded,
+                   int flags,
+                   storage::FileSystemOperation::GetMetadataCallback callback);
 
   // Used to implement GetVirtualFileId().
   void GetVirtualFileIdInternal(const GURL& url_decoded,
