@@ -1174,10 +1174,14 @@ class TabListMediator {
         }
 
         if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()) {
-            if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
+            if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled()
+                    && isUngroupedTab(pseudoTab.getId())) {
                 mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                         new ShoppingPersistedTabDataFetcher(
                                 pseudoTab.getTab(), mPriceWelcomeMessageController));
+            } else {
+                mModel.get(index).model.set(
+                        TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
             }
             if (StoreTrackingUtilities.isStoreHoursOnTabsEnabled()) {
                 mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER,
@@ -1198,6 +1202,11 @@ class TabListMediator {
                             forceUpdate && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
             mModel.get(index).model.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }
+    }
+
+    @VisibleForTesting
+    public boolean isUngroupedTab(int tabId) {
+        return getRelatedTabsForId(tabId).size() == 1;
     }
 
     /**
