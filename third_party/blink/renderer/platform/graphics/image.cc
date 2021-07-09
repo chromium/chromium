@@ -33,6 +33,7 @@
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "cc/tiles/software_image_decode_cache.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
@@ -298,6 +299,10 @@ void Image::DrawPattern(GraphicsContext& context,
                          "Draw LazyPixelRef", TRACE_EVENT_SCOPE_THREAD,
                          "LazyPixelRef", image_id);
   }
+}
+
+mojom::blink::ImageAnimationPolicy Image::AnimationPolicy() {
+  return mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed;
 }
 
 scoped_refptr<Image> Image::ImageForDefaultFrame() {

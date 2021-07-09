@@ -10,6 +10,10 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 
+namespace base {
+class WaitableEvent;
+}  // namespace base
+
 namespace media {
 class GpuMemoryBufferVideoFramePool;
 }  // namespace media

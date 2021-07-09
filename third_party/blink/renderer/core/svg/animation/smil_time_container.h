@@ -28,7 +28,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/animation/priority_queue.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time.h"
