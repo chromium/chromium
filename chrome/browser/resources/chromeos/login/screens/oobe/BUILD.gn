@@ -31,7 +31,7 @@ js_library("auto_enrollment_check") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/oobe_loading_dialog:oobe_loading_dialog",
+    "../../components/dialogs:oobe_loading_dialog",
   ]
 }
 
@@ -42,7 +42,7 @@ js_library("demo_preferences") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_text_button",
-    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_adaptive_dialog",
   ]
 }
 
@@ -54,7 +54,7 @@ js_library("demo_setup") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_text_button",
-    "../../components/oobe_dialog:oobe_dialog",
+    "../../components/dialogs:oobe_dialog",
   ]
 }
 
@@ -63,29 +63,29 @@ js_library("enable_debugging") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
-    "../../components/oobe_loading_dialog:oobe_loading_dialog",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_loading_dialog",
   ]
 }
 
 js_library("hid_detection") {
   deps = [
-    "../../components:oobe_modal_dialog",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_modal_dialog",
   ]
 }
 
 js_library("oobe_eula") {
   deps = [
     "../..:web_view_helper",
-    "../../components:oobe_modal_dialog",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_modal_dialog",
   ]
 }
 
@@ -94,7 +94,7 @@ js_library("oobe_network") {
     "../../components:network_select_login",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_adaptive_dialog",
   ]
 }
 
@@ -103,6 +103,6 @@ js_library("packaged_license") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_adaptive_dialog",
   ]
 }

@@ -11,9 +11,8 @@ group("closure_compile") {
   deps = [
     ":closure_compile_local",
     "buttons:closure_compile",
-    "oobe_adaptive_dialog:closure_compile",
+    "dialogs:closure_compile",
     "oobe_carousel:closure_compile",
-    "oobe_content_dialog:closure_compile",
     "behaviors:closure_compile",
     "oobe_slide:closure_compile",
     "progress_list_item:closure_compile",
@@ -29,7 +28,6 @@ js_type_check("closure_compile_local") {
     ":html-echo",
     ":network_select_login",
     ":oobe_i18n_dropdown",
-    ":oobe_modal_dialog",
     ":oobe_select",
     ":oobe_types",
   ]
@@ -103,13 +101,6 @@ js_library("oobe_i18n_dropdown") {
   deps = [
     ":oobe_select",
     ":oobe_types",
-  ]
-}
-
-js_library("oobe_modal_dialog") {
-  deps = [
-    "behaviors:oobe_i18n_behavior",
-    "buttons:oobe_text_button",
   ]
 }
 

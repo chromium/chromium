@@ -194,14 +194,16 @@ constexpr char kScrollableBehaviorJS[] =
 constexpr char kHDIronIconHTML[] = "components/hd_iron_icon.html";
 constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
 constexpr char kOobeAdaptiveDialogHTML[] =
-    "components/oobe_adaptive_dialog.html";
-constexpr char kOobeAdaptvieDialogJS[] = "components/oobe_adaptive_dialog.js";
-constexpr char kOobeContentDialogHTML[] = "components/oobe_content_dialog.html";
-constexpr char kOobeContentDialogJS[] = "components/oobe_content_dialog.js";
-constexpr char kOobeDialogHTML[] = "components/oobe_dialog/oobe_dialog.html";
-constexpr char kOobeDialogJS[] = "components/oobe_dialog/oobe_dialog.js";
-constexpr char kOobeLoadingDialogHTML[] = "components/oobe_loading_dialog/oobe_loading_dialog.html";
-constexpr char kOobeLoadingDialogJS[] = "components/oobe_loading_dialog/oobe_loading_dialog.js";
+    "components/dialogs/oobe_adaptive_dialog.html";
+constexpr char kOobeAdaptvieDialogJS[] = "components/dialogs/oobe_adaptive_dialog.js";
+constexpr char kOobeContentDialogHTML[] = "components/dialogs/oobe_content_dialog.html";
+constexpr char kOobeContentDialogJS[] = "components/dialogs/oobe_content_dialog.js";
+constexpr char kOobeDialogHTML[] = "components/dialogs/oobe_dialog.html";
+constexpr char kOobeDialogJS[] = "components/dialogs/oobe_dialog.js";
+constexpr char kOobeLoadingDialogHTML[] = "components/dialogs/oobe_loading_dialog.html";
+constexpr char kOobeLoadingDialogJS[] = "components/dialogs/oobe_loading_dialog.js";
+constexpr char kOobeModalDialogHTML[] = "components/dialogs/oobe_modal_dialog.html";
+constexpr char kOobeModalDialogJS[] = "components/dialogs/oobe_modal_dialog.js";
 constexpr char kOobeCarouselHTML[] = "components/oobe_carousel/oobe_carousel.html";
 constexpr char kOobeCarouselJS[] = "components/oobe_carousel/oobe_carousel.js";
 constexpr char kOobeSlideHTML[] = "components/oobe_slide/oobe_slide.html";
@@ -774,6 +776,10 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                           IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_HTML);
   source->AddResourcePath(kOobeLoadingDialogJS,
                           IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_JS);
+  source->AddResourcePath(kOobeModalDialogHTML,
+                          IDR_OOBE_COMPONENTS_OOBE_MODAL_DIALOG_HTML);
+  source->AddResourcePath(kOobeModalDialogJS,
+                          IDR_OOBE_COMPONENTS_OOBE_MODAL_DIALOG_JS);
 
   if (features::IsNewOobeLayoutEnabled()) {
     if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
