@@ -8,7 +8,8 @@
   await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  var request = new SDK.NetworkRequest(0, 'http://unknown', 'https://foo.test', 0, 0, null);
+  var request = SDK.NetworkRequest.create(
+      0, 'http://unknown', 'https://foo.test', 0, 0, null);
   SecurityTestRunner.dispatchRequestFinished(request);
 
   SecurityTestRunner.dumpSecurityPanelSidebarOrigins();

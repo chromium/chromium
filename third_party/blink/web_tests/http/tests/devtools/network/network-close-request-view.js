@@ -9,7 +9,7 @@
   var target = panel._networkLogView;
   var types = Common.resourceTypes;
 
-  var requestFoo = new SDK.NetworkRequest('', '', '', '', '');
+  var requestFoo = SDK.NetworkRequest.create('', '', '', '', '');
   requestFoo.setResourceType(types.XHR);
   requestFoo.setRequestIdForTest('foo');
   TestRunner.addResult('Showing request foo');

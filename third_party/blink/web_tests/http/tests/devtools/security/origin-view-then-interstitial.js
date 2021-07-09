@@ -8,7 +8,8 @@
   await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  var request1 = new SDK.NetworkRequest(0, 'http://foo.test/', 'http://foo.test', 0, 0, null);
+  var request1 = SDK.NetworkRequest.create(
+      0, 'http://foo.test/', 'http://foo.test', 0, 0, null);
   request1.setSecurityState(Protocol.Security.SecurityState.Insecure);
   SecurityTestRunner.dispatchRequestFinished(request1);
 

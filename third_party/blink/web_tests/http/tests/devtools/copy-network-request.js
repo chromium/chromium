@@ -11,7 +11,11 @@
   var logView = UI.panels.network._networkLogView;
 
   function newRequest(isBlob, headers, data, opt_url, method = null) {
-    var request = new SDK.NetworkRequest(0, (isBlob === true ? 'blob:' : '') + (opt_url || 'http://example.org/path'), 0, 0, 0);
+    var request = SDK.NetworkRequest.create(
+        0,
+        (isBlob === true ? 'blob:' : '') +
+            (opt_url || 'http://example.org/path'),
+        0, 0, 0);
     request.requestMethod = method || (data ? 'POST' : 'GET');
     var headerList = [];
     if (headers) {

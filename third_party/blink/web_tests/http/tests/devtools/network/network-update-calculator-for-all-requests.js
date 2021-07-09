@@ -13,7 +13,7 @@
   target._reset();
 
   function appendRequest(id, type, startTime, endTime) {
-    var request = new SDK.NetworkRequest('', '', '', '', '');
+    var request = SDK.NetworkRequest.create('', '', '', '', '');
     request.setResourceType(type);
     request.setRequestIdForTest(id);
     request.setIssueTime(startTime);

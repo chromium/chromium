@@ -26,13 +26,16 @@
   TestRunner.addResult('Detected main origin: ' + detectedMainOrigin);
 
   // Send subdownload resource requests to other origins.
-  const request1 = new SDK.NetworkRequest(0, 'https://foo.test/favicon.ico', page_url, 0, 0, null);
+  const request1 = SDK.NetworkRequest.create(
+      0, 'https://foo.test/favicon.ico', page_url, 0, 0, null);
   SecurityTestRunner.dispatchRequestFinished(request1);
-  const request2 = new SDK.NetworkRequest(0, 'https://bar.test/bar.css', page_url, 0, 0, null);
+  const request2 = SDK.NetworkRequest.create(
+      0, 'https://bar.test/bar.css', page_url, 0, 0, null);
   SecurityTestRunner.dispatchRequestFinished(request2);
 
   // Send one request to the Same Origin as the original page to ensure it appears in the group.
-  const request3 = new SDK.NetworkRequest(0, detectedMainOrigin + '/favicon.ico', page_url, 0, 0, null);
+  const request3 = SDK.NetworkRequest.create(
+      0, detectedMainOrigin + '/favicon.ico', page_url, 0, 0, null);
   SecurityTestRunner.dispatchRequestFinished(request3);
   SecurityTestRunner.dumpSecurityPanelSidebarOrigins();
   TestRunner.completeTest();

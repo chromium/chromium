@@ -12,7 +12,7 @@
     var target = panel._networkLogView;
     var types = Common.resourceTypes;
 
-    var requestFoo = new SDK.NetworkRequest('', '', '', '', '');
+    var requestFoo = SDK.NetworkRequest.create('', '', '', '', '');
     requestFoo.setResourceType(types.XHR);
     requestFoo.setRequestIdForTest('foo');
     requestFoo.setRequestHeaders([{name: 'Cookie', value: 'mycookie=myvalue;myother=myvalue2'}]);

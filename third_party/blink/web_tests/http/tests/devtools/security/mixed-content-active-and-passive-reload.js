@@ -32,11 +32,13 @@
         Security.SecurityModel.Events.VisibleSecurityStateChanged,
         pageVisibleSecurityState);
 
-  var passive = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  var passive = SDK.NetworkRequest.create(
+      0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   passive.mixedContentType = 'optionally-blockable';
   SecurityTestRunner.dispatchRequestFinished(passive);
 
-  var active = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  var active = SDK.NetworkRequest.create(
+      0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   active.mixedContentType = 'blockable';
   SecurityTestRunner.dispatchRequestFinished(active);
 

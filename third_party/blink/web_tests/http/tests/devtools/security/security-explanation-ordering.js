@@ -38,7 +38,8 @@
         Security.SecurityModel.Events.VisibleSecurityStateChanged,
         pageVisibleSecurityState);
 
-  var request = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  var request = SDK.NetworkRequest.create(
+      0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   SecurityTestRunner.dispatchRequestFinished(request);
 
   var explanations =

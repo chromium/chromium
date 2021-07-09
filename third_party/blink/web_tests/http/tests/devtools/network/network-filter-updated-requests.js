@@ -14,12 +14,12 @@
   target._resourceCategoryFilterUI._toggleTypeFilter(categoryName, false);
   TestRunner.addResult('Clicked \'' + categoryName + '\' button.');
 
-  var requestFoo = new SDK.NetworkRequest('', '', '', '', '');
+  var requestFoo = SDK.NetworkRequest.create('', '', '', '', '');
   requestFoo.setResourceType(types.Script);
   requestFoo.setRequestIdForTest('foo');
   TestRunner.networkManager._dispatcher._startNetworkRequest(requestFoo);
 
-  var requestBar = new SDK.NetworkRequest('', '', '', '', '');
+  var requestBar = SDK.NetworkRequest.create('', '', '', '', '');
   requestBar.setResourceType(types.Script);
   requestBar.setRequestIdForTest('bar');
   TestRunner.networkManager._dispatcher._startNetworkRequest(requestBar);

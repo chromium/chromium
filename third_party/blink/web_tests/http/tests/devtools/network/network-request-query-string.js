@@ -8,7 +8,7 @@
   await TestRunner.showPanel('network');
 
   function checkURL(url) {
-    var request = new SDK.NetworkRequest(url, url, '', '', '');
+    var request = SDK.NetworkRequest.create(url, url, '', '', '');
     TestRunner.addResult('URL: ' + url);
     TestRunner.addResult('Query: ' + request.queryString());
     TestRunner.addResult('');

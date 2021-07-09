@@ -8,7 +8,8 @@
   await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  var request1 = new SDK.NetworkRequest(0, 'https://foo.test/', 'https://foo.test', 0, 0, null);
+  var request1 = SDK.NetworkRequest.create(
+      0, 'https://foo.test/', 'https://foo.test', 0, 0, null);
   request1.setSecurityState(Protocol.Security.SecurityState.Secure);
   let securityDetails = {};
   securityDetails.protocol = 'TLS 1.2';

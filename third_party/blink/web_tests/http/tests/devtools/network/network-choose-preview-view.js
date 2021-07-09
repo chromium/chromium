@@ -10,7 +10,7 @@
   await TestRunner.showPanel('network');
 
   function createNetworkRequest(mimeType, content, statusCode, resourceType) {
-    var request = new SDK.NetworkRequest(0, 'http://localhost');
+    var request = SDK.NetworkRequest.create(0, 'http://localhost');
     request._resourceType = resourceType;
     request.mimeType = mimeType;
     request._contentData = Promise.resolve({error: null, content: content, encoded: false});

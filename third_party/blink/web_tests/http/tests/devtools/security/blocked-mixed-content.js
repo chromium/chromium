@@ -14,7 +14,8 @@
           Protocol.Security.SecurityState.Neutral, /* certificateSecurityState= */ null,
           /* safetyTipInfo= */ null, /* securityStateIssueIds= */ ['scheme-is-not-cryptographic']));
 
-  var request = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  var request = SDK.NetworkRequest.create(
+      0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   request.setBlockedReason(Protocol.Network.BlockedReason.MixedContent);
   request.mixedContentType = 'blockable';
   SecurityTestRunner.dispatchRequestFinished(request);
