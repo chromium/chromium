@@ -33899,6 +33899,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3948" label="RTCPeerConnectionWithBlockingCsp"/>
   <int value="3949" label="SanitizerAPISanitizeFor"/>
   <int value="3950" label="SanitizerAPIElementSetSanitized"/>
+  <int value="3951" label="TextShadowInHighlightPseudo"/>
+  <int value="3952" label="TextShadowNotNoneInHighlightPseudo"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -793,6 +793,22 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
 
     if (element->IsMathMLElement())
       ApplyMathMLCustomStyleProperties(element, state);
+  } else if (IsHighlightPseudoElement(style_request.pseudo_id)) {
+    if (element->GetComputedStyle() &&
+        element->GetComputedStyle()->TextShadow() !=
+            state.Style()->TextShadow()) {
+      // This counts the usage of text-shadow in CSS highlight pseudos.
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kTextShadowInHighlightPseudo);
+      if (state.Style()->TextShadow()) {
+        // This counts the cases in which text-shadow is not "none" in CSS
+        // highlight pseudos, as the most common use case is using it to disable
+        // text-shadow, and that won't be need once some painting issues related
+        // to highlight pseudos are fixed.
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kTextShadowNotNoneInHighlightPseudo);
+      }
+    }
   }
 
   if (Element* animating_element = state.GetAnimatingElement())

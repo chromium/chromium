@@ -3263,6 +3263,8 @@ enum WebFeature {
   kRTCPeerConnectionWithBlockingCsp = 3948,
   kSanitizerAPISanitizeFor = 3949,
   kSanitizerAPIElementSetSanitized = 3950,
+  kTextShadowInHighlightPseudo = 3951,
+  kTextShadowNotNoneInHighlightPseudo = 3952,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
