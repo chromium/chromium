@@ -25,10 +25,10 @@
 #include "services/device/usb/usb_device.h"
 #include "services/device/usb/usb_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
 #include "services/device/usb/usb_device_linux.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace device {
 namespace usb {
@@ -118,8 +118,7 @@ void DeviceManagerImpl::OnPermissionGrantedToRefresh(
 }
 #endif  // defined(OS_ANDROID)
 
-// TODO(huangs): Enable for IS_CHROMEOS_LACROS for crbug.com/1195247.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void DeviceManagerImpl::CheckAccess(const std::string& guid,
                                     CheckAccessCallback callback) {
   scoped_refptr<UsbDevice> device = usb_service_->GetDevice(guid);
@@ -173,7 +172,7 @@ void DeviceManagerImpl::OnOpenFileDescriptorError(
              << message;
   std::move(callback).Run(base::File());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void DeviceManagerImpl::SetClient(
     mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client) {

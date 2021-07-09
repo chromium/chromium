@@ -70,7 +70,7 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/webui/webui_allowlist.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif

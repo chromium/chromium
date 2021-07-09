@@ -84,7 +84,7 @@ void FakeUsbDeviceManager::RefreshDeviceInfo(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void FakeUsbDeviceManager::CheckAccess(const std::string& guid,
                                        CheckAccessCallback callback) {
   std::move(callback).Run(true);
@@ -99,7 +99,7 @@ void FakeUsbDeviceManager::OpenFileDescriptor(
       base::FilePath(FILE_PATH_LITERAL("/dev/null")),
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void FakeUsbDeviceManager::SetClient(
     mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client) {

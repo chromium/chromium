@@ -44,7 +44,7 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   virtual void Open(const mojom::SerialConnectionOptions& options,
                     OpenCompleteCallback callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Signals that the port has been opened.
   void OnPathOpened(
       scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
@@ -59,7 +59,7 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // Reports the open error from the permission broker.
   void ReportPathOpenError(const std::string& error_name,
                            const std::string& error_message);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Performs an async read operation. Behavior is undefined if this is called
   // while a read is already pending. Otherwise, |callback| will eventually be

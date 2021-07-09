@@ -29,9 +29,9 @@
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/permission_broker/permission_broker_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 using device::HidDeviceFilter;
 using device::mojom::UsbDeviceFilterPtr;
@@ -149,7 +149,7 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       remaining_initial_devices_++;
 
     auto device_info = std::make_unique<UsbDeviceInfo>(device.Clone());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     auto* device_manager = UsbDeviceManager::Get(browser_context());
     DCHECK(device_manager);
     device_manager->CheckAccess(
@@ -159,7 +159,7 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
 #else
     AddCheckedDevice(std::move(device_info), initial_enumeration,
                      /*allowed=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   void AddCheckedDevice(std::unique_ptr<UsbDeviceInfo> device_info,
@@ -335,6 +335,7 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       remaining_initial_devices_++;
 
     auto device_info = std::make_unique<HidDeviceInfo>(std::move(device));
+    // TODO(huangs): Enable this for Lacros (crbug.com/1217124).
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PermissionBrokerClient::Get()->CheckPathAccess(
         device_info.get()->device()->device_node,
