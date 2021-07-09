@@ -49,7 +49,7 @@ class ExtensionMessagePort : public MessagePort {
                        bool include_child_frames);
 
   // Create a port that is tied to all frames and service workers of an
-  // extension.
+  // extension. Should only be used for a receiver port.
   static std::unique_ptr<ExtensionMessagePort> CreateForExtension(
       base::WeakPtr<ChannelDelegate> channel_delegate,
       const PortId& port_id,

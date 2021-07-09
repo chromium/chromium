@@ -390,22 +390,13 @@ void ExtensionMessagePort::ClosePort(int process_id,
                                      int routing_id,
                                      int worker_thread_id) {
   const bool is_for_service_worker = worker_thread_id != kMainThreadId;
-  if (!is_for_service_worker && routing_id == MSG_ROUTING_NONE) {
-    // The only non-frame-specific message is the response to an unhandled
-    // onConnect event in the extension process.
-    DCHECK(for_all_extension_contexts_);
-    ClearFrames();
-    if (!HasReceivers())
-      CloseChannel();
-    return;
-  }
+  DCHECK(is_for_service_worker || routing_id != MSG_ROUTING_NONE);
 
   if (is_for_service_worker) {
     UnregisterWorker(process_id, worker_thread_id);
-  } else {
-    DCHECK_NE(MSG_ROUTING_NONE, routing_id);
-    if (auto* rfh = content::RenderFrameHost::FromID(process_id, routing_id))
-      UnregisterFrame(rfh);
+  } else if (auto* rfh =
+                 content::RenderFrameHost::FromID(process_id, routing_id)) {
+    UnregisterFrame(rfh);
   }
 }
 

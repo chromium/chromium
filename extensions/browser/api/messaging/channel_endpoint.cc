@@ -19,17 +19,15 @@ ChannelEndpoint::ChannelEndpoint(content::BrowserContext* browser_context,
       render_process_id_(render_process_id),
       port_context_(port_context) {
   // Context must be exclusive to render frame or worker.
-  DCHECK_NE(port_context.is_for_service_worker(),
-            port_context.is_for_render_frame());
+  DCHECK(port_context.is_for_service_worker() ^
+         port_context.is_for_render_frame());
 }
 
 // For native message endpoint.
 ChannelEndpoint::ChannelEndpoint(content::BrowserContext* browser_context)
     : browser_context_(browser_context),
-      render_process_id_(content::ChildProcessHost::kInvalidUniqueID) {
-  DCHECK(!port_context_.is_for_render_frame() &&
-         !port_context_.is_for_service_worker());
-}
+      render_process_id_(content::ChildProcessHost::kInvalidUniqueID),
+      port_context_(PortContext::ForNativeHost()) {}
 
 bool ChannelEndpoint::is_for_service_worker() const {
   return port_context_.is_for_service_worker();

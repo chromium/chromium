@@ -13,12 +13,14 @@
 
 namespace extensions {
 
-// Specifies the renderer context that is tied to a message Port.
 // A port can refer to a RenderFrame (FrameContext) or a Service Worker
-// (WorkerContext).
+// (WorkerContext) or a native messaging host.
 struct PortContext {
  public:
+  // This constructor is needed by our IPC code and tests. Clients should use
+  // factory functions instead.
   PortContext();
+
   ~PortContext();
   PortContext(const PortContext& other);
 
@@ -47,9 +49,11 @@ struct PortContext {
   static PortContext ForWorker(int thread_id,
                                int64_t version_id,
                                const std::string& extension_id);
+  static PortContext ForNativeHost();
 
   bool is_for_render_frame() const { return frame.has_value(); }
   bool is_for_service_worker() const { return worker.has_value(); }
+  bool is_for_native_host() const { return !frame && !worker; }
 
   absl::optional<FrameContext> frame;
   absl::optional<WorkerContext> worker;

@@ -373,6 +373,14 @@ void ExtensionMessageFilter::OnCloseMessagePort(const PortContext& port_context,
   if (!browser_context_)
     return;
 
+  // Note, we need to add more stringent IPC validation here.
+  if (!port_context.is_for_render_frame() &&
+      !port_context.is_for_service_worker()) {
+    bad_message::ReceivedBadMessage(render_process_id_,
+                                    bad_message::EMF_INVALID_PORT_CONTEXT);
+    return;
+  }
+
   MessageService::Get(browser_context_)
       ->ClosePort(port_id, render_process_id_, port_context, force_close);
 }

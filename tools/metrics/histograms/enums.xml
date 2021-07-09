@@ -7506,6 +7506,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="15" label="EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE"/>
   <int value="16" label="EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT"/>
   <int value="17" label="EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT"/>
+  <int value="18" label="EMF_INVALID_PORT_CONTEXT"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">
