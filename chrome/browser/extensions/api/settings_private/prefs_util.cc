@@ -1059,10 +1059,10 @@ settings_private::SetPrefResult PrefsUtil::SetPref(const std::string& pref_name,
         pref_service->SetInteger(pref_name, static_cast<int>(double_value));
       break;
     case base::Value::Type::STRING: {
-      std::string string_value;
-      if (!value->GetAsString(&string_value))
+      if (!value->is_string())
         return settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
 
+      std::string string_value = value->GetString();
       if (IsPrefTypeURL(pref_name)) {
         GURL fixed = url_formatter::FixupURL(string_value, std::string());
         if (fixed.is_valid())

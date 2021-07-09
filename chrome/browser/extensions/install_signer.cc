@@ -145,11 +145,10 @@ bool GetExtensionIdSet(const base::DictionaryValue& dictionary,
   if (!dictionary.GetList(key, &id_list))
     return false;
   for (const auto& entry : id_list->GetList()) {
-    std::string id;
-    if (!entry.GetAsString(&id)) {
+    if (!entry.is_string()) {
       return false;
     }
-    ids->insert(id);
+    ids->insert(entry.GetString());
   }
   return true;
 }

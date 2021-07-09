@@ -204,9 +204,8 @@ ContentSettingsContentSettingSetFunction::Run() {
       return RespondNow(Error(secondary_error));
   }
 
-  std::string setting_str;
-  EXTENSION_FUNCTION_VALIDATE(
-      params->details.setting->GetAsString(&setting_str));
+  EXTENSION_FUNCTION_VALIDATE(params->details.setting->is_string());
+  std::string setting_str = params->details.setting->GetString();
   ContentSetting setting;
   EXTENSION_FUNCTION_VALIDATE(
       content_settings::ContentSettingFromString(setting_str, &setting));

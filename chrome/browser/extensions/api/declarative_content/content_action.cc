@@ -176,9 +176,8 @@ class SetIcon : public ContentAction {
 static bool AppendJSStringsToCPPStrings(const base::ListValue& append_strings,
                                         std::vector<std::string>* append_to) {
   for (const auto& entry : append_strings.GetList()) {
-    std::string value;
-    if (entry.GetAsString(&value)) {
-      append_to->push_back(value);
+    if (entry.is_string()) {
+      append_to->push_back(entry.GetString());
     } else {
       return false;
     }

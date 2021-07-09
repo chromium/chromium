@@ -71,14 +71,14 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
     EXPECT_TRUE(message_queue.WaitForMessage(&json));
     absl::optional<base::Value> value =
         base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
-    std::string result;
     if (!value) {
       ADD_FAILURE() << "Received invalid response: " << json;
       return std::string();
     }
-    EXPECT_TRUE(value->GetAsString(&result));
+    EXPECT_TRUE(value->is_string());
     std::string trimmed_result;
-    base::TrimWhitespaceASCII(result, base::TRIM_ALL, &trimmed_result);
+    base::TrimWhitespaceASCII(value->GetString(), base::TRIM_ALL,
+                              &trimmed_result);
     return trimmed_result;
   }
 

@@ -118,14 +118,14 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
   int index = -1;
   for (const auto& entry : policy_list_value->GetList()) {
     ++index;
-    std::string entry_string;
-    if (!entry.GetAsString(&entry_string)) {
+    if (!entry.is_string()) {
       if (errors) {
         errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
                          base::Value::GetTypeName(base::Value::Type::STRING));
       }
       continue;
     }
+    std::string entry_string = entry.GetString();
 
     // Each string item of the list should be of one of the following forms:
     // * <extension_id>
@@ -188,12 +188,12 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
   // Check that the list contains valid URLPattern strings only.
   int index = 0;
   for (const auto& entry : list_value->GetList()) {
-    std::string url_pattern_string;
-    if (!entry.GetAsString(&url_pattern_string)) {
+    if (!entry.is_string()) {
       errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::STRING));
       return false;
     }
+    std::string url_pattern_string = entry.GetString();
 
     URLPattern pattern(URLPattern::SCHEME_ALL);
     if (pattern.Parse(url_pattern_string) !=

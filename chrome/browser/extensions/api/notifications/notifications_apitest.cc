@@ -349,9 +349,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
         extensions::api_test_utils::NONE));
 
     EXPECT_EQ(base::Value::Type::STRING, result->type());
-    std::string permission_level;
-    EXPECT_TRUE(result->GetAsString(&permission_level));
-    EXPECT_EQ("granted", permission_level);
+    EXPECT_TRUE(result->is_string());
+    EXPECT_EQ("granted", result->GetString());
   }
 
   // Get permission level for the extension whose notifications are disabled.
@@ -372,9 +371,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
         extensions::api_test_utils::NONE));
 
     EXPECT_EQ(base::Value::Type::STRING, result->type());
-    std::string permission_level;
-    EXPECT_TRUE(result->GetAsString(&permission_level));
-    EXPECT_EQ("denied", permission_level);
+    EXPECT_TRUE(result->is_string());
+    EXPECT_EQ("denied", result->GetString());
   }
 }
 

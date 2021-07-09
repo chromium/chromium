@@ -644,7 +644,11 @@ class DownloadExtensionTest : public ExtensionApiTest {
     std::unique_ptr<base::Value> result(
         RunFunctionAndReturnResult(function, args));
     EXPECT_TRUE(result.get());
-    return result.get() && result->GetAsString(result_string);
+    if (result.get() && result->is_string()) {
+      *result_string = result->GetString();
+      return true;
+    }
+    return false;
   }
 
   std::string DownloadItemIdAsArgList(const DownloadItem* download_item) {

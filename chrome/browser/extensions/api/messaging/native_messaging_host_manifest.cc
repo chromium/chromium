@@ -111,12 +111,11 @@ bool NativeMessagingHostManifest::Parse(base::DictionaryValue* dictionary,
   }
   allowed_origins_.ClearPatterns();
   for (const auto& entry : allowed_origins_list->GetList()) {
-    std::string pattern_string;
-    if (!entry.GetAsString(&pattern_string)) {
+    if (!entry.is_string()) {
       *error_message = "allowed_origins must be list of strings.";
       return false;
     }
-
+    std::string pattern_string = entry.GetString();
     URLPattern pattern(URLPattern::SCHEME_EXTENSION);
     URLPattern::ParseResult result = pattern.Parse(pattern_string);
     if (result != URLPattern::ParseResult::kSuccess) {

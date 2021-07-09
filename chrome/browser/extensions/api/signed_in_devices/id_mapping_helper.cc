@@ -27,12 +27,11 @@ std::string GetPublicIdFromGUID(
        !it.IsAtEnd();
        it.Advance()) {
     const base::Value& value = it.value();
-    std::string guid_in_value;
-    if (!value.GetAsString(&guid_in_value)) {
+    if (!value.is_string()) {
       LOG(ERROR) << "Badly formatted dictionary";
       continue;
     }
-    if (guid_in_value == guid) {
+    if (value.GetString() == guid) {
       return it.key();
     }
   }

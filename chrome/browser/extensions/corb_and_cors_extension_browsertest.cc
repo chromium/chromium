@@ -104,9 +104,8 @@ std::string PopString(content::DOMMessageQueue* message_queue) {
   EXPECT_TRUE(message_queue->WaitForMessage(&json));
   absl::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
-  std::string result;
-  EXPECT_TRUE(value->GetAsString(&result));
-  return result;
+  EXPECT_TRUE(value->is_string());
+  return value->GetString();
 }
 
 }  // namespace

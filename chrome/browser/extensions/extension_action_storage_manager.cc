@@ -142,10 +142,9 @@ void SetDefaultsFromValue(const base::DictionaryValue* dict,
     for (base::DictionaryValue::Iterator iter(*icon_value); !iter.IsAtEnd();
          iter.Advance()) {
       int icon_size = 0;
-      std::string icon_string;
       if (base::StringToInt(iter.key(), &icon_size) &&
-          iter.value().GetAsString(&icon_string) &&
-          StringToSkBitmap(icon_string, &bitmap)) {
+          iter.value().is_string() &&
+          StringToSkBitmap(iter.value().GetString(), &bitmap)) {
         CHECK(!bitmap.isNull());
         float scale =
             static_cast<float>(icon_size) / ExtensionAction::ActionIconSize();

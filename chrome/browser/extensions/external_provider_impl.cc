@@ -277,7 +277,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
     bool has_external_version = false;
     if (extension->Get(kExternalVersion, &external_version_value)) {
       if (external_version_value->is_string()) {
-        external_version_value->GetAsString(&external_version);
+        external_version = external_version_value->GetString();
         has_external_version = true;
       } else {
         install_stage_tracker->ReportFailure(

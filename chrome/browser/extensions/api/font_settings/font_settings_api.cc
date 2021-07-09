@@ -153,12 +153,11 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
       pref_name);
   CHECK(pref);
 
-  std::string font_name;
-  if (!pref->GetValue()->GetAsString(&font_name)) {
+  if (!pref->GetValue()->is_string()) {
     NOTREACHED();
     return;
   }
-
+  std::string font_name = pref->GetValue()->GetString();
   base::ListValue args;
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetString(kFontIdKey, font_name);
@@ -240,9 +239,8 @@ ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
   const PrefService::Preference* pref =
       prefs->FindPreference(pref_path);
 
-  std::string font_name;
-  EXTENSION_FUNCTION_VALIDATE(
-      pref && pref->GetValue()->GetAsString(&font_name));
+  EXTENSION_FUNCTION_VALIDATE(pref && pref->GetValue()->is_string());
+  std::string font_name = pref->GetValue()->GetString();
 
   // Legacy code was using the localized font name for fontId. These values may
   // have been stored in prefs. For backward compatibility, we are converting

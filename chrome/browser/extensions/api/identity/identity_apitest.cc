@@ -3331,10 +3331,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, NonInteractiveSuccess) {
       "\"url\": \"https://abcdefghij.chromiumapp.org/callback#test\"}]",
       browser()));
 
-  std::string url;
-  EXPECT_TRUE(value->GetAsString(&url));
+  EXPECT_TRUE(value->is_string());
   EXPECT_EQ(std::string("https://abcdefghij.chromiumapp.org/callback#test"),
-            url);
+            value->GetString());
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
@@ -3352,10 +3351,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
       "\"url\": \"https://abcdefghij.chromiumapp.org/callback#test\"}]",
       browser()));
 
-  std::string url;
-  EXPECT_TRUE(value->GetAsString(&url));
+  EXPECT_TRUE(value->is_string());
   EXPECT_EQ(std::string("https://abcdefghij.chromiumapp.org/callback#test"),
-            url);
+            value->GetString());
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
@@ -3378,10 +3376,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   std::unique_ptr<base::Value> value(
       utils::RunFunctionAndReturnSingleResult(function.get(), args, browser()));
 
-  std::string url;
-  EXPECT_TRUE(value->GetAsString(&url));
+  EXPECT_TRUE(value->is_string());
   EXPECT_EQ(std::string("https://abcdefghij.chromiumapp.org/callback#test"),
-            url);
+            value->GetString());
 }
 
 class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {

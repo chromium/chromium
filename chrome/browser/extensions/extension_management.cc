@@ -466,19 +466,17 @@ void ExtensionManagement::Refresh() {
   }
 
   // Parse legacy preferences.
-  ExtensionId id;
-
   if (allowed_list_pref) {
     for (const auto& entry : allowed_list_pref->GetList()) {
-      if (entry.GetAsString(&id) && crx_file::id_util::IdIsValid(id))
-        AccessById(id)->installation_mode = INSTALLATION_ALLOWED;
+      if (entry.is_string() && crx_file::id_util::IdIsValid(entry.GetString()))
+        AccessById(entry.GetString())->installation_mode = INSTALLATION_ALLOWED;
     }
   }
 
   if (denied_list_pref) {
     for (const auto& entry : denied_list_pref->GetList()) {
-      if (entry.GetAsString(&id) && crx_file::id_util::IdIsValid(id))
-        AccessById(id)->installation_mode = INSTALLATION_BLOCKED;
+      if (entry.is_string() && crx_file::id_util::IdIsValid(entry.GetString()))
+        AccessById(entry.GetString())->installation_mode = INSTALLATION_BLOCKED;
     }
   }
 
@@ -487,8 +485,8 @@ void ExtensionManagement::Refresh() {
   if (install_sources_pref) {
     global_settings_->has_restricted_install_sources = true;
     for (const auto& entry : install_sources_pref->GetList()) {
-      std::string url_pattern;
-      if (entry.GetAsString(&url_pattern)) {
+      if (entry.is_string()) {
+        std::string url_pattern = entry.GetString();
         URLPattern entry(URLPattern::SCHEME_ALL);
         if (entry.Parse(url_pattern) == URLPattern::ParseResult::kSuccess) {
           global_settings_->install_sources.AddPattern(entry);
