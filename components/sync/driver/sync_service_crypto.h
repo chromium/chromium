@@ -214,6 +214,8 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  bool initial_trusted_vault_recoverability_logged_to_uma_ = false;
+
   base::WeakPtrFactory<SyncServiceCrypto> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncServiceCrypto);

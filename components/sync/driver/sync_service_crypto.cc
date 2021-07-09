@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -370,6 +370,7 @@ void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
   if (state_.required_user_action ==
       RequiredUserAction::kUnknownDuringInitialization) {
     UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
+    RefreshIsRecoverabilityDegraded();
   }
 
   // This indicates OnTrustedVaultKeyRequired() was called as part of the
@@ -495,6 +496,7 @@ void SyncServiceCrypto::OnTrustedVaultKeyAccepted() {
   }
 
   UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
+  RefreshIsRecoverabilityDegraded();
 
   // Make sure the data types that depend on the decryption key are started at
   // this time.
@@ -591,7 +593,7 @@ void SyncServiceCrypto::FetchTrustedVaultKeys(bool is_second_fetch_attempt) {
          state_.required_user_action ==
              RequiredUserAction::kTrustedVaultKeyRequiredButFetching);
 
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       "Sync.TrustedVaultFetchKeysAttempt",
       is_second_fetch_attempt
           ? TrustedVaultFetchKeysAttemptForUMA::kSecondAttempt
@@ -619,7 +621,7 @@ void SyncServiceCrypto::TrustedVaultKeysFetchedFromClient(
 
   DCHECK(state_.engine);
 
-  UMA_HISTOGRAM_COUNTS_100("Sync.TrustedVaultFetchedKeysCount", keys.size());
+  base::UmaHistogramCounts100("Sync.TrustedVaultFetchedKeysCount", keys.size());
 
   if (keys.empty()) {
     // Nothing to do if no keys have been fetched from the client (e.g. user
@@ -644,7 +646,8 @@ void SyncServiceCrypto::TrustedVaultKeysAdded(bool is_second_fetch_attempt) {
                  state_.required_user_action !=
                      RequiredUserAction::kTrustedVaultKeyRequiredButFetching;
 
-  UMA_HISTOGRAM_BOOLEAN("Sync.TrustedVaultAddKeysAttemptIsSuccessful", success);
+  base::UmaHistogramBoolean("Sync.TrustedVaultAddKeysAttemptIsSuccessful",
+                            success);
 
   if (success) {
     return;
@@ -712,8 +715,6 @@ void SyncServiceCrypto::UpdateRequiredUserActionAndNotify(
 
   state_.required_user_action = new_required_user_action;
   delegate_->CryptoRequiredUserActionChanged();
-
-  RefreshIsRecoverabilityDegraded();
 }
 
 void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
@@ -764,6 +765,13 @@ void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
           RequiredUserAction::kTrustedVaultRecoverabilityDegraded) {
     UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
     delegate_->CryptoStateChanged();
+  }
+
+  if (!initial_trusted_vault_recoverability_logged_to_uma_) {
+    initial_trusted_vault_recoverability_logged_to_uma_ = true;
+    base::UmaHistogramBoolean(
+        "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
+        is_recoverability_degraded);
   }
 }
 

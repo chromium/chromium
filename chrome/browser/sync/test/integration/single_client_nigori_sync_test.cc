@@ -1113,6 +1113,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   const GURL recoverability_url = GetTrustedVaultRecoverabilityURL(
       *embedded_test_server(), kTestRecoveryMethodPublicKey);
 
+  base::HistogramTester histogram_tester;
+
   // Mimic the key being available upon startup but recoverability degraded.
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
@@ -1178,6 +1180,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   // Verify the profile-menu error string is empty.
   EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
+      /*sample=*/true, /*expected_bucket_count=*/1);
 
   // TODO(crbug.com/1201659): Verify the recovery method hint added to the fake
   // server.
@@ -1357,6 +1363,7 @@ IN_PROC_BROWSER_TEST_F(
     ShouldReportDegradedTrustedVaultRecoverability) {
   const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
       syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+  base::HistogramTester histogram_tester;
 
   // Mimic the key being available upon startup but recoverability degraded.
   const std::vector<uint8_t> trusted_vault_key =
@@ -1407,6 +1414,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // The error should have disappeared.
   EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
+      /*sample=*/true, /*expected_bucket_count=*/1);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

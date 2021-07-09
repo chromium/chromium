@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -799,6 +800,7 @@ TEST_F(SyncServiceCryptoTest,
   override_features.InitAndEnableFeature(
       switches::kSyncTrustedVaultPassphraseRecovery);
 
+  base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(false);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());
@@ -809,6 +811,9 @@ TEST_F(SyncServiceCryptoTest,
   ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
 
   EXPECT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
+      /*sample=*/false, /*expected_bucket_count=*/1);
 }
 
 TEST_F(SyncServiceCryptoTest,
@@ -817,6 +822,7 @@ TEST_F(SyncServiceCryptoTest,
   override_features.InitAndEnableFeature(
       switches::kSyncTrustedVaultPassphraseRecovery);
 
+  base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());
@@ -827,6 +833,9 @@ TEST_F(SyncServiceCryptoTest,
   ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
 
   EXPECT_TRUE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
+      /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
 TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
@@ -834,6 +843,7 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
   override_features.InitAndEnableFeature(
       switches::kSyncTrustedVaultPassphraseRecovery);
 
+  base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(false);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());
@@ -849,6 +859,11 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
   EXPECT_CALL(delegate_, CryptoStateChanged());
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
   EXPECT_TRUE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+
+  // For UMA purposes, only the initial value counts (false).
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
+      /*sample=*/false, /*expected_bucket_count=*/1);
 }
 
 TEST_F(SyncServiceCryptoTest,
@@ -857,6 +872,7 @@ TEST_F(SyncServiceCryptoTest,
   override_features.InitAndEnableFeature(
       switches::kSyncTrustedVaultPassphraseRecovery);
 
+  base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());
@@ -872,6 +888,11 @@ TEST_F(SyncServiceCryptoTest,
   EXPECT_CALL(delegate_, CryptoStateChanged());
   trusted_vault_client_.SetIsRecoverabilityDegraded(false);
   EXPECT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+
+  // For UMA purposes, only the initial value counts (true).
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
+      /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
 TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
@@ -879,6 +900,7 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
   override_features.InitAndEnableFeature(
       switches::kSyncTrustedVaultPassphraseRecovery);
 
+  base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
 
   // Mimic startup with trusted vault keys being required.
@@ -909,6 +931,9 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
 
   // The recoverability state should be exposed.
   EXPECT_TRUE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
+      /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
 TEST_F(SyncServiceCryptoTest,
