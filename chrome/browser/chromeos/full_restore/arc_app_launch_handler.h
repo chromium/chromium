@@ -94,10 +94,16 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // Returns true if the app is ready to be launched. Otherwise, returns false.
   bool IsAppReady(const std::string& app_id);
 
+  // Checks the app launching condition. If we can launch an app, launch the app
+  // following the window stack priority.
+  void MaybeLaunchApp();
+
   void LaunchApp(const std::string& app_id, int32_t window_id);
 
   // Removes windows related with `app_id`.
   void RemoveWindowsForApp(const std::string& app_id);
+
+  void MaybeReStartTimer(const base::TimeDelta& delay);
 
   // Returns [0, 100] as percentage of device CPU usage rate.
   int GetCpuUsageRate();
@@ -124,10 +130,25 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // the windows to be restored.
   std::list<WindowInfo> no_stack_windows_;
 
+  // If the app launching condition doesn't match, e.g. the app is not ready,
+  // and after checking `kMaxCheckingNum` times, there is no improvement, the
+  // window is moved to `pending_windows_` to be launched later.
+  std::list<WindowInfo> pending_windows_;
+
   std::map<int32_t, int32_t> window_id_to_session_id_;
   std::map<int32_t, int32_t> session_id_to_window_id_;
 
   ArcWindowHandler* window_handler_ = nullptr;
+
+  // The number to record how many times the current top window has been
+  // launched.
+  int launch_count_ = 0;
+
+  // A repeating timer to check whether we can restore the ARC apps.
+  std::unique_ptr<base::RepeatingTimer> app_launch_timer_;
+
+  // The timer delay.
+  base::TimeDelta current_delay_;
 
   chromeos::ResourcedClient::PressureLevel pressure_level_ =
       chromeos::ResourcedClient::PressureLevel::MODERATE;

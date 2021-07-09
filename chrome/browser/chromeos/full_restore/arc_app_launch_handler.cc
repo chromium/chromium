@@ -26,6 +26,23 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
+namespace {
+
+// If the app launching condition doesn't match, e.g. the app is not ready,
+// and after checking `kMaxCheckingNum` times, there is no improvement, move to
+// the next window to launch.
+constexpr int kMaxCheckingNum = 3;
+
+// Time interval between each checking for the app launching condition, e.g. the
+// memory pressure level, or whether the app is ready.
+constexpr base::TimeDelta kAppLaunchCheckingDelay =
+    base::TimeDelta::FromSeconds(1);
+
+// Delay between each app launching.
+constexpr base::TimeDelta kAppLaunchDelay = base::TimeDelta::FromSeconds(3);
+
+}  // namespace
+
 namespace chromeos {
 namespace full_restore {
 
@@ -262,6 +279,50 @@ bool ArcAppLaunchHandler::IsAppReady(const std::string& app_id) {
   return true;
 }
 
+void ArcAppLaunchHandler::MaybeLaunchApp() {
+  if (!CanLaunchApp())
+    return;
+
+  for (auto it = pending_windows_.begin(); it != pending_windows_.end(); ++it) {
+    if (IsAppReady(it->app_id)) {
+      LaunchApp(it->app_id, it->window_id);
+      pending_windows_.erase(it);
+      MaybeReStartTimer(kAppLaunchDelay);
+      return;
+    }
+  }
+
+  if (!windows_.empty()) {
+    auto it = windows_.begin();
+    if (IsAppReady(it->second.app_id)) {
+      launch_count_ = 0;
+      LaunchApp(it->second.app_id, it->second.window_id);
+      windows_.erase(it);
+      MaybeReStartTimer(kAppLaunchDelay);
+    } else {
+      ++launch_count_;
+      if (launch_count_ >= kMaxCheckingNum) {
+        pending_windows_.push_back({it->second.app_id, it->second.window_id});
+        windows_.erase(it);
+        launch_count_ = 0;
+      } else if (launch_count_ == 1) {
+        MaybeReStartTimer(kAppLaunchCheckingDelay);
+      }
+    }
+    return;
+  }
+
+  for (auto it = no_stack_windows_.begin(); it != no_stack_windows_.end();
+       ++it) {
+    if (IsAppReady(it->app_id)) {
+      LaunchApp(it->app_id, it->window_id);
+      no_stack_windows_.erase(it);
+      MaybeReStartTimer(kAppLaunchDelay);
+      return;
+    }
+  }
+}
+
 void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
                                     int32_t window_id) {
   DCHECK(handler_);
@@ -333,6 +394,30 @@ void ArcAppLaunchHandler::RemoveWindowsForApp(const std::string& app_id) {
 
   for (auto it : windows)
     no_stack_windows_.erase(it);
+}
+
+void ArcAppLaunchHandler::MaybeReStartTimer(const base::TimeDelta& delay) {
+  DCHECK(app_launch_timer_);
+
+  // If there is no window to be launched, stop the timer.
+  if (!HasRestoreData()) {
+    if (app_launch_timer_->IsRunning())
+      app_launch_timer_->Stop();
+    return;
+  }
+
+  if (current_delay_ == delay)
+    return;
+
+  // If the delay is changed, restart the timer.
+  if (app_launch_timer_->IsRunning())
+    app_launch_timer_->Stop();
+
+  current_delay_ = delay;
+  app_launch_timer_->Start(
+      FROM_HERE, current_delay_,
+      base::BindRepeating(&ArcAppLaunchHandler::MaybeLaunchApp,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 int ArcAppLaunchHandler::GetCpuUsageRate() {
