@@ -7024,6 +7024,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
+    {"pdf-unseasoned", flag_descriptions::kPdfUnseasonedName,
+     flag_descriptions::kPdfUnseasonedDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfUnseasoned)},
     {"pdf-xfa-forms", flag_descriptions::kPdfXfaFormsName,
      flag_descriptions::kPdfXfaFormsDescription, kOsAll,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfXfaSupport)},
