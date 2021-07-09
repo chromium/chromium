@@ -4,6 +4,8 @@
 
 #include "components/viz/common/surfaces/frame_sink_id.h"
 
+#include <ostream>
+
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 

@@ -4,6 +4,8 @@
 
 #include "ui/base/text/bytes_formatting.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/number_formatting.h"

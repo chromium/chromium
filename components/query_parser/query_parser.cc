@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <ostream>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"

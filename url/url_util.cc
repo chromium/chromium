@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 #include <string.h>
+
 #include <atomic>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"

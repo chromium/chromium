@@ -5,7 +5,9 @@
 #include "net/base/hash_value.h"
 
 #include <stdlib.h>
+
 #include <algorithm>
+#include <ostream>
 
 #include "base/base64.h"
 #include "base/check_op.h"

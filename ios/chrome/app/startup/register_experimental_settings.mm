@@ -4,6 +4,8 @@
 
 #include "ios/chrome/app/startup/register_experimental_settings.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/mac/bundle_locations.h"
 #include "base/notreached.h"

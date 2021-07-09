@@ -4,6 +4,8 @@
 
 #import "ios/web/navigation/crw_error_page_helper.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/escape.h"

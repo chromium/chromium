@@ -6,6 +6,7 @@
 #define BASE_CHECK_OP_H_
 
 #include <cstddef>
+#include <string>
 #include <type_traits>
 
 #include "base/check.h"
@@ -42,6 +43,7 @@ BASE_EXPORT char* CheckOpValueStr(unsigned long long v);
 BASE_EXPORT char* CheckOpValueStr(const void* v);
 BASE_EXPORT char* CheckOpValueStr(std::nullptr_t v);
 BASE_EXPORT char* CheckOpValueStr(double v);
+BASE_EXPORT char* CheckOpValueStr(const std::string& v);
 
 // Convert a streamable value to string out-of-line to avoid <sstream>.
 BASE_EXPORT char* StreamValToStr(const void* v,

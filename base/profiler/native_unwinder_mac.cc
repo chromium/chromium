@@ -4,6 +4,8 @@
 
 #include "base/profiler/native_unwinder_mac.h"
 
+#include <sys/types.h>  // This needs to come before sys/ptrace.h
+
 #include <mach-o/compact_unwind_encoding.h>
 #include <mach/mach.h>
 #include <mach/vm_map.h>

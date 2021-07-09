@@ -6,6 +6,8 @@
 
 #import <objc/runtime.h>
 
+#include <ostream>
+
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 

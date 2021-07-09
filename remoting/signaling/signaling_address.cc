@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
