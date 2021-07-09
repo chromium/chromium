@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "ipc/ipc_platform_file.h"
-#include "ipc/ipc_test_sink.h"
+#include "ipc/ipc_sender.h"
 
 #if defined(OS_NACL)
 #include <unistd.h>
@@ -44,9 +44,9 @@ bool ProxyChannel::InitWithChannel(
   return true;
 }
 
-void ProxyChannel::InitWithTestSink(IPC::TestSink* test_sink) {
+void ProxyChannel::InitWithTestSink(IPC::Sender* sender) {
   DCHECK(!test_sink_);
-  test_sink_ = test_sink;
+  test_sink_ = sender;
 #if !defined(OS_NACL)
   peer_pid_ = base::GetCurrentProcId();
 #endif

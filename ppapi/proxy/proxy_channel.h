@@ -24,10 +24,6 @@ class SingleThreadTaskRunner;
 class WaitableEvent;
 }
 
-namespace IPC {
-class TestSink;
-}
-
 namespace ppapi {
 namespace proxy {
 
@@ -77,7 +73,7 @@ class PPAPI_PROXY_EXPORT ProxyChannel
   // messages sent via this channel to the given test sink. The test sink
   // must outlive this class. In this case, the peer PID will be the current
   // process ID.
-  void InitWithTestSink(IPC::TestSink* test_sink);
+  void InitWithTestSink(IPC::Sender* sender);
 
   // Shares a file handle (HANDLE / file descriptor) with the remote side. It
   // returns a handle that should be sent in exactly one IPC message. Upon
@@ -141,7 +137,7 @@ class PPAPI_PROXY_EXPORT ProxyChannel
   // When we're unit testing, this will indicate the sink for the messages to
   // be deposited so they can be inspected by the test. When non-NULL, this
   // indicates that the channel should not be used.
-  IPC::TestSink* test_sink_;
+  IPC::Sender* test_sink_;
 
   // Will be null for some tests when there is a test_sink_, and if the
   // remote side has crashed.
