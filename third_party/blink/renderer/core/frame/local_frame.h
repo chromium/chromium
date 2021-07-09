@@ -142,13 +142,11 @@ class WebURLLoaderFactory;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 
 // A LocalFrame is a frame hosted inside this process.
-class CORE_EXPORT LocalFrame final
-    : public Frame,
-      public FrameScheduler::Delegate,
-      public Supplementable<LocalFrame>,
-      public mojom::blink::LocalFrame,
-      public mojom::blink::LocalMainFrame,
-      public mojom::blink::HighPriorityLocalFrame {
+class CORE_EXPORT LocalFrame final : public Frame,
+                                     public FrameScheduler::Delegate,
+                                     public Supplementable<LocalFrame>,
+                                     public mojom::blink::LocalFrame,
+                                     public mojom::blink::LocalMainFrame {
  public:
   // Returns the LocalFrame instance for the given |frame_token|.
   static LocalFrame* FromFrameToken(const LocalFrameToken& frame_token);
@@ -656,8 +654,6 @@ class CORE_EXPORT LocalFrame final
       mojom::blink::ResourceTimingInfoPtr timing,
       const String& server_timing_values) final;
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) final;
-  void DispatchBeforeUnload(bool is_reload,
-                            BeforeUnloadCallback callback) final;
   void MediaPlayerActionAt(
       const gfx::Point& window_point,
       blink::mojom::blink::MediaPlayerActionPtr action) final;
@@ -940,8 +936,6 @@ class CORE_EXPORT LocalFrame final
   static void BindToMainFrameReceiver(
       blink::LocalFrame* frame,
       mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrame> receiver);
-  void BindToHighPriorityReceiver(
-      mojo::PendingReceiver<mojom::blink::HighPriorityLocalFrame> receiver);
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
 
@@ -1069,9 +1063,6 @@ class CORE_EXPORT LocalFrame final
   // LocalFrame can be reused by multiple ExecutionContext.
   HeapMojoAssociatedReceiver<mojom::blink::LocalMainFrame, LocalFrame>
       main_frame_receiver_{this, nullptr};
-  // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoReceiver<mojom::blink::HighPriorityLocalFrame, LocalFrame>
-      high_priority_frame_receiver_{this, nullptr};
   // TODO(crbug.com/1227229): Move the above HeapMojoReceivers to
   // LocalFrameMojoReceiver.
   Member<LocalFrameMojoReceiver> mojo_receiver_;

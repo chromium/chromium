@@ -493,10 +493,6 @@ void LocalFrame::Init(Frame* opener,
           GetTaskRunner(blink::TaskType::kInternalDefault)));
   GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
       &LocalFrame::BindToReceiver, WrapWeakPersistent(this)));
-  GetInterfaceRegistry()->AddInterface(
-      WTF::BindRepeating(&LocalFrame::BindToHighPriorityReceiver,
-                         WrapWeakPersistent(this)),
-      GetTaskRunner(blink::TaskType::kInternalHighPriorityLocalFrame));
 
   if (IsMainFrame()) {
     GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
@@ -601,7 +597,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(back_forward_cache_controller_host_remote_);
   visitor->Trace(receiver_);
   visitor->Trace(main_frame_receiver_);
-  visitor->Trace(high_priority_frame_receiver_);
   visitor->Trace(mojo_receiver_);
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
@@ -833,7 +828,7 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   frame_scheduler_.reset();
   receiver_.reset();
   main_frame_receiver_.reset();
-  high_priority_frame_receiver_.reset();
+  mojo_receiver_->DidDetachFrame();
   WeakIdentifierMap<LocalFrame>::NotifyObjectDestroyed(this);
 
   return true;
@@ -3477,11 +3472,6 @@ void LocalFrame::BeforeUnload(bool is_reload, BeforeUnloadCallback callback) {
                           before_unload_end_time);
 }
 
-void LocalFrame::DispatchBeforeUnload(bool is_reload,
-                                      BeforeUnloadCallback callback) {
-  BeforeUnload(is_reload, std::move(callback));
-}
-
 void LocalFrame::MediaPlayerActionAtViewportPoint(
     const IntPoint& viewport_position,
     const blink::mojom::blink::MediaPlayerActionType type,
@@ -4066,18 +4056,6 @@ void LocalFrame::BindToMainFrameReceiver(
       frame->GetTaskRunner(blink::TaskType::kInternalDefault));
   frame->main_frame_receiver_.SetFilter(
       std::make_unique<ActiveURLMessageFilter>(frame));
-}
-
-void LocalFrame::BindToHighPriorityReceiver(
-    mojo::PendingReceiver<mojom::blink::HighPriorityLocalFrame> receiver) {
-  if (IsDetached())
-    return;
-
-  high_priority_frame_receiver_.Bind(
-      std::move(receiver),
-      GetTaskRunner(blink::TaskType::kInternalHighPriorityLocalFrame));
-  high_priority_frame_receiver_.SetFilter(
-      std::make_unique<ActiveURLMessageFilter>(this));
 }
 
 void LocalFrame::BindTextFragmentReceiver(

@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_RECEIVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_RECEIVER_H_
 
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
 
@@ -19,21 +21,34 @@ class LocalFrame;
 // A single LocalFrame instance owns a single LocalFrameMojoReceiver instance.
 class LocalFrameMojoReceiver
     : public GarbageCollected<LocalFrameMojoReceiver>,
+      public mojom::blink::HighPriorityLocalFrame,
       public mojom::blink::FullscreenVideoElementHandler {
  public:
   explicit LocalFrameMojoReceiver(LocalFrame& frame);
   void Trace(Visitor* visitor) const;
 
+  void DidDetachFrame();
+
  private:
+  void BindToHighPriorityReceiver(
+      mojo::PendingReceiver<mojom::blink::HighPriorityLocalFrame> receiver);
   void BindFullscreenVideoElementReceiver(
       mojo::PendingAssociatedReceiver<
           mojom::blink::FullscreenVideoElementHandler> receiver);
+
+  // mojom::blink::HighPriorityLocalFrame implementation:
+  void DispatchBeforeUnload(
+      bool is_reload,
+      mojom::blink::LocalFrame::BeforeUnloadCallback callback) final;
 
   // mojom::FullscreenVideoElementHandler implementation:
   void RequestFullscreenVideoElement() final;
 
   Member<LocalFrame> frame_;
 
+  // LocalFrameMojoReceiver can be reused by multiple ExecutionContext.
+  HeapMojoReceiver<mojom::blink::HighPriorityLocalFrame, LocalFrameMojoReceiver>
+      high_priority_frame_receiver_{this, nullptr};
   // LocalFrameMojoReceiver can be reused by multiple ExecutionContext.
   HeapMojoAssociatedReceiver<mojom::blink::FullscreenVideoElementHandler,
                              LocalFrameMojoReceiver>

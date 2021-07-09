@@ -43,14 +43,39 @@ void ActiveURLMessageFilter::DidDispatchOrReject(mojo::Message* message,
 
 LocalFrameMojoReceiver::LocalFrameMojoReceiver(LocalFrame& frame)
     : frame_(frame) {
-  frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
+  auto* registry = frame.GetInterfaceRegistry();
+  registry->AddInterface(
+      WTF::BindRepeating(&LocalFrameMojoReceiver::BindToHighPriorityReceiver,
+                         WrapWeakPersistent(this)),
+      frame.GetTaskRunner(TaskType::kInternalHighPriorityLocalFrame));
+  registry->AddAssociatedInterface(WTF::BindRepeating(
       &LocalFrameMojoReceiver::BindFullscreenVideoElementReceiver,
       WrapWeakPersistent(this)));
 }
 
 void LocalFrameMojoReceiver::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(high_priority_frame_receiver_);
   visitor->Trace(fullscreen_video_receiver_);
+}
+
+void LocalFrameMojoReceiver::DidDetachFrame() {
+  // We reset receivers explicitly because HeapMojoReceiver does not
+  // automatically reset on context destruction.
+  high_priority_frame_receiver_.reset();
+  // TODO(tkent): Should we reset other receivers?
+}
+
+void LocalFrameMojoReceiver::BindToHighPriorityReceiver(
+    mojo::PendingReceiver<mojom::blink::HighPriorityLocalFrame> receiver) {
+  if (frame_->IsDetached())
+    return;
+
+  high_priority_frame_receiver_.Bind(
+      std::move(receiver),
+      frame_->GetTaskRunner(TaskType::kInternalHighPriorityLocalFrame));
+  high_priority_frame_receiver_.SetFilter(
+      std::make_unique<ActiveURLMessageFilter>(frame_));
 }
 
 void LocalFrameMojoReceiver::BindFullscreenVideoElementReceiver(
@@ -63,6 +88,12 @@ void LocalFrameMojoReceiver::BindFullscreenVideoElementReceiver(
       std::move(receiver), frame_->GetTaskRunner(TaskType::kInternalDefault));
   fullscreen_video_receiver_.SetFilter(
       std::make_unique<ActiveURLMessageFilter>(frame_));
+}
+
+void LocalFrameMojoReceiver::DispatchBeforeUnload(
+    bool is_reload,
+    mojom::blink::LocalFrame::BeforeUnloadCallback callback) {
+  frame_->BeforeUnload(is_reload, std::move(callback));
 }
 
 void LocalFrameMojoReceiver::RequestFullscreenVideoElement() {
