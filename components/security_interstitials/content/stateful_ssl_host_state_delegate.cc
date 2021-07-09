@@ -284,15 +284,6 @@ StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
                                           content::WebContents* web_contents) {
   DCHECK(web_contents);
 
-  // If the appropriate flag is set, let requests on localhost go
-  // through even if there are certificate errors. Errors on localhost
-  // are unlikely to indicate actual security problems.
-  GURL url = GetSecureGURLForHost(host);
-  bool allow_localhost = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kAllowInsecureLocalhost);
-  if (allow_localhost && net::IsLocalhost(url))
-    return ALLOWED;
-
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
           web_contents->GetMainFrame()->GetSiteInstance(),
@@ -312,6 +303,7 @@ StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
     return DENIED;
   }
 
+  GURL url = GetSecureGURLForHost(host);
   std::unique_ptr<base::Value> value(
       host_content_settings_map_->GetWebsiteSetting(
           url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +29,8 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
+#include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -310,12 +313,22 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
 void SSLManager::OnCertError(std::unique_ptr<SSLErrorHandler> handler) {
   // First we check if we know the policy for this error.
   DCHECK(handler->ssl_info().is_valid());
-  SSLHostStateDelegate::CertJudgment judgment =
-      ssl_host_state_delegate_
-          ? ssl_host_state_delegate_->QueryPolicy(
-                handler->request_url().host(), *handler->ssl_info().cert.get(),
-                handler->cert_error(), handler->web_contents())
-          : SSLHostStateDelegate::DENIED;
+
+  SSLHostStateDelegate::CertJudgment judgment;
+  if (net::IsLocalhost(handler->request_url()) &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowInsecureLocalhost)) {
+    // If the appropriate flag is set, let requests on localhost go
+    // through even if there are certificate errors. Errors on localhost
+    // are unlikely to indicate actual security problems.
+    judgment = SSLHostStateDelegate::ALLOWED;
+  } else if (ssl_host_state_delegate_) {
+    judgment = ssl_host_state_delegate_->QueryPolicy(
+        handler->request_url().host(), *handler->ssl_info().cert.get(),
+        handler->cert_error(), handler->web_contents());
+  } else {
+    judgment = SSLHostStateDelegate::DENIED;
+  }
 
   if (judgment == SSLHostStateDelegate::ALLOWED) {
     handler->ContinueRequest();

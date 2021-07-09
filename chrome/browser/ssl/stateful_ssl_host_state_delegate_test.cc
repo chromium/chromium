@@ -737,32 +737,3 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
                                net::ERR_CERT_DATE_INVALID, tab));
   EXPECT_FALSE(state->HasAllowException(kWWWGoogleHost, tab));
 }
-
-// When the flag is set, requests to localhost with invalid certificates
-// should be allowed.
-class AllowLocalhostErrorsSSLHostStateDelegateTest
-    : public StatefulSSLHostStateDelegateTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    StatefulSSLHostStateDelegateTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kAllowInsecureLocalhost);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(AllowLocalhostErrorsSSLHostStateDelegateTest,
-                       LocalhostErrorWithFlag) {
-  // Serve the Google cert for localhost to generate an error.
-  scoped_refptr<net::X509Certificate> cert = GetOkCert();
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
-
-  EXPECT_EQ(content::SSLHostStateDelegate::ALLOWED,
-            state->QueryPolicy("localhost", *cert,
-                               net::ERR_CERT_COMMON_NAME_INVALID, tab));
-
-  EXPECT_EQ(content::SSLHostStateDelegate::ALLOWED,
-            state->QueryPolicy("127.0.0.1", *cert,
-                               net::ERR_CERT_COMMON_NAME_INVALID, tab));
-}

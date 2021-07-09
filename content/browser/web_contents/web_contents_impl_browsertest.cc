@@ -4864,4 +4864,56 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_FALSE(shell()->web_contents()->IsCrashed());
 }
 
+class WebContentsImplInsecureLocalhostBrowserTest
+    : public WebContentsImplBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    WebContentsImplBrowserTest::SetUpOnMainThread();
+    https_server_.AddDefaultHandlers(GetTestDataFilePath());
+  }
+
+  net::EmbeddedTestServer& https_server() { return https_server_; }
+
+ private:
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplInsecureLocalhostBrowserTest,
+                       BlocksByDefault) {
+  https_server().SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  ASSERT_TRUE(https_server().Start());
+  GURL url = https_server().GetURL("/title1.html");
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
+  EXPECT_TRUE(
+      IsLastCommittedEntryOfPageType(shell()->web_contents(), PAGE_TYPE_ERROR));
+}
+
+class WebContentsImplAllowInsecureLocalhostBrowserTest
+    : public WebContentsImplInsecureLocalhostBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kAllowInsecureLocalhost);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplAllowInsecureLocalhostBrowserTest,
+                       WarnsWithSwitch) {
+  https_server().SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  ASSERT_TRUE(https_server().Start());
+  GURL url = https_server().GetURL("/title1.html");
+
+  WebContentsConsoleObserver observer(shell()->web_contents());
+  observer.SetFilter(base::BindRepeating(
+      [](const GURL& expected_url,
+         const WebContentsConsoleObserver::Message& message) {
+        return message.source_frame->GetLastCommittedURL() == expected_url;
+      },
+      url));
+  observer.SetPattern("*SSL certificate*");
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  observer.Wait();
+}
+
 }  // namespace content
