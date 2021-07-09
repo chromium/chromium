@@ -115,10 +115,10 @@ ValueStore::WriteResult TestingValueStore::Remove(
     return WriteResult(CreateStatusCopy(status_));
 
   ValueStoreChangeList changes;
-  for (auto it = keys.cbegin(); it != keys.cend(); ++it) {
-    std::unique_ptr<base::Value> old_value;
-    if (storage_.RemoveWithoutPathExpansion(*it, &old_value)) {
-      changes.emplace_back(*it, std::move(*old_value), absl::nullopt);
+  for (auto const& key : keys) {
+    absl::optional<base::Value> old_value = storage_.ExtractKey(key);
+    if (old_value.has_value()) {
+      changes.emplace_back(key, std::move(*old_value), absl::nullopt);
     }
   }
   return WriteResult(std::move(changes), CreateStatusCopy(status_));

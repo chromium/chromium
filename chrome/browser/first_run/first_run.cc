@@ -416,8 +416,7 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
     // The distribution dictionary (and any prefs below it) are never registered
     // for use in Chrome's PrefService. Strip them from the initial dictionary
     // before mapping it to prefs.
-    initial_dictionary->RemoveWithoutPathExpansion(
-        installer::initial_preferences::kDistroDict, nullptr);
+    initial_dictionary->RemoveKey(installer::initial_preferences::kDistroDict);
 
     if (!chrome_prefs::InitializePrefsFromMasterPrefs(
             profiles::GetDefaultProfileDir(user_data_dir),

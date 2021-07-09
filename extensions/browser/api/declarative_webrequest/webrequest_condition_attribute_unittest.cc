@@ -256,7 +256,7 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
     const std::string* name = array[i];
     const std::string* value = array[i+1];
     if (dictionary->HasKey(*name)) {
-      std::unique_ptr<base::Value> entry_owned;
+      absl::optional<base::Value> entry_owned;
       base::Value* entry = dictionary->FindKey(*name);
       if (!entry)
         return nullptr;
@@ -264,9 +264,9 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
         case base::Value::Type::STRING: {
           // Replace the present string with a list.
           auto list = std::make_unique<base::ListValue>();
-          // Ignoring return value, we already verified the entry is there.
-          dictionary->RemoveWithoutPathExpansion(*name, &entry_owned);
-          list->Append(std::move(entry_owned));
+          // No need to check again, we already verified the entry is there.
+          entry_owned = dictionary->ExtractKey(*name);
+          list->Append(base::Value::ToUniquePtrValue(std::move(*entry_owned)));
           list->AppendString(*value);
           dictionary->SetKey(*name,
                              base::Value::FromUniquePtrValue(std::move(list)));
