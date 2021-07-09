@@ -32,6 +32,15 @@ StreamPromiseResolver* StreamPromiseResolver::CreateRejected(
   return promise;
 }
 
+StreamPromiseResolver* StreamPromiseResolver::CreateRejectedAndSilent(
+    ScriptState* script_state,
+    v8::Local<v8::Value> reason) {
+  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  promise->MarkAsSilent(script_state->GetIsolate());
+  promise->Reject(script_state, reason);
+  return promise;
+}
+
 StreamPromiseResolver::StreamPromiseResolver(ScriptState* script_state) {
   v8::Local<v8::Promise::Resolver> resolver;
   if (v8::Promise::Resolver::New(script_state->GetContext())
@@ -101,6 +110,14 @@ void StreamPromiseResolver::MarkAsHandled(v8::Isolate* isolate) {
     return;
   }
   promise->MarkAsHandled();
+}
+
+void StreamPromiseResolver::MarkAsSilent(v8::Isolate* isolate) {
+  v8::Local<v8::Promise> promise = V8Promise(isolate);
+  if (promise.IsEmpty()) {
+    return;
+  }
+  promise->MarkAsSilent();
 }
 
 v8::Promise::PromiseState StreamPromiseResolver::State(

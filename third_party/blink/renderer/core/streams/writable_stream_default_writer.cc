@@ -92,7 +92,7 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
     case WritableStream::kErroring: {
       //      a. Set this.[[readyPromise]] to a promise rejected with
       //         stream.[[storedError]].
-      ready_promise_ = StreamPromiseResolver::CreateRejected(
+      ready_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
           script_state, stream->GetStoredError(isolate));
 
       //      b. Set this.[[readyPromise]].[[PromiseIsHandled]] to true.
@@ -127,16 +127,16 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
 
       //      c. Set this.[[readyPromise]] to a promise rejected with
       //         storedError.
-      ready_promise_ =
-          StreamPromiseResolver::CreateRejected(script_state, stored_error);
+      ready_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
+          script_state, stored_error);
 
       //      d. Set this.[[readyPromise]].[[PromiseIsHandled]] to true.
       ready_promise_->MarkAsHandled(isolate);
 
       //      e. Set this.[[closedPromise]] to a promise rejected with
       //         storedError.
-      closed_promise_ =
-          StreamPromiseResolver::CreateRejected(script_state, stored_error);
+      closed_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
+          script_state, stored_error);
 
       //      f. Set this.[[closedPromise]].[[PromiseIsHandled]] to true.
       closed_promise_->MarkAsHandled(isolate);
@@ -284,12 +284,13 @@ void WritableStreamDefaultWriter::EnsureReadyPromiseRejected(
   //  1. If writer.[[readyPromise]].[[PromiseState]] is "pending", reject
   //     writer.[[readyPromise]] with error.
   if (!writer->ready_promise_->IsSettled()) {
+    writer->ready_promise_->MarkAsSilent(isolate);
     writer->ready_promise_->Reject(script_state, error);
   } else {
     //  2. Otherwise, set writer.[[readyPromise]] to a promise rejected with
     //     error.
     writer->ready_promise_ =
-        StreamPromiseResolver::CreateRejected(script_state, error);
+        StreamPromiseResolver::CreateRejectedAndSilent(script_state, error);
   }
 
   //  3. Set writer.[[readyPromise]].[[PromiseIsHandled]] to true.
@@ -517,12 +518,13 @@ void WritableStreamDefaultWriter::EnsureClosedPromiseRejected(
   //  1. If writer.[[closedPromise]].[[PromiseState]] is "pending", reject
   //     writer.[[closedPromise]] with error.
   if (!writer->closed_promise_->IsSettled()) {
+    writer->closed_promise_->MarkAsSilent(isolate);
     writer->closed_promise_->Reject(script_state, error);
   } else {
     //  2. Otherwise, set writer.[[closedPromise]] to a promise rejected with
     //     error.
     writer->closed_promise_ =
-        StreamPromiseResolver::CreateRejected(script_state, error);
+        StreamPromiseResolver::CreateRejectedAndSilent(script_state, error);
   }
 
   //  3. Set writer.[[closedPromise]].[[PromiseIsHandled]] to true.

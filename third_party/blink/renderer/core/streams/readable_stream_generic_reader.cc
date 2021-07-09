@@ -70,6 +70,7 @@ void ReadableStreamGenericReader::GenericRelease(
   // 3. If reader.[[ownerReadableStream]].[[state]] is "readable", reject
   //    reader.[[closedPromise]] with a TypeError exception.
   if (reader->owner_readable_stream_->state_ == ReadableStream::kReadable) {
+    reader->closed_promise_->MarkAsSilent(isolate);
     reader->closed_promise_->Reject(
         script_state,
         v8::Exception::TypeError(V8String(
@@ -79,7 +80,7 @@ void ReadableStreamGenericReader::GenericRelease(
   } else {
     // 4. Otherwise, set reader.[[closedPromise]] to a promise rejected with a
     //    TypeError exception.
-    reader->closed_promise_ = StreamPromiseResolver::CreateRejected(
+    reader->closed_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
         script_state, v8::Exception::TypeError(V8String(
                           isolate,
                           "This readable stream reader has been released and "
@@ -152,7 +153,7 @@ void ReadableStreamGenericReader::GenericInitialize(
 
       // b. Set reader.[[closedPromise]] to a promise rejected with stream.
       //    [[storedError]].
-      reader->closed_promise_ = StreamPromiseResolver::CreateRejected(
+      reader->closed_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
           script_state, stream->GetStoredError(isolate));
 
       // c. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
