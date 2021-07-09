@@ -67,6 +67,7 @@ AccountInfo CreateTestAccountInfo(const std::string& name,
   }
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
+  account_info.is_child_account = false;
   EXPECT_EQ(is_valid, account_info.IsValid());
   return account_info;
 }

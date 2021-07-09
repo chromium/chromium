@@ -86,6 +86,7 @@ void MakeValidAccountInfo(AccountInfo* info) {
   info->hosted_domain = kNoHostedDomainFound;
   info->locale = "en";
   info->picture_url = "https://example.com";
+  info->is_child_account = false;
   DCHECK(info->IsValid());
 }
 

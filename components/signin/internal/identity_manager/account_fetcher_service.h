@@ -47,10 +47,6 @@ class ImageDecoder;
 class ImageFetcherImpl;
 }  // namespace image_fetcher
 
-namespace signin {
-enum class Tribool;
-}
-
 class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
  public:
   // Name of the preference that tracks the int64_t representation of the last
@@ -131,8 +127,8 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
 #if defined(OS_ANDROID)
   void StartFetchingChildInfo(const CoreAccountId& account_id);
 
-  // Resets the child status to false if it is true. If there is more than one
-  // account in a profile, only the main account can be a child.
+  // If there is more than one account in a profile, we forcibly reset the
+  // child status for an account to be false.
   void ResetChildInfo();
 #endif
 
