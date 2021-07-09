@@ -28,7 +28,10 @@ class TabSharingInfoBarDelegateButton {
   virtual ~TabSharingInfoBarDelegateButton() = default;
   virtual void Click(infobars::InfoBar* infobar) = 0;
   virtual std::u16string GetLabel() const = 0;
+  virtual ui::ImageModel GetImage() const { return ui::ImageModel(); }
 };
+
+namespace {
 
 // Represents a button which, when clicked, changes the shared tab to be
 // the current tab (the one associated with this infobar.)
@@ -56,7 +59,7 @@ class ShareTabInsteadButton : public TabSharingInfoBarDelegateButton {
 // class is for the captured tab to activate the capturing tab, and vice versa.
 class SwitchToTabButton : public TabSharingInfoBarDelegateButton {
  public:
-  SwitchToTabButton(content::GlobalRenderFrameHostId focus_target,
+  SwitchToTabButton(const TabSharingInfoBarDelegate::FocusTarget& focus_target,
                     bool focus_target_is_captured)
       : focus_target_(focus_target),
         focus_target_is_captured_(focus_target_is_captured) {}
@@ -64,7 +67,7 @@ class SwitchToTabButton : public TabSharingInfoBarDelegateButton {
 
   void Click(infobars::InfoBar* infobar) override {
     content::RenderFrameHost* const rfh =
-        content::RenderFrameHost::FromID(focus_target_);
+        content::RenderFrameHost::FromID(focus_target_.id);
     if (!rfh) {
       return;
     }
@@ -81,8 +84,9 @@ class SwitchToTabButton : public TabSharingInfoBarDelegateButton {
   }
 
   std::u16string GetLabel() const override {
+    // TODO(crbug.com/1224363): Hard-code this text into the button.
     content::RenderFrameHost* const rfh =
-        content::RenderFrameHost::FromID(focus_target_);
+        content::RenderFrameHost::FromID(focus_target_.id);
     if (!rfh) {
       return GetDefaultLabel();
     }
@@ -93,6 +97,8 @@ class SwitchToTabButton : public TabSharingInfoBarDelegateButton {
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
 
+  ui::ImageModel GetImage() const override { return focus_target_.icon; }
+
  private:
   std::u16string GetDefaultLabel() const {
     return l10n_util::GetStringUTF16(
@@ -101,9 +107,11 @@ class SwitchToTabButton : public TabSharingInfoBarDelegateButton {
             : IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURER_BUTTON);
   }
 
-  const content::GlobalRenderFrameHostId focus_target_;
+  const TabSharingInfoBarDelegate::FocusTarget focus_target_;
   const bool focus_target_is_captured_;
 };
+
+}  // namespace
 
 // static
 infobars::InfoBar* TabSharingInfoBarDelegate::Create(
@@ -112,7 +120,7 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     const std::u16string& app_name,
     bool shared_tab,
     bool can_share,
-    absl::optional<content::GlobalRenderFrameHostId> focus_target,
+    absl::optional<FocusTarget> focus_target,
     TabSharingUI* ui) {
   DCHECK(infobar_manager);
   return infobar_manager->AddInfoBar(CreateConfirmInfoBar(base::WrapUnique(
@@ -125,7 +133,7 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     std::u16string app_name,
     bool shared_tab,
     bool can_share,
-    absl::optional<content::GlobalRenderFrameHostId> focus_target,
+    absl::optional<FocusTarget> focus_target,
     TabSharingUI* ui)
     : shared_tab_name_(std::move(shared_tab_name)),
       app_name_(std::move(app_name)),
@@ -178,6 +186,15 @@ std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
     DCHECK(secondary_button_);
     return secondary_button_->GetLabel();
   }
+}
+
+ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
+    InfoBarButton button) const {
+  if (button == BUTTON_CANCEL) {
+    DCHECK(secondary_button_);
+    return secondary_button_->GetImage();
+  }
+  return ui::ImageModel();
 }
 
 int TabSharingInfoBarDelegate::GetButtons() const {

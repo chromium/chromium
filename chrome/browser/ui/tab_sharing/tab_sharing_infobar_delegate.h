@@ -34,11 +34,18 @@ class TabSharingUI;
 // "Sharing a tab to |app_name_| [Stop] [Share this tab instead]"
 class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  // Represents a target to which focus could be switched and its favicon.
+  struct FocusTarget {
+    content::GlobalRenderFrameHostId id;
+    ui::ImageModel icon;
+  };
+
   // Creates a tab sharing infobar, which has 1-2 buttons.
   //
   // The primary button is for stopping the capture. It is always present.
   //
   // If |focus_target| has a value, the secondary button switches focus.
+  // The image on the secondary button is derived from |focus_target|.
   // Else, if |can_share|, the secondary button changes the capture target
   // to be the tab associated with |this| object.
   // Otherwise, there is no secondary button.
@@ -48,19 +55,18 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
       const std::u16string& app_name,
       bool shared_tab,
       bool can_share,
-      absl::optional<content::GlobalRenderFrameHostId> focus_target,
+      absl::optional<FocusTarget> focus_target,
       TabSharingUI* ui);
 
   ~TabSharingInfoBarDelegate() override;
 
  private:
-  TabSharingInfoBarDelegate(
-      std::u16string shared_tab_name,
-      std::u16string app_name,
-      bool shared_tab,
-      bool can_share,
-      absl::optional<content::GlobalRenderFrameHostId> focus_target,
-      TabSharingUI* ui);
+  TabSharingInfoBarDelegate(std::u16string shared_tab_name,
+                            std::u16string app_name,
+                            bool shared_tab,
+                            bool can_share,
+                            absl::optional<FocusTarget> focus_target,
+                            TabSharingUI* ui);
 
   // ConfirmInfoBarDelegate:
   bool EqualsDelegate(InfoBarDelegate* delegate) const override;
@@ -68,6 +74,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   std::u16string GetMessageText() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
+  ui::ImageModel GetButtonImage(InfoBarButton button) const override;
   int GetButtons() const override;
   bool Accept() override;
   bool Cancel() override;

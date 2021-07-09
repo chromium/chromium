@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -15,9 +16,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
+
+using FocusTarget = TabSharingInfoBarDelegate::FocusTarget;
 
 const std::u16string kSharedTabName = u"example.com";
 const std::u16string kAppName = u"sharing.com";
@@ -47,8 +52,7 @@ class TabSharingInfoBarDelegateTest : public BrowserWithTestWindowTest {
       bool shared_tab,
       bool can_share,
       int tab_index = 0,
-      absl::optional<content::GlobalRenderFrameHostId> focus_target =
-          absl::nullopt) {
+      absl::optional<FocusTarget> focus_target = absl::nullopt) {
     return TabSharingInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(
             browser()->tab_strip_model()->GetWebContentsAt(tab_index)),
@@ -62,8 +66,7 @@ class TabSharingInfoBarDelegateTest : public BrowserWithTestWindowTest {
       bool shared_tab,
       bool can_share,
       int tab_index = 0,
-      absl::optional<content::GlobalRenderFrameHostId> focus_target =
-          absl::nullopt) {
+      absl::optional<FocusTarget> focus_target = absl::nullopt) {
     infobars::InfoBar* infobar =
         CreateInfobar(shared_tab_name, app_name, shared_tab, can_share,
                       tab_index, focus_target);
@@ -120,8 +123,15 @@ TEST_F(TabSharingInfoBarDelegateTest, StopSharingOnAccept) {
 TEST_F(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
   AddTab(browser(), GURL("about:blank"));  // Captured; index = 0.
   AddTab(browser(), GURL("about:blank"));  // Capturing; index = 1.
+
+  const ui::ImageModel favicon = ui::ImageModel::FromImage(
+      gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
+          GURL("https://example.com"), gfx::kFaviconSize, gfx::kFaviconSize)));
+
   ConfirmInfoBarDelegate* delegate =
-      CreateDelegate(std::u16string(), kAppName, true, true, 1, GetGlobalId(0));
+      CreateDelegate(std::u16string(), kAppName, true, true, 1,
+                     FocusTarget{GetGlobalId(0), favicon});
+
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
   EXPECT_EQ(delegate->GetMessageText(),
@@ -133,6 +143,8 @@ TEST_F(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
   EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL),
             GetExpectedSwitchToMessageForTargetTab(1));
+  EXPECT_EQ(delegate->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_CANCEL),
+            favicon);
   EXPECT_FALSE(delegate->IsCloseable());
 }
 
@@ -141,8 +153,15 @@ TEST_F(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
 TEST_F(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
   AddTab(browser(), GURL("about:blank"));  // Captured; index = 0.
   AddTab(browser(), GURL("about:blank"));  // Capturing; index = 1.
+
+  const ui::ImageModel favicon = ui::ImageModel::FromImage(
+      gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
+          GURL("https://example.com"), gfx::kFaviconSize, gfx::kFaviconSize)));
+
   ConfirmInfoBarDelegate* delegate =
-      CreateDelegate(std::u16string(), kAppName, true, true, 0, GetGlobalId(1));
+      CreateDelegate(std::u16string(), kAppName, true, true, 0,
+                     FocusTarget{GetGlobalId(1), favicon});
+
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
   EXPECT_EQ(delegate->GetMessageText(),
@@ -154,6 +173,8 @@ TEST_F(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
   EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL),
             GetExpectedSwitchToMessageForTargetTab(0));
+  EXPECT_EQ(delegate->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_CANCEL),
+            favicon);
   EXPECT_FALSE(delegate->IsCloseable());
 }
 

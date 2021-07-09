@@ -10,6 +10,8 @@
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
 
 namespace infobars {
@@ -54,6 +56,10 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // Returns the label for the specified button. The default implementation
   // returns "OK" for the OK button and "Cancel" for the Cancel button.
   virtual std::u16string GetButtonLabel(InfoBarButton button) const;
+
+  // Returns the label for the specified button. The default implementation
+  // returns an empty image.
+  virtual ui::ImageModel GetButtonImage(InfoBarButton button) const;
 
   // Returns whether or not the OK button will trigger a UAC elevation prompt on
   // Windows.

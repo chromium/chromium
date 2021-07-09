@@ -35,7 +35,6 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
         gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
                         DISTANCE_TOAST_CONTROL_VERTICAL),
                     0));
-    button->SizeToPreferredSize();
     return button;
   };
 
@@ -56,6 +55,9 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
                                    &ConfirmInfoBar::CancelButtonPressed);
     if (buttons == ConfirmInfoBarDelegate::BUTTON_CANCEL)
       cancel_button_->SetProminent(true);
+    cancel_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        delegate_ptr->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_CANCEL));
   }
 
   link_ = CreateLink(delegate_ptr->GetLinkText());
@@ -69,6 +71,14 @@ ConfirmInfoBar::~ConfirmInfoBar() {
 
 void ConfirmInfoBar::Layout() {
   InfoBarView::Layout();
+
+  if (ok_button_) {
+    ok_button_->SizeToPreferredSize();
+  }
+
+  if (cancel_button_) {
+    cancel_button_->SizeToPreferredSize();
+  }
 
   int x = GetStartX();
   Views views;

@@ -45,6 +45,11 @@ std::u16string ConfirmInfoBarDelegate::GetButtonLabel(
                                                          : IDS_APP_CANCEL);
 }
 
+ui::ImageModel ConfirmInfoBarDelegate::GetButtonImage(
+    InfoBarButton button) const {
+  return ui::ImageModel();
+}
+
 bool ConfirmInfoBarDelegate::OKButtonTriggersUACPrompt() const {
   return false;
 }
