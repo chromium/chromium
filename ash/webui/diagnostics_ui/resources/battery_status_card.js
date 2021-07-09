@@ -256,7 +256,7 @@ Polymer({
       return '';
     }
 
-    const disableRunButtonThreshold = 98;
+    const disableRunButtonThreshold = 95;
     const percentage = Math.round(
         100 * this.batteryChargeStatus_.chargeNowMilliampHours /
         this.batteryHealth_.chargeFullNowMilliampHours);
