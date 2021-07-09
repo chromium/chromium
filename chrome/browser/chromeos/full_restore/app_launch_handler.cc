@@ -137,9 +137,9 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
 
   switch (app_type) {
     case apps::mojom::AppType::kArc:
-      LaunchArcApp(app_id, it->second);
-      // ARC apps restoration could be delayed, so return to preserve the
-      // restore data for ARC apps.
+      // ArcAppLaunchHandler handles ARC apps restoration and ARC apps
+      // restoration could be delayed, so return to preserve the restore data
+      // for ARC apps.
       return;
     case apps::mojom::AppType::kExtension:
       ::full_restore::FullRestoreReadHandler::GetInstance()

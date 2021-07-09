@@ -33,13 +33,6 @@ void DeskTemplateAppLaunchHandler::LaunchBrowser() {
   NOTIMPLEMENTED();
 }
 
-void DeskTemplateAppLaunchHandler::LaunchArcApp(
-    const std::string& app_id,
-    const ::full_restore::RestoreData::LaunchList& launch_list) {
-  // ARC is not currently supported for desk templates.
-  NOTREACHED();
-}
-
 void DeskTemplateAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   // TODO: Add UMA Histogram.

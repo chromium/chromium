@@ -175,13 +175,6 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
 }
 
-void FullRestoreAppLaunchHandler::LaunchArcApp(
-    const std::string& app_id,
-    const ::full_restore::RestoreData::LaunchList& launch_list) {
-  // TODO(crbug.com/1146900): Remove this function, because the implementation
-  // has been moved to ArcAppLaunchHandler.
-}
-
 void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,

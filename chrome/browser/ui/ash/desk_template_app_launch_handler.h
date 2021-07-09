@@ -41,9 +41,6 @@ class DeskTemplateAppLaunchHandler : public chromeos::AppLaunchHandler {
  private:
   // chromeos::AppLaunchHandler:
   void LaunchBrowser() override;
-  void LaunchArcApp(
-      const std::string& app_id,
-      const full_restore::RestoreData::LaunchList& launch_list) override;
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
   void RecordArcGhostWindowLaunch(bool is_arc_ghost_window) override;
 
