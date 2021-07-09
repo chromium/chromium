@@ -96,8 +96,8 @@ void ParseAndForwardQueryResponse(
       request_type, raw_response.response_info.status_code,
       raw_response.response_info.fetch_duration);
   FeedNetwork::QueryRequestResult result;
-  result.response_info.fetch_time_ticks = base::TimeTicks::Now();
   result.response_info = raw_response.response_info;
+  result.response_info.fetch_time_ticks = base::TimeTicks::Now();
   if (result.response_info.status_code == 200) {
     ::google::protobuf::io::CodedInputStream input_stream(
         reinterpret_cast<const uint8_t*>(raw_response.response_bytes.data()),
