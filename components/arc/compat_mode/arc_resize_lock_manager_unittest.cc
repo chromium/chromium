@@ -22,30 +22,6 @@
 namespace arc {
 namespace {
 
-class FakeArcResizeLockManager : public ArcResizeLockManager {
- public:
-  FakeArcResizeLockManager() : ArcResizeLockManager(nullptr, nullptr) {}
-
-  bool IsResizeLockEnabled(aura::Window* window) const {
-    return base::Contains(resize_lock_enabled_windows_, window);
-  }
-
-  // ArcResizeLockManager:
-  void EnableResizeLock(aura::Window* window) override {
-    ArcResizeLockManager::EnableResizeLock(window);
-    DCHECK(!base::Contains(resize_lock_enabled_windows_, window));
-    resize_lock_enabled_windows_.push_back(window);
-  }
-  void DisableResizeLock(aura::Window* window) override {
-    ArcResizeLockManager::DisableResizeLock(window);
-    DCHECK(base::Contains(resize_lock_enabled_windows_, window));
-    base::Erase(resize_lock_enabled_windows_, window);
-  }
-
- private:
-  std::vector<aura::Window*> resize_lock_enabled_windows_;
-};
-
 class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
  public:
   ~TestArcResizeLockPrefDelegate() override = default;
@@ -84,7 +60,7 @@ class ArcResizeLockManagerTest : public views::ViewsTestBase {
   // views::ViewsTestBase:
   void SetUp() override {
     views::ViewsTestBase::SetUp();
-    fake_arc_resize_lock_manager_.SetPrefDelegate(
+    arc_resize_lock_manager_.SetPrefDelegate(
         &test_arc_resize_lock_pref_delegate);
   }
 
@@ -101,11 +77,8 @@ class ArcResizeLockManagerTest : public views::ViewsTestBase {
   }
 
   bool IsResizeLockEnabled(aura::Window* window) const {
-    return fake_arc_resize_lock_manager_.IsResizeLockEnabled(window);
-  }
-
-  bool IsToggleMenuShown() {
-    return !!fake_arc_resize_lock_manager_.resize_toggle_menu_;
+    return arc_resize_lock_manager_.resize_lock_enabled_windows_.contains(
+        window);
   }
 
   TestArcResizeLockPrefDelegate* pref_delegate() {
@@ -113,14 +86,14 @@ class ArcResizeLockManagerTest : public views::ViewsTestBase {
   }
 
  private:
-  FakeArcResizeLockManager fake_arc_resize_lock_manager_;
+  ArcResizeLockManager arc_resize_lock_manager_{nullptr, nullptr};
   TestArcResizeLockPrefDelegate test_arc_resize_lock_pref_delegate;
 };
 
 TEST_F(ArcResizeLockManagerTest, ConstructDestruct) {}
 
 // Tests that resize lock state is properly sync'ed with the window property.
-TEST_F(ArcResizeLockManagerTest, TestArcWindowPropertyChange) {
+TEST_F(ArcResizeLockManagerTest, TestPropertyChange) {
   auto* arc_window = CreateFakeWindow(true);
 
   EXPECT_FALSE(IsResizeLockEnabled(arc_window));
@@ -163,8 +136,48 @@ TEST_F(ArcResizeLockManagerTest, TestArcWindowPropertyChange) {
   EXPECT_FALSE(IsResizeLockEnabled(arc_window));
 }
 
+// Test resize lock will not be enabled right after property change but
+// will be after the app id is set to the non-null value.
+TEST_F(ArcResizeLockManagerTest, TestPropertyChangeWithDelayedAppId) {
+  auto* arc_window = CreateFakeWindow(true);
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_LIMITED);
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+  // Should ignore null.
+  arc_window->ClearProperty(ash::kAppIDKey);
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+  // Should ignore uninterested property change.
+  arc_window->SetProperty(kNonInterestedPropKey, true);
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+  // Should not ignore non-null value.
+  arc_window->SetProperty(ash::kAppIDKey, new std::string("app-id"));
+  EXPECT_TRUE(IsResizeLockEnabled(arc_window));
+}
+
+// Tests that resize lock will not be enabled if the resize lock type is changed
+// to RESIZABLE while we're waiting for the valid app id.
+TEST_F(ArcResizeLockManagerTest, TestPropertyChangeWithDelayedAppIdCancel) {
+  auto* arc_window = CreateFakeWindow(true);
+  std::string app_id = "app-id";
+
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_LIMITED);
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZABLE);
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+
+  arc_window->SetProperty(ash::kAppIDKey, &app_id);
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+}
+
 // Test that resize lock will NOT be enabled for non ARC windows.
-TEST_F(ArcResizeLockManagerTest, TestNonArcWindowPropertyChange) {
+TEST_F(ArcResizeLockManagerTest, TestNonArcWindow) {
   auto* non_arc_window = CreateFakeWindow(false);
   EXPECT_FALSE(IsResizeLockEnabled(non_arc_window));
   non_arc_window->SetProperty(ash::kArcResizeLockTypeKey,

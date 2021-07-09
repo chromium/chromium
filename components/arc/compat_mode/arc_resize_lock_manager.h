@@ -63,13 +63,11 @@ class ArcResizeLockManager : public KeyedService,
 
   void ToggleResizeToggleMenu(views::Widget* widget);
 
- protected:
-  // protected and virtual for testing.
-  virtual void EnableResizeLock(aura::Window* window);
-  virtual void DisableResizeLock(aura::Window* window);
-
  private:
   friend class ArcResizeLockManagerTest;
+
+  void EnableResizeLock(aura::Window* window);
+  void DisableResizeLock(aura::Window* window);
 
   void UpdateCompatModeButton(aura::Window* window);
 
@@ -77,10 +75,14 @@ class ArcResizeLockManager : public KeyedService,
 
   std::unique_ptr<ResizeToggleMenu> resize_toggle_menu_;
 
+  base::flat_set<aura::Window*> resize_lock_enabled_windows_;
+
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation{this};
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
+
+  base::WeakPtrFactory<ArcResizeLockManager> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/default_frame_header.h"
@@ -115,6 +116,64 @@ class WindowActivationObserver : public wm::ActivationChangeObserver,
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
 
+// A self-deleting window property observer that runs the given callback when
+// its ash::kAppIDKey is set to non-null value.
+class AppIdObserver : public aura::WindowObserver {
+ public:
+  AppIdObserver(const AppIdObserver&) = delete;
+  AppIdObserver& operator=(const AppIdObserver&) = delete;
+
+  static void RunOnReady(aura::Window* window,
+                         base::OnceCallback<void(aura::Window*)> on_ready) {
+    const std::string* app_id = window->GetProperty(ash::kAppIDKey);
+    if (app_id) {
+      std::move(on_ready).Run(window);
+      return;
+    }
+
+    // The following instance self-destructs when the window gets activated or
+    // destroyed before getting activated.
+    new AppIdObserver(window, std::move(on_ready));
+  }
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    DCHECK(observer_.IsObservingSource(window));
+    delete this;
+  }
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    DCHECK(observer_.IsObservingSource(window));
+    if (key != ash::kAppIDKey)
+      return;
+    const std::string* app_id = window->GetProperty(ash::kAppIDKey);
+    if (!app_id)
+      return;
+    observer_.Reset();
+    std::move(on_ready_).Run(window);
+    delete this;
+  }
+
+ private:
+  AppIdObserver(aura::Window* window,
+                base::OnceCallback<void(aura::Window*)> on_ready)
+      : window_(window), on_ready_(std::move(on_ready)) {
+    DCHECK(!on_ready_.is_null());
+    observer_.Observe(window_);
+  }
+
+  ~AppIdObserver() override { observer_.Reset(); }
+
+  aura::Window* const window_;
+  base::OnceCallback<void(aura::Window*)> on_ready_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
+};
+
+bool ShouldEnableResizeLock(ash::ArcResizeLockType type) {
+  return type != ash::ArcResizeLockType::RESIZABLE;
+}
+
 }  // namespace
 
 // static
@@ -145,31 +204,37 @@ void ArcResizeLockManager::OnWindowInitialized(aura::Window* new_window) {
 void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
                                                    const void* key,
                                                    intptr_t old) {
-  if (key != ash::kArcResizeLockTypeKey && key != ash::kAppIDKey)
+  if (key != ash::kArcResizeLockTypeKey)
     return;
 
-  if (window->GetProperty(ash::kAppIDKey) == nullptr)
+  const auto new_value = window->GetProperty(ash::kArcResizeLockTypeKey);
+  const auto old_value = static_cast<ash::ArcResizeLockType>(old);
+
+  if (new_value == old_value)
     return;
 
-  UpdateCompatModeButton(window);
+  AppIdObserver::RunOnReady(
+      window, base::BindOnce(&ArcResizeLockManager::UpdateCompatModeButton,
+                             weak_ptr_factory_.GetWeakPtr()));
 
-  const ash::ArcResizeLockType current_resize_lock_value =
-      window->GetProperty(ash::kArcResizeLockTypeKey);
-  const bool resize_lock_changed =
-      (key == ash::kArcResizeLockTypeKey &&
-       current_resize_lock_value != static_cast<ash::ArcResizeLockType>(old));
-  const bool app_id_changed = key == ash::kAppIDKey;
-
-  // Both the resize lock value and app id are needed to enable resize lock.
-  if (current_resize_lock_value != ash::ArcResizeLockType::RESIZABLE &&
-      (app_id_changed || resize_lock_changed)) {
-    window->SetProperty(ash::kResizeShadowTypeKey,
-                        ash::ResizeShadowType::kLock);
-    EnableResizeLock(window);
-  }
-
-  if (resize_lock_changed &&
-      current_resize_lock_value == ash::ArcResizeLockType::RESIZABLE) {
+  if (ShouldEnableResizeLock(new_value)) {
+    // Both the resize lock value and app id are needed to enable resize lock.
+    AppIdObserver::RunOnReady(
+        window, base::BindOnce(
+                    [](base::WeakPtr<ArcResizeLockManager> manager,
+                       aura::Window* window) {
+                      if (!manager)
+                        return;
+                      if (!ShouldEnableResizeLock(window->GetProperty(
+                              ash::kArcResizeLockTypeKey))) {
+                        return;
+                      }
+                      window->SetProperty(ash::kResizeShadowTypeKey,
+                                          ash::ResizeShadowType::kLock);
+                      manager->EnableResizeLock(window);
+                    },
+                    weak_ptr_factory_.GetWeakPtr()));
+  } else {
     window->SetProperty(ash::kResizeShadowTypeKey,
                         ash::ResizeShadowType::kUnlock);
     DisableResizeLock(window);
@@ -185,11 +250,16 @@ void ArcResizeLockManager::OnWindowBoundsChanged(
 }
 
 void ArcResizeLockManager::OnWindowDestroying(aura::Window* window) {
+  resize_lock_enabled_windows_.erase(window);
   if (window_observations_.IsObservingSource(window))
     window_observations_.RemoveObservation(window);
 }
 
 void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
+  const bool inserted = resize_lock_enabled_windows_.insert(window).second;
+  if (!inserted)
+    return;
+
   bool is_first_launch = false;
 
   const std::string* app_id = window->GetProperty(ash::kAppIDKey);
@@ -234,6 +304,10 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
 }
 
 void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
+  const bool erased = resize_lock_enabled_windows_.erase(window);
+  if (!erased)
+    return;
+
   // Hide shadow effect on window. ash::Shell may not exist in tests.
   if (ash::Shell::HasInstance())
     ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
