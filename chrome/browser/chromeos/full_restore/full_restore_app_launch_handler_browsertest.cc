@@ -1013,7 +1013,19 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     app_launch_handler_ =
         std::make_unique<FullRestoreAppLaunchHandler>(profile());
     app_launch_handler_->SetShouldRestore();
+
+    arc_app_launch_handler_ =
+        FullRestoreArcTaskHandler::GetForProfile(profile())
+            ->arc_app_launch_handler();
+
     content::RunAllTasksUntilIdle();
+  }
+
+  void ForceLaunchApp(const std::string& app_id, int32_t window_id) {
+    if (arc_app_launch_handler_) {
+      arc_app_launch_handler_->LaunchApp(app_id, window_id);
+      content::RunAllTasksUntilIdle();
+    }
   }
 
   void VerifyGetArcAppLaunchInfo(const std::string& app_id,
@@ -1144,6 +1156,9 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     return &test_full_restore_info_observer_;
   }
 
+ protected:
+  ArcAppLaunchHandler* arc_app_launch_handler_ = nullptr;
+
  private:
   arc::ArcSessionManager* arc_session_manager() {
     return arc::ArcSessionManager::Get();
@@ -1205,6 +1220,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   ash::AutotestDesksApi().CreateNewDesk();
   ash::AutotestDesksApi().CreateNewDesk();
   ash::AutotestDesksApi().CreateNewDesk();
+
+  ForceLaunchApp(app_id, kTaskId1);
 
   // Create the window to simulate the restoration for the app. The task id
   // needs to match the |window_app_id| arg of CreateExoWindow.
@@ -1503,6 +1520,9 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   app_host()->OnTaskDestroyed(kTaskId1);
   app_host()->OnTaskDestroyed(kTaskId2);
 
+  ForceLaunchApp(app_id1, kTaskId1);
+  ForceLaunchApp(app_id2, kTaskId2);
+
   int32_t session_id3 =
       ::full_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
   int32_t session_id4 =
@@ -1596,6 +1616,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   Restore();
   arc_widget->CloseNow();
   app_host()->OnTaskDestroyed(kPreRestoreTaskId);
+
+  ForceLaunchApp(kAppId, kPreRestoreTaskId);
 
   // Recreate the window, simulating its restoration. Task id needs to match the
   // `kWindowAppId` arg of `CreateArcApp()`.
@@ -1708,14 +1730,6 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 class ArcAppLaunchHandlerArcAppBrowserTest
     : public FullRestoreAppLaunchHandlerArcAppBrowserTest {
  protected:
-  void Restore() {
-    FullRestoreAppLaunchHandlerArcAppBrowserTest::Restore();
-
-    arc_app_launch_handler_ =
-        FullRestoreArcTaskHandler::GetForProfile(profile())
-            ->arc_app_launch_handler();
-  }
-
   void UpdateApp(const std::string& app_id, apps::mojom::Readiness readiness) {
     apps::mojom::AppPtr app = apps::mojom::App::New();
     app->app_id = app_id;
@@ -1790,9 +1804,6 @@ class ArcAppLaunchHandlerArcAppBrowserTest
     }
     EXPECT_TRUE(found);
   }
-
- private:
-  ArcAppLaunchHandler* arc_app_launch_handler_ = nullptr;
 };
 
 // Verify the saved windows in ArcAppLaunchHandler when apps are removed.

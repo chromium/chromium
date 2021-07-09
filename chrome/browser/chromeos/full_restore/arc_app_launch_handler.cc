@@ -13,17 +13,23 @@
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -154,6 +160,18 @@ void ArcAppLaunchHandler::OnAppConnectionReady() {
   }
 
   StartCpuUsageCount();
+
+  if (!app_launch_timer_) {
+    app_launch_timer_ = std::make_unique<base::RepeatingTimer>();
+    MaybeReStartTimer(kAppLaunchCheckingDelay);
+  }
+
+  if (!stop_restore_timer_) {
+    stop_restore_timer_ = std::make_unique<base::OneShotTimer>();
+    stop_restore_timer_->Start(FROM_HERE, kStopRestoreDelay,
+                               base::BindOnce(&ArcAppLaunchHandler::StopRestore,
+                                              weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
@@ -259,8 +277,6 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     return;
   }
 
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(handler_->profile_);
-  DCHECK(proxy);
   auto* arc_handler =
       FullRestoreArcTaskHandler::GetForProfile(handler_->profile_);
 
@@ -269,15 +285,11 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
 
     DCHECK(data_it.second->event_flag.has_value());
 
-    apps::mojom::WindowInfoPtr window_info =
-        HandleArcWindowInfo(data_it.second->GetAppWindowInfo());
-
     // Set an ARC session id to find the restore window id based on the new
     // created ARC task id in FullRestoreReadHandler.
     int32_t arc_session_id =
         ::full_restore::FullRestoreReadHandler::GetInstance()
             ->GetArcSessionId();
-    window_info->window_id = arc_session_id;
     ::full_restore::FullRestoreReadHandler::GetInstance()
         ->SetArcSessionIdForWindowId(arc_session_id, data_it.first);
     window_id_to_session_id_[data_it.first] = arc_session_id;
@@ -285,8 +297,8 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
 
     bool launch_ghost_window = false;
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-    if (!window_info->bounds.is_null() && arc_handler &&
-        arc_handler->window_handler()) {
+    if (window_handler_ && (data_it.second->bounds_in_root.has_value() ||
+                            data_it.second->current_bounds.has_value())) {
       handler_->RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
       arc_handler->window_handler()->LaunchArcGhostWindow(
           app_id, arc_session_id, data_it.second.get());
@@ -299,15 +311,17 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     if (launch_ghost_window)
       continue;
 
-    if (data_it.second->intent.has_value()) {
-      proxy->LaunchAppWithIntent(app_id, data_it.second->event_flag.value(),
-                                 std::move(data_it.second->intent.value()),
-                                 apps::mojom::LaunchSource::kFromFullRestore,
-                                 std::move(window_info));
-    } else {
-      proxy->Launch(app_id, data_it.second->event_flag.value(),
-                    apps::mojom::LaunchSource::kFromFullRestore,
-                    std::move(window_info));
+    ChromeShelfController* chrome_controller =
+        ChromeShelfController::instance();
+    // chrome_controller may be null in tests.
+    if (chrome_controller) {
+      apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+      window_info->window_id = arc_session_id;
+      chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(
+          app_id, std::make_unique<ArcShelfSpinnerItemController>(
+                      app_id, data_it.second->event_flag.value(),
+                      arc::UserInteractionType::APP_STARTED_FROM_FULL_RESTORE,
+                      apps::MakeArcWindowInfo(std::move(window_info))));
     }
   }
 }

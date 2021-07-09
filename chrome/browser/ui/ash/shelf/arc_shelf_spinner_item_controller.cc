@@ -81,6 +81,12 @@ void ArcShelfSpinnerItemController::OnAppStatesChanged(
   if (!app_info.ready)
     return;
 
+  // If this item is created by full restore, we don't need to launch the app,
+  // because the full restore component will launch the app when the app is
+  // ready.
+  if (IsCreatedByFullRestore())
+    return;
+
   // Close() destroys this object, so start launching the app first.
   arc::LaunchApp(observed_profile_, arc_app_id, event_flags_,
                  user_interaction_type_, std::move(window_info_));
@@ -92,9 +98,26 @@ void ArcShelfSpinnerItemController::OnAppRemoved(
   Close();
 }
 
+void ArcShelfSpinnerItemController::OnAppConnectionReady() {
+  // If this item is created by full restore, start a 1 minute timer to close
+  // this item when timeout.
+  if (IsCreatedByFullRestore() && !close_timer_) {
+    close_timer_ = std::make_unique<base::OneShotTimer>();
+    close_timer_->Start(FROM_HERE, chromeos::full_restore::kStopRestoreDelay,
+                        base::BindOnce(&ArcShelfSpinnerItemController::Close,
+                                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
 void ArcShelfSpinnerItemController::OnArcPlayStoreEnabledChanged(bool enabled) {
   if (enabled)
     return;
   // If ARC was disabled, remove the deferred launch request.
   Close();
+}
+
+bool ArcShelfSpinnerItemController::IsCreatedByFullRestore() {
+  return window_info_ &&
+         window_info_->window_id >
+             full_restore::kArcSessionIdOffsetForRestoredLaunching;
 }

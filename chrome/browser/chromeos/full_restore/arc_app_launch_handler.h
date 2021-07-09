@@ -33,6 +33,7 @@ namespace full_restore {
 class ArcAppLaunchHandlerArcAppBrowserTest;
 class ArcWindowHandler;
 class FullRestoreAppLaunchHandler;
+class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
 struct CpuTick {
   uint64_t idle_time = 0;
@@ -41,6 +42,12 @@ struct CpuTick {
     return {idle_time - rhs.idle_time, used_time - rhs.used_time};
   }
 };
+
+// The restoration process might be blocked by some issues, e.g. the memory
+// pressure, CPU rate, etc. However we don't want to have the restoration
+// process taking too long to interact the normal usage. So if the restoration
+// has finished in `kAppLaunchDelay` timeframe, we stop the restoration process.
+constexpr base::TimeDelta kStopRestoreDelay = base::TimeDelta::FromMinutes(1);
 
 // The ArcAppLaunchHandler class restores ARC apps during the system startup
 // phase.
@@ -92,6 +99,7 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
  private:
   friend ArcAppLaunchHandlerArcAppBrowserTest;
+  friend FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
   // Reads the restore data, and add the ARC app windows to `windows_`,
   // `no_stack_windows_` and `app_ids_`.

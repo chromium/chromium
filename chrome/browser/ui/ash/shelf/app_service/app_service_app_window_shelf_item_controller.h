@@ -7,16 +7,13 @@
 
 #include <set>
 
-#include "base/scoped_observation.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 
 class AppServiceAppWindowShelfController;
 
 // Shelf item delegate for extension app windows.
 class AppServiceAppWindowShelfItemController
-    : public AppWindowShelfItemController,
-      public ArcAppListPrefs::Observer {
+    : public AppWindowShelfItemController {
  public:
   explicit AppServiceAppWindowShelfItemController(
       const ash::ShelfID& shelf_id,
@@ -42,10 +39,6 @@ class AppServiceAppWindowShelfItemController
   // aura::WindowObserver overrides:
   void OnWindowTitleChanged(aura::Window* window) override;
 
-  // ArcAppListPrefs::Observer:
-  void OnAppStatesChanged(const std::string& app_id,
-                          const ArcAppListPrefs::AppInfo& app_info) override;
-
   void AddTaskId(int task_id);
   void RemoveTaskId(int task_id);
   bool HasAnyTasks() const;
@@ -60,9 +53,6 @@ class AppServiceAppWindowShelfItemController
   bool IsChromeApp();
 
   AppServiceAppWindowShelfController* controller_ = nullptr;
-
-  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
-      arc_prefs_observer_{this};
 
   std::set<int> task_ids_;
   std::set<int> session_ids_;
