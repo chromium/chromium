@@ -343,6 +343,7 @@ if (enable_pdf) {
     visibility = [
       ":*",
       "//chrome/renderer",
+      "//components/pdf/renderer",
     ]
 
     sources = [

@@ -280,7 +280,6 @@ static_library("renderer") {
     deps += [
       "//components/pdf/common",
       "//components/pdf/renderer",
-      "//pdf/mojom",
     ]
 
     if (is_linux || is_chromeos) {

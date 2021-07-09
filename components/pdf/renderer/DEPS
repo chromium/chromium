@@ -6,6 +6,7 @@ include_rules = [
   "+pdf/buildflags.h",
   "+pdf/mojom/pdf.mojom.h",
   "+pdf/pdf_features.h",
+  "+pdf/pdf_view_web_plugin.h",
   "+ppapi",
   "+third_party/blink/public",
   "+ui/accessibility",

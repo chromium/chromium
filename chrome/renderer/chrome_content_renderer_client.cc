@@ -153,6 +153,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
+#include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_security_policy.h"
@@ -207,17 +208,16 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/common/internal_plugin_helpers.h"
-#endif
+#include "components/pdf/renderer/internal_plugin_renderer_helpers.h"
 
-#if BUILDFLAG(ENABLE_PDF_UNSEASONED)
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "pdf/mojom/pdf.mojom.h"  // nogncheck
+// TODO(crbug.com/1218971): Refactor this; only needed for
+// `chrome_pdf::PdfViewWebPlugin::PrintClient`.
 #include "pdf/pdf_view_web_plugin.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PDF_UNSEASONED) && BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/renderer/chrome_pdf_view_web_plugin_print_client.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_PRINTING)
+
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/common/plugin_utils.h"
@@ -1041,35 +1041,22 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           break;
         }
 
+#if BUILDFLAG(ENABLE_PDF)
         if (info.name ==
             ASCIIToUTF16(ChromeContentClient::kPDFInternalPluginName)) {
-          // For a PDF plugin, `params.url` holds the plugin's stream url. If
-          // `params` contains an 'original-url' attribute, reset `params.url`
-          // with its original URL value so that it can be used to determine
-          // the plugin's origin.
-          for (size_t i = 0; i < params.attribute_names.size(); ++i) {
-            if (params.attribute_names[i] == "original-url") {
-              params.url = GURL(params.attribute_values[i].Utf16());
-              break;
-            }
-          }
-
-#if BUILDFLAG(ENABLE_PDF_UNSEASONED)
-          // Create unseasoned PDF plugin directly, for development purposes.
-          // TODO(crbug.com/1123621): Implement a more permanent solution once
-          // the new PDF viewer process model is approved and in place.
-          mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote;
-          render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
-              pdf_service_remote.BindNewEndpointAndPassReceiver());
-          std::unique_ptr<ChromePdfViewWebPluginPrintClient> print_client;
+          std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient>
+              print_client;
 #if BUILDFLAG(ENABLE_PRINTING)
           print_client =
               std::make_unique<ChromePdfViewWebPluginPrintClient>(render_frame);
 #endif  // BUILDFLAG(ENABLE_PRINTING)
-          return new chrome_pdf::PdfViewWebPlugin(
-              std::move(pdf_service_remote), std::move(print_client), params);
-#endif  // BUILDFLAG(ENABLE_PDF_UNSEASONED)
+          WebPlugin* internal_pdf_plugin = pdf::MaybeCreateInternalPlugin(
+              render_frame, std::move(print_client), params);
+          if (internal_pdf_plugin)
+            return internal_pdf_plugin;
         }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
         return render_frame->CreatePlugin(info, params);
       }
       case chrome::mojom::PluginStatus::kDisabled: {
