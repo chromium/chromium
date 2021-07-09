@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PROFILES_PROFILE_INFO_CACHE_OBSERVER_H_
-#define CHROME_BROWSER_PROFILES_PROFILE_INFO_CACHE_OBSERVER_H_
+#ifndef CHROME_BROWSER_PROFILES_PROFILE_ATTRIBUTES_STORAGE_OBSERVER_H_
+#define CHROME_BROWSER_PROFILES_PROFILE_ATTRIBUTES_STORAGE_OBSERVER_H_
 
 #include <string>
-
-#include "ui/gfx/image/image.h"
 
 namespace base {
 class FilePath;
 }
 
 // This class provides an Observer interface to watch for changes to the
-// ProfileInfoCache.
-class ProfileInfoCacheObserver {
+// ProfileAttributesStorage.
+class ProfileAttributesStorageObserver {
  public:
-  ProfileInfoCacheObserver(const ProfileInfoCacheObserver&) = delete;
-  ProfileInfoCacheObserver& operator=(const ProfileInfoCacheObserver&) = delete;
-  virtual ~ProfileInfoCacheObserver() = default;
+  ProfileAttributesStorageObserver(const ProfileAttributesStorageObserver&) =
+      delete;
+  ProfileAttributesStorageObserver& operator=(
+      const ProfileAttributesStorageObserver&) = delete;
+  virtual ~ProfileAttributesStorageObserver() = default;
 
   // Notifies observers that a new profile at `profile_path` was added to cache.
   // It is guaranteed to be the first observer method that can observe a new
@@ -43,15 +43,14 @@ class ProfileInfoCacheObserver {
       const base::FilePath& profile_path) {}
   virtual void OnProfileSupervisedUserIdChanged(
       const base::FilePath& profile_path) {}
-  virtual void OnProfileIsOmittedChanged(
-      const base::FilePath& profile_path) {}
+  virtual void OnProfileIsOmittedChanged(const base::FilePath& profile_path) {}
   virtual void OnProfileThemeColorsChanged(const base::FilePath& profile_path) {
   }
   virtual void OnProfileHostedDomainChanged(
       const base::FilePath& profile_path) {}
 
  protected:
-  ProfileInfoCacheObserver() = default;
+  ProfileAttributesStorageObserver() = default;
 };
 
-#endif  // CHROME_BROWSER_PROFILES_PROFILE_INFO_CACHE_OBSERVER_H_
+#endif  // CHROME_BROWSER_PROFILES_PROFILE_ATTRIBUTES_STORAGE_OBSERVER_H_

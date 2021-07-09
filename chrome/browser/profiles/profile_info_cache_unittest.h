@@ -8,12 +8,9 @@
 #include <set>
 
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_info_cache_observer.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-class ProfileInfoCache;
 
 namespace base {
 class FilePath;
@@ -21,7 +18,7 @@ class FilePath;
 
 // Class used to test that ProfileInfoCache does not try to access any
 // unexpected profile names.
-class ProfileNameVerifierObserver : public ProfileInfoCacheObserver {
+class ProfileNameVerifierObserver : public ProfileAttributesStorage::Observer {
  public:
   explicit ProfileNameVerifierObserver(
       TestingProfileManager* testing_profile_manager);
@@ -30,7 +27,7 @@ class ProfileNameVerifierObserver : public ProfileInfoCacheObserver {
       delete;
   ~ProfileNameVerifierObserver() override;
 
-  // ProfileInfoCacheObserver overrides:
+  // ProfileAttributesStorage::Observer overrides:
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnProfileWillBeRemoved(const base::FilePath& profile_path) override;
   void OnProfileWasRemoved(const base::FilePath& profile_path,

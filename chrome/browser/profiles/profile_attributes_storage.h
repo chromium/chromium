@@ -21,7 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
-#include "chrome/browser/profiles/profile_info_cache_observer.h"
+#include "chrome/browser/profiles/profile_attributes_storage_observer.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -44,7 +44,7 @@ class PrefRegistrySimple;
 class ProfileAttributesStorage
     : public base::SupportsWeakPtr<ProfileAttributesStorage> {
  public:
-  using Observer = ProfileInfoCacheObserver;
+  using Observer = ProfileAttributesStorageObserver;
 
   explicit ProfileAttributesStorage(PrefService* prefs,
                                     const base::FilePath& user_data_dir);
