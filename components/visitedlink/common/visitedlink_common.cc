@@ -6,8 +6,6 @@
 
 #include <string.h>  // for memset()
 
-#include <ostream>
-
 #include "base/bit_cast.h"
 #include "base/check.h"
 #include "base/hash/md5.h"

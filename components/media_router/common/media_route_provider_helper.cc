@@ -4,8 +4,6 @@
 
 #include "components/media_router/common/media_route_provider_helper.h"
 
-#include <ostream>
-
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <ostream>
 #include <string>
 
 #include "base/check_op.h"

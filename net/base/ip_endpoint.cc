@@ -4,8 +4,6 @@
 
 #include "net/base/ip_endpoint.h"
 
-#include <ostream>
-
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

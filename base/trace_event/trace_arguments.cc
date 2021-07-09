@@ -10,7 +10,6 @@
 #include <string.h>
 
 #include <cmath>
-#include <ostream>
 
 #include "base/check_op.h"
 #include "base/json/string_escape.h"

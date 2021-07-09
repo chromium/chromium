@@ -4,8 +4,6 @@
 
 #import "ios/web/js_messaging/crw_js_window_id_manager.h"
 
-#include <ostream>
-
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"

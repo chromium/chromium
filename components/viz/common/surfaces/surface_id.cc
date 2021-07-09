@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/common/surfaces/surface_id.h"
-
 #include <algorithm>
-#include <ostream>
+
+#include "components/viz/common/surfaces/surface_id.h"
+#include "components/viz/common/surfaces/surface_range.h"
 
 #include "base/strings/stringprintf.h"
-#include "components/viz/common/surfaces/surface_range.h"
 
 namespace viz {
 

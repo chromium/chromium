@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <cstring>
-#include <ostream>
 
 #include "base/check_op.h"
 #include "base/macros.h"

@@ -4,8 +4,6 @@
 
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 
-#include <ostream>
-
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"

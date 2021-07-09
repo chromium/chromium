@@ -6,8 +6,6 @@
 
 #include <objc/runtime.h>
 
-#include <ostream>
-
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/objc_zombie.h"

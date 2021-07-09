@@ -4,7 +4,6 @@
 
 #include "components/viz/common/surfaces/surface_range.h"
 
-#include <ostream>
 #include <string>
 
 #include "base/strings/stringprintf.h"

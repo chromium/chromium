@@ -4,8 +4,6 @@
 
 #import "ios/testing/ocmock_complex_type_helper.h"
 
-#include <ostream>
-
 #include "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 

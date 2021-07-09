@@ -4,8 +4,6 @@
 
 #import "ios/chrome/app/multitasking_test_scene_delegate.h"
 
-#include <ostream>
-
 #include "base/notreached.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/chrome_overlay_window.h"

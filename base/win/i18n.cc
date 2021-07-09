@@ -6,8 +6,6 @@
 
 #include <windows.h>
 
-#include <ostream>
-
 #include "base/check_op.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"

@@ -4,8 +4,6 @@
 
 #include "extensions/common/extension_icon_set.h"
 
-#include <ostream>
-
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"

@@ -7,7 +7,6 @@
 #include <limits.h>
 #include <stdint.h>
 
-#include <ostream>
 #include <type_traits>
 
 #include "base/strings/string_piece.h"

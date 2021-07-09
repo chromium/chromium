@@ -4,8 +4,6 @@
 
 #include "net/ssl/ssl_cipher_suite_names.h"
 
-#include <ostream>
-
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 
-#include <ostream>
-
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"

@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include <ostream>
-
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"

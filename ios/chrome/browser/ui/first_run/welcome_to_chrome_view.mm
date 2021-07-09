@@ -6,8 +6,6 @@
 
 #import <MaterialComponents/MaterialTypography.h>
 
-#include <ostream>
-
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/ios/ns_range.h"

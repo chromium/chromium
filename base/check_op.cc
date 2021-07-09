@@ -64,10 +64,6 @@ char* CheckOpValueStr(std::nullptr_t v) {
   return strdup("nullptr");
 }
 
-char* CheckOpValueStr(const std::string& v) {
-  return strdup(v.c_str());
-}
-
 char* CheckOpValueStr(double v) {
   char buf[50];
   snprintf(buf, sizeof(buf), "%.6lf", v);
