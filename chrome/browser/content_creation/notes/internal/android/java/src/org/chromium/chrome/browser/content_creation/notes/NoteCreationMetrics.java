@@ -44,30 +44,74 @@ public final class NoteCreationMetrics {
         int NUM_ENTRIES = 11;
     }
 
+    /**
+     * Records metrics related to the user starting the creation flow.
+     */
     public static void recordNoteCreationSelected() {
         RecordHistogram.recordEnumeratedHistogram("NoteCreation.Funnel",
                 NoteCreationFunnel.NOTE_CREATION_SELECTED, NoteCreationFunnel.NUM_ENTRIES);
     }
 
-    public static void recordNoteTemplateSelected() {
+    /**
+     * Records metrics related to the user choosing a template and creating their note.
+     *
+     * @param duration The time elapsed between the start of the creation flow and when the user
+     *         selected a template and created their note.
+     */
+    public static void recordNoteTemplateSelected(long duration) {
         RecordHistogram.recordEnumeratedHistogram("NoteCreation.Funnel",
                 NoteCreationFunnel.TEMPLATE_SELECTED, NoteCreationFunnel.NUM_ENTRIES);
+
+        RecordHistogram.recordBooleanHistogram("NoteCreation.CreationStatus", true);
+
+        RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.SelectTemplate", duration);
     }
 
-    public static void recordNoteShared() {
+    /**
+     * Records metrics related to the user dismissing the creation dialog.
+     *
+     * @param duration The time elapsed between the start of the creation flow and when the user
+     *         dismissed the creation dialog.
+     */
+    public static void recordNoteCreationDismissed(long duration) {
+        RecordHistogram.recordBooleanHistogram("NoteCreation.CreationStatus", false);
+
+        RecordHistogram.recordMediumTimesHistogram(
+                "NoteCreation.TimeTo.DismissCreationDialog", duration);
+    }
+
+    /**
+     * Records metrics related to the user sharing their created note.
+     *
+     * @param duration The time elapsed between the start of the creation flow and when the user
+     *         shared their created note.
+     */
+    public static void recordNoteShared(long duration) {
         RecordHistogram.recordEnumeratedHistogram("NoteCreation.Funnel",
                 NoteCreationFunnel.NOTE_SHARED, NoteCreationFunnel.NUM_ENTRIES);
+
         RecordHistogram.recordBooleanHistogram("NoteCreation.NoteShared", true);
+
+        RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.ShareCreation", duration);
     }
 
-    public static void recordNoteNotShared() {
+    /**
+     * Records metrics related to the user not sharing their created note.
+     *
+     * @param duration The time elapsed between the start of the creation flow and when the user
+     *         dismissed the share sheet.
+     */
+    public static void recordNoteNotShared(long duration) {
         RecordHistogram.recordBooleanHistogram("NoteCreation.NoteShared", false);
+
+        RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.DismissShare", duration);
     }
 
-    public static void recordNoteCreationStatus(boolean created) {
-        RecordHistogram.recordBooleanHistogram("NoteCreation.CreationStatus", created);
-    }
-
+    /**
+     * Records the number of times the user switched between templates.
+     *
+     * @param nbChanges The number of times the user changes templates.
+     */
     public static void recordNbTemplateChanges(int nbChanges) {
         RecordHistogram.recordCount100Histogram("NoteCreation.NumberOfTemplateChanges", nbChanges);
     }

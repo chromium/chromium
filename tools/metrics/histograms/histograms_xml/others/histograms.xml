@@ -10640,6 +10640,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NoteCreation.TimeTo{action}" units="ms"
+    expires_after="2021-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to accomplish {action} from the time the
+    creation flow was started.
+  </summary>
+  <token key="action">
+    <variant name=".DismissCreationDialog"
+        summary="The user dismissed the creation dialog."/>
+    <variant name=".DismissShare"
+        summary="The user dismissed the sharing dialog for their newly
+                 created note."/>
+    <variant name=".SelectTemplate"
+        summary="The user selected a template for their note, completing the
+                 creation flow."/>
+    <variant name=".ShareCreation"
+        summary="The user shared their newly created note."/>
+  </token>
+</histogram>
+
 <histogram name="NQE.CachedNetworkQualityAvailable" enum="BooleanAvailable"
     expires_after="2021-10-10">
   <owner>tbansal@chromium.org</owner>

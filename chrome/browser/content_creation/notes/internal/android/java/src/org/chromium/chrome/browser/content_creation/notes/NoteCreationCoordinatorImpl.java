@@ -52,6 +52,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
     private final String mShareUrl;
     private final String mSelectedText;
 
+    private long mCreationStartTime;
+
     private TopBarCoordinator mTopBarCoordinator;
 
     public NoteCreationCoordinatorImpl(Activity activity, Tab tab, NoteService noteService,
@@ -82,6 +84,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
 
     @Override
     public void showDialog() {
+        mCreationStartTime = System.currentTimeMillis();
         NoteCreationMetrics.recordNoteCreationSelected();
 
         FragmentActivity fragmentActivity = (FragmentActivity) mActivity;
@@ -93,7 +96,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
      */
     @Override
     public void dismiss() {
-        NoteCreationMetrics.recordNoteCreationStatus(/*created=*/false);
+        NoteCreationMetrics.recordNoteCreationDismissed(getTimeElapsedSinceCreationStart());
         NoteCreationMetrics.recordNbTemplateChanges(mDialog.getNbTemplateSwitches());
         mDialog.dismiss();
     }
@@ -111,8 +114,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
      */
     @Override
     public void executeAction() {
-        NoteCreationMetrics.recordNoteTemplateSelected();
-        NoteCreationMetrics.recordNoteCreationStatus(/*created=*/true);
+        NoteCreationMetrics.recordNoteTemplateSelected(getTimeElapsedSinceCreationStart());
         NoteCreationMetrics.recordNbTemplateChanges(mDialog.getNbTemplateSwitches());
 
         int selectedNoteIndex = mDialog.getSelectedItemIndex();
@@ -138,12 +140,14 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                                     .setCallback(new ShareParams.TargetChosenCallback() {
                                         @Override
                                         public void onTargetChosen(ComponentName chosenComponent) {
-                                            NoteCreationMetrics.recordNoteShared();
+                                            NoteCreationMetrics.recordNoteShared(
+                                                    getTimeElapsedSinceCreationStart());
                                         }
 
                                         @Override
                                         public void onCancel() {
-                                            NoteCreationMetrics.recordNoteNotShared();
+                                            NoteCreationMetrics.recordNoteNotShared(
+                                                    getTimeElapsedSinceCreationStart());
                                         }
                                     })
                                     .build();
@@ -222,5 +226,12 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         // Dismiss current dialog before showing the share sheet.
         this.dismiss();
         mChromeOptionShareCallback.showShareSheet(params, extras, shareStartTime);
+    }
+
+    /**
+     * Returns the time elapsed since the creation was started.
+     */
+    private long getTimeElapsedSinceCreationStart() {
+        return System.currentTimeMillis() - mCreationStartTime;
     }
 }
