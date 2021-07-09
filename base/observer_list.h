@@ -336,14 +336,17 @@ class ObserverList {
   }
 
   std::string GetObserversCreationStackString() const {
+#if EXPENSIVE_DCHECKS_ARE_ON()
     std::string result;
-#if DCHECK_IS_ON()
     for (const auto& observer : observers_) {
       result += observer.GetCreationStackString();
       result += "\n";
     }
-#endif
     return result;
+#else
+    return "For observer stack traces, build with "
+           "`enable_expensive_dchecks=true`.";
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
   }
 
   std::vector<ObserverStorageType> observers_;
