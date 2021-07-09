@@ -103,7 +103,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
-                   bool* allow_legacy_mailbox) override;
+                   bool* allow_legacy_mailbox,
+                   bool is_pixel_used) override;
 
   // Returns true if the specified GpuMemoryBufferType can be imported using
   // this factory.

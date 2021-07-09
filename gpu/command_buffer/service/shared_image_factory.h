@@ -155,6 +155,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
       uint32_t usage,
       viz::ResourceFormat format,
       bool* allow_legacy_mailbox,
+      bool is_pixel_used,
       gfx::GpuMemoryBufferType gmb_type = gfx::EMPTY_BUFFER);
 
   MailboxManager* mailbox_manager_;

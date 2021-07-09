@@ -247,7 +247,11 @@ bool SharedImageBackingFactoryGLImage::IsSupported(
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool* allow_legacy_mailbox) {
+    bool* allow_legacy_mailbox,
+    bool is_pixel_used) {
+  if (is_pixel_used && gr_context_type != GrContextType::kGL) {
+    return false;
+  }
   if (thread_safe) {
     return false;
   }

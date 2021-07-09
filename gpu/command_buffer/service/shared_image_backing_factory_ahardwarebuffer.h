@@ -68,7 +68,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryAHB
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
-                   bool* allow_legacy_mailbox) override;
+                   bool* allow_legacy_mailbox,
+                   bool is_pixel_used) override;
   bool IsFormatSupported(viz::ResourceFormat format);
 
  private:

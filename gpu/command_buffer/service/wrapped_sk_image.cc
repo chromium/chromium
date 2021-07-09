@@ -82,7 +82,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
       SkPixmap pixmap(info, shared_memory_wrapper_.GetMemory(),
                       shared_memory_wrapper_.GetStride());
       if (!context_state_->gr_context()->updateBackendTexture(
-              backend_texture_, &pixmap, /*levels=*/1, nullptr, nullptr)) {
+              backend_texture_, &pixmap, /*numLevels=*/1, nullptr, nullptr)) {
         DLOG(ERROR) << "Failed to update WrappedSkImage texture";
       }
     }
@@ -512,7 +512,12 @@ bool WrappedSkImageFactory::IsSupported(uint32_t usage,
                                         bool thread_safe,
                                         gfx::GpuMemoryBufferType gmb_type,
                                         GrContextType gr_context_type,
-                                        bool* allow_legacy_mailbox) {
+                                        bool* allow_legacy_mailbox,
+                                        bool is_pixel_used) {
+  // TODO(hitawala): Remove gr_context_type check for supporting GL as well.
+  if (is_pixel_used && gr_context_type == GrContextType::kGL) {
+    return false;
+  }
   if (!CanUseWrappedSkImage(usage, gr_context_type) || thread_safe) {
     return false;
   }

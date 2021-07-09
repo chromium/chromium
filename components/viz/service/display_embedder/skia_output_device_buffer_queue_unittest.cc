@@ -186,7 +186,8 @@ class TestSharedImageBackingFactory : public gpu::SharedImageBackingFactory {
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,
                    gpu::GrContextType gr_context_type_,
-                   bool* allow_legacy_mailbox) override {
+                   bool* allow_legacy_mailbox,
+                   bool is_pixel_used) override {
     return true;
   }
 };

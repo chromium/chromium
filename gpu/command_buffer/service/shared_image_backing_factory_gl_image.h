@@ -78,7 +78,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLImage
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
-                   bool* allow_legacy_mailbox) override;
+                   bool* allow_legacy_mailbox,
+                   bool is_pixel_used) override;
 
  private:
   scoped_refptr<gl::GLImage> MakeGLImage(int client_id,

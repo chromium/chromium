@@ -133,7 +133,11 @@ bool SharedImageBackingFactoryEGL::IsSupported(
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool* allow_legacy_mailbox) {
+    bool* allow_legacy_mailbox,
+    bool is_pixel_used) {
+  if (is_pixel_used) {
+    return false;
+  }
   // Doesn't support gmb for now
   if (gmb_type != gfx::EMPTY_BUFFER) {
     return false;

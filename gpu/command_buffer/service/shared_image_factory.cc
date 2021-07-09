@@ -234,7 +234,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            gpu::SurfaceHandle surface_handle,
                                            uint32_t usage) {
   bool allow_legacy_mailbox = false;
-  auto* factory = GetFactoryByUsage(usage, format, &allow_legacy_mailbox);
+  auto* factory = GetFactoryByUsage(usage, format, &allow_legacy_mailbox,
+                                    /*is_pixel_used=*/false);
   if (!factory)
     return false;
   auto backing = factory->CreateSharedImage(
@@ -262,25 +263,13 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  // Currently we only perform data uploads via two paths,
-  // |gl_backing_factory_| for GL and |wrapped_sk_image_factory_| for Vulkan and
-  // Dawn.
-  // TODO(ericrk): Make this generic in the future.
   bool allow_legacy_mailbox = false;
   SharedImageBackingFactory* factory = nullptr;
   if (backing_factory_for_testing_) {
     factory = backing_factory_for_testing_;
-  } else if (gr_context_type_ == GrContextType::kGL) {
-    allow_legacy_mailbox = true;
-    if (gl_texture_backing_factory_->IsSupported(
-            usage, format, IsSharedBetweenThreads(usage), gfx::EMPTY_BUFFER,
-            gr_context_type_, &allow_legacy_mailbox)) {
-      factory = gl_texture_backing_factory_.get();
-    } else {
-      factory = gl_image_backing_factory_.get();
-    }
   } else {
-    factory = wrapped_sk_image_factory_.get();
+    factory = GetFactoryByUsage(usage, format, &allow_legacy_mailbox,
+                                /*is_pixel_used=*/true, gfx::EMPTY_BUFFER);
   }
   if (!factory)
     return false;
@@ -307,8 +296,9 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   // factory, e.g. SharedImageBackingFactoryAHB.
   bool allow_legacy_mailbox = false;
   auto resource_format = viz::GetResourceFormat(format);
-  auto* factory = GetFactoryByUsage(usage, resource_format,
-                                    &allow_legacy_mailbox, handle.type);
+  auto* factory =
+      GetFactoryByUsage(usage, resource_format, &allow_legacy_mailbox,
+                        /*is_pixel_used=*/false, handle.type);
   if (!factory)
     return false;
   auto backing = factory->CreateSharedImage(
@@ -518,6 +508,7 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     uint32_t usage,
     viz::ResourceFormat format,
     bool* allow_legacy_mailbox,
+    bool is_pixel_used,
     gfx::GpuMemoryBufferType gmb_type) {
   if (backing_factory_for_testing_)
     return backing_factory_for_testing_;
@@ -527,14 +518,14 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   if (wrapped_sk_image_factory_ &&
       wrapped_sk_image_factory_->IsSupported(
           usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox)) {
+          allow_legacy_mailbox, is_pixel_used)) {
     return wrapped_sk_image_factory_.get();
   }
 
   if (gl_texture_backing_factory_ &&
       gl_texture_backing_factory_->IsSupported(
           usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox)) {
+          allow_legacy_mailbox, is_pixel_used)) {
     return gl_texture_backing_factory_.get();
   }
 
@@ -542,7 +533,7 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   if (egl_backing_factory_ &&
       egl_backing_factory_->IsSupported(usage, format, share_between_threads,
                                         gmb_type, gr_context_type_,
-                                        allow_legacy_mailbox)) {
+                                        allow_legacy_mailbox, is_pixel_used)) {
     return egl_backing_factory_.get();
   }
 #endif  // !defined(OS_ANDROID)
@@ -550,7 +541,7 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   if (interop_backing_factory_ &&
       interop_backing_factory_->IsSupported(
           usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox)) {
+          allow_legacy_mailbox, is_pixel_used)) {
     return interop_backing_factory_.get();
   }
 
@@ -560,14 +551,14 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   if (external_vk_image_factory_ &&
       external_vk_image_factory_->IsSupported(
           usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox))
+          allow_legacy_mailbox, is_pixel_used))
     return external_vk_image_factory_.get();
 #endif  // !defined(OS_ANDROID)
 
   if (gl_image_backing_factory_ &&
       gl_image_backing_factory_->IsSupported(
           usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox)) {
+          allow_legacy_mailbox, is_pixel_used)) {
     return gl_image_backing_factory_.get();
   }
 
