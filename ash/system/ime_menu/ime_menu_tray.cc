@@ -33,6 +33,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/text_input_client.h"
@@ -215,10 +216,8 @@ class ImeButtonsView : public views::View {
 
     if (show_emoji) {
       emoji_button_ = new SystemMenuButton(
-          base::BindRepeating(&ImeButtonsView::KeysetButtonPressed,
-                              base::Unretained(this),
-                              chromeos::input_method::ImeKeyset::kEmoji),
-          kImeMenuEmoticonIcon, IDS_ASH_STATUS_TRAY_IME_EMOJI);
+          base::BindRepeating(&ui::ShowEmojiPanel), kImeMenuEmoticonIcon,
+          IDS_ASH_STATUS_TRAY_IME_EMOJI);
       emoji_button_->SetID(kEmojiButtonId);
       AddChildView(emoji_button_);
     }

@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -330,6 +331,10 @@ TEST_F(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
 
 // Tests that tapping the emoji button does not crash. http://crbug.com/739630
 TEST_F(ImeMenuTrayTest, TapEmojiButton) {
+  int callCount = 0;
+  ui::SetShowEmojiKeyboardCallback(
+      base::BindRepeating([](int* count) { (*count)++; }, (&callCount)));
+
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
       true /* ui enabled */, true /* emoji input enabled */,
@@ -345,8 +350,11 @@ TEST_F(ImeMenuTrayTest, TapEmojiButton) {
   ASSERT_TRUE(emoji_button);
   emoji_button->OnGestureEvent(&tap);
 
-  // The menu should be hidden.
-  EXPECT_FALSE(IsBubbleShown());
+  // The callback should have been called.
+  EXPECT_EQ(callCount, 1);
+
+  // Cleanup.
+  ui::SetShowEmojiKeyboardCallback(base::DoNothing());
 }
 
 TEST_F(ImeMenuTrayTest, ShouldShowBottomButtons) {
