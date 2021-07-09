@@ -4418,40 +4418,39 @@ bool GLRenderer::CanUseFastSolidColorDraw(
   if (!sqs->quad_to_target_transform.Preserves2dAxisAlignment())
     return false;
 
-  // If no blending is needed for the quad, then fast draw can be safely used.
-  if (!quad->ShouldDrawWithBlending() && SkColorGetA(quad->color) == 255)
+  // When no blending is needed, glClear can be used.
+  SkBlendMode blend_mode = quad->shared_quad_state->blend_mode;
+  if (blend_mode == SkBlendMode::kSrc)
     return true;
 
-  // It is safe to use glClearColor with alpha blending when the render
-  // pass has transparent background because the blending happens against
-  // (0, 0, 0, 0) which is the same as replacing the destination color & alpha.
-  // However, if the render pass does not have a transparent background, using
-  // glClear with a color that has alpha or opacity, would end up punching an
-  // unwanted hole in the frame buffer.
-  if (!current_frame()->current_render_pass->has_transparent_background)
-    return false;
+  if (blend_mode == SkBlendMode::kSrcOver) {
+    // Blending will replace destination color and alpha if the quad is opaque.
+    if (SkColorGetA(quad->color) == 255 &&
+        quad->shared_quad_state->opacity >= 1.0f) {
+      return true;
+    }
 
-  // If the color has any alpha and blending is needed, ensure the blend mode
-  // allows replacing destination color & alpha.
-  const bool is_translucent =
-      SkColorGetA(quad->color) != 255 || quad->shared_quad_state->opacity < 1.f;
-  if (is_translucent &&
-      !(quad->shared_quad_state->blend_mode == SkBlendMode::kSrc ||
-        quad->shared_quad_state->blend_mode == SkBlendMode::kSrcOver)) {
-    return false;
+    // It is safe to use glClearColor with alpha blending when the render
+    // pass has transparent background and nothing has drawn to the same rect
+    // area because the blending happens against (0, 0, 0, 0) which is the same
+    // as replacing the destination color & alpha.
+    if (!current_frame()->current_render_pass->has_transparent_background)
+      return false;
+
+    gfx::RectF quad_rect_in_target(quad->visible_rect);
+    sqs->quad_to_target_transform.TransformRect(&quad_rect_in_target);
+    const gfx::Rect quad_rect_in_target_rounded =
+        gfx::ToRoundedRect(quad_rect_in_target);
+
+    // If the quad does not intersect any region that has already been drawn
+    // to, then blending is not an issue and fast draw path can be used.
+    for (const auto& rect : drawn_rects_)
+      if (quad_rect_in_target_rounded.Intersects(rect))
+        return false;
+    return true;
   }
 
-  gfx::RectF quad_rect_in_target(quad->visible_rect);
-  sqs->quad_to_target_transform.TransformRect(&quad_rect_in_target);
-  const gfx::Rect quad_rect_in_target_rounded =
-      gfx::ToRoundedRect(quad_rect_in_target);
-
-  // If the quad does not intersect with any region that has already been drawn
-  // to, then blending is not an issue and fast draw path can be used.
-  for (const auto& rect : drawn_rects_)
-    if (quad_rect_in_target_rounded.Intersects(rect))
-      return false;
-  return true;
+  return false;
 }
 
 void GLRenderer::AllocateRenderPassResourceIfNeeded(

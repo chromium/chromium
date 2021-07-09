@@ -26,6 +26,7 @@
 #include "cc/test/resource_provider_test_utils.h"
 #include "cc/test/test_types.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -45,6 +46,7 @@
 #include "media/base/video_frame.h"
 #include "media/renderers/video_resource_updater.h"
 #include "media/video/half_float_maker.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -3080,6 +3082,90 @@ TEST_P(RendererPixelTestWithBackdropFilter, InvertFilterWithMask) {
       cc::FuzzyPixelOffByOneComparator(false)));
 }
 
+// Tests if drawing using the fast solid color draw feature returns the same
+// results as drawing without the feature.
+class GLRendererPixelTestFastSolidColorDraw
+    : public VizPixelTest,
+      public testing::WithParamInterface<SkBlendMode> {
+ public:
+  GLRendererPixelTestFastSolidColorDraw() : VizPixelTest(RendererType::kGL) {}
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kFastSolidColorDraw);
+    VizPixelTest::SetUp();
+  }
+
+ protected:
+  void SetUpRenderPassList() {
+    // Sets up a root render pass with three solid color draw quads.
+    // As the render pass has transparent background, the fast path is used to
+    // draw the quad on the left (semi-transparent) and the quad in the center
+    // (fully-opaque) when the blend mode is kSrcOver, but not when kScreen,
+    // kDstIn or kDstOut.
+    // The quad on the right is fully opaque and has the default kSrcOver blend
+    // mode, so it is drawn using the fast path.
+    pass_list_.clear();
+    gfx::Rect device_viewport_rect(this->device_viewport_size_);
+
+    AggregatedRenderPassId root_id{1};
+    auto root_pass = CreateTestRootRenderPass(root_id, device_viewport_rect);
+
+    const int kGridWidth = device_viewport_rect.width() / 3;
+    const int kGridHeight = device_viewport_rect.height() / 3;
+    gfx::Rect left_rect = gfx::Rect(0, kGridHeight, kGridWidth, kGridHeight);
+
+    gfx::Transform identity_quad_to_target_transform;
+    SharedQuadState* shared_state =
+        CreateTestSharedQuadState(identity_quad_to_target_transform, left_rect,
+                                  root_pass.get(), gfx::RRectF());
+    shared_state->blend_mode = GetParam();
+    auto* color_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    color_quad->SetNew(shared_state, left_rect, left_rect,
+                       SkColorSetARGB(0x33, 0xFF, 0, 0), true);
+
+    gfx::Rect center_rect =
+        gfx::Rect(kGridWidth, kGridHeight, kGridWidth, kGridHeight);
+
+    shared_state =
+        CreateTestSharedQuadState(identity_quad_to_target_transform,
+                                  center_rect, root_pass.get(), gfx::RRectF());
+    shared_state->blend_mode = GetParam();
+    color_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    color_quad->SetNew(shared_state, center_rect, center_rect, SK_ColorRED,
+                       true);
+    shared_state->blend_mode = GetParam();
+
+    gfx::Rect right_rect =
+        gfx::Rect(kGridWidth * 2, kGridHeight, kGridWidth, kGridHeight);
+    shared_state =
+        CreateTestSharedQuadState(identity_quad_to_target_transform, right_rect,
+                                  root_pass.get(), gfx::RRectF());
+    color_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    color_quad->SetNew(shared_state, right_rect, right_rect, SK_ColorRED, true);
+
+    pass_list_.push_back(std::move(root_pass));
+  }
+  AggregatedRenderPassList pass_list_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(GLRendererPixelTestFastSolidColorDraw, ResultSameAsFeatureDisabled) {
+  this->SetUpRenderPassList();
+  char buff[64];
+  memset(buff, 0, 64);
+  snprintf(buff, sizeof(buff), "gl_solid_color_%s.png",
+           SkBlendMode_Name(GetParam()));
+  EXPECT_TRUE(this->RunPixelTest(&this->pass_list_,
+                                 base::FilePath::FromUTF8Unsafe(buff),
+                                 cc::FuzzyPixelOffByOneComparator(true)));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GLRendererPixelTestFastSolidColorDraw,
+                         testing::Values(SkBlendMode::kSrcOver,
+                                         SkBlendMode::kDstIn,
+                                         SkBlendMode::kDstOut,
+                                         SkBlendMode::kScreen));
+
 class GLRendererPixelTestWithBackdropFilter : public VizPixelTest {
  public:
   GLRendererPixelTestWithBackdropFilter() : VizPixelTest(RendererType::kGL) {}
@@ -3184,6 +3270,7 @@ TEST_F(GLRendererPixelTestWithBackdropFilter, FilterQuality) {
       &this->pass_list_,
       base::FilePath(FILE_PATH_LITERAL("gl_backdrop_filter_1.png")),
       cc::FuzzyPixelOffByOneComparator(true)));
+
   if (this->context_provider()->ContextCapabilities().major_version < 3)
     return;
   this->backdrop_filter_quality_ = 0.33f;

@@ -3389,8 +3389,7 @@ TEST_F(GLRendererFastSolidColorTest, NeedsBlendingSlowPath) {
       gfx::Transform(), cc::FilterOperations());
   root_pass->damage_rect = root_pass_damage_rect;
 
-  cc::AddQuad(root_pass, quad_rect_1, SK_ColorRED);
-  root_pass->quad_list.back()->needs_blending = true;
+  cc::AddQuad(root_pass, quad_rect_1, SkColorSetARGB(0x33, 0xFF, 0, 0));
 
   cc::AddQuad(root_pass, quad_rect_2, SK_ColorBLUE);
   root_pass->shared_quad_state_list.back()->opacity = 0.5f;
@@ -3421,14 +3420,13 @@ TEST_F(GLRendererFastSolidColorTest, NeedsBlendingFastPath) {
       gfx::Transform(), cc::FilterOperations());
   root_pass->damage_rect = root_pass_damage_rect;
 
-  cc::AddQuad(root_pass, quad_rect_1, SK_ColorRED);
-  root_pass->quad_list.back()->needs_blending = true;
+  cc::AddQuad(root_pass, quad_rect_1, SkColorSetARGB(0x33, 0xFF, 0, 0));
 
   cc::AddQuad(root_pass, quad_rect_2, SK_ColorBLUE);
   root_pass->shared_quad_state_list.back()->opacity = 0.5f;
 
   cc::AddQuad(root_pass, quad_rect_3, SK_ColorGREEN);
-  root_pass->shared_quad_state_list.back()->blend_mode = SkBlendMode::kDstIn;
+  root_pass->shared_quad_state_list.back()->blend_mode = SkBlendMode::kSrc;
 
   auto* gl = gl_ptr();
 
@@ -3463,7 +3461,8 @@ TEST_F(GLRendererFastSolidColorTest, NeedsBlendingFastPath) {
   // Fast path draw used for red quad.
   EXPECT_CALL(*gl, Enable(GL_SCISSOR_TEST));
   EXPECT_CALL(*gl, Scissor(0, 480, 20, 20));
-  EXPECT_CALL(*gl, ClearColor(1, 0, 0, 1));
+  EXPECT_CALL(*gl, ClearColor(::testing::FloatEq(0.2f), 0, 0,
+                              ::testing::FloatEq(0.2f)));
   EXPECT_CALL(*gl, Disable(GL_SCISSOR_TEST));
   EXPECT_CALL(*gl, Scissor(0, 0, 0, 0));
 
