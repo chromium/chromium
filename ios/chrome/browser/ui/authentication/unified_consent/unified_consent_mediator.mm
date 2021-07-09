@@ -102,8 +102,10 @@
 #pragma mark - Private
 
 - (ChromeIdentity*)findDefaultSelectedIdentity {
-  if (self.authenticationService->IsAuthenticated()) {
-    return self.authenticationService->GetAuthenticatedIdentity();
+  if (self.authenticationService->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    return self.authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
   }
 
   return self.accountManagerService->GetDefaultIdentity();

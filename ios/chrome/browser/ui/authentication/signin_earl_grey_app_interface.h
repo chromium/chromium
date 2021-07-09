@@ -45,8 +45,8 @@
 // Returns a matcher for an identity picker cell for |email|.
 + (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email;
 
-// Checks if any identity is currently authenticated.
-+ (BOOL)isAuthenticated;
+// Checks whether there is a primary identity.
++ (BOOL)hasPrimaryIdentity;
 
 // Signs out the current user.
 + (void)signOut;

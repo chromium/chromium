@@ -142,7 +142,8 @@ using signin_metrics::PromoAction;
   }
   // Sync changes should only be commited if the user is authenticated and
   // the sign-in has not been interrupted.
-  if (self.authService->IsAuthenticated() && !self.signinInterrupted) {
+  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+      !self.signinInterrupted) {
     SyncSetupService* syncSetupService =
         SyncSetupServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
@@ -200,7 +201,7 @@ using signin_metrics::PromoAction;
   ChromeIdentity* authenticatedIdentity =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState())
-          ->GetAuthenticatedIdentity();
+          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   [self.googleServicesSettingsViewController preventUserInteraction];
   DCHECK(!self.authenticationFlow);
   self.authenticationFlow =
@@ -219,7 +220,8 @@ using signin_metrics::PromoAction;
 }
 
 - (void)openReauthDialogAsSyncIsInAuthError {
-  ChromeIdentity* identity = self.authService->GetAuthenticatedIdentity();
+  ChromeIdentity* identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (self.authService->HasCachedMDMErrorForIdentity(identity)) {
     self.authService->ShowMDMErrorDialogForIdentity(identity);
     return;
@@ -383,7 +385,7 @@ using signin_metrics::PromoAction;
   ChromeIdentity* primaryAccount =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState())
-          ->GetAuthenticatedIdentity();
+          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   self.signinInterrupted = !success && primaryAccount;
 }
 
@@ -410,7 +412,7 @@ using signin_metrics::PromoAction;
   ios::GetChromeBrowserProvider()
       .GetChromeIdentityService()
       ->PresentAccountDetailsController(
-          self.authService->GetAuthenticatedIdentity(),
+          self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin),
           self.googleServicesSettingsViewController, /*animated=*/YES);
 }
 

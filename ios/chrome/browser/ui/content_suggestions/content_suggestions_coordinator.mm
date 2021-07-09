@@ -545,7 +545,7 @@
                    style:UIAlertActionStyleDefault];
   }
 
-  if (self.authService->IsAuthenticated()) {
+  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     [self.alertCoordinator
         addItemWithTitle:l10n_util::GetNSString(
                              IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ACTIVITY_ITEM)

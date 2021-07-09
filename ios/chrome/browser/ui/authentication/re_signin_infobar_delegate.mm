@@ -73,7 +73,7 @@ ReSignInInfoBarDelegate::CreateInfoBarDelegate(
   if (!authService->ShouldReauthPromptForSignInAndSync())
     return nullptr;
   // Returns null if user has already signed in via some other path.
-  if (authService->IsAuthenticated()) {
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     authService->ResetReauthPromptForSignInAndSync();
     return nullptr;
   }

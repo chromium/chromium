@@ -40,13 +40,13 @@ bool ProfileReportGeneratorIOS::Init(const base::FilePath& path) {
 void ProfileReportGeneratorIOS::GetSigninUserInfo(
     enterprise_management::ChromeUserProfileInfo* report) {
   if (!AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-           ->IsAuthenticated()) {
+           ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return;
   }
 
   ChromeIdentity* account_info =
       AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-          ->GetAuthenticatedIdentity();
+          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
   signed_in_user_info->set_email(
       base::SysNSStringToUTF8(account_info.userEmail));

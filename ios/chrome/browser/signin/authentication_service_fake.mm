@@ -42,15 +42,19 @@ void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
   DCHECK(identity);
   sync_setup_service_->PrepareForFirstSyncSetup();
   authenticated_identity_ = identity;
+  consent_level_ = signin::ConsentLevel::kSignin;
 }
 
-void AuthenticationServiceFake::GrantSyncConsent(ChromeIdentity* identity) {}
+void AuthenticationServiceFake::GrantSyncConsent(ChromeIdentity* identity) {
+  consent_level_ = signin::ConsentLevel::kSync;
+}
 
 void AuthenticationServiceFake::SignOut(
     signin_metrics::ProfileSignout signout_source,
     bool force_clear_browsing_data,
     ProceduralBlock completion) {
-  if (force_clear_browsing_data || IsAuthenticatedIdentityManaged()) {
+  if (force_clear_browsing_data ||
+      HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin)) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&AuthenticationServiceFake::SignOutInternal,
                                   weak_factory_.GetWeakPtr(), completion));
@@ -61,20 +65,29 @@ void AuthenticationServiceFake::SignOut(
 
 void AuthenticationServiceFake::SignOutInternal(ProceduralBlock completion) {
   authenticated_identity_ = nil;
+  consent_level_ = signin::ConsentLevel::kSignin;
   if (completion)
     completion();
 }
 
-bool AuthenticationServiceFake::IsAuthenticated() const {
-  return authenticated_identity_ != nil;
+ChromeIdentity* AuthenticationServiceFake::GetPrimaryIdentity(
+    signin::ConsentLevel consent_level) const {
+  switch (consent_level) {
+    case signin::ConsentLevel::kSignin:
+      return authenticated_identity_;
+      break;
+    case signin::ConsentLevel::kSync:
+      return (consent_level_ == signin::ConsentLevel::kSync)
+                 ? authenticated_identity_
+                 : nil;
+      break;
+  }
+  return nil;
 }
 
-ChromeIdentity* AuthenticationServiceFake::GetAuthenticatedIdentity() const {
-  return authenticated_identity_;
-}
-
-bool AuthenticationServiceFake::IsAuthenticatedIdentityManaged() const {
-  if (!authenticated_identity_) {
+bool AuthenticationServiceFake::HasPrimaryIdentityManaged(
+    signin::ConsentLevel consent_level) const {
+  if (!GetPrimaryIdentity(consent_level)) {
     return false;
   }
   return [authenticated_identity_.userEmail

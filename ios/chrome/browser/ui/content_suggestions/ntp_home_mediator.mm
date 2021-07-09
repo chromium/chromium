@@ -736,7 +736,8 @@ const char kNTPHelpURL[] =
 - (void)updateAccountImage {
   UIImage* image;
   // Fetches user's identity from Authentication Service.
-  ChromeIdentity* identity = self.authService->GetAuthenticatedIdentity();
+  ChromeIdentity* identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
     // Fetches user's avatar from Authentication Service. Use cached version if
     // one is available. If not, use the default avatar and initiate a fetch

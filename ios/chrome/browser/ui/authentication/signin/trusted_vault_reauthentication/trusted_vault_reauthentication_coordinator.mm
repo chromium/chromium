@@ -89,7 +89,8 @@ using l10n_util::GetNSStringF;
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  DCHECK(authenticationService->IsAuthenticated());
+  DCHECK(
+      authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   // TODO(crbug.com/1019685): Should test if reauth is still needed. If still
   // needed, the reauth should be really started.
   // If not, the coordinator can be closed successfuly, by calling
@@ -99,7 +100,7 @@ using l10n_util::GetNSStringF;
       ios::GetChromeBrowserProvider().GetChromeTrustedVaultService();
   self.identity = AuthenticationServiceFactory::GetForBrowserState(
                       self.browser->GetBrowserState())
-                      ->GetAuthenticatedIdentity();
+                      ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   __weak __typeof(self) weakSelf = self;
   void (^callback)(BOOL success, NSError* error) =
       ^(BOOL success, NSError* error) {

@@ -80,7 +80,8 @@ void SignOutAndClearIdentities() {
     // Sign out current user and clear all browsing data on the device.
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state);
-    if (authentication_service->IsAuthenticated()) {
+    if (authentication_service->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin)) {
       authentication_service->SignOut(signin_metrics::SIGNOUT_TEST,
                                       /*force_clear_browsing_data=*/true, nil);
     }

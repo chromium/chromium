@@ -111,8 +111,9 @@ const CGFloat kSpinnerButtonPadding = 18;
     base::Time passphraseTime =
         service->GetUserSettings()->GetExplicitPassphraseTime();
     NSString* userEmail =
-        [AuthenticationServiceFactory::GetForBrowserState(browserState)
-                ->GetAuthenticatedIdentity() userEmail];
+        AuthenticationServiceFactory::GetForBrowserState(browserState)
+            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+            .userEmail;
     DCHECK(userEmail);
     _headerMessage =
         passphraseTime.is_null()
@@ -531,7 +532,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 - (void)onEndBatchOfRefreshTokenStateChanges {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   if (AuthenticationServiceFactory::GetForBrowserState(browserState)
-          ->IsAuthenticated()) {
+          ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return;
   }
   [base::mac::ObjCCastStrict<SettingsNavigationController>(

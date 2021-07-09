@@ -160,7 +160,8 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
   password_store_->AddLogin(form);
   task_environment_.RunUntilIdle();
 
-  EXPECT_FALSE(auth_service_->GetAuthenticatedIdentity());
+  EXPECT_FALSE(
+      auth_service_->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(credential_store_.credentials.firstObject.validationIdentifier);
 
   ios::FakeChromeIdentityService* identity_service =
@@ -170,8 +171,9 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
       identity_service->GetAllIdentities(nullptr).firstObject;
   auth_service_->SignIn(identity);
 
-  ASSERT_TRUE(auth_service_->GetAuthenticatedIdentity());
-  ASSERT_TRUE(auth_service_->IsAuthenticatedIdentityManaged());
+  ASSERT_TRUE(auth_service_->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      auth_service_->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin));
 
   CoreAccountInfo account = CoreAccountInfo();
   account.email = base::SysNSStringToUTF8(identity.userEmail);
@@ -185,9 +187,10 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
     base::RunLoop().RunUntilIdle();
-    return [auth_service_->GetAuthenticatedIdentity().gaiaID
-        isEqualToString:credential_store_.credentials.firstObject
-                            .validationIdentifier];
+    return
+        [auth_service_->GetPrimaryIdentity(signin::ConsentLevel::kSignin).gaiaID
+            isEqualToString:credential_store_.credentials.firstObject
+                                .validationIdentifier];
   }));
 
   auth_service_->SignOut(signin_metrics::SIGNOUT_TEST,
@@ -202,9 +205,10 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
     base::RunLoop().RunUntilIdle();
-    return ![auth_service_->GetAuthenticatedIdentity().gaiaID
-        isEqualToString:credential_store_.credentials.firstObject
-                            .validationIdentifier];
+    return !
+        [auth_service_->GetPrimaryIdentity(signin::ConsentLevel::kSignin).gaiaID
+            isEqualToString:credential_store_.credentials.firstObject
+                                .validationIdentifier];
   }));
 }
 

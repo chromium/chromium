@@ -167,18 +167,20 @@ class AuthenticationServiceTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 
-TEST_F(AuthenticationServiceTest, TestDefaultGetAuthenticatedIdentity) {
-  EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
-  EXPECT_FALSE(authentication_service()->IsAuthenticated());
+TEST_F(AuthenticationServiceTest, TestDefaultGetPrimaryIdentity) {
+  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
-TEST_F(AuthenticationServiceTest, TestSignInAndGetAuthenticatedIdentity) {
+TEST_F(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   // Sign in.
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
 
-  EXPECT_NSEQ(identity(0),
-              authentication_service()->GetAuthenticatedIdentity());
+  EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
+                               signin::ConsentLevel::kSignin));
 
   std::string user_email = base::SysNSStringToUTF8([identity(0) userEmail]);
   AccountInfo account_info =
@@ -187,7 +189,8 @@ TEST_F(AuthenticationServiceTest, TestSignInAndGetAuthenticatedIdentity) {
   EXPECT_EQ(base::SysNSStringToUTF8([identity(0) gaiaID]), account_info.gaia);
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
-  EXPECT_TRUE(authentication_service()->IsAuthenticated());
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 // Tests that reauth prompt can be set and reset.
@@ -219,8 +222,10 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
   EXPECT_TRUE(identity_manager()
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                   .email.empty());
-  EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
-  EXPECT_FALSE(authentication_service()->IsAuthenticated());
+  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
@@ -241,8 +246,10 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   EXPECT_TRUE(identity_manager()
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                   .email.empty());
-  EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
-  EXPECT_FALSE(authentication_service()->IsAuthenticated());
+  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
   EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
@@ -264,8 +271,10 @@ TEST_F(AuthenticationServiceTest,
   EXPECT_TRUE(identity_manager()
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                   .email.empty());
-  EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
-  EXPECT_FALSE(authentication_service()->IsAuthenticated());
+  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
@@ -373,18 +382,20 @@ TEST_F(AuthenticationServiceTest,
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 }
 
-TEST_F(AuthenticationServiceTest, IsAuthenticatedBackground) {
+TEST_F(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
   // Sign in.
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
-  EXPECT_TRUE(authentication_service()->IsAuthenticated());
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   // Remove the signed in identity while in background, and check that
-  // IsAuthenticated is up-to-date.
+  // HasPrimaryIdentity is up-to-date.
   identity_service()->ForgetIdentity(identity(0), nil);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(authentication_service()->IsAuthenticated());
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 // Tests that MDM errors are correctly cleared on foregrounding, sending
@@ -470,7 +481,8 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut) {
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(2));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_TRUE(authentication_service()->IsAuthenticatedIdentityManaged());
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin));
 
   NSDictionary* user_info = [NSDictionary dictionary];
   SetCachedMDMInfo(identity(2), user_info);
@@ -490,7 +502,8 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOutAndClearBrowsingData) {
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(2));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_TRUE(authentication_service()->IsAuthenticatedIdentityManaged());
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin));
 
   NSDictionary* user_info = [NSDictionary dictionary];
   SetCachedMDMInfo(identity(2), user_info);
@@ -563,14 +576,16 @@ TEST_F(AuthenticationServiceTest, HandleMDMBlockedNotification) {
               HandleMDMNotification(identity(1), user_info1, _))
       .WillOnce(Invoke(handle_mdm_notification_callback));
   FireAccessTokenRefreshFailed(identity(1), user_info1);
-  EXPECT_TRUE(authentication_service()->IsAuthenticated());
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   // User signed out as |identity_| is the primary account.
   EXPECT_CALL(*identity_service(),
               HandleMDMNotification(identity(0), user_info1, _))
       .WillOnce(Invoke(handle_mdm_notification_callback));
   FireAccessTokenRefreshFailed(identity(0), user_info1);
-  EXPECT_FALSE(authentication_service()->IsAuthenticated());
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 // Tests that MDM dialog isn't shown when there is no cached MDM error.
@@ -621,13 +636,14 @@ TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
 
-  EXPECT_NSEQ(identity(0),
-              authentication_service()->GetAuthenticatedIdentity());
+  EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
+                               signin::ConsentLevel::kSignin));
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_TRUE(authentication_service()->IsAuthenticated());
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   // Grant Sync consent.
   EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(1);
@@ -635,13 +651,14 @@ TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
               SetSyncRequested(true));
   authentication_service()->GrantSyncConsent(identity(0));
 
-  EXPECT_NSEQ(identity(0),
-              authentication_service()->GetAuthenticatedIdentity());
+  EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
+                               signin::ConsentLevel::kSignin));
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_TRUE(authentication_service()->IsAuthenticated());
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 TEST_F(AuthenticationServiceTest, SigninDisallowedCrash) {

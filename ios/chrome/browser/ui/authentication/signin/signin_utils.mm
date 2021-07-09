@@ -89,7 +89,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
   // Do not show the SSO promo if the user is already logged in.
-  if (auth_service->IsAuthenticated())
+  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin))
     return false;
 
   // Used for testing purposes only.

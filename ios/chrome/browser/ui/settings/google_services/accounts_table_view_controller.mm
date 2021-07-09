@@ -193,7 +193,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_browser)
     return;
 
-  if (![self authService] -> IsAuthenticated()) {
+  if (![self authService]->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     // This accounts table view will be popped or dismissed when the user
     // is signed out. Avoid reloading it in that case as that would lead to an
     // empty table view.
@@ -208,7 +208,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Update the title with the name with the currently signed-in account.
   ChromeIdentity* authenticatedIdentity =
-      [self authService] -> GetAuthenticatedIdentity();
+      [self authService]->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   NSString* title = nil;
   if (authenticatedIdentity) {
     title = [authenticatedIdentity userFullName];
@@ -220,7 +220,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [super loadModel];
 
-  if (![self authService] -> IsAuthenticated())
+  if (![self authService]->HasPrimaryIdentity(signin::ConsentLevel::kSignin))
     return;
 
   TableViewModel* model = self.tableViewModel;
@@ -272,7 +272,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierSignOut];
   } else {
     // Adds a signout option if the account is not managed.
-    if (![self authService]->IsAuthenticatedIdentityManaged()) {
+    if (![self authService]->HasPrimaryIdentityManaged(
+            signin::ConsentLevel::kSignin)) {
       [model addItem:[self signOutItem]
           toSectionWithIdentifier:SectionIdentifierSignOut];
     }
@@ -291,7 +292,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [model setFooter:[self signOutSyncingFooterItem]
           forSectionWithIdentifier:SectionIdentifierSignOut];
     }
-  } else if ([self authService]->IsAuthenticatedIdentityManaged()) {
+  } else if ([self authService]->HasPrimaryIdentityManaged(
+                 signin::ConsentLevel::kSignin)) {
     [model setFooter:[self signOutManagedAccountFooterItem]
         forSectionWithIdentifier:SectionIdentifierSignOut];
   } else {
@@ -452,8 +454,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                       "-stopBrowserStateServiceObservers";
 
   [self reloadData];
-  if (![self authService] -> IsAuthenticated() &&
-                                 _dimissAccountDetailsViewControllerBlock) {
+  if (![self authService]->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+      _dimissAccountDetailsViewControllerBlock) {
     _dimissAccountDetailsViewControllerBlock(/*animated=*/YES);
     _dimissAccountDetailsViewControllerBlock = nil;
   }
@@ -667,7 +669,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _alertCoordinator = nil;
 
   AuthenticationService* authService = [self authService];
-  if (authService->IsAuthenticated()) {
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     _authenticationOperationInProgress = YES;
     [self preventUserInteraction];
     __weak AccountsTableViewController* weakSelf = self;
@@ -685,7 +687,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Logs the UMA metrics to record the data retention option selected by the user
 // on signout. If the account is managed the data will always be cleared.
 - (void)logSignoutMetricsWithForceClearData:(BOOL)forceClearData {
-  if (![self authService]->IsAuthenticatedIdentityManaged()) {
+  if (![self authService]->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin)) {
     UMA_HISTOGRAM_BOOLEAN("Signin.UserRequestedWipeDataOnSignout",
                           forceClearData);
   }
@@ -718,7 +721,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_browser)
     return;
 
-  if ([self authService] -> IsAuthenticated()) {
+  if ([self authService]->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return;
   }
   if (_authenticationOperationInProgress) {

@@ -238,9 +238,12 @@ void CredentialProviderService::RemoveCredentials(
 }
 
 void CredentialProviderService::UpdateAccountValidationId() {
-  if (authentication_service_->IsAuthenticatedIdentityManaged()) {
+  if (authentication_service_->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin)) {
     account_validation_id_ =
-        authentication_service_->GetAuthenticatedIdentity().gaiaID;
+        authentication_service_
+            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+            .gaiaID;
   } else {
     account_validation_id_ = nil;
   }

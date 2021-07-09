@@ -66,7 +66,8 @@ using l10n_util::GetNSString;
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  DCHECK(authenticationService->IsAuthenticated());
+  DCHECK(
+      authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   self.identityManager = IdentityManagerFactory::GetForBrowserState(
       self.browser->GetBrowserState());
   self.advancedSettingsSigninNavigationController =
@@ -225,9 +226,10 @@ using l10n_util::GetNSString;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  ChromeIdentity* identity = (signinResult == SigninCoordinatorResultSuccess)
-                                 ? authService->GetAuthenticatedIdentity()
-                                 : nil;
+  ChromeIdentity* identity =
+      (signinResult == SigninCoordinatorResultSuccess)
+          ? authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+          : nil;
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
   [self runCompletionCallbackWithSigninResult:signinResult

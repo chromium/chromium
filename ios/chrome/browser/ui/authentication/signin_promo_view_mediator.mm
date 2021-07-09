@@ -501,9 +501,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
     return;
 
   // If the sign-in view is removed when the user is authenticated, then the
-  // sign-in has been done by another view, and this mediator cannot be counted
-  // as being dismissed.
-  if (self.authService->IsAuthenticated())
+  // sign-in for sync has been done by another view, and this mediator cannot be
+  // counted as being dismissed.
+  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSync))
     return;
   int displayedCount =
       self.prefService->GetInteger(displayedCountPreferenceKey);

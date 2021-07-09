@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/user_approved_account_list_manager.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -83,16 +84,37 @@ class AuthenticationService : public KeyedService,
   // Returns true if the user is signed in.
   // While the AuthenticationService is in background, this will reload the
   // credentials to ensure the value is up to date.
+  bool HasPrimaryIdentity(signin::ConsentLevel consent_level) const;
+
+  // Returns true if the user is signed in.
+  // While the AuthenticationService is in background, this will reload the
+  // credentials to ensure the value is up to date.
+  // DEPRECATED, use HasPrimaryIdentity().
   virtual bool IsAuthenticated() const;
 
   // Returns true if the user is signed in and the identity is considered
   // managed.
+  // Virtual for testing.
+  virtual bool HasPrimaryIdentityManaged(
+      signin::ConsentLevel consent_level) const;
+
+  // Returns true if the user is signed in and the identity is considered
+  // managed.
+  // DEPRECATED, use HasPrimaryIdentityManaged().
   virtual bool IsAuthenticatedIdentityManaged() const;
 
   // Retrieves the identity of the currently authenticated user or |nil| if
   // either the user is not authenticated, or is authenticated through
   // ClientLogin.
   // Virtual for testing.
+  virtual ChromeIdentity* GetPrimaryIdentity(
+      signin::ConsentLevel consent_level) const;
+
+  // Retrieves the identity of the currently authenticated user or |nil| if
+  // either the user is not authenticated, or is authenticated through
+  // ClientLogin.
+  // Virtual for testing.
+  // DEPRECATED, use HasPrimaryIdentityManaged().
   virtual ChromeIdentity* GetAuthenticatedIdentity() const;
 
   // Grants signin::ConsentLevel::kSignin to |identity|.

@@ -79,7 +79,7 @@
 }
 
 - (void)verifyAuthenticated {
-  EG_TEST_HELPER_ASSERT_TRUE([SigninEarlGreyAppInterface isAuthenticated],
+  EG_TEST_HELPER_ASSERT_TRUE([SigninEarlGreyAppInterface hasPrimaryIdentity],
                              @"User is not signed in");
 }
 

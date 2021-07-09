@@ -35,11 +35,11 @@ class AuthenticationServiceFake : public AuthenticationService {
                bool force_clear_browsing_data,
                ProceduralBlock completion) override;
 
-  bool IsAuthenticated() const override;
+  ChromeIdentity* GetPrimaryIdentity(
+      signin::ConsentLevel consent_level) const override;
 
-  ChromeIdentity* GetAuthenticatedIdentity() const override;
-
-  bool IsAuthenticatedIdentityManaged() const override;
+  bool HasPrimaryIdentityManaged(
+      signin::ConsentLevel consent_level) const override;
 
  private:
   AuthenticationServiceFake(
@@ -53,6 +53,7 @@ class AuthenticationServiceFake : public AuthenticationService {
   void SignOutInternal(ProceduralBlock completion);
 
   __strong ChromeIdentity* authenticated_identity_;
+  signin::ConsentLevel consent_level_ = signin::ConsentLevel::kSignin;
 
   // WeakPtrFactory should be last.
   base::WeakPtrFactory<AuthenticationServiceFake> weak_factory_{this};

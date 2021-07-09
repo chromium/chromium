@@ -163,7 +163,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotSignedIn) {
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
 
-  ASSERT_FALSE(authentication_service->IsAuthenticated());
+  ASSERT_FALSE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   // Strict mock, will fail if a method is called.
   id mockHandler =
@@ -184,7 +185,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
 
   SignIn();
 
-  ASSERT_TRUE(authentication_service->IsAuthenticated());
+  ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   id mockHandler = OCMProtocolMock(@protocol(PolicySignoutPromptCommands));
   agent_->Initialize(mockHandler);
@@ -197,7 +199,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
 
   // Verify the forceSignOut command was dispatched by the browser agent.
   EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_FALSE(authentication_service->IsAuthenticated());
+  EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 // Tests that the pref change doesn't trigger a command if the scene isn't
@@ -211,7 +214,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
 
   SignIn();
 
-  ASSERT_TRUE(authentication_service->IsAuthenticated());
+  ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   // Strict mock, will fail if a method is called.
   id mockHandler =
@@ -223,7 +227,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
                                                 false);
 
   EXPECT_TRUE(scene_state_.appState.shouldShowPolicySignoutPrompt);
-  EXPECT_FALSE(authentication_service->IsAuthenticated());
+  EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 // Tests that the handler is called and the user signed out if the policy is
@@ -259,14 +264,16 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
   SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
   // The SignOut will occur when the handler is set.
-  ASSERT_TRUE(authentication_service->IsAuthenticated());
+  ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   id mockHandler = OCMProtocolMock(@protocol(PolicySignoutPromptCommands));
   OCMExpect([mockHandler showPolicySignoutPrompt]);
   agent->Initialize(mockHandler);
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_FALSE(authentication_service->IsAuthenticated());
+  EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 // Tests that the command to show the UI isn't sent if the authentication
@@ -286,14 +293,16 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
                                        name:@"myName"];
   authentication_service->SignIn(identity);
 
-  ASSERT_TRUE(authentication_service->IsAuthenticated());
+  ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   // Strict protocol: method calls will fail until the method is stubbed.
   id mockHandler =
       OCMStrictProtocolMock(@protocol(PolicySignoutPromptCommands));
   agent_->Initialize(mockHandler);
 
-  ASSERT_TRUE(authentication_service->IsAuthenticated());
+  ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
   // As the SignOut callback hasn't been called yet, this shouldn't trigger a UI
   // update.
   agent_->SignInUIDismissed();
@@ -301,7 +310,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
   OCMExpect([mockHandler showPolicySignoutPrompt]);
 
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(authentication_service->IsAuthenticated());
+  ASSERT_FALSE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   // Once the SignOut callback is executed, the command should be sent.
   EXPECT_OCMOCK_VERIFY(mockHandler);

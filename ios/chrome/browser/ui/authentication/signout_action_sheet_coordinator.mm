@@ -70,7 +70,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 
 - (void)start {
   DCHECK(self.completion);
-  DCHECK(self.authenticationService->IsAuthenticated());
+  DCHECK(self.authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.baseViewController
@@ -171,7 +172,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           self.browser->GetBrowserState());
   BOOL syncEnabled = syncSetupService->IsFirstSetupComplete();
   SignedInUserState signedInUserState;
-  if (self.authenticationService->IsAuthenticatedIdentityManaged()) {
+  if (self.authenticationService->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin)) {
     signedInUserState = syncEnabled
                             ? SignedInUserStateWithManagedAccountAndSyncing
                             : SignedInUserStateWithManagedAccountAndNotSyncing;
@@ -218,7 +220,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   if (!self.browser)
     return;
 
-  if (!self.authenticationService->IsAuthenticated()) {
+  if (!self.authenticationService->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
     self.completion(YES);
     return;
   }
@@ -237,7 +240,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       });
   // Get UMA metrics on the usage of different options for signout available
   // for users with non-managed accounts.
-  if (!self.authenticationService->IsAuthenticatedIdentityManaged()) {
+  if (!self.authenticationService->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin)) {
     UMA_HISTOGRAM_BOOLEAN("Signin.UserRequestedWipeDataOnSignout",
                           forceClearData);
   }

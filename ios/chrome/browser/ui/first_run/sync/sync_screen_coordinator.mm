@@ -73,7 +73,8 @@
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
 
-  if (!authenticationService->GetAuthenticatedIdentity()) {
+  if (!authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
     // Don't show sync screen if no logged-in user account.
     return [self.delegate willFinishPresenting];
   }

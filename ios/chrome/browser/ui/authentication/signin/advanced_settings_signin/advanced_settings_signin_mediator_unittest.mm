@@ -134,7 +134,8 @@ TEST_F(AdvancedSettingsSigninMediatorTest,
   authentication_service_fake_->SignIn(identity_);
   [mediator_ saveUserPreferenceForSigninResult:SigninCoordinatorResultSuccess];
 
-  ASSERT_TRUE(authentication_service_fake_->IsAuthenticated());
+  ASSERT_TRUE(authentication_service_fake_->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 // Tests that a user is authenticated but not synced when sync is disabled and
@@ -151,7 +152,8 @@ TEST_F(AdvancedSettingsSigninMediatorTest,
   authentication_service_fake_->SignIn(identity_);
   [mediator_ saveUserPreferenceForSigninResult:SigninCoordinatorResultSuccess];
 
-  ASSERT_TRUE(authentication_service_fake_->IsAuthenticated());
+  ASSERT_TRUE(authentication_service_fake_->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 // Tests that a user is not authenticated when sign-in is canceled.
@@ -160,7 +162,8 @@ TEST_F(AdvancedSettingsSigninMediatorTest, saveUserPreferenceSigninCanceled) {
   [mediator_
       saveUserPreferenceForSigninResult:SigninCoordinatorResultCanceledByUser];
 
-  ASSERT_FALSE(authentication_service_fake_->IsAuthenticated());
+  ASSERT_FALSE(authentication_service_fake_->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 // Tests that a user's authentication does not change when sign-in is
@@ -171,5 +174,6 @@ TEST_F(AdvancedSettingsSigninMediatorTest,
   [mediator_
       saveUserPreferenceForSigninResult:SigninCoordinatorResultInterrupted];
 
-  ASSERT_TRUE(authentication_service_fake_->IsAuthenticated());
+  ASSERT_TRUE(authentication_service_fake_->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }

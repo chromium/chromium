@@ -107,9 +107,10 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest, TestModel) {
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(2, NumberOfItemsInSection(0));
   // Passphrase message item.
-  NSString* userEmail = [AuthenticationServiceFactory::GetForBrowserState(
-                             chrome_browser_state_.get())
-                             ->GetAuthenticatedIdentity() userEmail];
+  NSString* userEmail = AuthenticationServiceFactory::GetForBrowserState(
+                            chrome_browser_state_.get())
+                            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                            .userEmail;
   EXPECT_NSEQ(
       l10n_util::GetNSStringF(IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL,
                               base::SysNSStringToUTF16(userEmail)),

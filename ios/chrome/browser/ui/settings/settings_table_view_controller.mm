@@ -339,7 +339,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
     AuthenticationService* authService =
         AuthenticationServiceFactory::GetForBrowserState(_browserState);
-    _identity = authService->GetAuthenticatedIdentity();
+    _identity = authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     _identityServiceObserver.reset(
         new ChromeIdentityServiceObserverBridge(self));
 
@@ -550,7 +550,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
     // Ensure that the user sign-in state always reflects the sign-in allowed
     // preference.
-    DCHECK(!authService->IsAuthenticated());
+    DCHECK(!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
     item = signin::IsSigninAllowedByPolicy(_browserState->GetPrefs())
                ? [self signinDisabledTextItem]
                : [self signinDisabledByPolicyTextItem];
@@ -579,7 +579,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     [_signinPromoViewMediator signinPromoViewIsVisible];
 
     item = signinPromoItem;
-  } else if (!authService->IsAuthenticated()) {
+  } else if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     AccountSignInItem* signInTextItem =
         [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
     signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
@@ -617,7 +617,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if (authService->IsAuthenticated()) {
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     // Account profile item.
     [model addItem:[self accountCellItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAccount];
@@ -627,7 +627,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // Add Sync & Google Services cell.
   if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
     // Sync item.
-    if (authService->IsAuthenticated()) {
+    if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       [model addItem:[self googleSyncDetailItem]
           toSectionWithIdentifier:SettingsSectionIdentifierAccount];
     }
@@ -655,7 +655,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                  signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
                                              prefService:_browserState
                                                              ->GetPrefs()] &&
-         !authService->IsAuthenticated();
+         !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
 // Returns YES if the Sync service is available and all promos have not been
@@ -1515,7 +1515,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (void)updateIdentityAccountItem:(TableViewAccountItem*)identityAccountItem {
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  _identity = authService->GetAuthenticatedIdentity();
+  _identity = authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (!_identity) {
     // This could occur during the sign out process. Just ignore as the account
     // cell will be replaced by the "Sign in" button.
@@ -1567,7 +1567,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       SyncSetupServiceFactory::GetForBrowserState(_browserState);
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if (!authService->IsAuthenticated()) {
+  if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     // No sync status when the user is not signed-in.
     googleServicesItem.detailText = nil;
     googleServicesItem.image =
@@ -1665,7 +1665,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if (authService->IsAuthenticated()) {
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     if (_googleSyncDetailItem) {
       [self updateGoogleSyncDetailItem:_googleSyncDetailItem];
       [self reconfigureCellsForItems:@[ _googleSyncDetailItem ]];

@@ -250,27 +250,21 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
   ChromeBrowserState* browserState = browser->GetBrowserState();
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(browserState);
-  BOOL isCurrentUserSyncing =
-      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  std::string lastSyncingEmail;
-  if (isCurrentUserSyncing) {
-    // User is opted in to sync, the current data comes belongs to the syncing
-    // account.
-    lastSyncingEmail =
-        identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .email;
-    DCHECK(!lastSyncingEmail.empty());
-  } else {
+  NSString* lastSyncingEmail =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync)
+          .userEmail;
+  if (!lastSyncingEmail) {
     // User is not opted in to sync, the current data comes may belong to the
     // previously syncing account (if any).
     lastSyncingEmail =
-        browserState->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
+        base::SysUTF8ToNSString(browserState->GetPrefs()->GetString(
+            prefs::kGoogleServicesLastUsername));
   }
 
-  if (isCurrentUserSyncing &&
-      authenticationService->IsAuthenticatedIdentityManaged()) {
+  if (authenticationService->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSync)) {
     // If the current user is a managed account and sync is enabled, the sign-in
     // needs to wipe the current data. We need to ask confirm from the user.
     AccountInfo primaryAccountInfo = identityManager->FindExtendedAccountInfo(
@@ -278,18 +272,20 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
     DCHECK(!primaryAccountInfo.IsEmpty());
     NSString* hostedDomain =
         base::SysUTF8ToNSString(primaryAccountInfo.hosted_domain);
-    [self promptSwitchFromManagedEmail:base::SysUTF8ToNSString(lastSyncingEmail)
+    [self promptSwitchFromManagedEmail:lastSyncingEmail
                       withHostedDomain:hostedDomain
                                toEmail:[identity userEmail]
                         viewController:viewController
                                browser:browser];
     return;
   }
+  BOOL isCurrentUserSyncing =
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   _navigationController = [SettingsNavigationController
       importDataControllerForBrowser:browser
                             delegate:self
                   importDataDelegate:self
-                           fromEmail:base::SysUTF8ToNSString(lastSyncingEmail)
+                           fromEmail:lastSyncingEmail
                              toEmail:[identity userEmail]
                            isSyncing:isCurrentUserSyncing];
   [_delegate presentViewController:_navigationController
@@ -303,7 +299,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
   ChromeBrowserState* browserState = browser->GetBrowserState();
 
   DCHECK(!AuthenticationServiceFactory::GetForBrowserState(browserState)
-              ->IsAuthenticated());
+              ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
 
   // Workaround for crbug.com/1003578
   //

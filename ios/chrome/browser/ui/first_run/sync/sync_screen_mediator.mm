@@ -50,8 +50,8 @@
 - (void)startSyncWithConfirmationID:(const int)confirmationID
                            consentIDs:(NSArray<NSNumber*>*)consentIDs
     advancedSyncSettingsLinkWasTapped:(BOOL)advancedSyncSettingsLinkWasTapped {
-  ChromeIdentity* identity =
-      self.authenticationService->GetAuthenticatedIdentity();
+  ChromeIdentity* identity = self.authenticationService->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
   DCHECK(identity);
 
   sync_pb::UserConsentTypes::SyncConsent syncConsent;

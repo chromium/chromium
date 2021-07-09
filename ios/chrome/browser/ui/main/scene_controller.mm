@@ -1063,7 +1063,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
             self.sceneState.appState.mainBrowserState);
     DCHECK(authenticationService);
     DCHECK(authenticationService->initialized());
-    BOOL isSignedIn = authenticationService->IsAuthenticated();
+    BOOL isSignedIn = authenticationService->HasPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
 
     // Tailored promos take priority over general promo.
     BOOL isMadeForIOSPromoEligible =

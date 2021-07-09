@@ -118,7 +118,8 @@ void AuthenticationService::Initialize(
 
   HandleForgottenIdentity(nil, true /* should_prompt */);
 
-  crash_keys::SetCurrentlySignedIn(IsAuthenticated());
+  crash_keys::SetCurrentlySignedIn(
+      HasPrimaryIdentity(signin::ConsentLevel::kSignin));
 
   identity_service_observation_.Observe(
       ios::GetChromeBrowserProvider().GetChromeIdentityService());
@@ -140,7 +141,7 @@ void AuthenticationService::Shutdown() {
 }
 
 void AuthenticationService::OnApplicationWillEnterForeground() {
-  if (IsAuthenticated()) {
+  if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     bool can_sync_start = sync_setup_service_->CanSyncFeatureStart();
     LoginMethodAndSyncState loginMethodAndSyncState =
         can_sync_start ? SHARED_AUTHENTICATION_SYNC_ON
@@ -182,7 +183,7 @@ bool AuthenticationService::ShouldReauthPromptForSignInAndSync() const {
 }
 
 bool AuthenticationService::IsAccountListApprovedByUser() const {
-  DCHECK(IsAuthenticated());
+  DCHECK(HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   std::vector<CoreAccountInfo> accounts_info =
       identity_manager_->GetAccountsWithRefreshTokens();
   return user_approved_account_list_manager_.IsAccountListApprouvedByUser(
@@ -190,7 +191,7 @@ bool AuthenticationService::IsAccountListApprovedByUser() const {
 }
 
 void AuthenticationService::ApproveAccountList() {
-  DCHECK(IsAuthenticated());
+  DCHECK(HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   if (IsAccountListApprovedByUser())
     return;
   std::vector<CoreAccountInfo> current_accounts_info =
@@ -230,20 +231,37 @@ void AuthenticationService::MigrateAccountsStoredInPrefsIfNeeded() {
   pref_service_->SetBoolean(prefs::kSigninLastAccountsMigrated, true);
 }
 
-ChromeIdentity* AuthenticationService::GetAuthenticatedIdentity() const {
+bool AuthenticationService::HasPrimaryIdentity(
+    signin::ConsentLevel consent_level) const {
+  return GetPrimaryIdentity(consent_level) != nil;
+}
+
+bool AuthenticationService::HasPrimaryIdentityManaged(
+    signin::ConsentLevel consent_level) const {
+  return identity_manager_
+      ->FindExtendedAccountInfo(
+          identity_manager_->GetPrimaryAccountInfo(consent_level))
+      .IsManaged();
+}
+
+ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
+    signin::ConsentLevel consent_level) const {
   // There is no authenticated identity if there is no signed in user or if the
   // user signed in via the client login flow.
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (!identity_manager_->HasPrimaryAccount(consent_level)) {
     return nil;
   }
 
   std::string authenticated_gaia_id =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+      identity_manager_->GetPrimaryAccountInfo(consent_level).gaia;
   if (authenticated_gaia_id.empty())
     return nil;
 
   return account_manager_service_->GetIdentityWithGaiaID(authenticated_gaia_id);
+}
+
+ChromeIdentity* AuthenticationService::GetAuthenticatedIdentity() const {
+  return GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
 void AuthenticationService::SignIn(ChromeIdentity* identity) {
@@ -327,7 +345,8 @@ void AuthenticationService::SignOut(
     return;
   }
 
-  const bool is_managed = IsAuthenticatedIdentityManaged();
+  const bool is_managed =
+      HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
   // Get first setup complete value before to stop the sync service.
   const bool is_first_setup_complete =
       sync_setup_service_->IsFirstSetupComplete();
@@ -425,9 +444,9 @@ void AuthenticationService::OnPrimaryAccountChanged(
 void AuthenticationService::OnIdentityListChanged(bool keychain_reload) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // IdentityManager::HasPrimaryAccount() needs to be called instead of
-    // AuthenticationService::IsAuthenticated() or
-    // AuthenticationService::GetAuthenticatedIdentity().
-    // If the primary identity has just been removed, GetAuthenticatedIdentity()
+    // AuthenticationService::HasPrimaryIdentity() or
+    // AuthenticationService::GetPrimaryIdentity().
+    // If the primary identity has just been removed, GetPrimaryIdentity()
     // would return NO (since this method tests if the primary identity exists
     // in ChromeIdentityService).
     // In this case, we do need to call ReloadCredentialsFromIdentities().
@@ -461,7 +480,8 @@ bool AuthenticationService::HandleMDMNotification(ChromeIdentity* identity,
     if (is_blocked && weak_ptr.get()) {
       // If the identity is blocked, sign out of the account. As only managed
       // account can be blocked, this will clear the associated browsing data.
-      if (identity == weak_ptr->GetAuthenticatedIdentity()) {
+      if (identity ==
+          weak_ptr->GetPrimaryIdentity(signin::ConsentLevel::kSignin)) {
         weak_ptr->SignOut(signin_metrics::ABORT_SIGNIN,
                           /*force_clear_browsing_data=*/false, nil);
       }
@@ -513,7 +533,8 @@ void AuthenticationService::HandleForgottenIdentity(
     return;
   }
 
-  ChromeIdentity* authenticated_identity = GetAuthenticatedIdentity();
+  ChromeIdentity* authenticated_identity =
+      GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (authenticated_identity && authenticated_identity != invalid_identity) {
     // |authenticated_identity| exists and is a valid identity. Nothing to do
     // here.
@@ -539,7 +560,7 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
   base::AutoReset<bool> auto_reset(&is_reloading_credentials_, true);
 
   HandleForgottenIdentity(nil, keychain_reload);
-  if (!IsAuthenticated())
+  if (!HasPrimaryIdentity(signin::ConsentLevel::kSignin))
     return;
 
   DCHECK(
@@ -556,12 +577,9 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
 }
 
 bool AuthenticationService::IsAuthenticated() const {
-  return GetAuthenticatedIdentity() != nil;
+  return HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
 bool AuthenticationService::IsAuthenticatedIdentityManaged() const {
-  return identity_manager_
-      ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin))
-      .IsManaged();
+  return HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
 }

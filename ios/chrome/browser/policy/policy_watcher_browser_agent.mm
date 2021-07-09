@@ -73,7 +73,7 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
         AuthenticationServiceFactory::GetForBrowserState(
             browser_->GetBrowserState());
 
-    if (service->IsAuthenticated()) {
+    if (service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       sign_out_in_progress_ = true;
       base::UmaHistogramBoolean("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
                                 true);

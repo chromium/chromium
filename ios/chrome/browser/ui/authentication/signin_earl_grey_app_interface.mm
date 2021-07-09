@@ -90,12 +90,13 @@
                     grey_sufficientlyVisible(), nil);
 }
 
-+ (BOOL)isAuthenticated {
++ (BOOL)hasPrimaryIdentity {
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  return authentication_service->IsAuthenticated();
+  return authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
 }
 
 + (void)signOut {

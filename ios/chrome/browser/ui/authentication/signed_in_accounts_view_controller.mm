@@ -209,7 +209,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   return !gSignedInAccountsViewControllerIsShown &&
-         authService->IsAuthenticated() &&
+         authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
          !authService->IsAccountListApprovedByUser();
 }
 

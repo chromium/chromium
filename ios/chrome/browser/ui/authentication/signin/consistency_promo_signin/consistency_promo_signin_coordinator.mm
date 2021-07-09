@@ -367,7 +367,8 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
   DCHECK([self.selectedIdentity isEqual:identity]);
   [self.defaultAccountCoordinator startSigninSpinner];
   self.authenticationService->SignIn(self.selectedIdentity);
-  DCHECK(self.authenticationService->IsAuthenticated());
+  DCHECK(self.authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }
 
 #pragma mark - ConsistencyAccountChooserCoordinatorDelegate
@@ -438,7 +439,8 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
       // an account change event must come from the consistency sheet.
       // TODO(crbug.com/1081764): Update if sign-in UI becomes non-blocking.
       ChromeIdentity* signedInIdentity =
-          self.authenticationService->GetAuthenticatedIdentity();
+          self.authenticationService->GetPrimaryIdentity(
+              signin::ConsentLevel::kSignin);
       DCHECK([signedInIdentity isEqual:self.selectedIdentity]);
       break;
     }
@@ -464,7 +466,8 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
   }
   __weak __typeof(self) weakSelf = self;
   if (error.state() == GoogleServiceAuthError::State::NONE &&
-      self.authenticationService->GetAuthenticatedIdentity() &&
+      self.authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin) &&
       accountsInCookieJarInfo.signed_in_accounts.size() > 0) {
     [self.defaultAccountCoordinator stopSigninSpinner];
     [self.navigationController

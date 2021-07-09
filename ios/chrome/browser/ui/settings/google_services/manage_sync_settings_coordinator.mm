@@ -128,7 +128,8 @@ using signin_metrics::PromoAction;
   // Sync changes should only be commited if the user is authenticated and
   // the sign-in has not been interrupted.
   if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
-      (self.authService->IsAuthenticated() || !self.signinInterrupted)) {
+      (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) ||
+       !self.signinInterrupted)) {
     SyncSetupService* syncSetupService =
         SyncSetupServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
@@ -188,7 +189,7 @@ using signin_metrics::PromoAction;
   ChromeIdentity* primaryAccount =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState())
-          ->GetAuthenticatedIdentity();
+          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   // TODO(crbug.com/1101346): SigninCoordinatorResult should be received instead
   // of guessing if the sign-in has been interrupted.
   self.signinInterrupted = !success && primaryAccount;
@@ -226,8 +227,8 @@ using signin_metrics::PromoAction;
       ios::GetChromeBrowserProvider()
           .GetChromeIdentityService()
           ->PresentWebAndAppSettingDetailsController(
-              authService->GetAuthenticatedIdentity(), self.viewController,
-              YES);
+              authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin),
+              self.viewController, YES);
 }
 
 - (void)openDataFromChromeSyncWebPage {
@@ -306,7 +307,7 @@ using signin_metrics::PromoAction;
   ChromeIdentity* authenticatedIdentity =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState())
-          ->GetAuthenticatedIdentity();
+          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   [self.viewController preventUserInteraction];
   DCHECK(!self.authenticationFlow);
   self.authenticationFlow =
@@ -324,7 +325,8 @@ using signin_metrics::PromoAction;
 }
 
 - (void)openReauthDialogAsSyncIsInAuthError {
-  ChromeIdentity* identity = self.authService->GetAuthenticatedIdentity();
+  ChromeIdentity* identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (self.authService->HasCachedMDMErrorForIdentity(identity)) {
     self.authService->ShowMDMErrorDialogForIdentity(identity);
     return;
