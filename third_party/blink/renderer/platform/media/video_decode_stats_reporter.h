@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace media {
+namespace blink {
 
 // Reports on playback smoothness and for a given video codec profile, natural
 // size, and fps. When these properties change the current report will be
@@ -240,6 +240,6 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
   bool is_ipc_connected_ = true;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_VIDEO_DECODE_STATS_REPORTER_H_

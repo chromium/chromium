@@ -8,7 +8,7 @@
 #include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_string.h"
 
-namespace media {
+namespace blink {
 
 RemotePlaybackClientWrapperImpl::RemotePlaybackClientWrapperImpl(
     blink::WebMediaPlayerClient* client)
@@ -27,4 +27,4 @@ std::string RemotePlaybackClientWrapperImpl::GetActivePresentationId() {
   return remote_playback_client_->GetPresentationId().Ascii();
 }
 
-}  // namespace media
+}  // namespace blink

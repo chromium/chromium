@@ -27,7 +27,7 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace media {
+namespace blink {
 
 const int64_t kPositionNotSpecified = -1;
 
@@ -308,5 +308,6 @@ class BLINK_PLATFORM_EXPORT UrlIndex {
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
-}  // namespace media
+}  // namespace blink
+
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_URL_INDEX_H_

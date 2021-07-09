@@ -32,18 +32,12 @@
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
 
+namespace blink {
+
 using ::testing::_;
-using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::NiceMock;
-using ::testing::Return;
 using ::testing::Truly;
-
-using blink::WebString;
-using blink::WebURLError;
-using blink::WebURLResponse;
-
-namespace media {
 
 const char kHttpUrl[] = "http://test";
 const char kHttpsUrl[] = "https://test";
@@ -388,4 +382,4 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestSaveDataFRFRPreviewsState) {
   }
 }
 
-}  // namespace media
+}  // namespace blink

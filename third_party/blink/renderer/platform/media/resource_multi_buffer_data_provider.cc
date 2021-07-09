@@ -29,13 +29,7 @@
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/renderer/platform/media/cache_util.h"
 
-using blink::WebAssociatedURLLoader;
-using blink::WebString;
-using blink::WebURLError;
-using blink::WebURLRequest;
-using blink::WebURLResponse;
-
-namespace media {
+namespace blink {
 
 // The number of milliseconds to wait before retrying a failed load.
 const int kLoaderFailedRetryDelayMs = 250;
@@ -579,4 +573,4 @@ bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
   return true;
 }
 
-}  // namespace media
+}  // namespace blink

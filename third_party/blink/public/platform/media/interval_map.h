@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "third_party/blink/public/platform/web_common.h"
 
-namespace media {
+namespace blink {
 
 // An IntervalMap<KeyType, ValueType> maps every value of KeyType to
 // a ValueType, and incrementing, decrementing and setting ranges of values
@@ -285,6 +285,6 @@ class BLINK_PLATFORM_EXPORT IntervalMap {
   MapType map_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_INTERVAL_MAP_H_

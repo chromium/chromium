@@ -19,18 +19,15 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
-namespace blink {
-
-struct WebMediaKeySystemConfiguration;
-class WebString;
-
-}  // namespace blink
-
 namespace media {
-
-struct CdmConfig;
 class KeySystems;
 class MediaPermission;
+struct CdmConfig;
+}  // namespace media
+
+namespace blink {
+class WebString;
+struct WebMediaKeySystemConfiguration;
 
 class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
  public:
@@ -78,10 +75,8 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
 
   // Callback for the result of `SelectConfig()`. The returned configs must be
   // non-null iff `status` is `kSupported`.
-  using SelectConfigCB =
-      base::OnceCallback<void(Status status,
-                              blink::WebMediaKeySystemConfiguration*,
-                              media::CdmConfig*)>;
+  using SelectConfigCB = base::OnceCallback<
+      void(Status status, WebMediaKeySystemConfiguration*, media::CdmConfig*)>;
 
   void SelectConfig(
       const blink::WebString& key_system,
@@ -156,6 +151,6 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
   base::WeakPtrFactory<KeySystemConfigSelector> weak_factory_{this};
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_KEY_SYSTEM_CONFIG_SELECTOR_H_

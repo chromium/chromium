@@ -18,6 +18,9 @@
 
 namespace media {
 struct PipelineMetadata;
+}
+
+namespace blink {
 
 // Class to monitor for power events during playback and record them to UMA/UKM.
 class BLINK_PLATFORM_EXPORT PowerStatusHelper {
@@ -143,6 +146,6 @@ class BLINK_PLATFORM_EXPORT PowerStatusHelper {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_

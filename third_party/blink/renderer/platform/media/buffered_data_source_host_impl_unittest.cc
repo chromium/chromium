@@ -8,7 +8,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
+namespace blink {
 
 class BufferedDataSourceHostImplTest : public testing::Test {
  public:
@@ -153,4 +153,4 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThroughSmallAdvances) {
                                    base::TimeDelta::FromSecondsD(1000.0), 1.0));
 }
 
-}  // namespace media
+}  // namespace blink

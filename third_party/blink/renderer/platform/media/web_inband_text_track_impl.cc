@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 
-namespace media {
+namespace blink {
 
 WebInbandTextTrackImpl::WebInbandTextTrackImpl(Kind kind,
                                                const blink::WebString& label,
@@ -47,4 +47,4 @@ blink::WebString WebInbandTextTrackImpl::Id() const {
   return id_;
 }
 
-}  // namespace media
+}  // namespace blink

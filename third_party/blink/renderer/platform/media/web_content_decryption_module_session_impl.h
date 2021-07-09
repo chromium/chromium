@@ -21,8 +21,7 @@
 #include "third_party/blink/renderer/platform/media/new_session_cdm_result_promise.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace media {
-
+namespace blink {
 class CdmSessionAdapter;
 
 class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
@@ -101,6 +100,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
       this};
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_CONTENT_DECRYPTION_MODULE_SESSION_IMPL_H_

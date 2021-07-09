@@ -17,12 +17,11 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 
-using base::Time;
-using base::TimeDelta;
-using net::HttpVersion;
-using blink::WebURLResponse;
+namespace blink {
 
-namespace media {
+using ::base::Time;
+using ::base::TimeDelta;
+using ::net::HttpVersion;
 
 enum { kHttpOK = 200, kHttpPartialContent = 206 };
 
@@ -127,4 +126,4 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
   return ret;
 }
 
-}  // namespace media
+}  // namespace blink

@@ -27,9 +27,6 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 class WebAssociatedURLLoader;
-}  // namespace blink
-
-namespace media {
 
 class PLATFORM_EXPORT ResourceMultiBufferDataProvider
     : public MultiBuffer::DataProvider,
@@ -70,7 +67,6 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
  protected:
   friend class MultiBufferDataSourceTest;
   friend class ResourceMultiBufferDataProviderTest;
-  friend class MockBufferedDataSource;
 
   // Callback used when we're asked to fetch data after the end of the file.
   void Terminate();
@@ -135,6 +131,6 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   base::WeakPtrFactory<ResourceMultiBufferDataProvider> weak_factory_{this};
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_RESOURCE_MULTI_BUFFER_DATA_PROVIDER_H_

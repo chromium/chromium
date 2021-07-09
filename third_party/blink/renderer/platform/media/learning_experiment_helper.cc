@@ -4,13 +4,12 @@
 
 #include "third_party/blink/public/platform/media/learning_experiment_helper.h"
 
-namespace media {
+namespace blink {
 
-using learning::FeatureDictionary;
-using learning::FeatureVector;
-using learning::LearningTask;
-using learning::LearningTaskController;
-using learning::TargetValue;
+using ::media::learning::FeatureDictionary;
+using ::media::learning::FeatureVector;
+using ::media::learning::LearningTaskController;
+using ::media::learning::TargetValue;
 
 LearningExperimentHelper::LearningExperimentHelper(
     std::unique_ptr<LearningTaskController> controller)
@@ -52,4 +51,4 @@ void LearningExperimentHelper::CancelObservationIfNeeded() {
   observation_id_ = base::UnguessableToken::Null();
 }
 
-}  // namespace media
+}  // namespace blink

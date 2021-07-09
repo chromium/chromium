@@ -27,7 +27,7 @@
 #include "third_party/blink/public/platform/media/lru.h"
 #include "third_party/blink/public/platform/web_common.h"
 
-namespace media {
+namespace blink {
 
 // Used to identify a block of data in the multibuffer.
 // Our blocks are 32kb (1 << 15), so our maximum cacheable file size
@@ -39,20 +39,20 @@ class MultiBuffer;
 // multibuffers.
 typedef std::pair<MultiBuffer*, MultiBufferBlockId> MultiBufferGlobalBlockId;
 
-}  // namespace media
+}  // namespace blink
 
 namespace std {
 
 template <>
-struct hash<media::MultiBufferGlobalBlockId> {
-  std::size_t operator()(const media::MultiBufferGlobalBlockId& key) const {
+struct hash<blink::MultiBufferGlobalBlockId> {
+  std::size_t operator()(const blink::MultiBufferGlobalBlockId& key) const {
     return base::HashInts(reinterpret_cast<uintptr_t>(key.first), key.second);
   }
 };
 
 }  // namespace std
 
-namespace media {
+namespace blink {
 
 // Freeing a lot of blocks can be expensive, to keep thing
 // flowing smoothly we only free a maximum of |kMaxFreesPerAdd|
@@ -123,7 +123,7 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
     // returns true. Last block might be of a smaller size
     // and after the last block we will get an end-of-stream
     // DataBuffer.
-    virtual scoped_refptr<DataBuffer> Read() = 0;
+    virtual scoped_refptr<media::DataBuffer> Read() = 0;
 
     // Ask the data provider to stop giving us data.
     // It's ok if the effect is not immediate.
@@ -210,7 +210,7 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
   // Block numbers can be calculated from byte positions as:
   // block_num = byte_pos >> block_size_shift
   typedef MultiBufferBlockId BlockId;
-  typedef std::unordered_map<BlockId, scoped_refptr<DataBuffer>> DataMap;
+  typedef std::unordered_map<BlockId, scoped_refptr<media::DataBuffer>> DataMap;
 
   // Registers a reader at the given position.
   // If the cache does not already contain |pos|, it will activate
@@ -261,9 +261,10 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
 
   // Returns a continous (but possibly empty) list of blocks starting at
   // |from| up to, but not including |to|. This function is thread safe.
-  void GetBlocksThreadsafe(const BlockId& from,
-                           const BlockId& to,
-                           std::vector<scoped_refptr<DataBuffer>>* output);
+  void GetBlocksThreadsafe(
+      const BlockId& from,
+      const BlockId& to,
+      std::vector<scoped_refptr<media::DataBuffer>>* output);
 
   // Increment max cache size by |size| (counted in blocks).
   void IncrementMaxSize(int32_t size);
@@ -382,6 +383,6 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
   IntervalMap<BlockId, int32_t> present_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_MULTI_BUFFER_H_

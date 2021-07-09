@@ -27,14 +27,16 @@
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
-namespace media {
-
-using EmeFeatureRequirement =
-    blink::WebMediaKeySystemConfiguration::Requirement;
-using EmeEncryptionScheme =
-    blink::WebMediaKeySystemMediaCapability::EncryptionScheme;
-
+namespace blink {
 namespace {
+
+using ::media::EmeConfigRule;
+using ::media::EmeFeatureSupport;
+using ::media::EmeMediaType;
+using ::media::EmeSessionTypeSupport;
+using ::media::EncryptionScheme;
+using EmeFeatureRequirement = WebMediaKeySystemConfiguration::Requirement;
+using EmeEncryptionScheme = WebMediaKeySystemMediaCapability::EncryptionScheme;
 
 EmeConfigRule GetSessionTypeConfigRule(EmeSessionTypeSupport support) {
   switch (support) {
@@ -1100,4 +1102,4 @@ void KeySystemConfigSelector::OnPermissionResult(
   SelectConfigInternal(std::move(request));
 }
 
-}  // namespace media
+}  // namespace blink

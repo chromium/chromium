@@ -15,7 +15,7 @@
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace media {
+namespace blink {
 
 enum class SessionInitStatus {
   // Unable to determine the status.
@@ -79,6 +79,6 @@ class PLATFORM_EXPORT NewSessionCdmResultPromise
   base::TimeTicks creation_time_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_NEW_SESSION_CDM_RESULT_PROMISE_H_

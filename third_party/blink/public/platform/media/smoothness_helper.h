@@ -13,10 +13,12 @@
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace media {
-
 namespace learning {
 class LearningTaskController;
 }
+}  // namespace media
+
+namespace blink {
 
 // Helper class to construct learning observations about the smoothness of a
 // video playback.  Currently measures the worst-case frame drop ratio observed
@@ -62,6 +64,6 @@ class BLINK_PLATFORM_EXPORT SmoothnessHelper {
   media::learning::FeatureVector features_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_SMOOTHNESS_HELPER_H_

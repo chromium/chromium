@@ -20,7 +20,7 @@
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_source_buffer_client.h"
 
-namespace media {
+namespace blink {
 
 static blink::WebSourceBufferClient::ParseWarning ParseWarningToBlink(
     const media::SourceBufferParseWarning warning) {
@@ -259,4 +259,4 @@ void WebSourceBufferImpl::NotifyParseWarning(
   client_->NotifyParseWarning(ParseWarningToBlink(warning));
 }
 
-}  // namespace media
+}  // namespace blink

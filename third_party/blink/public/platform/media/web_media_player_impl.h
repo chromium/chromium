@@ -51,14 +51,6 @@
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
 #include "url/gurl.h"
 
-namespace blink {
-class WebAudioSourceProviderImpl;
-class WebLocalFrame;
-class WebMediaPlayerClient;
-class WebMediaPlayerEncryptedMediaClient;
-class WatchTimeReporter;
-}  // namespace blink
-
 namespace base {
 class SingleThreadTaskRunner;
 class TaskRunner;
@@ -76,20 +68,28 @@ namespace learning {
 class LearningTaskController;
 }
 
+namespace media {
+class CdmContextRef;
+class ChunkDemuxer;
+class MediaLog;
+class MemoryDumpProviderProxy;
+class PipelineController;
+}  // namespace media
+
 namespace viz {
 class RasterContextProvider;
 }
 
-namespace media {
-class CdmContextRef;
-class ChunkDemuxer;
-class VideoDecodeStatsReporter;
-class MediaLog;
-class MemoryDumpProviderProxy;
-class PipelineController;
+namespace blink {
 class PowerStatusHelper;
 class UrlIndex;
+class VideoDecodeStatsReporter;
 class VideoFrameCompositor;
+class WatchTimeReporter;
+class WebAudioSourceProviderImpl;
+class WebLocalFrame;
+class WebMediaPlayerClient;
+class WebMediaPlayerEncryptedMediaClient;
 
 // The canonical implementation of blink::WebMediaPlayer that's backed by
 // Pipeline. Handles normal resource loading, Media Source, and
@@ -1046,6 +1046,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   base::WeakPtrFactory<WebMediaPlayerImpl> weak_factory_{this};
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_WEB_MEDIA_PLAYER_IMPL_H_

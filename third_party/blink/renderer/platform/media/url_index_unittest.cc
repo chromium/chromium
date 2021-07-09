@@ -17,7 +17,7 @@
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
+namespace blink {
 
 class UrlIndexTest : public testing::Test {
  public:
@@ -176,4 +176,4 @@ TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {
   EXPECT_NE(url_data, url_index_.GetByUrl(url, cors, UrlIndex::kCacheDisabled));
 }
 
-}  // namespace media
+}  // namespace blink

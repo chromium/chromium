@@ -10,8 +10,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise_helper.h"
 
-namespace media {
-
+namespace blink {
 namespace {
 
 const char kTimeUMAPrefix[] = "TimeTo.";
@@ -106,4 +105,4 @@ void NewSessionCdmResultPromise::reject(CdmPromise::Exception exception_code,
                                     blink::WebString::FromUTF8(error_message));
 }
 
-}  // namespace media
+}  // namespace blink

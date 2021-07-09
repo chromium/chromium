@@ -29,21 +29,20 @@ class SingleThreadTaskRunner;
 class TaskRunner;
 }
 
+namespace media {
+class Demuxer;
+class SwitchableAudioRendererSink;
+}  // namespace media
+
 namespace blink {
 class WebContentDecryptionModule;
 class WebSurfaceLayerBridge;
 class WebSurfaceLayerBridgeObserver;
-}  // namespace blink
-
-namespace media {
 
 using CreateSurfaceLayerBridgeCB =
     base::OnceCallback<std::unique_ptr<blink::WebSurfaceLayerBridge>(
         blink::WebSurfaceLayerBridgeObserver*,
         cc::UpdateSubmissionStateCB)>;
-
-class Demuxer;
-class SwitchableAudioRendererSink;
 
 // Holds parameters for constructing WebMediaPlayerImpl without having
 // to plumb arguments through various abstraction layers.
@@ -214,6 +213,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
   std::unique_ptr<PowerStatusHelper> power_status_helper_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_WEB_MEDIA_PLAYER_PARAMS_H_

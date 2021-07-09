@@ -27,10 +27,12 @@ class TimeTicks;
 }  // namespace base
 
 namespace media {
-
-struct CdmConfig;
 class CdmContextRef;
 class CdmFactory;
+struct CdmConfig;
+}  // namespace media
+
+namespace blink {
 class WebContentDecryptionModuleSessionImpl;
 
 // Owns the CDM instance and makes calls from session objects to the CDM.
@@ -170,6 +172,6 @@ class PLATFORM_EXPORT CdmSessionAdapter
   base::WeakPtrFactory<CdmSessionAdapter> weak_ptr_factory_{this};
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_CDM_SESSION_ADAPTER_H_

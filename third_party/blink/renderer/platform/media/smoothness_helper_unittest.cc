@@ -11,22 +11,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
+namespace blink {
 
-using learning::FeatureValue;
-using learning::FeatureVector;
-using learning::LearningTask;
-using learning::LearningTaskController;
-using learning::ObservationCompletion;
-using learning::TargetValue;
-
-using testing::_;
-using testing::AnyNumber;
-using testing::Eq;
-using testing::Gt;
-using testing::Lt;
-using testing::ResultOf;
-using testing::Return;
+using ::media::learning::FeatureValue;
+using ::media::learning::FeatureVector;
+using ::media::learning::LearningTask;
+using ::media::learning::LearningTaskController;
+using ::media::learning::ObservationCompletion;
+using ::media::learning::TargetValue;
+using ::testing::_;
+using ::testing::ResultOf;
+using ::testing::Return;
 
 // Helper for EXPECT_CALL argument matching on Optional<TargetValue>.  Applies
 // matcher |m| to the TargetValue as a double.  For example:
@@ -208,4 +203,4 @@ TEST_F(SmoothnessHelperTest, NNRTaskRecordsMaxNNRs) {
   helper_->NotifyNNR();
 }
 
-}  // namespace media
+}  // namespace blink

@@ -11,7 +11,7 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "url/gurl.h"
 
-namespace media {
+namespace blink {
 
 // Generates WebURLErrors and WebURLResponses suitable for testing purposes.
 class TestResponseGenerator {
@@ -77,6 +77,6 @@ class TestResponseGenerator {
   int64_t content_length_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_TESTING_TEST_RESPONSE_GENERATOR_H_

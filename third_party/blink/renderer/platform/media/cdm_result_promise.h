@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/media/cdm_result_promise_helper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace media {
+namespace blink {
 
 const char kTimeUMAPrefix[] = "TimeTo.";
 
@@ -115,6 +115,6 @@ void CdmResultPromise<T...>::reject(media::CdmPromise::Exception exception_code,
                                     blink::WebString::FromUTF8(error_message));
 }
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_CDM_RESULT_PROMISE_H_

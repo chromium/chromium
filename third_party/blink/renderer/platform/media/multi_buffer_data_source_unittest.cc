@@ -31,22 +31,15 @@
 #include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
 #include "third_party/blink/renderer/platform/media/testing/test_response_generator.h"
 
+namespace blink {
+
 using ::testing::_;
 using ::testing::Assign;
-using ::testing::DoAll;
 using ::testing::Invoke;
-using ::testing::InvokeWithoutArgs;
 using ::testing::InSequence;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
 
-using blink::WebAssociatedURLLoader;
-using blink::WebString;
-using blink::WebURLResponse;
-
-namespace media {
-
-class TestResourceMultiBuffer;
 class TestMultiBufferDataProvider;
 
 std::set<TestMultiBufferDataProvider*> test_data_providers;
@@ -1884,4 +1877,4 @@ TEST_F(MultiBufferDataSourceTest, Http_Seek_Back) {
   Stop();
 }
 
-}  // namespace media
+}  // namespace blink

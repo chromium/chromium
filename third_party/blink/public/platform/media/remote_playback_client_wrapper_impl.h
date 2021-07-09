@@ -13,14 +13,11 @@
 namespace blink {
 class WebMediaPlayerClient;
 class WebRemotePlaybackClient;
-}  // namespace blink
-
-namespace media {
 
 // Wraps a WebRemotePlaybackClient to expose only the methods used by the
 // FlingingRendererClientFactory. This avoids dependencies on the blink layer.
 class BLINK_PLATFORM_EXPORT RemotePlaybackClientWrapperImpl
-    : public RemotePlaybackClientWrapper {
+    : public media::RemotePlaybackClientWrapper {
  public:
   explicit RemotePlaybackClientWrapperImpl(blink::WebMediaPlayerClient* client);
   ~RemotePlaybackClientWrapperImpl() override;
@@ -31,6 +28,6 @@ class BLINK_PLATFORM_EXPORT RemotePlaybackClientWrapperImpl
   blink::WebRemotePlaybackClient* remote_playback_client_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_REMOTE_PLAYBACK_CLIENT_WRAPPER_IMPL_H_

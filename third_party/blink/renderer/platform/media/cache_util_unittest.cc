@@ -19,10 +19,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 
-using blink::WebString;
-using blink::WebURLResponse;
-
-namespace media {
+namespace blink {
 
 // Inputs & expected output for GetReasonsForUncacheability.
 struct GRFUTestCase {
@@ -83,4 +80,4 @@ TEST(CacheUtilTest, GetReasonsForUncacheability) {
   }
 }
 
-}  // namespace media
+}  // namespace blink

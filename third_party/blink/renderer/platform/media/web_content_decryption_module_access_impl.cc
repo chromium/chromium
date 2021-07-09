@@ -12,7 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/media/web_encrypted_media_client_impl.h"
 
-namespace media {
+namespace blink {
 
 // The caller owns the created cdm (passed back using |result|).
 static void CreateCdm(
@@ -94,4 +94,4 @@ bool WebContentDecryptionModuleAccessImpl::UseHardwareSecureCodecs() const {
   return cdm_config_.use_hw_secure_codecs;
 }
 
-}  // namespace media
+}  // namespace blink

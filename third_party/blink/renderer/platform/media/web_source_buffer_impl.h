@@ -19,6 +19,9 @@ namespace media {
 class ChunkDemuxer;
 class MediaTracks;
 enum class SourceBufferParseWarning;
+}  // namespace media
+
+namespace blink {
 
 class PLATFORM_EXPORT WebSourceBufferImpl : public blink::WebSourceBuffer {
  public:
@@ -74,6 +77,6 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public blink::WebSourceBuffer {
   base::TimeDelta append_window_end_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_SOURCE_BUFFER_IMPL_H_

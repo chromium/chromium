@@ -9,7 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 
-namespace media {
+namespace blink {
 
 class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
  public:
@@ -28,6 +28,6 @@ class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
                void(base::SingleThreadTaskRunner* task_runner));
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_TESTING_MOCK_WEB_ASSOCIATED_URL_LOADER_H_

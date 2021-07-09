@@ -6,7 +6,7 @@
 
 #include "media/base/timestamp_constants.h"
 
-namespace media {
+namespace blink {
 
 // We want a relatively small window for estimating bandwidth,
 // that way we don't need to worry too much about seeks and pause
@@ -179,4 +179,4 @@ void BufferedDataSourceHostImpl::SetTickClockForTest(
   tick_clock_ = tick_clock;
 }
 
-}  // namespace media
+}  // namespace blink

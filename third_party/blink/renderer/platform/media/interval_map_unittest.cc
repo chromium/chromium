@@ -13,7 +13,7 @@
 #include "media/base/test_random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
+namespace blink {
 
 // Our tests only modifiy the interval map entries in [0..kTestSize).
 // We need this to be big enough to hit tricky corner cases, but small
@@ -111,9 +111,8 @@ class IntervalMapTest : public testing::Test {
  protected:
   media::TestRandom rnd_;
   SimpleIntervalMap truth_;
-  media::IntervalMap<int32_t, int32_t> testee_;
+  IntervalMap<int32_t, int32_t> testee_;
 };
-}
 
 TEST_F(IntervalMapTest, SimpleTest) {
   IncrementInterval(3, 7, 4);
@@ -272,3 +271,5 @@ TEST_F(IntervalMapTest, RandomSetTest) {
     }
   }
 }
+
+}  // namespace blink

@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
 
-namespace media {
+namespace blink {
 
 MockResourceFetchContext::MockResourceFetchContext() = default;
 
 MockResourceFetchContext::~MockResourceFetchContext() = default;
 
-}  // namespace media
+}  // namespace blink

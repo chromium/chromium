@@ -19,15 +19,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 
-using base::test::RunClosure;
-using testing::_;
-using testing::AnyNumber;
-using testing::DoAll;
-using testing::Eq;
-using testing::Return;
-using testing::StrictMock;
+namespace blink {
 
-namespace media {
+using ::base::test::RunClosure;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::DoAll;
+using ::testing::Eq;
+using ::testing::Return;
+using ::testing::StrictMock;
 
 using RenderingMode = ::media::VideoRendererSink::RenderCallback::RenderingMode;
 
@@ -491,4 +491,4 @@ TEST_F(VideoFrameCompositorTest, PreferredRenderInterval) {
             viz::BeginFrameArgs::MinInterval());
 }
 
-}  // namespace media
+}  // namespace blink

@@ -15,7 +15,7 @@
 #include "media/base/media_switches.h"
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 
-namespace media {
+namespace blink {
 
 const int kBlockSizeShift = 15;  // 1<<15 == 32kb
 const int kUrlMappingTimeoutSeconds = 300;
@@ -337,4 +337,4 @@ scoped_refptr<UrlData> UrlIndex::TryInsert(
   return iter->second;
 }
 
-}  // namespace media
+}  // namespace blink

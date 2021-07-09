@@ -14,6 +14,9 @@ namespace media {
 class AudioDecoderConfig;
 class ChunkDemuxer;
 class VideoDecoderConfig;
+}  // namespace media
+
+namespace blink {
 
 class PLATFORM_EXPORT WebMediaSourceImpl : public blink::WebMediaSource {
  public:
@@ -42,6 +45,6 @@ class PLATFORM_EXPORT WebMediaSourceImpl : public blink::WebMediaSource {
   media::ChunkDemuxer* demuxer_;  // Owned by WebMediaPlayerImpl.
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_MEDIA_SOURCE_IMPL_H_

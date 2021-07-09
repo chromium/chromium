@@ -16,19 +16,16 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_encrypted_media_client.h"
 
-namespace blink {
-
-class WebContentDecryptionModuleResult;
-struct WebMediaKeySystemConfiguration;
-class WebSecurityOrigin;
-
-}  // namespace blink
-
 namespace media {
-
-struct CdmConfig;
 class CdmFactory;
 class MediaPermission;
+struct CdmConfig;
+}  // namespace media
+
+namespace blink {
+class WebContentDecryptionModuleResult;
+class WebSecurityOrigin;
+struct WebMediaKeySystemConfiguration;
 
 class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
     : public blink::WebEncryptedMediaClient {
@@ -80,6 +77,6 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
   base::WeakPtrFactory<WebEncryptedMediaClientImpl> weak_factory_{this};
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_WEB_ENCRYPTED_MEDIA_CLIENT_IMPL_H_

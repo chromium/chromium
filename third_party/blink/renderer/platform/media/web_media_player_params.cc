@@ -9,7 +9,7 @@
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/demuxer.h"
 
-namespace media {
+namespace blink {
 
 WebMediaPlayerParams::WebMediaPlayerParams(
     std::unique_ptr<media::MediaLog> media_log,
@@ -67,4 +67,4 @@ std::unique_ptr<media::Demuxer> WebMediaPlayerParams::TakeDemuxerOverride() {
   return std::move(demuxer_override_);
 }
 
-}  // namespace media
+}  // namespace blink

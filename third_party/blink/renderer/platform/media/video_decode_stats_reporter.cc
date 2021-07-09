@@ -12,7 +12,7 @@
 #include "media/capabilities/bucket_utility.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 
-namespace media {
+namespace blink {
 
 VideoDecodeStatsReporter::VideoDecodeStatsReporter(
     mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder> recorder_remote,
@@ -329,4 +329,4 @@ void VideoDecodeStatsReporter::UpdateStats() {
   recorder_remote_->UpdateRecord(std::move(targets));
 }
 
-}  // namespace media
+}  // namespace blink

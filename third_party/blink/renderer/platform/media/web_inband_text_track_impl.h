@@ -9,7 +9,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace media {
+namespace blink {
 
 class PLATFORM_EXPORT WebInbandTextTrackImpl
     : public blink::WebInbandTextTrack {
@@ -39,6 +39,6 @@ class PLATFORM_EXPORT WebInbandTextTrackImpl
   blink::WebString id_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_INBAND_TEXT_TRACK_IMPL_H_

@@ -17,16 +17,15 @@
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace blink {
-class WebSecurityOrigin;
-}
-
 namespace media {
-
-struct CdmConfig;
 class CdmContextRef;
 class CdmFactory;
+struct CdmConfig;
+}  // namespace media
+
+namespace blink {
 class CdmSessionAdapter;
+class WebSecurityOrigin;
 
 using WebCdmCreatedCB =
     base::OnceCallback<void(blink::WebContentDecryptionModule* cdm,
@@ -80,6 +79,6 @@ inline WebContentDecryptionModuleImpl* ToWebContentDecryptionModuleImpl(
   return static_cast<WebContentDecryptionModuleImpl*>(cdm);
 }
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_CONTENT_DECRYPTION_MODULE_IMPL_H_

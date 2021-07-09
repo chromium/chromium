@@ -14,7 +14,7 @@
 #include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/renderer/platform/media/web_inband_text_track_impl.h"
 
-namespace media {
+namespace blink {
 
 TextTrackImpl::TextTrackImpl(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
@@ -63,4 +63,4 @@ void TextTrackImpl::OnRemoveTrack(
     client->RemoveTextTrack(text_track.get());
 }
 
-}  // namespace media
+}  // namespace blink

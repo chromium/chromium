@@ -10,7 +10,13 @@
 #include "media/learning/common/learning_task_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace blink {
 namespace {
+
+using ::media::learning::FeatureVector;
+using ::media::learning::LearningTaskController;
+using ::media::learning::TargetValue;
+
 static constexpr base::TimeDelta kSegmentSize =
     base::TimeDelta::FromSeconds(5);
 
@@ -20,13 +26,8 @@ static constexpr base::TimeDelta kMaxNNRDistance =
 
 // Max proportion of dropped frames in a window before we call it "not smooth".
 static constexpr float kMaxDroppedFramesPerWindow = 0.2;
-}
 
-namespace media {
-
-using learning::FeatureVector;
-using learning::LearningTaskController;
-using learning::TargetValue;
+}  // namespace
 
 // Monitor smoothness during a playback, and call back on each window.
 class SmoothnessWindowMonitor {
@@ -71,7 +72,7 @@ class SmoothnessWindowMonitor {
   int64_t segment_dropped_frames_;
 };
 
-SmoothnessHelper::SmoothnessHelper(const learning::FeatureVector& features)
+SmoothnessHelper::SmoothnessHelper(const FeatureVector& features)
     : features_(features) {}
 
 SmoothnessHelper::~SmoothnessHelper() = default;
@@ -236,4 +237,4 @@ base::TimeDelta SmoothnessHelper::SegmentSizeForTesting() {
   return kSegmentSize;
 }
 
-}  // namespace media
+}  // namespace blink

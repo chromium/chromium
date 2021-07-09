@@ -8,7 +8,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/media/resource_fetch_context.h"
 
-namespace media {
+namespace blink {
 
 class MockResourceFetchContext : public ResourceFetchContext {
  public:
@@ -22,6 +22,6 @@ class MockResourceFetchContext : public ResourceFetchContext {
                    const blink::WebAssociatedURLLoaderOptions&));
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_TESTING_MOCK_RESOURCE_FETCH_CONTEXT_H_

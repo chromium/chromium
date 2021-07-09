@@ -23,16 +23,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
 
+namespace blink {
+namespace {
+class FakeMultiBufferDataProvider;
+
 const int kBlockSizeShift = 8;
 const size_t kBlockSize = 1UL << kBlockSizeShift;
 
-namespace media {
-
-class FakeMultiBufferDataProvider;
-
-namespace {
 std::vector<FakeMultiBufferDataProvider*> writers;
-}  // namespace
 
 class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
  public:
@@ -128,6 +126,8 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
   MultiBuffer* multibuffer_;
   media::TestRandom* rnd_;
 };
+
+}  // namespace
 
 class TestMultiBuffer : public MultiBuffer {
  public:
@@ -606,4 +606,4 @@ TEST_F(MultiBufferTest, RandomTest_RangeSupported) {
   }
 }
 
-}  // namespace media
+}  // namespace blink

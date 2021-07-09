@@ -12,7 +12,7 @@
 #include "media/base/pipeline_metadata.h"
 #include "services/device/public/mojom/battery_status.mojom.h"
 
-namespace media {
+namespace blink {
 namespace {
 
 using ::device::mojom::BatteryStatusPtr;
@@ -307,4 +307,4 @@ void PowerStatusHelper::QueryNextStatus() {
       &PowerStatusHelper::OnBatteryStatus, base::Unretained(this)));
 }
 
-}  // namespace media
+}  // namespace blink

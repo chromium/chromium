@@ -16,8 +16,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace media {
-
+namespace blink {
 class WebEncryptedMediaClientImpl;
 
 class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
@@ -63,6 +62,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
   base::WeakPtr<WebEncryptedMediaClientImpl> client_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_CONTENT_DECRYPTION_MODULE_ACCESS_IMPL_H_

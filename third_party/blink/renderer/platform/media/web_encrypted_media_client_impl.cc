@@ -21,8 +21,7 @@
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_access_impl.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 
-namespace media {
-
+namespace blink {
 namespace {
 
 // Used to name UMAs in Reporter.
@@ -187,4 +186,4 @@ WebEncryptedMediaClientImpl::Reporter* WebEncryptedMediaClientImpl::GetReporter(
   return reporter.get();
 }
 
-}  // namespace media
+}  // namespace blink

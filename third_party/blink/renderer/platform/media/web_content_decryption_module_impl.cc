@@ -24,8 +24,7 @@
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_session_impl.h"
 #include "url/origin.h"
 
-namespace media {
-
+namespace blink {
 namespace {
 
 const char kCreateSessionSessionTypeUMAName[] = "CreateSession.SessionType";
@@ -33,7 +32,7 @@ const char kSetServerCertificateUMAName[] = "SetServerCertificate";
 const char kGetStatusForPolicyUMAName[] = "GetStatusForPolicy";
 
 bool ConvertHdcpVersion(const blink::WebString& hdcp_version_string,
-                        HdcpVersion* hdcp_version) {
+                        media::HdcpVersion* hdcp_version) {
   if (!hdcp_version_string.ContainsOnlyASCII())
     return false;
 
@@ -42,25 +41,25 @@ bool ConvertHdcpVersion(const blink::WebString& hdcp_version_string,
   // The strings are specified in the explainer doc:
   // https://github.com/WICG/hdcp-detection/blob/master/explainer.md
   if (hdcp_version_ascii.empty())
-    *hdcp_version = HdcpVersion::kHdcpVersionNone;
+    *hdcp_version = media::HdcpVersion::kHdcpVersionNone;
   else if (hdcp_version_ascii == "1.0")
-    *hdcp_version = HdcpVersion::kHdcpVersion1_0;
+    *hdcp_version = media::HdcpVersion::kHdcpVersion1_0;
   else if (hdcp_version_ascii == "1.1")
-    *hdcp_version = HdcpVersion::kHdcpVersion1_1;
+    *hdcp_version = media::HdcpVersion::kHdcpVersion1_1;
   else if (hdcp_version_ascii == "1.2")
-    *hdcp_version = HdcpVersion::kHdcpVersion1_2;
+    *hdcp_version = media::HdcpVersion::kHdcpVersion1_2;
   else if (hdcp_version_ascii == "1.3")
-    *hdcp_version = HdcpVersion::kHdcpVersion1_3;
+    *hdcp_version = media::HdcpVersion::kHdcpVersion1_3;
   else if (hdcp_version_ascii == "1.4")
-    *hdcp_version = HdcpVersion::kHdcpVersion1_4;
+    *hdcp_version = media::HdcpVersion::kHdcpVersion1_4;
   else if (hdcp_version_ascii == "2.0")
-    *hdcp_version = HdcpVersion::kHdcpVersion2_0;
+    *hdcp_version = media::HdcpVersion::kHdcpVersion2_0;
   else if (hdcp_version_ascii == "2.1")
-    *hdcp_version = HdcpVersion::kHdcpVersion2_1;
+    *hdcp_version = media::HdcpVersion::kHdcpVersion2_1;
   else if (hdcp_version_ascii == "2.2")
-    *hdcp_version = HdcpVersion::kHdcpVersion2_2;
+    *hdcp_version = media::HdcpVersion::kHdcpVersion2_2;
   else if (hdcp_version_ascii == "2.3")
-    *hdcp_version = HdcpVersion::kHdcpVersion2_3;
+    *hdcp_version = media::HdcpVersion::kHdcpVersion2_3;
   else
     return false;
 
@@ -144,7 +143,7 @@ void WebContentDecryptionModuleImpl::SetServerCertificate(
 void WebContentDecryptionModuleImpl::GetStatusForPolicy(
     const blink::WebString& min_hdcp_version_string,
     blink::WebContentDecryptionModuleResult result) {
-  HdcpVersion min_hdcp_version;
+  media::HdcpVersion min_hdcp_version;
   if (!ConvertHdcpVersion(min_hdcp_version_string, &min_hdcp_version)) {
     result.CompleteWithError(
         blink::kWebContentDecryptionModuleExceptionTypeError, 0,
@@ -172,4 +171,4 @@ media::CdmConfig WebContentDecryptionModuleImpl::GetCdmConfig() const {
   return adapter_->GetCdmConfig();
 }
 
-}  // namespace media
+}  // namespace blink

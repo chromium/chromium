@@ -12,7 +12,7 @@
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace media {
+namespace blink {
 
 // A superset of media::ContentDecryptionModule::Exception for UMA reporting.
 // These values should never be changed as it will affect existing reporting,
@@ -45,6 +45,6 @@ PLATFORM_EXPORT void ReportCdmResultUMA(const std::string& uma_name,
                                         uint32_t system_code,
                                         CdmResultForUMA result);
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_CDM_RESULT_PROMISE_HELPER_H_

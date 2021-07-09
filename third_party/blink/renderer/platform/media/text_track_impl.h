@@ -16,12 +16,8 @@ class SingleThreadTaskRunner;
 }
 
 namespace blink {
-class WebMediaPlayerClient;
-}
-
-namespace media {
-
 class WebInbandTextTrackImpl;
+class WebMediaPlayerClient;
 
 class PLATFORM_EXPORT TextTrackImpl : public media::TextTrack {
  public:
@@ -56,6 +52,6 @@ class PLATFORM_EXPORT TextTrackImpl : public media::TextTrack {
   std::unique_ptr<WebInbandTextTrackImpl> text_track_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_TEXT_TRACK_IMPL_H_

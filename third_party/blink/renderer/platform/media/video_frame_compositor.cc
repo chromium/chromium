@@ -17,9 +17,9 @@
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 
-namespace media {
+namespace blink {
 
-using RenderingMode = VideoRendererSink::RenderCallback::RenderingMode;
+using RenderingMode = ::media::VideoRendererSink::RenderCallback::RenderingMode;
 
 // Amount of time to wait between UpdateCurrentFrame() callbacks before starting
 // background rendering to keep the Render() callbacks moving.
@@ -462,4 +462,4 @@ bool VideoFrameCompositor::CallRender(base::TimeTicks deadline_min,
   return new_frame || had_new_background_frame;
 }
 
-}  // namespace media
+}  // namespace blink

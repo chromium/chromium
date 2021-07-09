@@ -12,7 +12,7 @@
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 
-namespace media {
+namespace blink {
 
 class BLINK_PLATFORM_EXPORT ResourceFetchContext {
  public:
@@ -22,6 +22,6 @@ class BLINK_PLATFORM_EXPORT ResourceFetchContext {
       const blink::WebAssociatedURLLoaderOptions& options) = 0;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_RESOURCE_FETCH_CONTEXT_H_

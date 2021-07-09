@@ -17,7 +17,7 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace media {
+namespace blink {
 
 // Wrapper for MultiBuffer that offers a simple byte-reading
 // interface with prefetch.
@@ -191,6 +191,6 @@ class PLATFORM_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   base::WeakPtrFactory<MultiBufferReader> weak_factory_{this};
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_MULTI_BUFFER_READER_H_

@@ -12,10 +12,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/media/web_source_buffer_impl.h"
 
-using ::blink::WebString;
-using ::blink::WebMediaSource;
-
-namespace media {
+namespace blink {
 
 #define STATIC_ASSERT_MATCHING_STATUS_ENUM(webkit_name, chromium_name)    \
   static_assert(static_cast<int>(WebMediaSource::webkit_name) ==          \
@@ -107,4 +104,4 @@ void WebMediaSourceImpl::UnmarkEndOfStream() {
   demuxer_->UnmarkEndOfStream();
 }
 
-}  // namespace media
+}  // namespace blink

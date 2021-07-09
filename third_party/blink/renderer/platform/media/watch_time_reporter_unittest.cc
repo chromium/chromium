@@ -25,12 +25,13 @@
 #include "third_party/blink/public/common/media/watch_time_reporter.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 
-namespace media {
+namespace blink {
+
+using ::media::WatchTimeKey;
+using ::testing::_;
 
 constexpr gfx::Size kSizeTooSmall = gfx::Size(101, 101);
 constexpr gfx::Size kSizeJustRight = gfx::Size(201, 201);
-
-using testing::_;
 
 #define EXPECT_WATCH_TIME(key, value)                                          \
   do {                                                                         \
@@ -2395,4 +2396,4 @@ INSTANTIATE_TEST_SUITE_P(MutedWatchTimeReporterTest,
                              std::make_tuple(true, true),
                          }));
 
-}  // namespace media
+}  // namespace blink

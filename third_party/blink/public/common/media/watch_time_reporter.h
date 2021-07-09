@@ -25,10 +25,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
-namespace media {
-class WatchTimeReporterTest;
-}
-
 namespace blink {
 
 // Class for monitoring and reporting watch time in response to various state
@@ -161,7 +157,7 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
   void OnDurationChanged(base::TimeDelta duration);
 
  private:
-  friend class media::WatchTimeReporterTest;
+  friend class WatchTimeReporterTest;
 
   // Internal constructor for marking background status.
   WatchTimeReporter(media::mojom::PlaybackPropertiesPtr properties,

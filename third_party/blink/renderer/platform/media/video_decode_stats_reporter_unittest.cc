@@ -27,11 +27,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace blink {
+
 using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::_;
-
-namespace media {
 
 const media::VideoCodecProfile kDefaultProfile = media::VP9PROFILE_PROFILE0;
 const int kDefaultHeight = 480;
@@ -932,4 +932,4 @@ TEST_F(VideoDecodeStatsReporterTest, SanitizeFrameCounts) {
   FastForward(kRecordingInterval);
 }
 
-}  // namespace media
+}  // namespace blink

@@ -21,14 +21,14 @@
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
 
-namespace media {
-
+namespace blink {
 namespace {
 
-using blink::WebEncryptedMediaSessionType;
-using blink::WebMediaKeySystemConfiguration;
-using blink::WebMediaKeySystemMediaCapability;
-using blink::WebString;
+using ::media::EmeConfigRule;
+using ::media::EmeFeatureSupport;
+using ::media::EmeInitDataType;
+using ::media::EmeMediaType;
+using ::media::EmeSessionTypeSupport;
 using MediaKeysRequirement = WebMediaKeySystemConfiguration::Requirement;
 using EncryptionScheme = WebMediaKeySystemMediaCapability::EncryptionScheme;
 
@@ -1847,4 +1847,4 @@ TEST_F(KeySystemConfigSelectorTest,
   ASSERT_EQ("b", config_.label);
 }
 
-}  // namespace media
+}  // namespace blink

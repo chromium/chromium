@@ -7,18 +7,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 
-namespace media {
+namespace blink {
 
 CdmResultForUMA ConvertCdmExceptionToResultForUMA(
-    CdmPromise::Exception exception_code) {
+    media::CdmPromise::Exception exception_code) {
   switch (exception_code) {
-    case CdmPromise::Exception::NOT_SUPPORTED_ERROR:
+    case media::CdmPromise::Exception::NOT_SUPPORTED_ERROR:
       return NOT_SUPPORTED_ERROR;
-    case CdmPromise::Exception::INVALID_STATE_ERROR:
+    case media::CdmPromise::Exception::INVALID_STATE_ERROR:
       return INVALID_STATE_ERROR;
-    case CdmPromise::Exception::QUOTA_EXCEEDED_ERROR:
+    case media::CdmPromise::Exception::QUOTA_EXCEEDED_ERROR:
       return QUOTA_EXCEEDED_ERROR;
-    case CdmPromise::Exception::TYPE_ERROR:
+    case media::CdmPromise::Exception::TYPE_ERROR:
       return TYPE_ERROR;
   }
   NOTREACHED();
@@ -26,15 +26,15 @@ CdmResultForUMA ConvertCdmExceptionToResultForUMA(
 }
 
 blink::WebContentDecryptionModuleException ConvertCdmException(
-    CdmPromise::Exception exception_code) {
+    media::CdmPromise::Exception exception_code) {
   switch (exception_code) {
-    case CdmPromise::Exception::NOT_SUPPORTED_ERROR:
+    case media::CdmPromise::Exception::NOT_SUPPORTED_ERROR:
       return blink::kWebContentDecryptionModuleExceptionNotSupportedError;
-    case CdmPromise::Exception::INVALID_STATE_ERROR:
+    case media::CdmPromise::Exception::INVALID_STATE_ERROR:
       return blink::kWebContentDecryptionModuleExceptionInvalidStateError;
-    case CdmPromise::Exception::QUOTA_EXCEEDED_ERROR:
+    case media::CdmPromise::Exception::QUOTA_EXCEEDED_ERROR:
       return blink::kWebContentDecryptionModuleExceptionQuotaExceededError;
-    case CdmPromise::Exception::TYPE_ERROR:
+    case media::CdmPromise::Exception::TYPE_ERROR:
       return blink::kWebContentDecryptionModuleExceptionTypeError;
   }
   NOTREACHED();
@@ -78,4 +78,4 @@ void ReportCdmResultUMA(const std::string& uma_name,
   base::UmaHistogramEnumeration(uma_name, result, NUM_RESULT_CODES);
 }
 
-}  // namespace media
+}  // namespace blink

@@ -90,16 +90,18 @@
 #include "media/base/android/media_codec_util.h"
 #endif
 
-using blink::WebMediaPlayer;
-using blink::WebString;
-
 #define STATIC_ASSERT_ENUM(a, b)                            \
   static_assert(static_cast<int>(a) == static_cast<int>(b), \
                 "mismatching enums: " #a)
 
-namespace media {
-
+namespace blink {
 namespace {
+
+namespace learning = ::media::learning;
+using ::media::Demuxer;
+using ::media::MediaLogEvent;
+using ::media::MediaLogProperty;
+using ::media::MediaTrack;
 
 const char kWatchTimeHistogram[] = "Media.WebMediaPlayerImpl.WatchTime";
 
@@ -3900,7 +3902,7 @@ WebMediaPlayerImpl::GetLearningTaskController(const char* task_name) {
   learning::LearningTask task = learning::MediaLearningTasks::Get(task_name);
   DCHECK_EQ(task.name, task_name);
 
-  mojo::Remote<media::learning::mojom::LearningTaskController> remote_ltc;
+  mojo::Remote<learning::mojom::LearningTaskController> remote_ltc;
   media_metrics_provider_->AcquireLearningTaskController(
       task.name, remote_ltc.BindNewPipeAndPassReceiver());
   return std::make_unique<learning::MojoLearningTaskController>(
@@ -3922,4 +3924,4 @@ bool WebMediaPlayerImpl::IsVideoBeingCaptured() const {
          base::TimeDelta::FromSeconds(5);
 }
 
-}  // namespace media
+}  // namespace blink

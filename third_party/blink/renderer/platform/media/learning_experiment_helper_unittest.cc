@@ -10,16 +10,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using media::learning::FeatureDictionary;
-using media::learning::FeatureValue;
-using media::learning::FeatureVector;
-using media::learning::LearningTask;
-using media::learning::LearningTaskController;
-using media::learning::ObservationCompletion;
-using media::learning::TargetValue;
-using testing::_;
+namespace blink {
 
-namespace media {
+using ::media::learning::FeatureDictionary;
+using ::media::learning::FeatureValue;
+using ::media::learning::FeatureVector;
+using ::media::learning::LearningTask;
+using ::media::learning::LearningTaskController;
+using ::media::learning::ObservationCompletion;
+using ::media::learning::TargetValue;
+using ::testing::_;
 
 class MockLearningTaskController : public LearningTaskController {
  public:
@@ -138,4 +138,4 @@ TEST_F(LearningExperimentHelperTest, DoesNothingWithoutController) {
   helper_->CancelObservationIfNeeded();
 }
 
-}  // namespace media
+}  // namespace blink

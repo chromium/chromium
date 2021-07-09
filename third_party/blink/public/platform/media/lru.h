@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "third_party/blink/public/platform/web_common.h"
 
-namespace media {
+namespace blink {
 
 // Simple LRU (least recently used) class.
 // Keeps track of a set of data and lets you get the least recently used
@@ -91,6 +91,6 @@ class BLINK_PLATFORM_EXPORT LRU {
   std::unordered_map<T, typename std::list<T>::iterator> pos_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_LRU_H_

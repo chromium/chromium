@@ -10,12 +10,7 @@
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/platform/web_string.h"
 
-using blink::WebString;
-using blink::WebURL;
-using blink::WebURLError;
-using blink::WebURLResponse;
-
-namespace media {
+namespace blink {
 
 TestResponseGenerator::TestResponseGenerator(const GURL& gurl,
                                              int64_t content_length)
@@ -109,4 +104,4 @@ WebURLResponse TestResponseGenerator::GenerateFileResponse(
   return response;
 }
 
-}  // namespace media
+}  // namespace blink

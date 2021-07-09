@@ -21,8 +21,7 @@
 #include "media/cdm/cdm_context_ref_impl.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_session_impl.h"
 
-namespace media {
-
+namespace blink {
 namespace {
 const char kMediaEME[] = "Media.EME.";
 const char kDot[] = ".";
@@ -266,4 +265,4 @@ WebContentDecryptionModuleSessionImpl* CdmSessionAdapter::GetSession(
   return (session != sessions_.end()) ? session->second.get() : NULL;
 }
 
-}  // namespace media
+}  // namespace blink

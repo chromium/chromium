@@ -16,7 +16,7 @@
 #include "third_party/blink/public/platform/media/interval_map.h"
 #include "third_party/blink/public/platform/web_common.h"
 
-namespace media {
+namespace blink {
 
 // Interface for testing purposes.
 class BLINK_PLATFORM_EXPORT BufferedDataSourceHost {
@@ -97,6 +97,6 @@ class BLINK_PLATFORM_EXPORT BufferedDataSourceHostImpl
                            CanPlayThroughSmallAdvances);
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_BUFFERED_DATA_SOURCE_HOST_IMPL_H_

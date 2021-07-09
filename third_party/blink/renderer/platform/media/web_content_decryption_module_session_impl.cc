@@ -32,8 +32,7 @@
 #include "third_party/blink/renderer/platform/media/cdm_result_promise_helper.h"
 #include "third_party/blink/renderer/platform/media/cdm_session_adapter.h"
 
-namespace media {
-
+namespace blink {
 namespace {
 
 const char kCloseSessionUMAName[] = "CloseSession";
@@ -43,22 +42,22 @@ const char kRemoveSessionUMAName[] = "RemoveSession";
 const char kUpdateSessionUMAName[] = "UpdateSession";
 const char kKeyStatusSystemCodeUMAName[] = "KeyStatusSystemCode";
 
-CdmSessionType ConvertSessionType(
+media::CdmSessionType ConvertSessionType(
     blink::WebEncryptedMediaSessionType session_type) {
   switch (session_type) {
     case blink::WebEncryptedMediaSessionType::kTemporary:
-      return CdmSessionType::kTemporary;
+      return media::CdmSessionType::kTemporary;
     case blink::WebEncryptedMediaSessionType::kPersistentLicense:
-      return CdmSessionType::kPersistentLicense;
+      return media::CdmSessionType::kPersistentLicense;
     case blink::WebEncryptedMediaSessionType::kUnknown:
       break;
   }
 
   NOTREACHED();
-  return CdmSessionType::kTemporary;
+  return media::CdmSessionType::kTemporary;
 }
 
-bool SanitizeInitData(EmeInitDataType init_data_type,
+bool SanitizeInitData(media::EmeInitDataType init_data_type,
                       const unsigned char* init_data,
                       size_t init_data_length,
                       std::vector<uint8_t>* sanitized_init_data,
@@ -70,7 +69,7 @@ bool SanitizeInitData(EmeInitDataType init_data_type,
   }
 
   switch (init_data_type) {
-    case EmeInitDataType::WEBM:
+    case media::EmeInitDataType::WEBM:
       // |init_data| for WebM is a single key.
       if (init_data_length > media::limits::kMaxKeyIdLength) {
         error_message->assign("Initialization data for WebM is too long.");
@@ -79,7 +78,7 @@ bool SanitizeInitData(EmeInitDataType init_data_type,
       sanitized_init_data->assign(init_data, init_data + init_data_length);
       return true;
 
-    case EmeInitDataType::CENC:
+    case media::EmeInitDataType::CENC:
       sanitized_init_data->assign(init_data, init_data + init_data_length);
       if (!media::ValidatePsshInput(*sanitized_init_data)) {
         error_message->assign("Initialization data for CENC is incorrect.");
@@ -87,7 +86,7 @@ bool SanitizeInitData(EmeInitDataType init_data_type,
       }
       return true;
 
-    case EmeInitDataType::KEYIDS: {
+    case media::EmeInitDataType::KEYIDS: {
       // Extract the keys and then rebuild the message. This ensures that any
       // extra data in the provided JSON is dropped.
       std::string init_data_string(init_data, init_data + init_data_length);
@@ -108,7 +107,7 @@ bool SanitizeInitData(EmeInitDataType init_data_type,
       return true;
     }
 
-    case EmeInitDataType::UNKNOWN:
+    case media::EmeInitDataType::UNKNOWN:
       break;
   }
 
@@ -157,7 +156,7 @@ bool SanitizeResponse(const std::string& key_system,
   if (media::IsClearKey(key_system) || media::IsExternalClearKey(key_system)) {
     std::string key_string(response, response + response_length);
     media::KeyIdAndKeyPairs keys;
-    auto session_type = CdmSessionType::kTemporary;
+    auto session_type = media::CdmSessionType::kTemporary;
     if (!ExtractKeysFromJWKSet(key_string, &keys, &session_type))
       return false;
 
@@ -226,7 +225,7 @@ blink::WebString WebContentDecryptionModuleSessionImpl::SessionId() const {
 }
 
 void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
-    EmeInitDataType eme_init_data_type,
+    media::EmeInitDataType eme_init_data_type,
     const unsigned char* init_data,
     size_t init_data_length,
     blink::WebContentDecryptionModuleResult result) {
@@ -311,7 +310,7 @@ void WebContentDecryptionModuleSessionImpl::Load(
   DCHECK(!session_id.IsEmpty());
   DCHECK(session_id_.empty());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(session_type_ == CdmSessionType::kPersistentLicense);
+  DCHECK(session_type_ == media::CdmSessionType::kPersistentLicense);
 
   // From https://w3c.github.io/encrypted-media/#load.
   // 8.1 Let sanitized session ID be a validated and/or sanitized version of
@@ -407,7 +406,7 @@ void WebContentDecryptionModuleSessionImpl::Remove(
 }
 
 void WebContentDecryptionModuleSessionImpl::OnSessionMessage(
-    CdmMessageType message_type,
+    media::CdmMessageType message_type,
     const std::vector<uint8_t>& message) {
   DCHECK(client_) << "Client not set before message event";
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -476,4 +475,4 @@ void WebContentDecryptionModuleSessionImpl::OnSessionInitialized(
           : SessionInitStatus::SESSION_ALREADY_EXISTS;
 }
 
-}  // namespace media
+}  // namespace blink

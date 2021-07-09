@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
 #include "url/gurl.h"
 
+namespace blink {
 namespace {
 
 // Minimum preload buffer.
@@ -60,8 +61,6 @@ const int kUpdateBufferSizeFrequency = 32;
 constexpr base::TimeDelta kSeekDelay = base::TimeDelta::FromMilliseconds(20);
 
 }  // namespace
-
-namespace media {
 
 class MultiBufferDataSource::ReadOperation {
  public:
@@ -779,4 +778,4 @@ void MultiBufferDataSource::UpdateBufferSizes() {
   reader_->SetPreload(preload_high, preload);
 }
 
-}  // namespace media
+}  // namespace blink

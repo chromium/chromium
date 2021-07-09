@@ -27,12 +27,15 @@ namespace base {
 class WaitableEvent;
 }
 
+namespace media {
+class VideoFrame;
+}
+
 namespace viz {
 class SurfaceId;
 }
 
-namespace media {
-class VideoFrame;
+namespace blink {
 
 // VideoFrameCompositor acts as a bridge between the media and cc layers for
 // rendering video frames. I.e. a media::VideoRenderer will talk to this class
@@ -291,6 +294,6 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   base::WeakPtrFactory<VideoFrameCompositor> weak_ptr_factory_{this};
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_VIDEO_FRAME_COMPOSITOR_H_

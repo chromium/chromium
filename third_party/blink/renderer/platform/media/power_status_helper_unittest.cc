@@ -18,17 +18,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
+namespace blink {
 
-using ::testing::_;
-using ::testing::AnyNumber;
 using ::testing::Bool;
 using ::testing::Combine;
-using ::testing::Eq;
-using ::testing::Gt;
-using ::testing::Lt;
-using ::testing::ResultOf;
-using ::testing::Return;
 using ::testing::Values;
 
 class PowerStatusHelperTest : public testing::Test {
@@ -444,4 +437,4 @@ INSTANTIATE_TEST_SUITE_P(
             Values(PowerStatusHelper::Bits::kFullScreenNo,
                    PowerStatusHelper::Bits::kFullScreenYes)));
 
-}  // namespace media
+}  // namespace blink

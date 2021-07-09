@@ -78,8 +78,13 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace blink {
+namespace {
+
 using ::base::test::RunClosure;
 using ::base::test::RunOnceCallback;
+using ::media::TestAudioConfig;
+using ::media::TestVideoConfig;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
@@ -94,8 +99,6 @@ using ::testing::ReturnRef;
 using ::testing::StrictMock;
 using ::testing::WithArg;
 using ::testing::WithoutArgs;
-
-namespace media {
 
 constexpr char kAudioOnlyTestFile[] = "sfx-opus-441.webm";
 constexpr char kVideoOnlyTestFile[] = "bear-320x240-video-only.webm";
@@ -310,6 +313,8 @@ class MockVideoFrameCompositor : public VideoFrameCompositor {
   MOCK_METHOD3(EnableSubmission,
                void(const viz::SurfaceId&, media::VideoRotation, bool));
 };
+
+}  // namespace
 
 class WebMediaPlayerImplTest
     : public testing::Test,
@@ -1796,7 +1801,7 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
   EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
       .WillOnce(testing::WithoutArgs(Invoke([]() {
-        auto mock_renderer = std::make_unique<NiceMock<MockRenderer>>();
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnSetCdm(_, _))
             .WillOnce(RunOnceCallback<1>(true));
         EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
@@ -2472,4 +2477,4 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Bool(),
         ::testing::Bool()));
 
-}  // namespace media
+}  // namespace blink

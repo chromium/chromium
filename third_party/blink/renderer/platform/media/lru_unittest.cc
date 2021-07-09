@@ -12,13 +12,11 @@
 #include "media/base/test_random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace blink {
+
 // Range of integer used in tests below.
 // We keep the integers small to get lots of re-use of integers.
 const int kTestIntRange = 16;
-
-namespace media {
-
-class LRUTest;
 
 class SimpleLRU {
  public:
@@ -138,7 +136,7 @@ class LRUTest : public testing::Test {
  protected:
   media::TestRandom rnd_;
   SimpleLRU truth_;
-  media::LRU<int> testee_;
+  LRU<int> testee_;
 };
 
 TEST_F(LRUTest, SimpleTest) {
@@ -234,4 +232,4 @@ TEST_F(LRUTest, RandomTest) {
   }
 }
 
-}  // namespace media
+}  // namespace blink

@@ -26,8 +26,11 @@ class SingleThreadTaskRunner;
 }
 
 namespace media {
-class BufferedDataSourceHost;
 class MediaLog;
+}
+
+namespace blink {
+class BufferedDataSourceHost;
 class MultiBufferReader;
 
 // A data source capable of loading URLs and buffering the data using an
@@ -291,6 +294,6 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
   base::WeakPtrFactory<MultiBufferDataSource> weak_factory_{this};
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_MULTI_BUFFER_DATA_SOURCE_H_

@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 
-namespace media {
+namespace blink {
 
 // Prune 80 blocks per 30 seconds.
 // This means a full cache will go away in ~5 minutes.
@@ -569,4 +569,4 @@ int64_t MultiBuffer::UncommittedBytesAt(const MultiBuffer::BlockId& block) {
   return i->second->AvailableBytes();
 }
 
-}  // namespace media
+}  // namespace blink

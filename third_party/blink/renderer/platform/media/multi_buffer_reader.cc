@@ -14,7 +14,7 @@
 #include "base/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 
-namespace media {
+namespace blink {
 
 MultiBufferReader::MultiBufferReader(
     MultiBuffer* multibuffer,
@@ -249,4 +249,4 @@ void MultiBufferReader::PinRange(MultiBuffer::BlockId begin,
   pinned_range_.end = end;
 }
 
-}  // namespace media
+}  // namespace blink

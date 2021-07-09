@@ -13,7 +13,7 @@
 #include "media/learning/common/learning_task_controller.h"
 #include "third_party/blink/public/platform/web_common.h"
 
-namespace media {
+namespace blink {
 
 // Helper for adding a learning experiment to existing code.
 class BLINK_PLATFORM_EXPORT LearningExperimentHelper {
@@ -47,6 +47,6 @@ class BLINK_PLATFORM_EXPORT LearningExperimentHelper {
   base::UnguessableToken observation_id_;
 };
 
-}  // namespace media
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_LEARNING_EXPERIMENT_HELPER_H_
