@@ -65,7 +65,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/scanning/url_constants.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/policy/handlers/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/chromeos/policy/networking/policy_cert_service.h"
 #include "chrome/browser/chromeos/policy/networking/policy_cert_service_factory.h"
 #include "chrome/test/base/scoped_testing_local_state.h"

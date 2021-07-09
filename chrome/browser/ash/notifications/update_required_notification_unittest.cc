@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/handlers/minimum_version_policy_handler.h"
+#include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 
 #include <memory>
 
@@ -13,9 +13,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/common/pref_names.h"
