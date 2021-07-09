@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_storage.h"
@@ -69,17 +70,19 @@ class CONTENT_EXPORT RateLimitTable {
   // Deletes data in the table older than the window determined by |clock_| and
   // |delegate_->GetRateLimits()|.
   // Returns the number of deleted rows.
-  int DeleteExpiredRateLimits(sql::Database* db);
+  int DeleteExpiredRateLimits(sql::Database* db)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Must outlive |this|.
-  const ConversionStorage::Delegate* delegate_;
+  const ConversionStorage::Delegate* delegate_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Must outlive |this|.
   const base::Clock* clock_;
 
   // Time at which `DeleteExpiredRateLimits()` was last called. Initialized to
   // the NULL time.
-  base::Time last_cleared_;
+  base::Time last_cleared_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

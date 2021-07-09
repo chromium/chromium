@@ -213,8 +213,6 @@ bool RateLimitTable::ClearDataForOriginsInRange(
 }
 
 int RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   base::Time timestamp = clock_->Now() - delegate_->GetRateLimits().time_window;
 
   const char kDeleteExpiredRateLimits[] =

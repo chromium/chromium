@@ -276,7 +276,6 @@ ConversionStorageSql::MaybeReplaceLowerPriorityReport(
     int num_conversions,
     int64_t conversion_priority,
     base::Time report_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(impression.impression_id().has_value());
   DCHECK_GE(num_conversions, 0);
 
@@ -536,8 +535,6 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 bool ConversionStorageSql::StoreConversionReport(const ConversionReport& report,
                                                  int64_t impression_id,
                                                  int64_t priority) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   const char kStoreConversionSql[] =
       "INSERT INTO conversions "
       "(impression_id, conversion_data, conversion_time, report_time, "
@@ -1004,7 +1001,6 @@ void ConversionStorageSql::HandleInitializationFailure(
 }
 
 bool ConversionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_init_status_) {
     if (g_run_in_memory_) {
       db_init_status_ = DbStatus::kDeferringCreation;
@@ -1110,8 +1106,6 @@ bool ConversionStorageSql::InitializeSchema(bool db_empty) {
 }
 
 bool ConversionStorageSql::CreateSchema() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   base::ThreadTicks start_timestamp = base::ThreadTicks::Now();
   // TODO(johnidel, csharrison): Many impressions will share a target origin and
   // a reporting origin, so it makes sense to make a "shared string" table for
@@ -1276,8 +1270,6 @@ void ConversionStorageSql::DatabaseErrorCallback(int extended_error,
 
 bool ConversionStorageSql::EnsureCapacityForPendingDestinationLimit(
     const StorableImpression& impression) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // TODO(apaseltiner): Add metrics for how this behaves so we can see how often
   // sites are hitting the limit.
 
