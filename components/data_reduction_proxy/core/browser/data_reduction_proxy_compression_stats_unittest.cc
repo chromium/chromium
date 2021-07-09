@@ -174,10 +174,10 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
 
   // Create daily pref list of |kNumDaysInHistory| zero values.
   void CreatePrefList(const char* pref) {
-    base::ListValue* update = compression_stats_->GetList(pref);
-    update->Clear();
+    base::Value* update = compression_stats_->GetList(pref);
+    update->ClearList();
     for (size_t i = 0; i < kNumDaysInHistory; ++i) {
-      update->Insert(0, std::make_unique<base::Value>(base::NumberToString(0)));
+      update->Append(base::Value(base::NumberToString(0)));
     }
   }
 
@@ -417,19 +417,17 @@ TEST_F(DataReductionProxyCompressionStatsTest, WritePrefsDelayed) {
 }
 
 TEST_F(DataReductionProxyCompressionStatsTest, StatsRestoredOnOnRestart) {
-  base::ListValue list_value;
-  list_value.Insert(0,
-                    std::make_unique<base::Value>(base::NumberToString(1234)));
+  base::Value list_value(base::Value::Type::LIST);
+  list_value.Append(base::Value(base::NumberToString(1234)));
   pref_service()->Set(prefs::kDailyHttpOriginalContentLength, list_value);
 
   ResetCompressionStatsWithDelay(
       base::TimeDelta::FromMinutes(kWriteDelayMinutes));
 
-  const base::ListValue* value = pref_service()->GetList(
-      prefs::kDailyHttpOriginalContentLength);
-  std::string string_value;
-  value->GetString(0, &string_value);
-  EXPECT_EQ("1234", string_value);
+  const base::Value* value =
+      pref_service()->GetList(prefs::kDailyHttpOriginalContentLength);
+  const std::string* string_value = value->GetList()[0].GetIfString();
+  EXPECT_EQ("1234", *string_value);
 }
 
 TEST_F(DataReductionProxyCompressionStatsTest, TotalLengths) {
