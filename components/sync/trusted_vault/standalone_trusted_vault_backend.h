@@ -117,6 +117,18 @@ class StandaloneTrustedVaultBackend
 
   void SetClockForTesting(base::Clock* clock);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Exposed publicly for testing.
+  enum class DeviceRegistrationStateForUMA {
+    kAlreadyRegistered = 0,
+    kLocalKeysAreStale = 1,
+    kThrottledClientSide = 2,
+    kAttemptingRegistrationWithNewKeyPair = 3,
+    kAttemptingRegistrationWithExistingKeyPair = 4,
+    kMaxValue = kAttemptingRegistrationWithExistingKeyPair,
+  };
+
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
 
@@ -127,8 +139,11 @@ class StandaloneTrustedVaultBackend
   sync_pb::LocalTrustedVaultPerUser* FindUserVault(const std::string& gaia_id);
 
   // Attempts to register device in case it's not yet registered and currently
-  // available local data is sufficient to do it.
-  void MaybeRegisterDevice();
+  // available local data is sufficient to do it. For the cases where
+  // registration is desirable (i.e. feature toggle enabled and user signed in),
+  // it returns an enum representing the registration state, intended to be used
+  // for metric recording. Otherwise it returns nullopt.
+  absl::optional<DeviceRegistrationStateForUMA> MaybeRegisterDevice();
 
   // Called when device registration for |gaia_id| is completed (either
   // successfully or not). |data_| must contain LocalTrustedVaultPerUser for
@@ -219,6 +234,8 @@ class StandaloneTrustedVaultBackend
   base::Clock* clock_;
 
   std::vector<uint8_t> last_added_recovery_method_public_key_for_testing_;
+
+  bool device_registration_state_recorded_to_uma_ = false;
 };
 
 }  // namespace syncer

@@ -81303,6 +81303,14 @@ Full version information for the fingerprint enum values:
   <int value="80" label="TRIM_MEMORY_COMPLETE"/>
 </enum>
 
+<enum name="TrustedVaultDeviceRegistrationState">
+  <int value="0" label="Already registered"/>
+  <int value="1" label="Local keys are stale"/>
+  <int value="2" label="Throttled client side"/>
+  <int value="3" label="Attempting registration with newly generated keys"/>
+  <int value="4" label="Attempting registration with preexisting keys"/>
+</enum>
+
 <enum name="TrustedVaultFetchKeysAttempt">
   <int value="0" label="First attempt"/>
   <int value="1" label="Second attempt"/>

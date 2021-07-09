@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
@@ -244,7 +245,16 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     per_user_vault = data_.add_user();
     per_user_vault->set_gaia_id(primary_account->gaia);
   }
-  MaybeRegisterDevice();
+
+  const absl::optional<DeviceRegistrationStateForUMA> registration_state =
+      MaybeRegisterDevice();
+
+  if (registration_state.has_value() &&
+      !device_registration_state_recorded_to_uma_) {
+    device_registration_state_recorded_to_uma_ = true;
+    base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationState",
+                                  *registration_state);
+  }
 
   if (pending_trusted_recovery_method_.has_value()) {
     PendingTrustedRecoveryMethod recovery_method =
@@ -410,16 +420,18 @@ void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
-void StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
+absl::optional<StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA>
+StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   // TODO(crbug.com/1102340): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
   if (!connection_) {
     // Feature disabled.
-    return;
+    return absl::nullopt;
   }
+
   if (!primary_account_.has_value()) {
     // Device registration is supported only for |primary_account_|.
-    return;
+    return absl::nullopt;
   }
 
   // |per_user_vault| must be created before calling this function.
@@ -432,19 +444,21 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
           switches::kAllowSilentTrustedVaultDeviceRegistration)) {
     // Either vault key with known version should be available or registration
     // without it should be allowed through feature flag.
-    return;
+    return absl::nullopt;
   }
+
+  if (per_user_vault->local_device_registration_info().device_registered()) {
+    return DeviceRegistrationStateForUMA::kAlreadyRegistered;
+  }
+
   if (per_user_vault->keys_are_stale()) {
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for device registration. Fresh keys should be obtained first.
-    return;
+    return DeviceRegistrationStateForUMA::kLocalKeysAreStale;
   }
-  if (per_user_vault->local_device_registration_info().device_registered()) {
-    // Device is already registered.
-    return;
-  }
+
   if (AreConnectionRequestsThrottled()) {
-    return;
+    return DeviceRegistrationStateForUMA::kThrottledClientSide;
   }
 
   std::unique_ptr<SecureBoxKeyPair> key_pair;
@@ -453,12 +467,11 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
         /*private_key_bytes=*/ProtoStringToBytes(
             per_user_vault->local_device_registration_info()
                 .private_key_material()));
-    if (!key_pair) {
-      // Device key is corrupted.
-      // TODO(crbug.com/1102340): consider generation of new key in this case.
-      return;
-    }
-  } else {
+  }
+
+  const bool had_generated_key_pair = key_pair != nullptr;
+
+  if (!key_pair) {
     key_pair = SecureBoxKeyPair::GenerateRandom();
     // It's possible that device will be successfully registered, but the client
     // won't persist this state (for example response doesn't reach the client
@@ -494,6 +507,11 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   }
 
   DCHECK(ongoing_connection_request_);
+
+  return had_generated_key_pair ? DeviceRegistrationStateForUMA::
+                                      kAttemptingRegistrationWithExistingKeyPair
+                                : DeviceRegistrationStateForUMA::
+                                      kAttemptingRegistrationWithNewKeyPair;
 }
 
 void StandaloneTrustedVaultBackend::OnDeviceRegistered(
