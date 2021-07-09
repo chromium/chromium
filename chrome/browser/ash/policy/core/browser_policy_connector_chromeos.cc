@@ -58,7 +58,7 @@
 #include "chrome/browser/chromeos/policy/networking/device_network_configuration_updater.h"
 #include "chrome/browser/chromeos/policy/remote_commands/affiliated_remote_commands_invalidator.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/device_scheduled_update_checker.h"
-#include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_executor.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
 #include "chrome/browser/chromeos/policy/server_backed_state/device_cloud_state_keys_uploader.h"
 #include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/chromeos/printing/bulk_printers_calculator_factory.h"
@@ -282,7 +282,7 @@ void BrowserPolicyConnectorChromeOS::Init(
       std::make_unique<DeviceScheduledUpdateChecker>(
           ash::CrosSettings::Get(),
           chromeos::NetworkHandler::Get()->network_state_handler(),
-          std::make_unique<ScheduledTaskExecutor>(
+          std::make_unique<ScheduledTaskExecutorImpl>(
               update_checker_internal::kUpdateCheckTimerTag));
 
   chromeos::BulkPrintersCalculatorFactory* calculator_factory =

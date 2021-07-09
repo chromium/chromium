@@ -5,15 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_TASK_HANDLER_SCHEDULED_TASK_EXECUTOR_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_TASK_HANDLER_SCHEDULED_TASK_EXECUTOR_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/native_timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {
 
@@ -56,58 +52,18 @@ class ScheduledTaskExecutor {
     base::TimeTicks next_scheduled_task_time_ticks;
   };
 
-  explicit ScheduledTaskExecutor(const char* timer_tag);
-  ScheduledTaskExecutor(const ScheduledTaskExecutor&) = delete;
-  ScheduledTaskExecutor& operator=(const ScheduledTaskExecutor&) = delete;
-  virtual ~ScheduledTaskExecutor();
+  virtual ~ScheduledTaskExecutor() = default;
 
-  // Starts the scheduled_task_timer_. Runs result_cb with false result if there
+  // Starts the native timer. Runs result_cb with false result if there
   // was an error while calculating the next_scheduled_task_time_ticks,
   // otherwise starts NativeTimer.
-  void Start(ScheduledTaskData* scheduled_task_data,
-             chromeos::OnStartNativeTimerCallback result_cb,
-             TimerCallback timer_expired_cb);
+  virtual void Start(ScheduledTaskData* scheduled_task_data,
+                     chromeos::OnStartNativeTimerCallback result_cb,
+                     TimerCallback timer_expired_cb) = 0;
 
-  // Resets the scheduled_task_timer_.
-  void Reset();
-
- protected:
-  // Calculates the delay from |cur_time| at which |scheduled_task_timer_|
-  // should run next. Returns 0 delay if the calculation failed due to a
-  // concurrent DST or Time Zone change.
-  virtual base::TimeDelta CalculateNextScheduledTaskTimerDelay(
-      base::Time cur_time,
-      ScheduledTaskData* scheduled_task_data);
-
- private:
-  // Returns current time.
-  virtual base::Time GetCurrentTime();
-
-  // Returns time ticks from boot including time ticks spent during sleeping.
-  virtual base::TimeTicks GetTicksSinceBoot();
-
-  // Returns the current time zone.
-  virtual const icu::TimeZone& GetTimeZone();
-
-  // Tag associated with native timer on timer instantiation.
-  std::string timer_tag_;
-
-  // Timer that is scheduled to execute the task.
-  std::unique_ptr<chromeos::NativeTimer> scheduled_task_timer_;
+  // Resets the native timer.
+  virtual void Reset() = 0;
 };
-
-namespace scheduled_task_internal {
-// Used as canonical value for timer delay calculations.
-constexpr base::TimeDelta kInvalidDelay = base::TimeDelta();
-
-// Calculates the difference in milliseconds of |a| - |b|. Caller has to ensure
-// |a| >= |b|.
-base::TimeDelta GetDiff(const icu::Calendar& a, const icu::Calendar& b);
-
-// Converts |cur_time| to ICU time in the time zone |tz|.
-std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
-                                                     const icu::TimeZone& tz);
-}  // namespace scheduled_task_internal
 
 }  // namespace policy
 

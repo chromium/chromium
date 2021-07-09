@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_executor.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/task_executor_with_retries.h"
 #include "chromeos/settings/cros_settings_names.h"
