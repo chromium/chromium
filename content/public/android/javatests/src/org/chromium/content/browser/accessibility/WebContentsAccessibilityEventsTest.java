@@ -208,6 +208,13 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_addAlertWithRoleChange() {
+        performTest("add-alert-with-role-change.html",
+                "add-alert-with-role-change-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_addChild() {
         performTest("add-child.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -261,6 +268,12 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     public void test_ariaAtomicChanged() {
         performTest("aria-atomic-changed.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaAtomicChanged2() {
+        performTest("aria-atomic-changed2.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
@@ -466,6 +479,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_ariaRelevantChanged2() {
+        performTest("aria-relevant-changed2.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaRequiredChanged() {
         performTest("aria-required-changed.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -525,6 +544,24 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     public void test_ariaSpinbuttonValuetextChanged() {
         performTest("aria-spinbutton-valuetext-change.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTextboxChildrenChange() {
+        performTest("aria-textbox-children-change.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTextboxEditabilityChanges() {
+        performTest("aria-textbox-editability-changes.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTextboxWithFocusableChildren() {
+        performTest("aria-textbox-with-focusable-children.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
@@ -798,8 +835,20 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_liveRegionOff() {
+        performTest("live-region-off.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_liveRegionRemove() {
         performTest("live-region-remove.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_menuBarShowHideMenus() {
+        performTest("menubar-show-hide-menus.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
@@ -929,6 +978,13 @@ public class WebContentsAccessibilityEventsTest {
     public void test_reportValidityInvalidField() {
         performTest("report-validity-invalid-field.html",
                 "report-validity-invalid-field-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_samePageLinkNavigation() {
+        performTest(
+                "same-page-link-navigation.html", "same-page-link-navigation-expected-android.txt");
     }
 
     @Test
