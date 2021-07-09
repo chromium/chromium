@@ -104,6 +104,12 @@ bool TextFragmentHandler::IsOverTextFragment(HitTestResult result) {
     return false;
   }
 
+  // Tree should be clean before accessing the position.
+  // |HitTestResult::GetPosition| calls |PositionForPoint()| which requires
+  // |kPrePaintClean|.
+  DCHECK_GE(result.InnerNodeFrame()->GetDocument()->Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+
   DocumentMarkerController& marker_controller =
       result.InnerNodeFrame()->GetDocument()->Markers();
   PositionWithAffinity pos_with_affinity = result.GetPosition();

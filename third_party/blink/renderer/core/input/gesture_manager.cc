@@ -328,8 +328,11 @@ WebInputEventResult GestureManager::HandleGestureTap(
       click_event_result);
 
   if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled() &&
-      TextFragmentHandler::IsOverTextFragment(current_hit_test)) {
-    if (event_result == WebInputEventResult::kNotHandled) {
+      current_hit_test.InnerNodeFrame()) {
+    current_hit_test.InnerNodeFrame()->View()->UpdateLifecycleToPrePaintClean(
+        DocumentUpdateReason::kHitTest);
+    if (TextFragmentHandler::IsOverTextFragment(current_hit_test) &&
+        event_result == WebInputEventResult::kNotHandled) {
       return SendContextMenuEventForGesture(targeted_event);
     }
   }
