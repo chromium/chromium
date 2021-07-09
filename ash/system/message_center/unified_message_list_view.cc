@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/system/message_center/unified_message_list_view.h"
+#include <string>
 
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/message_center/metrics_utils.h"
@@ -12,7 +14,10 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/auto_reset.h"
+#include "base/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/message_center/message_center.h"
@@ -21,6 +26,7 @@
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/widget/widget.h"
 
 using message_center::MessageCenter;
 using message_center::MessageView;
@@ -36,6 +42,31 @@ constexpr base::TimeDelta kClearAllStackedAnimationDuration =
     base::TimeDelta::FromMilliseconds(40);
 constexpr base::TimeDelta kClearAllVisibleAnimationDuration =
     base::TimeDelta::FromMilliseconds(160);
+
+constexpr char kMoveDownAnimationSmoothnessHistogramName[] =
+    "Ash.Notification.MoveDown.AnimationSmoothness";
+constexpr char kClearAllStackedAnimationSmoothnessHistogramName[] =
+    "Ash.Notification.ClearAllStacked.AnimationSmoothness";
+constexpr char kClearAllVisibleAnimationSmoothnessHistogramName[] =
+    "Ash.Notification.ClearAllVisible.AnimationSmoothness";
+
+void RecordAnimationSmoothness(const std::string& histogram_name,
+                               int smoothness) {
+  base::UmaHistogramPercentage(histogram_name, smoothness);
+}
+
+void SetupThroughputTrackerForAnimationSmoothness(
+    views::Widget* widget,
+    absl::optional<ui::ThroughputTracker>& tracker,
+    const char* histogram_name) {
+  // `widget` may not exist in tests.
+  if (!widget)
+    return;
+
+  tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
+  tracker->Start(ash::metrics_util::ForSmoothness(
+      base::BindRepeating(&RecordAnimationSmoothness, histogram_name)));
+}
 
 }  // namespace
 
@@ -475,6 +506,12 @@ void UnifiedMessageListView::OnSnoozeButtonPressed(
 }
 
 void UnifiedMessageListView::AnimationEnded(const gfx::Animation* animation) {
+  if (throughput_tracker_) {
+    // Reset `throughput_tracker_` to reset animation metrics recording.
+    throughput_tracker_->Stop();
+    throughput_tracker_.reset();
+  }
+
   // This is also called from AnimationCanceled().
   animation_->SetCurrentValue(1.0);
   PreferredSizeChanged();
@@ -623,22 +660,33 @@ void UnifiedMessageListView::DeleteRemovedNotifications() {
 void UnifiedMessageListView::StartAnimation() {
   DCHECK_NE(state_, State::IDLE);
 
+  base::TimeDelta animation_duration;
+
   switch (state_) {
     case State::IDLE:
       break;
     case State::MOVE_DOWN:
-      animation_->SetDuration(kClosingAnimationDuration);
-      animation_->Start();
+      SetupThroughputTrackerForAnimationSmoothness(
+          GetWidget(), throughput_tracker_,
+          kMoveDownAnimationSmoothnessHistogramName);
+      animation_duration = kClosingAnimationDuration;
       break;
     case State::CLEAR_ALL_STACKED:
-      animation_->SetDuration(kClearAllStackedAnimationDuration);
-      animation_->Start();
+      SetupThroughputTrackerForAnimationSmoothness(
+          GetWidget(), throughput_tracker_,
+          kClearAllStackedAnimationSmoothnessHistogramName);
+      animation_duration = kClearAllStackedAnimationDuration;
       break;
     case State::CLEAR_ALL_VISIBLE:
-      animation_->SetDuration(kClearAllVisibleAnimationDuration);
-      animation_->Start();
+      SetupThroughputTrackerForAnimationSmoothness(
+          GetWidget(), throughput_tracker_,
+          kClearAllVisibleAnimationSmoothnessHistogramName);
+      animation_duration = kClearAllVisibleAnimationDuration;
       break;
   }
+
+  animation_->SetDuration(animation_duration);
+  animation_->Start();
 }
 
 void UnifiedMessageListView::UpdateClearAllAnimation() {
@@ -660,8 +708,6 @@ void UnifiedMessageListView::UpdateClearAllAnimation() {
       }
 
       PreferredSizeChanged();
-
-      state_ = State::CLEAR_ALL_STACKED;
     } else {
       state_ = State::CLEAR_ALL_VISIBLE;
     }
