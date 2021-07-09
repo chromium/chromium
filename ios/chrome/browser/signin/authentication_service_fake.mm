@@ -41,7 +41,7 @@ void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
   // AuthenticationService.
   DCHECK(identity);
   sync_setup_service_->PrepareForFirstSyncSetup();
-  authenticated_identity_ = identity;
+  primary_identity_ = identity;
   consent_level_ = signin::ConsentLevel::kSignin;
 }
 
@@ -64,7 +64,7 @@ void AuthenticationServiceFake::SignOut(
 }
 
 void AuthenticationServiceFake::SignOutInternal(ProceduralBlock completion) {
-  authenticated_identity_ = nil;
+  primary_identity_ = nil;
   consent_level_ = signin::ConsentLevel::kSignin;
   if (completion)
     completion();
@@ -74,12 +74,11 @@ ChromeIdentity* AuthenticationServiceFake::GetPrimaryIdentity(
     signin::ConsentLevel consent_level) const {
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
-      return authenticated_identity_;
+      return primary_identity_;
       break;
     case signin::ConsentLevel::kSync:
-      return (consent_level_ == signin::ConsentLevel::kSync)
-                 ? authenticated_identity_
-                 : nil;
+      return (consent_level_ == signin::ConsentLevel::kSync) ? primary_identity_
+                                                             : nil;
       break;
   }
   return nil;
@@ -90,8 +89,8 @@ bool AuthenticationServiceFake::HasPrimaryIdentityManaged(
   if (!GetPrimaryIdentity(consent_level)) {
     return false;
   }
-  return [authenticated_identity_.userEmail
-      hasSuffix:ios::kManagedIdentityEmailSuffix];
+  return
+      [primary_identity_.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix];
 }
 
 std::unique_ptr<KeyedService>

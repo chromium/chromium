@@ -52,7 +52,7 @@ class AuthenticationServiceFake : public AuthenticationService {
   // Internal method effectively signing out the user.
   void SignOutInternal(ProceduralBlock completion);
 
-  __strong ChromeIdentity* authenticated_identity_;
+  __strong ChromeIdentity* primary_identity_;
   signin::ConsentLevel consent_level_ = signin::ConsentLevel::kSignin;
 
   // WeakPtrFactory should be last.
