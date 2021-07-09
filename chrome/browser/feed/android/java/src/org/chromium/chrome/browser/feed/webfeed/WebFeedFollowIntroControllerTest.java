@@ -34,10 +34,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -60,12 +62,16 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Tests {@link WebFeedFollowIntroController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowPostTask.class})
 public final class WebFeedFollowIntroControllerTest {
+    private static final long SAFE_INTRO_WAIT_TIME =
+            WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 10;
     private static final GURL sTestUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final byte[] sWebFeedId = "webFeedId".getBytes();
     private static final SharedPreferencesManager sSharedPreferencesManager =
@@ -108,8 +114,6 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Before
     public void setUp() {
-        FeatureList.setTestFeatures(new HashMap<String, Boolean>());
-
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
@@ -117,7 +121,6 @@ public final class WebFeedFollowIntroControllerTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
-        Profile.setLastUsedProfileForTesting(mProfile);
         mActivity = Robolectric.setupActivity(Activity.class);
         // Required for resolving an attribute used in AppMenuItemText.
         mActivity.setTheme(R.style.Theme_BrowserUI);
@@ -127,13 +130,16 @@ public final class WebFeedFollowIntroControllerTest {
         when(mTab.getUrl()).thenReturn(sTestUrl);
         when(mTab.isIncognito()).thenReturn(false);
         TrackerFactory.setTrackerForTests(mTracker);
+
+        // This empty setTestFeatures call below is needed to enable the field trial param calls.
+        FeatureList.setTestFeatures(new HashMap<String, Boolean>());
         mNumVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
         mDailyVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.WEB_FEED, PARAM_DAILY_VISIT_MIN, DEFAULT_DAILY_VISIT_MIN);
+
         mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity, mAppMenuHandler,
                 mTabSupplier, new View(mActivity), mFeedLauncher, mDialogManager, mSnackbarManager);
-
         mEmptyTabObserver = mWebFeedFollowIntroController.getEmptyTabObserverForTesting();
         mWebFeedFollowIntroController.setClockForTesting(mClock);
     }
@@ -146,8 +152,11 @@ public final class WebFeedFollowIntroControllerTest {
     @Test
     @SmallTest
     public void meetsShowingRequirements_showsIntro() {
-        prepareForMeetingIntroRequirements();
-        performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setRecommendableVisitCount(mNumVisitMin, mDailyVisitMin);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME);
 
         assertTrue(
                 "Intro should be shown.", mWebFeedFollowIntroController.getIntroShownForTesting());
@@ -165,10 +174,11 @@ public final class WebFeedFollowIntroControllerTest {
     @Test
     @SmallTest
     public void notRecommended_doesNotShowIntro() {
-        performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
-        invokePageLoad(new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl,
-                WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isActive=*/
-                true, /*isRecommended=*/false));
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setRecommendableVisitCount(mNumVisitMin, mDailyVisitMin);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/false);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME);
 
         assertFalse("Intro should not be shown.",
                 mWebFeedFollowIntroController.getIntroShownForTesting());
@@ -177,10 +187,11 @@ public final class WebFeedFollowIntroControllerTest {
     @Test
     @SmallTest
     public void subscribed_doesNotShowIntro() {
-        performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
-        invokePageLoad(new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl,
-                WebFeedSubscriptionStatus.SUBSCRIBED, /*isActive=*/
-                true, /*isRecommended=*/true));
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setRecommendableVisitCount(mNumVisitMin, mDailyVisitMin);
+        invokePageLoad(WebFeedSubscriptionStatus.SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME);
 
         assertFalse("Intro should not be shown.",
                 mWebFeedFollowIntroController.getIntroShownForTesting());
@@ -188,8 +199,12 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Test
     @SmallTest
-    public void scrollUpWithoutDelay_doesNotShowIntro() {
-        performScrollUpAfterDelay(0);
+    public void tooShortDelay_doesNotShowIntro() {
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setRecommendableVisitCount(mNumVisitMin, mDailyVisitMin);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME / 2);
 
         assertFalse("Intro should not be shown.",
                 mWebFeedFollowIntroController.getIntroShownForTesting());
@@ -197,10 +212,25 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Test
     @SmallTest
-    public void doesNotMeetVisitRequirements_doesNotShowIntro() {
-        setRecommendableVisitCount(
-                new WebFeedBridge.VisitCounts(mNumVisitMin - 1, mDailyVisitMin - 1));
-        performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
+    public void doesNotMeetTotalVisitRequirement_doesNotShowIntro() {
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setRecommendableVisitCount(mNumVisitMin - 1, mDailyVisitMin);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME);
+
+        assertFalse("Intro should not be shown.",
+                mWebFeedFollowIntroController.getIntroShownForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void doesNotMeetDailyVisitRequirement_doesNotShowIntro() {
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setRecommendableVisitCount(mNumVisitMin, mDailyVisitMin - 1);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME);
 
         assertFalse("Intro should not be shown.",
                 mWebFeedFollowIntroController.getIntroShownForTesting());
@@ -209,9 +239,11 @@ public final class WebFeedFollowIntroControllerTest {
     @Test
     @SmallTest
     public void lastShownTimeTooClose_doesNotShowIntro() {
-        setSharedPreferences(/*webFeedIntroLastShownTimeMs=*/mClock.currentTimeMillis(),
-                /*webFeedIntroWebFeedIdShownTimeMs=*/0);
-        performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
+        setWebFeedIntroLastShownTimeMsPref(mClock.currentTimeMillis() - 1000);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setRecommendableVisitCount(mNumVisitMin, mDailyVisitMin);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME);
 
         assertFalse("Intro should not be shown.",
                 mWebFeedFollowIntroController.getIntroShownForTesting());
@@ -220,9 +252,11 @@ public final class WebFeedFollowIntroControllerTest {
     @Test
     @SmallTest
     public void lastShownForWebFeedIdTimeTooClose_doesNotShowIntro() {
-        setSharedPreferences(/*webFeedIntroLastShownTimeMs=*/0,
-                /*webFeedIntroWebFeedIdShownTimeMs=*/mClock.currentTimeMillis());
-        performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(mClock.currentTimeMillis() - 1000);
+        setRecommendableVisitCount(mNumVisitMin, mDailyVisitMin);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME);
 
         assertFalse("Intro should not be shown.",
                 mWebFeedFollowIntroController.getIntroShownForTesting());
@@ -231,34 +265,33 @@ public final class WebFeedFollowIntroControllerTest {
     @Test
     @SmallTest
     public void featureEngagementTrackerSaysDoNotShow_doesNotShowIntro() {
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setRecommendableVisitCount(mNumVisitMin, mDailyVisitMin);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(false);
-        performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME);
 
         assertFalse("Intro should not be shown.",
                 mWebFeedFollowIntroController.getIntroShownForTesting());
     }
 
-    private void prepareForMeetingIntroRequirements() {
-        setSharedPreferences(
-                /*webFeedIntroLastShownTimeMs=*/0, /*webFeedIntroWebFeedIdShownTimeMs=*/0);
-        setRecommendableVisitCount(new WebFeedBridge.VisitCounts(mNumVisitMin, mDailyVisitMin));
-        invokePageLoad(new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl,
-                WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isActive=*/
-                true, /*isRecommended=*/true));
-    }
-
-    private void setSharedPreferences(
-            long webFeedIntroLastShownTimeMs, long webFeedIntroWebFeedIdShownTimeMs) {
+    private void setWebFeedIntroLastShownTimeMsPref(long webFeedIntroLastShownTimeMs) {
         sSharedPreferencesManager.writeLong(ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
                 webFeedIntroLastShownTimeMs);
+    }
+
+    private void setWebFeedIntroWebFeedIdShownTimeMsPref(long webFeedIntroWebFeedIdShownTimeMs) {
         sSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.createKey(
                         Base64.encodeToString(sWebFeedId, Base64.DEFAULT)),
                 webFeedIntroWebFeedIdShownTimeMs);
     }
 
-    private void setRecommendableVisitCount(WebFeedBridge.VisitCounts visitCounts) {
+    private void setRecommendableVisitCount(int numVisits, int dailyVisits) {
+        WebFeedBridge.VisitCounts visitCounts =
+                new WebFeedBridge.VisitCounts(numVisits, dailyVisits);
         doAnswer(invocation -> {
             invocation.<Callback<int[]>>getArgument(1).onResult(
                     new int[] {visitCounts.visits, visitCounts.dailyVisits});
@@ -268,7 +301,11 @@ public final class WebFeedFollowIntroControllerTest {
                 .getRecentVisitCountsToHost(eq(sTestUrl), any(Callback.class));
     }
 
-    private void invokePageLoad(WebFeedBridge.WebFeedMetadata webFeedMetadata) {
+    private void invokePageLoad(
+            @WebFeedSubscriptionStatus int subscriptionStatus, boolean isRecommended) {
+        WebFeedBridge.WebFeedMetadata webFeedMetadata =
+                new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl, subscriptionStatus,
+                        /*isActive=*/true, isRecommended);
         doAnswer(invocation -> {
             invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
                     webFeedMetadata);
@@ -283,9 +320,9 @@ public final class WebFeedFollowIntroControllerTest {
         assertEquals(sTestUrl, mPageInformationCaptor.getValue().mUrl);
     }
 
-    private void performScrollUpAfterDelay(long delay) {
-        mClock.advanceCurrentTimeMillis(delay);
-        mEmptyTabObserver.onContentViewScrollingEnded(/*verticalScrollDelta=*/10);
+    private void advanceClockByMs(long timeMs) {
+        mClock.advanceCurrentTimeMillis(timeMs);
+        Robolectric.getForegroundThreadScheduler().advanceBy(timeMs, TimeUnit.MILLISECONDS);
     }
 
     /**
