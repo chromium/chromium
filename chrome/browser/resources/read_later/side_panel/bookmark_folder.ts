@@ -107,6 +107,44 @@ export class BookmarkFolderElement extends PolymerElement {
     this.open_ =
         Boolean(this.openFolders) && this.openFolders.includes(this.folder.id);
   }
+
+  private getFocusableRows_(): HTMLElement[] {
+    return Array.from(
+        this.shadowRoot!.querySelectorAll('.row, bookmark-folder'));
+  }
+
+  moveFocus(delta: -1|1): boolean {
+    const currentFocus = this.shadowRoot!.activeElement;
+    if (currentFocus instanceof BookmarkFolderElement &&
+        currentFocus.moveFocus(delta)) {
+      // If focus is already inside a nested folder, delegate the focus to the
+      // nested folder and return early if successful.
+      return true;
+    }
+
+    let moveFocusTo = null;
+    const focusableRows = this.getFocusableRows_();
+    if (currentFocus) {
+      // If focus is in this folder, move focus to the next or previous
+      // focusable row.
+      const currentFocusIndex =
+          focusableRows.indexOf(currentFocus as HTMLElement);
+      moveFocusTo = focusableRows[currentFocusIndex + delta];
+    } else {
+      // If focus is not in this folder yet, move focus to either end.
+      moveFocusTo = delta === 1 ? focusableRows[0] :
+                                  focusableRows[focusableRows.length - 1];
+    }
+
+    if (moveFocusTo instanceof BookmarkFolderElement) {
+      return moveFocusTo.moveFocus(delta);
+    } else if (moveFocusTo) {
+      moveFocusTo.focus();
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 customElements.define(BookmarkFolderElement.is, BookmarkFolderElement);

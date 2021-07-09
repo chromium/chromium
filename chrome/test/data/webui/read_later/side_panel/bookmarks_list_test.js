@@ -199,4 +199,49 @@ suite('SidePanelBookmarksListTest', () => {
         JSON.stringify(['5001']),
         window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY]);
   });
+
+  test('MovesFocusBetweenFolders', () => {
+    const folderElements = getFolderElements(bookmarksList);
+
+    /** @param {string} key */
+    function dispatchArrowKey(key) {
+      bookmarksList.dispatchEvent(new KeyboardEvent('keydown', {key}));
+    }
+
+    /** @param {number} index */
+    function assertActiveElement(index) {
+      assertEquals(
+          folderElements[index], bookmarksList.shadowRoot.activeElement);
+    }
+
+    // Move focus to the first folder.
+    folderElements[0].moveFocus(1);
+    assertActiveElement(0);
+
+    // One ArrowDown key should still keep focus in the first folder since the
+    // folder has children.
+    dispatchArrowKey('ArrowDown');
+    assertActiveElement(0);
+
+    // Two ArrowsDown to eventually make it to the second folder.
+    dispatchArrowKey('ArrowDown');
+    dispatchArrowKey('ArrowDown');
+    assertActiveElement(1);
+
+    // One ArrowsDown to eventually make it to the third folder.
+    dispatchArrowKey('ArrowDown');
+    assertActiveElement(2);
+
+    // One ArrowsDown to loop back to the first folder.
+    dispatchArrowKey('ArrowDown');
+    assertActiveElement(0);
+
+    // One ArrowUp to loop back to the last folder.
+    dispatchArrowKey('ArrowUp');
+    assertActiveElement(2);
+
+    // One ArrowUp to loop back to the second folder.
+    dispatchArrowKey('ArrowUp');
+    assertActiveElement(1);
+  });
 });

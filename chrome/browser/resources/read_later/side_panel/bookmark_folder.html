@@ -93,16 +93,16 @@
 </button>
 
 <div id="children" role="group">
-  <template is="dom-if" if="[[open_]]">
+  <template is="dom-if" if="[[open_]]" restamp>
     <template is="dom-repeat" items="[[folder.children]]">
-      <template is="dom-if" if="[[!item.url]]">
+      <template is="dom-if" if="[[!item.url]]" restamp>
         <bookmark-folder role="treeitem" folder="[[item]]"
             depth="[[childDepth_]]"
             open-folders="[[openFolders]]">
         </bookmark-folder>
       </template>
 
-      <template is="dom-if" if="[[item.url]]">
+      <template is="dom-if" if="[[item.url]]" restamp>
         <a role="treeitem" href="[[item.url]]" class="bookmark row"
             on-click="onBookmarkClick_">
           <div

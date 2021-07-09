@@ -5,7 +5,7 @@
 import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FOLDER_OPEN_CHANGED_EVENT} from './bookmark_folder.js';
+import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from './bookmark_folder.js';
 import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
 
 // Key for localStorage object that refers to all the open folders.
@@ -49,6 +49,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
         FOLDER_OPEN_CHANGED_EVENT,
         e => this.onFolderOpenChanged_(
             e as CustomEvent<{id: string, open: boolean}>));
+    this.addEventListener('keydown', e => this.onKeydown_(e));
   }
 
   connectedCallback() {
@@ -181,6 +182,31 @@ export class BookmarksListElement extends BookmarksListElementBase {
     }
     window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] =
         JSON.stringify(this.openFolders_);
+  }
+
+  private onKeydown_(event: KeyboardEvent) {
+    if (!['ArrowDown', 'ArrowUp'].includes(event.key)) {
+      return;
+    }
+
+    if (!(this.shadowRoot!.activeElement instanceof BookmarkFolderElement)) {
+      // If the key event did not happen within a BookmarkFolderElement, do
+      // not do anything.
+      return;
+    }
+
+    const allFolderElements: BookmarkFolderElement[] =
+        Array.from(this.shadowRoot!.querySelectorAll('bookmark-folder'));
+
+    const delta = event.key === 'ArrowUp' ? -1 : 1;
+    let currentIndex =
+        allFolderElements.indexOf(this.shadowRoot!.activeElement);
+    let focusHasMoved = false;
+    while (!focusHasMoved) {
+      focusHasMoved = allFolderElements[currentIndex]!.moveFocus(delta);
+      currentIndex = (currentIndex + delta + allFolderElements.length) %
+          allFolderElements.length;
+    }
   }
 
   private onMoved_(movedInfo: chrome.bookmarks.MoveInfo) {
