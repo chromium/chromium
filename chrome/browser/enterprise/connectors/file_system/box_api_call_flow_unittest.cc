@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
@@ -207,6 +208,73 @@ std::vector<FindUpstreamFolderSuccessResponses> kTestSuccessResponses = {
 INSTANTIATE_TEST_SUITE_P(BoxFindUpstreamFolderApiCallFlowTest,
                          BoxFindUpstreamFolder_ProcessApiCallSuccessTest,
                          testing::ValuesIn(kTestSuccessResponses));
+
+////////////////////////////////////////////////////////////////////////////////
+// GetFileFolder
+////////////////////////////////////////////////////////////////////////////////
+
+class BoxGetFileFolderApiCallFlowForTest : public BoxGetFileFolderApiCallFlow {
+ public:
+  using BoxGetFileFolderApiCallFlow::BoxGetFileFolderApiCallFlow;
+  using BoxGetFileFolderApiCallFlow::CreateApiCallUrl;
+  using BoxGetFileFolderApiCallFlow::ProcessApiCallFailure;
+  using BoxGetFileFolderApiCallFlow::ProcessApiCallSuccess;
+};
+
+class BoxGetFileFolderApiCallFlowTest
+    : public BoxFolderApiCallFlowTest<BoxGetFileFolderApiCallFlowForTest> {
+ protected:
+  void SetUp() override {
+    flow_ = std::make_unique<BoxGetFileFolderApiCallFlowForTest>(
+        base::BindOnce(&BoxGetFileFolderApiCallFlowTest::OnResponse,
+                       factory_.GetWeakPtr()),
+        kFileSystemBoxGetFileFolderFileId);
+  }
+
+  base::WeakPtrFactory<BoxGetFileFolderApiCallFlowTest> factory_{this};
+};
+
+TEST_F(BoxGetFileFolderApiCallFlowTest, CreateApiCallUrl) {
+  GURL path(base::StrCat({kFileSystemBoxGetFileFolderUrl, "/",
+                          kFileSystemBoxGetFileFolderFileId}));
+  ASSERT_EQ(flow_->CreateApiCallUrl(), path);
+}
+
+TEST_F(BoxGetFileFolderApiCallFlowTest, ProcessApiCallFailure) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_TOO_MANY_REQUESTS);
+  std::unique_ptr<std::string> body =
+      std::make_unique<std::string>(CreateFailureResponse(
+          net::HTTP_TOO_MANY_REQUESTS, "rate_limit_exceeded"));
+  flow_->ProcessApiCallFailure(net::OK, http_head.get(), std::move(body));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_TOO_MANY_REQUESTS);
+  ASSERT_EQ(box_error_code_, "rate_limit_exceeded");
+  ASSERT_EQ(box_request_id_, kFileSystemBoxClientErrorResponseRequestId);
+  ASSERT_EQ(processed_folder_id_, "");
+}
+
+class BoxGetFileFolderApiCallFlowTest_ProcessApiCallSuccess
+    : public BoxGetFileFolderApiCallFlowTest {
+ public:
+  BoxGetFileFolderApiCallFlowTest_ProcessApiCallSuccess()
+      : head_(network::CreateURLResponseHead(net::HTTP_OK)) {}
+
+ protected:
+  network::mojom::URLResponseHeadPtr head_;
+};
+
+TEST_F(BoxGetFileFolderApiCallFlowTest_ProcessApiCallSuccess, Normal) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_OK);
+  flow_->ProcessApiCallSuccess(
+      http_head.get(),
+      std::make_unique<std::string>(kFileSystemBoxGetFileFolderResponseBody));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_OK);
+  ASSERT_EQ(processed_folder_id_, kFileSystemBoxGetFileFolderResponseFolderId);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // CreateUpstreamFolder

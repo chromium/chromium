@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 
 namespace enterprise_connectors {
+const char kFileSystemBoxGetFileFolderUrl[] = "https://api.box.com/2.0/files";
 const char kFileSystemBoxFindFolderUrl[] =
     "https://api.box.com/2.0/search?type=folder&query=ChromeDownloads";
 const char kFileSystemBoxCreateFolderUrl[] = "https://api.box.com/2.0/folders";
@@ -34,6 +35,16 @@ std::string CreateFailureResponse(int http_code, const char* box_error) {
   return base::StringPrintf(kFileSystemBoxClientErrorResponseBodyFormat,
                             box_error, http_code);
 }
+
+// For box Get File Folder
+const char kFileSystemBoxGetFileFolderFileId[] = "123";
+const char kFileSystemBoxGetFileFolderResponseBody[] = R"({
+    "id": 12345,
+    "parent": {
+      "id": 23456
+    }
+  })";
+const char kFileSystemBoxGetFileFolderResponseFolderId[] = "23456";
 
 // For Box Pre-Upload Steps/////////////////////////////////////////////////////
 

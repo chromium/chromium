@@ -73,6 +73,23 @@ std::string ExtractId(const base::Value& entry) {
   return id;
 }
 
+std::string ExtractParentId(const base::Value& value) {
+  std::string id;
+  const base::Value* parent = nullptr;
+  const base::Value* parent_id = nullptr;
+
+  parent = value.FindPath("parent");
+
+  if (parent)
+    parent_id = parent->FindPath("id");
+  if (parent_id && parent_id->is_int())
+    id = base::NumberToString(parent_id->GetInt());
+  else
+    DLOG(ERROR) << "[BoxApiCallFlow] Parent ID not found";
+
+  return id;
+}
+
 // For possible extensions:
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 std::string GetMimeType(base::FilePath file_path) {
@@ -280,6 +297,48 @@ GURL BoxApiCallFlow::MakeUrlToShowFolder(const std::string& folder_id) {
   return folder_id.empty()
              ? GURL()
              : GURL("https://app.box.com/folder/").Resolve(folder_id);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// GetFileFolder
+////////////////////////////////////////////////////////////////////////////////
+// BoxApiCallFlow interface.
+// API reference:
+// https://developer.box.com/reference/resources/file/
+BoxGetFileFolderApiCallFlow::BoxGetFileFolderApiCallFlow(
+    TaskCallback callback,
+    const std::string& file_id)
+    : callback_(std::move(callback)), file_id_(file_id) {}
+BoxGetFileFolderApiCallFlow::~BoxGetFileFolderApiCallFlow() = default;
+
+GURL BoxGetFileFolderApiCallFlow::CreateApiCallUrl() {
+  std::string path("2.0/files/" + file_id_);
+  return BoxApiCallFlow::CreateApiCallUrl().Resolve(path);
+}
+
+void BoxGetFileFolderApiCallFlow::ProcessApiCallSuccess(
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  CHECK_EQ(response_code, net::HTTP_OK);
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *body, base::BindOnce(&BoxGetFileFolderApiCallFlow::OnSuccessJsonParsed,
+                            weak_factory_.GetWeakPtr()));
+}
+
+void BoxGetFileFolderApiCallFlow::ProcessFailure(Response response) {
+  std::move(callback_).Run(response, std::string());
+}
+
+void BoxGetFileFolderApiCallFlow::OnSuccessJsonParsed(ParseResult result) {
+  std::string folder_id;
+
+  if (result.value.has_value())
+    folder_id = ExtractParentId(result.value.value());
+
+  std::move(callback_).Run(Response{!folder_id.empty(), net::HTTP_OK},
+                           folder_id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

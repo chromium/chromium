@@ -53,6 +53,33 @@ class BoxApiCallFlow : public OAuth2ApiCallFlow {
   base::WeakPtrFactory<BoxApiCallFlow> weak_factory_{this};
 };
 
+// Helper for getting the folder of a file in Box.
+class BoxGetFileFolderApiCallFlow : public BoxApiCallFlow {
+ public:
+  // Additional callback arg is: folder_id for the downloads folder found in
+  // Box.
+  using TaskCallback = base::OnceCallback<void(Response, const std::string&)>;
+  explicit BoxGetFileFolderApiCallFlow(TaskCallback callback,
+                                       const std::string& file_id);
+  ~BoxGetFileFolderApiCallFlow() override;
+
+ protected:
+  // BoxApiCallFlow interface.
+  GURL CreateApiCallUrl() override;
+  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
+
+ private:
+  // Callback for JsonParser that extracts folder id in ProcessApiCallSuccess().
+  void OnSuccessJsonParsed(ParseResult result);
+
+  // Callback from the uploader to report success, http_code, folder_id.
+  TaskCallback callback_;
+  const std::string file_id_;
+  base::WeakPtrFactory<BoxGetFileFolderApiCallFlow> weak_factory_{this};
+};
+
 // Helper for finding the downloads folder in Box.
 class BoxFindUpstreamFolderApiCallFlow : public BoxApiCallFlow {
  public:
