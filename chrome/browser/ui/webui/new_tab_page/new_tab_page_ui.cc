@@ -209,6 +209,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
        IDS_NTP_MODULES_RECIPE_TASKS_LOWER_THESE},
       {"modulesTasksInfo", IDS_NTP_MODULES_TASKS_INFO},
       {"modulesCartSentence", IDS_NTP_MODULES_CART_SENTENCE},
+      {"modulesCartSentenceV2", IDS_NTP_MODULES_CART_SENTENCE_V2},
       {"modulesCartLower", IDS_NTP_MODULES_CART_LOWER},
       {"modulesCartLowerThese", IDS_NTP_MODULES_CART_LOWER_THESE},
       {"modulesCartLowerYour", IDS_NTP_MODULES_CART_LOWER_YOUR},

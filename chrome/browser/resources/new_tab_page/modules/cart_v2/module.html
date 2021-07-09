@@ -54,7 +54,7 @@
 
   #consentCard,
   .cart-item {
-    margin: 0 4px;
+    margin: 0 15px 24px 15px;
   }
 
   .cart-item {
@@ -120,6 +120,7 @@
     color: var(--cr-primary-text-color);
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
     font-size: 13px;
     width: 99px;
   }
@@ -286,7 +287,7 @@
                                     'modulesCartLower')]]"
       show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
       on-disable-button-click="onDisableButtonClick_">
-    [[i18n('modulesCartSentence')]]
+    [[i18n('modulesCartSentenceV2')]]
   </ntp-module-header>
   <div id="moduleContent">
     <div id="cartCarousel">
@@ -375,18 +376,14 @@
     </cr-action-menu>
   </div>
   <div id="moduleFooter">
-    <template is="dom-if" if="[[showLeftScrollButton_]]">
-      <div id="leftScrollShadow" class="side-scroll-shadow"></div>
-      <cr-icon-button id="leftScrollButton"
-          class="side-scroll-button" on-click="onLeftScrollClick_">
-      </cr-icon-button>
-    </template>
-    <template is="dom-if" if="[[showRightScrollButton_]]">
-      <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
-      <cr-icon-button id="rightScrollButton"
-          class="side-scroll-button" on-click="onRightScrollClick_">
-      </cr-icon-button>
-    </template>
+    <div id="leftScrollShadow" class="side-scroll-shadow"></div>
+    <cr-icon-button id="leftScrollButton" class="side-scroll-button"
+        disabled="[[!showLeftScrollButton_]]" on-click="onLeftScrollClick_">
+    </cr-icon-button>
+    <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
+    <cr-icon-button id="rightScrollButton" class="side-scroll-button"
+        disabled="[[!showRightScrollButton_]]" on-click="onRightScrollClick_">
+    </cr-icon-button>
   </div>
 </div>
 <cr-toast id="dismissCartToast" duration="10000">

@@ -5819,6 +5819,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_SENTENCE" desc="Name of the chrome cart module in sentence case shown in various UIs.">
         Your carts
       </message>
+      <message name="IDS_NTP_MODULES_CART_SENTENCE_V2" desc="Name of the chrome cart module V2 in sentence case shown in various UIs.">
+        In your shopping cart
+      </message>
       <message name="IDS_NTP_MODULES_CART_LOWER" desc="Name of the chrome cart module in lowercase shown in various UIs.">
         carts
       </message>
