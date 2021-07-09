@@ -1763,7 +1763,6 @@ def main(argv):
   if is_static_library_dex_provider_target:
     # Map classpath entries to configs that include them in their classpath.
     configs_by_classpath_entry = collections.defaultdict(list)
-    static_lib_jar_paths = {}
     for config_path, dep_config in (sorted(
         static_library_dependent_configs_by_path.items())):
       # For bundles, only the jar path and jni sources of the base module
@@ -1773,7 +1772,6 @@ def main(argv):
       if dep_config['type'] == 'android_app_bundle':
         base_config = GetDepConfig(dep_config['base_module_config'])
       extra_main_r_text_files.append(base_config['r_text_path'])
-      static_lib_jar_paths[config_path] = base_config['device_jar_path']
       proguard_configs.extend(dep_config['proguard_all_configs'])
       extra_proguard_classpath_jars.extend(
           dep_config['proguard_classpath_jars'])
