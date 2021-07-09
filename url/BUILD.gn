@@ -211,10 +211,6 @@ test("url_unittests") {
     "//testing/gtest",
   ]
 
-  if (!is_ios) {
-    sources += [ "mojom/url_gurl_mojom_traits_unittest.cc" ]
-  }
-
   if (use_platform_icu_alternatives) {
     # Unit tests that are not supported by the current ICU alternatives on Android.
     if (is_android) {
@@ -239,8 +235,10 @@ test("url_unittests") {
   }
 
   if (!is_ios) {
+    sources += [ "mojom/url_gurl_mojom_traits_unittest.cc" ]
     deps += [
       "//mojo/core/embedder",
+      "//url/ipc:url_ipc_unittests",
       "//url/mojom:test_url_mojom_gurl",
     ]
   }

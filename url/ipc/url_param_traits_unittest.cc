@@ -118,20 +118,19 @@ TEST(IPCMessageTest, SerializeGurl_WindowsDriveInPathReplacement) {
   ExpectSerializationRoundtrips(url1_with_replaced_path);
 #endif
 
-  // On Windows, `url1_with_replaced_path` will round-trip as `url2`.  (There is
-  // nothing wrong with `url2` - its serialization round-trips just fine;  the
-  // test assertions below just help explain the lack of round-tripping of
-  // `url1_with_replaced_path` above.)
-  GURL url2("file://hostname/C:/dir/file.txt");
-  ExpectSerializationRoundtrips(url2);
+  // On Windows, IPC will serialize/deserialze `url1_with_replaced_path` as
+  // `url2` (i.e. it won't round-trip the URL spec).  The test assertions below
+  // help illustrate why we can't assert ExpectSerializationRoundtrips above (on
+  // Windows).
+  EXPECT_EQ("file://hostname/C:/dir/file.txt", url1_with_replaced_path.spec());
+  GURL url2(url1_with_replaced_path.spec());
 #ifdef WIN32
-  EXPECT_EQ(url2.spec(), url1_with_replaced_path.spec());
-  EXPECT_EQ(url2.path(), url1_with_replaced_path.path());
-  EXPECT_EQ(url2.host(), url1_with_replaced_path.host());
-  EXPECT_EQ("/C:/dir/file.txt", url2.path());
+  EXPECT_NE(url2.spec(), url1_with_replaced_path.spec());
   EXPECT_EQ("", url2.host());
 #else
-  EXPECT_EQ("/C:/dir/file.txt", url2.path());
+  EXPECT_EQ(url2.spec(), url1_with_replaced_path.spec());
   EXPECT_EQ("hostname", url2.host());
 #endif
+  EXPECT_EQ(url2.path(), url1_with_replaced_path.path());
+  ExpectSerializationRoundtrips(url2);
 }

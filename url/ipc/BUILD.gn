@@ -22,13 +22,14 @@ component("url_ipc") {
 
 # IPC unit tests aren't build on iOS.
 if (!is_ios) {
-  test("url_ipc_unittests") {
+  source_set("url_ipc_unittests") {
+    testonly = true
+
     sources = [ "url_param_traits_unittest.cc" ]
 
     deps = [
       ":url_ipc",
       "//base",
-      "//base/test:run_all_unittests",
       "//ipc:test_support",
       "//testing/gtest",
       "//url:url",
