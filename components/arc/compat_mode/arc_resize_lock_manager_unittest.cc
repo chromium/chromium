@@ -202,7 +202,7 @@ TEST_F(ArcResizeLockManagerTest, ResizeLockStateForFirstTimeLaunch) {
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
                           ash::ArcResizeLockType::FULLY_LOCKED);
   EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
-            mojom::ArcResizeLockState::ON);
+            mojom::ArcResizeLockState::FULLY_LOCKED);
 }
 
 }  // namespace arc

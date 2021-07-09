@@ -19,6 +19,9 @@ enum ArcResizeLockState {
   ON = 2,
   // Resize lock is disabled via the Chrome OS settings.
   OFF = 3,
+  // Resize lock is enabled, and even resize/resizability toggle is not
+  // available.
+  FULLY_LOCKED = 4,
 };
 
 // Interface for synchronizing the Chrome OS setting value for compatibility

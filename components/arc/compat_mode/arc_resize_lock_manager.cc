@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -197,7 +198,20 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   // lock for an app for the first time.
   if (pref_delegate_->GetResizeLockState(*app_id) ==
       mojom::ArcResizeLockState::READY) {
-    pref_delegate_->SetResizeLockState(*app_id, mojom::ArcResizeLockState::ON);
+    const ash::ArcResizeLockType resize_lock_value =
+        window->GetProperty(ash::kArcResizeLockTypeKey);
+    switch (resize_lock_value) {
+      case ash::ArcResizeLockType::RESIZE_LIMITED:
+        pref_delegate_->SetResizeLockState(*app_id,
+                                           mojom::ArcResizeLockState::ON);
+        break;
+      case ash::ArcResizeLockType::FULLY_LOCKED:
+        pref_delegate_->SetResizeLockState(
+            *app_id, mojom::ArcResizeLockState::FULLY_LOCKED);
+        break;
+      case ash::ArcResizeLockType::RESIZABLE:
+        NOTREACHED();
+    }
     is_first_launch = true;
   }
 

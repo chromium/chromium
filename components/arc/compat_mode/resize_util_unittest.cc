@@ -169,4 +169,12 @@ TEST_F(ResizeUtilTest, TestShouldShowSplashScreenDialog) {
   EXPECT_FALSE(ShouldShowSplashScreenDialog(pref_delegate()));
 }
 
+// Test that an unresizable app is not in resizable mode.
+TEST_F(ResizeUtilTest, TestPredictCurrentModeForUnresizable) {
+  widget()->widget_delegate()->SetCanResize(false);
+  ResizeLockToPhone(widget(), pref_delegate());
+  EXPECT_EQ(PredictCurrentMode(widget(), pref_delegate()),
+            ResizeCompatMode::kPhone);
+}
+
 }  // namespace arc

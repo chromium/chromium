@@ -139,12 +139,16 @@ absl::optional<ResizeCompatMode> PredictCurrentMode(
   // We don't use the exact size here to predict tablet or phone size because
   // the window size might be bigger than it due to the ARC app-side minimum
   // size constraints.
-  if (app_id && pref_delegate->GetResizeLockState(*app_id) !=
-                    mojom::ArcResizeLockState::ON)
+  if (!app_id)
+    return absl::nullopt;
+  const auto resize_lock_state = pref_delegate->GetResizeLockState(*app_id);
+  if (resize_lock_state != mojom::ArcResizeLockState::ON &&
+      resize_lock_state != mojom::ArcResizeLockState::FULLY_LOCKED) {
     return ResizeCompatMode::kResizable;
-  else if (width < height)
+  }
+  if (width < height)
     return ResizeCompatMode::kPhone;
-  else if (width > height)
+  if (width > height)
     return ResizeCompatMode::kTablet;
   return absl::nullopt;
 }

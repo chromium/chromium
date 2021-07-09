@@ -485,6 +485,9 @@ apps::mojom::OptionalBool IsResizeLocked(ArcAppListPrefs* prefs,
       return apps::mojom::OptionalBool::kFalse;
     case arc::mojom::ArcResizeLockState::UNDEFINED:
     case arc::mojom::ArcResizeLockState::READY:
+    // FULLY_LOCKED means the resize-lock-related features are not available
+    // including the resizability toggle in the app management page.
+    case arc::mojom::ArcResizeLockState::FULLY_LOCKED:
       return apps::mojom::OptionalBool::kUnknown;
   }
 }
