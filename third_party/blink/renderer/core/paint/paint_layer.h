@@ -408,6 +408,10 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
 
   PaintLayer* EnclosingDirectlyCompositableLayer(IncludeSelfOrNot) const;
 
+  // For CompositeAfterPaint, but not for LayoutNGBlockFragmentation.
+  const PaintLayer* EnclosingCompositedScrollingLayerUnderPagination(
+      IncludeSelfOrNot) const;
+
   // https://crbug.com/751768, this function can return nullptr sometimes.
   // Always check the result before using it, don't just DCHECK.
   PaintLayer* EnclosingLayerForPaintInvalidationCrossingFrameBoundaries() const;

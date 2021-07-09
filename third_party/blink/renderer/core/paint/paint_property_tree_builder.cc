@@ -2963,12 +2963,15 @@ void PaintPropertyTreeBuilder::InitSingleFragmentFromParent(
 
   // Column-span:all skips pagination container in the tree hierarchy, so it
   // should also skip any fragment clip created by the skipped pagination
-  // container. We also need to skip fragment clip if the object is a paint
-  // invalidation container which doesn't allow fragmentation.
-  bool skip_fragment_clip_for_composited_layer =
-      !RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      object_.CanBeCompositedForDirectReasons() &&
-      To<LayoutBoxModelObject>(object_).Layer()->EnclosingPaginationLayer();
+  // container. We also need to skip fragment clip if the layer doesn't allow
+  // fragmentation.
+  bool skip_fragment_clip_for_composited_layer = false;
+  if (object_.HasLayer()) {
+    const auto* layer = To<LayoutBoxModelObject>(object_).Layer();
+    skip_fragment_clip_for_composited_layer =
+        layer->EnclosingPaginationLayer() &&
+        !layer->ShouldFragmentCompositedBounds();
+  }
   if (!skip_fragment_clip_for_composited_layer && !object_.IsColumnSpanAll())
     return;
 
@@ -3011,8 +3014,6 @@ void PaintPropertyTreeBuilder::InitSingleFragmentFromParent(
 
 void PaintPropertyTreeBuilder::UpdateCompositedLayerPaginationOffset() {
   DCHECK(!IsInNGFragmentTraversal());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
 
   const auto* enclosing_pagination_layer =
       context_.painting_layer->EnclosingPaginationLayer();
@@ -3026,13 +3027,28 @@ void PaintPropertyTreeBuilder::UpdateCompositedLayerPaginationOffset() {
   DCHECK(!context_.painting_layer->ShouldFragmentCompositedBounds());
   FragmentData& first_fragment =
       object_.GetMutableForPainting().FirstFragment();
-  bool can_be_directly_composited = object_.CanBeCompositedForDirectReasons();
-  const auto* parent_directly_composited_layer =
-      context_.painting_layer->EnclosingDirectlyCompositableLayer(
-          can_be_directly_composited ? kExcludeSelf : kIncludeSelf);
-  if (can_be_directly_composited &&
-      (!parent_directly_composited_layer ||
-       !parent_directly_composited_layer->EnclosingPaginationLayer())) {
+  bool may_use_self_pagination_offset = false;
+  const PaintLayer* parent_pagination_offset_layer = nullptr;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    parent_pagination_offset_layer =
+        context_.painting_layer
+            ->EnclosingCompositedScrollingLayerUnderPagination(kIncludeSelf);
+    if (parent_pagination_offset_layer->GetLayoutObject() == object_) {
+      may_use_self_pagination_offset = true;
+      parent_pagination_offset_layer =
+          parent_pagination_offset_layer
+              ->EnclosingCompositedScrollingLayerUnderPagination(kExcludeSelf);
+    }
+  } else {
+    may_use_self_pagination_offset = object_.CanBeCompositedForDirectReasons();
+    parent_pagination_offset_layer =
+        context_.painting_layer->EnclosingDirectlyCompositableLayer(
+            may_use_self_pagination_offset ? kExcludeSelf : kIncludeSelf);
+  }
+
+  if (may_use_self_pagination_offset &&
+      (!parent_pagination_offset_layer ||
+       !parent_pagination_offset_layer->EnclosingPaginationLayer())) {
     // |object_| establishes the top level composited layer under the
     // pagination layer.
     FragmentainerIterator iterator(
@@ -3045,10 +3061,10 @@ void PaintPropertyTreeBuilder::UpdateCompositedLayerPaginationOffset() {
       first_fragment.SetLogicalTopInFlowThread(
           iterator.FragmentainerLogicalTopInFlowThread());
     }
-  } else if (parent_directly_composited_layer) {
+  } else if (parent_pagination_offset_layer) {
     // All objects under the composited layer use the same pagination offset.
     const auto& fragment =
-        parent_directly_composited_layer->GetLayoutObject().FirstFragment();
+        parent_pagination_offset_layer->GetLayoutObject().FirstFragment();
     first_fragment.SetLegacyPaginationOffset(fragment.LegacyPaginationOffset());
     first_fragment.SetLogicalTopInFlowThread(fragment.LogicalTopInFlowThread());
   }

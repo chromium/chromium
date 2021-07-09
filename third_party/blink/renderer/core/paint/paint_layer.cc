@@ -1135,6 +1135,21 @@ PaintLayer* PaintLayer::EnclosingDirectlyCompositableLayer(
   return nullptr;
 }
 
+const PaintLayer* PaintLayer::EnclosingCompositedScrollingLayerUnderPagination(
+    IncludeSelfOrNot include_self_or_not) const {
+  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  const auto* start_layer =
+      include_self_or_not == kIncludeSelf ? this : CompositingContainer();
+  for (const auto* curr = start_layer; curr && curr->EnclosingPaginationLayer();
+       curr = curr->CompositingContainer()) {
+    if (const auto* scrollable_area = curr->GetScrollableArea()) {
+      if (scrollable_area->NeedsCompositedScrolling())
+        return curr;
+    }
+  }
+  return nullptr;
+}
+
 void PaintLayer::SetNeedsCompositingInputsUpdate(bool mark_ancestor_flags) {
   SetNeedsCompositingInputsUpdateInternal();
 
@@ -1739,8 +1754,12 @@ bool PaintLayer::ShouldFragmentCompositedBounds(
     const PaintLayer* compositing_layer) const {
   if (!EnclosingPaginationLayer())
     return false;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return true;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // We should not fragment composited scrolling layers and descendants, which
+    // is not only to render the scroller correctly, but also to prevent
+    // multiple cc::Layers with the same scrolling element id.
+    return !EnclosingCompositedScrollingLayerUnderPagination(kIncludeSelf);
+  }
   if (Transform() &&
       !PaintsWithDirectReasonIntoOwnBacking(kGlobalPaintNormalPhase))
     return true;
