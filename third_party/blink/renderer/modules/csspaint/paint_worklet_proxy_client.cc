@@ -186,72 +186,13 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
   PaintWorkletGlobalScope* global_scope = global_scopes_[base::RandInt(
       0, (PaintWorklet::kNumGlobalScopesPerThread)-1)];
 
+  // TODO(crbug.com/1227698): Use To<> with checks instead of static_cast.
   const CSSPaintWorkletInput* input =
       static_cast<const CSSPaintWorkletInput*>(compositor_input);
   CSSPaintDefinition* definition =
       global_scope->FindDefinition(input->NameCopy());
-  PaintWorkletStylePropertyMap* style_map =
-      MakeGarbageCollected<PaintWorkletStylePropertyMap>(input->StyleMapData());
-
-  CSSStyleValueVector paint_arguments;
-  for (const auto& style_value : input->ParsedInputArguments()) {
-    paint_arguments.push_back(style_value->ToCSSStyleValue());
-  }
-
-  ApplyAnimatedPropertyOverrides(style_map, animated_property_values);
-
   device_pixel_ratio_ = input->DeviceScaleFactor() * input->EffectiveZoom();
-
-  sk_sp<PaintRecord> result = definition->Paint(
-      FloatSize(input->GetSize()), input->EffectiveZoom(), style_map,
-      &paint_arguments, input->DeviceScaleFactor());
-
-  // CSSPaintDefinition::Paint returns nullptr if it fails, but for
-  // OffThread-PaintWorklet we prefer to insert empty PaintRecords into the
-  // cache. Do the conversion here.
-  // TODO(smcgruer): Once OffThread-PaintWorklet launches, we can make
-  // CSSPaintDefinition::Paint return empty PaintRecords.
-  if (!result)
-    result = sk_make_sp<PaintRecord>();
-  return result;
-}
-
-void PaintWorkletProxyClient::ApplyAnimatedPropertyOverrides(
-    PaintWorkletStylePropertyMap* style_map,
-    const CompositorPaintWorkletJob::AnimatedPropertyValues&
-        animated_property_values) {
-  for (const auto& property_value : animated_property_values) {
-    DCHECK(property_value.second.has_value());
-    String property_name(
-        property_value.first.custom_property_name.value().c_str());
-    DCHECK(style_map->StyleMapData().Contains(property_name));
-    CrossThreadStyleValue* old_value =
-        style_map->StyleMapData().at(property_name);
-    switch (old_value->GetType()) {
-      case CrossThreadStyleValue::StyleValueType::kUnitType: {
-        DCHECK(property_value.second.float_value);
-        std::unique_ptr<CrossThreadUnitValue> new_value =
-            std::make_unique<CrossThreadUnitValue>(
-                property_value.second.float_value.value(),
-                DynamicTo<CrossThreadUnitValue>(old_value)->GetUnitType());
-        style_map->StyleMapData().Set(property_name, std::move(new_value));
-        break;
-      }
-      case CrossThreadStyleValue::StyleValueType::kColorType: {
-        DCHECK(property_value.second.color_value);
-        SkColor sk_color = property_value.second.color_value.value();
-        Color color(MakeRGBA(SkColorGetR(sk_color), SkColorGetG(sk_color),
-                             SkColorGetB(sk_color), SkColorGetA(sk_color)));
-        std::unique_ptr<CrossThreadColorValue> new_value =
-            std::make_unique<CrossThreadColorValue>(color);
-        style_map->StyleMapData().Set(property_name, std::move(new_value));
-        break;
-      }
-      default:
-        NOTREACHED();
-        break;
-    }
-  }
+  return definition->Paint(compositor_input, animated_property_values);
 }
 
 void ProvidePaintWorkletProxyClientTo(WorkerClients* clients,

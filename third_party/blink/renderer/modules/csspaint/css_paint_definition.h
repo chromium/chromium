@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
+#include "third_party/blink/renderer/modules/csspaint/paint_definition.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -21,6 +22,7 @@
 
 namespace blink {
 
+class PaintWorkletStylePropertyMap;
 class ScriptState;
 class StylePropertyMapReadOnly;
 class V8NoArgumentConstructor;
@@ -31,7 +33,8 @@ class V8PaintCallback;
 // types as well.
 class MODULES_EXPORT CSSPaintDefinition final
     : public GarbageCollected<CSSPaintDefinition>,
-      public NameClient {
+      public NameClient,
+      public PaintDefinition {
  public:
   CSSPaintDefinition(
       ScriptState*,
@@ -41,7 +44,12 @@ class MODULES_EXPORT CSSPaintDefinition final
       const Vector<AtomicString>& custom_invalidation_properties,
       const Vector<CSSSyntaxDefinition>& input_argument_types,
       const PaintRenderingContext2DSettings*);
-  ~CSSPaintDefinition() final;
+  ~CSSPaintDefinition() override;
+
+  // PaintDefinition override
+  sk_sp<PaintRecord> Paint(
+      const CompositorPaintWorkletInput*,
+      const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 
   // Invokes the javascript 'paint' callback on an instance of the javascript
   // class. The size given will be the size of the PaintRenderingContext2D
@@ -72,13 +80,17 @@ class MODULES_EXPORT CSSPaintDefinition final
 
   ScriptState* GetScriptState() const { return script_state_; }
 
-  virtual void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
   const char* NameInHeapSnapshot() const override {
     return "CSSPaintDefinition";
   }
 
  private:
   void MaybeCreatePaintInstance();
+  void ApplyAnimatedPropertyOverrides(
+      PaintWorkletStylePropertyMap* style_map,
+      const CompositorPaintWorkletJob::AnimatedPropertyValues&
+          animated_property_values);
 
   Member<ScriptState> script_state_;
 

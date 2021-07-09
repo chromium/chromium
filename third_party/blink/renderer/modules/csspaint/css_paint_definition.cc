@@ -10,6 +10,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_paint_callback.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
+#include "third_party/blink/renderer/core/css/cssom/cross_thread_color_value.h"
+#include "third_party/blink/renderer/core/css/cssom/cross_thread_unit_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -53,6 +56,33 @@ CSSPaintDefinition::CSSPaintDefinition(
 
 CSSPaintDefinition::~CSSPaintDefinition() = default;
 
+// PaintDefinition override
+sk_sp<PaintRecord> CSSPaintDefinition::Paint(
+    const CompositorPaintWorkletInput* compositor_input,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues&
+        animated_property_values) {
+  // TODO(crbug.com/1227698): Use To<> with checks instead of static_cast.
+  const CSSPaintWorkletInput* input =
+      static_cast<const CSSPaintWorkletInput*>(compositor_input);
+  PaintWorkletStylePropertyMap* style_map =
+      MakeGarbageCollected<PaintWorkletStylePropertyMap>(input->StyleMapData());
+  CSSStyleValueVector paint_arguments;
+  for (const auto& style_value : input->ParsedInputArguments()) {
+    paint_arguments.push_back(style_value->ToCSSStyleValue());
+  }
+
+  ApplyAnimatedPropertyOverrides(style_map, animated_property_values);
+
+  sk_sp<PaintRecord> result =
+      Paint(FloatSize(input->GetSize()), input->EffectiveZoom(), style_map,
+            &paint_arguments, input->DeviceScaleFactor());
+
+  // Return empty record if paint fails.
+  if (!result)
+    result = sk_make_sp<PaintRecord>();
+  return result;
+}
+
 sk_sp<PaintRecord> CSSPaintDefinition::Paint(
     const FloatSize& container_size,
     float zoom,
@@ -95,6 +125,44 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
   return rendering_context->GetRecord();
 }
 
+void CSSPaintDefinition::ApplyAnimatedPropertyOverrides(
+    PaintWorkletStylePropertyMap* style_map,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues&
+        animated_property_values) {
+  for (const auto& property_value : animated_property_values) {
+    DCHECK(property_value.second.has_value());
+    String property_name(
+        property_value.first.custom_property_name.value().c_str());
+    DCHECK(style_map->StyleMapData().Contains(property_name));
+    CrossThreadStyleValue* old_value =
+        style_map->StyleMapData().at(property_name);
+    switch (old_value->GetType()) {
+      case CrossThreadStyleValue::StyleValueType::kUnitType: {
+        DCHECK(property_value.second.float_value);
+        std::unique_ptr<CrossThreadUnitValue> new_value =
+            std::make_unique<CrossThreadUnitValue>(
+                property_value.second.float_value.value(),
+                DynamicTo<CrossThreadUnitValue>(old_value)->GetUnitType());
+        style_map->StyleMapData().Set(property_name, std::move(new_value));
+        break;
+      }
+      case CrossThreadStyleValue::StyleValueType::kColorType: {
+        DCHECK(property_value.second.color_value);
+        SkColor sk_color = property_value.second.color_value.value();
+        Color color(MakeRGBA(SkColorGetR(sk_color), SkColorGetG(sk_color),
+                             SkColorGetB(sk_color), SkColorGetA(sk_color)));
+        std::unique_ptr<CrossThreadColorValue> new_value =
+            std::make_unique<CrossThreadColorValue>(color);
+        style_map->StyleMapData().Set(property_name, std::move(new_value));
+        break;
+      }
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+}
+
 void CSSPaintDefinition::MaybeCreatePaintInstance() {
   if (did_call_constructor_)
     return;
@@ -115,6 +183,7 @@ void CSSPaintDefinition::Trace(Visitor* visitor) const {
   visitor->Trace(instance_);
   visitor->Trace(context_settings_);
   visitor->Trace(script_state_);
+  PaintDefinition::Trace(visitor);
 }
 
 }  // namespace blink

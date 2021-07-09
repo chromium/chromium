@@ -101,11 +101,6 @@ class MODULES_EXPORT PaintWorkletProxyClient
   FRIEND_TEST_ALL_PREFIXES(PaintWorkletProxyClientTest,
                            PaintWorkletProxyClientConstruction);
 
-  void ApplyAnimatedPropertyOverrides(
-      PaintWorkletStylePropertyMap* style_map,
-      const CompositorPaintWorkletJob::AnimatedPropertyValues&
-          animated_property_values);
-
   // Store the device pixel ratio here so it can be used off main thread
   double device_pixel_ratio_;
 
