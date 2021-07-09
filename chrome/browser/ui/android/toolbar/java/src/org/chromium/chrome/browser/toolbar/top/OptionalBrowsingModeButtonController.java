@@ -129,7 +129,7 @@ public class OptionalBrowsingModeButtonController {
      */
     private void updateCurrentOptionalButton(ButtonDataProvider provider) {
         ButtonData buttonData = provider.get(mTabSupplier.get());
-        if (buttonData.canShow()) {
+        if (buttonData != null && buttonData.canShow()) {
             setCurrentOptionalButton(provider, buttonData);
         } else {
             hideCurrentOptionalButton();
