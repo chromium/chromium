@@ -5,17 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DELEGATED_INK_INK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DELEGATED_INK_INK_H_
 
-#include "third_party/blink/renderer/modules/delegated_ink/delegated_ink_trail_presenter.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class Element;
+class ExceptionState;
 class Navigator;
 class ScriptPromise;
 class ScriptState;
+class V8PresenterType;
 
 class Ink : public ScriptWrappable, public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
@@ -26,8 +26,9 @@ class Ink : public ScriptWrappable, public Supplement<Navigator> {
 
   explicit Ink(Navigator&);
   ScriptPromise requestPresenter(ScriptState* state,
-                                 String type,
-                                 Element* presentationArea = nullptr);
+                                 const V8PresenterType& type,
+                                 Element* presentation_area,
+                                 ExceptionState& exception_state);
 
   void Trace(blink::Visitor*) const override;
 };

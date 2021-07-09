@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/modules/delegated_ink/ink.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_presenter_type.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/modules/delegated_ink/delegated_ink_trail_presenter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -26,32 +28,23 @@ Ink* Ink::ink(Navigator& navigator) {
 Ink::Ink(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
 ScriptPromise Ink::requestPresenter(ScriptState* state,
-                                    String type,
-                                    Element* presentationArea) {
+                                    const V8PresenterType& type,
+                                    Element* presentation_area,
+                                    ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::DelegatedInkTrailsEnabled());
-  DCHECK_EQ(type, "delegated-ink-trail");
+  DCHECK_EQ(type.AsEnum(), V8PresenterType::Enum::kDelegatedInkTrail);
+
+  if (!state->ContextIsValid()) {
+    exception_state.ThrowException(
+        ToExceptionCode(ESErrorType::kError),
+        "The object is no longer associated with a window.");
+    return ScriptPromise();
+  }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(state);
   ScriptPromise promise = resolver->Promise();
-
-  if (!state->ContextIsValid()) {
-    resolver->Reject(V8ThrowException::CreateError(
-        state->GetIsolate(),
-        "The object is no longer associated with a window."));
-    return promise;
-  }
-
-  if (type != "delegated-ink-trail") {
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        state->GetIsolate(), "Unknown type requested."));
-    return promise;
-  }
-
-  DelegatedInkTrailPresenter* trail_presenter =
-      DelegatedInkTrailPresenter::CreatePresenter(
-          presentationArea, GetSupplementable()->DomWindow()->GetFrame());
-
-  resolver->Resolve(trail_presenter);
+  resolver->Resolve(MakeGarbageCollected<DelegatedInkTrailPresenter>(
+      presentation_area, GetSupplementable()->DomWindow()->GetFrame()));
   return promise;
 }
 

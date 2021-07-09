@@ -63,7 +63,7 @@ class TestDelegatedInkMetadata {
 
 DelegatedInkTrailPresenter* CreatePresenter(Element* element,
                                             LocalFrame* frame) {
-  return DelegatedInkTrailPresenter::CreatePresenter(element, frame);
+  return MakeGarbageCollected<DelegatedInkTrailPresenter>(element, frame);
 }
 
 }  // namespace

@@ -29,9 +29,8 @@ class MODULES_EXPORT DelegatedInkTrailPresenter : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DelegatedInkTrailPresenter* CreatePresenter(Element* element,
-                                                     LocalFrame* frame);
   DelegatedInkTrailPresenter(Element* element, LocalFrame* frame);
+
   void updateInkTrailStartPoint(ScriptState* state,
                                 PointerEvent* evt,
                                 InkTrailStyle* style,

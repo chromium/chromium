@@ -20,17 +20,12 @@
 
 namespace blink {
 
-DelegatedInkTrailPresenter* DelegatedInkTrailPresenter::CreatePresenter(
-    Element* element,
-    LocalFrame* frame) {
-  DCHECK(!element || element->GetDocument() == frame->GetDocument());
-
-  return MakeGarbageCollected<DelegatedInkTrailPresenter>(element, frame);
-}
-
 DelegatedInkTrailPresenter::DelegatedInkTrailPresenter(Element* element,
                                                        LocalFrame* frame)
-    : presentation_area_(element), local_frame_(frame) {}
+    : presentation_area_(element), local_frame_(frame) {
+  DCHECK(!presentation_area_ ||
+         presentation_area_->GetDocument() == local_frame_->GetDocument());
+}
 
 void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
     ScriptState* state,

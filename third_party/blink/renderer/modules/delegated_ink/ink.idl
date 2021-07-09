@@ -12,5 +12,5 @@ enum PresenterType {
     RuntimeEnabled=DelegatedInkTrails,
     Exposed=Window
 ] interface Ink {
-    [CallWith=ScriptState] Promise<DelegatedInkTrailPresenter> requestPresenter(PresenterType type, optional Element? presentationArea = null);
+    [CallWith=ScriptState, RaisesException] Promise<DelegatedInkTrailPresenter> requestPresenter(PresenterType type, optional Element? presentationArea = null);
 };
