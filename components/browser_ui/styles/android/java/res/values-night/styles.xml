@@ -17,6 +17,7 @@
         <item name="colorSurface">@color/modern_grey_900</item>
         <item name="colorOnBackground">@color/modern_white</item>
         <item name="colorOnPrimary">@color/modern_blue_800</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
         <item name="colorOnSurface">@color/modern_grey_100</item>
         <item name="colorOnSurfaceVariant">@color/white_alpha_70</item>
         <item name="colorOnSurfaceInverse">@color/modern_grey_800</item>

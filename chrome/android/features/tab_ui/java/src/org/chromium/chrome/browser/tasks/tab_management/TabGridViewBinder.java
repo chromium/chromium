@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -113,6 +114,7 @@ class TabGridViewBinder {
             if (CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
                 updateColor(view, model.get(TabProperties.IS_INCOGNITO),
                         model.get(TabProperties.IS_SELECTED));
+                updateThumbnail(view, model);
             } else {
                 int selectedTabBackground =
                         model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
@@ -415,6 +417,11 @@ class TabGridViewBinder {
         if (thumbnail.getDrawable() == null) {
             thumbnail.setImageResource(
                     TabUiColorProvider.getThumbnailPlaceHolderColorResource(isIncognito));
+            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
+                thumbnail.setImageTintList(
+                        ColorStateList.valueOf(TabUiColorProvider.getMiniThumbnailPlaceHolderColor(
+                                backgroundView.getContext(), isIncognito, isSelected)));
+            }
         }
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(rootView.getContext())) {

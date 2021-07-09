@@ -77,13 +77,27 @@ public class TabUiColorProvider {
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
+     * @param isSelected Whether the tab is currently selected.
      * @return The text color for the number used on the tab group cards.
      */
     @ColorInt
-    public static int getTabGroupNumberTextColor(Context context, boolean isIncognito) {
-        return ApiCompatibilityUtils.getColor(context.getResources(),
-                isIncognito ? R.color.tab_group_number_text_color_incognito
-                            : R.color.tab_group_number_text_color);
+    public static int getTabGroupNumberTextColor(
+            Context context, boolean isIncognito, boolean isSelected) {
+        if (!themeRefactorEnabled()) {
+            return ApiCompatibilityUtils.getColor(context.getResources(),
+                    isIncognito ? R.color.tab_group_number_text_color_incognito
+                                : R.color.tab_group_number_text_color);
+        }
+        if (isIncognito) {
+            @ColorRes
+            int colorRes = isSelected ? R.color.incognito_tab_tile_number_selected_color
+                                      : R.color.incognito_tab_tile_number_color;
+            return ApiCompatibilityUtils.getColor(context.getResources(), colorRes);
+        } else {
+            return isSelected
+                    ? MaterialColors.getColor(context, R.attr.colorOnPrimaryContainer, TAG)
+                    : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+        }
     }
 
     /**
@@ -188,13 +202,34 @@ public class TabUiColorProvider {
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
+     * @param isSelected Whether the tab is currently selected.
      * @return The mini-thumbnail placeholder color.
      */
     @ColorInt
-    public static int getMiniThumbnailPlaceHolderColor(Context context, boolean isIncognito) {
-        return ApiCompatibilityUtils.getColor(context.getResources(),
-                isIncognito ? R.color.tab_list_mini_card_default_background_color_incognito
-                            : R.color.tab_list_mini_card_default_background_color);
+    public static int getMiniThumbnailPlaceHolderColor(
+            Context context, boolean isIncognito, boolean isSelected) {
+        if (!themeRefactorEnabled()) {
+            return ApiCompatibilityUtils.getColor(context.getResources(),
+                    isIncognito ? R.color.tab_list_mini_card_default_background_color_incognito
+                                : R.color.tab_list_mini_card_default_background_color);
+        }
+
+        if (isIncognito) {
+            @ColorRes
+            int colorRes = isSelected ? R.color.incognito_tab_thumbnail_placeholder_selected_color
+                                      : R.color.incognito_tab_thumbnail_placeholder_color;
+            return ApiCompatibilityUtils.getColor(context.getResources(), colorRes);
+        } else {
+            int alpha = context.getResources().getInteger(isSelected
+                            ? R.integer.tab_thumbnail_placeholder_selected_color_alpha
+                            : R.integer.tab_thumbnail_placeholder_color_alpha);
+            @ColorInt
+            int baseColor = isSelected
+                    ? MaterialColors.getColor(context, R.attr.colorPrimaryContainer, TAG)
+                    // TODO (crrev.com/c/2994242): Change light mode to Surface1.
+                    : MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
+            return MaterialColors.compositeARGBWithAlpha(baseColor, alpha);
+        }
     }
 
     /**
