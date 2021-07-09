@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -431,6 +432,79 @@ TEST_P(SQLDatabaseTest, ErrorCallback) {
 
     EXPECT_FALSE(db_->Execute("INSERT INTO foo (id) VALUES (12)"));
   }
+}
+
+TEST_P(SQLDatabaseTest, Execute_CompilationError) {
+  bool error_callback_called = false;
+  db_->set_error_callback(base::BindLambdaForTesting([&](int error,
+                                                         sql::Statement*
+                                                             statement) {
+    EXPECT_EQ(SQLITE_ERROR, error);
+    EXPECT_EQ(nullptr, statement);
+    EXPECT_FALSE(error_callback_called)
+        << "SQL compilation errors should call the error callback exactly once";
+    error_callback_called = true;
+  }));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_ERROR);
+    EXPECT_FALSE(db_->Execute("SELECT missing_column FROM missing_table"));
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+
+  EXPECT_TRUE(error_callback_called)
+      << "SQL compilation errors should call the error callback";
+}
+
+TEST_P(SQLDatabaseTest, GetUniqueStatement_CompilationError) {
+  bool error_callback_called = false;
+  db_->set_error_callback(base::BindLambdaForTesting([&](int error,
+                                                         sql::Statement*
+                                                             statement) {
+    EXPECT_EQ(SQLITE_ERROR, error);
+    EXPECT_EQ(nullptr, statement);
+    EXPECT_FALSE(error_callback_called)
+        << "SQL compilation errors should call the error callback exactly once";
+    error_callback_called = true;
+  }));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_ERROR);
+    sql::Statement statement(
+        db_->GetUniqueStatement("SELECT missing_column FROM missing_table"));
+    EXPECT_FALSE(statement.is_valid());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+
+  EXPECT_TRUE(error_callback_called)
+      << "SQL compilation errors should call the error callback";
+}
+
+TEST_P(SQLDatabaseTest, GetCachedStatement_CompilationError) {
+  bool error_callback_called = false;
+  db_->set_error_callback(base::BindLambdaForTesting([&](int error,
+                                                         sql::Statement*
+                                                             statement) {
+    EXPECT_EQ(SQLITE_ERROR, error);
+    EXPECT_EQ(nullptr, statement);
+    EXPECT_FALSE(error_callback_called)
+        << "SQL compilation errors should call the error callback exactly once";
+    error_callback_called = true;
+  }));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_ERROR);
+    sql::Statement statement(db_->GetCachedStatement(
+        SQL_FROM_HERE, "SELECT missing_column FROM missing_table"));
+    EXPECT_FALSE(statement.is_valid());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+
+  EXPECT_TRUE(error_callback_called)
+      << "SQL compilation errors should call the error callback";
 }
 
 // Test that Database::Raze() results in a database without the
@@ -1405,20 +1479,6 @@ TEST_P(SQLDatabaseTest, CorruptSizeInHeaderTest) {
     EXPECT_FALSE(db_->Execute("SELECT * FROM foo"));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
-}
-
-// To prevent invalid SQL from accidentally shipping to production, prepared
-// statements which fail to compile with SQLITE_ERROR call DLOG(DCHECK).  This
-// case cannot be suppressed with an error callback.
-TEST_P(SQLDatabaseTest, CompileError) {
-// DEATH tests not supported on Android, iOS, or Fuchsia.
-#if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
-  if (DLOG_IS_ON(FATAL)) {
-    db_->set_error_callback(base::BindRepeating(&IgnoreErrorCallback));
-    ASSERT_DEATH({ db_->GetUniqueStatement("SELECT x"); },
-                 "SQL compile error no such column: x");
-  }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
 }
 
 // WAL mode is currently not supported on Fuchsia.

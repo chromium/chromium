@@ -1172,12 +1172,20 @@ bool Database::Execute(const char* sql) {
   if (error != SQLITE_OK)
     error = OnSqliteError(error, nullptr, sql);
 
-  // This needs to be a FATAL log because the error case of arriving here is
-  // that there's a malformed SQL statement. This can arise in development if
-  // a change alters the schema but not all queries adjust.  This can happen
-  // in production if the schema is corrupted.
-  DCHECK_NE(error, SQLITE_ERROR)
-      << "SQL Error in " << sql << ", " << GetErrorMessage();
+#if DCHECK_IS_ON()
+  // Report SQL compilation errors. On developer machines, the errors are most
+  // likely caused by invalid SQL in an under-development feature. In
+  // production, SQL compilation errors are caused by database schema
+  // corruption.
+  //
+  // DCHECK would not be appropriate here, because on-disk data is always
+  // subject to corruption, so Chrome cannot assume that the database schema
+  // will remain intact.
+  if (error == SQLITE_ERROR) {
+    DLOG(ERROR) << "SQL compilation error: " << GetErrorMessage()
+                << ". Statement: " << sql;
+  }
+#endif  // DCHECK_IS_ON()
   return error == SQLITE_OK;
 }
 
@@ -1244,11 +1252,23 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
   int rc = sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, /* prepFlags= */ 0,
                               &sqlite_statement, /* pzTail= */ nullptr);
   if (rc != SQLITE_OK) {
-    // This is evidence of a syntax error in the incoming SQL.
-    DCHECK_NE(rc, SQLITE_ERROR) << "SQL compile error " << GetErrorMessage();
-
-    // It could also be database corruption.
     OnSqliteError(rc, nullptr, sql);
+
+#if DCHECK_IS_ON()
+    // Report SQL compilation errors. On developer machines, the errors are most
+    // likely caused by invalid SQL in an under-development feature. In
+    // production, SQL compilation errors are caused by database schema
+    // corruption.
+    //
+    // DCHECK would not be appropriate here, because on-disk data is always
+    // subject to corruption, so Chrome cannot assume that the database schema
+    // will remain intact.
+    if (rc == SQLITE_ERROR) {
+      DLOG(ERROR) << "SQL compilation error: " << GetErrorMessage()
+                  << ". Statement: " << sql;
+    }
+#endif  // DCHECK_IS_ON()
+
     return base::MakeRefCounted<StatementRef>(nullptr, nullptr, false);
   }
   return base::MakeRefCounted<StatementRef>(tracking_db, sqlite_statement,
@@ -1628,35 +1648,39 @@ void Database::set_histogram_tag(const std::string& tag) {
   histogram_tag_ = tag;
 }
 
-int Database::OnSqliteError(int err,
-                            sql::Statement* stmt,
+int Database::OnSqliteError(int sqlite_error_code,
+                            sql::Statement* statement,
                             const char* sql) const {
   TRACE_EVENT0("sql", "Database::OnSqliteError");
 
-  // Always log the error.
-  if (!sql && stmt)
-    sql = stmt->GetSQLStatement();
-  if (!sql)
-    sql = "-- unknown";
+  bool is_expected_error = IsExpectedSqliteError(sqlite_error_code);
+  if (!is_expected_error) {
+    // Log unexpected errors.
+    if (!sql && statement)
+      sql = statement->GetSQLStatement();
+    if (!sql)
+      sql = "(SQL unknown)";
 
-  std::string id = histogram_tag_;
-  if (id.empty())
-    id = DbPath().BaseName().AsUTF8Unsafe();
-  LOG(ERROR) << id << " sqlite error " << err << ", errno " << GetLastErrno()
-             << ": " << GetErrorMessage() << ", sql: " << sql;
+    std::string id = histogram_tag_;
+    if (id.empty())
+      id = DbPath().BaseName().AsUTF8Unsafe();
+    LOG(ERROR) << id << " SQLite error: code " << sqlite_error_code << " errno "
+               << GetLastErrno() << ": " << GetErrorMessage()
+               << " sql: " << sql;
+  }
 
   if (!error_callback_.is_null()) {
     // Fire from a copy of the callback in case of reentry into
     // re/set_error_callback().
     // TODO(shess): <http://crbug.com/254584>
-    ErrorCallback(error_callback_).Run(err, stmt);
-    return err;
+    ErrorCallback(error_callback_).Run(sqlite_error_code, statement);
+    return sqlite_error_code;
   }
 
   // The default handling is to assert on debug and to ignore on release.
-  if (!IsExpectedSqliteError(err))
+  if (!is_expected_error)
     DLOG(DCHECK) << GetErrorMessage();
-  return err;
+  return sqlite_error_code;
 }
 
 bool Database::FullIntegrityCheck(std::vector<std::string>* messages) {
