@@ -38,6 +38,8 @@ class PLATFORM_EXPORT Hyphenation : public RefCounted<Hyphenation> {
 
  protected:
   bool ShouldHyphenateWord(const StringView& word) const {
+    if (word.IsEmpty())
+      return false;
     // Avoid hyphenating capitalized words.
     return hyphenate_capitalized_word_ || !WTF::unicode::IsUpper(word[0]);
   }

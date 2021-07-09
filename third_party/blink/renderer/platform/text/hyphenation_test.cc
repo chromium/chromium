@@ -204,6 +204,23 @@ TEST_F(HyphenationTest, LeadingSpaces) {
   EXPECT_EQ(0u, hyphenation->LastHyphenLocation(only_spaces, 3));
 }
 
+TEST_F(HyphenationTest, NonLetters) {
+  scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
+#if defined(OS_ANDROID)
+  // Hyphenation is available only for Android M MR1 or later.
+  if (!hyphenation)
+    return;
+#endif
+
+  String non_letters("**********");
+  EXPECT_EQ(0u,
+            hyphenation->LastHyphenLocation(non_letters, non_letters.length()));
+
+  non_letters.Ensure16Bit();
+  EXPECT_EQ(0u,
+            hyphenation->LastHyphenLocation(non_letters, non_letters.length()));
+}
+
 TEST_F(HyphenationTest, English) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
 #if defined(OS_ANDROID)
