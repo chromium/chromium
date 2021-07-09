@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -79,12 +80,20 @@ InsecureCredentialTypeFlags ConvertInsecureType(InsecureType type) {
   NOTREACHED();
 }
 
-// This function takes three lists of insecure credentials, weak passwords
-// and saved passwords and joins them, producing a map that contains
-// CredentialWithPassword as keys and vector<PasswordForm> as values with
-// InsecureCredentialTypeFlags as values.
-CredentialPasswordsMap JoinInsecureCredentialsWithSavedPasswords(
-    const std::vector<InsecureCredential>& insecure_credentials,
+bool IsPasswordFormLeaked(const PasswordForm& form) {
+  return form.password_issues->find(InsecureType::kLeaked) !=
+         form.password_issues->end();
+}
+
+bool IsPasswordFormPhished(const PasswordForm& form) {
+  return form.password_issues->find(InsecureType::kPhished) !=
+         form.password_issues->end();
+}
+
+// This function two lists: weak passwords and saved passwords and joins them,
+// producing a map that contains CredentialWithPassword as keys and
+// vector<PasswordForm> as values.
+CredentialPasswordsMap GetInsecureCredentialsFromPasswords(
     const base::flat_set<std::u16string>& weak_passwords,
     SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
   CredentialPasswordsMap credentials_to_forms;
@@ -106,35 +115,21 @@ CredentialPasswordsMap JoinInsecureCredentialsWithSavedPasswords(
     return credentials_to_forms;
   }
 
-  // Since a single (signon_realm, username) pair might have multiple
-  // corresponding entries in saved_passwords, we are using a multiset and doing
-  // look-up via equal_range. In most cases the resulting |range| should have a
-  // size of 1, however.
-  std::multiset<PasswordForm, CredentialWithoutPasswordLess> password_forms(
-      saved_passwords.begin(), saved_passwords.end());
-  for (const auto& credential : insecure_credentials) {
-    auto range = password_forms.equal_range(credential);
-    // Make use of a set to only filter out repeated passwords, if any.
-    std::for_each(range.first, range.second, [&](const PasswordForm& form) {
+  for (const auto& form : saved_passwords) {
+    DCHECK(form.password_issues.has_value());
+    if (IsPasswordFormLeaked(form) || IsPasswordFormPhished(form)) {
       CredentialView insecure_credential(form);
       auto& credential_to_form = credentials_to_forms[insecure_credential];
-
-      // Using |= operator to save in a bit mask both Leaked and Phished.
-      credential_to_form.type |= ConvertInsecureType(credential.insecure_type);
-
-      // Use the latest time. Relevant when the same credential is both
-      // phished and leaked.
-      credential_to_form.latest_time =
-          std::max(credential_to_form.latest_time, credential.create_time);
-
+      for (const auto& pair : form.password_issues.value()) {
+        credential_to_form.type |= ConvertInsecureType(pair.first);
+        credential_to_form.latest_time =
+            std::max(credential_to_form.latest_time, pair.second.create_time);
+      }
       // Populate the map. The values are vectors, because it is
       // possible that multiple saved passwords match to the same
       // insecure credential.
       credential_to_form.forms.push_back(form);
-    });
-  }
-
-  for (const auto& form : saved_passwords) {
+    }
     if (weak_passwords.contains(form.password_value)) {
       CredentialView weak_credential(form);
       auto& credential_to_form = credentials_to_forms[weak_credential];
@@ -233,17 +228,13 @@ InsecureCredentialsManager::InsecureCredentialsManager(
     scoped_refptr<PasswordStore> account_store)
     : presenter_(presenter),
       profile_store_(std::move(profile_store)),
-      account_store_(std::move(account_store)),
-      insecure_credentials_reader_(profile_store_.get(), account_store_.get()) {
-  observed_insecure_credentials_reader_.Observe(&insecure_credentials_reader_);
+      account_store_(std::move(account_store)) {
   observed_saved_password_presenter_.Observe(presenter_);
 }
 
 InsecureCredentialsManager::~InsecureCredentialsManager() = default;
 
-void InsecureCredentialsManager::Init() {
-  insecure_credentials_reader_.Init();
-}
+void InsecureCredentialsManager::Init() {}
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 void InsecureCredentialsManager::StartWeakCheck(
@@ -348,8 +339,8 @@ void InsecureCredentialsManager::RemoveObserver(Observer* observer) {
 }
 
 void InsecureCredentialsManager::UpdateInsecureCredentials() {
-  credentials_to_forms_ = JoinInsecureCredentialsWithSavedPasswords(
-      insecure_credentials_, weak_passwords_, presenter_->GetSavedPasswords());
+  credentials_to_forms_ = GetInsecureCredentialsFromPasswords(
+      weak_passwords_, presenter_->GetSavedPasswords());
 }
 
 void InsecureCredentialsManager::OnWeakCheckDone(
@@ -360,15 +351,6 @@ void InsecureCredentialsManager::OnWeakCheckDone(
   weak_passwords_ = std::move(weak_passwords);
   UpdateInsecureCredentials();
   NotifyWeakCredentialsChanged();
-}
-
-// Re-computes the list of insecure credentials with passwords after
-// obtaining a new list of insecure credentials.
-void InsecureCredentialsManager::OnInsecureCredentialsChanged(
-    const std::vector<InsecureCredential>& insecure_credentials) {
-  insecure_credentials_ = insecure_credentials;
-  UpdateInsecureCredentials();
-  NotifyInsecureCredentialsChanged();
 }
 
 void InsecureCredentialsManager::OnEdited(const PasswordForm& form) {
@@ -392,8 +374,8 @@ void InsecureCredentialsManager::OnEdited(const PasswordForm& form) {
 // new list of saved passwords.
 void InsecureCredentialsManager::OnSavedPasswordsChanged(
     SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
-  credentials_to_forms_ = JoinInsecureCredentialsWithSavedPasswords(
-      insecure_credentials_, weak_passwords_, saved_passwords);
+  credentials_to_forms_ =
+      GetInsecureCredentialsFromPasswords(weak_passwords_, saved_passwords);
   NotifyInsecureCredentialsChanged();
   NotifyWeakCredentialsChanged();
 }

@@ -23,7 +23,6 @@
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
-#include "components/password_manager/core/browser/ui/insecure_credentials_reader.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "url/gurl.h"
 
@@ -141,8 +140,7 @@ struct CredentialMetadata;
 // insecure credentials with corresponding autofill::PasswordForms. It supports
 // an observer interface, and clients can register themselves to get notified
 // about changes to the list.
-class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
-                                   public SavedPasswordsPresenter::Observer {
+class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
  public:
   using CredentialsView = base::span<const CredentialWithPassword>;
 
@@ -213,10 +211,6 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   void OnWeakCheckDone(base::ElapsedTimer timer_since_weak_check_start,
                        base::flat_set<std::u16string> weak_passwords);
 
-  // InsecureCredentialsReader::Observer:
-  void OnInsecureCredentialsChanged(
-      const std::vector<InsecureCredential>& insecure_credentials) override;
-
   // SavedPasswordsPresenter::Observer:
   void OnEdited(const PasswordForm& form) override;
   void OnSavedPasswordsChanged(
@@ -240,10 +234,6 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   scoped_refptr<PasswordStore> profile_store_;
   scoped_refptr<PasswordStore> account_store_;
 
-  // The reader used to read the insecure credentials from the password
-  // stores.
-  InsecureCredentialsReader insecure_credentials_reader_;
-
   // Cache of the most recently obtained insecure credentials.
   std::vector<InsecureCredential> insecure_credentials_;
 
@@ -253,12 +243,6 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   // A map that matches CredentialView to corresponding PasswordForms, latest
   // create_type and combined insecure type.
   CredentialPasswordsMap credentials_to_forms_;
-
-  // A scoped observer for |insecure_credentials_reader_| to listen changes
-  // related to InsecureCredential only.
-  base::ScopedObservation<InsecureCredentialsReader,
-                          InsecureCredentialsReader::Observer>
-      observed_insecure_credentials_reader_{this};
 
   // A scoped observer for |presenter_|.
   base::ScopedObservation<SavedPasswordsPresenter,

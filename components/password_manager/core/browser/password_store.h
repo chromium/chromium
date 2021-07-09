@@ -63,27 +63,6 @@ class PasswordStore : protected PasswordStoreSync,
                       public PasswordStoreInterface,
                       public SmartBubbleStatsStore {
  public:
-  class DatabaseInsecureCredentialsObserver {
-    // An interface used to notify clients (observers) of this object that the
-    // list of insecure credentials in the password store has changed.
-    // Register the observer via
-    // PasswordStore::AddDatabaseInsecureCredentialsObserver.
-   public:
-    // Notifies the observer that the list of insecure credentials changed.
-    // Will be called from the UI thread.
-    virtual void OnInsecureCredentialsChanged() = 0;
-
-    // Like OnInsecureCredentialsChanged(), but also receives the originating
-    // PasswordStore as a parameter. This is useful for observers that observe
-    // changes in both the profile-scoped and the account-scoped store. The
-    // default implementation simply calls OnInsecureCredentialsChanged(), so
-    // observers that don't care about the store can just ignore this.
-    virtual void OnInsecureCredentialsChangedIn(PasswordStore* store);
-
-   protected:
-    virtual ~DatabaseInsecureCredentialsObserver() = default;
-  };
-
   // Used to notify that unsynced credentials are about to be deleted.
   class UnsyncedCredentialsDeletionNotifier {
    public:
@@ -209,15 +188,6 @@ class PasswordStore : protected PasswordStoreSync,
   // |main_task_runner_| once the process is complete. The bool parameter
   // indicates whether any data was actually cleared.
   void ClearStore(base::OnceCallback<void(bool)> completion);
-
-  // Adds an observer to be notified when the list of insecure passwords in
-  // the password store changes.
-  void AddDatabaseInsecureCredentialsObserver(
-      DatabaseInsecureCredentialsObserver* observer);
-
-  // Removes |observer| from the list of insecure credentials observer.
-  void RemoveDatabaseInsecureCredentialsObserver(
-      DatabaseInsecureCredentialsObserver* observer);
 
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   bool ScheduleTask(base::OnceClosure task);
@@ -366,10 +336,6 @@ class PasswordStore : protected PasswordStoreSync,
   // has been performed. Notifies observers that password store data may have
   // been changed.
   void NotifyLoginsChanged(const PasswordStoreChangeList& changes) override;
-
-  // Notifies insecure credentials observers added via
-  // AddDatabaseInsecureCredentialsObserver() that data have been changed.
-  void NotifyInsecureCredentialsChanged() override;
 
   void NotifyDeletionsHaveSynced(bool success) override;
 
@@ -563,10 +529,6 @@ class PasswordStore : protected PasswordStoreSync,
 
   // The observers.
   scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
-  scoped_refptr<
-      base::ObserverListThreadSafe<DatabaseInsecureCredentialsObserver>>
-      insecure_credentials_observers_ = base::MakeRefCounted<
-          base::ObserverListThreadSafe<DatabaseInsecureCredentialsObserver>>();
 
   std::unique_ptr<PasswordSyncBridge> sync_bridge_;
 

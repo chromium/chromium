@@ -73,11 +73,6 @@ std::vector<PasswordFormDigest> ConvertToForms(
 
 }  // namespace
 
-void PasswordStore::DatabaseInsecureCredentialsObserver::
-    OnInsecureCredentialsChangedIn(PasswordStore* store) {
-  OnInsecureCredentialsChanged();
-}
-
 PasswordStore::PasswordStore()
     : observers_(new base::ObserverListThreadSafe<Observer>()) {}
 
@@ -372,16 +367,6 @@ void PasswordStore::RemoveObserver(Observer* observer) {
   observers_->RemoveObserver(observer);
 }
 
-void PasswordStore::AddDatabaseInsecureCredentialsObserver(
-    DatabaseInsecureCredentialsObserver* observer) {
-  insecure_credentials_observers_->AddObserver(observer);
-}
-
-void PasswordStore::RemoveDatabaseInsecureCredentialsObserver(
-    DatabaseInsecureCredentialsObserver* observer) {
-  insecure_credentials_observers_->RemoveObserver(observer);
-}
-
 bool PasswordStore::ScheduleTask(base::OnceClosure task) {
   return background_task_runner_ &&
          background_task_runner_->PostTask(FROM_HERE, std::move(task));
@@ -504,19 +489,6 @@ void PasswordStore::NotifyLoginsChanged(
     if (sync_bridge_)
       sync_bridge_->ActOnPasswordStoreChanges(changes);
   }
-
-  if (base::ranges::any_of(changes, [](const auto& change) {
-        return change.insecure_credentials_changed();
-      })) {
-    NotifyInsecureCredentialsChanged();
-  }
-}
-
-void PasswordStore::NotifyInsecureCredentialsChanged() {
-  insecure_credentials_observers_->Notify(
-      FROM_HERE,
-      &DatabaseInsecureCredentialsObserver::OnInsecureCredentialsChangedIn,
-      base::RetainedRef(this));
 }
 
 void PasswordStore::NotifyDeletionsHaveSynced(bool success) {
@@ -541,12 +513,7 @@ void PasswordStore::NotifyDeletionsHaveSynced(bool success) {
 void PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange(
     base::OnceCallback<PasswordStoreChangeList()> callback) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  PasswordStoreChangeList changes = std::move(callback).Run();
-  if (!changes.empty()) {
-    NotifyInsecureCredentialsChanged();
-    if (sync_bridge_)
-      sync_bridge_->ActOnPasswordStoreChanges(changes);
-  }
+  NotifyLoginsChanged(std::move(callback).Run());
 }
 
 void PasswordStore::NotifyUnsyncedCredentialsWillBeDeleted(

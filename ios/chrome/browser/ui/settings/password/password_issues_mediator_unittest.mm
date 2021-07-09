@@ -114,7 +114,11 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     form.url = GURL(website + "/login");
     form.action = GURL(website + "/action");
     form.username_element = u"email";
-
+    // TODO(crbug.com/1223022): Once all places that operate changes on forms
+    // via UpdateLogin properly set |password_issues|, setting them to an empty
+    // map should be part of the default constructor.
+    form.password_issues =
+        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
     store()->AddLogin(form);
     store()->AddInsecureCredential(MakeInsecureCredential(website, username));
   }

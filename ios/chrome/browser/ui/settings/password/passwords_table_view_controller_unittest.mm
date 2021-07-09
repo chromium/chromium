@@ -173,6 +173,11 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->signon_realm = "http://www.example.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
+    // TODO(crbug.com/1223022): Once all places that operate changes on forms
+    // via UpdateLogin properly set |password_issues|, setting them to an empty
+    // map should be part of the default constructor.
+    form->password_issues =
+        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
     AddPasswordForm(std::move(form));
   }
 
@@ -189,6 +194,11 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->signon_realm = "http://www.example2.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
+    // TODO(crbug.com/1223022): Once all places that operate changes on forms
+    // via UpdateLogin properly set |password_issues|, setting them to an empty
+    // map should be part of the default constructor.
+    form->password_issues =
+        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
     AddPasswordForm(std::move(form));
   }
 
@@ -206,6 +216,11 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->signon_realm = "http://www.secret.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = true;
+    // TODO(crbug.com/1223022): Once all places that operate changes on forms
+    // via UpdateLogin properly set |password_issues|, setting them to an empty
+    // map should be part of the default constructor.
+    form->password_issues =
+        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
     AddPasswordForm(std::move(form));
   }
 
@@ -223,6 +238,11 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->signon_realm = "http://www.secret2.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = true;
+    // TODO(crbug.com/1223022): Once all places that operate changes on forms
+    // via UpdateLogin properly set |password_issues|, setting them to an empty
+    // map should be part of the default constructor.
+    form->password_issues =
+        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
     AddPasswordForm(std::move(form));
   }
 

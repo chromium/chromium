@@ -125,6 +125,11 @@ PasswordForm MakeSavedPassword(
   form.password_value = std::u16string(password);
   form.username_element = std::u16string(username_element);
   form.in_store = PasswordForm::Store::kProfileStore;
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  form.password_issues =
+      base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
   return form;
 }
 
@@ -279,6 +284,7 @@ TEST_F(IOSChromePasswordCheckManagerTest,
   manager().AddObserver(&observer);
 
   // Adding a compromised credential should notify observers.
+  EXPECT_CALL(observer, PasswordCheckStatusChanged);
   EXPECT_CALL(
       observer,
       CompromisedCredentialsChanged(ElementsAre(ExpectCompromisedCredential(

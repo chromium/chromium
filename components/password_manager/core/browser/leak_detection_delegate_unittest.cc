@@ -129,8 +129,10 @@ class LeakDetectionDelegateTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::NiceMock<MockPasswordManagerClient> client_;
   MockLeakDetectionCheckFactory* mock_factory_ = nullptr;
+  // TODO(crbug.com/1218413): Use StrickMock after MockPasswordStore is replaced
+  // with the MockPasswordStoreInterface.
   scoped_refptr<MockPasswordStore> mock_store_ =
-      base::MakeRefCounted<testing::StrictMock<MockPasswordStore>>();
+      base::MakeRefCounted<testing::NiceMock<MockPasswordStore>>();
   LeakDetectionDelegate delegate_{&client_};
   std::unique_ptr<TestingPrefServiceSimple> pref_service_ =
       std::make_unique<TestingPrefServiceSimple>();

@@ -58,6 +58,11 @@ PasswordForm CreatePasswordForm() {
   form.password_value = u"test";
   form.signon_realm = "http://www.example.com/";
   form.in_store = PasswordForm::Store::kProfileStore;
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  form.password_issues =
+      base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
   return form;
 }
 

@@ -45,6 +45,10 @@ PasswordForm CreateForm(base::StringPiece origin,
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.signon_realm = form.url.GetOrigin().spec();
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
@@ -57,7 +61,9 @@ class LeakDetectionDelegateHelperTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    store_ = new testing::StrictMock<MockPasswordStore>;
+    // TODO(crbug.com/1223022): Use StrickMock after MockPasswordStore is
+    // replaced with the MockPasswordStoreInterface.
+    store_ = base::MakeRefCounted<testing::NiceMock<MockPasswordStore>>();
     CHECK(store_->Init(nullptr));
 
     delegate_helper_ = std::make_unique<LeakDetectionDelegateHelper>(
