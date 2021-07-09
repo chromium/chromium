@@ -81,6 +81,8 @@ class AssistiveSuggester : public SuggestionsSource {
 
   bool IsMultiWordSuggestEnabled();
 
+  bool IsExpandedMultiWordSuggestEnabled();
+
   void RecordAssistiveMatchMetricsForAction(AssistiveType action);
 
   // Only the first applicable reason in DisabledReason enum is returned.

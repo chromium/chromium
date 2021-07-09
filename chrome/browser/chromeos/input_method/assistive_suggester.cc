@@ -348,6 +348,12 @@ bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
              prefs::kAssistPredictiveWritingEnabled);
 }
 
+bool AssistiveSuggester::IsExpandedMultiWordSuggestEnabled() {
+  return IsMultiWordSuggestEnabled() &&
+         base::FeatureList::IsEnabled(
+             chromeos::features::kAssistMultiWordExpanded);
+}
+
 DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
   if (!base::FeatureList::IsEnabled(chromeos::features::kAssistPersonalInfo)) {
     return DisabledReason::kFeatureFlagOff;
@@ -461,7 +467,8 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
 void AssistiveSuggester::OnExternalSuggestionsUpdated(
     const std::vector<TextSuggestion>& suggestions) {
   if (!IsMultiWordSuggestEnabled() ||
-      !IsAllowedUrlOrAppForMultiWordSuggestion()) {
+      (!IsAllowedUrlOrAppForMultiWordSuggestion() &&
+       !IsExpandedMultiWordSuggestEnabled())) {
     RecordAssistiveDisabledReasonForMultiWord(GetDisabledReasonForMultiWord());
     return;
   }
