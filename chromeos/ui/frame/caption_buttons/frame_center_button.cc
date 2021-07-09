@@ -9,6 +9,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -188,5 +189,8 @@ void FrameCenterButton::OnBackgroundColorChanged() {
   if (text_)
     text_->SetColor(GetButtonColor(GetBackgroundColor()));
 }
+
+BEGIN_METADATA(FrameCenterButton, views::FrameCaptionButton)
+END_METADATA
 
 }  // namespace chromeos

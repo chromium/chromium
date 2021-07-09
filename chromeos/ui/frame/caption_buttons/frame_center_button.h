@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/window/frame_caption_button.h"
 
@@ -18,6 +19,8 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCenterButton
     : public views::FrameCaptionButton {
  public:
+  METADATA_HEADER(FrameCenterButton);
+
   FrameCenterButton(PressedCallback callback);
   FrameCenterButton(const FrameCenterButton&) = delete;
   FrameCenterButton& operator=(const FrameCenterButton&) = delete;
