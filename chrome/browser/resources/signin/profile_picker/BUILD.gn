@@ -83,7 +83,7 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "profile_picker.js",
-    "navigation_behavior.js",
+    "navigation_mixin.js",
     "policy_helper.js",
     "icons.js",
     "lazy_load.js",
@@ -144,7 +144,7 @@ js_type_check("profile_picker_files") {
   deps = [
     ":ensure_lazy_loaded",
     ":lazy_load",
-    ":navigation_behavior",
+    ":navigation_mixin",
     ":policy_helper",
     ":profile_card",
     ":profile_card_menu",
@@ -159,7 +159,7 @@ js_library("profile_picker") {
   deps = [
     ":ensure_lazy_loaded",
     ":manage_profiles_browser_proxy",
-    ":navigation_behavior",
+    ":navigation_mixin",
     ":profile_picker_app",
   ]
 }
@@ -179,7 +179,7 @@ js_library("lazy_load") {
 js_library("profile_picker_main_view") {
   deps = [
     ":manage_profiles_browser_proxy",
-    ":navigation_behavior",
+    ":navigation_mixin",
     ":profile_card",
     "//third_party/polymer/v3_0/components-chromium/iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -191,7 +191,7 @@ js_library("profile_picker_main_view") {
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
-js_library("navigation_behavior") {
+js_library("navigation_mixin") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -202,7 +202,7 @@ js_library("navigation_behavior") {
 js_library("profile_picker_app") {
   deps = [
     ":ensure_lazy_loaded",
-    ":navigation_behavior",
+    ":navigation_mixin",
     ":profile_picker_main_view",
     ":profile_switch",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

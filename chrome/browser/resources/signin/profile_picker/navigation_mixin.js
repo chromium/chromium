@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isBrowserSigninAllowed, isForceSigninEnabled, isSignInProfileCreationSupported} from './policy_helper.js';
 
@@ -182,27 +183,42 @@ export function navigateToStep(route, step) {
   notifyObservers();
 }
 
-/** @polymerBehavior */
-export const NavigationBehavior = {
-  /** @override */
-  attached() {
-    assert(!routeObservers.has(this));
-    routeObservers.add(this);
-
-    // history state was set when page loaded, so when the element first
-    // attaches, call the route-change handler to initialize first.
-    this.onRouteChange(history.state.route, history.state.step);
-  },
-
-  /** @override */
-  detached: function() {
-    assert(routeObservers.delete(this));
-  },
-
+/**
+ * @polymer
+ * @mixinFunction
+ */
+export const NavigationMixin = dedupingMixin(superClass => {
   /**
-   * Elements can override onRouteChange to handle route changes.
-   * @param {Routes} route
-   * @param {string} step
+   * @polymer
+   * @mixinClass
    */
-  onRouteChange: function(route, step) {},
-};
+  class NavigationMixin extends superClass {
+    /** @override */
+    connectedCallback() {
+      super.connectedCallback();
+
+      assert(!routeObservers.has(this));
+      routeObservers.add(this);
+
+      // history state was set when page loaded, so when the element first
+      // attaches, call the route-change handler to initialize first.
+      this.onRouteChange(history.state.route, history.state.step);
+    }
+
+    /** @override */
+    disconnectedCallback() {
+      super.disconnectedCallback();
+
+      assert(routeObservers.delete(this));
+    }
+
+    /**
+     * Elements can override onRouteChange to handle route changes.
+     * @param {Routes} route
+     * @param {string} step
+     */
+    onRouteChange(route, step) {}
+  }
+
+  return NavigationMixin;
+});

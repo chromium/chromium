@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ManageProfilesBrowserProxyImpl, NavigationBehavior, ProfileState, Routes} from 'chrome://profile-picker/profile_picker.js';
+import {ManageProfilesBrowserProxyImpl, NavigationMixin, ProfileState, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from '../test_util.m.js';
@@ -21,29 +21,34 @@ suite('ProfilePickerMainViewTest', function() {
 
   let navigationElement;
   suiteSetup(function() {
-    Polymer({
-      is: 'navigation-element',
+    class NavigationElement extends NavigationMixin
+    (PolymerElement) {
+      static get is() {
+        return 'navigation-element';
+      }
 
-      behaviors: [NavigationBehavior],
-
-      ready: function() {
+      /** @override */
+      ready() {
+        super.ready();
         this.reset();
-      },
+      }
 
       /**
        * @param {Routes} route
        * @param {string} step
        */
-      onRouteChange: function(route, step) {
+      onRouteChange(route, step) {
         this.changeCalled = true;
         this.route = route;
-      },
+      }
 
-      reset: function() {
+      reset() {
         this.changeCalled = false;
         this.route = '';
       }
-    });
+    }
+
+    customElements.define(NavigationElement.is, NavigationElement);
   });
 
   function resetTest() {

@@ -18,7 +18,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
-import {navigateTo, NavigationBehavior, Routes} from './navigation_behavior.js';
+import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
 import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
 
 /**
@@ -27,7 +27,7 @@ import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} fro
  * @implements {WebUIListenerBehaviorInterface}
  */
 const ProfilePickerMainViewElementBase =
-    mixinBehaviors([WebUIListenerBehavior, NavigationBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], NavigationMixin(PolymerElement));
 
 /** @polymer */
 export class ProfilePickerMainViewElement extends

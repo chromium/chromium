@@ -17,7 +17,7 @@ js_type_check("closure_compile") {
 js_library("profile_type_choice") {
   deps = [
     "..:manage_profiles_browser_proxy",
-    "..:navigation_behavior",
+    "..:navigation_mixin",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
@@ -28,7 +28,7 @@ js_library("profile_type_choice") {
 js_library("local_profile_customization") {
   deps = [
     "..:manage_profiles_browser_proxy",
-    "..:navigation_behavior",
+    "..:navigation_mixin",
     "..:policy_helper",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/customize_themes",
