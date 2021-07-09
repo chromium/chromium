@@ -1,5 +1,6 @@
 # CPU Profiling Chrome
 
+
 [TOC]
 
 ## Introduction
@@ -257,20 +258,26 @@ Find the PID for Chromium (browser process):
 Find the PID for all child processes of Chromium:
     
     $ pgrep -P $CHROMIUM_PID
-Combine commands to run tool for Chromium and all and all it's children:
+Combine commands to run tool for Chromium and all its children:
     
     $ cat <(pgrep -x Chromium) <(pgrep -P $(pgrep -x Chromium)) | xargs $MY_TOOL --pid
 
 ## Checkout setup
+Profiling should always be done on a build that represents the performance of official builds as much as possible. `is_official_build` enables some additional optimizations like PGO.
 
     is_debug = false
-    
+    is_component_build = false
+    is_official_build = true
+
     # Most profiling techniques on macOS will work with minimal symbols for local builds.
     # You should try and use minimal symbols when starting out because most tools will take
     # an incredibly long time to process the symbols and in some cases will freeze the application
     # while doing so.
     blink_symbol_level = 0
     symbol_level = 0
+
+## Viewing traces.
+Once collected the traces produced by any tool in this section can be converted to pprof using [InstrumentsToPprof](https://github.com/google/instrumentsToPprof#instrumentstopprof).
 
 ## Tools
 
@@ -284,10 +291,48 @@ Combine commands to run tool for Chromium and all and all it's children:
 
 #### Usage
 Sample stacks of $pid for 10 seconds grabbing a stack every 1ms. [-maydie] to still have stacks if process exits.
+
     $ sample $pid 10 1 -mayDie -f ./output.txt
 
 ### Instruments
-    $TODO(http://crbug.com/1201656) : Fill this in.
+#### Pros
+* Ships with macOS.
+* Can produce much more than sampling profiles via different modes.
+* Is low overhead.
+* Only captures cpu-active stacks (In Time Profiler mode) so no idle stack filtering is needed.
+#### Cons
+* Cannot produce human-readable reports fully automatically. (Requires use of GUI)
+* Built-in trace viewer is quite underpowered.
+
+#### Usage
+To get a trace use either the GUI in the "Time Profiler" mode or this command:
+
+    $ xcrun -r xctrace record --template 'Time Profiler' --all-processes --time-limit 30s --output 'profile.trace'
 
 ### DTrace
-    $TODO(http://crbug.com/1201656) : Fill this in.
+#### Pros
+* Ships with macOS.
+* Can produce much more than sampling profiles via different probes.
+* Supports scripting.
+* Is low overhead.
+* Only captures cpu-active stacks so no idle stack filtering is needed.
+* Can be used fully from the command-line / script.
+#### Cons
+* Requires partially disabling SIP
+
+#### SIP
+By default `dtrace` does not work well with [SIP](https://support.apple.com/en-us/HT204899). Disabling SIP as a whole is not recommended and instead should be done only for DTrace using these steps:
+
+* Reboot in recovery mode
+* Start a shell
+* Execute `csrutil enable --without dtrace --without debug`
+* Reboot
+
+#### Usage
+To get sampled cpu stacks
+
+    $ dtrace -p $PID -o $OUTPUT_FILE -n "profile-1001/pid == $PID/ {{ @[ustack()] = count(); }}"
+
+To get stacks that caused wake-ups
+
+    $ dtrace -p $PID -o $OUTPUT_FILE -n "mach_kernel::wakeup/pid == $PID/ {{ @[ustack()] = count(); }}"
