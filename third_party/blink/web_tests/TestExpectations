@@ -7005,6 +7005,14 @@ crbug.com/1222097 virtual/synchronous_html_parser/external/wpt/html/semantics/em
 
 crbug.com/1222097 svg/css/alignment-baseline.html [ Failure Pass ]
 
+# Temporarily disable to unblock a WebRTC roll
+crbug.com/webrtc/8199 [ Win ] external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+crbug.com/webrtc/8199 [ Linux ] external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+crbug.com/webrtc/8199 [ Mac10.15 ] external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+crbug.com/webrtc/8199 [ Mac10.14 ] external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+crbug.com/webrtc/8199 [ Mac10.13 ] external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+crbug.com/webrtc/8199 [ Mac10.12 ] external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+
 # Sheriff
 crbug.com/1223276 external/wpt/layout-instability/input-timestamp.html [ Skip ]
 crbug.com/1223327 wpt_internal/prerender/unload.html [ Pass Timeout ]
