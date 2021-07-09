@@ -56,6 +56,7 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kStandaloneBrowser:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
+    case apps::mojom::AppType::kStandaloneBrowserExtension:
       return TASK_TYPE_UNKNOWN;
   }
 }

@@ -69,6 +69,7 @@ std::set<apps::AppTypeName>& GetAppTypeNameSet() {
     app_type_name_map->insert(apps::AppTypeName::kBorealis);
     app_type_name_map->insert(apps::AppTypeName::kSystemWeb);
     app_type_name_map->insert(apps::AppTypeName::kChromeBrowser);
+    app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserExtension);
   }
   return *app_type_name_map;
 }
@@ -190,6 +191,8 @@ apps::AppTypeName GetAppTypeName(Profile* profile,
       return apps::AppTypeName::kBorealis;
     case apps::mojom::AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
+    case apps::mojom::AppType::kStandaloneBrowserExtension:
+      return apps::AppTypeName::kStandaloneBrowserExtension;
   }
 }
 
@@ -272,6 +275,8 @@ apps::AppTypeName GetAppTypeName(Profile* profile,
       return apps::AppTypeName::kBorealis;
     case apps::mojom::AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
+    case apps::mojom::AppType::kStandaloneBrowserExtension:
+      return apps::AppTypeName::kStandaloneBrowserExtension;
   }
 }
 
@@ -312,6 +317,8 @@ constexpr char kRemoteHistogramName[] = "RemoteApp";
 constexpr char kBorealisHistogramName[] = "Borealis";
 constexpr char kSystemWebAppHistogramName[] = "SystemWebApp";
 constexpr char kChromeBrowserHistogramName[] = "ChromeBrowser";
+constexpr char kStandaloneBrowserExtensionHistogramName[] =
+    "StandaloneBrowserExtension";
 
 std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
   switch (app_type_name) {
@@ -341,6 +348,8 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
       return kSystemWebAppHistogramName;
     case apps::AppTypeName::kChromeBrowser:
       return kChromeBrowserHistogramName;
+    case apps::AppTypeName::kStandaloneBrowserExtension:
+      return kStandaloneBrowserExtensionHistogramName;
   }
 }
 

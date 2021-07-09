@@ -56,6 +56,8 @@ constexpr char kBorealisAppsCountHistogramName[] =
     "FamilyUser.BorealisAppsCount2";
 constexpr char kSystemWebAppsCountHistogramName[] =
     "FamilyUser.SystemWebAppsCount2";
+constexpr char kStandaloneBrowserExtensionCountHistogramName[] =
+    "FamilyUser.LacrosChromeAppsCount2";
 
 const char* GetAppsCountHistogramName(apps::mojom::AppType app_type) {
   switch (app_type) {
@@ -83,6 +85,8 @@ const char* GetAppsCountHistogramName(apps::mojom::AppType app_type) {
       return kBorealisAppsCountHistogramName;
     case apps::mojom::AppType::kSystemWeb:
       return kSystemWebAppsCountHistogramName;
+    case apps::mojom::AppType::kStandaloneBrowserExtension:
+      return kStandaloneBrowserExtensionCountHistogramName;
   }
 }
 

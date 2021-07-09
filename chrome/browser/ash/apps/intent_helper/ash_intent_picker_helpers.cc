@@ -277,6 +277,7 @@ PickerEntryType GetPickerEntryType(mojom::AppType app_type) {
     case mojom::AppType::kPluginVm:
     case mojom::AppType::kExtension:
     case mojom::AppType::kStandaloneBrowser:
+    case mojom::AppType::kStandaloneBrowserExtension:
     case mojom::AppType::kRemote:
     case mojom::AppType::kBorealis:
       break;

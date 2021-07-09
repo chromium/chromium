@@ -130,6 +130,9 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*app_id=*/"l", apps::mojom::AppType::kStandaloneBrowser,
         apps::mojom::InstallSource::kSystem));
     deltas.push_back(MakeApp(
+        /*app_id=*/"lcr", apps::mojom::AppType::kStandaloneBrowserExtension,
+        apps::mojom::InstallSource::kUser));
+    deltas.push_back(MakeApp(
         /*app_id=*/"r", apps::mojom::AppType::kRemote,
         apps::mojom::InstallSource::kPolicy));
     deltas.push_back(MakeApp(/*app_id=*/"bo", apps::mojom::AppType::kBorealis,
@@ -210,6 +213,15 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
             AppTypeName::kStandaloneBrowser,
             apps::mojom::InstallSource::kSystem),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
+            AppTypeName::kStandaloneBrowserExtension),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kStandaloneBrowserExtension,
+            apps::mojom::InstallSource::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
