@@ -293,6 +293,10 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
+    name = "android-12-x64-fyi-rel",
+)
+
+try_.chromium_android_builder(
     name = "android-asan",
 )
 

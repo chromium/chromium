@@ -111,6 +111,7 @@
       'Android arm64 Builder (dbg) (reclient)': 'android_webview_google_debug_static_bot_arm64_reclient',
       'Android WebView P FYI (rel)': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-11-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
+      'android-12-x64-fyi-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_google',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-web-platform-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
@@ -816,6 +817,7 @@
       'android-webview-pie-arm64-fyi-rel': 'android_release_trybot_arm64_webview_google',
       'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_google',
       'android-11-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google',
+      'android-12-x64-fyi-rel': 'android_release_trybot_x64_fastbuild_webview_google',
       'android-webview-marshmallow-arm64-dbg': 'android_release_trybot_arm64_webview_google',
       'android-webview-nougat-arm64-dbg': 'android_release_trybot_arm64_webview_google',
       'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_google',
@@ -1439,6 +1441,11 @@
       'webview_google',
     ],
 
+    'android_release_bot_minimal_symbols_x64_fastbuild_webview_google': [
+      'android', 'release_bot', 'minimal_symbols', 'x64',
+      'strip_debug_info', 'android_fastbuild', 'webview_google',
+    ],
+
     'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google': [
       'android', 'release_bot', 'minimal_symbols',
       'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
@@ -1519,6 +1526,11 @@
       'android', 'release_trybot', 'minimal_symbols',
       'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
       'chrome_google'
+    ],
+
+    'android_release_trybot_x64_fastbuild_webview_google': [
+      'android', 'release_trybot', 'strip_debug_info', 'x64',
+      'android_fastbuild', 'webview_google',
     ],
 
     'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google': [

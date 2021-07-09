@@ -1150,6 +1150,15 @@ ci.android_fyi_builder(
     os = os.LINUX_BIONIC_REMOVE,
 )
 
+ci.android_fyi_builder(
+    name = "android-12-x64-fyi-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "emulator|12|x64",
+        short_name = "rel",
+    ),
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
 ci.angle_linux_builder(
     name = "android-angle-arm64-builder",
     console_view_entry = consoles.console_view_entry(
