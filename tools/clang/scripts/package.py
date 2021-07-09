@@ -11,6 +11,7 @@ from __future__ import print_function
 import argparse
 import fnmatch
 import itertools
+import multiprocessing.dummy
 import os
 import platform
 import shutil
@@ -129,31 +130,34 @@ def UploadPDBsToSymbolServer(binaries):
   sys.path.insert(0, os.path.join(CHROMIUM_DIR, 'tools', 'symsrc'))
   import img_fingerprint, pdb_fingerprint_from_img
 
+  files = []
   for binary_path in binaries:
     binary_path = os.path.join(LLVM_RELEASE_DIR, binary_path)
     binary_id = img_fingerprint.GetImgFingerprint(binary_path)
     (pdb_id, pdb_path) = pdb_fingerprint_from_img.GetPDBInfoFromImg(binary_path)
+    files += [(binary_path, binary_id), (pdb_path, pdb_id)]
 
     # The build process builds clang.exe and then copies it to clang-cl.exe
     # (both are the same binary and they behave differently on what their
     # filename is).  Hence, the pdb is at clang.pdb, not at clang-cl.pdb.
     # Likewise, lld-link.exe's PDB file is called lld.pdb.
 
-    # Compress and upload.
-    for f, f_id in ((binary_path, binary_id), (pdb_path, pdb_id)):
-      subprocess.check_call(
-          ['makecab', '/D', 'CompressionType=LZX', '/D', 'CompressionMemory=21',
-           f, '/L', os.path.dirname(f)], stdout=open(os.devnull, 'w'))
-      f_cab = f[:-1] + '_'
-
-      dest = '%s/%s/%s' % (os.path.basename(f), f_id, os.path.basename(f_cab))
-      print('Uploading %s to Google Cloud Storage...' % dest)
-      gsutil_args = ['cp', '-n', '-a', 'public-read', f_cab,
-                     'gs://chromium-browser-symsrv/' + dest]
-      exit_code = RunGsutil(gsutil_args)
-      if exit_code != 0:
-        print("gsutil failed, exit_code: %s" % exit_code)
-        sys.exit(exit_code)
+  # Compress and upload.
+  def compress(t):
+    subprocess.check_call(
+      ['makecab', '/D', 'CompressionType=LZX', '/D', 'CompressionMemory=21',
+       t[0], '/L', os.path.dirname(t[0])], stdout=open(os.devnull, 'w'))
+  multiprocessing.dummy.Pool().map(compress, files)
+  for f, f_id in files:
+    f_cab = f[:-1] + '_'
+    dest = '%s/%s/%s' % (os.path.basename(f), f_id, os.path.basename(f_cab))
+    print('Uploading %s to Google Cloud Storage...' % dest)
+    gsutil_args = ['cp', '-n', '-a', 'public-read', f_cab,
+                   'gs://chromium-browser-symsrv/' + dest]
+    exit_code = RunGsutil(gsutil_args)
+    if exit_code != 0:
+      print("gsutil failed, exit_code: %s" % exit_code)
+      sys.exit(exit_code)
 
 
 def main():
