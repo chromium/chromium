@@ -193,6 +193,12 @@ WatchHangsInScope::~WatchHangsInScope() {
     return;
   }
 
+  // If the thread was unregistered since construction there is also nothing to
+  // do .
+  if (!current_hang_watch_state) {
+    return;
+  }
+
   // If a hang is currently being captured we should block here so execution
   // stops and we avoid recording unrelated stack frames in the crash.
   if (current_hang_watch_state->IsFlagSet(
