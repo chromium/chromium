@@ -720,7 +720,9 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
 // When the password stored for an Android application is updated, credentials
 // with the same username stored for affiliated web sites should also be updated
 // automatically.
-TEST_F(PasswordStoreTest, UpdatePasswordsStoredForAffiliatedWebsites) {
+// TODO(crbug.bom/1226042): Remove this test since we no longer update passwords
+// for affiliated websites through sync.
+TEST_F(PasswordStoreTest, DISABLED_UpdatePasswordsStoredForAffiliatedWebsites) {
   const char16_t kTestUsername[] = u"username_value_1";
   const char16_t kTestOtherUsername[] = u"username_value_2";
   const char16_t kTestOldPassword[] = u"old_password_value";
@@ -882,14 +884,14 @@ TEST_F(PasswordStoreTest, UpdatePasswordsStoredForAffiliatedWebsites) {
                     _, testing::SizeIs(kExpectedNumberOfPropagatedUpdates)));
     if (test_remove_and_add_login) {
       store->ScheduleTask(
-          base::BindOnce(IgnoreResult(&PasswordStore::RemoveLoginSync), store,
-                         *all_credentials[0]));
+          base::BindOnce(IgnoreResult(&PasswordStoreImpl::RemoveLoginSync),
+                         store, *all_credentials[0]));
       store->ScheduleTask(base::BindOnce(
-          IgnoreResult(&PasswordStore::AddLoginSync), store,
+          IgnoreResult(&PasswordStoreImpl::AddLoginSync), store,
           *expected_credentials_after_update[0], /*error=*/nullptr));
     } else {
       store->ScheduleTask(base::BindOnce(
-          IgnoreResult(&PasswordStore::UpdateLoginSync), store,
+          IgnoreResult(&PasswordStoreImpl::UpdateLoginSync), store,
           *expected_credentials_after_update[0], /*error=*/nullptr));
     }
     WaitForPasswordStore();
@@ -1423,11 +1425,12 @@ TEST_F(PasswordStoreTest, AddInsecureCredentialsSync) {
                          base::Time(), InsecureType::kReused, IsMuted(false))};
 
   AddLoginError add_login_error = AddLoginError::kDbError;
-  store->ScheduleTask(base::BindOnce(IgnoreResult(&PasswordStore::AddLoginSync),
-                                     store, *test_form, &add_login_error));
   store->ScheduleTask(
-      base::BindOnce(IgnoreResult(&PasswordStore::AddInsecureCredentialsSync),
-                     store, credentials));
+      base::BindOnce(IgnoreResult(&PasswordStoreImpl::AddLoginSync), store,
+                     *test_form, &add_login_error));
+  store->ScheduleTask(base::BindOnce(
+      IgnoreResult(&PasswordStoreImpl::AddInsecureCredentialsSync), store,
+      credentials));
 
   WaitForPasswordStore();
   EXPECT_EQ(add_login_error, AddLoginError::kNone);
@@ -1482,7 +1485,7 @@ TEST_F(PasswordStoreTest, UpdateInsecureCredentialsSync) {
 
   // Update the password store with the new insecure credentials.
   store->ScheduleTask(base::BindOnce(
-      IgnoreResult(&PasswordStore::UpdateInsecureCredentialsSync), store,
+      IgnoreResult(&PasswordStoreImpl::UpdateInsecureCredentialsSync), store,
       *test_form, new_credentials));
   WaitForPasswordStore();
 

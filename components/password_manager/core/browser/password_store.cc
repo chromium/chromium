@@ -432,54 +432,6 @@ bool PasswordStore::InitOnBackgroundSequence() {
   return true;
 }
 
-PasswordStoreChangeList PasswordStore::AddLoginSync(const PasswordForm& form,
-                                                    AddLoginError* error) {
-  // There is no good way to check if the password is actually up to date, or
-  // at least to check if it was actually changed. Assume it is.
-  if (AffiliatedMatchHelper::IsValidAndroidCredential(PasswordFormDigest(form)))
-    ScheduleFindAndUpdateAffiliatedWebLogins(form);
-  return AddLoginImpl(form, error);
-}
-
-bool PasswordStore::AddInsecureCredentialsSync(
-    base::span<const InsecureCredential> credentials) {
-  return base::ranges::all_of(credentials, [this](const auto& cred) {
-    return !AddInsecureCredentialImpl(cred).empty();
-  });
-}
-
-PasswordStoreChangeList PasswordStore::UpdateLoginSync(
-    const PasswordForm& form,
-    UpdateLoginError* error) {
-  if (AffiliatedMatchHelper::IsValidAndroidCredential(
-          PasswordFormDigest(form))) {
-    // Ideally, a |form| would not be updated in any way unless it was ensured
-    // that it, as a whole, can be used for a successful login. This, sadly, can
-    // not be guaranteed. It might be that |form| just contains updates to some
-    // meta-attribute, while it still has an out-of-date password. If such a
-    // password were to be propagated to affiliated credentials in that case, it
-    // may very well overwrite the actual, up-to-date password. Try to mitigate
-    // this risk by ignoring updates unless they actually update the password.
-    std::unique_ptr<PasswordForm> old_form(GetLoginImpl(form));
-    if (old_form && form.password_value != old_form->password_value)
-      ScheduleFindAndUpdateAffiliatedWebLogins(form);
-  }
-  return UpdateLoginImpl(form, error);
-}
-
-bool PasswordStore::UpdateInsecureCredentialsSync(
-    const PasswordForm& form,
-    base::span<const InsecureCredential> credentials) {
-  RemoveInsecureCredentialsImpl(form.signon_realm, form.username_value,
-                                RemoveInsecureCredentialsReason::kSyncUpdate);
-  return AddInsecureCredentialsSync(credentials);
-}
-
-PasswordStoreChangeList PasswordStore::RemoveLoginSync(
-    const PasswordForm& form) {
-  return RemoveLoginImpl(form);
-}
-
 void PasswordStore::NotifyLoginsChanged(
     const PasswordStoreChangeList& changes) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());

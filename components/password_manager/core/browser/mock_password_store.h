@@ -100,6 +100,28 @@ class MockPasswordStore : public PasswordStore {
 
   MOCK_CONST_METHOD0(IsAbleToSavePasswords, bool());
 
+  // TODO(crbug.bom/1226042): Remove this after PasswordStore no longer
+  // inherits PasswordStoreSync.
+  MOCK_METHOD(PasswordStoreChangeList,
+              AddLoginSync,
+              (const PasswordForm&, AddLoginError*),
+              (override));
+  MOCK_METHOD(bool,
+              AddInsecureCredentialsSync,
+              (base::span<const InsecureCredential>),
+              (override));
+  MOCK_METHOD(PasswordStoreChangeList,
+              UpdateLoginSync,
+              (const PasswordForm&, UpdateLoginError*),
+              (override));
+  MOCK_METHOD(bool,
+              UpdateInsecureCredentialsSync,
+              (const PasswordForm&, base::span<const InsecureCredential>),
+              (override));
+  MOCK_METHOD(PasswordStoreChangeList,
+              RemoveLoginSync,
+              (const PasswordForm& form),
+              (override));
   MOCK_METHOD0(BeginTransaction, bool());
   MOCK_METHOD0(RollbackTransaction, void());
   MOCK_METHOD0(CommitTransaction, bool());

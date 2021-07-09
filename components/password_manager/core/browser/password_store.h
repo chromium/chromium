@@ -319,19 +319,6 @@ class PasswordStore : protected PasswordStoreSync,
   // store is empty.
   virtual bool IsEmpty() = 0;
 
-  // PasswordStoreSync:
-  PasswordStoreChangeList AddLoginSync(const PasswordForm& form,
-                                       AddLoginError* error) override;
-  bool AddInsecureCredentialsSync(
-      base::span<const InsecureCredential> credentials) override;
-  PasswordStoreChangeList UpdateLoginSync(const PasswordForm& form,
-                                          UpdateLoginError* error) override;
-  bool UpdateInsecureCredentialsSync(
-      const PasswordForm& form,
-      base::span<const InsecureCredential> credentials) override;
-
-  PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) override;
-
   // Called by *Internal() methods once the underlying data-modifying operation
   // has been performed. Notifies observers that password store data may have
   // been changed.
@@ -362,11 +349,6 @@ class PasswordStore : protected PasswordStoreSync,
   PasswordStoreBackend* backend_ = nullptr;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest,
-                           UpdatePasswordsStoredForAffiliatedWebsites);
-  FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, AddInsecureCredentialsSync);
-  FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, UpdateInsecureCredentialsSync);
-
   using StatsResult = std::vector<InteractionsStats>;
   using StatsTask = base::OnceCallback<StatsResult()>;
 

@@ -407,6 +407,39 @@ void TestPasswordStore::RemoveFieldInfoByTimeImpl(base::Time remove_begin,
   NOTIMPLEMENTED();
 }
 
+PasswordStoreChangeList TestPasswordStore::AddLoginSync(
+    const PasswordForm& form,
+    AddLoginError* error) {
+  NOTIMPLEMENTED();
+  return {};
+}
+
+bool TestPasswordStore::AddInsecureCredentialsSync(
+    base::span<const InsecureCredential> credentials) {
+  NOTIMPLEMENTED();
+  return true;
+}
+
+PasswordStoreChangeList TestPasswordStore::UpdateLoginSync(
+    const PasswordForm& form,
+    UpdateLoginError* error) {
+  NOTIMPLEMENTED();
+  return {};
+}
+
+bool TestPasswordStore::UpdateInsecureCredentialsSync(
+    const PasswordForm& form,
+    base::span<const InsecureCredential> credentials) {
+  NOTIMPLEMENTED();
+  return true;
+}
+
+PasswordStoreChangeList TestPasswordStore::RemoveLoginSync(
+    const PasswordForm& form) {
+  NOTIMPLEMENTED();
+  return {};
+}
+
 bool TestPasswordStore::BeginTransaction() {
   return true;
 }

@@ -312,6 +312,38 @@ bool PasswordStoreImpl::IsEmpty() {
   return login_db_->IsEmpty();
 }
 
+PasswordStoreChangeList PasswordStoreImpl::AddLoginSync(
+    const PasswordForm& form,
+    AddLoginError* error) {
+  return AddLoginImpl(form, error);
+}
+
+bool PasswordStoreImpl::AddInsecureCredentialsSync(
+    base::span<const InsecureCredential> credentials) {
+  return base::ranges::all_of(credentials, [this](const auto& cred) {
+    return !AddInsecureCredentialImpl(cred).empty();
+  });
+}
+
+PasswordStoreChangeList PasswordStoreImpl::UpdateLoginSync(
+    const PasswordForm& form,
+    UpdateLoginError* error) {
+  return UpdateLoginImpl(form, error);
+}
+
+bool PasswordStoreImpl::UpdateInsecureCredentialsSync(
+    const PasswordForm& form,
+    base::span<const InsecureCredential> credentials) {
+  RemoveInsecureCredentialsImpl(form.signon_realm, form.username_value,
+                                RemoveInsecureCredentialsReason::kSyncUpdate);
+  return AddInsecureCredentialsSync(credentials);
+}
+
+PasswordStoreChangeList PasswordStoreImpl::RemoveLoginSync(
+    const PasswordForm& form) {
+  return RemoveLoginImpl(form);
+}
+
 bool PasswordStoreImpl::BeginTransaction() {
   if (login_db_)
     return login_db_->BeginTransaction();

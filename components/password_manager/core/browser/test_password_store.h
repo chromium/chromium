@@ -134,6 +134,18 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
                                  base::Time remove_end) override;
 
   // PasswordStoreSync interface.
+  // TODO(crbug.bom/1226042): Remove this after PasswordStore no longer
+  // inherits PasswordStoreSync.
+  PasswordStoreChangeList AddLoginSync(const PasswordForm& form,
+                                       AddLoginError* error) override;
+  bool AddInsecureCredentialsSync(
+      base::span<const InsecureCredential> credentials) override;
+  PasswordStoreChangeList UpdateLoginSync(const PasswordForm& form,
+                                          UpdateLoginError* error) override;
+  bool UpdateInsecureCredentialsSync(
+      const PasswordForm& form,
+      base::span<const InsecureCredential> credentials) override;
+  PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) override;
   bool BeginTransaction() override;
   void RollbackTransaction() override;
   bool CommitTransaction() override;

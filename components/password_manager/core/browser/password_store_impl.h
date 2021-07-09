@@ -86,6 +86,16 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   bool IsEmpty() override;
 
   // Implements PasswordStoreSync interface.
+  PasswordStoreChangeList AddLoginSync(const PasswordForm& form,
+                                       AddLoginError* error) override;
+  bool AddInsecureCredentialsSync(
+      base::span<const InsecureCredential> credentials) override;
+  PasswordStoreChangeList UpdateLoginSync(const PasswordForm& form,
+                                          UpdateLoginError* error) override;
+  bool UpdateInsecureCredentialsSync(
+      const PasswordForm& form,
+      base::span<const InsecureCredential> credentials) override;
+  PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) override;
   bool BeginTransaction() override;
   void RollbackTransaction() override;
   bool CommitTransaction() override;
@@ -100,6 +110,11 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   bool DeleteAndRecreateDatabaseFile() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest,
+                           UpdatePasswordsStoredForAffiliatedWebsites);
+  FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, AddInsecureCredentialsSync);
+  FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, UpdateInsecureCredentialsSync);
+
   // Implements PasswordStoreBackend interface.
 
   void GetAllLoginsAsync(LoginsReply callback) override;
