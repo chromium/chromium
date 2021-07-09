@@ -14029,6 +14029,9 @@ Safe Browsing lookups, which is critical for security. -->
 
 <histogram name="SB2.RemoteCall.ThreatSubType.PotentiallyHarmfulApp"
     enum="SB2RemoteCallThreatSubType" expires_after="2021-07-28">
+  <obsolete>
+    Removed from code Jul 2021.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -14040,6 +14043,9 @@ Safe Browsing lookups, which is critical for security. -->
 
 <histogram name="SB2.RemoteCall.ThreatSubType.SocialEngineering"
     enum="SB2RemoteCallThreatSubType" expires_after="2021-07-28">
+  <obsolete>
+    Removed from code Jul 2021.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
