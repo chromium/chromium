@@ -8,9 +8,12 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/browserservices/metrics/BrowserServicesTimingMetrics.java",
     "java/src/org/chromium/chrome/browser/browserservices/metrics/OriginVerifierMetricsRecorder.java",
+    "java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java",
   ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/android/browserservices/constants:java",
+    "//components/browser_ui/util/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

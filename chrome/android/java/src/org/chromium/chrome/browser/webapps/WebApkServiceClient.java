@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
-import org.chromium.chrome.browser.metrics.WebApkUma;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -42,13 +42,13 @@ public class WebApkServiceClient {
         @Override
         public void onConnected(IBinder api) {
             if (api == null) {
-                WebApkUma.recordBindToWebApkServiceSucceeded(false);
+                WebApkUmaRecorder.recordBindToWebApkServiceSucceeded(false);
                 return;
             }
 
             try {
                 useApi(IWebApkApi.Stub.asInterface(api));
-                WebApkUma.recordBindToWebApkServiceSucceeded(true);
+                WebApkUmaRecorder.recordBindToWebApkServiceSucceeded(true);
             } catch (RemoteException e) {
                 Log.w(TAG, "WebApkAPI use failed.", e);
             }
@@ -105,7 +105,7 @@ public class WebApkServiceClient {
                     api.notifyNotificationWithChannel(platformTag, platformID,
                             notificationBuilder.build(metadata).getNotification(), channelName);
                 }
-                WebApkUma.recordNotificationPermissionStatus(notificationPermissionEnabled);
+                WebApkUmaRecorder.recordNotificationPermissionStatus(notificationPermissionEnabled);
             }
         };
 

@@ -20,10 +20,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionStore;
 import org.chromium.chrome.browser.browsing_data.UrlFilter;
 import org.chromium.chrome.browser.browsing_data.UrlFilterBridge;
-import org.chromium.chrome.browser.metrics.WebApkUma;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.embedder_support.util.Origin;
@@ -456,7 +456,7 @@ public class WebappRegistry {
             }
         }
         if (isInitalizing) {
-            WebApkUma.recordWebApksCount(getOriginsWithWebApk().size());
+            WebApkUmaRecorder.recordWebApksCount(getOriginsWithWebApk().size());
         }
     }
 }

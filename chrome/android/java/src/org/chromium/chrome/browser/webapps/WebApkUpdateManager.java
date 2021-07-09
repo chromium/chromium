@@ -23,13 +23,13 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder.UpdateRequestQueued;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.metrics.WebApkUma;
-import org.chromium.chrome.browser.metrics.WebApkUma.UpdateRequestQueued;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -260,7 +260,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     /** Schedules update for when WebAPK is not running. */
     private void scheduleUpdate() {
-        WebApkUma.recordUpdateRequestQueued(UpdateRequestQueued.TWICE);
+        WebApkUmaRecorder.recordUpdateRequestQueued(UpdateRequestQueued.TWICE);
         TaskInfo updateTask;
         if (mStorage.shouldForceUpdate()) {
             // Start an update task ASAP for forced updates.
@@ -295,7 +295,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             callback.run();
         };
 
-        WebApkUma.recordUpdateRequestSent(WebApkUma.UpdateRequestSent.WHILE_WEBAPK_CLOSED);
+        WebApkUmaRecorder.recordUpdateRequestSent(
+                WebApkUmaRecorder.UpdateRequestSent.WHILE_WEBAPK_CLOSED);
         WebApkUpdateManagerJni.get().updateWebApkFromFile(
                 storage.getPendingUpdateRequestPath(), callbackRunner);
     }

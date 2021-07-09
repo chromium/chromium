@@ -761,6 +761,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/metrics/VariationsSession.java",
   "java/src/org/chromium/chrome/browser/metrics/WebApkSplashscreenMetrics.java",
   "java/src/org/chromium/chrome/browser/metrics/WebApkUma.java",
+  "java/src/org/chromium/chrome/browser/metrics/WebApkUninstallUmaTracker.java",
   "java/src/org/chromium/chrome/browser/modaldialog/ChromeTabModalPresenter.java",
   "java/src/org/chromium/chrome/browser/modaldialog/TabModalLifetimeHandler.java",
   "java/src/org/chromium/chrome/browser/modules/ModuleInstallUi.java",

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashscreenObserver;
 
 /**
@@ -32,11 +33,13 @@ public class WebApkSplashscreenMetrics implements SplashscreenObserver {
 
         // commit both shown/hidden histograms here because native may not be loaded when the
         // splashscreen is shown.
-        WebApkUma.recordShellApkLaunchToSplashVisible(startTimestamp - mShellApkLaunchTimestamp);
-        WebApkUma.recordShellApkLaunchToSplashHidden(endTimestamp - mShellApkLaunchTimestamp);
+        WebApkUmaRecorder.recordShellApkLaunchToSplashVisible(
+                startTimestamp - mShellApkLaunchTimestamp);
+        WebApkUmaRecorder.recordShellApkLaunchToSplashHidden(
+                endTimestamp - mShellApkLaunchTimestamp);
 
         if (mNewStyleSplashShownTimestamp != -1) {
-            WebApkUma.recordNewStyleShellApkLaunchToSplashVisible(
+            WebApkUmaRecorder.recordNewStyleShellApkLaunchToSplashVisible(
                     mNewStyleSplashShownTimestamp - mShellApkLaunchTimestamp);
         }
     }
