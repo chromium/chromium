@@ -727,6 +727,15 @@
     "args": ["--enable-blink-features=CSSContainerQueries"]
   },
   {
+    "prefix": "isolated-animation-updates",
+    "bases": ["external/wpt/css/css-animations",
+              "external/wpt/css/css-transitions",
+              "external/wpt/scroll-animations",
+              "external/wpt/web-animations",
+              "animations"],
+    "args": ["--enable-blink-features=CSSIsolatedAnimationUpdates"]
+  },
+  {
     "prefix": "appcache-origin-trial",
     "bases": ["http/tests/appcache"],
     "args": ["--enable-features=AppCacheRequireOriginTrial",

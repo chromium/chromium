@@ -229,17 +229,17 @@ class CORE_EXPORT CSSAnimationUpdate final {
     return active_interpolations_for_transitions_;
   }
 
-  bool IsEmpty() const {
-    return new_animations_.IsEmpty() &&
-           cancelled_animation_indices_.IsEmpty() &&
-           suppressed_animations_.IsEmpty() &&
-           animation_indices_with_pause_toggled_.IsEmpty() &&
-           animations_with_updates_.IsEmpty() && new_transitions_.IsEmpty() &&
-           cancelled_transitions_.IsEmpty() &&
-           finished_transitions_.IsEmpty() &&
-           active_interpolations_for_animations_.IsEmpty() &&
-           active_interpolations_for_transitions_.IsEmpty() &&
-           updated_compositor_keyframes_.IsEmpty();
+  bool IsEmpty() const { return !HasUpdates() && !HasActiveInterpolations(); }
+
+  bool HasUpdates() const {
+    return !new_animations_.IsEmpty() ||
+           !cancelled_animation_indices_.IsEmpty() ||
+           !suppressed_animations_.IsEmpty() ||
+           !animation_indices_with_pause_toggled_.IsEmpty() ||
+           !animations_with_updates_.IsEmpty() || !new_transitions_.IsEmpty() ||
+           !cancelled_transitions_.IsEmpty() ||
+           !finished_transitions_.IsEmpty() ||
+           !updated_compositor_keyframes_.IsEmpty();
   }
 
   void Trace(Visitor* visitor) const {
@@ -253,6 +253,11 @@ class CORE_EXPORT CSSAnimationUpdate final {
   }
 
  private:
+  bool HasActiveInterpolations() const {
+    return !active_interpolations_for_animations_.IsEmpty() ||
+           !active_interpolations_for_transitions_.IsEmpty();
+  }
+
   // Order is significant since it defines the order in which new animations
   // will be started. Note that there may be multiple animations present
   // with the same name, due to the way in which we split up animations with

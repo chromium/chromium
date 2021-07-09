@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS Switching between document and scroll timelines [immediate]
+PASS Switching between document and scroll timelines [scroll]
+PASS Changing computed value of animation-timeline changes effective timeline [immediate]
+PASS Changing computed value of animation-timeline changes effective timeline [scroll]
+FAIL Changing to/from animation-timeline:none [immediate] assert_equals: expected "0px" but got "100px"
+PASS Changing to/from animation-timeline:none [scroll]
+PASS Changing the source descriptor switches effective timeline [immediate]
+PASS Changing the source descriptor switches effective timeline [scroll]
+PASS Changing the time-range descriptor switches effective timeline [immediate]
+PASS Changing the time-range descriptor switches effective timeline [scroll]
+PASS Changing the start descriptor switches effective timeline [immediate]
+PASS Changing the start descriptor switches effective timeline [scroll]
+PASS Changing the end descriptor switches effective timeline [immediate]
+PASS Changing the end descriptor switches effective timeline [scroll]
+PASS Reverse animation direction [immediate]
+PASS Reverse animation direction [scroll]
+PASS Switching timelines while paused [immediate]
+PASS Switching timelines while paused [scroll]
+PASS Switching timelines and pausing at the same time [immediate]
+PASS Switching timelines and pausing at the same time [scroll]
+Harness: the test ran to completion.
+

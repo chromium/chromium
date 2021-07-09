@@ -598,6 +598,12 @@
       status: "experimental",
     },
     {
+      // CSS animation/transition updates occur outside style recalc.
+      //
+      // https://crbug.com/1180159
+      name: "CSSIsolatedAnimationUpdates",
+    },
+    {
       name: "CSSLayoutAPI",
       status: "experimental",
     },

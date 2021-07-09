@@ -68,6 +68,8 @@ class CORE_EXPORT EffectStack {
   bool AffectsProperties(PropertyHandleFilter) const;
   bool AffectsProperties(const CSSBitset&,
                          KeyframeEffect::Priority priority) const;
+  HashSet<PropertyHandle> AffectedProperties(
+      KeyframeEffect::Priority priority) const;
   bool HasRevert() const;
 
   // Produces a map of properties to active effects.

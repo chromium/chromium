@@ -287,4 +287,46 @@ TEST_F(AnimationEffectStackTest, AffectsPropertiesCSSBitsetTransitionPriority) {
       KeyframeEffect::kTransitionPriority));
 }
 
+TEST_F(AnimationEffectStackTest, AffectedPropertiesDefaultPriority) {
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kColor, "red")), 10);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kTop, "1px")), 10);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kLeft, "1px")), 10);
+
+  ASSERT_TRUE(element->GetElementAnimations());
+  const EffectStack& effect_stack =
+      element->GetElementAnimations()->GetEffectStack();
+
+  EXPECT_TRUE(
+      effect_stack.AffectedProperties(KeyframeEffect::kTransitionPriority)
+          .IsEmpty());
+
+  auto set = effect_stack.AffectedProperties(KeyframeEffect::kDefaultPriority);
+  ASSERT_EQ(3u, set.size());
+  EXPECT_TRUE(set.Contains(PropertyHandle(GetCSSPropertyColor())));
+  EXPECT_TRUE(set.Contains(PropertyHandle(GetCSSPropertyTop())));
+  EXPECT_TRUE(set.Contains(PropertyHandle(GetCSSPropertyLeft())));
+}
+
+TEST_F(AnimationEffectStackTest, AffectedPropertiesTransitionPriority) {
+  Element* body = GetDocument().body();
+  body->SetInlineStyleProperty(CSSPropertyID::kTransition, "color 10s");
+  body->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  UpdateAllLifecyclePhasesForTest();
+
+  body->SetInlineStyleProperty(CSSPropertyID::kColor, "blue");
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(body->GetElementAnimations());
+  const EffectStack& effect_stack =
+      body->GetElementAnimations()->GetEffectStack();
+
+  EXPECT_TRUE(effect_stack.AffectedProperties(KeyframeEffect::kDefaultPriority)
+                  .IsEmpty());
+
+  auto set =
+      effect_stack.AffectedProperties(KeyframeEffect::kTransitionPriority);
+  ASSERT_EQ(1u, set.size());
+  EXPECT_TRUE(set.Contains(PropertyHandle(GetCSSPropertyColor())));
+}
+
 }  // namespace blink

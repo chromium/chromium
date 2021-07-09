@@ -142,4 +142,50 @@ TEST_F(DocumentAnimationsTest, UpdateAnimationsUpdatesAllTimelines) {
   EXPECT_EQ(5u, host->MainThreadAnimationsCount());
 }
 
+TEST_F(DocumentAnimationsTest, AllowAnimationUpdatesScope) {
+  DocumentAnimations& document_animations = document->GetDocumentAnimations();
+  auto allowed = [&document_animations]() -> bool {
+    return document_animations.AnimationUpdatesAllowed();
+  };
+
+  using AllowAnimationUpdatesScope =
+      DocumentAnimations::AllowAnimationUpdatesScope;
+
+  // Implicitly disallowed by default:
+  EXPECT_FALSE(allowed());
+
+  {
+    AllowAnimationUpdatesScope scope(document_animations, true);
+    EXPECT_TRUE(allowed());
+
+    {
+      AllowAnimationUpdatesScope scope(document_animations, true);
+      EXPECT_TRUE(allowed());
+    }
+
+    {
+      // Disallow explicitly:
+      AllowAnimationUpdatesScope scope(document_animations, false);
+      EXPECT_FALSE(allowed());
+
+      {
+        // Allowing while explicitly disallowed has no effect:
+        AllowAnimationUpdatesScope scope(document_animations, true);
+        EXPECT_FALSE(allowed());
+      }
+
+      EXPECT_FALSE(allowed());
+    }
+
+    EXPECT_TRUE(allowed());
+  }
+
+  {
+    AllowAnimationUpdatesScope scope(document_animations, false);
+    EXPECT_FALSE(allowed());
+  }
+
+  EXPECT_FALSE(allowed());
+}
+
 }  // namespace blink

@@ -140,6 +140,20 @@ bool EffectStack::AffectsProperties(const CSSBitset& bitset,
   return false;
 }
 
+HashSet<PropertyHandle> EffectStack::AffectedProperties(
+    KeyframeEffect::Priority priority) const {
+  HashSet<PropertyHandle> affected;
+
+  for (const auto& sampled_effect : sampled_effects_) {
+    if (sampled_effect->GetPriority() != priority)
+      continue;
+    for (const auto& interpolation : sampled_effect->Interpolations())
+      affected.insert(interpolation->GetProperty());
+  }
+
+  return affected;
+}
+
 bool EffectStack::HasRevert() const {
   for (const auto& sampled_effect : sampled_effects_) {
     if (sampled_effect->Effect() && sampled_effect->Effect()->HasRevert())

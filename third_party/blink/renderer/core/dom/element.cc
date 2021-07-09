@@ -2846,9 +2846,12 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     return nullptr;
   }
 
-  // ResolveStyle() might add active animations so we need to get it again.
   if (ElementAnimations* element_animations = GetElementAnimations()) {
-    element_animations->CssAnimations().MaybeApplyPendingUpdate(this);
+    // With CSSIsolatedAnimationUpdates enabled, animation updates are not
+    // applied during an Element's style recalc, but during
+    // Document::UpdateStyle.
+    if (!RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled())
+      element_animations->CssAnimations().MaybeApplyPendingUpdate(this);
     element_animations->UpdateAnimationFlags(*style);
   }
 

@@ -205,6 +205,10 @@ class CORE_EXPORT CSSAnimations final {
       size_t transition_index,
       const ComputedStyle&);
 
+  static bool CanCalculateTransitionUpdateForProperty(
+      TransitionUpdateState& state,
+      const PropertyHandle& property);
+
   static void CalculateTransitionUpdateForPropertyHandle(
       TransitionUpdateState&,
       const PropertyHandle&,

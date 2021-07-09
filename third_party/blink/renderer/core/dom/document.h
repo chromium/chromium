@@ -1776,6 +1776,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void UpdateStyleInvalidationIfNeeded();
   void UpdateStyle();
+  void UpdateStyleInternal();
   void NotifyLayoutTreeOfSubtreeChanges();
   bool ChildrenCanHaveStyle() const final;
 

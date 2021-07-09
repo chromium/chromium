@@ -3274,6 +3274,7 @@ void LocalFrameView::UpdateStyleAndLayout() {
     if (did_layout)
       GetLayoutView()->AssertSubtreeIsLaidOut();
   }
+  frame_->GetDocument()->GetDocumentAnimations().AssertNoPendingUpdates();
 #endif
 
   if (did_layout) {

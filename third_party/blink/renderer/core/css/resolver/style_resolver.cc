@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
@@ -116,10 +117,20 @@ void SetAnimationUpdateIfNeeded(StyleResolverState& state, Element& element) {
   // If any changes to CSS Animations were detected, stash the update away for
   // application after the layout object is updated if we're in the appropriate
   // scope.
-  if (!state.AnimationUpdate().IsEmpty()) {
-    auto& element_animations = element.EnsureElementAnimations();
-    element_animations.CssAnimations().SetPendingUpdate(
-        state.AnimationUpdate());
+  if (state.AnimationUpdate().IsEmpty())
+    return;
+
+  auto& element_animations = element.EnsureElementAnimations();
+  auto& document_animations = state.GetDocument().GetDocumentAnimations();
+
+  element_animations.CssAnimations().SetPendingUpdate(state.AnimationUpdate());
+
+  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
+    if (document_animations.AnimationUpdatesAllowed()) {
+      state.GetDocument()
+          .GetDocumentAnimations()
+          .AddElementWithPendingAnimationUpdate(element);
+    }
   }
 }
 
