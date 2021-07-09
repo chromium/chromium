@@ -246,6 +246,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kSetTouchableArea:
       out << "SetTouchableArea";
       break;
+    case ActionProto::ActionInfoCase::kDeletePassword:
+      out << "DeletePassword";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;
