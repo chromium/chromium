@@ -152,7 +152,7 @@ void TestConversionManager::GetPendingReportsForWebUI(
 }
 
 const base::circular_deque<SentReportInfo>&
-TestConversionManager::GetSentReportsForWebUI() {
+TestConversionManager::GetSentReportsForWebUI() const {
   return sent_reports_;
 }
 

@@ -29,8 +29,8 @@ struct ImpressionIdAndConversionOrigin {
 std::vector<ImpressionIdAndConversionOrigin>
 GetImpressionIdAndConversionOrigins(sql::Database* db,
                                     int64_t start_impression_id) {
-  const char kGetImpressionsSql[] =
-      "SELECT impression_id, conversion_origin "
+  static constexpr char kGetImpressionsSql[] =
+      "SELECT impression_id,conversion_origin "
       "FROM impressions "
       "WHERE impression_id >= ? "
       "ORDER BY impression_id "
@@ -64,8 +64,8 @@ struct ImpressionIdAndImpressionOrigin {
 std::vector<ImpressionIdAndImpressionOrigin>
 GetImpressionIdAndImpressionOrigins(sql::Database* db,
                                     int64_t start_impression_id) {
-  const char kGetImpressionsSql[] =
-      "SELECT impression_id, impression_origin "
+  static constexpr char kGetImpressionsSql[] =
+      "SELECT impression_id,impression_origin "
       "FROM impressions "
       "WHERE impression_id >= ? "
       "ORDER BY impression_id "
@@ -107,7 +107,7 @@ bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
   // https://sqlite.org/lang_altertable.html#otheralter. Other approaches, like
   // using "ALTER ... ADD COLUMN" require setting a DEFAULT value for the column
   // which is undesirable.
-  const char kNewImpressionTableSql[] =
+  static constexpr char kNewImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS new_impressions"
       "(impression_id INTEGER PRIMARY KEY,"
       "impression_data TEXT NOT NULL,"
@@ -124,7 +124,7 @@ bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
 
   // Transfer the existing rows to the new table, inserting a placeholder for
   // the conversion_destination column.
-  const char kPopulateNewImpressionTableSql[] =
+  static constexpr char kPopulateNewImpressionTableSql[] =
       "INSERT INTO new_impressions SELECT "
       "impression_id,impression_data,impression_origin,"
       "conversion_origin,reporting_origin,impression_time,"
@@ -133,11 +133,11 @@ bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
   if (!db->Execute(kPopulateNewImpressionTableSql))
     return false;
 
-  const char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
+  static constexpr char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
   if (!db->Execute(kDropOldImpressionTableSql))
     return false;
 
-  const char kRenameImpressionTableSql[] =
+  static constexpr char kRenameImpressionTableSql[] =
       "ALTER TABLE new_impressions RENAME TO impressions";
   if (!db->Execute(kRenameImpressionTableSql))
     return false;
@@ -152,7 +152,7 @@ bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
   std::vector<ImpressionIdAndConversionOrigin> impressions =
       GetImpressionIdAndConversionOrigins(db, /*start_impression_id=*/0);
 
-  const char kUpdateDestinationSql[] =
+  static constexpr char kUpdateDestinationSql[] =
       "UPDATE impressions SET conversion_destination = ? WHERE impression_id = "
       "?";
   sql::Statement update_destination_statement(
@@ -177,13 +177,13 @@ bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
   }
 
   // Create the pre-existing impression table indices on the new table.
-  const char kImpressionExpiryIndexSql[] =
+  static constexpr char kImpressionExpiryIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
       "ON impressions(expiry_time)";
   if (!db->Execute(kImpressionExpiryIndexSql))
     return false;
 
-  const char kImpressionOriginIndexSql[] =
+  static constexpr char kImpressionOriginIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_origin_idx "
       "ON impressions(impression_origin)";
   if (!db->Execute(kImpressionOriginIndexSql))
@@ -192,9 +192,9 @@ bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
   // Replace the pre-existing conversion_origin_idx with an index that uses the
   // conversion destination, as attribution logic now depends on the
   // conversion_destination.
-  const char kConversionDestinationIndexSql[] =
+  static constexpr char kConversionDestinationIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
-      "ON impressions(active, conversion_destination, reporting_origin)";
+      "ON impressions(active,conversion_destination,reporting_origin)";
   if (!db->Execute(kConversionDestinationIndexSql))
     return false;
 
@@ -214,7 +214,7 @@ bool MigrateToVersion3(sql::Database* db, sql::MetaTable* meta_table) {
   // https://sqlite.org/lang_altertable.html#otheralter. Other approaches, like
   // using "ALTER ... ADD COLUMN" require setting a DEFAULT value for the column
   // which is undesirable.
-  const char kNewImpressionTableSql[] =
+  static constexpr char kNewImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS new_impressions"
       "(impression_id INTEGER PRIMARY KEY,"
       "impression_data TEXT NOT NULL,"
@@ -233,7 +233,7 @@ bool MigrateToVersion3(sql::Database* db, sql::MetaTable* meta_table) {
 
   // Transfer the existing rows to the new table, inserting default values for
   // the source_type and attributed_truthfully columns.
-  const char kPopulateNewImpressionTableSql[] =
+  static constexpr char kPopulateNewImpressionTableSql[] =
       "INSERT INTO new_impressions SELECT "
       "impression_id,impression_data,impression_origin,"
       "conversion_origin,reporting_origin,impression_time,"
@@ -248,31 +248,31 @@ bool MigrateToVersion3(sql::Database* db, sql::MetaTable* meta_table) {
   if (!populate_statement.Run())
     return false;
 
-  const char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
+  static constexpr char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
   if (!db->Execute(kDropOldImpressionTableSql))
     return false;
 
-  const char kRenameImpressionTableSql[] =
+  static constexpr char kRenameImpressionTableSql[] =
       "ALTER TABLE new_impressions RENAME TO impressions";
   if (!db->Execute(kRenameImpressionTableSql))
     return false;
 
   // Create the pre-existing impression table indices on the new table.
-  const char kImpressionExpiryIndexSql[] =
+  static constexpr char kImpressionExpiryIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
       "ON impressions(expiry_time)";
   if (!db->Execute(kImpressionExpiryIndexSql))
     return false;
 
-  const char kImpressionOriginIndexSql[] =
+  static constexpr char kImpressionOriginIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_origin_idx "
       "ON impressions(impression_origin)";
   if (!db->Execute(kImpressionOriginIndexSql))
     return false;
 
-  const char kConversionDestinationIndexSql[] =
+  static constexpr char kConversionDestinationIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
-      "ON impressions(active, conversion_destination, reporting_origin)";
+      "ON impressions(active,conversion_destination,reporting_origin)";
   if (!db->Execute(kConversionDestinationIndexSql))
     return false;
 
@@ -287,7 +287,7 @@ bool MigrateToVersion4(sql::Database* db, sql::MetaTable* meta_table) {
   if (!transaction.Begin())
     return false;
 
-  const char kRateLimitTableSql[] =
+  static constexpr char kRateLimitTableSql[] =
       "CREATE TABLE IF NOT EXISTS rate_limits"
       "(rate_limit_id INTEGER PRIMARY KEY,"
       "attribution_type INTEGER NOT NULL,"
@@ -300,20 +300,20 @@ bool MigrateToVersion4(sql::Database* db, sql::MetaTable* meta_table) {
   if (!db->Execute(kRateLimitTableSql))
     return false;
 
-  const char kRateLimitImpressionSiteTypeIndexSql[] =
+  static constexpr char kRateLimitImpressionSiteTypeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS rate_limit_impression_site_type_idx "
-      "ON rate_limits(attribution_type, conversion_destination, "
-      "impression_site, conversion_time)";
+      "ON rate_limits(attribution_type,conversion_destination,"
+      "impression_site,conversion_time)";
   if (!db->Execute(kRateLimitImpressionSiteTypeIndexSql))
     return false;
 
-  const char kRateLimitConversionTimeIndexSql[] =
+  static constexpr char kRateLimitConversionTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS rate_limit_conversion_time_idx "
       "ON rate_limits(conversion_time)";
   if (!db->Execute(kRateLimitConversionTimeIndexSql))
     return false;
 
-  const char kRateLimitImpressionIndexSql[] =
+  static constexpr char kRateLimitImpressionIndexSql[] =
       "CREATE INDEX IF NOT EXISTS rate_limit_impression_id_idx "
       "ON rate_limits(impression_id)";
   if (!db->Execute(kRateLimitImpressionIndexSql))
@@ -332,12 +332,12 @@ bool MigrateToVersion5(sql::Database* db, sql::MetaTable* meta_table) {
 
   // Any corresponding impressions will naturally be cleaned up by the expiry
   // logic.
-  const char kDropZeroCreditConversionsSql[] =
+  static constexpr char kDropZeroCreditConversionsSql[] =
       "DELETE FROM conversions WHERE attribution_credit = 0";
   if (!db->Execute(kDropZeroCreditConversionsSql))
     return false;
 
-  const char kDropAttributionCreditColumnSql[] =
+  static constexpr char kDropAttributionCreditColumnSql[] =
       "ALTER TABLE conversions DROP COLUMN attribution_credit";
   if (!db->Execute(kDropAttributionCreditColumnSql))
     return false;
@@ -357,7 +357,7 @@ bool MigrateToVersion6(sql::Database* db, sql::MetaTable* meta_table) {
   // documented at https://sqlite.org/lang_altertable.html#otheralter. Other
   // approaches, like using "ALTER ... ADD COLUMN" require setting a DEFAULT
   // value for the column which is undesirable.
-  const char kNewImpressionTableSql[] =
+  static constexpr char kNewImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS new_impressions"
       "(impression_id INTEGER PRIMARY KEY,"
       "impression_data TEXT NOT NULL,"
@@ -377,7 +377,7 @@ bool MigrateToVersion6(sql::Database* db, sql::MetaTable* meta_table) {
 
   // Transfer the existing rows to the new table, inserting default values for
   // the priority column.
-  const char kPopulateNewImpressionTableSql[] =
+  static constexpr char kPopulateNewImpressionTableSql[] =
       "INSERT INTO new_impressions SELECT "
       "impression_id,impression_data,impression_origin,"
       "conversion_origin,reporting_origin,impression_time,"
@@ -389,31 +389,31 @@ bool MigrateToVersion6(sql::Database* db, sql::MetaTable* meta_table) {
   if (!populate_statement.Run())
     return false;
 
-  const char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
+  static constexpr char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
   if (!db->Execute(kDropOldImpressionTableSql))
     return false;
 
-  const char kRenameImpressionTableSql[] =
+  static constexpr char kRenameImpressionTableSql[] =
       "ALTER TABLE new_impressions RENAME TO impressions";
   if (!db->Execute(kRenameImpressionTableSql))
     return false;
 
   // Create the pre-existing impression table indices on the new table.
-  const char kImpressionExpiryIndexSql[] =
+  static constexpr char kImpressionExpiryIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
       "ON impressions(expiry_time)";
   if (!db->Execute(kImpressionExpiryIndexSql))
     return false;
 
-  const char kImpressionOriginIndexSql[] =
+  static constexpr char kImpressionOriginIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_origin_idx "
       "ON impressions(impression_origin)";
   if (!db->Execute(kImpressionOriginIndexSql))
     return false;
 
-  const char kConversionDestinationIndexSql[] =
+  static constexpr char kConversionDestinationIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
-      "ON impressions(active, conversion_destination, reporting_origin)";
+      "ON impressions(active,conversion_destination,reporting_origin)";
   if (!db->Execute(kConversionDestinationIndexSql))
     return false;
 
@@ -432,7 +432,7 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
   // steps documented at https://sqlite.org/lang_altertable.html#otheralter.
   // Other approaches, like using "ALTER ... ADD COLUMN" require setting a
   // DEFAULT value for the column which is undesirable.
-  const char kNewImpressionTableSql[] =
+  static constexpr char kNewImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS new_impressions"
       "(impression_id INTEGER PRIMARY KEY,"
       "impression_data TEXT NOT NULL,"
@@ -453,7 +453,7 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
 
   // Transfer the existing rows to the new table, inserting placeholder values
   // for the impression_site column.
-  const char kPopulateNewImpressionTableSql[] =
+  static constexpr char kPopulateNewImpressionTableSql[] =
       "INSERT INTO new_impressions SELECT "
       "impression_id,impression_data,impression_origin,"
       "conversion_origin,reporting_origin,impression_time,"
@@ -465,11 +465,11 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
   if (!populate_statement.Run())
     return false;
 
-  const char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
+  static constexpr char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
   if (!db->Execute(kDropOldImpressionTableSql))
     return false;
 
-  const char kRenameImpressionTableSql[] =
+  static constexpr char kRenameImpressionTableSql[] =
       "ALTER TABLE new_impressions RENAME TO impressions";
   if (!db->Execute(kRenameImpressionTableSql))
     return false;
@@ -482,7 +482,7 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
   std::vector<ImpressionIdAndImpressionOrigin> impressions =
       GetImpressionIdAndImpressionOrigins(db, /*start_impression_id=*/0);
 
-  const char kUpdateImpressionSiteSql[] =
+  static constexpr char kUpdateImpressionSiteSql[] =
       "UPDATE impressions SET impression_site = ? WHERE impression_id = ?";
   sql::Statement update_impression_site_statement(
       db->GetCachedStatement(SQL_FROM_HERE, kUpdateImpressionSiteSql));
@@ -506,28 +506,28 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
   }
 
   // Create the pre-existing impression table indices on the new table.
-  const char kImpressionExpiryIndexSql[] =
+  static constexpr char kImpressionExpiryIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
       "ON impressions(expiry_time)";
   if (!db->Execute(kImpressionExpiryIndexSql))
     return false;
 
-  const char kImpressionOriginIndexSql[] =
+  static constexpr char kImpressionOriginIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_origin_idx "
       "ON impressions(impression_origin)";
   if (!db->Execute(kImpressionOriginIndexSql))
     return false;
 
-  const char kConversionDestinationIndexSql[] =
+  static constexpr char kConversionDestinationIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
-      "ON impressions(active, conversion_destination, reporting_origin)";
+      "ON impressions(active,conversion_destination,reporting_origin)";
   if (!db->Execute(kConversionDestinationIndexSql))
     return false;
 
   // Create the new impression table index.
-  const char kImpressionSiteIndexSql[] =
+  static constexpr char kImpressionSiteIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_site_idx "
-      "ON impressions(active, impression_site, source_type)";
+      "ON impressions(active,impression_site,source_type)";
   if (!db->Execute(kImpressionSiteIndexSql))
     return false;
 
@@ -543,8 +543,8 @@ struct ImpressionIdAndImpressionData {
 std::vector<ImpressionIdAndImpressionData> GetImpressionIdAndImpressionData(
     sql::Database* db,
     int64_t start_impression_id) {
-  const char kGetImpressionsSql[] =
-      "SELECT impression_id, impression_data "
+  static constexpr char kGetImpressionsSql[] =
+      "SELECT impression_id,impression_data "
       "FROM impressions "
       "WHERE impression_id >= ? "
       "ORDER BY impression_id "
@@ -580,7 +580,7 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
   // steps documented at https://sqlite.org/lang_altertable.html#otheralter.
   // Other approaches, like using "ALTER ... ADD COLUMN" require setting a
   // DEFAULT value for the column which is undesirable.
-  const char kNewImpressionTableSql[] =
+  static constexpr char kNewImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS new_impressions"
       "(impression_id INTEGER PRIMARY KEY,"
       "impression_data INTEGER NOT NULL,"
@@ -601,7 +601,7 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
 
   // Transfer the existing impressions rows to the new table with a placeholder
   // for the impression_data column.
-  const char kPopulateNewImpressionsSql[] =
+  static constexpr char kPopulateNewImpressionsSql[] =
       "INSERT INTO new_impressions SELECT "
       "impression_id,0,impression_origin,conversion_origin,reporting_origin,"
       "impression_time,expiry_time,num_conversions,active,"
@@ -621,7 +621,7 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
   std::vector<ImpressionIdAndImpressionData> impressions =
       GetImpressionIdAndImpressionData(db, /*start_impression_id=*/0);
 
-  const char kUpdateImpressionDataSql[] =
+  static constexpr char kUpdateImpressionDataSql[] =
       "UPDATE new_impressions SET impression_data = ? WHERE impression_id = ?";
   sql::Statement update_impression_data_statement(
       db->GetCachedStatement(SQL_FROM_HERE, kUpdateImpressionDataSql));
@@ -646,37 +646,37 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
         db, impressions.back().impression_id + 1);
   }
 
-  const char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
+  static constexpr char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
   if (!db->Execute(kDropOldImpressionTableSql))
     return false;
 
-  const char kRenameImpressionTableSql[] =
+  static constexpr char kRenameImpressionTableSql[] =
       "ALTER TABLE new_impressions RENAME TO impressions";
   if (!db->Execute(kRenameImpressionTableSql))
     return false;
 
   // Create the pre-existing impression table indices on the new table.
-  const char kImpressionExpiryIndexSql[] =
+  static constexpr char kImpressionExpiryIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
       "ON impressions(expiry_time)";
   if (!db->Execute(kImpressionExpiryIndexSql))
     return false;
 
-  const char kImpressionOriginIndexSql[] =
+  static constexpr char kImpressionOriginIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_origin_idx "
       "ON impressions(impression_origin)";
   if (!db->Execute(kImpressionOriginIndexSql))
     return false;
 
-  const char kConversionDestinationIndexSql[] =
+  static constexpr char kConversionDestinationIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
-      "ON impressions(active, conversion_destination, reporting_origin)";
+      "ON impressions(active,conversion_destination,reporting_origin)";
   if (!db->Execute(kConversionDestinationIndexSql))
     return false;
 
-  const char kImpressionSiteIndexSql[] =
+  static constexpr char kImpressionSiteIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_site_idx "
-      "ON impressions(active, impression_site, source_type)";
+      "ON impressions(active,impression_site,source_type)";
   if (!db->Execute(kImpressionSiteIndexSql))
     return false;
 
@@ -685,13 +685,13 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
   // https://sqlite.org/lang_altertable.html#otheralter./ Other approaches, like
   // using "ALTER ... ADD COLUMN" require setting a DEFAULT value for the column
   // which is undesirable.
-  const char kNewConversionTableSql[] =
-      "CREATE TABLE IF NOT EXISTS new_conversions "
+  static constexpr char kNewConversionTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_conversions"
       "(conversion_id INTEGER PRIMARY KEY,"
-      " impression_id INTEGER NOT NULL,"
-      " conversion_data INTEGER NOT NULL,"
-      " conversion_time INTEGER NOT NULL,"
-      " report_time INTEGER NOT NULL)";
+      "impression_id INTEGER NOT NULL,"
+      "conversion_data INTEGER NOT NULL,"
+      "conversion_time INTEGER NOT NULL,"
+      "report_time INTEGER NOT NULL)";
   if (!db->Execute(kNewConversionTableSql))
     return false;
 
@@ -700,7 +700,7 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
   // we can use here because valid conversion_data is in the range [0, 8].
   // Existing impression_id values should never be NULL, but if they are, we
   // insert 0 instead of failing.
-  const char kPopulateNewConversionsSql[] =
+  static constexpr char kPopulateNewConversionsSql[] =
       "INSERT INTO new_conversions SELECT "
       "conversion_id,IFNULL(impression_id,0),"
       "CAST(conversion_data AS INTEGER),conversion_time,report_time "
@@ -710,23 +710,23 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
   if (!populate_new_conversions_statement.Run())
     return false;
 
-  const char kDropOldConversionTableSql[] = "DROP TABLE conversions";
+  static constexpr char kDropOldConversionTableSql[] = "DROP TABLE conversions";
   if (!db->Execute(kDropOldConversionTableSql))
     return false;
 
-  const char kRenameConversionTableSql[] =
+  static constexpr char kRenameConversionTableSql[] =
       "ALTER TABLE new_conversions RENAME TO conversions";
   if (!db->Execute(kRenameConversionTableSql))
     return false;
 
   // Create the pre-existing conversion table indices on the new table.
-  const char kConversionReportTimeIndexSql[] =
+  static constexpr char kConversionReportTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_report_idx "
       "ON conversions(report_time)";
   if (!db->Execute(kConversionReportTimeIndexSql))
     return false;
 
-  const char kConversionClickIdIndexSql[] =
+  static constexpr char kConversionClickIdIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
       "ON conversions(impression_id)";
   if (!db->Execute(kConversionClickIdIndexSql))
@@ -747,20 +747,20 @@ bool MigrateToVersion9(sql::Database* db, sql::MetaTable* meta_table) {
   // steps documented at https://sqlite.org/lang_altertable.html#otheralter.
   // Other approaches, like using "ALTER ... ADD COLUMN" require setting a
   // DEFAULT value for the column which is undesirable.
-  const char kNewTableSql[] =
-      "CREATE TABLE IF NOT EXISTS new_conversions "
+  static constexpr char kNewTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_conversions"
       "(conversion_id INTEGER PRIMARY KEY,"
-      " impression_id INTEGER NOT NULL,"
-      " conversion_data INTEGER NOT NULL,"
-      " conversion_time INTEGER NOT NULL,"
-      " report_time INTEGER NOT NULL,"
-      " priority INTEGER NOT NULL)";
+      "impression_id INTEGER NOT NULL,"
+      "conversion_data INTEGER NOT NULL,"
+      "conversion_time INTEGER NOT NULL,"
+      "report_time INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL)";
   if (!db->Execute(kNewTableSql))
     return false;
 
   // Transfer the existing rows to the new table, inserting 0 for the priority
   // column.
-  const char kPopulateSql[] =
+  static constexpr char kPopulateSql[] =
       "INSERT INTO new_conversions SELECT "
       "conversion_id,impression_id,conversion_data,conversion_time,"
       "report_time,0 "
@@ -770,23 +770,23 @@ bool MigrateToVersion9(sql::Database* db, sql::MetaTable* meta_table) {
   if (!populate_statement.Run())
     return false;
 
-  const char kDropOldTableSql[] = "DROP TABLE conversions";
+  static constexpr char kDropOldTableSql[] = "DROP TABLE conversions";
   if (!db->Execute(kDropOldTableSql))
     return false;
 
-  const char kRenameTableSql[] =
+  static constexpr char kRenameTableSql[] =
       "ALTER TABLE new_conversions RENAME TO conversions";
   if (!db->Execute(kRenameTableSql))
     return false;
 
   // Create the pre-existing conversion table indices on the new table.
-  const char kConversionReportTimeIndexSql[] =
+  static constexpr char kConversionReportTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_report_idx "
       "ON conversions(report_time)";
   if (!db->Execute(kConversionReportTimeIndexSql))
     return false;
 
-  const char kConversionClickIdIndexSql[] =
+  static constexpr char kConversionClickIdIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
       "ON conversions(impression_id)";
   if (!db->Execute(kConversionClickIdIndexSql))

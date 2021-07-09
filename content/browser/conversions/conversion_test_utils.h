@@ -169,7 +169,8 @@ class TestConversionManager : public ConversionManager {
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<ConversionReport>)> callback,
       base::Time max_report_time) override;
-  const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI() override;
+  const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI()
+      const override;
   void SendReportsForWebUI(base::OnceClosure done) override;
   const ConversionPolicy& GetConversionPolicy() const override;
   void ClearData(base::Time delete_begin,
@@ -228,23 +229,28 @@ class ImpressionBuilder {
   explicit ImpressionBuilder(base::Time time);
   ~ImpressionBuilder();
 
-  ImpressionBuilder& SetExpiry(base::TimeDelta delta);
+  ImpressionBuilder& SetExpiry(base::TimeDelta delta) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetData(uint64_t data);
+  ImpressionBuilder& SetData(uint64_t data) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetImpressionOrigin(const url::Origin& origin);
+  ImpressionBuilder& SetImpressionOrigin(const url::Origin& origin)
+      WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetConversionOrigin(const url::Origin& domain);
+  ImpressionBuilder& SetConversionOrigin(const url::Origin& domain)
+      WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetReportingOrigin(const url::Origin& origin);
+  ImpressionBuilder& SetReportingOrigin(const url::Origin& origin)
+      WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetSourceType(StorableImpression::SourceType source_type);
+  ImpressionBuilder& SetSourceType(StorableImpression::SourceType source_type)
+      WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetPriority(int64_t priority);
+  ImpressionBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetImpressionId(absl::optional<int64_t> impression_id);
+  ImpressionBuilder& SetImpressionId(absl::optional<int64_t> impression_id)
+      WARN_UNUSED_RESULT;
 
-  StorableImpression Build() const;
+  StorableImpression Build() const WARN_UNUSED_RESULT;
 
  private:
   uint64_t impression_data_;
@@ -260,7 +266,7 @@ class ImpressionBuilder {
 
 // Returns a StorableConversion with default data which matches the default
 // impressions created by ImpressionBuilder.
-StorableConversion DefaultConversion();
+StorableConversion DefaultConversion() WARN_UNUSED_RESULT;
 
 // Helper class to construct a StorableConversion for tests using default data.
 // StorableConversion members are not mutable after construction requiring a
@@ -270,19 +276,21 @@ class ConversionBuilder {
   ConversionBuilder();
   ~ConversionBuilder() = default;
 
-  ConversionBuilder& SetConversionData(uint64_t conversion_data);
+  ConversionBuilder& SetConversionData(uint64_t conversion_data)
+      WARN_UNUSED_RESULT;
 
   ConversionBuilder& SetEventSourceTriggerData(
-      uint64_t event_source_trigger_data);
+      uint64_t event_source_trigger_data) WARN_UNUSED_RESULT;
 
   ConversionBuilder& SetConversionDestination(
-      const net::SchemefulSite& conversion_destination);
+      const net::SchemefulSite& conversion_destination) WARN_UNUSED_RESULT;
 
-  ConversionBuilder& SetReportingOrigin(const url::Origin& reporting_origin);
+  ConversionBuilder& SetReportingOrigin(const url::Origin& reporting_origin)
+      WARN_UNUSED_RESULT;
 
-  ConversionBuilder& SetPriority(int64_t priority);
+  ConversionBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
 
-  StorableConversion Build() const;
+  StorableConversion Build() const WARN_UNUSED_RESULT;
 
  private:
   uint64_t conversion_data_ = 111;
@@ -300,7 +308,7 @@ bool operator==(const SentReportInfo& a, const SentReportInfo& b);
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,
-    base::Time max_report_time);
+    base::Time max_report_time) WARN_UNUSED_RESULT;
 
 }  // namespace content
 

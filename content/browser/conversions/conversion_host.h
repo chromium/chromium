@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "content/browser/conversions/conversion_manager.h"
@@ -44,10 +45,10 @@ class CONTENT_EXPORT ConversionHost
       const std::string& attribution_source_event_id,
       const std::string& attribution_destination,
       const std::string& attribution_report_to,
-      int64_t attribution_expiry);
+      int64_t attribution_expiry) WARN_UNUSED_RESULT;
 
   static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
-      const blink::Impression& impression);
+      const blink::Impression& impression) WARN_UNUSED_RESULT;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,

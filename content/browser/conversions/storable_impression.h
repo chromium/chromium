@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
@@ -59,35 +60,47 @@ class CONTENT_EXPORT StorableImpression {
   StorableImpression& operator=(StorableImpression&& other);
   ~StorableImpression();
 
-  uint64_t impression_data() const { return impression_data_; }
+  uint64_t impression_data() const WARN_UNUSED_RESULT {
+    return impression_data_;
+  }
 
-  const url::Origin& impression_origin() const { return impression_origin_; }
+  const url::Origin& impression_origin() const WARN_UNUSED_RESULT {
+    return impression_origin_;
+  }
 
-  const url::Origin& conversion_origin() const { return conversion_origin_; }
+  const url::Origin& conversion_origin() const WARN_UNUSED_RESULT {
+    return conversion_origin_;
+  }
 
-  const url::Origin& reporting_origin() const { return reporting_origin_; }
+  const url::Origin& reporting_origin() const WARN_UNUSED_RESULT {
+    return reporting_origin_;
+  }
 
-  base::Time impression_time() const { return impression_time_; }
+  base::Time impression_time() const WARN_UNUSED_RESULT {
+    return impression_time_;
+  }
 
-  base::Time expiry_time() const { return expiry_time_; }
+  base::Time expiry_time() const WARN_UNUSED_RESULT { return expiry_time_; }
 
-  absl::optional<int64_t> impression_id() const { return impression_id_; }
+  absl::optional<int64_t> impression_id() const WARN_UNUSED_RESULT {
+    return impression_id_;
+  }
 
-  SourceType source_type() const { return source_type_; }
+  SourceType source_type() const WARN_UNUSED_RESULT { return source_type_; }
 
-  int64_t priority() const { return priority_; }
+  int64_t priority() const WARN_UNUSED_RESULT { return priority_; }
 
   // Returns the schemeful site of |conversion_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
   // that we avoid unnecessary copies of |conversion_origin_|.
-  net::SchemefulSite ConversionDestination() const;
+  net::SchemefulSite ConversionDestination() const WARN_UNUSED_RESULT;
 
   // Returns the schemeful site of |impression_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
   // that we avoid unnecessary copies of |impression_origin_|.
-  net::SchemefulSite ImpressionSite() const;
+  net::SchemefulSite ImpressionSite() const WARN_UNUSED_RESULT;
 
  private:
   uint64_t impression_data_;

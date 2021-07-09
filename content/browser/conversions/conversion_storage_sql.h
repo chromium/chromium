@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -95,9 +96,9 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   bool HasCapacityForStoringImpression(const std::string& serialized_origin)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
   int GetCapacityForStoringConversion(const std::string& serialized_origin)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   enum class MaybeReplaceLowerPriorityReportResult {
     kError,
@@ -109,30 +110,32 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
       const StorableImpression& impression,
       int num_conversions,
       int64_t conversion_priority,
-      base::Time report_time) VALID_CONTEXT_REQUIRED(sequence_checker_);
+      base::Time report_time)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // When storing an event-source impression, deletes active event-source
   // impressions in order by |impression_time| until there are sufficiently few
   // unique conversion destinations for the same |impression_site|.
   bool EnsureCapacityForPendingDestinationLimit(
       const StorableImpression& impression)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Stores |report| in the database, but uses |impression_id| rather than
   // |ConversionReport::impression::impression_id()|, which may be null.
   bool StoreConversionReport(const ConversionReport& report,
                              int64_t impression_id,
                              int64_t priority)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if
   // it is not already.
   bool LazyInit(DbCreationPolicy creation_policy)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
   bool InitializeSchema(bool db_empty)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-  bool CreateSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  bool CreateSchema()
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
   void HandleInitializationFailure(const InitStatus status)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 

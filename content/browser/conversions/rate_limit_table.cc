@@ -38,7 +38,7 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   // |conversion_destination| is the destination of the conversion.
   // |conversion_origin| is the origin of the conversion.
   // |conversion_time| is the report's conversion time.
-  const char kRateLimitTableSql[] =
+  static constexpr char kRateLimitTableSql[] =
       "CREATE TABLE IF NOT EXISTS rate_limits"
       "(rate_limit_id INTEGER PRIMARY KEY,"
       "attribution_type INTEGER NOT NULL,"
@@ -52,22 +52,22 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
     return false;
 
   // Optimizes calls to |IsAttributionAllowed()|.
-  const char kRateLimitImpressionSiteTypeIndexSql[] =
+  static constexpr char kRateLimitImpressionSiteTypeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS rate_limit_impression_site_type_idx "
-      "ON rate_limits(attribution_type, conversion_destination, "
-      "impression_site, conversion_time)";
+      "ON rate_limits(attribution_type,conversion_destination,"
+      "impression_site,conversion_time)";
   if (!db->Execute(kRateLimitImpressionSiteTypeIndexSql))
     return false;
 
   // Optimizes calls to |DeleteExpiredRateLimits()| and |ClearAllDataInRange()|.
-  const char kRateLimitConversionTimeIndexSql[] =
+  static constexpr char kRateLimitConversionTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS rate_limit_conversion_time_idx "
       "ON rate_limits(conversion_time)";
   if (!db->Execute(kRateLimitConversionTimeIndexSql))
     return false;
 
   // Optimizes calls to |ClearDataForImpressionIds()|.
-  const char kRateLimitImpressionIndexSql[] =
+  static constexpr char kRateLimitImpressionIndexSql[] =
       "CREATE INDEX IF NOT EXISTS rate_limit_impression_id_idx "
       "ON rate_limits(impression_id)";
   return db->Execute(kRateLimitImpressionIndexSql);
@@ -84,13 +84,14 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   base::Time now = clock_->Now();
   if (now - last_cleared_ >= kDeleteFrequency) {
     last_cleared_ = now;
-    DeleteExpiredRateLimits(db);
+    if (!DeleteExpiredRateLimits(db))
+      return false;
   }
 
-  const char kStoreRateLimitSql[] =
-      "INSERT INTO rate_limits "
-      "(attribution_type, impression_id, impression_site, impression_origin, "
-      "conversion_destination, conversion_origin, conversion_time) "
+  static constexpr char kStoreRateLimitSql[] =
+      "INSERT INTO rate_limits"
+      "(attribution_type,impression_id,impression_site,impression_origin,"
+      "conversion_destination,conversion_origin,conversion_time)"
       "VALUES(?,?,?,?,?,?,?)";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
@@ -115,8 +116,8 @@ bool RateLimitTable::IsAttributionAllowed(sql::Database* db,
       delegate_->GetRateLimits();
   base::Time min_timestamp = now - rate_limits.time_window;
 
-  const char kAttributionAllowedSql[] =
-      "SELECT COUNT(*) FROM rate_limits "
+  static constexpr char kAttributionAllowedSql[] =
+      "SELECT COUNT(*)FROM rate_limits "
       "WHERE attribution_type = ? "
       "AND impression_site = ? "
       "AND conversion_destination = ? "
@@ -143,7 +144,7 @@ bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
   DCHECK(!((delete_begin.is_null() || delete_begin.is_min()) &&
            delete_end.is_max()));
 
-  const char kDeleteRateLimitRangeSql[] =
+  static constexpr char kDeleteRateLimitRangeSql[] =
       "DELETE FROM rate_limits WHERE conversion_time BETWEEN ? AND "
       "?";
   sql::Statement statement(
@@ -156,7 +157,7 @@ bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
 bool RateLimitTable::ClearAllDataAllTime(sql::Database* db) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const char kDeleteAllRateLimitsSql[] = "DELETE FROM rate_limits";
+  static constexpr char kDeleteAllRateLimitsSql[] = "DELETE FROM rate_limits";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteAllRateLimitsSql));
   return statement.Run();
@@ -172,9 +173,9 @@ bool RateLimitTable::ClearDataForOriginsInRange(
 
   std::vector<int64_t> rate_limit_ids_to_delete;
   {
-    const char kScanCandidateData[] =
-        "SELECT rate_limit_id, impression_site, impression_origin, "
-        "conversion_destination, conversion_origin FROM rate_limits "
+    static constexpr char kScanCandidateData[] =
+        "SELECT rate_limit_id,impression_site,impression_origin,"
+        "conversion_destination,conversion_origin FROM rate_limits "
         "WHERE conversion_time BETWEEN ? AND ?";
     sql::Statement statement(
         db->GetCachedStatement(SQL_FROM_HERE, kScanCandidateData));
@@ -200,7 +201,7 @@ bool RateLimitTable::ClearDataForOriginsInRange(
     return false;
 
   for (int64_t rate_limit_id : rate_limit_ids_to_delete) {
-    const char kDeleteRateLimitSql[] =
+    static constexpr char kDeleteRateLimitSql[] =
         "DELETE FROM rate_limits WHERE rate_limit_id = ?";
     sql::Statement statement(
         db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
@@ -212,17 +213,15 @@ bool RateLimitTable::ClearDataForOriginsInRange(
   return transaction.Commit();
 }
 
-int RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
+bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
   base::Time timestamp = clock_->Now() - delegate_->GetRateLimits().time_window;
 
-  const char kDeleteExpiredRateLimits[] =
+  static constexpr char kDeleteExpiredRateLimits[] =
       "DELETE FROM rate_limits WHERE conversion_time <= ?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredRateLimits));
   statement.BindTime(0, timestamp);
-  if (!statement.Run())
-    return 0;
-  return db->GetLastChangeCount();
+  return statement.Run();
 }
 
 bool RateLimitTable::ClearDataForImpressionIds(
@@ -235,7 +234,7 @@ bool RateLimitTable::ClearDataForImpressionIds(
     return false;
 
   for (int64_t id : impression_ids) {
-    const char kDeleteRateLimitSql[] =
+    static constexpr char kDeleteRateLimitSql[] =
         "DELETE FROM rate_limits WHERE impression_id = ?";
     sql::Statement statement(
         db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));

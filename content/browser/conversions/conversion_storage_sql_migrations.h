@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_CONVERSIONS_CONVERSION_STORAGE_SQL_MIGRATIONS_H_
 #define CONTENT_BROWSER_CONVERSIONS_CONVERSION_STORAGE_SQL_MIGRATIONS_H_
 
+#include "base/compiler_specific.h"
+
 namespace sql {
 class Database;
 class MetaTable;
@@ -43,7 +45,8 @@ namespace content {
 // Upgrades |db| to the latest schema, and updates the version stored in
 // |meta_table| accordingly. Must be called with an open |db|.
 bool UpgradeConversionStorageSqlSchema(sql::Database* db,
-                                       sql::MetaTable* meta_table);
+                                       sql::MetaTable* meta_table)
+    WARN_UNUSED_RESULT;
 
 }  // namespace content
 

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
@@ -32,19 +33,23 @@ class CONTENT_EXPORT StorableConversion {
   StorableConversion& operator=(StorableConversion&& other);
   ~StorableConversion();
 
-  uint64_t conversion_data() const { return conversion_data_; }
+  uint64_t conversion_data() const WARN_UNUSED_RESULT {
+    return conversion_data_;
+  }
 
-  const net::SchemefulSite& conversion_destination() const {
+  const net::SchemefulSite& conversion_destination() const WARN_UNUSED_RESULT {
     return conversion_destination_;
   }
 
-  const url::Origin& reporting_origin() const { return reporting_origin_; }
+  const url::Origin& reporting_origin() const WARN_UNUSED_RESULT {
+    return reporting_origin_;
+  }
 
-  uint64_t event_source_trigger_data() const {
+  uint64_t event_source_trigger_data() const WARN_UNUSED_RESULT {
     return event_source_trigger_data_;
   }
 
-  int64_t priority() const { return priority_; }
+  int64_t priority() const WARN_UNUSED_RESULT { return priority_; }
 
  private:
   // Conversion data associated with conversion registration event.

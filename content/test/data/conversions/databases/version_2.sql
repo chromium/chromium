@@ -16,7 +16,7 @@ VALUES(1,
        1,
        'https://conversion.test/');
 
-CREATE TABLE conversions (conversion_id INTEGER PRIMARY KEY, impression_id INTEGER, conversion_data TEXT NOT NULL, conversion_time INTEGER NOT NULL, report_time INTEGER NOT NULL, attribution_credit INTEGER NOT NULL);
+CREATE TABLE conversions(conversion_id INTEGER PRIMARY KEY,impression_id INTEGER,conversion_data TEXT NOT NULL,conversion_time INTEGER NOT NULL,report_time INTEGER NOT NULL,attribution_credit INTEGER NOT NULL);
 
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
@@ -32,6 +32,6 @@ CREATE INDEX conversion_report_idx ON conversions(report_time);
 
 CREATE INDEX conversion_impression_id_idx ON conversions(impression_id);
 
-CREATE INDEX conversion_destination_idx ON impressions(active, conversion_destination, reporting_origin);
+CREATE INDEX conversion_destination_idx ON impressions(active,conversion_destination,reporting_origin);
 
 COMMIT;

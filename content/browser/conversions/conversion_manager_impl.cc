@@ -192,7 +192,7 @@ void ConversionManagerImpl::GetPendingReportsForWebUI(
 }
 
 const base::circular_deque<SentReportInfo>&
-ConversionManagerImpl::GetSentReportsForWebUI() {
+ConversionManagerImpl::GetSentReportsForWebUI() const {
   return sent_reports_;
 }
 

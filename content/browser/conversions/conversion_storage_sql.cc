@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -103,7 +104,7 @@ void RecordReportsDeleted(int count) {
                             count);
 }
 
-bool ShouldReplaceImpressionToAttribute(
+WARN_UNUSED_RESULT bool ShouldReplaceImpressionToAttribute(
     const absl::optional<StorableImpression>& impression_to_attribute,
     int64_t candidate_priority,
     base::Time candidate_impression_time) {
@@ -191,7 +192,7 @@ void ConversionStorageSql::StoreImpression(
   // In the case where we get a new impression for a given <reporting_origin,
   // conversion_destination> we should mark all active, converted impressions
   // with the matching <reporting_origin, conversion_destination> as not active.
-  const char kDeactivateMatchingConvertedImpressionsSql[] =
+  static constexpr char kDeactivateMatchingConvertedImpressionsSql[] =
       "UPDATE impressions SET active = 0 "
       "WHERE conversion_destination = ? AND reporting_origin = ? AND "
       "active = 1 AND num_conversions > 0";
@@ -204,14 +205,14 @@ void ConversionStorageSql::StoreImpression(
   const StorableImpression::AttributionLogic attribution_logic =
       delegate_->SelectAttributionLogic(impression);
 
-  const char kInsertImpressionSql[] =
+  static constexpr char kInsertImpressionSql[] =
       "INSERT INTO impressions"
-      "(impression_data, impression_origin, conversion_origin, "
-      "conversion_destination, "
-      "reporting_origin, impression_time, expiry_time, source_type, "
-      "attributed_truthfully, priority, impression_site, "
-      "num_conversions, active) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      "(impression_data,impression_origin,conversion_origin,"
+      "conversion_destination,"
+      "reporting_origin,impression_time,expiry_time,source_type,"
+      "attributed_truthfully,priority,impression_site,"
+      "num_conversions,active)"
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(
@@ -289,8 +290,8 @@ ConversionStorageSql::MaybeReplaceLowerPriorityReport(
   // Prioritization is scoped within report windows.
   // This is reasonably optimized as is, because we only store a ~small number
   // of reports per impression_id.
-  const char kMinPrioritySql[] =
-      "SELECT MIN(priority), conversion_id "
+  static constexpr char kMinPrioritySql[] =
+      "SELECT MIN(priority),conversion_id "
       "FROM conversions "
       "WHERE impression_id = ? AND report_time = ?";
   sql::Statement min_priority_statement(
@@ -304,7 +305,7 @@ ConversionStorageSql::MaybeReplaceLowerPriorityReport(
   // Deactivate the impression as a new report will never be generated in the
   // future.
   if (min_priority_statement.GetColumnType(0) == sql::ColumnType::kNull) {
-    const char kDeactivateSql[] =
+    static constexpr char kDeactivateSql[] =
         "UPDATE impressions SET active = 0 WHERE impression_id = ?";
     sql::Statement deactivate_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
@@ -328,7 +329,7 @@ ConversionStorageSql::MaybeReplaceLowerPriorityReport(
   }
 
   // Otherwise, delete the existing report with the lowest priority.
-  const char kDeleteConversionSql[] =
+  static constexpr char kDeleteConversionSql[] =
       "DELETE FROM conversions WHERE conversion_id = ?";
   sql::Statement delete_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteConversionSql));
@@ -365,10 +366,10 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // Get all impressions that match this <reporting_origin,
   // conversion_destination> pair. Only get impressions that are active and not
   // past their expiry time.
-  const char kGetMatchingImpressionsSql[] =
-      "SELECT impression_origin, impression_id, impression_time, priority, "
-      "impression_data, conversion_origin, expiry_time, "
-      "attributed_truthfully, source_type, num_conversions "
+  static constexpr char kGetMatchingImpressionsSql[] =
+      "SELECT impression_origin,impression_id,impression_time,priority,"
+      "impression_data,conversion_origin,expiry_time,"
+      "attributed_truthfully,source_type,num_conversions "
       "FROM impressions "
       "WHERE conversion_destination = ? AND reporting_origin = ? "
       "AND active = 1 AND expiry_time > ? "
@@ -491,7 +492,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   if (maybe_replace_lower_priority_report_result ==
       ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
           kAddNewReport) {
-    const char kUpdateImpressionForConversionSql[] =
+    static constexpr char kUpdateImpressionForConversionSql[] =
         "UPDATE impressions SET num_conversions = num_conversions + 1 "
         "WHERE impression_id = ?";
     sql::Statement impression_update_statement(db_->GetCachedStatement(
@@ -505,7 +506,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   }
 
   // Delete all unattributed impressions.
-  const char kDeleteUnattributedImpressionsSql[] =
+  static constexpr char kDeleteUnattributedImpressionsSql[] =
       "DELETE FROM impressions WHERE impression_id = ?";
   sql::Statement delete_impression_statement(db_->GetCachedStatement(
       SQL_FROM_HERE, kDeleteUnattributedImpressionsSql));
@@ -535,10 +536,10 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 bool ConversionStorageSql::StoreConversionReport(const ConversionReport& report,
                                                  int64_t impression_id,
                                                  int64_t priority) {
-  const char kStoreConversionSql[] =
-      "INSERT INTO conversions "
-      "(impression_id, conversion_data, conversion_time, report_time, "
-      "priority) VALUES(?,?,?,?,?)";
+  static constexpr char kStoreConversionSql[] =
+      "INSERT INTO conversions"
+      "(impression_id,conversion_data,conversion_time,report_time,"
+      "priority)VALUES(?,?,?,?,?)";
   sql::Statement store_conversion_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kStoreConversionSql));
   store_conversion_statement.BindInt64(0, impression_id);
@@ -561,12 +562,12 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   // less than |max_report_time| and their matching information from the
   // impression table. Negatives are treated as no limit
   // (https://sqlite.org/lang_select.html#limitoffset).
-  const char kGetExpiredConversionsSql[] =
-      "SELECT C.conversion_data, C.conversion_time, "
-      "C.report_time, "
-      "C.conversion_id, I.impression_origin, I.conversion_origin, "
-      "I.reporting_origin, I.impression_data, I.impression_time, "
-      "I.expiry_time, I.impression_id, I.source_type, I.priority "
+  static constexpr char kGetExpiredConversionsSql[] =
+      "SELECT C.conversion_data,C.conversion_time,"
+      "C.report_time,"
+      "C.conversion_id,I.impression_origin,I.conversion_origin,"
+      "I.reporting_origin,I.impression_data,I.impression_time,"
+      "I.expiry_time,I.impression_id,I.source_type,I.priority "
       "FROM conversions C JOIN impressions I ON "
       "C.impression_id = I.impression_id WHERE C.report_time <= ? "
       "LIMIT ?";
@@ -631,9 +632,9 @@ int ConversionStorageSql::DeleteExpiredImpressions() {
 
   // Delete all impressions that have no associated conversions and are past
   // their expiry time. Optimized by |kImpressionExpiryIndexSql|.
-  const char kDeleteExpiredImpressionsSql[] =
+  static constexpr char kDeleteExpiredImpressionsSql[] =
       "DELETE FROM impressions WHERE expiry_time <= ? AND "
-      "impression_id NOT IN (SELECT impression_id FROM conversions)";
+      "impression_id NOT IN(SELECT impression_id FROM conversions)";
   sql::Statement delete_expired_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredImpressionsSql));
   delete_expired_statement.BindTime(0, clock_->Now());
@@ -645,9 +646,9 @@ int ConversionStorageSql::DeleteExpiredImpressions() {
   // inactive. This is done in a separate statement from
   // |kDeleteExpiredImpressionsSql| so that each query is optimized by an index.
   // Optimized by |kConversionUrlIndexSql|.
-  const char kDeleteInactiveImpressionsSql[] =
+  static constexpr char kDeleteInactiveImpressionsSql[] =
       "DELETE FROM impressions WHERE active = 0 AND "
-      "impression_id NOT IN (SELECT impression_id FROM conversions)";
+      "impression_id NOT IN(SELECT impression_id FROM conversions)";
   sql::Statement delete_inactive_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteInactiveImpressionsSql));
 
@@ -662,7 +663,7 @@ bool ConversionStorageSql::DeleteConversion(int64_t conversion_id) {
     return false;
 
   // Delete the row identified by |conversion_id|.
-  const char kDeleteSentConversionSql[] =
+  static constexpr char kDeleteSentConversionSql[] =
       "DELETE FROM conversions WHERE conversion_id = ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSentConversionSql));
@@ -696,12 +697,12 @@ void ConversionStorageSql::ClearData(
   // adding indexes on the impression_time and conversion_time columns.
   // See this comment for more information:
   // crrev.com/c/2150071/4/content/browser/conversions/conversion_storage_sql.cc#342
-  const char kScanCandidateData[] =
-      "SELECT C.conversion_id, I.impression_id,"
-      "I.impression_origin, I.conversion_origin, I.reporting_origin "
+  static constexpr char kScanCandidateData[] =
+      "SELECT C.conversion_id,I.impression_id,"
+      "I.impression_origin,I.conversion_origin,I.reporting_origin "
       "FROM impressions I LEFT JOIN conversions C ON "
       "C.impression_id = I.impression_id WHERE"
-      "(I.impression_time BETWEEN ?1 AND ?2) OR"
+      "(I.impression_time BETWEEN ?1 AND ?2)OR"
       "(C.conversion_time BETWEEN ?1 AND ?2)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kScanCandidateData));
@@ -742,7 +743,7 @@ void ConversionStorageSql::ClearData(
     return;
 
   for (int64_t impression_id : unique_impression_ids_to_delete) {
-    const char kDeleteImpressionSql[] =
+    static constexpr char kDeleteImpressionSql[] =
         "DELETE FROM impressions WHERE impression_id = ?";
     sql::Statement impression_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kDeleteImpressionSql));
@@ -752,7 +753,7 @@ void ConversionStorageSql::ClearData(
   }
 
   for (int64_t conversion_id : conversion_ids_to_delete) {
-    const char kDeleteConversionSql[] =
+    static constexpr char kDeleteConversionSql[] =
         "DELETE FROM conversions WHERE conversion_id = ?";
     sql::Statement conversion_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kDeleteConversionSql));
@@ -771,7 +772,7 @@ void ConversionStorageSql::ClearData(
   // Delete all unattributed conversions here to ensure everything is cleaned
   // up.
   for (int64_t impression_id : unique_impression_ids_to_delete) {
-    const char kDeleteVestigialConversionSql[] =
+    static constexpr char kDeleteVestigialConversionSql[] =
         "DELETE FROM conversions WHERE impression_id = ?";
     sql::Statement delete_vestigial_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kDeleteVestigialConversionSql));
@@ -821,10 +822,10 @@ void ConversionStorageSql::ClearAllDataInRange(base::Time delete_begin,
   //
   // Optimizing these queries are also tough, see this comment for an idea:
   // http://crrev.com/c/2150071/12/content/browser/conversions/conversion_storage_sql.cc#468
-  const char kSelectImpressionRangeSql[] =
-      "SELECT impression_id FROM impressions WHERE (impression_time BETWEEN ?1 "
-      "AND ?2) OR "
-      "impression_id in (SELECT impression_id FROM conversions "
+  static constexpr char kSelectImpressionRangeSql[] =
+      "SELECT impression_id FROM impressions WHERE(impression_time BETWEEN ?1 "
+      "AND ?2)OR "
+      "impression_id IN(SELECT impression_id FROM conversions "
       "WHERE conversion_time BETWEEN ?1 AND ?2)";
   sql::Statement select_impressions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectImpressionRangeSql));
@@ -839,7 +840,7 @@ void ConversionStorageSql::ClearAllDataInRange(base::Time delete_begin,
   if (!select_impressions_statement.Succeeded())
     return;
 
-  const char kDeleteImpressionSql[] =
+  static constexpr char kDeleteImpressionSql[] =
       "DELETE FROM impressions WHERE impression_id = ?";
   sql::Statement delete_impression_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteImpressionSql));
@@ -850,9 +851,9 @@ void ConversionStorageSql::ClearAllDataInRange(base::Time delete_begin,
       return;
   }
 
-  const char kDeleteConversionRangeSql[] =
-      "DELETE FROM conversions WHERE (conversion_time BETWEEN ? AND ?) "
-      "OR impression_id NOT IN (SELECT impression_id FROM impressions)";
+  static constexpr char kDeleteConversionRangeSql[] =
+      "DELETE FROM conversions WHERE(conversion_time BETWEEN ? AND ?)"
+      "OR impression_id NOT IN(SELECT impression_id FROM impressions)";
   sql::Statement delete_conversions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteConversionRangeSql));
   delete_conversions_statement.BindTime(0, delete_begin);
@@ -881,8 +882,8 @@ void ConversionStorageSql::ClearAllDataAllTime() {
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
     return;
-  const char kDeleteAllConversionsSql[] = "DELETE FROM conversions";
-  const char kDeleteAllImpressionsSql[] = "DELETE FROM impressions";
+  static constexpr char kDeleteAllConversionsSql[] = "DELETE FROM conversions";
+  static constexpr char kDeleteAllImpressionsSql[] = "DELETE FROM impressions";
   sql::Statement delete_all_conversions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllConversionsSql));
   sql::Statement delete_all_impressions_statement(
@@ -910,8 +911,8 @@ void ConversionStorageSql::ClearAllDataAllTime() {
 bool ConversionStorageSql::HasCapacityForStoringImpression(
     const std::string& serialized_origin) {
   // Optimized by impression_origin_idx.
-  const char kCountImpressionsSql[] =
-      "SELECT COUNT(impression_origin) FROM impressions WHERE "
+  static constexpr char kCountImpressionsSql[] =
+      "SELECT COUNT(impression_origin)FROM impressions WHERE "
       "impression_origin = ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountImpressionsSql));
@@ -931,10 +932,10 @@ int ConversionStorageSql::GetCapacityForStoringConversion(
   //
   // Note: to take advantage of this, we need to hint to the query planner that
   // |active| is a boolean, so include it in the conditional.
-  const char kCountConversionsSql[] =
-      "SELECT COUNT(conversion_id) FROM conversions C JOIN impressions I ON"
+  static constexpr char kCountConversionsSql[] =
+      "SELECT COUNT(conversion_id)FROM conversions C JOIN impressions I ON"
       " I.impression_id = C.impression_id"
-      " WHERE I.conversion_destination = ? AND (active BETWEEN 0 AND 1)";
+      " WHERE I.conversion_destination = ? AND(active BETWEEN 0 AND 1)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountConversionsSql));
   statement.BindString(0, serialized_origin);
@@ -952,10 +953,10 @@ std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
 
   // Negatives are treated as no limit
   // (https://sqlite.org/lang_select.html#limitoffset).
-  const char kGetActiveImpressionsSql[] =
-      "SELECT impression_data, impression_origin, conversion_origin, "
-      "reporting_origin, impression_time, expiry_time, impression_id, "
-      "source_type, priority "
+  static constexpr char kGetActiveImpressionsSql[] =
+      "SELECT impression_data,impression_origin,conversion_origin,"
+      "reporting_origin,impression_time,expiry_time,impression_id,"
+      "source_type,priority "
       "FROM impressions "
       "WHERE active = 1 and expiry_time > ? "
       "LIMIT ?";
@@ -1133,7 +1134,7 @@ bool ConversionStorageSql::CreateSchema() {
   // |StorableImpression::AttributionLogic| enum.
   // |impression_site| is used to optimize the lookup of impressions;
   // |StorableImpression::ImpressionSite| is always derived from the origin.
-  const char kImpressionTableSql[] =
+  static constexpr char kImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS impressions"
       "(impression_id INTEGER PRIMARY KEY,"
       "impression_data INTEGER NOT NULL,"
@@ -1157,9 +1158,9 @@ bool ConversionStorageSql::CreateSchema() {
   // `StoreImpression()`, `DeleteExpiredImpressions()`. Impressions and
   // conversions are considered matching if they share this pair. These calls
   // only look at active conversions, so include |active| in the index.
-  const char kConversionDestinationIndexSql[] =
+  static constexpr char kConversionDestinationIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
-      "ON impressions(active, conversion_destination, reporting_origin)";
+      "ON impressions(active,conversion_destination,reporting_origin)";
   if (!db_->Execute(kConversionDestinationIndexSql))
     return false;
 
@@ -1167,23 +1168,23 @@ bool ConversionStorageSql::CreateSchema() {
   // `MaybeCreateAndStoreConversionReport()` by indexing impressions by expiry
   // time. Both calls require only returning impressions that expire after a
   // given time.
-  const char kImpressionExpiryIndexSql[] =
+  static constexpr char kImpressionExpiryIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
       "ON impressions(expiry_time)";
   if (!db_->Execute(kImpressionExpiryIndexSql))
     return false;
 
   // Optimizes counting impressions by impression origin.
-  const char kImpressionOriginIndexSql[] =
+  static constexpr char kImpressionOriginIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_origin_idx "
       "ON impressions(impression_origin)";
   if (!db_->Execute(kImpressionOriginIndexSql))
     return false;
 
   // Optimizes `EnsureCapacityForPendingDestinationLimit()`.
-  const char kImpressionSiteIndexSql[] =
+  static constexpr char kImpressionSiteIndexSql[] =
       "CREATE INDEX IF NOT EXISTS impression_site_idx "
-      "ON impressions(active, impression_site, source_type)";
+      "ON impressions(active,impression_site,source_type)";
   if (!db_->Execute(kImpressionSiteIndexSql))
     return false;
 
@@ -1193,21 +1194,21 @@ bool ConversionStorageSql::CreateSchema() {
   // should be used for clearing site data. |report_time| is the time a
   // <conversion, impression> pair should be reported, and is specified by
   // |delegate_|.
-  const char kConversionTableSql[] =
-      "CREATE TABLE IF NOT EXISTS conversions "
+  static constexpr char kConversionTableSql[] =
+      "CREATE TABLE IF NOT EXISTS conversions"
       "(conversion_id INTEGER PRIMARY KEY,"
-      " impression_id INTEGER NOT NULL,"
-      " conversion_data INTEGER NOT NULL,"
-      " conversion_time INTEGER NOT NULL,"
-      " report_time INTEGER NOT NULL,"
-      " priority INTEGER NOT NULL)";
+      "impression_id INTEGER NOT NULL,"
+      "conversion_data INTEGER NOT NULL,"
+      "conversion_time INTEGER NOT NULL,"
+      "report_time INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL)";
   if (!db_->Execute(kConversionTableSql))
     return false;
 
   // Optimize sorting conversions by report time for calls to
   // GetConversionsToReport(). The reports with the earliest report times are
   // periodically fetched from storage to be sent.
-  const char kConversionReportTimeIndexSql[] =
+  static constexpr char kConversionReportTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_report_idx "
       "ON conversions(report_time)";
   if (!db_->Execute(kConversionReportTimeIndexSql))
@@ -1217,7 +1218,7 @@ bool ConversionStorageSql::CreateSchema() {
   // quickly know if an expired impression can be deleted safely if it has no
   // corresponding pending conversions during calls to
   // DeleteExpiredImpressions().
-  const char kConversionClickIdIndexSql[] =
+  static constexpr char kConversionClickIdIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
       "ON conversions(impression_id)";
   if (!db_->Execute(kConversionClickIdIndexSql))
@@ -1279,8 +1280,8 @@ bool ConversionStorageSql::EnsureCapacityForPendingDestinationLimit(
   const std::string serialized_conversion_destination =
       impression.ConversionDestination().Serialize();
 
-  const char kSelectImpressionsSql[] =
-      "SELECT impression_id, conversion_destination "
+  static constexpr char kSelectImpressionsSql[] =
+      "SELECT impression_id,conversion_destination "
       "FROM impressions "
       "WHERE impression_site = ? AND source_type = ? "
       "AND active = 1 AND num_conversions = 0 "
@@ -1350,7 +1351,7 @@ bool ConversionStorageSql::EnsureCapacityForPendingDestinationLimit(
   if (!transaction.Begin())
     return false;
 
-  const char kDeleteImpressionSql[] =
+  static constexpr char kDeleteImpressionSql[] =
       "DELETE FROM impressions WHERE impression_id = ?";
   sql::Statement delete_impression_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteImpressionSql));

@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,8 +47,9 @@ class ConversionStorageSqlMigrationsTest : public testing::Test {
         std::make_unique<ConfigurableStorageDelegate>(), &clock);
 
     // We need to run an operation on storage to force the lazy initialization.
-    static_cast<ConversionStorage*>(&storage)->GetConversionsToReport(
-        base::Time::Min());
+    ignore_result(
+        static_cast<ConversionStorage*>(&storage)->GetConversionsToReport(
+            base::Time::Min()));
   }
 
   base::FilePath DbPath() {

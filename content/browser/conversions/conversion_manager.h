@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "content/browser/conversions/conversion_policy.h"
 #include "content/browser/conversions/conversion_report.h"
@@ -62,8 +63,8 @@ class CONTENT_EXPORT ConversionManager {
 
   // Get all reports sent in this session. Used for populating WebUI. Limited to
   // last 100.
-  virtual const base::circular_deque<SentReportInfo>&
-  GetSentReportsForWebUI() = 0;
+  virtual const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI()
+      const WARN_UNUSED_RESULT = 0;
 
   // Sends all pending reports immediately, and runs |done| once they have all
   // been sent.
@@ -71,7 +72,8 @@ class CONTENT_EXPORT ConversionManager {
 
   // Returns the ConversionPolicy that is used to control API policies such
   // as noise.
-  virtual const ConversionPolicy& GetConversionPolicy() const = 0;
+  virtual const ConversionPolicy& GetConversionPolicy() const
+      WARN_UNUSED_RESULT = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between
   // |delete_begin| and |delete_end| time.

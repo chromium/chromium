@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -83,7 +84,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
       const base::Clock* clock,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      size_t max_sent_reports_to_store);
+      size_t max_sent_reports_to_store) WARN_UNUSED_RESULT;
 
   ConversionManagerImpl(
       StoragePartition* storage_partition,
@@ -102,7 +103,8 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<ConversionReport>)> callback,
       base::Time max_report_time) override;
-  const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI() override;
+  const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI()
+      const override;
   void SendReportsForWebUI(base::OnceClosure done) override;
   const ConversionPolicy& GetConversionPolicy() const override;
   void ClearData(base::Time delete_begin,

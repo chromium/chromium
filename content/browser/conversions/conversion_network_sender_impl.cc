@@ -73,7 +73,7 @@ void LogMetricsOnReportSend(const ConversionReport& report) {
 
 GURL GetReportUrl(const content::ConversionReport& report) {
   url::Replacements<char> replacements;
-  const char kEndpointPath[] =
+  static constexpr char kEndpointPath[] =
       "/.well-known/attribution-reporting/report-attribution";
   replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
   return report.impression.reporting_origin().GetURL().ReplaceComponents(

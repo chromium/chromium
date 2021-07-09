@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_CONVERSIONS_RATE_LIMIT_TABLE_H_
 
 #include "base/callback.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -38,40 +39,43 @@ class CONTENT_EXPORT RateLimitTable {
 
   // Creates the table in |db| if it doesn't exist.
   // Returns false on failure.
-  bool CreateTable(sql::Database* db);
+  bool CreateTable(sql::Database* db) WARN_UNUSED_RESULT;
 
   // Adds a rate limit to the table.
   // Returns false on failure.
-  bool AddRateLimit(sql::Database* db, const ConversionReport& report);
+  bool AddRateLimit(sql::Database* db,
+                    const ConversionReport& report) WARN_UNUSED_RESULT;
 
   // Checks if the given attribution is allowed according to the data in the
   // table and policy as specified by the delegate.
   bool IsAttributionAllowed(sql::Database* db,
                             const ConversionReport& report,
-                            base::Time now);
+                            base::Time now) WARN_UNUSED_RESULT;
 
   // These should be 1:1 with |ConversionStorageSql|'s |ClearData| functions.
   // Returns false on failure.
   bool ClearAllDataInRange(sql::Database* db,
                            base::Time delete_begin,
-                           base::Time delete_end);
+                           base::Time delete_end) WARN_UNUSED_RESULT;
   // Returns false on failure.
-  bool ClearAllDataAllTime(sql::Database* db);
+  bool ClearAllDataAllTime(sql::Database* db) WARN_UNUSED_RESULT;
   // Returns false on failure.
   bool ClearDataForOriginsInRange(
       sql::Database* db,
       base::Time delete_begin,
       base::Time delete_end,
-      base::RepeatingCallback<bool(const url::Origin&)> filter);
+      base::RepeatingCallback<bool(const url::Origin&)> filter)
+      WARN_UNUSED_RESULT;
   bool ClearDataForImpressionIds(sql::Database* db,
-                                 const base::flat_set<int64_t>& impression_ids);
+                                 const base::flat_set<int64_t>& impression_ids)
+      WARN_UNUSED_RESULT;
 
  private:
   // Deletes data in the table older than the window determined by |clock_| and
   // |delegate_->GetRateLimits()|.
-  // Returns the number of deleted rows.
-  int DeleteExpiredRateLimits(sql::Database* db)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Returns false on failure.
+  bool DeleteExpiredRateLimits(sql::Database* db)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Must outlive |this|.
   const ConversionStorage::Delegate* delegate_
