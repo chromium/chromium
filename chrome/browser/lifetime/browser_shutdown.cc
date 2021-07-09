@@ -77,6 +77,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_utils.h"
+#include "content/public/common/child_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/profiling_utils.h"
 #endif
