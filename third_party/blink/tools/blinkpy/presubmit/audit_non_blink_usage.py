@@ -979,6 +979,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc',
+        ],
+        # This class needs access to a GPU driver bug workaround entry.
+        'allowed': [
+            'gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/html/media/',
         ],
         # This module needs access to the following for media's base::Feature

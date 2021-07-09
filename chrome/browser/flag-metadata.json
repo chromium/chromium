@@ -2772,6 +2772,14 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-webgl-developer-extensions",
+    "owners": [ "webgl-team@google.com" ],
+    // This flag is the only way for developers to use
+    // development-time WebGL extensions on Android and ChromeOS. It
+    // must not be removed.
+    "expiry_milestone": -1
+  },
+  {
     "name": "enable-webgl-draft-extensions",
     "owners": [ "webgl-team@google.com" ],
     // This flag is the only way for end users to test upcoming WebGL

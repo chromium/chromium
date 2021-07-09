@@ -348,6 +348,10 @@ void WebRuntimeFeatures::EnableScrollUnification(bool enable) {
   RuntimeEnabledFeatures::SetScrollUnificationEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebGLDeveloperExtensions(bool enable) {
+  RuntimeEnabledFeatures::SetWebGLDeveloperExtensionsEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableWebGLDraftExtensions(bool enable) {
   RuntimeEnabledFeatures::SetWebGLDraftExtensionsEnabled(enable);
 }

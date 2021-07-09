@@ -49024,6 +49024,7 @@ from previous Chrome versions.
   <int value="330439654" label="SyncPseudoUSSExtensions:enabled"/>
   <int value="330653520" label="ChromeShareHighlightsAndroid:enabled"/>
   <int value="331770879" label="CrostiniAppSearch:disabled"/>
+  <int value="331845034" label="enable-webgl-developer-extensions"/>
   <int value="332391072" label="cs-contextual-cards-bar-integration"/>
   <int value="332960119" label="PdfXfaSupport:disabled"/>
   <int value="333019109" label="PrivacyReview:enabled"/>

@@ -1576,6 +1576,9 @@ extern const char kWebOtpBackendSmsVerification[];
 extern const char kWebOtpBackendUserConsent[];
 extern const char kWebOtpBackendAuto[];
 
+extern const char kWebglDeveloperExtensionsName[];
+extern const char kWebglDeveloperExtensionsDescription[];
+
 extern const char kWebglDraftExtensionsName[];
 extern const char kWebglDraftExtensionsDescription[];
 

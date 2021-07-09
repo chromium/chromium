@@ -57,6 +57,7 @@
   "enable-virtual-keyboard",
   "enable-web-authentication-testing-api",
   "enable-web-payments-experimental-features",
+  "enable-webgl-developer-extensions",
   "enable-webgl-draft-extensions",
   "enable-zero-copy",
   "extensions-on-chrome-urls",

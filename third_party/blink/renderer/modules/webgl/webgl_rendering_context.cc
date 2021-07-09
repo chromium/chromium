@@ -177,7 +177,9 @@ void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(angle_instanced_arrays_);
   RegisterExtension(ext_blend_min_max_);
   RegisterExtension(ext_color_buffer_half_float_);
-  RegisterExtension(ext_disjoint_timer_query_);
+  RegisterExtension(ext_disjoint_timer_query_, TimerQueryExtensionsEnabled()
+                                                   ? kApprovedExtension
+                                                   : kDeveloperExtension);
   RegisterExtension(ext_float_blend_);
   RegisterExtension(ext_frag_depth_);
   RegisterExtension(ext_shader_texture_lod_);

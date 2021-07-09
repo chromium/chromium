@@ -2384,6 +2384,10 @@
       status: "experimental",
     },
     {
+      name: "WebGLDeveloperExtensions",
+      status: "experimental",
+    },
+    {
       name: "WebGLDraftExtensions",
       status: "experimental",
     },

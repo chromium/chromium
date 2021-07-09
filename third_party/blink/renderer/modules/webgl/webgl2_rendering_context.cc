@@ -147,7 +147,9 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   // Register extensions.
   RegisterExtension(ext_color_buffer_float_);
   RegisterExtension(ext_color_buffer_half_float_);
-  RegisterExtension(ext_disjoint_timer_query_web_gl2_);
+  RegisterExtension(
+      ext_disjoint_timer_query_web_gl2_,
+      TimerQueryExtensionsEnabled() ? kApprovedExtension : kDeveloperExtension);
   RegisterExtension(ext_float_blend_);
   RegisterExtension(ext_texture_compression_bptc_);
   RegisterExtension(ext_texture_compression_rgtc_);

@@ -449,6 +449,11 @@ const char kEnableVtune[]                   = "enable-vtune-support";
 const char kEnableWebAuthDeprecatedMojoTestingApi[] =
     "enable-web-auth-deprecated-mojo-testing-api";
 
+// Enables WebGL developer extensions which are not generally exposed
+// to the web platform.
+const char kEnableWebGLDeveloperExtensions[] =
+    "enable-webgl-developer-extensions";
+
 // Enables WebGL extensions not yet approved by the community.
 const char kEnableWebGLDraftExtensions[] = "enable-webgl-draft-extensions";
 

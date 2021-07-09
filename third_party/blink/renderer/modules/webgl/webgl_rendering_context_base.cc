@@ -35,6 +35,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -3122,11 +3123,21 @@ bool WebGLRenderingContextBase::ExtensionSupportedAndAllowed(
   if (tracker->Draft() &&
       !RuntimeEnabledFeatures::WebGLDraftExtensionsEnabled())
     return false;
+  if (tracker->Developer() &&
+      !RuntimeEnabledFeatures::WebGLDeveloperExtensionsEnabled())
+    return false;
   if (!tracker->Supported(this))
     return false;
   if (disabled_extensions_.Contains(String(tracker->ExtensionName())))
     return false;
   return true;
+}
+
+bool WebGLRenderingContextBase::TimerQueryExtensionsEnabled() {
+  return (drawing_buffer_ && drawing_buffer_->ContextProvider() &&
+          drawing_buffer_->ContextProvider()
+              ->GetGpuFeatureInfo()
+              .IsWorkaroundEnabled(gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS));
 }
 
 ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,

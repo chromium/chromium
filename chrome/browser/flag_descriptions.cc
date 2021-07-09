@@ -2768,10 +2768,15 @@ const char kWebOtpBackendSmsVerification[] = "Code Browser API";
 const char kWebOtpBackendUserConsent[] = "User Consent API";
 const char kWebOtpBackendAuto[] = "Automatically select the backend";
 
+const char kWebglDeveloperExtensionsName[] = "WebGL Developer Extensions";
+const char kWebglDeveloperExtensionsDescription[] =
+    "Enabling this option allows web applications to access WebGL extensions "
+    "intended only for use during development time.";
+
 const char kWebglDraftExtensionsName[] = "WebGL Draft Extensions";
 const char kWebglDraftExtensionsDescription[] =
     "Enabling this option allows web applications to access the WebGL "
-    "Extensions that are still in draft status.";
+    "extensions that are still in draft status.";
 
 const char kWebPaymentsExperimentalFeaturesName[] =
     "Experimental Web Payments API features";

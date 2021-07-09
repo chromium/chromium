@@ -2319,14 +2319,17 @@
     },
     {
       "id": 256,
-      "description": "Don't expose disjoint_timer_query extensions to WebGL unless site isolation is enabled",
-      "cr_bugs": [808744],
-      "os": {
-        "type": "android"
-      },
-      "disabled_webgl_extensions": [
-        "EXT_disjoint_timer_query",
-        "EXT_disjoint_timer_query_webgl2"
+      "description": "Expose WebGL's disjoint_timer_query extensions on platforms with site isolation",
+      "cr_bugs": [808744, 870491],
+      "features": [
+        "enable_webgl_timer_query_extensions"
+      ],
+      "exceptions": [
+        {
+          "os": {
+            "type": "android"
+          }
+        }
       ]
     },
     {

@@ -3318,6 +3318,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeviceDiscoveryNotificationsDescription, kOsDesktop,
      SINGLE_VALUE_TYPE(switches::kEnableDeviceDiscoveryNotifications)},
 #endif  // BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
+    {"enable-webgl-developer-extensions",
+     flag_descriptions::kWebglDeveloperExtensionsName,
+     flag_descriptions::kWebglDeveloperExtensionsDescription, kOsAll,
+     SINGLE_VALUE_TYPE(switches::kEnableWebGLDeveloperExtensions)},
     {"enable-webgl-draft-extensions",
      flag_descriptions::kWebglDraftExtensionsName,
      flag_descriptions::kWebglDraftExtensionsDescription, kOsAll,

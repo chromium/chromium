@@ -912,16 +912,22 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     kApprovedExtension = 0x00,
     // Extension that is behind the draft extensions runtime flag:
     kDraftExtension = 0x01,
+    // Extension that is intended for development rather than
+    // deployment time.
+    kDeveloperExtension = 0x02,
   };
 
   class ExtensionTracker : public GarbageCollected<ExtensionTracker>,
                            public NameClient {
    public:
     ExtensionTracker(ExtensionFlags flags, const char* const* prefixes)
-        : draft_(flags & kDraftExtension), prefixes_(prefixes) {}
+        : draft_(flags & kDraftExtension),
+          developer_(flags & kDeveloperExtension),
+          prefixes_(prefixes) {}
     ~ExtensionTracker() override = default;
 
     bool Draft() const { return draft_; }
+    bool Developer() const { return developer_; }
 
     const char* const* Prefixes() const;
     bool MatchesNameWithPrefixes(const String&) const;
@@ -941,6 +947,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
    private:
     bool draft_;
+    bool developer_;
     const char* const* prefixes_;
   };
 
@@ -1009,6 +1016,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   inline bool ExtensionEnabled(WebGLExtensionName name) {
     return extension_enabled_[name];
   }
+
+  bool TimerQueryExtensionsEnabled();
 
   // ScopedDrawingBufferBinder is used for
   // ReadPixels/CopyTexImage2D/CopySubImage2D to read from a multisampled
