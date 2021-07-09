@@ -16,7 +16,9 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/render_process_host.h"
@@ -88,15 +90,9 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       IdentityManagerFactory::GetForProfile(profile_);
   CoreAccountInfo account =
       identity_manager->GetPrimaryAccountInfo(consent_level);
-  absl::optional<bool> is_child_account = absl::nullopt;
-  if (!account.IsEmpty()) {
-    AccountInfo extended_account_info =
-        identity_manager->FindExtendedAccountInfo(account);
-    if (!extended_account_info.IsEmpty()) {
-      is_child_account =
-          absl::make_optional<bool>(extended_account_info.is_child_account);
-    }
-  }
+  signin::Tribool is_child_account =
+      // Defaults to kUnknown if the account is not found.
+      identity_manager->FindExtendedAccountInfo(account).is_child_account;
 
   int incognito_mode_availability =
       prefs->GetInteger(prefs::kIncognitoModeAvailability);

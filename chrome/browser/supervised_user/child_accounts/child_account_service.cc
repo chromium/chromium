@@ -26,8 +26,10 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/browser_context.h"
@@ -276,7 +278,7 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
   if (info.account_id != auth_account_id)
     return;
 
-  SetIsChildAccount(info.is_child_account);
+  SetIsChildAccount(info.is_child_account == signin::Tribool::kTrue);
 }
 
 void ChildAccountService::OnExtendedAccountInfoRemoved(

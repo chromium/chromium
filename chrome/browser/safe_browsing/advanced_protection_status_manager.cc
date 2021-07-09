@@ -14,10 +14,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -271,8 +273,10 @@ void AdvancedProtectionStatusManager::OnGetIDToken(
   if (is_under_advanced_protection_ !=
       service_flags.is_under_advanced_protection) {
     identity_manager_->GetAccountsMutator()->UpdateAccountInfo(
-        GetUnconsentedPrimaryAccountId(), false,
-        service_flags.is_under_advanced_protection);
+        GetUnconsentedPrimaryAccountId(),
+        /*is_child_account=*/signin::Tribool::kUnknown,
+        service_flags.is_under_advanced_protection ? signin::Tribool::kTrue
+                                                   : signin::Tribool::kFalse);
   } else if (service_flags.is_under_advanced_protection) {
     OnAdvancedProtectionEnabled();
   } else {

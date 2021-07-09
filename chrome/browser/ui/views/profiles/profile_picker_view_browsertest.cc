@@ -95,7 +95,6 @@ AccountInfo FillAccountInfo(
   account_info.hosted_domain = hosted_domain;
   account_info.locale = "en";
   account_info.picture_url = "https://get-avatar.com/foo";
-  account_info.is_child_account = false;
   return account_info;
 }
 

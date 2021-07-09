@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -741,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
       identity_manager()->FindExtendedAccountInfoByAccountId(
           core_account_info.account_id);
   EXPECT_EQ(account_info.capabilities.can_offer_extended_chrome_sync_promos(),
-            AccountCapabilities::Tribool::kTrue);
+            Tribool::kTrue);
 }
 
 }  // namespace test

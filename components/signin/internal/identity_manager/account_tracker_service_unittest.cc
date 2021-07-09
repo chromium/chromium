@@ -31,6 +31,7 @@
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -268,8 +269,8 @@ class AccountTrackerServiceTest : public testing::Test {
   void CheckAccountCapabilities(AccountKey account_key,
                                 const AccountInfo& info) {
     EXPECT_EQ(AccountKeyToAccountCapability(account_key)
-                  ? AccountCapabilities::Tribool::kTrue
-                  : AccountCapabilities::Tribool::kFalse,
+                  ? signin::Tribool::kTrue
+                  : signin::Tribool::kFalse,
               info.capabilities.can_offer_extended_chrome_sync_promos());
   }
 
@@ -985,7 +986,7 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
   ASSERT_EQ(1u, infos.size());
   CheckAccountDetails(kAccountKeyBeta, infos[0]);
   CheckAccountCapabilities(kAccountKeyBeta, infos[0]);
-  EXPECT_TRUE(infos[0].is_child_account);
+  EXPECT_EQ(signin::Tribool::kTrue, infos[0].is_child_account);
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) && !defined(OS_IOS)
   EXPECT_TRUE(infos[0].is_under_advanced_protection);
 #else
@@ -996,6 +997,60 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
   // that all in-use files are closed.
   ResetAccountTracker();
   ASSERT_TRUE(scoped_user_data_dir.Delete());
+}
+
+TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
+#endif
+
+  base::ScopedTempDir scoped_user_data_dir;
+  ASSERT_TRUE(scoped_user_data_dir.CreateUniqueTempDir());
+
+  // Create a tracker and add an account. This should cause the account to be
+  // saved to persistence.
+  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+
+  // The child status is unknown, and none of the child-related keys should be
+  // set.
+  EXPECT_EQ(signin::Tribool::kUnknown,
+            account_tracker()
+                ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
+                .is_child_account);
+  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  base::DictionaryValue* dict = nullptr;
+  update->GetDictionary(0, &dict);
+  ASSERT_TRUE(dict);
+  const char kDeprecatedChildKey[] = "is_child_account";
+  const char kNewChildKey[] = "is_supervised_child";
+  // The deprecated key is not set.
+  EXPECT_FALSE(dict->FindBoolKey(kDeprecatedChildKey));
+
+  // Set the child status using the deprecated key, and reload the account.
+  dict->SetBoolean(kDeprecatedChildKey, true);
+  dict->RemoveKey(kNewChildKey);
+  ClearAccountTrackerEvents();
+  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
+  EXPECT_TRUE(CheckAccountTrackerEvents(
+      {TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyAlpha),
+                     AccountKeyToGaiaId(kAccountKeyAlpha),
+                     AccountKeyToEmail(kAccountKeyAlpha))}));
+
+  // Check that the migration happened.
+  std::vector<AccountInfo> infos = account_tracker()->GetAccounts();
+  ASSERT_EQ(1u, infos.size());
+  CheckAccountDetails(kAccountKeyAlpha, infos[0]);
+  // The deprecated key has been read.
+  EXPECT_EQ(signin::Tribool::kTrue, infos[0].is_child_account);
+  // The deprecated key has been removed.
+  EXPECT_FALSE(dict->FindBoolKey(kDeprecatedChildKey));
+  // The new key has been written.
+  absl::optional<int> new_key = dict->FindIntKey(kNewChildKey);
+  ASSERT_TRUE(new_key.has_value());
+  EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
 }
 
 TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {
@@ -1399,7 +1454,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountBasic) {
   EXPECT_TRUE(CheckAccountTrackerEvents({}));
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_TRUE(info.is_child_account);
+  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
   SimulateTokenRevoked(kAccountKeyChild);
 }
 
@@ -1423,7 +1478,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevoked) {
   }));
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_FALSE(info.is_child_account);
+  EXPECT_EQ(signin::Tribool::kFalse, info.is_child_account);
   SimulateTokenRevoked(kAccountKeyChild);
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(REMOVED, AccountKeyToAccountId(kAccountKeyChild),
@@ -1452,7 +1507,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevokedWithUpdate) {
   }));
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_TRUE(info.is_child_account);
+  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
   SimulateTokenRevoked(kAccountKeyChild);
 #if defined(OS_ANDROID)
   // On Android, is_child_account is set to false before removing it.
@@ -1528,7 +1583,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountGraduation) {
 #endif
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_TRUE(info.is_child_account);
+  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
   ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
                      net::HTTP_OK,
                      GenerateValidTokenInfoResponse(kAccountKeyChild));
@@ -1548,7 +1603,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountGraduation) {
 #endif
   info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_FALSE(info.is_child_account);
+  EXPECT_EQ(signin::Tribool::kFalse, info.is_child_account);
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
                     AccountKeyToGaiaId(kAccountKeyChild),

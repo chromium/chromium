@@ -7,6 +7,7 @@
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "testing/platform_test.h"
 
 namespace {
@@ -183,7 +184,7 @@ TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue) {
 
   ASSERT_TRUE(capabilities.has_value());
   EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
-            AccountCapabilities::Tribool::kTrue);
+            signin::Tribool::kTrue);
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_EmptyList) {
@@ -192,7 +193,7 @@ TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_EmptyList) {
 
   ASSERT_TRUE(capabilities.has_value());
   EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
-            AccountCapabilities::Tribool::kUnknown);
+            signin::Tribool::kUnknown);
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_SeveralCapabilities) {
@@ -203,7 +204,7 @@ TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_SeveralCapabilities) {
 
   ASSERT_TRUE(capabilities.has_value());
   EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
-            AccountCapabilities::Tribool::kFalse);
+            signin::Tribool::kFalse);
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NonBooleanValue) {
@@ -220,7 +221,7 @@ TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NonBooleanValue) {
 
   ASSERT_TRUE(capabilities.has_value());
   EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
-            AccountCapabilities::Tribool::kUnknown);
+            signin::Tribool::kUnknown);
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NotADictionary) {

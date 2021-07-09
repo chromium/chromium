@@ -328,7 +328,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   account_info.hosted_domain = kNoHostedDomainFound;
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
-  account_info.is_child_account = false;
   DCHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
@@ -416,7 +415,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   account_info.hosted_domain = "example.com";
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
-  account_info.is_child_account = false;
   DCHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
@@ -648,7 +646,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   account_info.hosted_domain = kNoHostedDomainFound;
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
-  account_info.is_child_account = false;
   DCHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
@@ -717,7 +714,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseSwitchBrowserTest,
   account_info.hosted_domain = "example.com";
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
-  account_info.is_child_account = false;
   DCHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
@@ -798,7 +794,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseSwitchBrowserTest,
   account_info.hosted_domain = "example.com";
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
-  account_info.is_child_account = false;
   DCHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
   // Create another profile with a browser window.

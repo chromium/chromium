@@ -43,6 +43,8 @@ source_set("identity_manager") {
     "primary_account_mutator.h",
     "scope_set.h",
     "set_accounts_in_cookie_result.h",
+    "tribool.cc",
+    "tribool.h",
     "ubertoken_fetcher.cc",
     "ubertoken_fetcher.h",
   ]
