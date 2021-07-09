@@ -5,7 +5,6 @@
 import("//build/config/chromecast_build.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
-import("//third_party/blink/renderer/bindings/modules/v8/v8.gni")
 import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
@@ -36,7 +35,7 @@ component("modules") {
     "modules_initializer.h",
   ]
 
-  sources += bindings_modules_v8_files
+  sources += blink_modules_sources_bindings
 
   configs += [
     ":modules_implementation",

@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_typed_arrays = [
+  "array_buffer/array_buffer_contents.cc",
+  "array_buffer/array_buffer_contents.h",
+  "array_buffer_view_helpers.h",
+  "dom_array_buffer.cc",
+  "dom_array_buffer.h",
+  "dom_array_buffer_base.h",
+  "dom_array_buffer_view.cc",
+  "dom_array_buffer_view.h",
+  "dom_array_piece.cc",
+  "dom_array_piece.h",
+  "dom_data_view.cc",
+  "dom_data_view.h",
+  "dom_shared_array_buffer.cc",
+  "dom_shared_array_buffer.h",
+  "dom_typed_array.cc",
+  "dom_typed_array.h",
+  "flexible_array_buffer_view.h",
+  "typed_flexible_array_buffer_view.h",
+]

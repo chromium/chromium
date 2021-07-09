@@ -2,12 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# All paths in this file should be absolute so it can be imported into
-# different contexts.
+# The database file produced by
+# "//third_party/blink/renderer/bindings:web_idl_database".
+web_idl_database_filepath =
+    get_path_info(".", "gen_dir") + "/web_idl_database.pickle"
 
-import("//third_party/blink/renderer/bindings/modules/v8/v8.gni")
-
-bindings_core_v8_files =
+# Source files to be part of
+# "//third_party/blink/renderer/core:core".
+blink_core_sources_bindings =
     get_path_info([
                     "core/v8/active_script_wrappable.cc",
                     "core/v8/active_script_wrappable.h",
@@ -173,14 +175,29 @@ bindings_core_v8_files =
                   ],
                   "abspath")
 
-bindings_dir = get_path_info(".", "abspath")
-blink_output_dir = "$root_gen_dir/third_party/blink/renderer"
-bindings_output_dir = "$root_gen_dir/third_party/blink/renderer/bindings"
-bindings_core_v8_output_dir = "$bindings_output_dir/core/v8"
-web_idl_database_filepath = "${bindings_output_dir}/web_idl_database.pickle"
+# Source files to be part of
+# "//third_party/blink/renderer/modules:modules".
+blink_modules_sources_bindings = get_path_info(
+        [
+          "modules/v8/module_bindings_initializer.cc",
+          "modules/v8/module_bindings_initializer.h",
+          "modules/v8/serialization/serialized_script_value_for_modules_factory.cc",
+          "modules/v8/serialization/serialized_script_value_for_modules_factory.h",
+          "modules/v8/serialization/v8_script_value_deserializer_for_modules.cc",
+          "modules/v8/serialization/v8_script_value_deserializer_for_modules.h",
+          "modules/v8/serialization/v8_script_value_serializer_for_modules.cc",
+          "modules/v8/serialization/v8_script_value_serializer_for_modules.h",
+          "modules/v8/to_v8_for_modules.h",
+          "modules/v8/v8_binding_for_modules.cc",
+          "modules/v8/v8_binding_for_modules.h",
+          "modules/v8/v8_context_snapshot_impl.cc",
+          "modules/v8/v8_context_snapshot_impl.h",
+          "modules/v8/webgl_any.cc",
+          "modules/v8/webgl_any.h",
+        ],
+        "abspath")
 
-bindings_unittest_files =
-    get_path_info(
+bindings_unittest_files = get_path_info(
         [
           "core/v8/activity_logger_test.cc",
           "core/v8/binding_security_test.cc",
@@ -214,6 +231,7 @@ bindings_unittest_files =
           "core/v8/v8_extras_test_utils.h",
           "core/v8/script_promise_tester.cc",
           "core/v8/script_promise_tester.h",
+          "modules/v8/serialization/v8_script_value_serializer_for_modules_test.cc",
+          "modules/v8/v8_binding_for_modules_test.cc",
         ],
         "abspath")
-bindings_unittest_files += bindings_modules_v8_unittest_files
