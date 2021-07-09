@@ -118,7 +118,7 @@ TEST_F(BlinkGCMemoryDumpProviderTest, WorkerLightDump) {
 
   size_t workers_found = 0;
   for (const auto& kvp : dump->allocator_dumps()) {
-    if (kvp.first.find("blink_gc/workers/heap") != std::string::npos) {
+    if (kvp.first.find("blink_gc/workers/") != std::string::npos) {
       workers_found++;
       CheckBasicHeapDumpStructure(dump->GetAllocatorDump(kvp.first));
     }
@@ -137,13 +137,18 @@ TEST_F(BlinkGCMemoryDumpProviderTest, WorkerDetailedDump) {
           BlinkGCMemoryDumpProvider::HeapType::kBlinkWorkerThread));
   dump_provider->OnMemoryDump(args, dump.get());
 
-  // There should be no main thread heap dump available.
-  ASSERT_EQ(nullptr, dump->GetAllocatorDump("blink_gc/main/heap"));
+#if BUILDFLAG(USE_V8_OILPAN)
+  const std::string worker_path_prefix = "blink_gc/workers";
+  const std::string worker_path_suffix = "/heap";
+#else   // !USE_V8_OILPAN
+  const std::string worker_path_prefix = "blink_gc/workers/heap";
+  const std::string worker_path_suffix = "";
+#endif  // !USE_V8_OILPAN
 
   // Find worker suffix.
   std::string worker_suffix;
   for (const auto& kvp : dump->allocator_dumps()) {
-    if (kvp.first.find("blink_gc/workers/heap/worker_0x") !=
+    if (kvp.first.find(worker_path_prefix + "/worker_0x") !=
         std::string::npos) {
       auto start_pos = kvp.first.find("_0x");
       auto end_pos = kvp.first.find("/", start_pos);
@@ -151,7 +156,7 @@ TEST_F(BlinkGCMemoryDumpProviderTest, WorkerDetailedDump) {
     }
   }
   std::string worker_base_path =
-      "blink_gc/workers/heap/worker_" + worker_suffix;
+      worker_path_prefix + "/worker_" + worker_suffix + worker_path_suffix;
   CheckBasicHeapDumpStructure(dump->GetAllocatorDump(worker_base_path));
 
   IterateMemoryDumps(*dump, worker_base_path + "/",
