@@ -145,16 +145,6 @@ class SmbService : public KeyedService,
                      bool skip_connect,
                      MountInternalCallback callback);
 
-  // Handles the response from mounting an SMB share using smbprovider.
-  // Completes the mounting of an SMB file system, passing |options| on to
-  // file_system_provider::Service::MountFileSystem(). Passes error status to
-  // callback.
-  void OnProviderMountDone(MountInternalCallback callback,
-                           const file_system_provider::MountOptions& options,
-                           bool save_credentials,
-                           smbprovider::ErrorType error,
-                           int32_t mount_id);
-
   // Handles the response from mounting an smbfs share. Passes |result| onto
   // |callback|.
   void OnSmbfsMountDone(const std::string& smbfs_mount_id,

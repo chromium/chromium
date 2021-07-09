@@ -83,12 +83,6 @@ std::unique_ptr<NetBiosClientInterface> GetNetBiosClient(Profile* profile) {
   return std::make_unique<NetBiosClient>(network_context);
 }
 
-// TODO(crbug.com/1203884): Remove this method and any code conditional on it
-// being false.
-bool IsSmbFsEnabled() {
-  return true;
-}
-
 // Metric recording functions.
 
 // This enum is used to define the buckets for an enumerated UMA histogram.
@@ -320,7 +314,7 @@ void SmbService::Mount(const file_system_provider::MountOptions& options,
     return;
   }
 
-  if (IsSmbFsEnabled() && smbfs_shares_.size() >= kMaxSmbFsShares) {
+  if (smbfs_shares_.size() >= kMaxSmbFsShares) {
     // Prevent users from mounting an excessive number of shares.
     std::move(callback).Run(SmbMountResult::kTooManyOpened);
     return;
@@ -419,9 +413,7 @@ void SmbService::MountInternalDone(MountResponse callback,
     platform_util::ShowItemInFolder(profile_, mount_path);
   }
 
-  if (IsSmbFsEnabled()) {
-    registry_.Save(info);
-  }
+  registry_.Save(info);
 
   RecordMountCount();
   std::move(callback).Run(SmbMountResult::kSuccess);
@@ -437,71 +429,48 @@ void SmbService::MountInternal(
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
 
-  if (IsSmbFsEnabled()) {
-    SmbFsShare::MountOptions smbfs_options;
-    smbfs_options.resolved_host =
-        share_finder_->GetResolvedHost(info.share_url().GetHost());
-    smbfs_options.username = info.username();
-    smbfs_options.workgroup = info.workgroup();
-    smbfs_options.password = password;
-    smbfs_options.allow_ntlm = IsNTLMAuthenticationEnabled();
-    smbfs_options.skip_connect = skip_connect;
-    if (save_credentials && !info.password_salt().empty()) {
-      smbfs_options.save_restore_password = true;
-      smbfs_options.account_hash = user->username_hash();
-      smbfs_options.password_salt = info.password_salt();
-    }
-    if (info.use_kerberos()) {
-      if (user->IsActiveDirectoryUser()) {
-        smbfs_options.kerberos_options =
-            absl::make_optional<SmbFsShare::KerberosOptions>(
-                SmbFsShare::KerberosOptions::Source::kActiveDirectory,
-                user->GetAccountId().GetObjGuid());
-      } else if (smb_credentials_updater_) {
-        smbfs_options.kerberos_options =
-            absl::make_optional<SmbFsShare::KerberosOptions>(
-                SmbFsShare::KerberosOptions::Source::kKerberos,
-                smb_credentials_updater_->active_account_name());
-      } else {
-        LOG(WARNING) << "No Kerberos credential source available";
-        std::move(callback).Run(SmbMountResult::kAuthenticationFailed, {});
-        return;
-      }
-    }
-
-    std::unique_ptr<SmbFsShare> mount = std::make_unique<SmbFsShare>(
-        profile_, info.share_url(), info.display_name(), smbfs_options);
-    if (smbfs_mounter_creation_callback_) {
-      mount->SetMounterCreationCallbackForTest(
-          smbfs_mounter_creation_callback_);
-    }
-
-    SmbFsShare* raw_mount = mount.get();
-    const std::string mount_id = mount->mount_id();
-    smbfs_shares_[mount_id] = std::move(mount);
-    raw_mount->Mount(base::BindOnce(&SmbService::OnSmbfsMountDone, AsWeakPtr(),
-                                    mount_id, std::move(callback)));
-  } else {
-    // If using kerberos, the hostname should not be resolved since kerberos
-    // service tickets are keyed on hostname.
-    const SmbUrl url = info.use_kerberos()
-                           ? info.share_url()
-                           : share_finder_->GetResolvedUrl(info.share_url());
-
-    SmbProviderClient::MountOptions smb_mount_options;
-    smb_mount_options.original_path = info.share_url().ToString();
-    smb_mount_options.username = info.username();
-    smb_mount_options.workgroup = info.workgroup();
-    smb_mount_options.ntlm_enabled = IsNTLMAuthenticationEnabled();
-    smb_mount_options.save_password = save_credentials && !info.use_kerberos();
-    smb_mount_options.account_hash = user->username_hash();
-    smb_mount_options.skip_connect = skip_connect;
-    GetSmbProviderClient()->Mount(
-        base::FilePath(url.ToString()), smb_mount_options,
-        MakeFdWithContents(password),
-        base::BindOnce(&SmbService::OnProviderMountDone, AsWeakPtr(),
-                       std::move(callback), options, save_credentials));
+  SmbFsShare::MountOptions smbfs_options;
+  smbfs_options.resolved_host =
+      share_finder_->GetResolvedHost(info.share_url().GetHost());
+  smbfs_options.username = info.username();
+  smbfs_options.workgroup = info.workgroup();
+  smbfs_options.password = password;
+  smbfs_options.allow_ntlm = IsNTLMAuthenticationEnabled();
+  smbfs_options.skip_connect = skip_connect;
+  if (save_credentials && !info.password_salt().empty()) {
+    smbfs_options.save_restore_password = true;
+    smbfs_options.account_hash = user->username_hash();
+    smbfs_options.password_salt = info.password_salt();
   }
+  if (info.use_kerberos()) {
+    if (user->IsActiveDirectoryUser()) {
+      smbfs_options.kerberos_options =
+          absl::make_optional<SmbFsShare::KerberosOptions>(
+              SmbFsShare::KerberosOptions::Source::kActiveDirectory,
+              user->GetAccountId().GetObjGuid());
+    } else if (smb_credentials_updater_) {
+      smbfs_options.kerberos_options =
+          absl::make_optional<SmbFsShare::KerberosOptions>(
+              SmbFsShare::KerberosOptions::Source::kKerberos,
+              smb_credentials_updater_->active_account_name());
+    } else {
+      LOG(WARNING) << "No Kerberos credential source available";
+      std::move(callback).Run(SmbMountResult::kAuthenticationFailed, {});
+      return;
+    }
+  }
+
+  std::unique_ptr<SmbFsShare> mount = std::make_unique<SmbFsShare>(
+      profile_, info.share_url(), info.display_name(), smbfs_options);
+  if (smbfs_mounter_creation_callback_) {
+    mount->SetMounterCreationCallbackForTest(smbfs_mounter_creation_callback_);
+  }
+
+  SmbFsShare* raw_mount = mount.get();
+  const std::string mount_id = mount->mount_id();
+  smbfs_shares_[mount_id] = std::move(mount);
+  raw_mount->Mount(base::BindOnce(&SmbService::OnSmbfsMountDone, AsWeakPtr(),
+                                  mount_id, std::move(callback)));
 }
 
 void SmbService::OnSmbfsMountDone(const std::string& smbfs_mount_id,
@@ -523,40 +492,6 @@ void SmbService::OnSmbfsMountDone(const std::string& smbfs_mount_id,
   }
 
   std::move(callback).Run(SmbMountResult::kSuccess, mount->mount_path());
-}
-
-void SmbService::OnProviderMountDone(
-    MountInternalCallback callback,
-    const file_system_provider::MountOptions& options,
-    bool save_credentials,
-    smbprovider::ErrorType error,
-    int32_t mount_id) {
-  SmbMountResult mount_result = TranslateErrorToMountResult(error);
-  RecordMountResult(mount_result);
-
-  if (mount_result != SmbMountResult::kSuccess) {
-    std::move(callback).Run(mount_result, {});
-    return;
-  }
-
-  DCHECK_GE(mount_id, 0);
-  mount_id_map_[options.file_system_id] = mount_id;
-
-  base::File::Error result =
-      GetProviderService()->MountFileSystem(provider_id_, options);
-  if (result != base::File::FILE_OK) {
-    mount_id_map_.erase(options.file_system_id);
-    // If the password was asked to be saved, remove it.
-    GetSmbProviderClient()->Unmount(
-        mount_id, save_credentials /* remove_password */, base::DoNothing());
-
-    std::move(callback).Run(TranslateErrorToMountResult(result), {});
-    return;
-  }
-
-  base::FilePath mount_path = file_system_provider::util::GetMountPath(
-      profile_, provider_id_, options.file_system_id);
-  std::move(callback).Run(SmbMountResult::kSuccess, mount_path);
 }
 
 int32_t SmbService::GetMountId(
@@ -604,11 +539,8 @@ void SmbService::RestoreMounts() {
       GetPreconfiguredSharePathsForPremount();
 
   std::vector<SmbShareInfo> saved_smbfs_shares;
-  if (IsSmbFsEnabled()) {
-    // Restore smbfs shares.
-    // TODO(crbug.com/1055571): Migrate saved smbprovider shares to smbfs.
-    saved_smbfs_shares = registry_.GetAll();
-  }
+  // Restore smbfs shares.
+  saved_smbfs_shares = registry_.GetAll();
 
   if (!provided_file_systems.empty() || !saved_smbfs_shares.empty() ||
       !preconfigured_shares.empty()) {
