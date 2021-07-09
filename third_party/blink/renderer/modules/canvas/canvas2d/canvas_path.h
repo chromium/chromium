@@ -30,6 +30,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATH_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
@@ -40,7 +41,6 @@
 namespace blink {
 
 class ExceptionState;
-class V8UnionDOMPointOrUnrestrictedDouble;
 
 class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
   DISALLOW_NEW();
@@ -92,7 +92,7 @@ class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
       double double_y,
       double double_width,
       double double_height,
-      const HeapVector<Member<V8UnionDOMPointOrUnrestrictedDouble>>& radii,
+      const HeapVector<Member<V8UnionDOMPointInitOrUnrestrictedDouble>>& radii,
       ExceptionState& exception_state);
 
   virtual bool IsTransformInvertible() const { return true; }
