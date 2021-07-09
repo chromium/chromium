@@ -394,9 +394,18 @@ bool VP9VaapiVideoEncoderDelegate::ApplyPendingUpdateRates() {
 
   // Update active layer status in |svc_layers_|, and key frame is produced when
   // active layer changed.
-  if (svc_layers_ &&
-      !svc_layers_->MaybeUpdateActiveLayer(&current_params_.bitrate_allocation))
-    return false;
+  if (svc_layers_) {
+    if (!svc_layers_->MaybeUpdateActiveLayer(
+            &current_params_.bitrate_allocation)) {
+      return false;
+    }
+  } else {
+    // Simple stream encoding.
+    if (current_params_.bitrate_allocation.GetSumBps() !=
+        current_params_.bitrate_allocation.GetBitrateBps(0, 0)) {
+      return false;
+    }
+  }
 
   CHECK(rate_ctrl_);
 
