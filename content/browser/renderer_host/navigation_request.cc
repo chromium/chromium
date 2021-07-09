@@ -5442,10 +5442,6 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithoutFinalFrameHost() {
   if (use_opaque_origin)
     origin = origin.DeriveNewOpaqueOrigin();
 
-  // MHTML documents should commit as an opaque origin. They should not be able
-  // to make network request on behalf of the real origin.
-  DCHECK(!IsMhtmlOrSubframe() || origin.opaque());
-
   return origin;
 }
 
@@ -5458,6 +5454,10 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
     return GetRenderFrameHost()->GetLastCommittedOrigin();
 
   url::Origin origin = GetOriginForURLLoaderFactoryWithoutFinalFrameHost();
+
+  // MHTML documents should commit as an opaque origin. They should not be able
+  // to make network request on behalf of the real origin.
+  DCHECK(!IsMhtmlOrSubframe() || origin.opaque());
 
   // https://crbug.com/1041376) of the origin that will be committed because of
   // |this| NavigationRequest.
