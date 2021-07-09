@@ -296,6 +296,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   void NotifyDelegateAboutFeaturesAfterCurrentTask();
 
+  void MoveTaskQueuesToCorrectWakeUpBudgetPool();
+
   // Create QueueTraits for the default (non-finch) task queues.
   static MainThreadTaskQueue::QueueTraits ThrottleableTaskQueueTraits();
   static MainThreadTaskQueue::QueueTraits DeferrableTaskQueueTraits();

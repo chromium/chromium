@@ -491,6 +491,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // notify the throttler that this queue should wake immediately.
   void SetImmediateWakeUpForTest();
 
+  void SetWakeUpBudgetPool(WakeUpBudgetPool* wake_up_budget_pool);
+  WakeUpBudgetPool* GetWakeUpBudgetPool() const { return wake_up_budget_pool_; }
+
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -557,6 +560,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // Set in the constructor. Cleared in ClearReferencesToSchedulers(). Can never
   // be set to a different value afterwards (except in tests).
   FrameSchedulerImpl* frame_scheduler_;  // NOT OWNED
+
+  // The WakeUpBudgetPool for this TaskQueue, if any.
+  WakeUpBudgetPool* wake_up_budget_pool_{nullptr};  // NOT OWNED
 
   base::WeakPtrFactory<MainThreadTaskQueue> weak_ptr_factory_{this};
 };

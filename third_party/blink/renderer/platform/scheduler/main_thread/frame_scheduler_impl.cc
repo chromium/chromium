@@ -290,8 +290,36 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
                                       task_queue->GetTaskQueue());
   }
 
-  parent_page_scheduler_->RemoveQueueFromWakeUpBudgetPool(
-      task_queue, frame_origin_type_, &lazy_now);
+  parent_page_scheduler_->RemoveQueueFromWakeUpBudgetPool(task_queue,
+                                                          &lazy_now);
+}
+
+void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
+  base::sequence_manager::LazyNow lazy_now(
+      main_thread_scheduler_->tick_clock());
+
+  // The WakeUpBudgetPool is selected based on origin state, frame visibility
+  // and page background state.
+  //
+  // For each throttled queue, check if it should be in a different
+  // WakeUpBudgetPool and make the necessary adjustments.
+  for (const auto& task_queue_and_voter :
+       frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
+    auto* task_queue = task_queue_and_voter.first;
+    if (!task_queue->CanBeThrottled())
+      continue;
+
+    auto* new_wake_up_budget_pool = parent_page_scheduler_->GetWakeUpBudgetPool(
+        task_queue, frame_origin_type_, frame_visible_);
+    if (task_queue->GetWakeUpBudgetPool() == new_wake_up_budget_pool) {
+      continue;
+    }
+
+    parent_page_scheduler_->RemoveQueueFromWakeUpBudgetPool(task_queue,
+                                                            &lazy_now);
+    parent_page_scheduler_->AddQueueToWakeUpBudgetPool(
+        task_queue, frame_origin_type_, frame_visible_, &lazy_now);
+  }
 }
 
 void FrameSchedulerImpl::SetFrameVisible(bool frame_visible) {
@@ -300,6 +328,8 @@ void FrameSchedulerImpl::SetFrameVisible(bool frame_visible) {
     return;
   UMA_HISTOGRAM_BOOLEAN("RendererScheduler.IPC.FrameVisibility", frame_visible);
   frame_visible_ = frame_visible;
+
+  MoveTaskQueuesToCorrectWakeUpBudgetPool();
   UpdatePolicy();
 }
 
@@ -314,39 +344,13 @@ void FrameSchedulerImpl::SetCrossOriginToMainFrame(bool cross_origin) {
     return;
   }
 
-  base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->tick_clock());
-
-  // Remove throttleable TaskQueues from their current WakeUpBudgetPool.
-  //
-  // The WakeUpBudgetPool is selected based on origin. TaskQueues are reinserted
-  // in the appropriate WakeUpBudgetPool at the end of this method, after the
-  // |frame_origin_type_| is updated.
-  for (const auto& task_queue_and_voter :
-       frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
-    if (task_queue_and_voter.first->CanBeThrottled()) {
-      parent_page_scheduler_->RemoveQueueFromWakeUpBudgetPool(
-          task_queue_and_voter.first, frame_origin_type_, &lazy_now);
-    }
-  }
-
-  // Update the FrameOriginType.
   if (cross_origin) {
     frame_origin_type_ = FrameOriginType::kCrossOriginToMainFrame;
   } else {
     frame_origin_type_ = FrameOriginType::kSameOriginToMainFrame;
   }
 
-  // Add throttleable TaskQueues to WakeUpBudgetPool that corresponds to the
-  // updated |frame_origin_type_|.
-  for (const auto& task_queue_and_voter :
-       frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
-    if (task_queue_and_voter.first->CanBeThrottled()) {
-      parent_page_scheduler_->AddQueueToWakeUpBudgetPool(
-          task_queue_and_voter.first, frame_origin_type_, &lazy_now);
-    }
-  }
-
+  MoveTaskQueuesToCorrectWakeUpBudgetPool();
   UpdatePolicy();
 }
 
@@ -1012,6 +1016,8 @@ bool FrameSchedulerImpl::IsOrdinary() const {
 bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
   DCHECK(parent_page_scheduler_);
 
+  if (parent_page_scheduler_->ThrottleForegroundTimers())
+    return true;
   if (!RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled())
     return false;
   if (parent_page_scheduler_->IsAudioPlaying())
@@ -1268,7 +1274,7 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
     }
 
     parent_page_scheduler_->AddQueueToWakeUpBudgetPool(
-        task_queue, frame_origin_type_, &lazy_now);
+        task_queue, frame_origin_type_, frame_visible_, &lazy_now);
 
     if (task_queues_throttled_) {
       MainThreadTaskQueue::ThrottleHandle handle = task_queue->Throttle();

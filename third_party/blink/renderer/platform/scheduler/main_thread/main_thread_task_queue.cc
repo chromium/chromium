@@ -128,7 +128,9 @@ MainThreadTaskQueue::MainThreadTaskQueue(
   }
 }
 
-MainThreadTaskQueue::~MainThreadTaskQueue() = default;
+MainThreadTaskQueue::~MainThreadTaskQueue() {
+  DCHECK(!wake_up_budget_pool_);
+}
 
 void MainThreadTaskQueue::OnTaskStarted(
     const base::sequence_manager::Task& task,
@@ -288,6 +290,11 @@ void MainThreadTaskQueue::SetImmediateWakeUpForTest() {
     main_thread_scheduler_->task_queue_throttler()->OnQueueNextWakeUpChanged(
         task_queue_.get(), base::TimeTicks());
   }
+}
+
+void MainThreadTaskQueue::SetWakeUpBudgetPool(
+    WakeUpBudgetPool* wake_up_budget_pool) {
+  wake_up_budget_pool_ = wake_up_budget_pool;
 }
 
 void MainThreadTaskQueue::WriteIntoTrace(perfetto::TracedValue context) const {
