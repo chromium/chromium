@@ -11,6 +11,8 @@
 #include "base/win/current_module.h"
 #include "base/win/wrapped_window_proc.h"
 
+#include <windows.h>
+
 const wchar_t kMessageWindowClassName[] = L"Chrome_MessageWindow";
 
 namespace base {

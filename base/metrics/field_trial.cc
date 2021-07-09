@@ -31,6 +31,10 @@
 #include "base/posix/global_descriptors.h"
 #endif
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace base {
 
 namespace {

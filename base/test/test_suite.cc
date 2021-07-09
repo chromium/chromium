@@ -76,9 +76,12 @@
 #include "base/base_paths_fuchsia.h"
 #endif
 
-#if defined(OS_WIN) && defined(_DEBUG)
+#if defined(OS_WIN)
+#if defined(_DEBUG)
 #include <crtdbg.h>
-#endif
+#endif  // _DEBUG
+#include <windows.h>
+#endif  // OS_WIN
 
 namespace base {
 

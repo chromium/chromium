@@ -27,10 +27,17 @@
 // Make sure windows.h can be included after windows_types.h
 #include "base/win/windows_types.h"
 
+// windows.h must be included before objidl.h
 #include <windows.h>
+
+#include <objidl.h>
 
 // Check that type sizes match.
 static_assert(sizeof(CHROME_CONDITION_VARIABLE) == sizeof(CONDITION_VARIABLE),
               "Definition mismatch.");
 static_assert(sizeof(CHROME_SRWLOCK) == sizeof(SRWLOCK),
+              "Definition mismatch.");
+static_assert(sizeof(CHROME_WIN32_FIND_DATA) == sizeof(WIN32_FIND_DATA),
+              "Definition mismatch.");
+static_assert(sizeof(CHROME_FORMATETC) == sizeof(FORMATETC),
               "Definition mismatch.");

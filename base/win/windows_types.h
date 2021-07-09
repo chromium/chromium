@@ -125,10 +125,22 @@ typedef PVOID PSID;
 
 typedef HANDLE HLOCAL;
 
+typedef /* [wire_marshal] */ WORD CLIPFORMAT;
+typedef struct tagDVTARGETDEVICE DVTARGETDEVICE;
+
+typedef struct tagFORMATETC FORMATETC;
+
+// Use WIN32_FIND_DATAW when you just need a forward declaration. Use
+// CHROME_WIN32_FIND_DATA when you need a concrete declaration to reserve
+// space.
+typedef struct _WIN32_FIND_DATAW WIN32_FIND_DATAW;
+typedef WIN32_FIND_DATAW WIN32_FIND_DATA;
+
 // Declare Chrome versions of some Windows structures. These are needed for
 // when we need a concrete type but don't want to pull in Windows.h. We can't
 // declare the Windows types so we declare our types and cast to the Windows
-// types in a few places.
+// types in a few places. The sizes must match the Windows types so we verify
+// that with static asserts in win_includes_unittest.cc.
 
 struct CHROME_SRWLOCK {
   PVOID Ptr;
@@ -136,6 +148,20 @@ struct CHROME_SRWLOCK {
 
 struct CHROME_CONDITION_VARIABLE {
   PVOID Ptr;
+};
+
+// _WIN32_FIND_DATAW is 592 bytes and the largest built-in type in it is a
+// DWORD. The buffer declaration guarantees the correct size and alignment.
+struct CHROME_WIN32_FIND_DATA {
+  DWORD buffer[592 / sizeof(DWORD)];
+};
+
+struct CHROME_FORMATETC {
+  CLIPFORMAT cfFormat;
+  /* [unique] */ DVTARGETDEVICE* ptd;
+  DWORD dwAspect;
+  LONG lindex;
+  DWORD tymed;
 };
 
 // Define some commonly used Windows constants. Note that the layout of these
@@ -158,7 +184,9 @@ struct CHROME_CONDITION_VARIABLE {
 #define ERROR_INVALID_HANDLE 6L
 #define ERROR_SHARING_VIOLATION 32L
 #define ERROR_LOCK_VIOLATION 33L
+#define ERROR_MORE_DATA 234L
 #define REG_BINARY ( 3ul )
+#define REG_NONE ( 0ul )
 
 #define STATUS_PENDING ((DWORD   )0x00000103L)
 #define STILL_ACTIVE STATUS_PENDING
@@ -178,6 +206,7 @@ struct CHROME_CONDITION_VARIABLE {
 #define KEY_WOW64_64KEY (0x0100)
 #define KEY_WOW64_RES (0x0300)
 
+#define PROCESS_QUERY_INFORMATION (0x0400)
 #define READ_CONTROL (0x00020000L)
 #define SYNCHRONIZE (0x00100000L)
 
@@ -222,6 +251,7 @@ struct CHROME_CONDITION_VARIABLE {
 #define WINBASEAPI DECLSPEC_IMPORT
 #define WINUSERAPI DECLSPEC_IMPORT
 #define WINAPI __stdcall
+#define APIENTRY WINAPI
 #define CALLBACK __stdcall
 
 // Needed for LockImpl.

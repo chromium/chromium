@@ -73,6 +73,8 @@
 #if defined(OS_WIN)
 #include "base/strings/string_util_win.h"
 #include "base/win/windows_version.h"
+
+#include <windows.h>
 #endif
 
 #if defined(OS_FUCHSIA)

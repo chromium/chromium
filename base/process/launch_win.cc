@@ -6,10 +6,13 @@
 
 #include <fcntl.h>
 #include <io.h>
-#include <shellapi.h>
+
+// windows.h must be included before shellapi.h
 #include <windows.h>
-#include <userenv.h>
+
 #include <psapi.h>
+#include <shellapi.h>
+#include <userenv.h>
 
 #include <ios>
 #include <limits>

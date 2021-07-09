@@ -21,6 +21,10 @@
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 using base::File;
 using base::FilePath;
 

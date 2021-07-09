@@ -21,6 +21,8 @@
 #if defined(OS_WIN)
 #include "base/win/base_win_buildflags.h"
 #include "base/win/windows_version.h"
+
+#include <windows.h>
 #endif
 
 namespace {

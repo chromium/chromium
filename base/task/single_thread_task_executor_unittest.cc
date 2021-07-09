@@ -55,6 +55,8 @@
 #include "base/win/current_module.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_handle.h"
+
+#include <windows.h>
 #endif
 
 using ::testing::IsNull;
@@ -363,11 +365,11 @@ void RecursiveFuncWin(scoped_refptr<SingleThreadTaskRunner> task_runner,
   // Poll for the MessageBox. Don't do this at home! At the speed we do it,
   // you will never realize one MessageBox was shown.
   for (; expect_window;) {
-    HWND window = ::FindWindow(L"#32770", kMessageBoxTitle);
+    HWND window = ::FindWindowW(L"#32770", kMessageBoxTitle);
     if (window) {
       // Dismiss it.
       for (;;) {
-        HWND button = ::FindWindowEx(window, NULL, L"Button", NULL);
+        HWND button = ::FindWindowExW(window, NULL, L"Button", NULL);
         if (button != NULL) {
           EXPECT_EQ(0, ::SendMessage(button, WM_LBUTTONDOWN, 0, 0));
           EXPECT_EQ(0, ::SendMessage(button, WM_LBUTTONUP, 0, 0));

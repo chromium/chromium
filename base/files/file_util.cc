@@ -24,6 +24,10 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace base {
 
 #if !defined(OS_NACL_NONSFI)

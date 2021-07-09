@@ -29,6 +29,10 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace base {
 namespace debug {
 
