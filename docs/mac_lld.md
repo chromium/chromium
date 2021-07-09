@@ -13,8 +13,8 @@ is the executable file format used on most OSs, including Linux, Android,
 Chrome OS, Fuchsia), and it's faster than other COFF linkers (the executable
 file format on Windows).
 
-LLD is currently 3-4x faster at linking Chromium Framework than ld64, the macOS
-system linker in symbol\_level=0 release builds, despite ld64 being already
+LLD is currently 3-4x as fast as ld64, the macOS system linker, at linking
+Chromium Framework in symbol\_level=0 release builds, despite ld64 being already
 fast.
 
 LLD has advantages unrelated to speed, too:
