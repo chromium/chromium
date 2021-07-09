@@ -37,7 +37,7 @@ class BLINK_PLATFORM_EXPORT SmoothnessHelper {
   virtual ~SmoothnessHelper();
 
   // Return the features that we were constructed with.
-  const learning::FeatureVector& features() const { return features_; }
+  const media::learning::FeatureVector& features() const { return features_; }
 
   // Notify us that an NNR has occurred.
   virtual void NotifyNNR() = 0;
@@ -46,9 +46,9 @@ class BLINK_PLATFORM_EXPORT SmoothnessHelper {
   // we create.  They should be features that could be captured at the time a
   // prediction would be needed.
   static std::unique_ptr<SmoothnessHelper> Create(
-      std::unique_ptr<learning::LearningTaskController> bad_controller,
-      std::unique_ptr<learning::LearningTaskController> nnr_controller,
-      const learning::FeatureVector& features,
+      std::unique_ptr<media::learning::LearningTaskController> bad_controller,
+      std::unique_ptr<media::learning::LearningTaskController> nnr_controller,
+      const media::learning::FeatureVector& features,
       Client* player);
 
   // We split playbacks up into |kSegmentSize| units, and record the worst
@@ -57,9 +57,9 @@ class BLINK_PLATFORM_EXPORT SmoothnessHelper {
   static base::TimeDelta SegmentSizeForTesting();
 
  protected:
-  SmoothnessHelper(const learning::FeatureVector& features);
+  SmoothnessHelper(const media::learning::FeatureVector& features);
 
-  learning::FeatureVector features_;
+  media::learning::FeatureVector features_;
 };
 
 }  // namespace media

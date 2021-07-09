@@ -20,7 +20,7 @@ class BLINK_PLATFORM_EXPORT LearningExperimentHelper {
  public:
   // If |controller| is null, then everything else no-ops.
   LearningExperimentHelper(
-      std::unique_ptr<learning::LearningTaskController> controller);
+      std::unique_ptr<media::learning::LearningTaskController> controller);
 
   LearningExperimentHelper(const LearningExperimentHelper&) = delete;
   LearningExperimentHelper& operator=(const LearningExperimentHelper&) = delete;
@@ -30,17 +30,17 @@ class BLINK_PLATFORM_EXPORT LearningExperimentHelper {
 
   // Start a new observation.  Any existing observation is cancelled.  Does
   // nothing if there's no controller.
-  void BeginObservation(const learning::FeatureDictionary& dictionary);
+  void BeginObservation(const media::learning::FeatureDictionary& dictionary);
 
   // Complete any pending observation.  Does nothing if none is in progress.
-  void CompleteObservationIfNeeded(const learning::TargetValue& target);
+  void CompleteObservationIfNeeded(const media::learning::TargetValue& target);
 
   // Cancel any pending observation.
   void CancelObservationIfNeeded();
 
  private:
   // May be null.
-  std::unique_ptr<learning::LearningTaskController> controller_;
+  std::unique_ptr<media::learning::LearningTaskController> controller_;
 
   // May be null if no observation is in flight.  Must be null if |controller_|
   // is null.

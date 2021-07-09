@@ -34,8 +34,8 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
     : public blink::WebEncryptedMediaClient {
  public:
   WebEncryptedMediaClientImpl(
-      CdmFactory* cdm_factory,
-      MediaPermission* media_permission,
+      media::CdmFactory* cdm_factory,
+      media::MediaPermission* media_permission,
       std::unique_ptr<KeySystemConfigSelector::WebLocalFrameDelegate>
           web_frame_delegate);
   ~WebEncryptedMediaClientImpl() override;
@@ -49,7 +49,7 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
   void CreateCdm(
       const blink::WebString& key_system,
       const blink::WebSecurityOrigin& security_origin,
-      const CdmConfig& cdm_config,
+      const media::CdmConfig& cdm_config,
       std::unique_ptr<blink::WebContentDecryptionModuleResult> result);
 
  private:
@@ -66,7 +66,7 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
       blink::WebEncryptedMediaRequest request,
       KeySystemConfigSelector::Status status,
       blink::WebMediaKeySystemConfiguration* accumulated_configuration,
-      CdmConfig* cdm_config);
+      media::CdmConfig* cdm_config);
 
   // Gets the Reporter for |key_system|. If it doesn't already exist,
   // create one.
@@ -75,7 +75,7 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
   // Reporter singletons.
   std::unordered_map<std::string, std::unique_ptr<Reporter>> reporters_;
 
-  CdmFactory* cdm_factory_;
+  media::CdmFactory* cdm_factory_;
   KeySystemConfigSelector key_system_config_selector_;
   base::WeakPtrFactory<WebEncryptedMediaClientImpl> weak_factory_{this};
 };

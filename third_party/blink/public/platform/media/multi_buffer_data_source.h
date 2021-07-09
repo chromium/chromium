@@ -35,7 +35,7 @@ class MultiBufferReader;
 //
 // MultiBufferDataSource must be created and destroyed on the thread associated
 // with the |task_runner| passed in the constructor.
-class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public DataSource {
+class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
  public:
   using DownloadingCB = base::RepeatingCallback<void(bool)>;
   using RedirectCB = base::RepeatingCallback<void()>;
@@ -59,7 +59,7 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public DataSource {
   MultiBufferDataSource(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       scoped_refptr<UrlData> url_data,
-      MediaLog* media_log,
+      media::MediaLog* media_log,
       BufferedDataSourceHost* host,
       DownloadingCB downloading_cb);
   MultiBufferDataSource(const MultiBufferDataSource&) = delete;
@@ -115,7 +115,7 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public DataSource {
 
   GURL GetUrlAfterRedirects() const;
 
-  // DataSource implementation.
+  // media::DataSource implementation.
   // Called from demuxer thread.
   void Stop() override;
   void Abort() override;
@@ -123,7 +123,7 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public DataSource {
   void Read(int64_t position,
             int size,
             uint8_t* data,
-            DataSource::ReadCB read_cb) override;
+            media::DataSource::ReadCB read_cb) override;
   bool GetSize(int64_t* size_out) override;
   bool IsStreaming() override;
   void SetBitrate(int bitrate) override;
@@ -265,7 +265,7 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public DataSource {
   // Current playback rate.
   double playback_rate_;
 
-  MediaLog* media_log_;
+  media::MediaLog* media_log_;
 
   bool is_client_audio_element_ = false;
 

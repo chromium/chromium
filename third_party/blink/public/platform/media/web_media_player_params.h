@@ -62,9 +62,10 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
   // |defer_load_cb|, |audio_renderer_sink|, |compositor_task_runner|, and
   // |context_3d_cb| may be null.
   WebMediaPlayerParams(
-      std::unique_ptr<MediaLog> media_log,
+      std::unique_ptr<media::MediaLog> media_log,
       const DeferLoadCB& defer_load_cb,
-      const scoped_refptr<SwitchableAudioRendererSink>& audio_renderer_sink,
+      const scoped_refptr<media::SwitchableAudioRendererSink>&
+          audio_renderer_sink,
       const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       const scoped_refptr<base::SingleThreadTaskRunner>& compositor_task_runner,
@@ -72,18 +73,18 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
           video_frame_compositor_task_runner,
       const AdjustAllocatedMemoryCB& adjust_allocated_memory_cb,
       blink::WebContentDecryptionModule* initial_cdm,
-      RequestRoutingTokenCallback request_routing_token_cb,
-      base::WeakPtr<MediaObserver> media_observer,
+      media::RequestRoutingTokenCallback request_routing_token_cb,
+      base::WeakPtr<media::MediaObserver> media_observer,
       bool enable_instant_source_buffer_gc,
       bool embedded_media_experience_enabled,
-      mojo::PendingRemote<mojom::MediaMetricsProvider> metrics_provider,
+      mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
       CreateSurfaceLayerBridgeCB bridge_callback,
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
       blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video,
       bool is_background_suspend_enabled,
       bool is_background_video_play_enabled,
       bool is_background_video_track_optimization_supported,
-      std::unique_ptr<Demuxer> demuxer_override,
+      std::unique_ptr<media::Demuxer> demuxer_override,
       std::unique_ptr<PowerStatusHelper> power_status_helper);
 
   WebMediaPlayerParams(const WebMediaPlayerParams&) = delete;
@@ -92,14 +93,17 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
 
   DeferLoadCB defer_load_cb() const { return defer_load_cb_; }
 
-  const scoped_refptr<SwitchableAudioRendererSink>& audio_renderer_sink()
+  const scoped_refptr<media::SwitchableAudioRendererSink>& audio_renderer_sink()
       const {
     return audio_renderer_sink_;
   }
 
-  std::unique_ptr<MediaLog> take_media_log() { return std::move(media_log_); }
+  std::unique_ptr<media::MediaLog> take_media_log() {
+    return std::move(media_log_);
+  }
 
-  mojo::PendingRemote<mojom::MediaMetricsProvider> take_metrics_provider() {
+  mojo::PendingRemote<media::mojom::MediaMetricsProvider>
+  take_metrics_provider() {
     return std::move(metrics_provider_);
   }
 
@@ -129,7 +133,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
     return adjust_allocated_memory_cb_;
   }
 
-  base::WeakPtr<MediaObserver> media_observer() const {
+  base::WeakPtr<media::MediaObserver> media_observer() const {
     return media_observer_;
   }
 
@@ -141,7 +145,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
     return embedded_media_experience_enabled_;
   }
 
-  RequestRoutingTokenCallback request_routing_token_cb() {
+  media::RequestRoutingTokenCallback request_routing_token_cb() {
     return request_routing_token_cb_;
   }
 
@@ -169,7 +173,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
     return is_background_video_track_optimization_supported_;
   }
 
-  std::unique_ptr<Demuxer> TakeDemuxerOverride();
+  std::unique_ptr<media::Demuxer> TakeDemuxerOverride();
 
   std::unique_ptr<PowerStatusHelper> TakePowerStatusHelper() {
     return std::move(power_status_helper_);
@@ -177,8 +181,8 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
 
  private:
   DeferLoadCB defer_load_cb_;
-  scoped_refptr<SwitchableAudioRendererSink> audio_renderer_sink_;
-  std::unique_ptr<MediaLog> media_log_;
+  scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink_;
+  std::unique_ptr<media::MediaLog> media_log_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   scoped_refptr<base::TaskRunner> worker_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
@@ -187,11 +191,11 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
   AdjustAllocatedMemoryCB adjust_allocated_memory_cb_;
 
   blink::WebContentDecryptionModule* initial_cdm_;
-  RequestRoutingTokenCallback request_routing_token_cb_;
-  base::WeakPtr<MediaObserver> media_observer_;
+  media::RequestRoutingTokenCallback request_routing_token_cb_;
+  base::WeakPtr<media::MediaObserver> media_observer_;
   bool enable_instant_source_buffer_gc_;
   const bool embedded_media_experience_enabled_;
-  mojo::PendingRemote<mojom::MediaMetricsProvider> metrics_provider_;
+  mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider_;
   CreateSurfaceLayerBridgeCB create_bridge_callback_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video_;
@@ -205,7 +209,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
   bool is_background_video_track_optimization_supported_ = true;
 
   // Optional custom demuxer to use instead of the standard demuxers.
-  std::unique_ptr<Demuxer> demuxer_override_;
+  std::unique_ptr<media::Demuxer> demuxer_override_;
 
   std::unique_ptr<PowerStatusHelper> power_status_helper_;
 };

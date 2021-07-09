@@ -60,7 +60,7 @@ class VideoFrame;
 // VideoFrameCompositor must live on the same thread as the compositor, though
 // it may be constructed on any thread.
 class BLINK_PLATFORM_EXPORT VideoFrameCompositor
-    : public VideoRendererSink,
+    : public media::VideoRendererSink,
       public cc::VideoFrameProvider {
  public:
   // Used to report back the time when the new frame has been processed.
@@ -92,10 +92,9 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
 
   // Signals the VideoFrameSubmitter to prepare to receive BeginFrames and
   // submit video frames given by VideoFrameCompositor.
-  virtual void EnableSubmission(
-      const viz::SurfaceId& id,
-      VideoRotation rotation,
-      bool force_submit);
+  virtual void EnableSubmission(const viz::SurfaceId& id,
+                                media::VideoRotation rotation,
+                                bool force_submit);
 
   // cc::VideoFrameProvider implementation. These methods must be called on the
   // |task_runner_|.
@@ -104,7 +103,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   bool UpdateCurrentFrame(base::TimeTicks deadline_min,
                           base::TimeTicks deadline_max) override;
   bool HasCurrentFrame() override;
-  scoped_refptr<VideoFrame> GetCurrentFrame() override;
+  scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
   void PutCurrentFrame() override;
   base::TimeDelta GetPreferredRenderInterval() override;
 
@@ -112,13 +111,13 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   // it was updated. In certain applications, one might need to periodically
   // call UpdateCurrentFrameIfStale on |task_runner_| to drive the updates.
   // Can be called from any thread.
-  virtual scoped_refptr<VideoFrame> GetCurrentFrameOnAnyThread();
+  virtual scoped_refptr<media::VideoFrame> GetCurrentFrameOnAnyThread();
 
-  // VideoRendererSink implementation. These methods must be called from the
-  // same thread (typically the media thread).
+  // media::VideoRendererSink implementation. These methods must be called from
+  // the same thread (typically the media thread).
   void Start(RenderCallback* callback) override;
   void Stop() override;
-  void PaintSingleFrame(scoped_refptr<VideoFrame> frame,
+  void PaintSingleFrame(scoped_refptr<media::VideoFrame> frame,
                         bool repaint_duplicate_frame = false) override;
 
   // If |client_| is not set, |callback_| is set, and |is_background_rendering_|
@@ -149,7 +148,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   GetLastPresentedFrameMetadata();
 
   // Updates the rotation information for frames given to |submitter_|.
-  void UpdateRotation(VideoRotation rotation);
+  void UpdateRotation(media::VideoRotation rotation);
 
   // Should be called when page visibility changes. Notifies |submitter_|.
   virtual void SetIsPageVisible(bool is_visible);
@@ -193,11 +192,11 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   void OnRendererStateUpdate(bool new_state);
 
   // Handles setting of |current_frame_|.
-  bool ProcessNewFrame(scoped_refptr<VideoFrame> frame,
+  bool ProcessNewFrame(scoped_refptr<media::VideoFrame> frame,
                        base::TimeTicks presentation_time,
                        bool repaint_duplicate_frame);
 
-  void SetCurrentFrame_Locked(scoped_refptr<VideoFrame> frame,
+  void SetCurrentFrame_Locked(scoped_refptr<media::VideoFrame> frame,
                               base::TimeTicks expected_display_time);
 
   // Sets the ForceBeginFrames flag on |submitter_|, and resets
@@ -214,8 +213,8 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   // Called by |background_rendering_timer_| when enough time elapses where we
   // haven't seen a Render() call.
   void BackgroundRender(
-      VideoRendererSink::RenderCallback::RenderingMode mode =
-          VideoRendererSink::RenderCallback::RenderingMode::kBackground);
+      media::VideoRendererSink::RenderCallback::RenderingMode mode =
+          media::VideoRendererSink::RenderCallback::RenderingMode::kBackground);
 
   // If |callback_| is available, calls Render() with the provided properties.
   // Updates |is_background_rendering_|, |last_interval_|, and resets
@@ -223,7 +222,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   // available via GetCurrentFrame().
   bool CallRender(base::TimeTicks deadline_min,
                   base::TimeTicks deadline_max,
-                  VideoRendererSink::RenderCallback::RenderingMode mode);
+                  media::VideoRendererSink::RenderCallback::RenderingMode mode);
 
   // Returns |last_interval_| without acquiring a lock.
   // Can only be called from the compositor thread.
@@ -266,7 +265,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   // Set on the compositor thread, but also read on the media thread. Lock is
   // not used when reading |current_frame_| on the compositor thread.
   base::Lock current_frame_lock_;
-  scoped_refptr<VideoFrame> current_frame_;
+  scoped_refptr<media::VideoFrame> current_frame_;
 
   // Used to fulfill video.requestVideoFrameCallback() calls.
   // See https://wicg.github.io/video-rvfc/.
@@ -276,8 +275,8 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
 
   // These values are updated and read from the media and compositor threads.
   base::Lock callback_lock_;
-  VideoRendererSink::RenderCallback* callback_ GUARDED_BY(callback_lock_) =
-      nullptr;
+  media::VideoRendererSink::RenderCallback* callback_
+      GUARDED_BY(callback_lock_) = nullptr;
 
   // Assume 60Hz before the first UpdateCurrentFrame() call.
   // Updated/read by the compositor thread, but also read on the media thread.
