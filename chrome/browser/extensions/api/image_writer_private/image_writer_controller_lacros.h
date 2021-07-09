@@ -37,11 +37,22 @@ class ImageWriterControllerLacros : public BrowserContextKeyedAPI,
   void ListRemovableStorageDevices(
       ListRemovableStorageDevicesCallback callback);
 
-  using DestroyPartitionsCallback =
-      crosapi::mojom::ImageWriter::DestroyPartitionsCallback;
+  using WriteOperationCallback =
+      base::OnceCallback<void(const absl::optional<std::string>&)>;
   void DestroyPartitions(const std::string& extension_id,
                          const std::string& storage_unit_id,
-                         DestroyPartitionsCallback callback);
+                         WriteOperationCallback callback);
+  void WriteFromUrl(const std::string& extension_id,
+                    const std::string& storage_unit_id,
+                    const GURL& image_url,
+                    const absl::optional<std::string>& image_hash,
+                    WriteOperationCallback callback);
+  void WriteFromFile(const std::string& extension_id,
+                     const std::string& storage_unit_id,
+                     const base::FilePath& image_path,
+                     WriteOperationCallback callback);
+  void CancelWrite(const std::string& extension_id,
+                   WriteOperationCallback callback);
 
   void OnPendingClientWriteCompleted(const std::string& extension_id);
   void OnPendingClientWriteError(const std::string& extension_id);

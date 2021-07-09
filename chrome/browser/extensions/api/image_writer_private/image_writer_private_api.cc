@@ -46,6 +46,15 @@ ImageWriterPrivateBaseFunction::ImageWriterPrivateBaseFunction() = default;
 
 ImageWriterPrivateBaseFunction::~ImageWriterPrivateBaseFunction() = default;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ImageWriterPrivateBaseFunction::OnComplete(
+    const absl::optional<std::string>& error) {
+  if (error)
+    Respond(Error(error.value()));
+  else
+    Respond(NoArguments());
+}
+#else
 void ImageWriterPrivateBaseFunction::OnComplete(bool success,
                                                 const std::string& error) {
   if (success)
@@ -53,6 +62,7 @@ void ImageWriterPrivateBaseFunction::OnComplete(bool success,
   else
     Respond(Error(error));
 }
+#endif  // BUILDFLAG(IS_CHROMOS_LACROS)
 
 ImageWriterPrivateWriteFromUrlFunction::
     ImageWriterPrivateWriteFromUrlFunction() = default;
@@ -62,7 +72,7 @@ ImageWriterPrivateWriteFromUrlFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateWriteFromUrlFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (profile->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled) ||
       profile->GetPrefs()->GetBoolean(prefs::kExternalStorageReadOnly)) {
@@ -82,11 +92,20 @@ ImageWriterPrivateWriteFromUrlFunction::Run() {
     hash = *params->options->image_hash;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  image_writer::ImageWriterControllerLacros::Get(browser_context())
+      ->WriteFromUrl(
+          extension_id(), params->storage_unit_id, url,
+          hash.empty() ? absl::nullopt : absl::make_optional(hash),
+          base::BindOnce(&ImageWriterPrivateWriteFromUrlFunction::OnComplete,
+                         this));
+#else
   image_writer::OperationManager::Get(browser_context())
       ->StartWriteFromUrl(
           extension_id(), url, hash, params->storage_unit_id,
           base::BindOnce(&ImageWriterPrivateWriteFromUrlFunction::OnComplete,
                          this));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return RespondLater();
 }
 
@@ -98,7 +117,7 @@ ImageWriterPrivateWriteFromFileFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateWriteFromFileFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (profile->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled) ||
       profile->GetPrefs()->GetBoolean(prefs::kExternalStorageReadOnly)) {
@@ -122,11 +141,19 @@ ImageWriterPrivateWriteFromFileFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  image_writer::ImageWriterControllerLacros::Get(browser_context())
+      ->WriteFromFile(
+          extension_id(), storage_unit_id, path,
+          base::BindOnce(&ImageWriterPrivateWriteFromFileFunction::OnComplete,
+                         this));
+#else
   image_writer::OperationManager::Get(browser_context())
       ->StartWriteFromFile(
           extension_id(), path, storage_unit_id,
           base::BindOnce(&ImageWriterPrivateWriteFromFileFunction::OnComplete,
                          this));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return RespondLater();
 }
 
@@ -137,11 +164,19 @@ ImageWriterPrivateCancelWriteFunction::
     ~ImageWriterPrivateCancelWriteFunction() = default;
 
 ExtensionFunction::ResponseAction ImageWriterPrivateCancelWriteFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  image_writer::ImageWriterControllerLacros::Get(browser_context())
+      ->CancelWrite(
+          extension_id(),
+          base::BindOnce(&ImageWriterPrivateCancelWriteFunction::OnComplete,
+                         this));
+#else
   image_writer::OperationManager::Get(browser_context())
       ->CancelWrite(
           extension_id(),
           base::BindOnce(&ImageWriterPrivateCancelWriteFunction::OnComplete,
                          this));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return RespondLater();
 }
 
@@ -169,9 +204,8 @@ ImageWriterPrivateDestroyPartitionsFunction::Run() {
   image_writer::ImageWriterControllerLacros::Get(browser_context())
       ->DestroyPartitions(
           extension_id(), params->storage_unit_id,
-          base::BindOnce(&ImageWriterPrivateDestroyPartitionsFunction::
-                             OnDestroyPartitionsDone,
-                         this));
+          base::BindOnce(
+              &ImageWriterPrivateDestroyPartitionsFunction::OnComplete, this));
 #else
   image_writer::OperationManager::Get(browser_context())
       ->DestroyPartitions(
@@ -181,16 +215,6 @@ ImageWriterPrivateDestroyPartitionsFunction::Run() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return RespondLater();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ImageWriterPrivateDestroyPartitionsFunction::OnDestroyPartitionsDone(
-    const absl::optional<std::string>& error) {
-  if (error)
-    Respond(Error(error.value()));
-  else
-    Respond(NoArguments());
-}
-#endif
 
 ImageWriterPrivateListRemovableStorageDevicesFunction::
     ImageWriterPrivateListRemovableStorageDevicesFunction() = default;

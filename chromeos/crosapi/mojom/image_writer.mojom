@@ -4,7 +4,9 @@
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "url/mojom/url.mojom";
 
 // A struct representing a removable storage device.
 [Stable]
@@ -67,17 +69,55 @@ interface ImageWriter {
   // Destroys the partition table of a removable disk specified by
   // |storage_unit_id| from the request of a remote extension running in Lacros.
   // |remote_client| will be used to dispatch writing progress events back
-  // to remote extension which initiates DestroyPartitions.
+  // to the remote extension which initiates DestroyPartitions.
   // Returns an error defined by extensions::image_writer::error
   // (see chrome/browser/extensions/api/image_writer_private/error_messages.cc)
   // such as error::kOperationAlreadyInProgress or error::kDeviceWriteError,
   // which are caught before performing writing operation on the removable
   // device.
   // |error| should be returned to the caller of the extension API
-  // imageWriterPrivate.DestroyPartitions.
+  // imageWriterPrivate.destroyPartitions.
   // Errors that occur while writing to the removable device are reported by
   // ImageWriterClient::DispatchOnWriteErrorEvent api.
   DestroyPartitions@1(string storage_unit_id,
       pending_remote<ImageWriterClient> remote_client)
-       => (string? error);
+          => (string? error);
+
+  // Write an image downloaded from |image_url| to the disk specified by
+  // |storage_unit_id|. Compare the download with |image_hash| if the optional
+  // parameter is provided.
+  // |remote_client| will be used to dispatch writing progress events back
+  // to the remote extension which initiates WriteFromUrl.
+  // Returns an error defined by extensions::image_writer::error
+  // (see chrome/browser/extensions/api/image_writer_private/error_messages.cc)
+  // such as error::kOperationAlreadyInProgress or error::kDeviceWriteError,
+  // which are caught before performing writing operation on the removable
+  // device.
+  // |error| should be returned to the caller of the extension API
+  // imageWriterPrivate.writeFromUrl.
+  // Errors that occur while writing to the removable device are reported by
+  // ImageWriterClient::DispatchOnWriteErrorEvent api.
+  [MinVersion=1]
+  WriteFromUrl@2(string storage_unit_id, url.mojom.Url image_url,
+      string? image_hash, pending_remote<ImageWriterClient> remote_client)
+          => (string? error);
+
+
+  // Write an image supplied by a local file with |image_path| to the
+  // disk specified by |storage_unit_id|.
+  // |remote_client| will be used to dispatch writing progress events back
+  // to the remote extension which initiates WriteFromFile.
+  // Returns an error defined by extensions::image_writer::error
+  // (see chrome/browser/extensions/api/image_writer_private/error_messages.cc)
+  // such as error::kOperationAlreadyInProgress or error::kDeviceWriteError,
+  // which are caught before performing writing operation on the removable
+  // device.
+  // |error| should be returned to the caller of the extension API
+  // imageWriterPrivate.writeFromFile.
+  // Errors that occur while writing to the removable device are reported by
+  // ImageWriterClient::DispatchOnWriteErrorEvent api.
+  [MinVersion=1]
+  WriteFromFile@3(string storage_unit_id, mojo_base.mojom.FilePath image_path,
+      pending_remote<ImageWriterClient> remote_client)
+          => (string? error);
 };

@@ -22,6 +22,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class GURL;
+
 namespace crosapi {
 
 // Implements crosapi image writer interface which performs operations on
@@ -43,6 +45,16 @@ class ImageWriterAsh : public mojom::ImageWriter {
       const std::string& storage_unit_id,
       mojo::PendingRemote<mojom::ImageWriterClient> remote_client,
       DestroyPartitionsCallback callback) override;
+  void WriteFromUrl(const std::string& storage_unit_id,
+                    const GURL& image_url,
+                    const absl::optional<std::string>& image_hash,
+                    mojo::PendingRemote<mojom::ImageWriterClient> remote_client,
+                    WriteFromUrlCallback callback) override;
+  void WriteFromFile(
+      const std::string& storage_unit_id,
+      const base::FilePath& image_path,
+      mojo::PendingRemote<mojom::ImageWriterClient> remote_client,
+      WriteFromFileCallback callback) override;
 
   // Dispatches OnWriteProgress event to the remote image writer client
   // identified by |client_token_string|.
@@ -75,9 +87,16 @@ class ImageWriterAsh : public mojom::ImageWriter {
   void OnDeviceListReady(ListRemovableStorageDevicesCallback callback,
                          scoped_refptr<StorageDeviceList> device_list);
 
-  void OnDestroyPartitionsDone(DestroyPartitionsCallback callback,
-                               bool success,
-                               const std::string& error);
+  // Called after an operation has been handled by either posting it to
+  // perform on the removable disk, or returning with |error| due to sanity
+  // check failure.
+  using OperationCallback =
+      base::OnceCallback<void(const absl::optional<std::string>&)>;
+  void OnOperationCompleted(OperationCallback callback,
+                            bool success,
+                            const std ::string& error);
+
+  void OnCancelWriteDone(bool success, const std::string& error);
 
   // This class supports any number of connections. This allows ImageWriter to
   // have multiple, potentially thread-affine, remotes.

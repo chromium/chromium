@@ -18,7 +18,11 @@ class ImageWriterPrivateBaseFunction : public ExtensionFunction {
  public:
   ImageWriterPrivateBaseFunction();
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  virtual void OnComplete(const absl::optional<std::string>& error);
+#else
   virtual void OnComplete(bool success, const std::string& error);
+#endif
 
  protected:
   ~ImageWriterPrivateBaseFunction() override;
@@ -73,9 +77,6 @@ class ImageWriterPrivateDestroyPartitionsFunction
  private:
   ~ImageWriterPrivateDestroyPartitionsFunction() override;
   ResponseAction Run() override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnDestroyPartitionsDone(const absl::optional<std::string>& error);
-#endif
 };
 
 class ImageWriterPrivateListRemovableStorageDevicesFunction

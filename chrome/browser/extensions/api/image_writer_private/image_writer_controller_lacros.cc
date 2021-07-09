@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
@@ -19,6 +20,8 @@ namespace extensions {
 namespace image_writer {
 
 namespace {
+
+const char kUnsupportedAshVersion[] = "UNSUPPORTED_ASH_VERSION";
 
 image_writer_api::Stage FromMojo(crosapi::mojom::Stage mojo_stage) {
   switch (mojo_stage) {
@@ -51,8 +54,8 @@ class ImageWriterControllerLacros::ImageWriterClientLacros
       content::BrowserContext* browser_context,
       const std::string& extension_id,
       extensions::image_writer::ImageWriterControllerLacros* controller)
-      : browser_context_(browser_context),
-        extension_id_(extension_id),
+      : extension_id_(extension_id),
+        browser_context_(browser_context),
         controller_(controller) {}
 
   ImageWriterClientLacros(const ImageWriterClientLacros&) = delete;
@@ -109,8 +112,12 @@ class ImageWriterControllerLacros::ImageWriterClientLacros
     // Note: |this| is deleted at this point.
   }
 
-  content::BrowserContext* const browser_context_;
   const std::string extension_id_;
+  // Both pointers of |browser_context_| and |controller_| are guaranteed
+  // to be valid for the lifetime of this class, as destruction of either
+  // BrowserContext or ImageWriterControllerLacros will result in synchronous
+  // destruction of this class.
+  content::BrowserContext* const browser_context_;
   extensions::image_writer::ImageWriterControllerLacros* const controller_;
 
   mojo::Receiver<crosapi::mojom::ImageWriterClient> receiver_{this};
@@ -141,15 +148,15 @@ void ImageWriterControllerLacros::ListRemovableStorageDevices(
 void ImageWriterControllerLacros::DestroyPartitions(
     const std::string& extension_id,
     const std::string& storage_unit_id,
-    DestroyPartitionsCallback callback) {
+    WriteOperationCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::ImageWriter>()) {
-    std::move(callback).Run("Unsupported ash version");
+    std::move(callback).Run(kUnsupportedAshVersion);
     return;
   }
 
   if (base::Contains(pending_clients_, extension_id)) {
-    std::move(callback).Run("Operation already in progress");
+    std::move(callback).Run(error::kOperationAlreadyInProgress);
     return;
   }
 
@@ -159,6 +166,70 @@ void ImageWriterControllerLacros::DestroyPartitions(
       storage_unit_id, pending_client->BindImageWriterClient(),
       std::move(callback));
   pending_clients_.emplace(extension_id, std::move(pending_client));
+}
+
+void ImageWriterControllerLacros::WriteFromUrl(
+    const std::string& extension_id,
+    const std::string& storage_unit_id,
+    const GURL& image_url,
+    const absl::optional<std::string>& image_hash,
+    WriteOperationCallback callback) {
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::ImageWriter>() ||
+      service->GetInterfaceVersion(crosapi::mojom::ImageWriter::Uuid_) < 1) {
+    std::move(callback).Run(kUnsupportedAshVersion);
+    return;
+  }
+
+  if (base::Contains(pending_clients_, extension_id)) {
+    std::move(callback).Run(error::kOperationAlreadyInProgress);
+    return;
+  }
+
+  auto pending_client = std::make_unique<ImageWriterClientLacros>(
+      browser_context_, extension_id, this);
+  service->GetRemote<crosapi::mojom::ImageWriter>()->WriteFromUrl(
+      storage_unit_id, image_url, image_hash,
+      pending_client->BindImageWriterClient(), std::move(callback));
+  pending_clients_.emplace(extension_id, std::move(pending_client));
+}
+
+void ImageWriterControllerLacros::WriteFromFile(
+    const std::string& extension_id,
+    const std::string& storage_unit_id,
+    const base::FilePath& image_path,
+    WriteOperationCallback callback) {
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::ImageWriter>() ||
+      service->GetInterfaceVersion(crosapi::mojom::ImageWriter::Uuid_) < 1) {
+    std::move(callback).Run(kUnsupportedAshVersion);
+    return;
+  }
+
+  if (base::Contains(pending_clients_, extension_id)) {
+    std::move(callback).Run(error::kOperationAlreadyInProgress);
+    return;
+  }
+
+  auto pending_client = std::make_unique<ImageWriterClientLacros>(
+      browser_context_, extension_id, this);
+  service->GetRemote<crosapi::mojom::ImageWriter>()->WriteFromFile(
+      storage_unit_id, image_path, pending_client->BindImageWriterClient(),
+      std::move(callback));
+  pending_clients_.emplace(extension_id, std::move(pending_client));
+}
+
+void ImageWriterControllerLacros::CancelWrite(const std::string& extension_id,
+                                              WriteOperationCallback callback) {
+  if (!base::Contains(pending_clients_, extension_id)) {
+    std::move(callback).Run(error::kNoOperationInProgress);
+    return;
+  }
+
+  // Deleting pending client will trigger its disconnect handler in ash,
+  // which will cancel its pending write operation if there is any.
+  DeletePendingClient(extension_id);
+  std::move(callback).Run(absl::nullopt);
 }
 
 void ImageWriterControllerLacros::OnPendingClientWriteCompleted(
