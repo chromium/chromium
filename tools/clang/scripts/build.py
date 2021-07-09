@@ -1130,7 +1130,10 @@ def main():
         # because the asan install changes library RPATHs which CMake only
         # supports on ELF platforms and MacOS uses Mach-O instead of ELF.
         if sys.platform != 'darwin':
-          fuchsia_args.append('-DCOMPILER_RT_BUILD_SANITIZERS=ON')
+          fuchsia_args.extend([
+              '-DCOMPILER_RT_BUILD_SANITIZERS=ON',
+              '-DSANITIZER_NO_UNDEFINED_SYMBOLS=OFF',
+          ])
         build_phase2_dir = os.path.join(LLVM_BUILD_DIR,
                                          'fuchsia-phase2-' + target_arch)
         if not os.path.exists(build_phase2_dir):
@@ -1140,16 +1143,16 @@ def main():
                    fuchsia_args +
                    [COMPILER_RT_DIR])
         profile_a = 'libclang_rt.profile.a'
-        asan_a = 'libclang_rt.asan.a'
+        asan_so = 'libclang_rt.asan.so'
         ninja_command = ['ninja', profile_a]
         if sys.platform != 'darwin':
-          ninja_command.append(asan_a)
+          ninja_command.append(asan_so)
         RunCommand(ninja_command)
         CopyFile(os.path.join(build_phase2_dir, 'lib', target_spec, profile_a),
                               fuchsia_lib_dst_dir)
         if sys.platform != 'darwin':
-          CopyFile(os.path.join(build_phase2_dir, 'lib', target_spec, asan_a),
-                                fuchsia_lib_dst_dir)
+          CopyFile(os.path.join(build_phase2_dir, 'lib', target_spec, asan_so),
+                   fuchsia_lib_dst_dir)
 
   # Run tests.
   if (not args.build_mac_arm and
