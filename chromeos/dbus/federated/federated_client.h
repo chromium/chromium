@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(FEDERATED) FederatedClient {
   // * Upon completion of the D-Bus call, `result_callback` will be invoked to
   //   indicate success or failure.
   // * This method will first wait for the federated service to become
-  // available.
+  //   available.
   virtual void BootstrapMojoConnection(
       base::ScopedFD fd,
       base::OnceCallback<void(bool success)> result_callback) = 0;
@@ -47,9 +47,8 @@ class COMPONENT_EXPORT(FEDERATED) FederatedClient {
   // Initialize/Shutdown should be used instead.
   FederatedClient();
   virtual ~FederatedClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FederatedClient);
+  FederatedClient(const FederatedClient&) = delete;
+  FederatedClient& operator=(const FederatedClient&) = delete;
 };
 
 }  // namespace chromeos

@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/dbus/federated/federated_client.h"
 
 namespace chromeos {
@@ -17,14 +16,13 @@ class FakeFederatedClient : public FederatedClient {
  public:
   FakeFederatedClient();
   ~FakeFederatedClient() override;
+  FakeFederatedClient(const FakeFederatedClient&) = delete;
+  FakeFederatedClient& operator=(const FakeFederatedClient&) = delete;
 
   // FederatedClient:
   void BootstrapMojoConnection(
       base::ScopedFD fd,
       base::OnceCallback<void(bool success)> result_callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeFederatedClient);
 };
 
 }  // namespace chromeos
