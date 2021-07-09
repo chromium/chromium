@@ -2167,10 +2167,10 @@ This file contains the strings for ash.
         No mobile networks set up
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND" desc="The message to display in the network list when no mobile devices which can provide a tether hotspot have been discovered nearby.">
-        No mobile devices found.
+        No mobile devices found
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH" desc="The message to display in the mobile section of the network list when Bluetooth is off. If Bluetooth is off and mobile data is turned on, Bluetooth will also be turned on for the user to support this feature.">
-        Enabling mobile data will enable Bluetooth.
+        Enabling mobile data will enable Bluetooth
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED" desc="The message to display in the network list when mobile data is turned off.">
         Mobile data is turned off
