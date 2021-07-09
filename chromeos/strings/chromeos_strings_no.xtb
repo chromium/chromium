@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Ingen nettilkobling</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
+<translation id="2294675138977897428">Finner ingen Ethernet-tilkobling</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2364498172489649528">Bestått</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
 <translation id="4378373042927530923">Ikke kjørt</translation>
+<translation id="4378551569595875038">Kobler til …</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Min disk</translation>
 <translation id="4429881212383817840">Kerberos-saken utløper snart</translation>
@@ -278,6 +280,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6527081081771465939">Ukjent Wi-Fi-sikkerhetsprotokoll</translation>
 <translation id="65587193855025101">Planskanner</translation>
 <translation id="6564646048574748301">Mislykket – skriveren kan ikke nås</translation>
+<translation id="6603230386432466813">Har du problemer med å koble til?</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Tøm</translation>

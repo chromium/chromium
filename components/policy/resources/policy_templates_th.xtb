@@ -555,6 +555,27 @@
       หากไม่ได้ตั้งค่านโยบายนี้ การติดตั้ง <ph name="PLUGIN_VM_NAME" /> จะไม่สำเร็จหากอุปกรณ์มีพื้นที่ว่างในดิสก์น้อยกว่า 20 GB (ค่าเริ่มต้น)
       หากตั้งค่านโยบายนี้ การติดตั้ง <ph name="PLUGIN_VM_NAME" /> จะไม่สำเร็จหากอุปกรณ์มีพื้นที่ว่างในดิสก์น้อยกว่าที่นโยบายกำหนดไว้</translation>
 <translation id="1690383938831887552">ป้องกันไม่ให้โหลด Signed HTTP Exchange</translation>
+<translation id="1700458869527146675">การตั้งค่านโยบายนี้จะกำหนดค่าพร็อกซีสำหรับ Chrome และแอป ARC โดยไม่พิจารณาตัวเลือกเกี่ยวกับพร็อกซีทั้งหมดที่ระบุจากบรรทัดคำสั่ง
+
+       การไม่ตั้งค่านโยบายนี้จะทำให้ผู้ใช้เลือกการตั้งค่าพร็อกซีได้
+
+       การตั้งค่านโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> จะยอมรับช่องต่อไปนี้
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> สำหรับให้คุณระบุพร็อกซีเซิร์ฟเวอร์ที่ Chrome จะใช้ได้ และป้องกันไม่ให้ผู้ใช้เปลี่ยนการตั้งค่าพร็อกซี
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> คือ URL ที่ชี้ไปยังไฟล์ .pac ของพร็อกซี
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> สำหรับป้องกันไม่ให้สแต็กเครือข่ายเปลี่ยนไปใช้วิธีสำรอง นั่นคือการเชื่อมต่อโดยตรงกับสคริปต์ PAC ที่ไม่ถูกต้องหรือไม่พร้อมใช้งาน
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> คือ URL ของพร็อกซีเซิร์ฟเวอร์
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> คือรายการโฮสต์ที่จะข้ามพร็อกซี
+
+       ช่อง <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> เลิกใช้งานแล้วเพื่อใช้ช่อง <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />
+
+        สำหรับ <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> หากคุณเลือกค่าต่อไปนี้
+          * <ph name="PROXY_MODE_ENUM_DIRECT" /> ระบบจะไม่ใช้พร็อกซีและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> ระบบจะใช้พร็อกซีของระบบและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> ระบบจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ระบบจะใช้ช่อง <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> ระบบจะใช้ช่อง <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
+
+      หมายเหตุ: ดูตัวอย่างโดยละเอียดเพิ่มเติมได้ที่ The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )</translation>
 <translation id="1700811900332333712">อนุญาตให้อุปกรณ์ขอทำ Powerwash</translation>
 <translation id="1708496595873025510">ตั้งค่าข้อจำกัดการเรียกเมล็ดรูปแบบ</translation>
 <translation id="1713829924716792485">การตั้งค่านโยบายเป็น "เปิดใช้" หรือไม่ตั้งค่าจะทำให้ผู้ใช้เชื่อมต่อกับโฮสต์การเข้าถึงระยะไกลเพื่อโอนไฟล์ระหว่างไคลเอ็นต์และโฮสต์ได้ นโยบายนี้ไม่มีผลกับการเชื่อมต่อความช่วยเหลือระยะไกล ซึ่งไม่รองรับการโอนไฟล์
@@ -578,6 +599,11 @@
       การไม่ตั้งค่านโยบายจะไม่ส่งผลต่อการควบคุมหน้าจอของผู้ใช้หรือฟีเจอร์ความสว่างอัตโนมัติ
 
       หมายเหตุ: ระบุค่านโยบายเป็นเปอร์เซ็นต์จาก 0 ถึง 100</translation>
+<translation id="1733939382419067578">การตั้งค่านโยบายจะให้คุณสร้างรายการรูปแบบ URL ซึ่งระบุเว็บไซต์ที่แสดงการแจ้งเตือนได้
+
+      การไม่ตั้งค่านโยบายหมายความว่า <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> จะมีผลกับทุกเว็บไซต์ (หากตั้งค่าไว้) แต่หากไม่ได้ตั้งค่าไว้ การตั้งค่าส่วนตัวของผู้ใช้จะมีผล
+
+      ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns <ph name="WILDCARD_VALUE" /> ไม่ใช่ค่าที่ยอมรับสำหรับนโยบายนี้</translation>
 <translation id="1736269219679256369">อนุญาตให้ดำเนินการจากหน้าคำเตือน SSL</translation>
 <translation id="173993509627303617">ป้องกันไม่ให้เว็บแอปพลิเคชันที่บังคับติดตั้งค้นหาแอตทริบิวต์ของอุปกรณ์</translation>
 <translation id="174765717426930019">อนุญาตให้เปิดป๊อปอัปทั้งหมดโดยมีการกำหนดเป้าหมายให้ <ph name="BLANK_PAGE_NAME" /> โต้ตอบกับหน้าที่ขอเปิดป๊อปอัป เว้นแต่หน้าที่เปิดเลือกไม่ใช้การโต้ตอบดังกล่าวอย่างชัดแจ้ง </translation>
@@ -2422,6 +2448,11 @@
 <translation id="4043796890723386527">ป้องกันไม่ให้ผู้ใช้สร้างและใช้โปรไฟล์รอง ตลอดจนป้องกันไม่ให้ใช้โหมดผู้มาเยือนในเบราว์เซอร์ <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">เปิดใช้การตรวจหาการบังหน้าต่าง</translation>
 <translation id="4056910949759281379">ปิดใช้งานโปรโตคอล SPDY</translation>
+<translation id="4061107397839125009">การตั้งค่านโยบายจะให้คุณสร้างรายการรูปแบบ URL ซึ่งระบุเว็บไซต์ที่แสดงการแจ้งเตือนไม่ได้
+
+      การไม่ตั้งค่านโยบายหมายความว่า <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> จะมีผลกับทุกเว็บไซต์ (หากตั้งค่าไว้) แต่หากไม่ได้ตั้งค่าไว้ การตั้งค่าส่วนตัวของผู้ใช้จะมีผล
+
+      ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns  <ph name="WILDCARD_VALUE" /> ไม่ใช่ค่าที่ยอมรับสำหรับนโยบายนี้</translation>
 <translation id="4061590579642538878">รายงานข้อมูลเกี่ยวกับรายงานข้อขัดข้อง</translation>
 <translation id="4075675819066819571">กำหนดตำแหน่งชั้นวางให้อยู่ที่ด้านซ้ายของหน้าจอ</translation>
 <translation id="408029843066770167">อนุญาตคำค้นหาที่ส่งไปยังบริการเวลาของ Google</translation>

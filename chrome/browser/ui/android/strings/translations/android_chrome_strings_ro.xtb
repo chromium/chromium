@@ -488,6 +488,7 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="4181841719683918333">Limbi</translation>
 <translation id="4183868528246477015">Caută folosind Google Lens <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
+<translation id="4196597275619698563">Creează un card</translation>
 <translation id="4198423547019359126">Nu există locații de descărcare disponibile</translation>
 <translation id="4209895695669353772">Pentru a obține sugestii de conținut personalizat de la Google, activează sincronizarea</translation>
 <translation id="4225895483398857530">Comanda rapidă spre bara de instrumente</translation>
@@ -1046,6 +1047,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7704317875155739195">Completează automat căutările și adresele URL</translation>
 <translation id="7707922173985738739">va folosi datele mobile;</translation>
 <translation id="7725024127233776428">Paginile pe care le marchezi apar aici</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Alte tipuri de activități<ph name="END_LINK1" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.</translation>
 <translation id="7757787379047923882">Text trimis de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Alege data și ora</translation>
 <translation id="7762668264895820836">Cardul SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8854223127042600341">Vezi fișierele offline</translation>
 <translation id="8856607253650333758">Generează descrieri</translation>
 <translation id="8873817150012960745">Atinge aici pentru a începe</translation>
+<translation id="8881973373982641723">Șterge istoricul, inclusiv din caseta de căutare.</translation>
 <translation id="889338405075704026">Accesează setările Chrome</translation>
 <translation id="8898822736010347272">Trimite la Google adrese URL ale unor pagini pe care le accesezi, informații despre sistem limitate și o parte din conținutul paginii pentru a identifica amenințările noi și a proteja toți utilizatorii de pe web.</translation>
 <translation id="8909135823018751308">Trimite…</translation>
@@ -1289,6 +1292,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="9209888181064652401">Nu pot apela</translation>
 <translation id="9212845824145208577">Nu se poate selecta mai jos. Începe selecția în pagină de mai jos.</translation>
 <translation id="9219103736887031265">Imagini</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Istoricul căutărilor<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />alte tipuri de activități<ph name="END_LINK2" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.</translation>
 <translation id="926205370408745186">Elimină activitatea în Chrome din Bunăstarea digitală</translation>
 <translation id="927968626442779827">Folosește modul Lite în Google Chrome</translation>
 <translation id="932327136139879170">Pagina de pornire</translation>

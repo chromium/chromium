@@ -614,7 +614,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="164936512206786300">Annuler l'association de l'appareil Bluetooth</translation>
 <translation id="1651008383952180276">Vous devez entrer deux fois la même phrase de passe</translation>
 <translation id="1652326691684645429">Activer la fonctionnalité Partage à proximité</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Ajoutez l'imprimante à Google Cloud Print pour imprimer des documents où que vous soyez.}one{Ajoutez # imprimante à Google Cloud Print pour imprimer des documents où que vous soyez.}other{Ajoutez # imprimantes à Google Cloud Print pour imprimer des documents où que vous soyez.}}</translation>
 <translation id="1653631694606464309">Les applications Web demandent habituellement l'autorisation d'ouvrir certains types de fichiers pour que vous puissiez travailler sur ces fichiers où vous le voulez, par exemple, ouvrir des documents dans votre logiciel de traitement de texte préféré</translation>
 <translation id="1656528038316521561">Opacité de l'arrière-plan</translation>
 <translation id="1657406563541664238">Aidez-nous à améliorer <ph name="PRODUCT_NAME" /> en envoyant automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
@@ -2905,7 +2904,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4094647278880271855">Vous utilisez une variable d'environnement incompatible : <ph name="BAD_VAR" />. Cela aura un impact sur la stabilité et la sécurité.</translation>
 <translation id="4095264805865317199">Ouvrir l'IU d'activation cellulaire</translation>
 <translation id="4095507791297118304">Affichage principal</translation>
-<translation id="409579654357498729">Ajouter à Google Cloud Print</translation>
 <translation id="4096508467498758490">Désactiver les extensions du mode développeur</translation>
 <translation id="4097406557126260163">Applications et extensions</translation>
 <translation id="409742781329613461">Astuces pour Chrome</translation>
@@ -4381,6 +4379,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5794700615121138172">Dossiers partagés Linux</translation>
 <translation id="5794786537412027208">Quitter toutes les applications Chrome</translation>
 <translation id="5797070761912323120">Google peut utiliser votre historique pour personnaliser la recherche, les annonces et d'autres services Google</translation>
+<translation id="5797521893972859201">Efface l'historique, y compris le contenu du champ de recherche</translation>
 <translation id="5798079537501238810">Les sites peuvent installer des modules de traitement de paiement</translation>
 <translation id="579907812742603813">Contenu protégé</translation>
 <translation id="579915268381781820">Votre clé de sécurité a été retirée.</translation>
@@ -4464,6 +4463,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5900302528761731119">Photo du profil Google</translation>
 <translation id="590036993063074298">Renseignements sur la qualité de la duplication d'écran</translation>
 <translation id="5901069264981746702">Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Passer à l'onglet de capture</translation>
 <translation id="5901494423252125310">La porte de l'imprimante est ouverte</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5904614460720589786">Impossible de configurer <ph name="APP_NAME" /> en raison d'une erreur de configuration. Veuillez communiquer avec votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
@@ -4736,6 +4736,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6196854373336333322">L'extension « <ph name="EXTENSION_NAME" /> » a pris le contrôle de vos paramètres de mandataire, ce qui signifie qu'elle peut modifier ou espionner tout ce que vous faites en ligne. Si vous ne savez pas pourquoi ce changement s'est produit, vous ne voulez probablement pas l'accepter.</translation>
 <translation id="6198102561359457428">Déconnectez-vous, puis connectez-vous de nouveau...</translation>
 <translation id="6198252989419008588">Modifier le NIP</translation>
+<translation id="6200047250927636406">Supprimer le fichier</translation>
 <translation id="6202304368170870640">Vous pouvez utiliser votre NIP pour vous connecter à votre appareil ou pour le déverrouiller.</translation>
 <translation id="6206311232642889873">Cop&amp;ier l'image</translation>
 <translation id="6207200176136643843">Rétablir le niveau de zoom par défaut</translation>
@@ -4821,7 +4822,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="628352644014831790">4 secondes</translation>
 <translation id="6285120108426285413">Le fichier <ph name="FILE_NAME" /> n'est pas souvent téléchargé et peut être dangereux.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nouvelle imprimante sur le réseau}one{Nouvelle imprimante sur le réseau}other{Nouvelles imprimantes sur le réseau}}</translation>
 <translation id="6285770818046456882">L'appareil qui partage du contenu avec vous a annulé le transfert</translation>
 <translation id="6290613030083731160">Aucun appareil à proximité avec qui partager du contenu. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Vérification du code d'activation en cours… Cette opération peut prendre quelques minutes.</translation>
@@ -5304,6 +5304,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6833479554815567477">Onglet retiré du groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Passer à un navigateur intelligent et sécurisé</translation>
+<translation id="6834652994408928492">Le mode sombre s'activera automatiquement au coucher du soleil</translation>
 <translation id="683540480453879381">Ouvrir les fichiers <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Veuillez vous connecter à Internet pour mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Demander la permission lorsqu'un site souhaite ouvrir et placer des fenêtres sur vos écrans (recommandé)</translation>
@@ -6016,6 +6017,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7622114377921274169">Charge en cours…</translation>
 <translation id="7622768823216805500">Les sites font généralement appel à des modules de paiement pour proposer certaines fonctionnalités d'achat, comme un paiement plus simple</translation>
 <translation id="7622903810087708234">Renseignements sur le mot de passe</translation>
+<translation id="7622966771025050155">Passer à l'onglet capturé</translation>
 <translation id="7624337243375417909">verrouillage des majuscules désactivé</translation>
 <translation id="7625568159987162309">Afficher les autorisations et les données stockées sur tous les sites</translation>
 <translation id="7628201176665550262">Fréquence d'actualisation</translation>
@@ -6182,6 +6184,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7784067724422331729">Les paramètres de sécurité de votre ordinateur ont entraîné le blocage de ce fichier.</translation>
 <translation id="7784796923038949829">Impossible de lire ou de modifier les données du site</translation>
 <translation id="778480864305029524">Pour utiliser la fonction Partage de connexion instantané, activez les notifications pour les services Google Play.</translation>
+<translation id="7785471469930192436">Le cas échéant, consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche</translation>
 <translation id="7786889348652477777">Actua&amp;liser l'application</translation>
 <translation id="7787308148023287649">Afficher sur un autre écran</translation>
 <translation id="7788298548579301890">Un autre programme sur votre ordinateur a ajouté une application qui risque de modifier le fonctionnement de Google Chrome.
@@ -6793,6 +6796,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution</translation>
 <translation id="8438566539970814960">Amélioration des recherches et de la navigation</translation>
 <translation id="8439506636278576865">Me proposer de traduire les pages dans cette langue</translation>
 <translation id="8440630305826533614">Applications Linux</translation>
+<translation id="8446225304314102060">Passer à l'onglet <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8447409163267621480">Vous devez inclure la touche Ctrl ou Alt</translation>
 <translation id="8448729345478502352">Agrandir ou réduire les éléments affichés</translation>
@@ -7455,6 +7459,7 @@ Vous pouvez attribuer cette même action à plusieurs commutateurs</translation>
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9148126808321036104">Connectez-vous de nouveau</translation>
 <translation id="9148963623915467028">Ce site peut accéder à votre position.</translation>
+<translation id="9149529198050266366">Le mode sombre se désactivera automatiquement au lever du soleil</translation>
 <translation id="9149866541089851383">Modifier...</translation>
 <translation id="9150045010208374699">Utiliser votre caméra</translation>
 <translation id="9150079578948279438">Impossible de retirer le profil. Veuillez réessayer ou communiquer avec votre fournisseur de services pour obtenir de l'assistance technique.</translation>

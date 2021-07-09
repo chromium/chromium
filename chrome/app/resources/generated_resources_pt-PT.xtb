@@ -613,7 +613,6 @@
 <translation id="164936512206786300">Dessincronizar dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Tem de introduzir a mesma frase de acesso duas vezes</translation>
 <translation id="1652326691684645429">Ativar a funcionalidade Partilhar na proximidade</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Adicione a impressora ao Google Cloud Print para poder imprimir em qualquer local.}other{Adicione # impressoras ao Google Cloud Print para poder imprimir em qualquer local.}}</translation>
 <translation id="1653631694606464309">Geralmente, as apps para a Web pedem para abrir determinados tipos de ficheiros para que possa trabalhar nesses ficheiros quando pretender, como abrir documentos no seu processador de texto favorito</translation>
 <translation id="1656528038316521561">Opacidade do fundo</translation>
 <translation id="1657406563541664238">Ajude a melhorar o <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de utilização e relatórios de falhas para a Google</translation>
@@ -2904,7 +2903,6 @@ Pretende pará-lo?</translation>
 <translation id="4094647278880271855">Está a utilizar uma variável de ambiente não suportada: <ph name="BAD_VAR" />. A estabilidade e a segurança serão afetadas.</translation>
 <translation id="4095264805865317199">Abrir IU de ativação de rede móvel</translation>
 <translation id="4095507791297118304">Ecrã principal</translation>
-<translation id="409579654357498729">Adicionar ao Google Cloud Print</translation>
 <translation id="4096508467498758490">Desativar extensões de modo de programador</translation>
 <translation id="4097406557126260163">Apps e extensões</translation>
 <translation id="409742781329613461">Sugestões para o Chrome</translation>
@@ -4381,6 +4379,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5794700615121138172">Pastas partilhadas do Linux</translation>
 <translation id="5794786537412027208">Sair de todas as Apps do Chrome</translation>
 <translation id="5797070761912323120">A Google pode utilizar o seu histórico para personalizar a Pesquisa, os anúncios e outros serviços Google.</translation>
+<translation id="5797521893972859201">Limpa o histórico, incluindo na caixa de pesquisa</translation>
 <translation id="5798079537501238810">Os sites podem instalar controladores de pagamentos</translation>
 <translation id="579907812742603813">conteúdo protegido</translation>
 <translation id="579915268381781820">A sua chave de segurança foi removida.</translation>
@@ -4464,6 +4463,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5900302528761731119">Fotografia do Perfil do Google</translation>
 <translation id="590036993063074298">Detalhes da qualidade do espelhamento</translation>
 <translation id="5901069264981746702">Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Mudar para o separador a capturar</translation>
 <translation id="5901494423252125310">Porta da impressora aberta</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5904614460720589786">Não foi possível configurar a app <ph name="APP_NAME" /> devido a um problema na configuração. Contacte o seu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
@@ -4736,6 +4736,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6196854373336333322">A extensão "<ph name="EXTENSION_NAME" />" apoderou-se das suas definições de proxy, o que significa que pode alterar, interromper ou intercetar qualquer coisa que esteja a fazer online. Se não tem a certeza do motivo pelo qual aconteceu esta alteração, é provável que não a queira.</translation>
 <translation id="6198102561359457428">Terminar sessão e, em seguida, iniciar sessão novamente...</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
+<translation id="6200047250927636406">Rejeitar ficheiro</translation>
 <translation id="6202304368170870640">Pode utilizar o PIN para iniciar sessão ou desbloquear o dispositivo.</translation>
 <translation id="6206311232642889873">Cop&amp;iar Imagem</translation>
 <translation id="6207200176136643843">Repor o nível de zoom predefinido</translation>
@@ -4821,7 +4822,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.</translation>
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> não é habitualmente transferido e pode ser perigoso.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nova impressora na rede}other{Novas impressoras na rede}}</translation>
 <translation id="6285770818046456882">O dispositivo que estava a partilhar consigo cancelou a transferência.</translation>
 <translation id="6290613030083731160">Nenhum dispositivo disponível a partilhar nas proximidades. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">A validar o código de ativação. Esta ação pode demorar alguns minutos.</translation>
@@ -5304,6 +5304,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6833479554815567477">Separador removido do grupo <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Mude para um navegador inteligente e seguro</translation>
+<translation id="6834652994408928492">O modo escuro ativa-se automaticamente ao pôr do sol</translation>
 <translation id="683540480453879381">Abrir ficheiros <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Ligue-se à Internet para atualizar o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Perguntar quando um site pretender abrir e colocar janelas nos seus ecrãs (recomendado)</translation>
@@ -6016,6 +6017,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7622114377921274169">A carregar…</translation>
 <translation id="7622768823216805500">Normalmente, os sites instalam controladores de pagamentos para funcionalidades de compras como o pagamento mais fácil.</translation>
 <translation id="7622903810087708234">Detalhes da palavra-passe</translation>
+<translation id="7622966771025050155">Mudar para o separador capturado</translation>
 <translation id="7624337243375417909">caps lock desligado</translation>
 <translation id="7625568159987162309">Ver autorizações e dados armazenados em sites</translation>
 <translation id="7628201176665550262">Taxa de atualização</translation>
@@ -6182,6 +6184,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7784067724422331729">As definições de segurança do computador bloquearam este ficheiro.</translation>
 <translation id="7784796923038949829">Não é possível ler nem alterar os dados do site.</translation>
 <translation id="778480864305029524">Para utilizar a Ligação via telemóvel instantânea, ative as notificações dos Serviços do Google Play</translation>
+<translation id="7785471469930192436">Se aplicável, consulte as instruções do motor de pesquisa para eliminar o histórico de pesquisas</translation>
 <translation id="7786889348652477777">&amp;Recarregar aplicação</translation>
 <translation id="7787308148023287649">Apresentar noutro ecrã</translation>
 <translation id="7788298548579301890">Outro programa no computador adicionou uma aplicação que pode alterar o funcionamento do Chrome.
@@ -6794,6 +6797,7 @@ Prima um comutador atribuído para remover a atribuição</translation>
 <translation id="8438566539970814960">Melhorar as pesquisas e a navegação</translation>
 <translation id="8439506636278576865">Oferecer para traduzir páginas neste idioma</translation>
 <translation id="8440630305826533614">Apps para Linux</translation>
+<translation id="8446225304314102060">Mudar para o separador <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8447409163267621480">Inclua Ctrl ou Alt.</translation>
 <translation id="8448729345478502352">Diminuir ou aumentar os elementos no ecrã</translation>
@@ -7455,6 +7459,7 @@ Pode atribuir vários comutadores a esta ação</translation>
 <translation id="9148058034647219655">Sair</translation>
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
 <translation id="9148963623915467028">Este site pode aceder à sua localização.</translation>
+<translation id="9149529198050266366">O modo escuro desativa-se automaticamente ao nascer do sol</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9150045010208374699">Utilizar a sua câmara</translation>
 <translation id="9150079578948279438">Não foi possível remover o perfil. Tente novamente ou contacte o operador para obter apoio técnico.</translation>

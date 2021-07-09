@@ -488,6 +488,7 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4183868528246477015">Cerca con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
+<translation id="4196597275619698563">Crea scheda</translation>
 <translation id="4198423547019359126">Nessun percorso di download disponibile</translation>
 <translation id="4209895695669353772">Per ricevere contenuti suggeriti appositamente per te da Google, attiva la sincronizzazione</translation>
 <translation id="4225895483398857530">Scorciatoia per la barra degli strumenti</translation>
@@ -1046,6 +1047,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7704317875155739195">Completamento automatico di ricerche e URL</translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7725024127233776428">Le pagine aggiunte ai preferiti saranno mostrate qui</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Altri tipi di attività<ph name="END_LINK1" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminare queste informazioni in qualsiasi momento.</translation>
 <translation id="7757787379047923882">Testo condiviso da <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Scegli data e ora</translation>
 <translation id="7762668264895820836">Scheda SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8854223127042600341">Vedi i tuoi file offline</translation>
 <translation id="8856607253650333758">Recupera descrizioni</translation>
 <translation id="8873817150012960745">Tocca qui per iniziare</translation>
+<translation id="8881973373982641723">Viene cancellata la cronologia, anche nella casella di ricerca.</translation>
 <translation id="889338405075704026">Apri le impostazioni di Chrome</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>
 <translation id="8909135823018751308">Condividi…</translation>
@@ -1289,6 +1292,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="9209888181064652401">Impossibile effettuare chiamate</translation>
 <translation id="9212845824145208577">Non puoi scorrere più in basso di così. Prova a partire da un punto più in basso nella pagina.</translation>
 <translation id="9219103736887031265">Immagini</translation>
+<translation id="923957533152125119">La <ph name="BEGIN_LINK1" />cronologia delle ricerche<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />altri tipi di attività<ph name="END_LINK2" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminare queste informazioni in qualsiasi momento.</translation>
 <translation id="926205370408745186">Rimuovi la tua attività di Chrome da Benessere digitale</translation>
 <translation id="927968626442779827">Usa la modalità Lite su Google Chrome</translation>
 <translation id="932327136139879170">Home page</translation>

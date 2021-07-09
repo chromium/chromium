@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktyvinimo būsena</translation>
+<translation id="2294675138977897428">Nėra eterneto ryšio</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> tšk./col.</translation>
 <translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
 <translation id="2364498172489649528">Pavyko</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
 <translation id="4300073214558989">Vaizdų: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Nevykdyti</translation>
+<translation id="4378551569595875038">Jungiamasi...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mano Diskas</translation>
 <translation id="4429881212383817840">„Kerberos“ bilietas netrukus baigs galioti</translation>
@@ -278,6 +280,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6527081081771465939">Nežinomas „Wi-Fi“ saugos protokolas</translation>
 <translation id="65587193855025101">Plokščiasis</translation>
 <translation id="6564646048574748301">Nepavyko – spausdintuvas nepasiekiamas</translation>
+<translation id="6603230386432466813">Kyla sunkumų prisijungiant?</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
 <translation id="6620487321149975369">Spausdinimo užduotys bus rodomos istorijoje, nebent bus pašalintos neautomatiškai</translation>
 <translation id="6643016212128521049">Išvalyti</translation>

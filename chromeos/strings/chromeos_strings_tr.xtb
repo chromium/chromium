@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Etkinleştirme durumu</translation>
+<translation id="2294675138977897428">Ethernet bağlantısı algılanmadı</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yakındaki cihazları keşfetmek için Bluetooth'u aç</translation>
 <translation id="2364498172489649528">Başarılı oldu</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Resim</translation>
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
+<translation id="4378551569595875038">Bağlanıyor...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
 <translation id="4429881212383817840">Kerberos biletinin süresi yakında doluyor</translation>
@@ -278,6 +280,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6527081081771465939">Bilinmeyen kablosuz ağ güvenlik protokolü</translation>
 <translation id="65587193855025101">Düz Yataklı</translation>
 <translation id="6564646048574748301">İşlem başarısız - Yazıcıya ulaşılamıyor</translation>
+<translation id="6603230386432466813">Bağlanmayla ilgili sorun mu yaşıyorsunuz?</translation>
 <translation id="6618744767048954150">Çalışıyor</translation>
 <translation id="6620487321149975369">Yazdırma işleri, manuel olarak kaldırılmadığı sürece geçmişte görünür</translation>
 <translation id="6643016212128521049">Temizle</translation>

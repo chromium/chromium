@@ -619,7 +619,6 @@
 <translation id="164936512206786300">„Bluetooth“ įrenginio atsiejimas</translation>
 <translation id="1651008383952180276">Reikia dukart įvesti tą pačią slaptafrazę</translation>
 <translation id="1652326691684645429">Įjungti Bendrinimo netoliese funkciją</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Pridėkite spausdintuvą prie „Google“ spausdinimo iš debesies, kad galėtumėte spausdinti iš bet kurios vietos.}one{Pridėkite # spausdintuvą prie „Google“ spausdinimo iš debesies, kad galėtumėte spausdinti iš bet kurios vietos.}few{Pridėkite # spausdintuvus prie „Google“ spausdinimo iš debesies, kad galėtumėte spausdinti iš bet kurios vietos.}many{Pridėkite # spausdintuvo prie „Google“ spausdinimo iš debesies, kad galėtumėte spausdinti iš bet kurios vietos.}other{Pridėkite # spausdintuvų prie „Google“ spausdinimo iš debesies, kad galėtumėte spausdinti iš bet kurios vietos.}}</translation>
 <translation id="1653631694606464309">Žiniatinklio programos įprastai prašo atidaryti tam tikrų tipų failus, kad galėtumėte atlikti su šiais failais susijusius veiksmus norimoje vietoje, pvz., atidaryti dokumentus naudodami norimą tekstų rengyklę</translation>
 <translation id="1656528038316521561">Fono nepermatomumas</translation>
 <translation id="1657406563541664238">Padėkite tobulinti „<ph name="PRODUCT_NAME" />“ automatiškai siųsdami „Google“ naudojimo statistiką ir trikčių ataskaitas</translation>
@@ -2921,7 +2920,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4094647278880271855">Naudojate nepalaikomą aplinkos kintamąjį: <ph name="BAD_VAR" />. Tai neigiamai paveiks stabilumą ir saugą.</translation>
 <translation id="4095264805865317199">Atidaryti mobiliojo ryšio aktyvinimo NS</translation>
 <translation id="4095507791297118304">Pagrindinis vaizdas</translation>
-<translation id="409579654357498729">Pridėti prie Spausdinimo iš debesies</translation>
 <translation id="4096508467498758490">Išjunkite kūrėjo režimu veikiančius plėtinius</translation>
 <translation id="4097406557126260163">Programos ir plėtiniai</translation>
 <translation id="409742781329613461">„Chrome“ patarimai</translation>
@@ -4399,6 +4397,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5794700615121138172">„Linux“ bendrinami aplankai</translation>
 <translation id="5794786537412027208">Uždaryti visas „Chrome“ programas</translation>
 <translation id="5797070761912323120">„Google“ gali naudoti jūsų istoriją, kad suasmenintų Paiešką, skelbimus ir kitas „Google“ paslaugas</translation>
+<translation id="5797521893972859201">Išvaloma istorija, įskaitant paieškos laukelį</translation>
 <translation id="5798079537501238810">Svetainėse galima įdiegti mokėjimo dorokles</translation>
 <translation id="579907812742603813">saugomas turinys</translation>
 <translation id="579915268381781820">Saugos raktas buvo pašalintas.</translation>
@@ -4482,6 +4481,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5900302528761731119">„Google“ profilio nuotrauka</translation>
 <translation id="590036993063074298">Išsami ekrano vaizdo bendrinimo kokybės informacija</translation>
 <translation id="5901069264981746702">Kontrolinio kodo duomenys saugomi saugiai ir niekada nepatenka už „<ph name="DEVICE_TYPE" />“ ribų. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Perjungti į užfiksuojamą skirtuką</translation>
 <translation id="5901494423252125310">Spausdintuvo durelės atidarytos</translation>
 <translation id="5901630391730855834">Geltona</translation>
 <translation id="5904614460720589786">Nepavyko nustatyti programos „<ph name="APP_NAME" />“ dėl konfigūravimo problemos. Susisiekite su administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
@@ -4754,6 +4754,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6196854373336333322">Plėtinys „<ph name="EXTENSION_NAME" />“ perėmė tarpinio serverio valdymą. Tai reiškia, kad jis gali keisti, nutraukti ar stebėti visus prisijungus atliekamus veiksmus. Jei nesate tikri, kodėl įvyko šis pakeitimas, tikriausiai jūs jo nenorite.</translation>
 <translation id="6198102561359457428">Atsijunkite, tada vėl prisijunkite...</translation>
 <translation id="6198252989419008588">Keisti PIN kodą</translation>
+<translation id="6200047250927636406">Atmesti failą</translation>
 <translation id="6202304368170870640">Naudodami PIN kodą galite prisijungti prie įrenginio arba jį atrakinti.</translation>
 <translation id="6206311232642889873">Kopijuo&amp;ti vaizdą</translation>
 <translation id="6207200176136643843">Nustatomas numatytasis mastelis</translation>
@@ -4839,7 +4840,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.</translation>
 <translation id="628352644014831790">4 sek.</translation>
 <translation id="6285120108426285413">„<ph name="FILE_NAME" />“ nėra įprastai atsisiunčiamas ir gali būti pavojingas.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Naujas spausdintuvas tinkle}one{Nauji spausdintuvai tinkle}few{Nauji spausdintuvai tinkle}many{Nauji spausdintuvai tinkle}other{Nauji spausdintuvai tinkle}}</translation>
 <translation id="6285770818046456882">Įrenginys, kuris bendrina su jumis, atšaukė perdavimą</translation>
 <translation id="6290613030083731160">Nėra jokių pasiekiamų įrenginių, bendrinančių netoliese. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Patvirtinamas aktyvinimo kodas. Tai gali užtrukti kelias minutes.</translation>
@@ -5322,6 +5322,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6831043979455480757">Vertėjas</translation>
 <translation id="6833479554815567477">Skirtukas pašalintas iš grupės „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Perjunkite į išmanią ir saugią naršyklę</translation>
+<translation id="6834652994408928492">Tamsus režimas automatiškai įsijungs saulei leidžiantis</translation>
 <translation id="683540480453879381">Atidaryti <ph name="FILE_EXTENSIONS" /> failus</translation>
 <translation id="6835762382653651563">Prisijunkite prie interneto, kad galėtumėte atnaujinti „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="6838034009068684089">Klausti, kai svetainė nori atidaryti ir įdėti langų jūsų ekranuose (rekomenduojama)</translation>
@@ -6034,6 +6035,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7622114377921274169">Įkraunama.</translation>
 <translation id="7622768823216805500">Paprastai svetainėse įdiegiamos mokėjimų doroklės, naudojamos vykdant apsipirkimo funkcijas, pvz., norint supaprastinti atsiskaitymo procesą</translation>
 <translation id="7622903810087708234">Išsami slaptažodžio informacija</translation>
+<translation id="7622966771025050155">Perjungti į užfiksuotą skirtuką</translation>
 <translation id="7624337243375417909">didžiųjų raidžių režimas išjungtas</translation>
 <translation id="7625568159987162309">Peržiūrėti leidimus ir saugomus svetainių duomenis</translation>
 <translation id="7628201176665550262">Atnaujinimo dažnis</translation>
@@ -6200,6 +6202,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7784067724422331729">Kompiuterio saugos nustatymai užblokavo šį failą.</translation>
 <translation id="7784796923038949829">Nepavyko nuskaityti arba pakeisti svetainės duomenų</translation>
 <translation id="778480864305029524">Jei norite naudoti momentinio įrenginio kaip modemo naudojimo funkciją, įjunkite „Google Play“ paslaugų pranešimus.</translation>
+<translation id="7785471469930192436">Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="7786889348652477777">&amp;Įkelti programą iš naujo</translation>
 <translation id="7787308148023287649">Rodyti kitame ekrane</translation>
 <translation id="7788298548579301890">Kita kompiuterio programa pridėjo programą, kuri gali pakeisti, kaip veikia „Chrome“.
@@ -6812,6 +6815,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą</translation>
 <translation id="8438566539970814960">Tobulinti paieškas ir naršymą</translation>
 <translation id="8439506636278576865">Siūlyti versti puslapius šia kalba</translation>
 <translation id="8440630305826533614">„Linux“ programos</translation>
+<translation id="8446225304314102060">Perjungti į skirtuką <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Sužinokite daugiau</translation>
 <translation id="8447409163267621480">Naudokite „Ctrl“ arba „Alt“</translation>
 <translation id="8448729345478502352">Padidinkite arba sumažinkite elementus ekrane</translation>
@@ -7476,6 +7480,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą</translation>
 <translation id="9148058034647219655">Išeiti</translation>
 <translation id="9148126808321036104">Prisijungti dar kartą</translation>
 <translation id="9148963623915467028">Ši svetainė gali pasiekti jūsų vietovės informaciją.</translation>
+<translation id="9149529198050266366">Tamsus režimas automatiškai išsijungs saulei tekant</translation>
 <translation id="9149866541089851383">Redaguoti...</translation>
 <translation id="9150045010208374699">Naudoti kamerą</translation>
 <translation id="9150079578948279438">Nepavyko pašalinti profilio. Bandykite dar kartą arba susisiekite su operatoriumi dėl techninio palaikymo paslaugų.</translation>

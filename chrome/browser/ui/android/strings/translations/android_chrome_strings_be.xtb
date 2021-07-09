@@ -488,6 +488,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4181841719683918333">Мовы</translation>
 <translation id="4183868528246477015">Пошук праз Google Аб'ектыў <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
+<translation id="4196597275619698563">Стварыць картку</translation>
 <translation id="4198423547019359126">Няма месца для спампоўкі</translation>
 <translation id="4209895695669353772">Каб атрымліваць прапановы персаналізаванага змесціва ад Google, уключыце сінхранізацыю</translation>
 <translation id="4225895483398857530">Кнопка-ярлык на панэлі інструментаў</translation>
@@ -1046,6 +1047,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7704317875155739195">Аўтаматычна дапісваць пошукавыя запыты і URL-адрасы</translation>
 <translation id="7707922173985738739">Выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="7725024127233776428">Тут будуць паказвацца старонкі, якія вы дадалі ў закладкі</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Іншыя дзеянні<ph name="END_LINK1" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Гэтыя даныя можна ў любы час выдаліць.</translation>
 <translation id="7757787379047923882">Тэкст абагулены з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7761849928583394409">Выберыце дату і час</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8854223127042600341">Праглядзіце файлы, даступныя па-за сеткай</translation>
 <translation id="8856607253650333758">Атрымліваць апісанні</translation>
 <translation id="8873817150012960745">Каб пачаць, націсніце тут</translation>
+<translation id="8881973373982641723">Будзе выдалена гісторыя, у тым ліку даныя, якія ўводзіліся ў полі пошуку.</translation>
 <translation id="889338405075704026">Перайсці ў налады Chrome</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
 <translation id="8909135823018751308">Абагуліць…</translation>
@@ -1289,6 +1292,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="9209888181064652401">Нельга рабіць выклікі</translation>
 <translation id="9212845824145208577">Не ўдаецца перамясціцца ніжэй. Паспрабуйце пачаць з месца, якое б знаходзілася ніжэй на старонцы.</translation>
 <translation id="9219103736887031265">Відарысы</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Гісторыя пошуку<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />іншыя дзеянні<ph name="END_LINK2" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Гэтыя даныя можна ў любы час выдаліць.</translation>
 <translation id="926205370408745186">Выдаліць дзеянні ў Chrome са службы лічбавага камфорту</translation>
 <translation id="927968626442779827">Выкарыстоўвайце Google Chrome, уключыўшы спрошчаны рэжым</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>

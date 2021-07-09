@@ -63,7 +63,7 @@
 <translation id="2224337661447660594">Nema internetske veze</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Status aktivacije</translation>
-<translation id="2294675138977897428">Veza s Ethernetom nije otkrivena</translation>
+<translation id="2294675138977897428">Veza s Ethernet mrežom nije otkrivena</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da otkrijete uređaje u blizini</translation>
 <translation id="2364498172489649528">Uspješno</translation>
@@ -145,6 +145,7 @@
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slike/a</translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
+<translation id="4378551569595875038">Povezivanje…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kerberos tiket uskoro ističe</translation>
@@ -279,7 +280,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6527081081771465939">Nepoznati sigurnosni protokol za WiFi</translation>
 <translation id="65587193855025101">Položeno</translation>
 <translation id="6564646048574748301">Nije uspjelo – štampač je nedostupan</translation>
-<translation id="6603230386432466813">Imate li problema s povezivanjem?</translation>
+<translation id="6603230386432466813">Imate poteškoće s povezivanjem?</translation>
 <translation id="6618744767048954150">Pokrenuto</translation>
 <translation id="6620487321149975369">Zadaci za štampanje će se pojaviti u historiji osim ako ih ne uklonite ručno</translation>
 <translation id="6643016212128521049">Obriši</translation>

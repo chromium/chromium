@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">ບໍ່ມີອິນເຕີເນັດ</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">ສະຖານະການເປີດນຳໃຊ້</translation>
+<translation id="2294675138977897428">ບໍ່ພົບການເຊື່ອມຕໍ່ອີເທີເນັດ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
+<translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">ປີ້ Kerberos ຈະໝົດອາຍຸໃນໄວໆນີ້</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">ໂປຣໂຕຄໍຮັກສາຄວາມປອດໄພ WiFi ທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="65587193855025101">ແບບແທ່ນນອນ</translation>
 <translation id="6564646048574748301">ບໍ່ສຳເລັດ, ບໍ່ສາມາດຕິດຕໍ່ເຄື່ອງພິມໄດ້</translation>
+<translation id="6603230386432466813">ກຳລັງມີບັນຫາໃນການເຊື່ອມຕໍ່ບໍ?</translation>
 <translation id="6618744767048954150">ກຳລັງເປີດ</translation>
 <translation id="6620487321149975369">ວຽກພິມຈະປາກົດໃນປະຫວັດ ເວັ້ນເສຍແຕ່ຜູ້ໃຊ້ຈະລຶບພວກມັນອອກດ້ວຍຕົນເອງ</translation>
 <translation id="6643016212128521049">ລຶບ</translation>

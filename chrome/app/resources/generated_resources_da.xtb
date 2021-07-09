@@ -617,7 +617,6 @@
 <translation id="164936512206786300">Fjern parring af Bluetooth-enhed</translation>
 <translation id="1651008383952180276">Du skal angive den samme adgangssætning to gange</translation>
 <translation id="1652326691684645429">Slå Deling tæt på til</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Føj printeren til Google Cloudprinter, så du kan udskrive, uanset hvor du befinder dig.}one{Føj # printere til Google Cloudprinter, så du kan udskrive, uanset hvor du befinder dig.}other{Føj # printere til Google Cloudprinter, så du kan udskrive, uanset hvor du befinder dig.}}</translation>
 <translation id="1653631694606464309">Webapps anmoder typisk om at åbne visse typer af filer, så du kan arbejde i de pågældende filer, hvor det passer dig, f.eks. åbning af dokumenter i dit foretrukne tekstbehandlingsprogram</translation>
 <translation id="1656528038316521561">Baggrundens gennemsigtighed</translation>
 <translation id="1657406563541664238">Vær med til at gøre <ph name="PRODUCT_NAME" /> bedre ved automatisk at sende forbrugsstatistikker og rapportere om nedbrud til Google</translation>
@@ -2919,7 +2918,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4094647278880271855">Du bruger en variabel for miljøet, der ikke understøttes: <ph name="BAD_VAR" />. Dette går ud over stabiliteten og sikkerheden.</translation>
 <translation id="4095264805865317199">Åbn brugerflade for aktivering af mobildata</translation>
 <translation id="4095507791297118304">Primær skærm</translation>
-<translation id="409579654357498729">Føj til Cloudprinter</translation>
 <translation id="4096508467498758490">Deaktiver udvidelser, der kører i udviklertilstand</translation>
 <translation id="4097406557126260163">Apps og udvidelser</translation>
 <translation id="409742781329613461">Tips til Chrome</translation>
@@ -4396,6 +4394,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5794700615121138172">Delte mapper i Linux</translation>
 <translation id="5794786537412027208">Afslut alle Chrome-apps</translation>
 <translation id="5797070761912323120">Google kan bruge din historik til at tilpasse Søgning, annoncer og andre Google-tjenester</translation>
+<translation id="5797521893972859201">Rydder historikken, herunder fra søgefeltet</translation>
 <translation id="5798079537501238810">Websites kan installere betalingshandlere</translation>
 <translation id="579907812742603813">beskyttet indhold</translation>
 <translation id="579915268381781820">Din sikkerhedsnøgle blev fjernet.</translation>
@@ -4479,6 +4478,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5900302528761731119">Google-profilbillede</translation>
 <translation id="590036993063074298">Oplysninger om spejlingskvaliteten</translation>
 <translation id="5901069264981746702">Dine fingeraftryksdata gemmes sikkert og forlader aldrig din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Skift til den fane, der registreres</translation>
 <translation id="5901494423252125310">Lågen på printeren er åben</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> kunne ikke konfigureres, da der opstod et konfigurationsproblem. Kontakt din administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
@@ -4751,6 +4751,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6196854373336333322">Udvidelsen <ph name="EXTENSION_NAME" /> har taget kontrol over dine proxyindstillinger, hvilket betyder, at den kan ændre, ødelægge eller aflytte alt, hvad du foretager dig på nettet. Hvis du ikke er sikker på, hvorfor denne ændring er sket, er den sandsynligvis uønsket.</translation>
 <translation id="6198102561359457428">Log ud, og log derefter ind igen...</translation>
 <translation id="6198252989419008588">Skift pinkode</translation>
+<translation id="6200047250927636406">Kassér fil</translation>
 <translation id="6202304368170870640">Du kan bruge din pinkode til at logge ind på din enhed eller låse den op.</translation>
 <translation id="6206311232642889873">Ko&amp;pier billede</translation>
 <translation id="6207200176136643843">Nulstil til standardniveauet for zoom</translation>
@@ -4836,7 +4837,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <ph name="DOMAIN" /> kræver, at chipkortet er indsat.</translation>
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> downloades normalt ikke og kan være skadelig.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ny printer på dit netværk}one{Nye printere på dit netværk}other{Nye printere på dit netværk}}</translation>
 <translation id="6285770818046456882">Den enhed, der deler med dig, annullerede overførslen</translation>
 <translation id="6290613030083731160">Der er ingen enheder, som deler i nærheden. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktiveringskoden bekræftes. Dette kan tage et par minutter.</translation>
@@ -5319,6 +5319,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6831043979455480757">Oversæt</translation>
 <translation id="6833479554815567477">Fanen blev fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Skift til en smart og sikker browser</translation>
+<translation id="6834652994408928492">Mørk tilstand aktiveres automatisk ved solnedgang</translation>
 <translation id="683540480453879381">Åbne <ph name="FILE_EXTENSIONS" />-filer</translation>
 <translation id="6835762382653651563">Opret forbindelse til internettet for at opdatere din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Spørg, når et website vil åbne og placere vinduer på dine skærme (anbefales)</translation>
@@ -6031,6 +6032,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7622114377921274169">Oplader.</translation>
 <translation id="7622768823216805500">Websites installerer normalt betalingshandlere til shoppingformål såsom nemmere betaling</translation>
 <translation id="7622903810087708234">Oplysninger om adgangskode</translation>
+<translation id="7622966771025050155">Skift til den registrerede fane</translation>
 <translation id="7624337243375417909">capslock er slået fra</translation>
 <translation id="7625568159987162309">Se tilladelser og data, der er gemt på alle websites</translation>
 <translation id="7628201176665550262">Opdateringshastighed</translation>
@@ -6197,6 +6199,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7784067724422331729">Sikkerhedsindstillingerne på din computer blokerede denne fil.</translation>
 <translation id="7784796923038949829">Kan hverken læse eller ændre websitedata</translation>
 <translation id="778480864305029524">Hvis du vil bruge Øjeblikkelig netdeling, skal du aktivere notifikationer om Google Play-tjenester.</translation>
+<translation id="7785471469930192436">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant</translation>
 <translation id="7786889348652477777">&amp;Genindlæs app</translation>
 <translation id="7787308148023287649">Vis på en anden skærm</translation>
 <translation id="7788298548579301890">Et andet program på din computer har tilføjet en app, som kan ændre måden, Chrome fungerer på.
@@ -6808,6 +6811,7 @@ Tryk på en tildelt kontakt for fjerne en tildeling</translation>
 <translation id="8438566539970814960">Gør søgninger og browsing endnu bedre</translation>
 <translation id="8439506636278576865">Tilbyd at oversætte sider på dette sprog</translation>
 <translation id="8440630305826533614">Linux-apps</translation>
+<translation id="8446225304314102060">Skift til fanen <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Få flere oplysninger</translation>
 <translation id="8447409163267621480">Skal indeholde enten Ctrl eller Alt</translation>
 <translation id="8448729345478502352">Gør elementer på skærmen mindre eller større</translation>
@@ -7471,6 +7475,7 @@ Flere kontakter kan tildeles denne handling</translation>
 <translation id="9148058034647219655">Afslut</translation>
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9148963623915467028">Dette website har adgang til din placering.</translation>
+<translation id="9149529198050266366">Mørk tilstand deaktiveres automatisk ved solopgang</translation>
 <translation id="9149866541089851383">Rediger...</translation>
 <translation id="9150045010208374699">Bruge dit kamera</translation>
 <translation id="9150079578948279438">Profilen kunne ikke fjernes. Prøv igen, eller kontakt dit mobilselskab for at få teknisk support.</translation>

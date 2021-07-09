@@ -488,7 +488,7 @@ Okruženje zaštićene privatnosti i dalje je u fazi aktivnog razvoja i dostupno
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4183868528246477015">Pretraživanje uz Google Objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
-<translation id="4196597275619698563">Izradi karticu</translation>
+<translation id="4196597275619698563">Kreiraj karticu</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanje</translation>
 <translation id="4209895695669353772">Uključite sinhronizaciju da dobijete prilagođeni sadržaj koji predlaže Google</translation>
 <translation id="4225895483398857530">Prečica za alatnu traku</translation>
@@ -1047,7 +1047,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7704317875155739195">Automatsko dovršavanje pretraživanja i URL-ova</translation>
 <translation id="7707922173985738739">Koristi prijenos podataka na mobilnoj mreži</translation>
 <translation id="7725024127233776428">Stranice koje označite će se pojaviti ovdje</translation>
-<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Ostali oblici aktivnosti<ph name="END_LINK1" /> mogu se spremati na vaš Google račun kad ste prijavljeni. Možete ih izbrisati kad god želite.</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Ostali oblici aktivnosti<ph name="END_LINK1" /> se mogu pohranjivati na vaš Google račun kada ste prijavljeni. Možete ih izbrisati bilo kada.</translation>
 <translation id="7757787379047923882">Tekst je podijeljen s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Odaberite datum i vrijeme</translation>
 <translation id="7762668264895820836">SD kartica <ph name="SD_CARD_NUMBER" /></translation>
@@ -1238,7 +1238,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8854223127042600341">Pregledajte fajlove van mreže</translation>
 <translation id="8856607253650333758">Preuzmi opise</translation>
 <translation id="8873817150012960745">Dodirnite ovdje da započnete</translation>
-<translation id="8881973373982641723">Briše povijest, uključujući u okviru za pretraživanje.</translation>
+<translation id="8881973373982641723">Briše historiju, uključujući onu u okviru za pretraživanje.</translation>
 <translation id="889338405075704026">Idi u postavke Chromea</translation>
 <translation id="8898822736010347272">Šalje Googleu URL-ove nekih stranica koje posjetite, ograničene informacije sistema i sadržaj nekih stranica radi lakšeg otkrivanja novih prijetnji te zaštite svakoga na webu.</translation>
 <translation id="8909135823018751308">Dijeljenje…</translation>
@@ -1292,7 +1292,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="9209888181064652401">Upućivanje poziva nije moguće</translation>
 <translation id="9212845824145208577">Nije moguće pomjeriti niže. Pokušajte započeti na nižem mjestu na stranici.</translation>
 <translation id="9219103736887031265">Slike</translation>
-<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Povijest pretraživanja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />drugi oblici aktivnosti<ph name="END_LINK2" /> mogu se spremati na vaš Google račun kad ste prijavljeni. Možete ih izbrisati kad god želite.</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Historija pretraživanja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />ostali oblici aktivnosti<ph name="END_LINK2" /> se mogu pohranjivati na vaš Google račun kada ste prijavljeni. Možete ih izbrisati bilo kada.</translation>
 <translation id="926205370408745186">Uklonite aktivnosti Chromea iz Digitalnog blagostanja</translation>
 <translation id="927968626442779827">Koristite Jednostavni način rada na Google Chromeu</translation>
 <translation id="932327136139879170">Dom</translation>

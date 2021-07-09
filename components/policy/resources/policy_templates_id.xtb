@@ -555,6 +555,27 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan ini tidak disetel, penginstalan <ph name="PLUGIN_VM_NAME" /> akan gagal jika ruang disk kosong yang tersedia di perangkat kurang dari 20 GB (nilai default).
       Jika kebijakan ini disetel, penginstalan <ph name="PLUGIN_VM_NAME" /> akan gagal jika ruang disk kosong yang tersedia di perangkat kurang dari yang ditentukan oleh kebijakan.</translation>
 <translation id="1690383938831887552">Cegah pemuatan Signed HTTP Exchange</translation>
+<translation id="1700458869527146675">Menyetel kebijakan akan mengonfigurasi setelan proxy untuk Chrome dan aplikasi ARC, yang mengabaikan semua opsi terkait proxy yang ditentukan dari command line.
+
+       Jika kebijakan tidak disetel, pengguna dapat memilih setelan proxy mereka.
+
+       Menyetel kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> akan menyetujui kolom berikut:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, yang memungkinkan Anda menentukan server proxy yang digunakan oleh Chrome dan mencegah pengguna mengubah setelan proxy
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, URL ke file .pac proxy
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, yang mencegah stack jaringan kembali ke koneksi langsung dengan skrip PAC yang tidak valid atau tidak tersedia
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, URL server proxy
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, daftar host proxy yang diabaikan
+
+       Kolom <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> tidak digunakan lagi dan digantikan dengan kolom <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Untuk <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, jika Anda memilih nilai:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy tidak akan pernah digunakan dan semua kolom lainnya akan diabaikan.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, proxy sistem akan digunakan dan semua kolom lainnya akan diabaikan.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, semua kolom lainnya akan diabaikan.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, kolom <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, kolom <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
+
+      Catatan: Untuk contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1700811900332333712">Izinkan perangkat untuk meminta powerwash</translation>
 <translation id="1708496595873025510">Setel batasan pada pengambilan bibit Varietas</translation>
 <translation id="1713829924716792485">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna yang terhubung ke host akses jarak jauh akan diizinkan untuk mentransfer file antara klien dan host. Ini tidak berlaku untuk koneksi bantuan jarak jauh, yang tidak mendukung transfer file.
@@ -578,6 +599,11 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Tidak menyetel kebijakan tidak akan memengaruhi kontrol layar pengguna atau fitur kecerahan otomatis.
 
       Catatan: Nilai kebijakan harus ditentukan dalam persen dari 0 sampai 100.</translation>
+<translation id="1733939382419067578">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang dapat menampilkan notifikasi.
+
+      Tidak menyetel kebijakan berarti <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
+
+      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="1736269219679256369">Memungkinkan melanjutkan dari halaman peringatan SSL</translation>
 <translation id="173993509627303617">Cegah aplikasi web yang diinstal otomatis mengkueri atribut perangkat.</translation>
 <translation id="174765717426930019">Izinkan semua pop-up yang dibuka dengan target <ph name="BLANK_PAGE_NAME" /> untuk berinteraksi dengan halaman yang meminta membuka pop-up, kecuali jika halaman pembuka secara eksplisit memilih untuk melarang interaksi tersebut </translation>
@@ -2469,6 +2495,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4043796890723386527">Cegah pengguna membuat dan menggunakan profil sekunder serta menggunakan mode tamu di browser <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Mengaktifkan Penghalangan Jendela</translation>
 <translation id="4056910949759281379">Nonaktifkan protokol SPDY</translation>
+<translation id="4061107397839125009">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat menampilkan notifikasi.
+
+      Tidak menyetel kebijakan berarti <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
+
+      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="4061590579642538878">Laporkan informasi tentang laporan kerusakan.</translation>
 <translation id="4075675819066819571">Posisikan rak di sisi kiri layar</translation>
 <translation id="408029843066770167">Izinkan kueri ke layanan waktu Google</translation>

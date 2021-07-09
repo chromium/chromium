@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Activation status</translation>
+<translation id="2294675138977897428">No Ethernet connection detected</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Turn on Bluetooth to discover nearby devices</translation>
 <translation id="2364498172489649528">Passed</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Stopped – unknown error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4378373042927530923">Not run</translation>
+<translation id="4378551569595875038">Connecting...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos ticket expires soon</translation>
@@ -278,6 +280,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6527081081771465939">Unknown Wi-Fi security protocol</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Failed – Printer unreachable</translation>
+<translation id="6603230386432466813">Having trouble connecting?</translation>
 <translation id="6618744767048954150">Running</translation>
 <translation id="6620487321149975369">Print jobs will appear in history unless they are removed manually</translation>
 <translation id="6643016212128521049">Clear</translation>

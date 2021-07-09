@@ -613,7 +613,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="164936512206786300">Desparekatu Bluetooth bidezko gailua</translation>
 <translation id="1651008383952180276">Pasaesaldi bera idatzi behar duzu bietan</translation>
 <translation id="1652326691684645429">Gaitu Nearby Share</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Gehitu inprimagailua Google Cloud Print zerbitzuan, edonondik inprimatu ahal izateko.}other{Gehitu # inprimagailu Google Cloud Print zerbitzuan, edonondik inprimatu ahal izateko.}}</translation>
 <translation id="1653631694606464309">Sareko aplikazioek fitxategi mota jakin batzuk irekitzea eskatu ohi dute, nahi duzun tokian lan egin ahal izan dezazun fitxategi horiekin (adibidez, hitz-prozesadore hobetsian dokumentuak irekitzea eskatu ohi dute)</translation>
 <translation id="1656528038316521561">Atzeko planoaren opakutasuna</translation>
 <translation id="1657406563541664238">Lagundu <ph name="PRODUCT_NAME" /> hobetzen Google-ra erabilera-estatistikak eta hutsegite-txostenak bidalita</translation>
@@ -2902,7 +2901,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4094647278880271855">Onartzen ez den ingurune-aldagai bat erabiltzen ari zara: <ph name="BAD_VAR" />. Egonkortasunak eta segurtasunak okerrera egingo dute.</translation>
 <translation id="4095264805865317199">Ireki sare mugikorretarako SIM txartelak aktibatzeko erabiltzaile-interfazea</translation>
 <translation id="4095507791297118304">Pantaila nagusia</translation>
-<translation id="409579654357498729">Gehitu Cloud Print zerbitzuan</translation>
 <translation id="4096508467498758490">Desgaitu garatzaile moduaren luzapenak</translation>
 <translation id="4097406557126260163">Aplikazioak eta luzapenak</translation>
 <translation id="409742781329613461">Chrome erabiltzeko aholkuak</translation>
@@ -4378,6 +4376,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5794700615121138172">Linux-eko karpeta partekatuak</translation>
 <translation id="5794786537412027208">Irten Chrome-ren aplikazio guztietatik</translation>
 <translation id="5797070761912323120">Baliteke Google-k historia erabiltzea Bilaketa, iragarkiak eta Google-ren beste zerbitzu batzuk pertsonalizatzeko</translation>
+<translation id="5797521893972859201">Historia garbitzen du, bilaketa-koadroa barne</translation>
 <translation id="5798079537501238810">Webguneek ordainketa-kudeatzaileak instala ditzakete</translation>
 <translation id="579907812742603813">eduki babestua</translation>
 <translation id="579915268381781820">Kendu egin da segurtasun-giltza.</translation>
@@ -4461,6 +4460,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5900302528761731119">Google-ko profileko argazkia</translation>
 <translation id="590036993063074298">Islatzearen kalitateari buruzko xehetasunak</translation>
 <translation id="5901069264981746702">Zure hatz-marken datuak modu seguruan gordeko dira eta ez dira inoiz aterako <ph name="DEVICE_TYPE" /> gailutik. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Aldatu grabatzen ari den fitxara</translation>
 <translation id="5901494423252125310">Inprimagailuaren estalkia irekita dago</translation>
 <translation id="5901630391730855834">Horia</translation>
 <translation id="5904614460720589786">Ezin izan da instalatu <ph name="APP_NAME" /> konfigurazio-arazo batengatik. Jarri administratzailearekin harremanetan. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
@@ -4733,6 +4733,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6196854373336333322"><ph name="EXTENSION_NAME" /> luzapenak zure proxy-ezarpenen kontrola hartu du; alegia, sarean egiten duzun edozer alda, honda edo zelata dezake. Aldaketa zergatik gertatu den ziur ez badakizu, baliteke aldaketa nahi ez izatea.</translation>
 <translation id="6198102561359457428">Amaitu saioa eta hasi berriro</translation>
 <translation id="6198252989419008588">Aldatu PINa</translation>
+<translation id="6200047250927636406">Baztertu fitxategia</translation>
 <translation id="6202304368170870640">Gailua desblokeatzeko edo bertan saioa hasteko erabil dezakezu PINa.</translation>
 <translation id="6206311232642889873">Kop&amp;iatu irudia</translation>
 <translation id="6207200176136643843">Berrezarri zoom-maila lehenetsia</translation>
@@ -4818,7 +4819,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.</translation>
 <translation id="628352644014831790">4 segundo</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ez da deskargatzen sarriegi, eta arriskutsua izan liteke.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Inprimagailu berria dago sarean}other{Inprimagailu berriak daude sarean}}</translation>
 <translation id="6285770818046456882">Zurekin partekatzen ari zen gailuak bertan behera utzi du transferentzia</translation>
 <translation id="6290613030083731160">Ez dago partekatzen ari den gailurik inguruan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktibazio-kodea egiaztatzen. Agian minutu batzuk beharko dira.</translation>
@@ -5301,6 +5301,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> taldetik kendu da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="683373380308365518">Aldatu arakatzaile adimendun eta seguru batera</translation>
+<translation id="6834652994408928492">Modu iluna automatikoki aktibatuko da iluntzean</translation>
 <translation id="683540480453879381">Ireki <ph name="FILE_EXTENSIONS" /> fitxategiak</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> eguneratzeko, konektatu Internetera.</translation>
 <translation id="6838034009068684089">Eskatu zure baimena webguneren batek zure pantailetan leihoak ireki eta kokatu nahi dituenean (gomendatua)</translation>
@@ -6013,6 +6014,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7622114377921274169">Kargatzen.</translation>
 <translation id="7622768823216805500">Webguneek ordainketa-kudeatzaileak instalatu ohi dituzte ordainketa erraza eta antzeko erosketa-eginbideak eskaintzeko</translation>
 <translation id="7622903810087708234">Pasahitzaren xehetasunak</translation>
+<translation id="7622966771025050155">Aldatu grabatutako fitxara</translation>
 <translation id="7624337243375417909">maiuskulak desaktibatuta daude</translation>
 <translation id="7625568159987162309">Ikusi webguneetan gordetako baimenak eta datuak</translation>
 <translation id="7628201176665550262">Freskatze-abiadura</translation>
@@ -6179,6 +6181,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7784067724422331729">Fitxategia blokeatu da ordenagailuan dituzun segurtasun-ezarpenen ondorioz</translation>
 <translation id="7784796923038949829">Ezin dira irakurri edo aldatu webguneko datuak</translation>
 <translation id="778480864305029524">Konexioa bizkor partekatzeko eginbidea erabiltzeko, aktibatu Google Play Services-en jakinarazpenak.</translation>
+<translation id="7785471469930192436">Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko</translation>
 <translation id="7786889348652477777">Kar&amp;gatu berriro aplikazioa</translation>
 <translation id="7787308148023287649">Erakutsi beste pantaila batean</translation>
 <translation id="7788298548579301890">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen aplikazio bat gehitu du.
@@ -6789,6 +6792,7 @@ Esleipena kentzeko, berriz, sakatu esleitutako erabilerraztasun-etengailu bat.</
 <translation id="8438566539970814960">Hobetu bilaketak eta arakatze-jarduerak</translation>
 <translation id="8439506636278576865">Eskaini hizkuntza honetako orriak itzultzea</translation>
 <translation id="8440630305826533614">Linux aplikazioak</translation>
+<translation id="8446225304314102060">Aldatu <ph name="TAB_ORIGIN" /> fitxara</translation>
 <translation id="8446884382197647889">Lortu informazio gehiago</translation>
 <translation id="8447409163267621480">Erabili Ktrl edo Alt</translation>
 <translation id="8448729345478502352">Handitu edo txikitu pantailako elementuak</translation>
@@ -7449,6 +7453,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9148058034647219655">Irten</translation>
 <translation id="9148126808321036104">Hasi saioa berriro</translation>
 <translation id="9148963623915467028">Webgune honek zure kokapena atzi dezake.</translation>
+<translation id="9149529198050266366">Modu iluna automatikoki desaktibatuko da egunsentian</translation>
 <translation id="9149866541089851383">Editatu…</translation>
 <translation id="9150045010208374699">Erabili zure kamera</translation>
 <translation id="9150079578948279438">Ezin izan da kendu profila. Saiatu berriro edo jarri operadorearekin harremanetan laguntza teknikoa lortzeko.</translation>

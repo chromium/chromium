@@ -550,6 +550,27 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wenn die Richtlinie nicht konfiguriert ist, schlägt die Installation von <ph name="PLUGIN_VM_NAME" /> fehl, wenn weniger als 20 GB (Standardwert) freier Speicherplatz auf dem Gerät verfügbar sind.
       Wenn die Richtlinie konfiguriert ist, schlägt die Installation von <ph name="PLUGIN_VM_NAME" /> fehl, wenn der freie Speicherplatz auf dem Gerät nicht dem in der Richtlinie angegebenen Mindestwert entspricht.</translation>
 <translation id="1690383938831887552">Verhindern, dass Signed HTTP Exchanges geladen werden</translation>
+<translation id="1700458869527146675">Durch Festlegen der Richtlinie werden die Proxyeinstellungen für Chrome- und ARC-Apps so konfiguriert, dass alle Proxyoptionen, die über die Befehlszeile eingegeben werden, ignoriert werden.
+
+       Wird die Richtlinie nicht konfiguriert, können Nutzer die Proxyeinstellungen auswählen.
+
+       Durch Festlegen der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ werden die folgenden Felder übernommen:
+* „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ legt fest, welcher Proxyserver von Chrome verwendet werden soll, und verhindert, dass Nutzer die Proxyeinstellungen ändern
+* „<ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />“, eine URL zu einer PAC-Proxydatei
+* „<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />“ verhindert, dass der Netzwerkstapel zurück zu direkten Verbindungen mit ungültigem oder nicht verfügbarem PAC-Skript fällt
+* „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“, eine URL des Proxyservers
+* „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“, eine Liste mit Hosts, für die der Proxy umgangen wird
+
+Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zugunsten des Felds „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ eingestellt.
+
+        Für „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ können folgende Werte festgelegt werden:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" /> – kein Proxy wird verwendet und alle anderen Felder werden ignoriert.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> – der Proxy des Systems wird verwendet und alle anderen Felder werden ignoriert.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> – alle anderen Felder werden ignoriert.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> – die Felder „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> – die Felder „<ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />“, „<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
+
+      Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten unter https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="1700811900332333712">Powerwash-Anfrage durch Gerät zulassen</translation>
 <translation id="1708496595873025510">Beschränkung für Abruf des Varianten-Seeds festlegen</translation>
 <translation id="1713829924716792485">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die mit einem Host für den Remotezugriff verbunden sind, Dateien zwischen Client und Host übertragen. Verbindungen zur Remote-Unterstützung sind hiervon ausgenommen, da sie keine Dateiübertragung unterstützen.
@@ -573,6 +594,11 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wird diese Richtlinie nicht festgelegt, hat dies keine Auswirkungen auf die Steuerung des Bildschirms durch den Nutzer und auf die Funktionen zur automatischen Anpassung der Bildschirmhelligkeit.
 
       Hinweis: Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen.</translation>
+<translation id="1733939382419067578">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Benachrichtigungen anzeigen dürfen.
+
+      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="1736269219679256369">Fortfahren von SSL-Hinweisseite erlauben</translation>
 <translation id="173993509627303617">Webanwendungen, die erzwungen installiert wurden, daran hindern, Geräteattribute anzufragen.</translation>
 <translation id="174765717426930019">Allen mit dem Ziel <ph name="BLANK_PAGE_NAME" /> geöffneten Pop-ups erlauben, mit der Seite zu interagieren, die das Pop-up geöffnet hat, es sei denn, die öffnende Seite hat dieser Art von Interaktion ausdrücklich nicht zugestimmt </translation>
@@ -2435,6 +2461,11 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4043796890723386527">Diese Einstellung hindert Nutzer daran, sekundäre Profile zu erstellen oder zu verwenden und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="4051723201852944592">Fenster-Okklusion aktivieren</translation>
 <translation id="4056910949759281379">SPDY-Protokoll deaktivieren</translation>
+<translation id="4061107397839125009">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites keine Benachrichtigungen anzeigen dürfen.
+
+      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4061590579642538878">Informationen über Absturzberichte melden.</translation>
 <translation id="4075675819066819571">Ablage auf der linken Seite des Bildschirms anzeigen</translation>
 <translation id="408029843066770167">Abfragen an einen Google-Dienst für die Zeiteinstellung zulassen</translation>

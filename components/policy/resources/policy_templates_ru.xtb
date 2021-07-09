@@ -553,6 +553,27 @@
       Если не настроить это правило, установка <ph name="PLUGIN_VM_NAME" /> будет возможна, только если на устройстве не менее 20 ГБ свободного пространства (значение по умолчанию).
       Если правило настроено, установка <ph name="PLUGIN_VM_NAME" /> будет выполнена, только если на устройстве больше свободного пространства, чем задано в правиле.</translation>
 <translation id="1690383938831887552">Запретить загрузку веб-контента, для показа которого используется Signed HTTP Exchange</translation>
+<translation id="1700458869527146675">Правило позволяет задать настройки прокси-сервера для Chrome и ARC-приложений, игнорируя все настройки прокси, указанные с помощью командной строки.
+
+       Если правило не задано, пользователи могут самостоятельно настраивать прокси-сервер.
+
+       Правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> позволяет указать значения следующих полей:
+         * поле <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> задает прокси-сервер для Chrome и запрещает пользователям изменять эти настройки;
+         * поле <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> задает URL PAC-файла прокси-сервера;
+         * поле <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> предотвращает возврат сетевого стека к прямым соединениям с недопустимым или недоступным PAC-скриптом;
+         * поле <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> задает URL прокси-сервера;
+         * поле <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> задает список хостов, для которых прокси-сервер будет игнорироваться.
+
+       Поле <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> заменено полем <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Вы можете выбрать одно из следующих значений поля <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" /> – прокси-сервер никогда не будет использоваться, а значения остальных полей будут игнорироваться.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> – будут использоваться системные настройки прокси-сервера, значения остальных полей будут игнорироваться.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> – значения остальных полей будут игнорироваться.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> – будут использоваться поля <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> и <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> – будут использоваться поля <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> и <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+      Примечание. Подробную информацию можно найти здесь: https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="1700811900332333712">Разрешить запрос функции Powerwash на устройстве</translation>
 <translation id="1708496595873025510">Ограничение загрузки исходного значения Variations</translation>
 <translation id="1713829924716792485">Если правило включено или не настроено, то пользователи, подключенные к хосту удаленного доступа, могут перемещать файлы между клиентом и хостом. Это правило не действует для подключений удаленной поддержки, не поддерживающих передачу файлов.
@@ -576,6 +597,11 @@
       Если правило не настроено, пользовательские настройки экрана и функция адаптивной яркости не будут изменены.
 
       Примечание. Значение указывается в процентах (от 0 до 100).</translation>
+<translation id="1733939382419067578">Позволяет задать список шаблонов URL для указания сайтов, которым разрешено показывать уведомления.
+
+      Если это правило не настроено, то действует правило <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> при условии, что оно задано. В противном случае действуют персональные настройки пользователя.
+
+      Подробнее о допустимых шаблонах <ph name="URL_LABEL" />: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Значение <ph name="WILDCARD_VALUE" /> не поддерживается для этого правила.</translation>
 <translation id="1736269219679256369">Разрешить переход со страницы предупреждения SSL</translation>
 <translation id="173993509627303617">Запретить принудительно установленным веб-приложениям запрашивать атрибуты устройств</translation>
 <translation id="174765717426930019">Разрешить всем всплывающим окнам, открытым с использованием target="<ph name="BLANK_PAGE_NAME" />", взаимодействовать со страницей, которая запросила их открытие (кроме случаев, когда она явно предоставила отказ от этого взаимодействия) </translation>
@@ -2436,6 +2462,11 @@
 <translation id="4043796890723386527">Запретить пользователям создавать дополнительные профили и использовать гостевой режим в браузере <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Включить перекрытие окон</translation>
 <translation id="4056910949759281379">Отключение протокола SPDY</translation>
+<translation id="4061107397839125009">Позволяет задать список шаблонов URL для указания сайтов, которым запрещено показывать уведомления.
+
+      Если это правило не настроено, то действует правило <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> при условии, что оно задано. В противном случае действуют персональные настройки пользователя.
+
+      Подробнее о допустимых шаблонах <ph name="URL_LABEL" />: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Значение <ph name="WILDCARD_VALUE" /> не поддерживается для этого правила.</translation>
 <translation id="4061590579642538878">Передача информации из отчетов о сбое</translation>
 <translation id="4075675819066819571">Расположить панель запуска с левой стороны экрана</translation>
 <translation id="408029843066770167">Разрешить отправлять запросы в службу времени Google</translation>

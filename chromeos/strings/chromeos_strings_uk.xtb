@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус активації</translation>
+<translation id="2294675138977897428">Не виявлено з’єднання Ethernet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2364498172489649528">Виконано</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
 <translation id="4300073214558989">Зображень: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Не виконано</translation>
+<translation id="4378551569595875038">Підключення…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мій диск</translation>
 <translation id="4429881212383817840">Термін дії квитка Kerberos незабаром минає</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">Невідомий протокол безпеки Wi-Fi</translation>
 <translation id="65587193855025101">Планшетний сканер</translation>
 <translation id="6564646048574748301">Не надруковано – принтер недоступний</translation>
+<translation id="6603230386432466813">Проблеми з підключенням?</translation>
 <translation id="6618744767048954150">Виконується</translation>
 <translation id="6620487321149975369">Завдання друку відображатимуться в історії, доки ви не вилучите їх вручну</translation>
 <translation id="6643016212128521049">Очистити</translation>

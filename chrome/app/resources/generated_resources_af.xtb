@@ -616,7 +616,6 @@
 <translation id="164936512206786300">Maak Bluetooth-toestel los</translation>
 <translation id="1651008383952180276">Jy moet dieselfde wagfrase twee keer invoer</translation>
 <translation id="1652326691684645429">Aktiveer Nabydeling</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Voeg die drukker by Google Wolk-drukker sodat jy van enige plek af kan druk.}other{Voeg # drukkers by Google Wolk-drukker sodat jy van enige plek af kan druk.}}</translation>
 <translation id="1653631694606464309">Webprogramme vra gewoonlik om sekere tipes lêers oop te maak sodat jy aan daardie lêers kan werk wanneer jy wil, soos om dokumente in jou voorkeurwoordverwerker oop te maak</translation>
 <translation id="1656528038316521561">Agtergrondondeursigtigheid</translation>
 <translation id="1657406563541664238">Help om <ph name="PRODUCT_NAME" /> te verbeter deur gebruikstatistiek en omvalverslae outomaties na Google te stuur</translation>
@@ -2918,7 +2917,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4094647278880271855">Jy gebruik tans 'n omgewingveranderlike wat nie gesteun word nie: <ph name="BAD_VAR" />. Stabiliteit en veiligheid sal daaronder ly.</translation>
 <translation id="4095264805865317199">Maak Sellulêre Aktivering UI oop</translation>
 <translation id="4095507791297118304">Primêre skerm</translation>
-<translation id="409579654357498729">Voeg by Wolkdruk</translation>
 <translation id="4096508467498758490">Deaktiveer ontwikkelaarmodus se uitbreidings</translation>
 <translation id="4097406557126260163">Programme en uitbreidings</translation>
 <translation id="409742781329613461">Wenke vir Chrome</translation>
@@ -4839,7 +4837,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.</translation>
 <translation id="628352644014831790">4 sekondes</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> word nie gewoonlik afgelaai nie en kan gevaarlik wees.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nuwe drukker in jou netwerk}other{Nuwe drukkers in jou netwerk}}</translation>
 <translation id="6285770818046456882">Die toestel wat tans met jou deel, het die oordrag gekanselleer</translation>
 <translation id="6290613030083731160">Geen beskikbare toestelle in die omtrek deel tans nie <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verifieer tans aktiveringkode. Dit kan 'n paar minute neem.</translation>

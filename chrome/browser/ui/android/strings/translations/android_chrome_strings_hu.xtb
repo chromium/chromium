@@ -488,6 +488,7 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4181841719683918333">Nyelvek</translation>
 <translation id="4183868528246477015">Keresés a Google Lensszel <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
+<translation id="4196597275619698563">Kártya létrehozása</translation>
 <translation id="4198423547019359126">Nem áll rendelkezésre letöltési hely</translation>
 <translation id="4209895695669353772">A Google által javasolt, személyre szabott tartalmak fogadásához kapcsolja be a szinkronizálást</translation>
 <translation id="4225895483398857530">Eszköztár gyorsparancs</translation>
@@ -1046,6 +1047,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7704317875155739195">Keresések és URL-címek automatikus kiegészítése</translation>
 <translation id="7707922173985738739">Mobiladat-kapcsolat használata</translation>
 <translation id="7725024127233776428">Itt jelennek meg a könyvjelzőként mentett oldalak</translation>
+<translation id="7731260005404856143">Amikor be van jelentkezve, a <ph name="BEGIN_LINK1" />további tevékenységtípusokat<ph name="END_LINK1" /> a rendszer elmentheti a Google-fiókjába. Ön bármikor törölheti őket.</translation>
 <translation id="7757787379047923882">Szöveg megosztva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Dátum és időpont kiválasztása</translation>
 <translation id="7762668264895820836">SD-kártya (<ph name="SD_CARD_NUMBER" />)</translation>
@@ -1236,6 +1238,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8854223127042600341">Offline fájlok megtekintése</translation>
 <translation id="8856607253650333758">Leírások lekérése</translation>
 <translation id="8873817150012960745">Koppintson ide az indításhoz</translation>
+<translation id="8881973373982641723">Törli az előzményeket, köztük a keresőmező előzményeit is.</translation>
 <translation id="889338405075704026">Ugrás a Chrome beállításaira</translation>
 <translation id="8898822736010347272">Egyes felkeresett oldalak URL-jeit, korlátozott rendszer-információkat és bizonyos oldaltartalmakat küld el a Google-nak, hogy könnyebben felfedezhetők legyenek az internetezőkre leselkedő új veszélyek, és meg lehessen védeni a felhasználókat.</translation>
 <translation id="8909135823018751308">Megosztás...</translation>
@@ -1289,6 +1292,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="9209888181064652401">Nem lehet hívást indítani</translation>
 <translation id="9212845824145208577">Nem lehet lejjebb menni. Próbálkozzon a lap lentebbi részével való kezdéssel.</translation>
 <translation id="9219103736887031265">Képek</translation>
+<translation id="923957533152125119">Amikor be van jelentkezve, a <ph name="BEGIN_LINK1" />keresési előzményeket<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />más tevékenységtípusokat<ph name="END_LINK2" /> a rendszer elmentheti a Google-fiókjába. Ön bármikor törölheti őket.</translation>
 <translation id="926205370408745186">Chrome-beli tevékenység eltávolítása a digitális jóllét funkcióból</translation>
 <translation id="927968626442779827">Használja az Egyszerűsített módot a Google Chrome-ban</translation>
 <translation id="932327136139879170">Főoldal</translation>

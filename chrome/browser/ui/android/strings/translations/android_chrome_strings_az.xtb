@@ -488,6 +488,7 @@ Təhlükəsiz Sandbox hələ də aktiv inkişaf etdirilir və seçilmiş bölgə
 <translation id="4181841719683918333">Dillər</translation>
 <translation id="4183868528246477015">Google Linza ilə axtarın <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
+<translation id="4196597275619698563">Kart yaradın</translation>
 <translation id="4198423547019359126">Əlçatan endirmə məkanı yoxdur</translation>
 <translation id="4209895695669353772">Google tərəfindən təklif olunan fərdiləşdirilmiş kontenti əldə etmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="4225895483398857530">Alətlər paneli qısayolu</translation>
@@ -1044,6 +1045,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="7704317875155739195">Axtarış və linkləri avtomatik tamamlayın</translation>
 <translation id="7707922173985738739">Mobil data istifadə edin</translation>
 <translation id="7725024127233776428">Seçdiyiniz səhifələr burada görünəcək</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Digər fəaliyyət formaları<ph name="END_LINK1" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. Onları istənilən vaxt silə bilərsiniz.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> cihazından paylaşılan mətn</translation>
 <translation id="7761849928583394409">Tarix və vaxt seçin</translation>
 <translation id="7762668264895820836">SD Kart <ph name="SD_CARD_NUMBER" /></translation>
@@ -1234,6 +1236,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="8854223127042600341">Oflayn fayllarınıza baxın</translation>
 <translation id="8856607253650333758">Təsvirləri əldə edin</translation>
 <translation id="8873817150012960745">Başlamaq üçün bura toxunun</translation>
+<translation id="8881973373982641723">Axtarış bölməsindəki daxil olmaqla, tarixçəni silir.</translation>
 <translation id="889338405075704026">Chrome ayarlarına keçin</translation>
 <translation id="8898822736010347272">Yeni təhlükələri aşkarlamaq və vebdə hər kəsi qorumağa yardım etmək üçün daxil olduğunuz bəzi səhifələrin URL'lərini, məhdud sistem məlumatlarını və bəzi səhifə məzmunlarını Google'a göndərin.</translation>
 <translation id="8909135823018751308">Paylaşın...</translation>
@@ -1287,6 +1290,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="9209888181064652401">Zəng etmək mümkün deyil</translation>
 <translation id="9212845824145208577">Aşağıya keçmək olmur. Səhifənin aşağısından başlamağı sınayın.</translation>
 <translation id="9219103736887031265">Şəkillər</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Axtarış tarixçəsi<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />digər fəaliyyət formaları<ph name="END_LINK2" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. Onları istənilən vaxt silə bilərsiniz.</translation>
 <translation id="926205370408745186">Digital Sağlamlıqdan Chrome fəaliyyətini silin</translation>
 <translation id="927968626442779827">Google Chrome'da Lite rejimindən istifadə edin</translation>
 <translation id="932327136139879170">Ev</translation>

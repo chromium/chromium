@@ -612,7 +612,6 @@
 <translation id="164936512206786300">Desvincular dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Debes introducir a mesma frase de acceso dúas veces</translation>
 <translation id="1652326691684645429">Activar Compartir por Nearby</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Engade a impresora a Google Cloud Print para poder imprimir desde calquera lugar.}other{Engade # impresoras a Google Cloud Print para poder imprimir desde calquera lugar.}}</translation>
 <translation id="1653631694606464309">As aplicacións web adoitan pedir permiso para abrir certos tipos de ficheiros, o que che ofrece a posibilidade de traballar con eles onde queiras (por exemplo, abrir documentos co teu procesador de texto preferido)</translation>
 <translation id="1656528038316521561">Opacidade do fondo</translation>
 <translation id="1657406563541664238">Axúdanos a mellorar <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de uso e informes de erros a Google</translation>
@@ -2901,7 +2900,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4094647278880271855">Estás usando unha variable de ambiente non compatible: <ph name="BAD_VAR" />. A estabilidade e a seguranza veranse afectadas.</translation>
 <translation id="4095264805865317199">Abrir IU de activación móbil</translation>
 <translation id="4095507791297118304">Pantalla principal</translation>
-<translation id="409579654357498729">Engadir a Cloud Print</translation>
 <translation id="4096508467498758490">Desactivar extensións do modo de programador</translation>
 <translation id="4097406557126260163">Aplicacións e extensións</translation>
 <translation id="409742781329613461">Consellos para Chrome</translation>
@@ -4817,7 +4815,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.</translation>
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> non se descarga habitualmente e pode ser perigoso.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nova impresora na túa rede}other{Novas impresoras na túa rede}}</translation>
 <translation id="6285770818046456882">O dispositivo que estaba compartindo o ficheiro contigo cancelou a transferencia</translation>
 <translation id="6290613030083731160">Non hai dispositivos próximos dispoñibles para compartir ficheiros. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verificando código de activación. Esta acción pode tardar uns minutos.</translation>

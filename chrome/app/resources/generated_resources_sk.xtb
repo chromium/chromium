@@ -615,7 +615,6 @@
 <translation id="164936512206786300">Zrušenie párovania zariadenia Bluetooth</translation>
 <translation id="1651008383952180276">Rovnakú prístupovú frázu musíte zadať dvakrát</translation>
 <translation id="1652326691684645429">Povoliť Zdieľanie nablízku</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Pridajte si tlačiareň do služby Google Cloud Print, aby ste mohli tlačiť odkiaľkoľvek.}few{Pridajte si # tlačiarne do služby Google Cloud Print, aby ste mohli tlačiť odkiaľkoľvek.}many{Pridajte si # tlačiarne do služby Google Cloud Print, aby ste mohli tlačiť odkiaľkoľvek.}other{Pridajte si # tlačiarní do služby Google Cloud Print, aby ste mohli tlačiť odkiaľkoľvek.}}</translation>
 <translation id="1653631694606464309">Webové aplikácie zvyčajne žiadajú o otvorenie konkrétnych typov súborov, aby ste mohli s danými súbormi pracovať v ľubovoľnom programe, napríklad otvárať dokumenty v preferovanom textovom procesore.</translation>
 <translation id="1656528038316521561">Nepriehľadnosť pozadia</translation>
 <translation id="1657406563541664238">Pomôžte zlepšiť aplikáciu <ph name="PRODUCT_NAME" /> aktivovaním automatického odosielania štatistických údajov o používaní prehliadača a správ o chybách spoločnosti Google.</translation>
@@ -2905,7 +2904,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4094647278880271855">Používate nepodporovanú premennú prostredia: <ph name="BAD_VAR" />. Negatívne to ovplyvní stabilitu a zabezpečenie.</translation>
 <translation id="4095264805865317199">Otvoriť rozhranie aktivácie mobilnej siete</translation>
 <translation id="4095507791297118304">Primárna obrazovka</translation>
-<translation id="409579654357498729">Pridať do služby Cloud Print</translation>
 <translation id="4096508467498758490">Zakázanie rozšírení spustených v režime vývojára</translation>
 <translation id="4097406557126260163">Aplikácie a rozšírenia</translation>
 <translation id="409742781329613461">Tip pre Chrome</translation>
@@ -4381,6 +4379,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5794700615121138172">Zdieľané priečinky v systéme Linux</translation>
 <translation id="5794786537412027208">Ukončiť všetky aplikácie Chrome</translation>
 <translation id="5797070761912323120">Google môže pomocou vašej histórie prispôsobiť Vyhľadávanie, reklamy a ďalšie služby Googlu</translation>
+<translation id="5797521893972859201">Vymaže históriu (aj vo vyhľadávacom poli)</translation>
 <translation id="5798079537501238810">Weby môžu inštalovať obslužné nástroje platieb</translation>
 <translation id="579907812742603813">chránený obsah</translation>
 <translation id="579915268381781820">Bezpečnostný kľúč bol odstránený.</translation>
@@ -4464,6 +4463,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5900302528761731119">Fotografia profilu Google</translation>
 <translation id="590036993063074298">Podrobnosti o kvalite zrkadlenia</translation>
 <translation id="5901069264981746702">Údaje odtlačkov prstov sú uložené bezpečne a nikdy sa nedostanú mimo zariadenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Prepnúť na zaznamenávanú kartu</translation>
 <translation id="5901494423252125310">Dvierka tlačiarne sú otvorené</translation>
 <translation id="5901630391730855834">Žltá</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> sa nepodarilo nastaviť pre problém s konfiguráciou. Kontaktujte správcu. Kód chyby: <ph name="ERROR_CODE" />.</translation>
@@ -4736,6 +4736,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6196854373336333322">Toto rozšírenie „<ph name="EXTENSION_NAME" />“ prevzalo kontrolu nad vašimi nastaveniami servera proxy, čo znamená, že môže zmeniť, prerušiť alebo zachytiť všetku vašu činnosť online. Ak neviete, prečo k tomu došlo, pravdepodobne si to neželáte.</translation>
 <translation id="6198102561359457428">Odhláste sa a potom sa znova prihláste...</translation>
 <translation id="6198252989419008588">Zmeniť PIN</translation>
+<translation id="6200047250927636406">Zahodiť súbor</translation>
 <translation id="6202304368170870640">Pomocou kódu PIN sa môžete prihlásiť do zariadenia alebo ho odomknúť.</translation>
 <translation id="6206311232642889873">&amp;Kopírovať obrázok</translation>
 <translation id="6207200176136643843">Resetovať na predvolenú úroveň lupy</translation>
@@ -4821,7 +4822,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.</translation>
 <translation id="628352644014831790">4 sekundy</translation>
 <translation id="6285120108426285413">Súbor <ph name="FILE_NAME" /> sa bežne nesťahuje a môže byť nebezpečný.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nová tlačiareň v sieti}few{Nové tlačiarne v sieti}many{Nové tlačiarne v sieti}other{Nové tlačiarne v sieti}}</translation>
 <translation id="6285770818046456882">Zariadenie, ktoré s vami zdieľa obsah, zrušilo prenos</translation>
 <translation id="6290613030083731160">Nablízku nie sú žiadne dostupné zdieľajúce zariadenia. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Overuje sa aktivačný kód. Môže to trvať niekoľko minút.</translation>
@@ -5304,6 +5304,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6833479554815567477">Karta bola odstránená zo skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Prepnite na inteligentný a bezpečný prehliadač</translation>
+<translation id="6834652994408928492">Tmavý režim sa automaticky zapne pri západe slnka</translation>
 <translation id="683540480453879381">Otvárať súbory s príponami <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Ak chcete aktualizovať zariadenie <ph name="DEVICE_TYPE" />, pripojte sa k internetu.</translation>
 <translation id="6838034009068684089">Opýtať sa, keď chce web otvárať a umiestňovať okná na vaše obrazovky (odporúčané)</translation>
@@ -6016,6 +6017,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7622114377921274169">Nabíja sa.</translation>
 <translation id="7622768823216805500">Weby zvyčajne inštalujú obslužné nástroje platieb, aby mohli poskytovať nákupné funkcie, ako je ľahšie platenie</translation>
 <translation id="7622903810087708234">Podrobnosti o hesle</translation>
+<translation id="7622966771025050155">Prepnúť na zaznamenanú kartu</translation>
 <translation id="7624337243375417909">Funkcia Caps Lock je vypnutá</translation>
 <translation id="7625568159987162309">Zobraziť povolenia a uložené dáta webov</translation>
 <translation id="7628201176665550262">Frekvencia obnovenia</translation>
@@ -6182,6 +6184,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7784067724422331729">Tento súbor je blokovaný nastaveniami zabezpečenia počítača.</translation>
 <translation id="7784796923038949829">Údaje webu sa nedajú prečítať ani zmeniť</translation>
 <translation id="778480864305029524">Ak chcete používať Dynamický tethering, zapnite upozornenia pre Služby Google Play.</translation>
+<translation id="7785471469930192436">Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania (ak je to možné)</translation>
 <translation id="7786889348652477777">&amp;Znova načítať aplikáciu</translation>
 <translation id="7787308148023287649">Zobraziť na inej obrazovke</translation>
 <translation id="7788298548579301890">Iný program v počítači pridal aplikáciu, ktorá môže zmeniť spôsob fungovania Chromu.
@@ -6793,6 +6796,7 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="8438566539970814960">Zlepšovať vyhľadávanie a prehliadanie</translation>
 <translation id="8439506636278576865">Ponúkať preklad stránok v tomto jazyku</translation>
 <translation id="8440630305826533614">Aplikácie pre Linux</translation>
+<translation id="8446225304314102060">Prepnúť na kartu <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Ďalšie informácie</translation>
 <translation id="8447409163267621480">Použite buď Ctrl, alebo Alt</translation>
 <translation id="8448729345478502352">Zväčšte alebo zmenšite položky na obrazovke</translation>
@@ -7456,6 +7460,7 @@ K tejto akcii môžete prideliť viacero prepínačov</translation>
 <translation id="9148058034647219655">Ukončiť</translation>
 <translation id="9148126808321036104">Znova sa prihlásiť</translation>
 <translation id="9148963623915467028">Tento web má povolený prístup k vašej polohe.</translation>
+<translation id="9149529198050266366">Tmavý režim sa automaticky vypne pri východe slnka</translation>
 <translation id="9149866541089851383">Upraviť...</translation>
 <translation id="9150045010208374699">Používať vašu kameru</translation>
 <translation id="9150079578948279438">Profil sa nepodarilo odstrániť. Skúste to znova alebo požiadajte o technickú podporu operátora.</translation>

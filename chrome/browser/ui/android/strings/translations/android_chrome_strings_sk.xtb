@@ -488,6 +488,7 @@ Na vývoji technológií Privacy Sandbox sa stále aktívne pracuje a je k dis
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4183868528246477015">Hľadať cez Google Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
+<translation id="4196597275619698563">Vytvoriť kartu</translation>
 <translation id="4198423547019359126">Nie sú k dispozícii žiadne umiestnenia stiahnutých súborov</translation>
 <translation id="4209895695669353772">Ak chcete získavať prispôsobený obsah navrhnutý Googlom, zapnite synchronizáciu</translation>
 <translation id="4225895483398857530">Skratka panela s nástrojmi</translation>
@@ -1046,6 +1047,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7704317875155739195">Automaticky dopĺňať vyhľadávania a webové adresy</translation>
 <translation id="7707922173985738739">Používať mobilné dáta</translation>
 <translation id="7725024127233776428">Tu sa zobrazia vaše stránky uložené ako záložky</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Iné formy aktivity<ph name="END_LINK1" /> sa môžu ukladať do vášho účtu Google, keď sa doň prihlásite. Tieto položky môžete kedykoľvek odstrániť.</translation>
 <translation id="7757787379047923882">Text zdieľaný zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Vybrať dátum a čas</translation>
 <translation id="7762668264895820836">SD karta <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8854223127042600341">Zobraziť offline súbory</translation>
 <translation id="8856607253650333758">Získať popisy</translation>
 <translation id="8873817150012960745">Začnite klepnutím tu</translation>
+<translation id="8881973373982641723">Vymaže históriu (aj vo vyhľadávacom poli).</translation>
 <translation id="889338405075704026">Prejsť do nastavení Chromu</translation>
 <translation id="8898822736010347272">Odosiela webové adresy niektorých navštívených stránok, obmedzené informácie o systéme a určitý obsah stránok, aby pomáhalo objavovať nové hrozby a chrániť všetkých na internete.</translation>
 <translation id="8909135823018751308">Zdieľať…</translation>
@@ -1289,6 +1292,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="9209888181064652401">Nedá sa volať</translation>
 <translation id="9212845824145208577">Nižšie to už nejde. Skúste začať nižšie na stránke.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />História vyhľadávania<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />ďalšie formy aktivity<ph name="END_LINK2" /> sa môžu ukladať do vášho účtu Google, keď sa doň prihlásite. Tieto položky môžete kedykoľvek odstrániť.</translation>
 <translation id="926205370408745186">Odstránenie aktivity v Chrome z digitálnej rovnováhy</translation>
 <translation id="927968626442779827">Používanie zjednodušeného režimu v prehliadači Google Chrome</translation>
 <translation id="932327136139879170">Domov</translation>

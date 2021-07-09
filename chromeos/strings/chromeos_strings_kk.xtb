@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Интернет жоқ</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Белсендіру күйі</translation>
+<translation id="2294675138977897428">Ethernet байланысы анықталмады</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> нүкте/дюйм</translation>
 <translation id="2338501278241028356">Маңайдағы құрылғыларды табу үшін Bluetooth функциясын қосыңыз</translation>
 <translation id="2364498172489649528">Сынақтан өтті</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сурет</translation>
 <translation id="4378373042927530923">Іске қосылмаған</translation>
+<translation id="4378551569595875038">Қосылуда…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Менің Drive дискім</translation>
 <translation id="4429881212383817840">Kerberos билетінің жарамдылық мерзімі жақында аяқталады</translation>
@@ -277,6 +279,7 @@
 <translation id="6527081081771465939">WiFi қауіпсіздік протоколы белгісіз.</translation>
 <translation id="65587193855025101">Планшет</translation>
 <translation id="6564646048574748301">Сәтсіз: принтер қолжетімді емес</translation>
+<translation id="6603230386432466813">Байланыс орнату кезінде қиындық туындады ма?</translation>
 <translation id="6618744767048954150">Жұмыс істеп тұр</translation>
 <translation id="6620487321149975369">Қолмен өшірмесеңіз, баспа жұмыстары тарихта сақтала береді.</translation>
 <translation id="6643016212128521049">Тазалау</translation>

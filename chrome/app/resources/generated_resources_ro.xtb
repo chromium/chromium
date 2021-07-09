@@ -614,7 +614,6 @@
 <translation id="164936512206786300">Anulează asocierea dispozitivului Bluetooth</translation>
 <translation id="1651008383952180276">Trebuie să introduci aceeași expresie de acces de două ori</translation>
 <translation id="1652326691684645429">Activează Trimiterea în apropiere</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Pentru a putea printa de oriunde, adaugă imprimanta în Google Cloud Print.}few{Pentru a putea printa de oriunde, adaugă cele # imprimante în Google Cloud Print.}other{Pentru a putea printa de oriunde, adaugă cele # de imprimante în Google Cloud Print.}}</translation>
 <translation id="1653631694606464309">Aplicațiile web solicită de obicei permisiunea de a deschide anumite tipuri de fișiere, ca să poți lucra în acestea oricând dorești, de exemplu, deschizând documente în procesorul de text preferat</translation>
 <translation id="1656528038316521561">Opacitatea fundalului</translation>
 <translation id="1657406563541664238">Trimite automat statistici de utilizare și rapoarte de blocare la Google pentru a contribui la îmbunătățirea <ph name="PRODUCT_NAME" />.</translation>
@@ -2904,7 +2903,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4094647278880271855">Folosești o variabilă de mediu neacceptată: <ph name="BAD_VAR" />. Stabilitatea și securitatea vor avea de suferit.</translation>
 <translation id="4095264805865317199">Deschide IU pentru activarea celulară</translation>
 <translation id="4095507791297118304">Afișare principală</translation>
-<translation id="409579654357498729">Adăugați la Cloud Print</translation>
 <translation id="4096508467498758490">Dezactivați extensiile care rulează în modul pentru dezvoltatori</translation>
 <translation id="4097406557126260163">Aplicații și extensii</translation>
 <translation id="409742781329613461">Sfaturi pentru Chrome</translation>
@@ -4380,6 +4378,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5794700615121138172">Dosare comune în Linux</translation>
 <translation id="5794786537412027208">Ieși din toate aplicațiile Chrome</translation>
 <translation id="5797070761912323120">Google poate folosi istoricul pentru a personaliza Căutarea, anunțurile și alte servicii Google</translation>
+<translation id="5797521893972859201">Șterge istoricul, inclusiv din caseta de căutare</translation>
 <translation id="5798079537501238810">Site-urile pot instala handlere pentru plăți</translation>
 <translation id="579907812742603813">Conținut protejat</translation>
 <translation id="579915268381781820">Cheia de securitate a fost eliminată.</translation>
@@ -4463,6 +4462,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5900302528761731119">Fotografie de profil Google</translation>
 <translation id="590036993063074298">Detalii privind calitatea oglindirii</translation>
 <translation id="5901069264981746702">Datele privind amprentele sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Comută la capturarea filei</translation>
 <translation id="5901494423252125310">Capacul imprimantei este deschis</translation>
 <translation id="5901630391730855834">Galben</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> nu s-a instalat din cauza unei probleme de configurație. Contactează administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
@@ -4735,6 +4735,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6196854373336333322">Extensia „<ph name="EXTENSION_NAME" />” a preluat controlul asupra setărilor de proxy, ceea ce înseamnă că poate modifica, întrerupe sau intercepta tot ceea ce faci online. Dacă nu știi sigur de ce a apărut această modificare, probabil că nu ai aprobat-o.</translation>
 <translation id="6198102561359457428">Deconectați-vă, apoi conectați-vă din nou...</translation>
 <translation id="6198252989419008588">Schimbă codul PIN</translation>
+<translation id="6200047250927636406">Șterge fișierul</translation>
 <translation id="6202304368170870640">Poți folosi codul PIN ca să te conectezi la dispozitiv sau să-l deblochezi.</translation>
 <translation id="6206311232642889873">Cop&amp;iază imaginea</translation>
 <translation id="6207200176136643843">Resetează la nivelul de zoom prestabilit</translation>
@@ -4820,7 +4821,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <ph name="DOMAIN" /> solicită să nu scoți cardul inteligent din dispozitiv.</translation>
 <translation id="628352644014831790">4 secunde</translation>
 <translation id="6285120108426285413">Fișierul <ph name="FILE_NAME" /> nu este descărcat de obicei și ar putea fi periculos.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Imprimantă nouă în rețea}few{Imprimante noi în rețea}other{Imprimante noi în rețea}}</translation>
 <translation id="6285770818046456882">Dispozitivul care îți trimitea fișiere a anulat transferul</translation>
 <translation id="6290613030083731160">Nu sunt disponibile dispozitive care trimit fișiere în apropiere. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Este verificat codul de activare. Poate dura câteva minute.</translation>
@@ -5303,6 +5303,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6831043979455480757">Tradu</translation>
 <translation id="6833479554815567477">Fila a fost eliminată din grupul <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Comută la un browser inteligent și securizat</translation>
+<translation id="6834652994408928492">Modul întunecat se va activa automat la apus</translation>
 <translation id="683540480453879381">Să deschidă fișiere <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Accesează internetul pentru a actualiza dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Anunță-mă dacă un site vrea să deschidă și să plaseze ferestre în ecrane (recomandat)</translation>
@@ -6015,6 +6016,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7622114377921274169">Se încarcă.</translation>
 <translation id="7622768823216805500">Site-urile instalează de obicei handlere pentru plăți pentru opțiuni oferite la cumpărare, de exemplu, finalizarea mai simplă a achiziției</translation>
 <translation id="7622903810087708234">Detalii privind parola</translation>
+<translation id="7622966771025050155">Comută la fila capturată</translation>
 <translation id="7624337243375417909">tasta Caps Lock este dezactivată</translation>
 <translation id="7625568159987162309">Vezi permisiunile și datele stocate pe toate site-urile</translation>
 <translation id="7628201176665550262">Rata de actualizare</translation>
@@ -6181,6 +6183,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7784067724422331729">Setările de securitate de pe computer au blocat acest fișier.</translation>
 <translation id="7784796923038949829">Nu se pot citi sau modifica datele site-ului</translation>
 <translation id="778480864305029524">Pentru a folosi Tetheringul instantaneu, activează notificările pentru serviciile Google Play.</translation>
+<translation id="7785471469930192436">Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul</translation>
 <translation id="7786889348652477777">&amp;Reîncarcă aplicația</translation>
 <translation id="7787308148023287649">Afișează pe alt ecran</translation>
 <translation id="7788298548579301890">Un alt program de pe computerul tău a adăugat o aplicație care poate schimba modul în care funcționează Chrome.
@@ -6792,6 +6795,7 @@ Apasă un comutator atribuit pentru a elimina atribuirea</translation>
 <translation id="8438566539970814960">Îmbunătățește căutările și navigarea</translation>
 <translation id="8439506636278576865">Oferă-te să traduci paginile în această limbă</translation>
 <translation id="8440630305826533614">Aplicații Linux</translation>
+<translation id="8446225304314102060">Comută la fila <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Află mai multe</translation>
 <translation id="8447409163267621480">Include Ctrl sau Alt</translation>
 <translation id="8448729345478502352">Micșorează sau mărește elementele de pe ecran</translation>
@@ -7453,6 +7457,7 @@ Apasă un comutator atribuit pentru a elimina atribuirea</translation>
 <translation id="9148058034647219655">Ieși</translation>
 <translation id="9148126808321036104">Conectează-te din nou</translation>
 <translation id="9148963623915467028">Acest site îți poate accesa locația.</translation>
+<translation id="9149529198050266366">Modul întunecat se va dezactiva automat la răsărit</translation>
 <translation id="9149866541089851383">Editează...</translation>
 <translation id="9150045010208374699">Utilizează camera foto</translation>
 <translation id="9150079578948279438">Profilul nu a putut fi eliminat. Încearcă din nou sau contactează operatorul pentru asistență tehnică.</translation>

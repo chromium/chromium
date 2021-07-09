@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Нет подключения к Интернету</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус активации</translation>
+<translation id="2294675138977897428">Нет подключения по сети Ethernet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2364498172489649528">Завершено</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4300073214558989">Изображений: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Не проверено</translation>
+<translation id="4378551569595875038">Подключение…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мой диск</translation>
 <translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
 <translation id="65587193855025101">Планшетный</translation>
 <translation id="6564646048574748301">Сбой: принтер недоступен</translation>
+<translation id="6603230386432466813">Не удается подключиться?</translation>
 <translation id="6618744767048954150">Выполняется</translation>
 <translation id="6620487321149975369">Задания печати показываются в истории до тех пор, пока вы их не удалите</translation>
 <translation id="6643016212128521049">Удалить</translation>

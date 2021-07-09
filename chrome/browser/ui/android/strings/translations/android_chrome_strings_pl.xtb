@@ -488,6 +488,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4183868528246477015">Szukaj z Obiektywem Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
+<translation id="4196597275619698563">Utwórz kartę</translation>
 <translation id="4198423547019359126">Brak dostępnych miejsc zapisu pobieranych plików</translation>
 <translation id="4209895695669353772">Aby uzyskać dostęp do spersonalizowanej treści proponowanej przez Google, włącz synchronizację</translation>
 <translation id="4225895483398857530">Skrót na pasku narzędzi</translation>
@@ -1046,6 +1047,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7704317875155739195">Autouzupełniaj wyszukiwania i adresy URL</translation>
 <translation id="7707922173985738739">Użycie mobilnej transmisji danych</translation>
 <translation id="7725024127233776428">Tutaj pojawią się strony, które dodasz do zakładek</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Inne formy aktywności<ph name="END_LINK1" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. Te wpisy możesz w każdej chwili usunąć.</translation>
 <translation id="7757787379047923882">Tekst udostępniony z urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Wybierz datę i godzinę</translation>
 <translation id="7762668264895820836">Karta SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8854223127042600341">Zobacz pliki offline</translation>
 <translation id="8856607253650333758">Pobieraj opisy obrazów</translation>
 <translation id="8873817150012960745">Kliknij tutaj, by rozpocząć</translation>
+<translation id="8881973373982641723">Usuwa historię, również z pola wyszukiwania.</translation>
 <translation id="889338405075704026">Otwórz ustawienia Chrome</translation>
 <translation id="8898822736010347272">Wysyła do Google adresy URL niektórych odwiedzanych przez Ciebie stron, niektóre informacje o systemie i niektóre treści ze stron, by pomóc w wykrywaniu nowych zagrożeń i chronić wszystkich użytkowników internetu.</translation>
 <translation id="8909135823018751308">Udostępnij…</translation>
@@ -1289,6 +1292,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="9209888181064652401">Nie można wykonywać połączeń</translation>
 <translation id="9212845824145208577">Nie można przejść niżej. Zacznij w dolnej części strony.</translation>
 <translation id="9219103736887031265">Grafika</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Historia wyszukiwania<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />inne formy aktywności<ph name="END_LINK2" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. Te wpisy możesz w każdej chwili usunąć.</translation>
 <translation id="926205370408745186">Usuwa Twoją aktywność w Chrome z Cyfrowej równowagi</translation>
 <translation id="927968626442779827">Użyj wersji uproszczonej w Google Chrome</translation>
 <translation id="932327136139879170">Strona główna</translation>

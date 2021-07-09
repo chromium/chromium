@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivləşdirmə statusu</translation>
+<translation id="2294675138977897428">Heç bir Ethernet bağlantısı tapılmadı</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
 <translation id="2364498172489649528">Keçdi</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> şəkil</translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
+<translation id="4378551569595875038">Qoşulur...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Diskim</translation>
 <translation id="4429881212383817840">Kerberos biletinin vaxtı tezliklə başa çatacaq</translation>
@@ -277,6 +279,7 @@
 <translation id="6527081081771465939">Naməlum Wi-Fi güvənlik protokolu</translation>
 <translation id="65587193855025101">Yastı</translation>
 <translation id="6564646048574748301">Alınmadı - Printer əlçatan deyil</translation>
+<translation id="6603230386432466813">Bağlantı problemi var?</translation>
 <translation id="6618744767048954150">İcra olunur</translation>
 <translation id="6620487321149975369">Manual olaraq silinməsə, çap işləri tarixçədə görünəcək</translation>
 <translation id="6643016212128521049">Silin</translation>

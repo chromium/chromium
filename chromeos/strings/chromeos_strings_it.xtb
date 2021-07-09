@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Nessuna connessione a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stato attivazione</translation>
+<translation id="2294675138977897428">Nessuna connessione Ethernet rilevata</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2364498172489649528">Superato</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
 <translation id="4378373042927530923">Non eseguito</translation>
+<translation id="4378551569595875038">Connessione...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">I miei file</translation>
 <translation id="4429881212383817840">La richiesta di Kerberos scade a breve</translation>
@@ -278,6 +280,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6527081081771465939">protocollo di sicurezza Wi-Fi sconosciuto</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Operazione non riuscita - Stampante non raggiungibile</translation>
+<translation id="6603230386432466813">Hai problemi di connessione?</translation>
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6620487321149975369">I processi di stampa verranno mostrati nella cronologia a meno che non vengano rimossi manualmente</translation>
 <translation id="6643016212128521049">Cancella</translation>

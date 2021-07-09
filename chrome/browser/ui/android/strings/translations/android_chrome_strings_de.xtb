@@ -488,6 +488,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4183868528246477015">Mit Google Lens suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
+<translation id="4196597275619698563">Karte erstellen</translation>
 <translation id="4198423547019359126">Keine verfügbaren Speicherorte für Downloads</translation>
 <translation id="4209895695669353772">Aktivieren Sie die Synchronisierung, um personalisierte, von Google vorgeschlagene Inhalte zu erhalten</translation>
 <translation id="4225895483398857530">Tastenkürzel in Symbolleiste</translation>
@@ -1046,6 +1047,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7704317875155739195">Suchanfragen und URLs automatisch vervollständigen</translation>
 <translation id="7707922173985738739">Mobile Daten verwenden</translation>
 <translation id="7725024127233776428">Seiten, die Sie als Lesezeichen speichern, werden hier angezeigt.</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Andere Arten von Aktivitäten<ph name="END_LINK1" /> können in Ihrem Google-Konto gespeichert werden, wenn Sie angemeldet sind. Diese Daten lassen sich jederzeit löschen.</translation>
 <translation id="7757787379047923882">Text geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Datum &amp; Zeit auswählen</translation>
 <translation id="7762668264895820836">SD-Karte <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8854223127042600341">Offlinedateien ansehen</translation>
 <translation id="8856607253650333758">Beschreibungen erhalten</translation>
 <translation id="8873817150012960745">Zum Starten hier tippen</translation>
+<translation id="8881973373982641723">Löscht den Verlauf, auch im Suchfeld.</translation>
 <translation id="889338405075704026">Zu den Chrome-Einstellungen</translation>
 <translation id="8898822736010347272">URLs einiger von Ihnen besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte werden an Google gesendet, um die Erkennung neuer Bedrohungen zu verbessern und Nutzer im Internet zu schützen.</translation>
 <translation id="8909135823018751308">Teilen...</translation>
@@ -1289,6 +1292,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="9209888181064652401">Anrufe nicht möglich</translation>
 <translation id="9212845824145208577">Screenshot kann nicht nach unten erweitert werden. Beginnen Sie weiter unten auf der Seite.</translation>
 <translation id="9219103736887031265">Bilder</translation>
+<translation id="923957533152125119">Der <ph name="BEGIN_LINK1" />Suchverlauf<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />andere Arten von Aktivitäten<ph name="END_LINK2" /> können in Ihrem Google-Konto gespeichert werden, wenn Sie angemeldet sind. Diese Daten lassen sich jederzeit löschen.</translation>
 <translation id="926205370408745186">Chrome-Aktivitäten aus Digital Wellbeing entfernen</translation>
 <translation id="927968626442779827">Verwenden Sie den Lite-Modus in Google Chrome</translation>
 <translation id="932327136139879170">Startseite</translation>

@@ -610,7 +610,6 @@
 <translation id="164936512206786300">Anulo çiftimin me pajisjen me Bluetooth</translation>
 <translation id="1651008383952180276">Duhet të fusësh dy herë të njëjtën frazë kalimi</translation>
 <translation id="1652326691684645429">Aktivizo "Ndarjen në afërsi"</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Shtoje printerin te "Printimi në renë kompjuterike" të Google që të mund të printosh nga çdo vend.}other{Shto # printerë te "Printimi në renë kompjuterike" të Google që të mund të printosh nga çdo vend.}}</translation>
 <translation id="1653631694606464309">Aplikacionet e uebit zakonisht pyesin për të hapur lloje të caktuara të skedarëve që të mund të punosh me ata skedarë ku të dëshirosh, si p.sh. t'i hapësh dokumentet në përpunuesin tënd të preferuar të fjalëve</translation>
 <translation id="1656528038316521561">Niveli i transparencës së sfondit</translation>
 <translation id="1657406563541664238">Ndihmo në përmirësimin e <ph name="PRODUCT_NAME" /> duke dërguar automatikisht te Google statistika të përdorimit dhe raporte të ndërprerjeve aksidentale</translation>
@@ -2900,7 +2899,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4094647278880271855">Po përdor një ndryshore mjedisi që nuk mbështetet: <ph name="BAD_VAR" />. Kjo do të ketë ndikim te qëndrueshmëria dhe siguria.</translation>
 <translation id="4095264805865317199">Hap ndërfaqen e përdorimit të aktivizimit celular</translation>
 <translation id="4095507791297118304">Ekrani kryesor</translation>
-<translation id="409579654357498729">Shtoje te "Printim nëpërmjet resë kompjuterike"</translation>
 <translation id="4096508467498758490">Çaktivizo shtesat e modalitetit "si zhvillues"</translation>
 <translation id="4097406557126260163">Aplikacionet dhe shtesat</translation>
 <translation id="409742781329613461">Këshilla për Chrome</translation>
@@ -4816,7 +4814,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.</translation>
 <translation id="628352644014831790">4 sekonda</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Printer i ri në rrjetin tënd}other{Printerë të rinj në rrjetin tënd}}</translation>
 <translation id="6285770818046456882">Pajisja që po ndan me ty e anuloi transfertën</translation>
 <translation id="6290613030083731160">Asnjë pajisje e disponueshme nuk po ndan në afërsi. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Po verifikon kodin e aktivizimit. Kjo mund të zgjasë disa minuta.</translation>

@@ -616,7 +616,6 @@
 <translation id="164936512206786300">Nyahgandingkan peranti Bluetooth</translation>
 <translation id="1651008383952180276">Anda mesti memasukkan ungkapan laluan yang sama dua kali</translation>
 <translation id="1652326691684645429">Dayakan Kongsi Berdekatan</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Tambahkan pencetak kepada Pencetak Awan Google supaya anda dapat mencetak dari mana-mana sahaja.}other{Tambahkan # pencetak kepada Pencetak Awan Google supaya anda dapat mencetak dari mana-mana sahaja.}}</translation>
 <translation id="1653631694606464309">Biasanya apl web meminta untuk membuka jenis fail tertentu supaya anda boleh menggunakan fail tersebut dalam mana-mana perisian, seperti membuka dokumen dalam pemproses kata pilihan anda</translation>
 <translation id="1656528038316521561">Kelegapan latar</translation>
 <translation id="1657406563541664238">Bantu jadikan <ph name="PRODUCT_NAME" /> lebih baik dengan menghantar statistik dan laporan nahas secara automatik kepada Google</translation>
@@ -2918,7 +2917,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4094647278880271855">Anda sedang menggunakan pemboleh ubah persekitaran yang tidak disokong: <ph name="BAD_VAR" />. Kestabilan dan keselamatan akan terjejas.</translation>
 <translation id="4095264805865317199">Buka UI Pengaktifan Selular</translation>
 <translation id="4095507791297118304">Paparan utama</translation>
-<translation id="409579654357498729">Tambahkan pada Cetakan Awan</translation>
 <translation id="4096508467498758490">Lumpuhkan sambungan mod pembangun</translation>
 <translation id="4097406557126260163">Apl dan sambungan</translation>
 <translation id="409742781329613461">Petua untuk Chrome</translation>
@@ -4395,6 +4393,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5794700615121138172">Folder kongsi Linux</translation>
 <translation id="5794786537412027208">Hentikan semua Apl Chrome</translation>
 <translation id="5797070761912323120">Google boleh menggunakan sejarah anda untuk memperibadikan Carian, iklan dan perkhidmatan Google yang lain</translation>
+<translation id="5797521893972859201">Kosongkan sejarah, termasuk item dalam kotak carian</translation>
 <translation id="5798079537501238810">Laman boleh memasang pengendali pembayaran</translation>
 <translation id="579907812742603813">kandungan yang dilindungi</translation>
 <translation id="579915268381781820">Kunci keselamatan anda telah dialih keluar.</translation>
@@ -4478,6 +4477,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5900302528761731119">Foto Profil Google</translation>
 <translation id="590036993063074298">Butiran Kualiti Pencerminan</translation>
 <translation id="5901069264981746702">Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Beralih kepada menangkap tab</translation>
 <translation id="5901494423252125310">Pintu pencetak terbuka</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5904614460720589786">Tidak dapat menyediakan <ph name="APP_NAME" /> kerana terdapat masalah konfigurasi. Sila hubungi pentadbir anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
@@ -4750,6 +4750,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6196854373336333322">Sambungan "<ph name="EXTENSION_NAME" />" telah mengambil alih kawalan tetapan proksi anda, yang bermakna sambungan ini boleh mengubah, menghentikan atau mencuri dengar apa-apa sahaja yang anda lakukan dalam talian. Jika anda tidak pasti mengapa perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="6198102561359457428">Log keluar kemudian log masuk semula...</translation>
 <translation id="6198252989419008588">Tukar PIN</translation>
+<translation id="6200047250927636406">Buang fail</translation>
 <translation id="6202304368170870640">Anda boleh menggunakan PIN anda untuk log masuk atau membuka kunci peranti anda.</translation>
 <translation id="6206311232642889873">Sal&amp;in Imej</translation>
 <translation id="6207200176136643843">Tetapkan semula kepada tahap zum lalai</translation>
@@ -4835,7 +4836,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <ph name="DOMAIN" /> menghendaki anda memastikan kad pintar anda tidak dikeluarkan.</translation>
 <translation id="628352644014831790">4 saat</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> tidak biasa dimuat turun dan mungkin berbahaya.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Pencetak baharu pada rangkaian anda}other{Pencetak baharu pada rangkaian anda}}</translation>
 <translation id="6285770818046456882">Peranti yang berkongsi dengan anda telah membatalkan pemindahan</translation>
 <translation id="6290613030083731160">Tiada peranti yang tersedia berkongsi berdekatan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Mengesahkan kod pengaktifan. Proses ini mungkin mengambil masa beberapa minit.</translation>
@@ -5318,6 +5318,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6831043979455480757">Terjemah</translation>
 <translation id="6833479554815567477">Tab dialih keluar daripada kumpulan <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Tukar kepada penyemak imbas yang pintar dan selamat</translation>
+<translation id="6834652994408928492">Mod gelap akan dihidupkan secara automatik pada waktu matahari terbenam</translation>
 <translation id="683540480453879381">Buka fail <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Sila sambung ke Internet untuk mengemaskinikan <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="6838034009068684089">Tanya apabila tapak mahu membuka dan meletakkan tetingkap pada skrin anda (disyorkan)</translation>
@@ -6030,6 +6031,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7622114377921274169">Mengecas.</translation>
 <translation id="7622768823216805500">Tapak biasanya memasang pengendali pembayaran untuk ciri beli-belah seperti daftar keluar yang lebih mudah</translation>
 <translation id="7622903810087708234">Butiran kata laluan</translation>
+<translation id="7622966771025050155">Beralih kepada tab yang ditangkap</translation>
 <translation id="7624337243375417909">kunci huruf besar dimatikan</translation>
 <translation id="7625568159987162309">Lihat kebenaran dan data yang disimpan pada semua tapak</translation>
 <translation id="7628201176665550262">Kadar Muat Semula</translation>
@@ -6196,6 +6198,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7784067724422331729">Tetapan keselamatan pada komputer anda telah menyekat fail ini.</translation>
 <translation id="7784796923038949829">Tidak dapat membaca atau menukar data tapak</translation>
 <translation id="778480864305029524">Untuk menggunakan Penambatan Segera, hidupkan pemberitahuan untuk Perkhidmatan Google Play.</translation>
+<translation id="7785471469930192436">Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berkenaan</translation>
 <translation id="7786889348652477777">&amp;Muat Semula Apl</translation>
 <translation id="7787308148023287649">Paparkan pada skrin lain</translation>
 <translation id="7788298548579301890">Atur cara lain pada komputer anda telah menambahkan apl yang boleh mengubah cara Chrome berfungsi.
@@ -6809,6 +6812,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8438566539970814960">Mempertingkatkan carian dan penyemakan imbas</translation>
 <translation id="8439506636278576865">Tawaran untuk menterjemahkan halaman dalam bahasa ini</translation>
 <translation id="8440630305826533614">Apl Linux</translation>
+<translation id="8446225304314102060">Beralih kepada tab <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Ketahui Lebih Lanjut</translation>
 <translation id="8447409163267621480">Termasuk sama ada Ctrl atau Alt</translation>
 <translation id="8448729345478502352">Kecilkan atau besarkan item pada skrin anda</translation>
@@ -7470,6 +7474,7 @@ Anda boleh menguntukkan berbilang suis kepada tindakan ini</translation>
 <translation id="9148058034647219655">Keluar</translation>
 <translation id="9148126808321036104">Log masuk semula</translation>
 <translation id="9148963623915467028">Tapak ini boleh mengakses lokasi anda.</translation>
+<translation id="9149529198050266366">Mod gelap akan dimatikan secara automatik pada waktu matahari terbit</translation>
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9150045010208374699">Gunakan kamera anda</translation>
 <translation id="9150079578948279438">Profil tidak dapat dialih keluar. Sila cuba lagi atau hubungi pembawa anda untuk mendapatkan sokongan teknikal.</translation>

@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Tiada Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Status pengaktifan</translation>
+<translation id="2294675138977897428">Tiada sambungan Ethernet dikesan</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Hidupkan Bluetooth untuk menemui peranti berdekatan</translation>
 <translation id="2364498172489649528">Lulus</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
+<translation id="4378551569595875038">Menyambung...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4429881212383817840">Tiket Kerberos akan tamat tempoh tidak lama lagi</translation>
@@ -278,6 +280,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6527081081771465939">Protokol keselamatan Wi-Fi tidak diketahui</translation>
 <translation id="65587193855025101">Dasar rata</translation>
 <translation id="6564646048574748301">Gagal - Pencetak tidak dapat dicapai</translation>
+<translation id="6603230386432466813">Ada masalah membuat sambungan?</translation>
 <translation id="6618744767048954150">Berjalan</translation>
 <translation id="6620487321149975369">Tugas cetak akan dipaparkan dalam sejarah melainkan dialih keluar secara manual</translation>
 <translation id="6643016212128521049">Kosongkan</translation>

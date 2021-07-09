@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Estat d'activació</translation>
+<translation id="2294675138977897428">No s'ha detectat cap connexió Ethernet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
 <translation id="2364498172489649528">Comprovació superada</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
 <translation id="4378373042927530923">No s'ha executat</translation>
+<translation id="4378551569595875038">Connectant...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
@@ -278,6 +280,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
 <translation id="65587193855025101">Finestra plana</translation>
 <translation id="6564646048574748301">Error: no es pot accedir a la impressora</translation>
+<translation id="6603230386432466813">Tens problemes per connectar-te?</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
 <translation id="6620487321149975369">Les tasques d'impressió es mostraran a l'historial tret que se suprimeixin manualment</translation>
 <translation id="6643016212128521049">Esborra</translation>

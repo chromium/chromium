@@ -616,7 +616,6 @@
 <translation id="164936512206786300">Hủy ghép nối thiết bị Bluetooth</translation>
 <translation id="1651008383952180276">Bạn phải nhập cùng một cụm mật khẩu hai lần</translation>
 <translation id="1652326691684645429">Bật tính năng Chia sẻ lân cận</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Thêm máy in vào Google Cloud Print để bạn có thể in từ bất cứ đâu.}other{Thêm # máy in vào Google Cloud Print để bạn có thể in từ bất cứ đâu.}}</translation>
 <translation id="1653631694606464309">Ứng dụng web thường xin phép mở một số loại tệp để bạn có thể thao tác trên các tệp đó ở nơi mình muốn, chẳng hạn như mở tài liệu trong trình xử lý văn bản ưu tiên</translation>
 <translation id="1656528038316521561">Độ mờ của nền</translation>
 <translation id="1657406563541664238">Trợ giúp cải thiện <ph name="PRODUCT_NAME" /> bằng cách tự động gửi cho Google thống kê sử dụng và báo cáo sự cố</translation>
@@ -2918,7 +2917,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4094647278880271855">Bạn đang dùng một biến môi trường chưa được hỗ trợ: <ph name="BAD_VAR" />. Do đó, tính ổn định và độ bảo mật sẽ bị ảnh hưởng.</translation>
 <translation id="4095264805865317199">Mở giao diện kích hoạt mạng di động</translation>
 <translation id="4095507791297118304">Màn hình chính</translation>
-<translation id="409579654357498729">Thêm vào Cloud Print</translation>
 <translation id="4096508467498758490">Vô hiệu hóa tiện ích chế độ nhà phát triển</translation>
 <translation id="4097406557126260163">Ứng dụng và tiện ích</translation>
 <translation id="409742781329613461">Mẹo dành cho Chrome</translation>
@@ -4835,7 +4833,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.</translation>
 <translation id="628352644014831790">4 giây</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> thường không được tải xuống và có thể nguy hiểm.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Máy in mới trên mạng của bạn}other{Máy in mới trên mạng của bạn}}</translation>
 <translation id="6285770818046456882">Thiết bị đang chia sẻ với bạn đã hủy quá trình chuyển tệp</translation>
 <translation id="6290613030083731160">Không có thiết bị nào ở gần đang chia sẻ với bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Đang xác minh mã kích hoạt. Quá trình này có thể mất vài phút.</translation>

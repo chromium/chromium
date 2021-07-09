@@ -488,6 +488,7 @@
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
 <translation id="4183868528246477015">Google Lens <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /> ဖြင့်ရှာခြင်း</translation>
 <translation id="4195643157523330669">တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
+<translation id="4196597275619698563">ကတ်ပြုလုပ်ရန်</translation>
 <translation id="4198423547019359126">ဒေါင်းလုဒ်တည်နေရာ မရှိပါ</translation>
 <translation id="4209895695669353772">Google က အကြံပြုထားသည့် ပုဂ္ဂိုလ်ရေးသီးသန့် အကြောင်းအရာများကို ရယူရန် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
 <translation id="4225895483398857530">ကိရိယာဘား ဖြတ်လမ်းလင့်ခ်</translation>
@@ -1045,6 +1046,7 @@
 <translation id="7704317875155739195">ရှာဖွေမှုများနှင့် URL များကို အလိုအလျောက်ဖြည့်ခြင်း</translation>
 <translation id="7707922173985738739">မိုဘိုင်းဒေတာကို သုံးရန်</translation>
 <translation id="7725024127233776428">သင်သိမ်းဆည်းထားသည့် လိပ်စာ၏ စာမျက်နှာများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
+<translation id="7731260005404856143">သင်လက်မှတ်ထိုးဝင်သောအခါ <ph name="BEGIN_LINK1" />အခြားပုံစံဖြင့် လုပ်ဆောင်ချက်<ph name="END_LINK1" /> ကို သင်၏ Google Account တွင် သိမ်းထားနိုင်သည်။ ၎င်းတို့ကို အချိန်မရွေး ဖျက်နိုင်သည်။</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> မှ မျှဝေထားသော စာသား</translation>
 <translation id="7761849928583394409">ရက်စွဲနှင့် အချိန်ရွေးရန်</translation>
 <translation id="7762668264895820836">SD ကတ် <ph name="SD_CARD_NUMBER" /></translation>
@@ -1235,6 +1237,7 @@
 <translation id="8854223127042600341">သင်၏အော့ဖ်လိုင်း ဖိုင်များ ကြည့်ရန်</translation>
 <translation id="8856607253650333758">ရှင်းလင်းချက်များ ရယူရန်</translation>
 <translation id="8873817150012960745">စတင်ရန် ဤနေရာကိုတို့ပါ</translation>
+<translation id="8881973373982641723">ရှာဖွေစာလုံးဖြည့်ကွက်လပ် အပါအဝင် မှတ်တမ်းကို ရှင်းပေးသည်။</translation>
 <translation id="889338405075704026">Chrome ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="8898822736010347272">အန္တရာယ်အသစ်များ ရှာဖွေရာ၌ အထောက်အကူဖြစ်စေရန်နှင့် ဝဘ်ပေါ်ရှိလူတိုင်းကို ကာကွယ်ရန် သင်ဝင်ကြည့်သည့် အချို့ဝဘ်ဆိုက်များ၏ URL များ၊ ကန့်သတ်ထားသည့် စနစ်အချက်အလက်များနှင့် အချို့သော ဝဘ်ဆိုက်ပါအကြောင်းအရာတို့ကို Google သို့ ပို့သည်။</translation>
 <translation id="8909135823018751308">ၐေမျှရန်...</translation>
@@ -1288,6 +1291,7 @@
 <translation id="9209888181064652401">ဖုန်းခေါ်၍ မရပါ</translation>
 <translation id="9212845824145208577">အောက်သို့ထပ်နှိမ့်၍ မရပါ။ စာမျက်နှာ၏ အောက်ဘက်ခပ်ဝေးဝေးမှ စကြည့်ပါ။</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
+<translation id="923957533152125119">သင်လက်မှတ်ထိုးဝင်သောအခါ <ph name="BEGIN_LINK1" />ရှာဖွေမှတ်တမ်း<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />အခြားပုံစံဖြင့် လုပ်ဆောင်ချက်<ph name="END_LINK2" /> တို့ကို သင်၏ Google Account တွင် သိမ်းထားနိုင်သည်။ ၎င်းတို့ကို အချိန်မရွေး ဖျက်နိုင်သည်။</translation>
 <translation id="926205370408745186">'ဒစ်ဂျစ်တယ် အာရောဂျံ' မှနေ၍ သင်၏ Chrome လုပ်ဆောင်ချက်ကို ဖယ်ရှားခြင်း</translation>
 <translation id="927968626442779827">Google Chrome တွင် အပေါ့စားမုဒ် သုံးရန်</translation>
 <translation id="932327136139879170">ပင်မ</translation>

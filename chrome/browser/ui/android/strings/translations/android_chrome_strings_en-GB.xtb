@@ -488,6 +488,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4181841719683918333">Languages</translation>
 <translation id="4183868528246477015">Search with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Open in new tab</translation>
+<translation id="4196597275619698563">Create card</translation>
 <translation id="4198423547019359126">No available download locations</translation>
 <translation id="4209895695669353772">To get personalised content suggested by Google, turn on sync</translation>
 <translation id="4225895483398857530">Toolbar shortcut</translation>
@@ -1046,6 +1047,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7704317875155739195">Auto-complete searches and URLs</translation>
 <translation id="7707922173985738739">Use mobile data</translation>
 <translation id="7725024127233776428">Pages that you bookmark appear here</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Other forms of activity<ph name="END_LINK1" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Select date and time</translation>
 <translation id="7762668264895820836">SD Card <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8854223127042600341">See your offline files</translation>
 <translation id="8856607253650333758">Get descriptions</translation>
 <translation id="8873817150012960745">Tap here to start</translation>
+<translation id="8881973373982641723">Clears history, including in the search box.</translation>
 <translation id="889338405075704026">Go to Chrome settings</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8909135823018751308">Share…</translation>
@@ -1289,6 +1292,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9209888181064652401">Can't make calls</translation>
 <translation id="9212845824145208577">Can\u2019t go lower. Try starting from further down the page.</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Search history<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />other forms of activity<ph name="END_LINK2" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="926205370408745186">Remove your Chrome activity from Digital Wellbeing</translation>
 <translation id="927968626442779827">Use lite mode on Google Chrome</translation>
 <translation id="932327136139879170">Home</translation>

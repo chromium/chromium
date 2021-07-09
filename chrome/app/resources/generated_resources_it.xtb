@@ -613,7 +613,6 @@
 <translation id="164936512206786300">Disaccoppiare dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Devi inserire la stessa passphrase due volte</translation>
 <translation id="1652326691684645429">Attiva Condivisione nelle vicinanze</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Aggiungi la stampante a Google Cloud Print per poter stampare ovunque.}other{Aggiungi # stampanti a Google Cloud Print per poter stampare ovunque.}}</translation>
 <translation id="1653631694606464309">Generalmente le app web chiedono di aprire determinati tipi di file in modo che tu possa lavorarci con il programma che vuoi, ad esempio con il tuo elaboratore di testi preferito</translation>
 <translation id="1656528038316521561">Opacità sfondo</translation>
 <translation id="1657406563541664238">Aiutaci a migliorare <ph name="PRODUCT_NAME" /> inviando automaticamente a Google le statistiche sull'utilizzo e segnalazioni sugli arresti anomali</translation>
@@ -2903,7 +2902,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4094647278880271855">Stai utilizzando una variabile di ambiente non supportata: <ph name="BAD_VAR" />. Sicurezza e stabilità ne risentiranno.</translation>
 <translation id="4095264805865317199">Apri UI di attivazione rete mobile</translation>
 <translation id="4095507791297118304">Display principale</translation>
-<translation id="409579654357498729">Aggiungi a Cloud Print</translation>
 <translation id="4096508467498758490">Disattiva estensioni in modalità sviluppatore</translation>
 <translation id="4097406557126260163">App ed estensioni</translation>
 <translation id="409742781329613461">Suggerimenti per Chrome</translation>
@@ -4379,6 +4377,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5794700615121138172">Cartelle condivise di Linux</translation>
 <translation id="5794786537412027208">Chiudi tutte le app di Chrome</translation>
 <translation id="5797070761912323120">Google può utilizzare la tua cronologia per personalizzare la Ricerca, gli annunci e altri servizi Google</translation>
+<translation id="5797521893972859201">Viene cancellata la cronologia, anche nella casella di ricerca</translation>
 <translation id="5798079537501238810">I siti possono installare gestori dei pagamenti</translation>
 <translation id="579907812742603813">contenuti protetti</translation>
 <translation id="579915268381781820">Il token di sicurezza è stato rimosso.</translation>
@@ -4462,6 +4461,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5900302528761731119">Foto profilo Google</translation>
 <translation id="590036993063074298">Informazioni sulla qualità del mirroring</translation>
 <translation id="5901069264981746702">I dati relativi alle tue impronte vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo dal tuo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Passa alla scheda in fase di acquisizione</translation>
 <translation id="5901494423252125310">Sportello della stampante aperto</translation>
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5904614460720589786">Impossibile installare <ph name="APP_NAME" /> a causa di un problema di configurazione. Contatta l'amministratore. Codice di errore: <ph name="ERROR_CODE" />.</translation>
@@ -4734,6 +4734,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6196854373336333322">L'estensione "<ph name="EXTENSION_NAME" />" ha assunto il controllo delle tue impostazioni proxy, il che significa che può cambiare, interrompere o intercettare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
 <translation id="6198102561359457428">Esci e accedi di nuovo...</translation>
 <translation id="6198252989419008588">Modifica PIN</translation>
+<translation id="6200047250927636406">Ignora file</translation>
 <translation id="6202304368170870640">Puoi utilizzare il PIN per accedere al tuo dispositivo o per sbloccarlo.</translation>
 <translation id="6206311232642889873">Cop&amp;ia immagine</translation>
 <translation id="6207200176136643843">Ripristina il livello di zoom predefinito</translation>
@@ -4819,7 +4820,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.</translation>
 <translation id="628352644014831790">4 secondi</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> non viene scaricato spesso e potrebbe essere pericoloso.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nuova stampante in rete}other{Nuove stampanti in rete}}</translation>
 <translation id="6285770818046456882">Il dispositivo che stava condividendo dei contenuti ha annullato il trasferimento</translation>
 <translation id="6290613030083731160">Non sono disponibili dispositivi per condividere contenuti nelle vicinanze. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verifica del codice di attivazione in corso. Questa operazione può richiedere alcuni minuti.</translation>
@@ -5302,6 +5302,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6833479554815567477">Scheda spostata dal gruppo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Passa a un browser intelligente e sicuro</translation>
+<translation id="6834652994408928492">La modalità Buio verrà attivata automaticamente al tramonto</translation>
 <translation id="683540480453879381">Apri file <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Connettiti a Internet per aggiornare il tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Chiedi conferma quando un sito vuole aprire e posizionare finestre sugli schermi (opzione consigliata)</translation>
@@ -6014,6 +6015,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7622114377921274169">In carica.</translation>
 <translation id="7622768823216805500">In genere, i siti installano gestori dei pagamenti per funzionalità di acquisto come il pagamento semplificato</translation>
 <translation id="7622903810087708234">Dettagli password</translation>
+<translation id="7622966771025050155">Passa alla scheda acquisita</translation>
 <translation id="7624337243375417909">bloc maiusc non attivo</translation>
 <translation id="7625568159987162309">Visualizza le autorizzazioni e i dati memorizzati sui siti</translation>
 <translation id="7628201176665550262">Frequenza di aggiornamento</translation>
@@ -6180,6 +6182,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7784067724422331729">Le impostazioni di sicurezza del computer hanno bloccato questo file.</translation>
 <translation id="7784796923038949829">Impossibile leggere i dati del sito o modificarli</translation>
 <translation id="778480864305029524">Per usare il tethering istantaneo devi attivare le notifiche di Google Play Services.</translation>
+<translation id="7785471469930192436">Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se possibile</translation>
 <translation id="7786889348652477777">&amp;Ricarica app</translation>
 <translation id="7787308148023287649">Mostra sull'altro schermo</translation>
 <translation id="7788298548579301890">Un altro programma sul computer ha aggiunto un'app che potrebbe modificare il funzionamento di Chrome.
@@ -6792,6 +6795,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8438566539970814960">Migliora le ricerche e le attività di navigazione</translation>
 <translation id="8439506636278576865">Proponi di tradurre pagine in questa lingua</translation>
 <translation id="8440630305826533614">App Linux</translation>
+<translation id="8446225304314102060">Passa alla scheda <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Ulteriori informazioni</translation>
 <translation id="8447409163267621480">Includi CTRL o ALT</translation>
 <translation id="8448729345478502352">Ingrandisci o rimpicciolisci gli elementi sullo schermo</translation>
@@ -7453,6 +7457,7 @@ Puoi assegnare più sensori a questa azione</translation>
 <translation id="9148058034647219655">Esci</translation>
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9148963623915467028">Questo sito può accedere alla tua posizione.</translation>
+<translation id="9149529198050266366">La modalità Buio verrà disattivata automaticamente all'alba</translation>
 <translation id="9149866541089851383">Modifica...</translation>
 <translation id="9150045010208374699">Utilizzare la fotocamera</translation>
 <translation id="9150079578948279438">Impossibile rimuovere il profilo. Riprova oppure contatta il tuo operatore per ricevere assistenza tecnica.</translation>

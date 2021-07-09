@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Bez internetu</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stav aktivácie</translation>
+<translation id="2294675138977897428">Nezistilo sa žiadne ethernetové pripojenie</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
 <translation id="2364498172489649528">Úspešné</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
 <translation id="4300073214558989">Počet obrázkov: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Nebolo spustené</translation>
+<translation id="4378551569595875038">Pripája sa...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Môj disk</translation>
 <translation id="4429881212383817840">Platnosť tiketu Kerberos čoskoro uplynie</translation>
@@ -278,6 +280,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6527081081771465939">Neznámy protokol zabezpečenia siete Wi‑Fi</translation>
 <translation id="65587193855025101">Reflektívny skener</translation>
 <translation id="6564646048574748301">Nepodarilo sa – nedostupné</translation>
+<translation id="6603230386432466813">Máte problémy s pripojením?</translation>
 <translation id="6618744767048954150">Beží</translation>
 <translation id="6620487321149975369">Tlačové úlohy sa budú zobrazovať v histórii, dokým ich neodstránite ručne</translation>
 <translation id="6643016212128521049">Vymazať</translation>

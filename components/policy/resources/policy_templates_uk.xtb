@@ -555,6 +555,27 @@
       Якщо це правило не налаштовано, а на диску є менше ніж 20 ГБ (значення за умовчанням) вільного місця, <ph name="PLUGIN_VM_NAME" /> не буде встановлено.
       Якщо це правило налаштовано, <ph name="PLUGIN_VM_NAME" /> не буде встановлено, коли на диску буде менше вільного місця, ніж указано в правилі.</translation>
 <translation id="1690383938831887552">Заборонити завантаження за допомогою технології Signed HTTP Exchange</translation>
+<translation id="1700458869527146675">За допомогою налаштувань цього правила можна вибрати параметри проксі для Chrome і додатків ARC, які ігнорують усі опції проксі, указані в командному рядку.
+
+       Якщо не налаштувати це правило, користувачі зможуть самостійно вибирати параметри проксі.
+
+       Якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> налаштовано, буде прийнято ці поля:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> визначає проксі-сервер для Chrome і забороняє користувачам змінювати ці налаштування;
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> – URL-адреса файлу .pac проксі-сервера;
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, не дає мережевому стеку використовувати прямі підключення з недійсним або недоступним скриптом PAC;
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> – URL-адреса проксі-сервера;
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> – список хостів, які працюватимуть в обхід проксі-сервера.
+
+       Поле <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> застаріле. Замість нього використовується поле<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Якщо для параметра <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> вибрати значення:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, проксі ніколи не використовуватиметься, а всі інші поля ігноруватимуться;
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, використовуватимуться проксі системи, а всі інші поля ігноруватимуться;
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, усі інші поля ігноруватимуться;
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, використовуватимуться поля <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> та <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, використовуватимуться поля <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> та <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+      Примітка: щоб переглянути детальніші приклади, відвідайте веб-сайт проектів Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1700811900332333712">Дозволити пристрою надсилати запит на запуск Powerwash</translation>
 <translation id="1708496595873025510">Установити обмеження щодо отримання початкового числа Варіацій</translation>
 <translation id="1713829924716792485">Якщо це правило ввімкнено або не налаштовано, користувачі з віддаленим доступом до хосту можуть переносити файли між клієнтом і хостом. Це не стосується з'єднань для віддаленої допомоги, що не підтримують перенесення файлів.
@@ -578,6 +599,11 @@
       Якщо це правило не налаштовано, елементи керування екраном і функції адаптації яскравості не змінюються.
 
       Примітка. Значення правила потрібно вказувати у відсотках від 0 до 100.</translation>
+<translation id="1733939382419067578">За допомогою цього правила можна вказати список шаблонів URL-адрес, що визначають сайти, які можуть показувати сповіщення.
+
+      Якщо це правило не налаштовано, до всіх сайтів застосовуватиметься правило <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> за умови, що воно налаштоване. Якщо ні, використовуються особисті налаштування користувачів.
+
+      Докладніше про дійсні шаблони <ph name="URL_LABEL" />-адрес можна дізнатися на сторінці https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> – недопустиме значення для цього правила.</translation>
 <translation id="1736269219679256369">Дозволяти перехід зі сторінки застереження SSL</translation>
 <translation id="173993509627303617">Заборонити примусово встановленим веб-додаткам запитувати атрибути пристроїв.</translation>
 <translation id="174765717426930019">Дозволити всім спливаючим вікнам, які спрямовують на сторінку <ph name="BLANK_PAGE_NAME" />, взаємодіяти зі сторінкою, що надіслала запит, якщо ця сторінка спеціально не забороняла таку взаємодію </translation>
@@ -2467,6 +2493,11 @@
 <translation id="4043796890723386527">Не дозволяти користувачам створювати й використовувати додаткові профілі та вмикати режим гостя у веб-переглядачі <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Увімкнути перекривання вікон</translation>
 <translation id="4056910949759281379">Вимкнути протокол SPDY</translation>
+<translation id="4061107397839125009">За допомогою цього правила можна вказати список шаблонів URL-адрес, що визначають сайти, яким заборонено показувати сповіщення.
+
+      Якщо це правило не налаштовано, до всіх сайтів застосовуватиметься правило <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> за умови, що воно налаштоване. Якщо ні, використовуються особисті налаштування користувачів.
+
+      Докладніше про дійсні шаблони <ph name="URL_LABEL" />-адрес можна дізнатися на сторінці https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> – недопустиме значення для цього правила.</translation>
 <translation id="4061590579642538878">Повідомляти дані звітів про аварійне завершення роботи.</translation>
 <translation id="4075675819066819571">Розташування полиці ліворуч на екрані</translation>
 <translation id="408029843066770167">Дозволити запити в службу часу Google</translation>

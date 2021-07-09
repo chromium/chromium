@@ -616,7 +616,6 @@
 <translation id="164936512206786300">Unpair Bluetooth device</translation>
 <translation id="1651008383952180276">You must enter the same passphrase twice</translation>
 <translation id="1652326691684645429">Enable Nearby Share</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Add the printer to Google Cloud Print so that you can print from anywhere.}other{Add # printers to Google Cloud Print so that you can print from anywhere.}}</translation>
 <translation id="1653631694606464309">Web apps typically ask to open certain types of files so that you can work on those files where you want, like opening documents in your preferred word processor</translation>
 <translation id="1656528038316521561">Background opacity</translation>
 <translation id="1657406563541664238">Help make <ph name="PRODUCT_NAME" /> better by automatically sending usage statistics and crash reports to Google.</translation>
@@ -2918,7 +2917,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4094647278880271855">You are using an unsupported environment variable: <ph name="BAD_VAR" />. Stability and security will suffer.</translation>
 <translation id="4095264805865317199">Open Mobile Activation UI</translation>
 <translation id="4095507791297118304">Primary display</translation>
-<translation id="409579654357498729">Add to Cloud Print</translation>
 <translation id="4096508467498758490">Disable developer mode extensions</translation>
 <translation id="4097406557126260163">Apps and extensions</translation>
 <translation id="409742781329613461">Tips for Chrome</translation>
@@ -4395,6 +4393,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5794700615121138172">Linux shared folders</translation>
 <translation id="5794786537412027208">Quit all Chrome Apps</translation>
 <translation id="5797070761912323120">Google may use your history to personalise Search, ads and other Google services</translation>
+<translation id="5797521893972859201">Clears history, including in the search box</translation>
 <translation id="5798079537501238810">Sites can install payment handlers</translation>
 <translation id="579907812742603813">protected content</translation>
 <translation id="579915268381781820">Your security key was removed.</translation>
@@ -4478,6 +4477,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5900302528761731119">Google Profile photo</translation>
 <translation id="590036993063074298">Mirroring quality details</translation>
 <translation id="5901069264981746702">Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Switch to capturing tab</translation>
 <translation id="5901494423252125310">Printer door open</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5904614460720589786">Couldn't set up <ph name="APP_NAME" /> because of a configuration problem. Please contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
@@ -4750,6 +4750,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6196854373336333322">The extension "<ph name="EXTENSION_NAME" />" has taken control of your proxy settings, which means it can change, break or eavesdrop on anything you do online. If you aren't sure why this change happened, you probably don't want it.</translation>
 <translation id="6198102561359457428">Sign out then sign in again...</translation>
 <translation id="6198252989419008588">Change PIN</translation>
+<translation id="6200047250927636406">Discard file</translation>
 <translation id="6202304368170870640">You can use your PIN to sign in to or unlock your device.</translation>
 <translation id="6206311232642889873">Cop&amp;y Image</translation>
 <translation id="6207200176136643843">Reset to default zoom level</translation>
@@ -4835,7 +4836,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <ph name="DOMAIN" /> requires you to keep your smart card inserted.</translation>
 <translation id="628352644014831790">4 seconds</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> is not commonly downloaded and may be dangerous.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{New printer on your network}other{New printers on your network}}</translation>
 <translation id="6285770818046456882">The device sharing with you cancelled the transfer</translation>
 <translation id="6290613030083731160">No available devices sharing nearby. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verifying activation code. This may take a few minutes.</translation>
@@ -5318,6 +5318,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6833479554815567477">Tab removed from group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Switch to a smart and secure browser</translation>
+<translation id="6834652994408928492">Dark mode will turn on automatically at sunset</translation>
 <translation id="683540480453879381">Open <ph name="FILE_EXTENSIONS" /> files</translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Ask when a site wants to open and place windows on your screens (recommended)</translation>
@@ -6030,6 +6031,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7622114377921274169">Charging.</translation>
 <translation id="7622768823216805500">Sites usually install payment handlers for shopping features like easier checkout</translation>
 <translation id="7622903810087708234">Password details</translation>
+<translation id="7622966771025050155">Switch to captured tab</translation>
 <translation id="7624337243375417909">caps lock off</translation>
 <translation id="7625568159987162309">View permissions and data stored across sites</translation>
 <translation id="7628201176665550262">Refresh rate</translation>
@@ -6196,6 +6198,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7784067724422331729">Security settings on your computer blocked this file.</translation>
 <translation id="7784796923038949829">Can't read or change site's data</translation>
 <translation id="778480864305029524">To use Instant Tethering, turn on notifications for Google Play Services.</translation>
+<translation id="7785471469930192436">See your search engine's instructions for deleting your search history, if applicable</translation>
 <translation id="7786889348652477777">&amp;Reload App</translation>
 <translation id="7787308148023287649">Display on another screen</translation>
 <translation id="7788298548579301890">Another program on your computer added an app that may change the way Chrome works.
@@ -6808,6 +6811,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8438566539970814960">Make searches and browsing better</translation>
 <translation id="8439506636278576865">Offer to translate pages in this language</translation>
 <translation id="8440630305826533614">Linux apps</translation>
+<translation id="8446225304314102060">Switch to tab <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Learn More</translation>
 <translation id="8447409163267621480">Include either Ctrl or Alt</translation>
 <translation id="8448729345478502352">Make items on your screen smaller or larger</translation>
@@ -7469,6 +7473,7 @@ You can assign multiple switches to this action</translation>
 <translation id="9148058034647219655">Exit</translation>
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9148963623915467028">This site can access your location.</translation>
+<translation id="9149529198050266366">Dark mode will turn off automatically at sunrise</translation>
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9150045010208374699">Use your camera</translation>
 <translation id="9150079578948279438">Profile could not be removed. Please try again or contact your operator for technical support.</translation>

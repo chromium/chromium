@@ -488,6 +488,7 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4181841719683918333">Idiomes</translation>
 <translation id="4183868528246477015">Cerca amb Google Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
+<translation id="4196597275619698563">Crea una targeta</translation>
 <translation id="4198423547019359126">No hi ha cap ubicació de baixada disponible</translation>
 <translation id="4209895695669353772">Perquè Google et suggereixi contingut personalitzat, activa la sincronització</translation>
 <translation id="4225895483398857530">Drecera de la barra d'eines</translation>
@@ -1046,6 +1047,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7704317875155739195">Completa automàticament les cerques i els URL</translation>
 <translation id="7707922173985738739">Utilitza dades mòbils</translation>
 <translation id="7725024127233776428">Les pàgines que afegeixis a les adreces d'interès es mostraran aquí</translation>
+<translation id="7731260005404856143">És possible que es desin <ph name="BEGIN_LINK1" />altres tipus d'activitats<ph name="END_LINK1" /> al teu Compte de Google quan tinguis la sessió iniciada. Els pots suprimir en qualsevol moment.</translation>
 <translation id="7757787379047923882">Text compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Tria la data i l'hora</translation>
 <translation id="7762668264895820836">Targeta SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8854223127042600341">Consulta els fitxers sense connexió</translation>
 <translation id="8856607253650333758">Obtén les descripcions</translation>
 <translation id="8873817150012960745">Toca aquí per començar</translation>
+<translation id="8881973373982641723">Esborra l'historial, inclòs el del quadre de cerca.</translation>
 <translation id="889338405075704026">Ves a la configuració de Chrome</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
 <translation id="8909135823018751308">Comparteix...</translation>
@@ -1289,6 +1292,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="9209888181064652401">No es poden fer trucades</translation>
 <translation id="9212845824145208577">No es pot baixar més. Prova de començar des de més avall a la pàgina.</translation>
 <translation id="9219103736887031265">Imatges</translation>
+<translation id="923957533152125119">És possible que l'<ph name="BEGIN_LINK1" />historial de cerques<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />altres tipus d'activitats<ph name="END_LINK2" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Els pots suprimir en qualsevol moment.</translation>
 <translation id="926205370408745186">Suprimeix l'activitat de Chrome de l'aplicació Benestar digital</translation>
 <translation id="927968626442779827">Utilitza el mode bàsic a Google Chrome</translation>
 <translation id="932327136139879170">Inici</translation>

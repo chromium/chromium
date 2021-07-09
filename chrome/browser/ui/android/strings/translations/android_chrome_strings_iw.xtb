@@ -488,6 +488,7 @@
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4183868528246477015">‏חיפוש בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
+<translation id="4196597275619698563">ליצירת כרטיס</translation>
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
 <translation id="4209895695669353772">‏כדי לקבל מ-Google הצעות לתוכן מותאם אישית, יש להפעיל את הסנכרון</translation>
 <translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
@@ -1046,6 +1047,7 @@
 <translation id="7704317875155739195">השלמה אוטומטית של חיפושים וכתובות אתרים</translation>
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
 <translation id="7725024127233776428">הדפים שהוספת לסימניות מופיעים כאן</translation>
+<translation id="7731260005404856143">‏<ph name="BEGIN_LINK1" />סוגי פעילות אחרים<ph name="END_LINK1" /> עשויים להישמר בחשבון Google לאחר הכניסה. ניתן למחוק אותם בכל שלב.</translation>
 <translation id="7757787379047923882">הטקסט שותף דרך <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">בחירת תאריך ושעה</translation>
 <translation id="7762668264895820836">‏כרטיס SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@
 <translation id="8854223127042600341">הצגת הקבצים שזמינים ללא חיבור לאינטרנט.</translation>
 <translation id="8856607253650333758">ליצירת תיאורים</translation>
 <translation id="8873817150012960745">כדי להתחיל, יש להקיש כאן</translation>
+<translation id="8881973373982641723">יתבצע ניקוי של ההיסטוריה, כולל זו שבתיבת החיפוש.</translation>
 <translation id="889338405075704026">‏כניסה להגדרות Chrome</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
@@ -1289,6 +1292,7 @@
 <translation id="9209888181064652401">לא ניתן לבצע שיחות</translation>
 <translation id="9212845824145208577">אי אפשר לזוז למטה יותר. יש לנסות להתחיל מחלק נמוך יותר בדף.</translation>
 <translation id="9219103736887031265">תמונות</translation>
+<translation id="923957533152125119">‏<ph name="BEGIN_LINK1" />היסטוריית החיפושים<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />סוגי פעילות אחרים<ph name="END_LINK2" /> עשויים להישמר בחשבון Google לאחר הכניסה. ניתן למחוק אותם בכל שלב.</translation>
 <translation id="926205370408745186">‏הסרת הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'.</translation>
 <translation id="927968626442779827">‏כדאי להשתמש במצב הטעינה המהירה ב-Google Chrome</translation>
 <translation id="932327136139879170">בית</translation>

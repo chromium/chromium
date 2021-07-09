@@ -488,6 +488,7 @@
 <translation id="4181841719683918333">言語</translation>
 <translation id="4183868528246477015">Google レンズで検索<ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
+<translation id="4196597275619698563">カードを作成</translation>
 <translation id="4198423547019359126">ダウンロードの保存先はありません</translation>
 <translation id="4209895695669353772">ユーザーに合わせた Google からのおすすめコンテンツを表示するには、同期を有効にします</translation>
 <translation id="4225895483398857530">ツールバー ショートカット</translation>
@@ -1046,6 +1047,7 @@
 <translation id="7704317875155739195">検索語句や URL をオートコンプリートする</translation>
 <translation id="7707922173985738739">モバイルデータを使用します</translation>
 <translation id="7725024127233776428">ブックマークしたページがここに表示されます</translation>
+<translation id="7731260005404856143">ログイン中は Google アカウントに<ph name="BEGIN_LINK1" />その他のアクティビティ<ph name="END_LINK1" />が保存される可能性があります。保存されたデータはいつでも削除できます。</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> からテキストが共有されました</translation>
 <translation id="7761849928583394409">日付と時間を選択</translation>
 <translation id="7762668264895820836">SD カード <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@
 <translation id="8854223127042600341">オフライン ファイルを表示</translation>
 <translation id="8856607253650333758">説明文を取得</translation>
 <translation id="8873817150012960745">始めるにはここをタップ</translation>
+<translation id="8881973373982641723">検索ボックスなどの履歴を削除します。</translation>
 <translation id="889338405075704026">Chrome 設定に移動</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
 <translation id="8909135823018751308">共有...</translation>
@@ -1289,6 +1292,7 @@
 <translation id="9209888181064652401">通話ができません</translation>
 <translation id="9212845824145208577">下に移動できません。ページの下のほうから始めてみてください。</translation>
 <translation id="9219103736887031265">画像</translation>
+<translation id="923957533152125119">ログイン中は Google アカウントに<ph name="BEGIN_LINK1" />検索履歴<ph name="END_LINK1" />や<ph name="BEGIN_LINK2" />その他のアクティビティ<ph name="END_LINK2" />が保存される可能性があります。保存されたデータはいつでも削除できます。</translation>
 <translation id="926205370408745186">Chrome のアクティビティを Digital Wellbeing から削除</translation>
 <translation id="927968626442779827">Google Chrome のライトモードをご活用ください</translation>
 <translation id="932327136139879170">ホーム</translation>

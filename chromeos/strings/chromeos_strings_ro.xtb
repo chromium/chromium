@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Nu există conexiune la internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stare de activare</translation>
+<translation id="2294675138977897428">Nu s-a detectat nicio conexiune la Ethernet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Pentru a descoperi dispozitivele din apropiere, activează Bluetooth</translation>
 <translation id="2364498172489649528">Reușită</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagini</translation>
 <translation id="4378373042927530923">Nu a rulat</translation>
+<translation id="4378551569595875038">Se conectează</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
 <translation id="4429881212383817840">Tichetul Kerberos expiră în curând</translation>
@@ -278,6 +280,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>
 <translation id="65587193855025101">Suport plat</translation>
 <translation id="6564646048574748301">Nereușită – Imprimanta nu poate fi accesată</translation>
+<translation id="6603230386432466813">Ai întâmpinat probleme la conectare?</translation>
 <translation id="6618744767048954150">Rulează</translation>
 <translation id="6620487321149975369">Sarcinile de printare vor apărea în istoric dacă nu sunt eliminate manual</translation>
 <translation id="6643016212128521049">Șterge</translation>

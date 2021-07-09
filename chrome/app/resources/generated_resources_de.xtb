@@ -610,7 +610,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="164936512206786300">Bluetooth-Gerät entkoppeln</translation>
 <translation id="1651008383952180276">Sie müssen zweimal dieselbe Passphrase eingeben</translation>
 <translation id="1652326691684645429">Nearby Share aktivieren</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Fügen Sie den Drucker zu Google Cloud Print hinzu, damit Sie von überall aus drucken können.}other{Fügen Sie # Drucker zu Google Cloud Print hinzu, damit Sie von überall aus drucken können.}}</translation>
 <translation id="1653631694606464309">Webanwendungen fragen in der Regel nach, ob sie bestimmte Dateitypen öffnen können, damit Sie die Dateien von überall aus bearbeiten können, beispielsweise in Ihrem bevorzugten Textverarbeitungsprogramm</translation>
 <translation id="1656528038316521561">Deckkraft des Hintergrunds</translation>
 <translation id="1657406563541664238">Zur Verbesserung von <ph name="PRODUCT_NAME" /> Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
@@ -2900,7 +2899,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4094647278880271855">Sie verwenden eine nicht unterstützte Umgebungsvariable: <ph name="BAD_VAR" />. Dadurch werden Stabilität und Sicherheit beeinträchtigt.</translation>
 <translation id="4095264805865317199">Benutzeroberfläche für Mobilfunkaktivierung öffnen</translation>
 <translation id="4095507791297118304">Hauptbildschirm</translation>
-<translation id="409579654357498729">Zu Cloud Print hinzufügen</translation>
 <translation id="4096508467498758490">Erweiterungen im Entwicklermodus deaktivieren</translation>
 <translation id="4097406557126260163">Apps und Erweiterungen</translation>
 <translation id="409742781329613461">Tipps für Chrome</translation>
@@ -4374,6 +4372,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5794700615121138172">Freigegebene Linux-Ordner</translation>
 <translation id="5794786537412027208">Alle Chrome-Apps beenden</translation>
 <translation id="5797070761912323120">Anhand Ihres Verlaufs kann Google die Google Suche, Werbung und andere Google-Dienste personalisieren</translation>
+<translation id="5797521893972859201">Löscht den Verlauf, auch im Suchfeld</translation>
 <translation id="5798079537501238810">Websites dürfen Zahlungs-Handler installieren</translation>
 <translation id="579907812742603813">Geschützte Inhalte</translation>
 <translation id="579915268381781820">Ihr Sicherheitsschlüssel wurde entfernt.</translation>
@@ -4457,6 +4456,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5900302528761731119">Google Profile-Foto</translation>
 <translation id="590036993063074298">Details zur Qualität der Spiegelung</translation>
 <translation id="5901069264981746702">Ihr Fingerabdruck wird sicher und niemals außerhalb Ihres Geräts (<ph name="DEVICE_TYPE" />) gespeichert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Zum aufnehmenden Tab wechseln</translation>
 <translation id="5901494423252125310">Druckerklappe offen</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> konnte aufgrund eines Konfigurationsproblems nicht eingerichtet werden. Bitte wenden Sie sich an Ihren Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
@@ -4729,6 +4729,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6196854373336333322">Die Erweiterung <ph name="EXTENSION_NAME" /> hat die Kontrolle über Ihre Proxyeinstellungen übernommen. Das bedeutet, dass sie sämtliche Onlineaktivitäten ändern, abbrechen oder überwachen kann. Wenn Sie nicht sicher sind, wie es zu dieser Änderung gekommen ist, war sie wahrscheinlich nicht beabsichtigt.</translation>
 <translation id="6198102561359457428">Abmelden und dann erneut anmelden...</translation>
 <translation id="6198252989419008588">PIN ändern</translation>
+<translation id="6200047250927636406">Datei verwerfen</translation>
 <translation id="6202304368170870640">Mit Ihrer PIN können Sie sich auf Ihrem Gerät anmelden oder es entsperren.</translation>
 <translation id="6206311232642889873">Bild kop&amp;ieren</translation>
 <translation id="6207200176136643843">Auf Standard-Zoomstufe zurücksetzen</translation>
@@ -4814,7 +4815,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.</translation>
 <translation id="628352644014831790">4 Sekunden</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ist ein ungewöhnlicher Download und könnte schädlich sein.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Neuer Drucker in Ihrem Netzwerk gefunden}other{Neue Drucker in Ihrem Netzwerk gefunden}}</translation>
 <translation id="6285770818046456882">Das Gerät, das Daten mit Ihnen geteilt hat, hat die Übertragung abgebrochen</translation>
 <translation id="6290613030083731160">Keine Geräte in der Nähe verfügbar, die Daten teilen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivierungscode wird geprüft. Das kann einige Minuten dauern.</translation>
@@ -5294,6 +5294,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6833479554815567477">Tab wurde aus folgender Gruppe entfernt: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Steigen Sie auf einen intelligenten und sicheren Browser um</translation>
+<translation id="6834652994408928492">Dunkler Modus wird bei Sonnenuntergang automatisch aktiviert</translation>
 <translation id="683540480453879381"><ph name="FILE_EXTENSIONS" />-Dateien öffnen</translation>
 <translation id="6835762382653651563">Stellen Sie eine Internetverbindung her, um Ihr Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="6838034009068684089">Nachfragen, wenn eine Website Fenster auf meinen Bildschirmen öffnen und platzieren möchte (empfohlen)</translation>
@@ -6006,6 +6007,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7622114377921274169">Wird aufgeladen.</translation>
 <translation id="7622768823216805500">Websites installieren normalerweise Zahlungs-Handler für Einkaufsfunktionen wie eine schnellere Bezahlung</translation>
 <translation id="7622903810087708234">Passwortdetails</translation>
+<translation id="7622966771025050155">Zum aufgenommenen Tab wechseln</translation>
 <translation id="7624337243375417909">Feststelltaste aus</translation>
 <translation id="7625568159987162309">Nach Websites sortierte Berechtigungen und gespeicherte Daten aufrufen</translation>
 <translation id="7628201176665550262">Aktualisierungsrate</translation>
@@ -6172,6 +6174,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7784067724422331729">Diese Datei wurde von den Sicherheitseinstellungen auf Ihrem Computer blockiert.</translation>
 <translation id="7784796923038949829">Daten der Website können nicht gelesen oder geändert werden</translation>
 <translation id="778480864305029524">Zum Verwenden von Instant Tethering Benachrichtigungen für Google Play-Dienste aktivieren.</translation>
+<translation id="7785471469930192436">Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer Suchmaschine</translation>
 <translation id="7786889348652477777">App &amp;neu laden</translation>
 <translation id="7787308148023287649">Anzeige auf einem anderen Display</translation>
 <translation id="7788298548579301890">Ein anderes Programm auf Ihrem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
@@ -6783,6 +6786,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter</tr
 <translation id="8438566539970814960">Suchanfragen und das Surfen verbessern</translation>
 <translation id="8439506636278576865">Übersetzung für Seiten in dieser Sprache anbieten</translation>
 <translation id="8440630305826533614">Linux-Apps</translation>
+<translation id="8446225304314102060">Zum Tab „<ph name="TAB_ORIGIN" />“ wechseln</translation>
 <translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8447409163267621480">Entweder Strg oder Alt integrieren</translation>
 <translation id="8448729345478502352">Die Elemente auf dem Bildschirm vergrößern oder verkleinern</translation>
@@ -7444,6 +7448,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen</translation>
 <translation id="9148058034647219655">Beenden</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>
 <translation id="9148963623915467028">Diese Website hat Zugriff auf Ihren Standort.</translation>
+<translation id="9149529198050266366">Dunkler Modus wird bei Sonnenaufgang automatisch deaktiviert</translation>
 <translation id="9149866541089851383">Bearbeiten...</translation>
 <translation id="9150045010208374699">Ihre Kamera verwenden</translation>
 <translation id="9150079578948279438">Das Profil konnte nicht entfernt werden. Bitte versuchen Sie es noch einmal oder wenden Sie sich an den technischen Support.</translation>

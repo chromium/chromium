@@ -544,6 +544,27 @@
       このポリシーを未設定のままにした場合、デバイスで使用できるディスクの空き容量が 20 GB（デフォルト値）未満のときに <ph name="PLUGIN_VM_NAME" /> のインストールが失敗します。
       このポリシーを設定した場合、デバイスで使用できるディスクの空き容量がポリシーで要求される値未満のときに <ph name="PLUGIN_VM_NAME" /> のインストールが失敗します。</translation>
 <translation id="1690383938831887552">Signed HTTP Exchange の読み込みを許可しない</translation>
+<translation id="1700458869527146675">このポリシーでは、Chrome と ARC アプリのプロキシ設定を行います。いずれもコマンドラインで指定されたプロキシ関連の設定はすべて無視されます。
+
+       このポリシーを未設定のままにした場合、ユーザーはプロキシ設定を選択できます。
+
+       <ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを設定すると、次のフィールドを受け取れるようになります。
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Chrome で使用するプロキシ サーバーを指定して、ユーザーがプロキシ設定を変更できないようにします
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: プロキシ .pac ファイルへの URL
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: ネットワーク スタックが無効または使用できない PAC スクリプトを使用して直接接続にフォールバックできないようにします。
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: プロキシ サーバーの URL
+         *<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: プロキシを使用しないホストのリスト
+
+       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> フィールドは非推奨となりました。代わりに <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> フィールドを使用してください。
+
+       <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> については、以下のいずれかの値を指定します。
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />: プロキシは一切使用せず、他のフィールドをすべて無視します。
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: システムのプロキシを使用して、他のフィールドをすべて無視します。
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: 他のフィールドをすべて無視します。
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> フィールド、<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> フィールド、<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
+
+      注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
 <translation id="1700811900332333712">デバイスに Powerwash のリクエストを許可する</translation>
 <translation id="1708496595873025510">バリエーション シードの取得に制限を設定する</translation>
 <translation id="1713829924716792485">このポリシーを有効に設定するか未設定のままにした場合、リモート アクセス ホストに接続しているユーザーは、クライアントとホスト間でファイルを転送できます。これは、ファイル転送がサポートされていないリモート サポート接続には適用されません。
@@ -565,6 +586,11 @@
       このポリシーを未設定のままにした場合、ユーザーによる画面制御と明るさの自動調整機能には影響しません。
 
       注: ポリシーの値は 0～100（%）の範囲で指定する必要があります。</translation>
+<translation id="1733939382419067578">このポリシーでは、通知の表示を許可するサイトの URL パターンリストを指定できます。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="1736269219679256369">SSL 警告ページから移動することを許可する</translation>
 <translation id="173993509627303617">自動インストールされたウェブ アプリケーションにデバイス属性の取得を許可しない。</translation>
 <translation id="174765717426930019">ポップアップの表示元ページで操作が明示的に禁止されている場合以外は、<ph name="BLANK_PAGE_NAME" /> をターゲットとして開いたすべてのポップアップにそのリクエスト元ページの操作を許可する </translation>
@@ -2391,6 +2417,11 @@
 <translation id="4043796890723386527">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可しない</translation>
 <translation id="4051723201852944592">ウィンドウ オクルージョンを有効にします</translation>
 <translation id="4056910949759281379">SPDY プロトコルを無効にする</translation>
+<translation id="4061107397839125009">このポリシーでは、通知の表示を許可しないサイトの URL パターンリストを指定できます。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="4061590579642538878">障害レポートに関する情報を報告します。</translation>
 <translation id="4075675819066819571">シェルフを画面の左側に配置する</translation>
 <translation id="408029843066770167">Google 時間サービスへのクエリを許可する</translation>

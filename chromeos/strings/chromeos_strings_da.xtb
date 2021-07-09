@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
+<translation id="2294675138977897428">Der blev ikke registreret nogen Ethernet-forbindelse</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
 <translation id="2364498172489649528">Bestået</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> billeder</translation>
 <translation id="4378373042927530923">Kørte ikke</translation>
+<translation id="4378551569595875038">Tilslutter...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
@@ -277,6 +279,7 @@
 <translation id="6527081081771465939">Ukendt Wi-Fi-sikkerhedsprotokol</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Handlingen mislykkedes – Ingen forbindelse til printer</translation>
+<translation id="6603230386432466813">Har du problemer med at oprette forbindelse?</translation>
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6620487321149975369">Udskriftsjobs vises i historikken, medmindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Ryd</translation>

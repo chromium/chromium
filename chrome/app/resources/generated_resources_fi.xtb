@@ -616,7 +616,6 @@
 <translation id="164936512206786300">Poista Bluetooth-laitteen pari</translation>
 <translation id="1651008383952180276">Kirjoita sama tunnuslause kahdesti.</translation>
 <translation id="1652326691684645429">Ota lähijakaminen käyttöön</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Lisää tulostin Google Cloud Printiin, jotta voit tulostaa mistä tahansa.}other{Lisää # tulostinta Google Cloud Printiin, jotta voit tulostaa mistä tahansa.}}</translation>
 <translation id="1653631694606464309">Verkkosovellukset pyytävät yleensä lupaa avata tietyntyyppisiä tiedostoja, jotta voit työstää kyseisiä tiedostoja missä tahansa, esim. avata dokumentteja haluamassasi tekstinkäsittelyohjelmassa</translation>
 <translation id="1656528038316521561">Taustan läpinäkyvyys</translation>
 <translation id="1657406563541664238">Auta parantamaan tuotetta <ph name="PRODUCT_NAME" /> lähettämällä automaattisesti käyttötilastoja ja virheraportteja Googlelle.</translation>
@@ -2914,7 +2913,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4094647278880271855">Käytät ympäristön muuttujaa, jota ei tueta: <ph name="BAD_VAR" />. Tämä heikentää vakautta ja tietoturvaa.</translation>
 <translation id="4095264805865317199">Avaa mobiiliyhteyden aktivoinnin käyttöliittymä</translation>
 <translation id="4095507791297118304">Ensisijainen näyttö</translation>
-<translation id="409579654357498729">Lisää Cloud Printiin</translation>
 <translation id="4096508467498758490">Poista kehittäjätilassa olevat laajennukset käytöstä</translation>
 <translation id="4097406557126260163">Sovellukset ja laajennukset</translation>
 <translation id="409742781329613461">Vinkkejä Chromen käyttöön</translation>
@@ -4391,6 +4389,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5794700615121138172">Linuxin jaetut kansiot</translation>
 <translation id="5794786537412027208">Sulje kaikki Chrome-sovellukset</translation>
 <translation id="5797070761912323120">Google voi muokata Hakua, mainoksia ja muita Googlen palveluita historiasi perusteella</translation>
+<translation id="5797521893972859201">Tyhjentää historian esim. hakukentästä</translation>
 <translation id="5798079537501238810">Sivustot voivat asentaa maksunkäsittelijöitä</translation>
 <translation id="579907812742603813">suojattu sisältö</translation>
 <translation id="579915268381781820">Suojausavain poistettiin.</translation>
@@ -4474,6 +4473,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5900302528761731119">Google-profiilin kuva</translation>
 <translation id="590036993063074298">Peilauksen laatutiedot</translation>
 <translation id="5901069264981746702">Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Vaihda tallennettavalle välilehdelle</translation>
 <translation id="5901494423252125310">Tulostimen luukku auki</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" />:n asennus ei onnistunut konfiguraatio-ongelman vuoksi. Ota yhteyttä järjestelmänvalvojaasi. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
@@ -4746,6 +4746,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6196854373336333322">Välityspalvelimesi asetuksia hallinnoi tällä hetkellä tämä laajennus <ph name="EXTENSION_NAME" />, joka voi muokata, haitata tai salakuunnella kaikkia verkkotoimiasi. Jos et tiedä, miksi tämä muutos tehtiin, et luultavasti halua käyttää sitä.</translation>
 <translation id="6198102561359457428">Kirjaudu ulos ja kirjaudu uudelleen sisään...</translation>
 <translation id="6198252989419008588">Vaihda PIN-koodi</translation>
+<translation id="6200047250927636406">Hylkää tiedosto</translation>
 <translation id="6202304368170870640">PIN-koodin avulla voit kirjautua laitteeseen tai avata sen lukituksen.</translation>
 <translation id="6206311232642889873">K&amp;opioi kuva</translation>
 <translation id="6207200176136643843">Palauta zoomauksen oletustaso</translation>
@@ -4831,7 +4832,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <ph name="DOMAIN" /> ei salli älykortin poistamista.</translation>
 <translation id="628352644014831790">4 sekuntia</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> on harvinainen ladattava tiedosto, ja se voi olla vaarallinen.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Verkossasi on uusi tulostin}other{Verkossasi on uusia tulostimia}}</translation>
 <translation id="6285770818046456882">Sinulle sisältöä jakanut laite peruutti siirron</translation>
 <translation id="6290613030083731160">Ei sisältöä jakavia laitteita lähistöllä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivointikoodia todennetaan… Tämä voi kestää muutaman minuutin.</translation>
@@ -5314,6 +5314,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6831043979455480757">Käännä</translation>
 <translation id="6833479554815567477">Välilehti poistettu ryhmästä <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Siirry käyttämään älykästä ja turvallista selainta.</translation>
+<translation id="6834652994408928492">Tumma tila menee automaattisesti päälle, kun aurinko laskee</translation>
 <translation id="683540480453879381">avata tiedostot: <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Muodosta internetyhteys, niin voit päivittää laitteen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Kysy, kun sivusto haluaa avata ikkunoita ja sijoittaa niitä näytöillesi (suositus)</translation>
@@ -6026,6 +6027,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7622114377921274169">Ladataan</translation>
 <translation id="7622768823216805500">Sivustot asentavat yleensä maksunkäsittelijöitä tarjotakseen osto-ominaisuuksia, esim. helpomman maksamisen</translation>
 <translation id="7622903810087708234">Salasanan tiedot</translation>
+<translation id="7622966771025050155">Vaihda tallennetulle välilehdelle</translation>
 <translation id="7624337243375417909">caps lock pois päältä</translation>
 <translation id="7625568159987162309">Näytä kaikki sivustoille tallennetut käyttöoikeudet ja data</translation>
 <translation id="7628201176665550262">Päivitysväli</translation>
@@ -6192,6 +6194,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7784067724422331729">Tietokoneesi suojausasetukset estivät tämän tiedoston.</translation>
 <translation id="7784796923038949829">Sivuston dataa ei voi lukea tai muuttaa</translation>
 <translation id="778480864305029524">Jotta voit käyttää yhteyden pikajakamista, ota Google Play Palveluiden ilmoitukset käyttöön.</translation>
+<translation id="7785471469930192436">Katso tarvittaessa hakukoneen ohjeet hakuhistorian poistamiselle</translation>
 <translation id="7786889348652477777">&amp;Lataa sovellus uudelleen</translation>
 <translation id="7787308148023287649">Näytä toisella näytöllä</translation>
 <translation id="7788298548579301890">Toinen tietokoneellasi oleva ohjelma on lisännyt sovelluksen, joka voi muuttaa Chromen toimintaa.
@@ -6803,6 +6806,7 @@ Paina määritettyä kytkintä poistaaksesi määrityksen</translation>
 <translation id="8438566539970814960">Paranna hakuja ja selausta</translation>
 <translation id="8439506636278576865">Tarjoudu kääntämään sivuja tälle kielelle</translation>
 <translation id="8440630305826533614">Linux-sovellukset</translation>
+<translation id="8446225304314102060">Vaihda välilehdelle <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Lisätietoja</translation>
 <translation id="8447409163267621480">Lisää alkuun joko Ctrl tai Alt</translation>
 <translation id="8448729345478502352">Pienennä tai suurenna näytöllä näkyviä kohteita</translation>
@@ -7464,6 +7468,7 @@ Voit määrittää tälle toiminnolle useita kytkimiä</translation>
 <translation id="9148058034647219655">Poistu</translation>
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
 <translation id="9148963623915467028">Tämä sivusto voi käyttää sijaintitietojasi.</translation>
+<translation id="9149529198050266366">Tumma tila menee automaattisesti pois päältä, kun aurinko nousee</translation>
 <translation id="9149866541089851383">Muokkaa...</translation>
 <translation id="9150045010208374699">Käyttää kameraa</translation>
 <translation id="9150079578948279438">Profiilin poisto ei onnistunut. Yritä uudelleen tai pyydä operaattorilta teknistä tukea.</translation>

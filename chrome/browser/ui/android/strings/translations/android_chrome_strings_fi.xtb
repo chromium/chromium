@@ -488,6 +488,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4181841719683918333">Kielet</translation>
 <translation id="4183868528246477015">Hae Google Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
+<translation id="4196597275619698563">Luo kortti</translation>
 <translation id="4198423547019359126">Tallennussijainteja ei ole saatavilla</translation>
 <translation id="4209895695669353772">Ota synkronointi käyttöön, niin näet Googlen suosittelemaa yksilöllistä sisältöä</translation>
 <translation id="4225895483398857530">Työkalupalkin pikakuvake</translation>
@@ -1046,6 +1047,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7704317875155739195">Täydennä automaattisesti hakuja ja URL-osoitteita</translation>
 <translation id="7707922173985738739">Käytä mobiilidataa</translation>
 <translation id="7725024127233776428">Kirjanmerkeiksi lisätyt sivut näkyvät tässä</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Muita toimintoja<ph name="END_LINK1" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa ne milloin tahansa.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> jakoi tekstin</translation>
 <translation id="7761849928583394409">Valitse päivä ja aika</translation>
 <translation id="7762668264895820836">SD-kortti <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8854223127042600341">Katso offline-tiedostojasi</translation>
 <translation id="8856607253650333758">Muodosta kuvaukset</translation>
 <translation id="8873817150012960745">Aloita napauttamalla tätä</translation>
+<translation id="8881973373982641723">Tyhjentää historian esim. hakukentästä.</translation>
 <translation id="889338405075704026">Siirry Chrome-asetuksiin</translation>
 <translation id="8898822736010347272">Lähettää Googlelle joidenkin vierailemiesi sivujen URL-osoitteita, rajallisia järjestelmätietoja ja osia sivujen sisällöstä auttaakseen löytämään uusia uhkia ja suojaamaan kaikkia verkon käyttäjiä.</translation>
 <translation id="8909135823018751308">Jaa…</translation>
@@ -1289,6 +1292,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="9209888181064652401">Puheluiden soittaminen ei onnistu</translation>
 <translation id="9212845824145208577">Alemmas ei pääse. Kokeile aloittaa alempaa sivulta.</translation>
 <translation id="9219103736887031265">Kuvat</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Hakuhistoriaa<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />muita toimintoja<ph name="END_LINK2" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa ne milloin tahansa.</translation>
 <translation id="926205370408745186">Poista Chrome-toimintasi Digitaalisesta hyvinvoinnista</translation>
 <translation id="927968626442779827">Käytä Yksinkertaistettua tilaa Google Chromessa</translation>
 <translation id="932327136139879170">Etusivu</translation>

@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">इन्टरनेट छैन</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">सक्रियताको वस्तुस्थिति</translation>
+<translation id="2294675138977897428">कुनै पनि इथरनेट कनेक्सन भेटिएन</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">नजिकैका डिभाइसहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">रोकियो - अज्ञात त्रुटि भयो</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> वटा फोटो</translation>
 <translation id="4378373042927530923">चलेन</translation>
+<translation id="4378551569595875038">जडान गर्दै...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">मेरो ड्राइभ</translation>
 <translation id="4429881212383817840">Kerberos टिकटको म्याद चाँडै सकिँदै छ</translation>
@@ -277,6 +279,7 @@
 <translation id="6527081081771465939">अज्ञात WiFi सेक्युरिटी प्रोटोकोल</translation>
 <translation id="65587193855025101">फ्याल्टबेड</translation>
 <translation id="6564646048574748301">प्रिन्ट गर्न सकिएन - प्रिन्टरमा कनेक्ट भइरहेको छैन</translation>
+<translation id="6603230386432466813">कनेक्ट गर्ने क्रममा समस्या भइरहेको छ?</translation>
 <translation id="6618744767048954150">जाँच हुँदै छ</translation>
 <translation id="6620487321149975369">तपाईंले प्रिन्टसम्बन्धी कार्यहरू नहटाउँदासम्म ती कार्यहरू इतिहासमा देखिने छन्</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>

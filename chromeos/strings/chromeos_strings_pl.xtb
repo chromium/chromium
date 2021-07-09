@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Brak internetu</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stan aktywacji</translation>
+<translation id="2294675138977897428">Nie wykryto połączenia z siecią Ethernet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
 <translation id="2364498172489649528">Zaliczone</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
 <translation id="4300073214558989">Obrazy: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Nie wykonano</translation>
+<translation id="4378551569595875038">Łączę...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
 <translation id="4429881212383817840">Zgłoszenie Kerberos wkrótce straci ważność</translation>
@@ -278,6 +280,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6527081081771465939">Nieznany protokół zabezpieczeń Wi-Fi</translation>
 <translation id="65587193855025101">Szyba</translation>
 <translation id="6564646048574748301">Niepowodzenie – drukarka jest nieosiągalna</translation>
+<translation id="6603230386432466813">Masz kłopoty z nawiązaniem połączenia?</translation>
 <translation id="6618744767048954150">W toku</translation>
 <translation id="6620487321149975369">Zadania drukowania będą widoczne w historii, dopóki ich nie usuniesz</translation>
 <translation id="6643016212128521049">Wyczyść</translation>

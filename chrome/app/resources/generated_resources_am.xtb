@@ -614,7 +614,6 @@
 <translation id="164936512206786300">የብሉቱዝ መሣሪያን ነጥል</translation>
 <translation id="1651008383952180276">ተመሳሳዩ የይለፍ ሐረጉን ሁለት ጊዜ ማስገባት አለብዎት</translation>
 <translation id="1652326691684645429">የአቅራቢያ አጋራን ያንቁ</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{ከማንኛውም ቦታ ሆነው ማተም እንዲችሉ አታሚውን ወደ Google Cloud አታሚ ያክሉ።}one{ከማንኛውም ቦታ ሆነው ማተም እንዲችሉ # አታሚዎችን ወደ Google Cloud አታሚ ያክሉ።}other{ከማንኛውም ቦታ ሆነው ማተም እንዲችሉ # አታሚዎችን ወደ Google Cloud አታሚ ያክሉ።}}</translation>
 <translation id="1653631694606464309">እንደ በተመረጡ የጽሑፍ ማቀናበሪያዎ ውስጥ ሰነዶችን እንደ መክፈት ያሉ በሚፈልጉት ፋይሎች ላይ መስራት እንዲችሉ የድር መተግበሪያዎች በተለምዶ የተወሰኑ የፋይሎች ዓይነቶችን እንዲከፍቱ ይጠይቃሉ።</translation>
 <translation id="1656528038316521561">የበስተጀርባ ብርሃን-ከልነት</translation>
 <translation id="1657406563541664238">የአጠቃቀም ስታቲክሶችን እና የስንኩል ሪፖርቶችን ወደ Google በቀጥታ በመላክ <ph name="PRODUCT_NAME" />ን የተሻለ ለማድረግ እገዛ ያድርጉ።</translation>
@@ -2910,7 +2909,6 @@
 <translation id="4094647278880271855">የማይደገፍ የድባብ ተለዋዋጭ በመጠቀም ላይ ነዎት፦ <ph name="BAD_VAR" />። ማረጋጊያ እና ደህንነት ይቸገራሉ።</translation>
 <translation id="4095264805865317199">ተንቀሳቃሽ ማግበሪያ ዩአይ ይክፈቱ</translation>
 <translation id="4095507791297118304">ዋና ማሳያ</translation>
-<translation id="409579654357498729">ወደ የደመና ህትመት ያክሉ</translation>
 <translation id="4096508467498758490">የገንቢ ሁኔታ ቅጥያዎችን ያሰናክሉ</translation>
 <translation id="4097406557126260163">መተግበሪያዎች እና ቅጥያዎች</translation>
 <translation id="409742781329613461">ጠቃሚ ምክሮች ለChrome</translation>
@@ -4386,6 +4384,7 @@
 <translation id="5794700615121138172">የተጋሩ የLinux አቃፊዎች</translation>
 <translation id="5794786537412027208">ከሁሉም የChrome መተግበሪያዎች ውጣ</translation>
 <translation id="5797070761912323120">Google ፍለጋን፣ ማስታወቂያዎችን እና ሌሎች የGoogle አገልግሎቶችን ግላዊነት ለማላበስ የእርስዎን ታሪክ ሊጠቀም ይችላል</translation>
+<translation id="5797521893972859201">በፍለጋ ሳጥኑ ውስጥ ጨምሮ ታሪክን ያጸዳል</translation>
 <translation id="5798079537501238810">ጣቢያዎች የክፍያ ተቆጣጣሪዎችን መጫን ይችላሉ</translation>
 <translation id="579907812742603813">ጥበቃ የሚደረግለት ይዘት</translation>
 <translation id="579915268381781820">የእርስዎ የደህንነት ቁልፍ ተወግዷል።</translation>
@@ -4469,6 +4468,7 @@
 <translation id="5900302528761731119">Google የመገለጫ ፎቶ</translation>
 <translation id="590036993063074298">የጥራት ዝርዝሮችን ማንጸባረቅ</translation>
 <translation id="5901069264981746702">የጣት አሻራዎ ውሂብ ደህንነቱ በተጠበቀ ሁኔታ ይከማቻል እና በጭራሽ ከእርስዎ <ph name="DEVICE_TYPE" /> አይወጣም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">ወደ የሚቀርጽ ትር ይቀይሩ</translation>
 <translation id="5901494423252125310">የማተሚያ በር ክፍት ነው</translation>
 <translation id="5901630391730855834">ቢጫ</translation>
 <translation id="5904614460720589786">በውቅረት ችግር ምክንያት <ph name="APP_NAME" />ን ማቀናበር አልተቻለም። እባክዎ አስተዳዳሪዎን ያነጋግሩ። የስሕተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
@@ -4741,6 +4741,7 @@
 <translation id="6196854373336333322">ይህ «<ph name="EXTENSION_NAME" />» ቅጥያ የተኪ ቅንብሮችዎን ተቆጣጥሯል፣ ይሄ ማለት መስመር ላይ የሚያደርጉት ማንኛውም ነገር ሊቀይር፣ ሊሰብር ወይም በድብቅ ሊከታተል ይችላል። ይሄ ለውጥ ለምን እንደተከሰተ እርግጠኛ ካልሆኑ የማይፈልጉት ነገር ሳይሆን አይቀርም።</translation>
 <translation id="6198102561359457428">ዘግተው ይውጡና ከዚያ እንደገና ይግቡ...</translation>
 <translation id="6198252989419008588">ፒን ይቀይሩ</translation>
+<translation id="6200047250927636406">ፋይልን አስወግድ</translation>
 <translation id="6202304368170870640">ወደ መሣሪያዎ ለመግባት ወይም መሣሪያዎን ለመቆለፍ የእርስዎን ፒን መጠቀም ይችላሉ።</translation>
 <translation id="6206311232642889873">ምስል ቅ&amp;ዳ</translation>
 <translation id="6207200176136643843">ወደ ነባሪ የማጉላት ደረጃ ዳግም አስጀምር</translation>
@@ -4826,7 +4827,6 @@
 <ph name="DOMAIN" /> የእርስዎን ዘመናዊ ካርድ እንደገባ እንዲቆይ ይፈልግብዎታል።</translation>
 <translation id="628352644014831790">4 ሰከንዶች</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> በተለምዶ የሚወርድ ፋይል አይደለም፣ እና አደገኛ ሊሆን ይችላል።</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{በእርስዎ አውታረ መረብ ላይ ያለ አዲስ አታሚ}one{በእርስዎ አውታረ መረብ ላይ ያሉ አዲስ አታሚዎች}other{በእርስዎ አውታረ መረብ ላይ ያሉ አዲስ አታሚዎች}}</translation>
 <translation id="6285770818046456882">ከእርስዎ ጋር የተጋራው መሣሪያ ዝውውሩን ሰርዞታል</translation>
 <translation id="6290613030083731160">በአቅራቢያ የሚጋሩ መሣሪያዎች የሉም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">የማግበሪያ ኮድን በማረጋገጥ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
@@ -5309,6 +5309,7 @@
 <translation id="6831043979455480757">መተርጎም</translation>
 <translation id="6833479554815567477">ትር ከቡድን <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ተወግዷል</translation>
 <translation id="683373380308365518">ወደ ዘመናዊ እና ደህንነቱ የተጠበቀ አሳሽ ይቀይሩ</translation>
+<translation id="6834652994408928492">የጨለማ ሁነታ ፀሐይ ስትጠልቅ በራስ-ሰር ይበራል</translation>
 <translation id="683540480453879381">የ<ph name="FILE_EXTENSIONS" /> ፋይሎችን መክፈት</translation>
 <translation id="6835762382653651563">የእርስዎን <ph name="DEVICE_TYPE" /> ለማዘመን እባክዎ ከበይነመረብ ጋር ይገናኙ።</translation>
 <translation id="6838034009068684089">አንድ ጣቢያ መስኮቶችን መክፈትና በማያ ገጾችዎ ላይ ሊያስቀምጣቸው ሲፈልግ ጠይቅ (የሚመከር)</translation>
@@ -6021,6 +6022,7 @@
 <translation id="7622114377921274169">ኃይል በመሙላት ላይ።</translation>
 <translation id="7622768823216805500">ጣቢያዎች አብዛኛው ጊዜ እንደ የቀለለ ከፍሎ ማውጫ ላሉ የግዢ ባህሪዎች የክፍያ ተቆጣጣሪዎችን ይጭናሉ</translation>
 <translation id="7622903810087708234">የይለፍ ቃል ዝርዝሮች</translation>
+<translation id="7622966771025050155">ወደ የተቀረጸ ትር ይቀይሩ</translation>
 <translation id="7624337243375417909">አቢያት ማድረጊያ ጠፍቷል</translation>
 <translation id="7625568159987162309">ፈቃዶችን እና በመላ ጣቢያዎች ላይ የተከማቸ ውሂብን አሳይ</translation>
 <translation id="7628201176665550262">የዕድሳት ፍጥነት</translation>
@@ -6187,6 +6189,7 @@
 <translation id="7784067724422331729">በኮምፒውተርዎ ላይ ያሉት የደህንነት ቅንብሮች ይህንን ፋይል አግደውታል።</translation>
 <translation id="7784796923038949829">የጣቢያን ውሂብ ማንበብ ወይም መቀየር አልተቻለም</translation>
 <translation id="778480864305029524">ቅጽበታዊ እንደ ሞደም መሰካትን ለመጠቀም ለGoogle Play አገልግሎቶች ማሳወቂያዎችን ያብሩ።</translation>
+<translation id="7785471469930192436">መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ የፍለጋ ፕሮግራምዎን መመሪያዎች ይመልከቱ።</translation>
 <translation id="7786889348652477777">&amp;መተግበሪያን ዳግም ጫን</translation>
 <translation id="7787308148023287649">በሌላ ማያ ገጽ ላይ አሳይ</translation>
 <translation id="7788298548579301890">ሌላ ፕሮግራም Chrome የሚሰራበትን መንገድ የሚለውጥ መተግበሪያ በኮምፒውተርዎ ታክሏል።
@@ -6804,6 +6807,7 @@ nil</translation>
 <translation id="8438566539970814960">ፍለጋዎችን እና አሰሳን የተሻለ አድርግ</translation>
 <translation id="8439506636278576865">በዚህ ቋንቋ ውስጥ ያሉ ገጾችን ለመተርጎም ያቅርቡ</translation>
 <translation id="8440630305826533614">Linux መተግበሪያዎች</translation>
+<translation id="8446225304314102060">ወደ ትር <ph name="TAB_ORIGIN" /> ቀይር</translation>
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8447409163267621480">Ctrl ወይም Alt ያካትቱ</translation>
 <translation id="8448729345478502352">በማያ ገጽዎ ላይ ያሉ ንጥሎችን ያሳንሱ ወይም ያተልቁ</translation>
@@ -7466,6 +7470,7 @@ nil</translation>
 <translation id="9148058034647219655">ውጣ</translation>
 <translation id="9148126808321036104">እንደገና ይግቡ</translation>
 <translation id="9148963623915467028">ይህ ጣቢያ አካባቢዎን ሊደርስበት ይችላል።</translation>
+<translation id="9149529198050266366">የጨለማ ሁነታ ፀሐይ ስትወጣ በራስ-ሰር ይጠፋል</translation>
 <translation id="9149866541089851383">አርትዕ…</translation>
 <translation id="9150045010208374699">ካሜራዎን ይጠቀማል</translation>
 <translation id="9150079578948279438">መገለጫ ሊወገድ አልቻለም። እባክዎ እንደገና ይሞክሩ ወይም ለቴክኒካዊ ድጋፍ አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>

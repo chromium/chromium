@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Ակտիվացման կարգավիճակը</translation>
+<translation id="2294675138977897428">Ethernet միացում չի հայտնաբերվել</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Մոտակա սարքերը գտնելու համար միացրեք Bluetooth-ը</translation>
 <translation id="2364498172489649528">Անցել է ստուգում</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> պատկեր</translation>
 <translation id="4378373042927530923">Չի գործարկվել</translation>
+<translation id="4378551569595875038">Միացում…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
 <translation id="4429881212383817840">Kerberos տոմսի գործողության ժամկետը շուտով կսպառվի</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">Wi-Fi-ի անվտանգության անհայտ հաղորդակարգ</translation>
 <translation id="65587193855025101">Պլանշետային</translation>
 <translation id="6564646048574748301">Չհաջողվեց տպել – Տպիչն անհասանելի է</translation>
+<translation id="6603230386432466813">Չի՞ հաջողվում միանալ</translation>
 <translation id="6618744767048954150">Ստուգումն ընթացքում է</translation>
 <translation id="6620487321149975369">Տպելու առաջադրանքները կցուցադրվեն պատմության մեջ, եթե դրանք ձեռքով չեն հեռացվել</translation>
 <translation id="6643016212128521049">Մաքրել</translation>

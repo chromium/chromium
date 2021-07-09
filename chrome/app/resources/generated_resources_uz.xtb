@@ -611,7 +611,6 @@
 <translation id="164936512206786300">Bluetooth qurilmani uzish</translation>
 <translation id="1651008383952180276">Siz kodli iborani ikki marta bir xil kiritishingiz kerak.</translation>
 <translation id="1652326691684645429">Nearby Share’ni yoqish</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Google Virtual printer xizmatiga printer qo‘shing va hujjatlarni istalgan qurilmadan turib chop etishga yuboring.}other{Google Virtual printer xizmatiga # ta printer qo‘shing va hujjatlarni istalgan qurilmadan turib chop etishga yuboring.}}</translation>
 <translation id="1653631694606464309">Veb ilovalar odatda hujjatlarni maqbul muharrirda ochish singari fayl turlarini ochishga ruxsat soʻraydi</translation>
 <translation id="1656528038316521561">Orqa fon shaffofligi</translation>
 <translation id="1657406563541664238">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini jo‘natish orqali <ph name="PRODUCT_NAME" />’ni takomillashtirishga yordam bering</translation>
@@ -2905,7 +2904,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4094647278880271855">Siz moslanmagan muhit qiymatidan foydalanyapsiz: <ph name="BAD_VAR" />. Barqarorlik va xavfsizlikka zarar tegishi mumkin.</translation>
 <translation id="4095264805865317199">Mobil tarmoqni faollashtirish interfeysini ochish</translation>
 <translation id="4095507791297118304">Asosiy ekran</translation>
-<translation id="409579654357498729">Virtual printerga qo‘shish</translation>
 <translation id="4096508467498758490">Dasturchi rejimidagi kengaytmalarni o‘chirib qo‘yish</translation>
 <translation id="4097406557126260163">Ilova va kengaytmalar</translation>
 <translation id="409742781329613461">Chrome maslahati</translation>
@@ -4825,7 +4823,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.</translation>
 <translation id="628352644014831790">4 soniya</translation>
 <translation id="6285120108426285413">“<ph name="FILE_NAME" />” faylini yuklab olish tavsiya etilmaydi, chunki bu fayl kompyuteringiz uchun xavfli bo‘lishi mumkin.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Tarmoqda yangi printer}other{Tarmoqda yangi printerlar}}</translation>
 <translation id="6285770818046456882">Fayl yuborayotgan qurilma uzatmani bekor qildi</translation>
 <translation id="6290613030083731160">Atrofda hech qanday qurilma topilmadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivatsiya kodi tekshirilmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>

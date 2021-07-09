@@ -488,6 +488,7 @@ A Privacy Sandbox está em desenvolvimento e está disponível em regiões selec
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4183868528246477015">Pesquisar com Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
+<translation id="4196597275619698563">Criar cartão</translation>
 <translation id="4198423547019359126">Não existem localizações de transferência disponíveis.</translation>
 <translation id="4209895695669353772">Para obter conteúdo personalizado sugerido pelo Google, ative a sincronização.</translation>
 <translation id="4225895483398857530">Atalho da barra de ferramentas</translation>
@@ -1046,6 +1047,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7704317875155739195">Pesquisas de preenchimento automático e URLs</translation>
 <translation id="7707922173985738739">Utilizar dados móveis</translation>
 <translation id="7725024127233776428">As páginas que adiciona aos marcadores aparecem aqui.</translation>
+<translation id="7731260005404856143">Podem ser guardadas <ph name="BEGIN_LINK1" />outras formas de atividade<ph name="END_LINK1" /> na sua Conta Google quando tem sessão iniciada. Pode eliminá-las em qualquer altura.</translation>
 <translation id="7757787379047923882">Texto partilhado a partir do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Escolher data e hora</translation>
 <translation id="7762668264895820836">Cartão SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8854223127042600341">Veja os seus ficheiros offline</translation>
 <translation id="8856607253650333758">Obter descrições</translation>
 <translation id="8873817150012960745">Toque aqui para começar.</translation>
+<translation id="8881973373982641723">Limpa o histórico, incluindo na caixa de pesquisa.</translation>
 <translation id="889338405075704026">Aceder às definições do Chrome</translation>
 <translation id="8898822736010347272">Envia URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas para a Google para ajudar a detetar novas ameaças e a proteger todos os utilizadores na Web.</translation>
 <translation id="8909135823018751308">Partilhar…</translation>
@@ -1289,6 +1292,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="9209888181064652401">Não é possível efetuar chamadas</translation>
 <translation id="9212845824145208577">Não é possível descer mais. Tente começar mais abaixo na página.</translation>
 <translation id="9219103736887031265">Imagens</translation>
+<translation id="923957533152125119">O <ph name="BEGIN_LINK1" />histórico de pesquisas<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outras formas de atividade<ph name="END_LINK2" /> podem ser guardados na sua Conta Google quando tem sessão iniciada. Pode eliminá-los em qualquer altura.</translation>
 <translation id="926205370408745186">Remova a atividade do Chrome do Bem-estar digital</translation>
 <translation id="927968626442779827">Utilize o Modo Lite no Google Chrome.</translation>
 <translation id="932327136139879170">Página inicial</translation>

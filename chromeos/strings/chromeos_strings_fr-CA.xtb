@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Aucune connexion Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">État de l'activation</translation>
+<translation id="2294675138977897428">Aucune connexion Ethernet détectée</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
 <translation id="2364498172489649528">Vérification réussie</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
+<translation id="4378551569595875038">Connexion...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mon disque</translation>
 <translation id="4429881212383817840">Le ticket Kerberos expire bientôt</translation>
@@ -278,6 +280,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6527081081771465939">Protocole de sécurité Wi-Fi inconnu</translation>
 <translation id="65587193855025101">À plat</translation>
 <translation id="6564646048574748301">Échec : imprimante inaccessible</translation>
+<translation id="6603230386432466813">Vous éprouvez des problèmes de connexion?</translation>
 <translation id="6618744767048954150">En cours…</translation>
 <translation id="6620487321149975369">Les tâches d'impression s'afficheront dans l'historique, sauf si vous les retirez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>

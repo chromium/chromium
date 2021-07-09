@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">حالة التفعيل</translation>
+<translation id="2294675138977897428">لم يتم رصد اتصال إيثرنت.</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
 <translation id="2364498172489649528">تم الاجتياز.</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>
 <translation id="4378373042927530923">لم يتم التشغيل</translation>
+<translation id="4378551569595875038">جارٍ الاتصال...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">‏بروتوكول حماية شبكة Wi-Fi غير معروف.</translation>
 <translation id="65587193855025101">المسطَّح</translation>
 <translation id="6564646048574748301">تعذَّرت الطباعة - لا يمكن الوصول إلى الطابعة</translation>
+<translation id="6603230386432466813">هل تواجه مشكلة أثناء الاتصال؟</translation>
 <translation id="6618744767048954150">قيد التشغيل</translation>
 <translation id="6620487321149975369">ستظهر طلبات الطباعة في السجلّ إلّا إذا تمت إزالتها يدويًا.</translation>
 <translation id="6643016212128521049">محو</translation>

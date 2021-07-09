@@ -610,7 +610,6 @@
 <translation id="164936512206786300">取消与蓝牙设备配对</translation>
 <translation id="1651008383952180276">您两次输入的密码必须相同</translation>
 <translation id="1652326691684645429">启用“附近分享”功能</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{请将该打印机添加到 Google 云打印，以便您可以随时随地进行打印。}other{请将 # 台打印机添加到 Google 云打印，以便您可以随时随地进行打印。}}</translation>
 <translation id="1653631694606464309">Web 应用通常会请求打开某些类型的文件，以便您能在所需程序中处理这些文件，例如在首选的文字处理程序中打开文档</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">将使用情况统计信息和崩溃报告自动发送给 Google，帮助我们完善 <ph name="PRODUCT_NAME" /></translation>
@@ -2898,7 +2897,6 @@
 <translation id="4094647278880271855">您使用了不受支持的环境变量：<ph name="BAD_VAR" />。稳定性和安全性会有所下降。</translation>
 <translation id="4095264805865317199">打开移动网络激活界面</translation>
 <translation id="4095507791297118304">主显示屏</translation>
-<translation id="409579654357498729">添加到云打印</translation>
 <translation id="4096508467498758490">请停用以开发者模式运行的扩展程序</translation>
 <translation id="4097406557126260163">应用和扩展程序</translation>
 <translation id="409742781329613461">Chrome 使用提示</translation>
@@ -4814,7 +4812,6 @@
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。</translation>
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 的下载方式实属异常，因此它可能存在危险。</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{您的网络中有 1 台新打印机}other{您的网络中有多台新打印机}}</translation>
 <translation id="6285770818046456882">正与您分享内容的设备取消了传输</translation>
 <translation id="6290613030083731160">附近没有正在分享内容的设备。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">正在验证激活码。这可能需要几分钟的时间。</translation>

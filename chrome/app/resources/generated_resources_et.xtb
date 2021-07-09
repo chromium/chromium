@@ -616,7 +616,6 @@
 <translation id="164936512206786300">Bluetooth-seadme seose tühistamine</translation>
 <translation id="1651008383952180276">Peate sisestama sama parooli kaks korda</translation>
 <translation id="1652326691684645429">Läheduses jagamise lubamine</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Lisage printer teenusesse Google'i pilvprintimine, et saaksite printida kõikjal.}other{Lisage # printerit teenusesse Google'i pilvprintimine, et saaksite printida kõikjal.}}</translation>
 <translation id="1653631694606464309">Veebirakendused küsivad tavaliselt luba teatud tüüpi failide avamiseks, et saaksite nende failidega soovitud kohas töötada (nt dokumentide avamine eelistatud tekstitöötlusprogrammis)</translation>
 <translation id="1656528038316521561">Tausta läbipaistvus</translation>
 <translation id="1657406563541664238">Aidake muuta rakendus <ph name="PRODUCT_NAME" /> paremaks, saates Google'ile automaatselt kasutusstatistikat ja veaaruandeid</translation>
@@ -2909,7 +2908,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4094647278880271855">Kasutate keskkonna toetamata muutujat: <ph name="BAD_VAR" />. See vähendab stabiilsust ja turvalisust.</translation>
 <translation id="4095264805865317199">Ava mobiilsidevõrgu aktiveerimise kasutajaliides</translation>
 <translation id="4095507791297118304">Peamine ekraan</translation>
-<translation id="409579654357498729">Lisa pilvprintimisse</translation>
 <translation id="4096508467498758490">Arendaja režiimi laienduste keelamine</translation>
 <translation id="4097406557126260163">Rakendused ja laiendused</translation>
 <translation id="409742781329613461">Chrome'i nõuanded</translation>
@@ -4828,7 +4826,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.</translation>
 <translation id="628352644014831790">4 sekundit</translation>
 <translation id="6285120108426285413">Faili <ph name="FILE_NAME" /> ei laadita sageli alla ja see võib olla ohtlik.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Teie võrgus on uus printer}other{Teie võrgus on uued printerid}}</translation>
 <translation id="6285770818046456882">Teiega jagav seade tühistas ülekandmise</translation>
 <translation id="6290613030083731160">Mitte ükski saadaolev seade ei jaga läheduses. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktiveerimiskoodi kinnitamine. See võib võtta mõne minuti.</translation>

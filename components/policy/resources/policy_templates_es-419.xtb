@@ -556,6 +556,27 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces esta política, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior a 20 GB (valor predeterminado).
       Si la estableces, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior al espacio que requiere la política.</translation>
 <translation id="1690383938831887552">No permitir que se carguen los intercambios HTTP firmados</translation>
+<translation id="1700458869527146675">Si estableces la política, se especificará la configuración del proxy para Chrome y las apps de ARC, por lo que se ignorarán todas las opciones relacionadas con el proxy que se especificaron en la línea de comandos.
+
+       Si no la estableces, los usuarios podrán elegir su configuración de proxy.
+
+       Si estableces la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, se aceptarán los siguientes campos:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> (podrás especificar el servidor proxy que usa Chrome y evitar que los usuarios cambien la configuración del proxy)
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> (una dirección URL a un archivo de proxy en formato .pac)
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> (evita que la pila de red recurra a conexiones directas con una secuencia de comandos PAC no válida o no disponible)
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> (URL del servidor proxy)
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> (lista de hosts que determinarán que se evite el proxy)
+
+       El campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> está obsoleto y ha sido sustituido por el campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, puedes elegir alguno de los valores siguientes:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />: no se usará nunca un proxy y se ignorará el resto de los campos.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: se usará el proxy del sistema y se ignorará el resto de los campos.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: se ignorará el resto de los campos.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: se usarán los campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: se usarán los campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+      Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1700811900332333712">Permite que el dispositivo solicite Powerwash</translation>
 <translation id="1708496595873025510">Establece la restricción en la obtención del valor de inicialización de las variaciones.</translation>
 <translation id="1713829924716792485">Si habilitas la política o no la estableces, los usuarios conectados con un host de acceso remoto podrán transferir archivos entre el cliente y el host. Esta acción no se aplicará a las conexiones de asistencia remota, las cuales no admiten la transferencia de archivos.
@@ -579,6 +600,11 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces la política, no se verán afectados los controles de la pantalla ni las funciones de brillo automático.
 
       Nota: Los valores de la política deben especificarse en porcentajes del 0 al 100.</translation>
+<translation id="1733939382419067578">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que pueden mostrar notificaciones.
+
+      Si no estableces la política, se aplicará <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
+
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="1736269219679256369">Permitir continuar desde la página de advertencia de SSL</translation>
 <translation id="173993509627303617">Impedir que las aplicaciones web instaladas de manera automática busquen atributos de dispositivos</translation>
 <translation id="174765717426930019">Permitir que se abran todas ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> para interactuar con la página que abrió la ventana emergente, a menos que esta página inhabilite esta interacción de forma explícita </translation>
@@ -2455,6 +2481,11 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="4043796890723386527">Impedir que los usuarios creen o utilicen perfiles secundarios o usen el modo de invitado en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Habilita la oclusión de ventanas</translation>
 <translation id="4056910949759281379">Inhabilitar el protocolo SPDY</translation>
+<translation id="4061107397839125009">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden mostrar notificaciones.
+
+      Si no estableces la política, se aplicará <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
+
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4061590579642538878">Proporciona datos sobre los informes de fallas</translation>
 <translation id="4075675819066819571">Ubicar la biblioteca en el lado izquierdo de la pantalla</translation>
 <translation id="408029843066770167">Permitir consultas a un servicio de hora de Google</translation>

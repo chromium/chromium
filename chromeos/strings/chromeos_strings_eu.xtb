@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Ez dago Interneteko konexiorik</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktibazioaren egoera</translation>
+<translation id="2294675138977897428">Ez da hauteman Ethernet-eko konexiorik</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Inguruko gailuak ikusteko, aktibatu Bluetooth-a</translation>
 <translation id="2364498172489649528">Gaindituta</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> irudi</translation>
 <translation id="4378373042927530923">Ez da exekutatu</translation>
+<translation id="4378551569595875038">Konektatzen…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Nire unitatea</translation>
 <translation id="4429881212383817840">Laster iraungiko da Kerberos-eko zerbitzu-eskaera</translation>
@@ -278,6 +280,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6527081081771465939">Wifiaren segurtasun-protokoloa ezezaguna da</translation>
 <translation id="65587193855025101">Eskaner horizontala</translation>
 <translation id="6564646048574748301">Hutsegitea - Inprimagailua ez da aurkitu</translation>
+<translation id="6603230386432466813">Arazoak dituzu konektatzeko?</translation>
 <translation id="6618744767048954150">Abian</translation>
 <translation id="6620487321149975369">Inprimatze-lanak historian agertuko dira, eskuz kendu ezean</translation>
 <translation id="6643016212128521049">Garbitu</translation>

@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">활성화 상태</translation>
+<translation id="2294675138977897428">감지된 이더넷 연결 없음</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" />dpi</translation>
 <translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
 <translation id="2364498172489649528">통과</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
 <translation id="4300073214558989">이미지 <ph name="IMAGE_COUNT" />개</translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
+<translation id="4378551569595875038">연결 중...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
 <translation id="4429881212383817840">Kerberos 티켓이 곧 만료됨</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
 <translation id="65587193855025101">평판</translation>
 <translation id="6564646048574748301">실패 - 프린터에 연결할 수 없음</translation>
+<translation id="6603230386432466813">연결하는 데 문제가 있나요?</translation>
 <translation id="6618744767048954150">실행 중</translation>
 <translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 기록에 나타납니다.</translation>
 <translation id="6643016212128521049">삭제</translation>

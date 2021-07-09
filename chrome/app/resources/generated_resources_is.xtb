@@ -617,7 +617,6 @@
 <translation id="164936512206786300">Aftengja Bluetooth-tæki</translation>
 <translation id="1651008383952180276">Þú verður að slá sama aðgangsorðið inn tvisvar</translation>
 <translation id="1652326691684645429">Kveikja á Nærdeilingu</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Bættu prentaranum við Google skýjaprentun til að prenta hvaðan sem er.}one{Bættu # prentara við Google skýjaprentun til að prenta hvaðan sem er.}other{Bættu # prenturum við Google skýjaprentun til að prenta hvaðan sem er.}}</translation>
 <translation id="1653631694606464309">Vefforrit biðja yfirleitt um að opna tilteknar skráargerðir svo þú getir unnið að þessum skrám þar sem þú vilt, eins og að opna skjöl í ritvinnsluforriti að eigin vali</translation>
 <translation id="1656528038316521561">Gagnsæi bakgrunns</translation>
 <translation id="1657406563541664238">Hjálpa til við að bæta <ph name="PRODUCT_NAME" /> með því að senda sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google</translation>
@@ -2918,7 +2917,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4094647278880271855">Þú ert að nota óstudda umhverfisbreytu: <ph name="BAD_VAR" />. Þetta hefur áhrif á stöðugleika og öryggi.</translation>
 <translation id="4095264805865317199">Opna viðmót fyrir farsímavirkjun</translation>
 <translation id="4095507791297118304">Aðalskjár</translation>
-<translation id="409579654357498729">Bæta við skýjaprentun</translation>
 <translation id="4096508467498758490">Slökkva á viðbótum í forritarastillingu</translation>
 <translation id="4097406557126260163">Forrit og viðbætur</translation>
 <translation id="409742781329613461">Ábendingar fyrir Chrome</translation>
@@ -4835,7 +4833,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.</translation>
 <translation id="628352644014831790">4 sekúndur</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> er ekki sótt oft og kann að vera hættulegt.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nýr prentari á netinu}one{Nýir prentarar á netinu}other{Nýir prentarar á netinu}}</translation>
 <translation id="6285770818046456882">Tækið sem er að deila með þér hætti við flutninginn</translation>
 <translation id="6290613030083731160">Engin tæki eru að deila nálægt. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Staðfestir virkjunarkóða. Þetta gæti tekið nokkrar mínútur.</translation>

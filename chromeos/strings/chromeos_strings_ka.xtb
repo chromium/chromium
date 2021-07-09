@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">ინტერნეტ-კავშირი არ არის</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">აქტივაციის სტატუსი</translation>
+<translation id="2294675138977897428">Ethernet-კავშირი აღმოჩენილი არ არის</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ახლომდებარე მოწყობილობების საპოვნელად ჩართეთ Bluetooth</translation>
 <translation id="2364498172489649528">გავლილია</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> სურათი</translation>
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
+<translation id="4378551569595875038">დაკავშირება…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">ჩემი Drive</translation>
 <translation id="4429881212383817840">Kerberos ბილეთის მოქმედების ვადა მალე იწურება</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">Wi-Fi-ს უცნობი უსაფრთხოების პროტოკოლი</translation>
 <translation id="65587193855025101">ბაქანი</translation>
 <translation id="6564646048574748301">ვერ მოხერხდა — პრინტერთან დაკავშირება ვერ ხერხდება</translation>
+<translation id="6603230386432466813">პრობლემა გაქვთ დაკავშირებასთან?</translation>
 <translation id="6618744767048954150">მიმდინარეობს</translation>
 <translation id="6620487321149975369">ბეჭდვის დავალებები გამოჩნდება ისტორიაში, თუ მათ ხელით არ ამოშლით</translation>
 <translation id="6643016212128521049">გასუფთავება</translation>

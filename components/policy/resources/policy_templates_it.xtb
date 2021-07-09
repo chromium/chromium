@@ -552,6 +552,27 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, l'installazione di <ph name="PLUGIN_VM_NAME" /> non va a buon fine se lo spazio libero disponibile sul dispositivo è inferiore a 20 GB (valore predefinito).
       Se il criterio è impostato, l'installazione di <ph name="PLUGIN_VM_NAME" /> non va a buon fine se lo spazio libero disponibile sul dispositivo è inferiore a quello richiesto dal criterio.</translation>
 <translation id="1690383938831887552">Impedisci il caricamento di scambi Signed HTTP Exchange</translation>
+<translation id="1700458869527146675">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
+
+       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
+
+       L'impostazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e impedisce agli utenti di modificare le impostazioni del proxy
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, un URL a un file proxy .pac
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, che impedisce allo stack di rete di utilizzare connessioni dirette con uno script PAC non valido o non disponibile
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, un URL del server proxy
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, un elenco di host per i quali verrà bypassato il proxy
+
+       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+      Nota: per esempi più dettagliati, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1700811900332333712">Consenti al dispositivo di richiedere il powerwash</translation>
 <translation id="1708496595873025510">Imposta la limitazione sul recupero del numero di inizializzazione delle varianti</translation>
 <translation id="1713829924716792485">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti connessi a un host di accesso remoto possono trasferire file dal client all'host e viceversa. Questo criterio non si applica alle connessioni di assistenza remota, che non supportano il trasferimento di file.
@@ -575,6 +596,11 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, i controlli o le funzionalità di luminosità automatica dello schermo dell'utente rimangono invariati.
 
       Nota: i valori del criterio devono essere specificati in percentuali da 0 a 100.</translation>
+<translation id="1733939382419067578">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che possono mostrare notifiche.
+
+      Se il criterio non viene configurato, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="1736269219679256369">Consenti di proseguire dalla pagina di avviso SSL</translation>
 <translation id="173993509627303617">Le applicazioni web con installazione forzata non possono richiedere gli attributi dei dispositivi.</translation>
 <translation id="174765717426930019">Consenti a tutti i popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha richiesto l'apertura del popup se la pagina di apertura non disattiva esplicitamente tale interazione </translation>
@@ -2442,6 +2468,11 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4043796890723386527">Impedisci agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
+<translation id="4061107397839125009">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che non possono mostrare notifiche.
+
+      Se il criterio non viene configurato, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="4061590579642538878">Segnala informazioni relative ai rapporti sugli arresti anomali.</translation>
 <translation id="4075675819066819571">Posiziona la barra delle app sul lato sinistro dello schermo</translation>
 <translation id="408029843066770167">Consenti query a un servizio orario di Google</translation>

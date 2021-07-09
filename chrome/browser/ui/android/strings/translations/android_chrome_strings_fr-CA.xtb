@@ -488,6 +488,7 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4183868528246477015"><ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /> Rech. avec Lentille Google</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
+<translation id="4196597275619698563">Créer une carte</translation>
 <translation id="4198423547019359126">Aucun dossier de téléchargement n'est disponible</translation>
 <translation id="4209895695669353772">Pour obtenir du contenu personnalisé suggéré par Google, activez la synchronisation</translation>
 <translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
@@ -1046,6 +1047,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7704317875155739195">Saisie semi-automatique des recherches et des URL</translation>
 <translation id="7707922173985738739">Utiliser les données mobiles</translation>
 <translation id="7725024127233776428">Les pages que vous ajoutez aux favoris s'affichent ici</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />D'autres formes d'activités<ph name="END_LINK1" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer en tout temps.</translation>
 <translation id="7757787379047923882">Texte partagé à partir de <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Sélectionner une date et une heure</translation>
 <translation id="7762668264895820836">Carte SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8854223127042600341">Afficher vos fichiers hors ligne</translation>
 <translation id="8856607253650333758">Obtenir les descriptions</translation>
 <translation id="8873817150012960745">Touchez ici pour commencer</translation>
+<translation id="8881973373982641723">Efface l'historique, y compris le contenu du champ de recherche.</translation>
 <translation id="889338405075704026">Aller aux paramètres de Chrome</translation>
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>
 <translation id="8909135823018751308">Partager...</translation>
@@ -1289,6 +1292,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9209888181064652401">Impossible de faire des appels</translation>
 <translation id="9212845824145208577">Impossible d'aller plus bas. Essayez de commencer plus bas sur la page.</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="923957533152125119">L'<ph name="BEGIN_LINK1" />historique de recherche<ph name="END_LINK1" /> et d'<ph name="BEGIN_LINK2" />autres formes d'activités<ph name="END_LINK2" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer en tout temps.</translation>
 <translation id="926205370408745186">Supprimer votre activité Chrome de Bien-être numérique</translation>
 <translation id="927968626442779827">Utilisez le mode simplifié dans Google Chrome</translation>
 <translation id="932327136139879170">Accueil</translation>

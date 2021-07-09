@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Kein Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivierungsstatus</translation>
+<translation id="2294675138977897428">Keine Ethernetverbindung gefunden</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivieren Sie Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2364498172489649528">Bestanden</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
+<translation id="4378551569595875038">Verbindung...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
 <translation id="4429881212383817840">Kerberos-Ticket läuft bald ab</translation>
@@ -278,6 +280,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6527081081771465939">Unbekanntes WLAN-Sicherheitsprotokoll</translation>
 <translation id="65587193855025101">Flachbett</translation>
 <translation id="6564646048574748301">Fehlgeschlagen – Drucker nicht erreichbar</translation>
+<translation id="6603230386432466813">Sie haben Probleme beim Herstellen einer Verbindung?</translation>
 <translation id="6618744767048954150">Läuft</translation>
 <translation id="6620487321149975369">Druckaufträge erscheinen im Verlauf, solange sie nicht manuell gelöscht werden</translation>
 <translation id="6643016212128521049">Löschen</translation>

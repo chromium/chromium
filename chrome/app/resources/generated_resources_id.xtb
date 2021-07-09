@@ -616,7 +616,6 @@
 <translation id="164936512206786300">Lepaskan sambungan perangkat Bluetooth</translation>
 <translation id="1651008383952180276">Anda harus memasukkan frasa sandi yang sama dua kali</translation>
 <translation id="1652326691684645429">Aktifkan Berbagi Langsung</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Tambahkan printer ke Google Cloud Print agar Anda dapat mencetak dari mana saja.}other{Tambahkan # printer ke Google Cloud Print agar Anda dapat mencetak dari mana saja.}}</translation>
 <translation id="1653631694606464309">Aplikasi web biasanya meminta untuk membuka jenis file tertentu agar Anda dapat menangani file tersebut di aplikasi yang Anda inginkan, seperti membuka dokumen di pemroses kata pilihan Anda</translation>
 <translation id="1656528038316521561">Opasitas latar belakang</translation>
 <translation id="1657406563541664238">Bantu menjadikan <ph name="PRODUCT_NAME" /> lebih baik dengan mengirim statistik penggunaan dan laporan kerusakan secara otomatis ke Google</translation>
@@ -2918,7 +2917,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4094647278880271855">Anda menggunakan variabel lingkungan yang tidak didukung: <ph name="BAD_VAR" />. Stabilitas dan keamanan akan terganggu.</translation>
 <translation id="4095264805865317199">Buka UI Aktivasi Seluler</translation>
 <translation id="4095507791297118304">Tampilan utama</translation>
-<translation id="409579654357498729">Tambahkan ke Cloud Print</translation>
 <translation id="4096508467498758490">Nonaktifkan ekstensi mode pengembang</translation>
 <translation id="4097406557126260163">Aplikasi dan ekstensi</translation>
 <translation id="409742781329613461">Tips untuk Chrome</translation>
@@ -4395,6 +4393,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5794700615121138172">Folder bersama Linux</translation>
 <translation id="5794786537412027208">Keluar dari semua Aplikasi Chrome</translation>
 <translation id="5797070761912323120">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran, iklan, dan layanan Google lainnya</translation>
+<translation id="5797521893972859201">Menghapus histori, termasuk di kotak penelusuran</translation>
 <translation id="5798079537501238810">Situs dapat menginstal pengendali pembayaran</translation>
 <translation id="579907812742603813">konten yang dilindungi</translation>
 <translation id="579915268381781820">Kunci keamanan Anda dihapus.</translation>
@@ -4478,6 +4477,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5900302528761731119">Foto Google profil</translation>
 <translation id="590036993063074298">Detail Kualitas Pencerminan</translation>
 <translation id="5901069264981746702">Data sidik jari Anda disimpan dengan aman dan hanya ada di <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Beralih ke tab yang sedang direkam</translation>
 <translation id="5901494423252125310">Tutup printer terbuka</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5904614460720589786">Tidak dapat menyiapkan <ph name="APP_NAME" /> karena ada masalah konfigurasi. Harap hubungi administrator Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
@@ -4750,6 +4750,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6196854373336333322">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengambil alih kontrol setelan proxy Anda, yang berarti ekstensi dapat mengubah, merusak, atau menyadap apa pun yang Anda lakukan secara online. Jika tidak yakin mengapa perubahan ini terjadi, mungkin Anda tidak menginginkannya.</translation>
 <translation id="6198102561359457428">Keluar kemudian masuk lagi...</translation>
 <translation id="6198252989419008588">Ubah PIN</translation>
+<translation id="6200047250927636406">Hapus file</translation>
 <translation id="6202304368170870640">Anda dapat menggunakan PIN untuk login atau membuka kunci perangkat.</translation>
 <translation id="6206311232642889873">Sali&amp;n Gambar</translation>
 <translation id="6207200176136643843">Reset ke tingkat zoom default</translation>
@@ -4835,7 +4836,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.</translation>
 <translation id="628352644014831790">4 detik</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> tidak biasa didownload dan mungkin berbahaya.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Printer baru di jaringan Anda}other{Printer baru di jaringan Anda}}</translation>
 <translation id="6285770818046456882">Perangkat yang berbagi dengan Anda membatalkan transfer</translation>
 <translation id="6290613030083731160">Tidak ada perangkat yang tersedia untuk berbagi di sekitar. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Memverifikasi kode aktivasi. Proses ini mungkin perlu waktu beberapa menit.</translation>
@@ -5318,6 +5318,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6833479554815567477">Tab dihapus dari grup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Beralih ke browser cerdas dan aman</translation>
+<translation id="6834652994408928492">Mode gelap akan otomatis diaktifkan saat matahari terbenam</translation>
 <translation id="683540480453879381">Membuka file <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Sambungkan ke internet untuk memperbarui <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="6838034009068684089">Tanyakan saat situs ingin membuka dan menempatkan jendela di layar Anda (direkomendasikan)</translation>
@@ -6030,6 +6031,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7622114377921274169">Mengisi daya.</translation>
 <translation id="7622768823216805500">Situs biasanya menginstal pengelola pembayaran untuk fitur belanja seperti pembayaran yang lebih mudah</translation>
 <translation id="7622903810087708234">Detail sandi</translation>
+<translation id="7622966771025050155">Beralih ke tab yang telah direkam</translation>
 <translation id="7624337243375417909">caps lock nonaktif</translation>
 <translation id="7625568159987162309">Lihat izin dan data yang disimpan di seluruh situs</translation>
 <translation id="7628201176665550262">Rasio Refresh</translation>
@@ -6196,6 +6198,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7784067724422331729">Setelan keamanan di komputer Anda memblokir file ini.</translation>
 <translation id="7784796923038949829">Tidak dapat membaca atau mengubah data situs</translation>
 <translation id="778480864305029524">Untuk menggunakan Tethering Instan, aktifkan notifikasi untuk Layanan Google Play.</translation>
+<translation id="7785471469930192436">Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan</translation>
 <translation id="7786889348652477777">&amp;Muat Ulang Aplikasi</translation>
 <translation id="7787308148023287649">Tampilkan di layar lain</translation>
 <translation id="7788298548579301890">Program lain di komputer Anda menambahkan aplikasi yang dapat mengubah cara kerja Chrome.
@@ -6808,6 +6811,7 @@ Tekan tombol akses yang telah ditetapkan untuk menghapus penetapan</translation>
 <translation id="8438566539970814960">Jadikan penelusuran dan penjelajahan lebih baik</translation>
 <translation id="8439506636278576865">Tawarkan penerjemahan halaman ke dalam bahasa ini</translation>
 <translation id="8440630305826533614">Aplikasi Linux</translation>
+<translation id="8446225304314102060">Beralih ke tab <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Pelajari Lebih Lanjut</translation>
 <translation id="8447409163267621480">Sertakan Ctrl atau Alt</translation>
 <translation id="8448729345478502352">Membuat item di layar menjadi lebih kecil atau lebih besar</translation>
@@ -7469,6 +7473,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini</translation>
 <translation id="9148058034647219655">Keluar</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>
 <translation id="9148963623915467028">Situs ini dapat mengakses lokasi Anda</translation>
+<translation id="9149529198050266366">Mode gelap akan otomatis dinonaktifkan saat matahari terbit</translation>
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9150045010208374699">Menggunakan kamera Anda</translation>
 <translation id="9150079578948279438">Profil tidak dapat dihapus. Coba lagi atau hubungi operator Anda untuk meminta dukungan teknis.</translation>

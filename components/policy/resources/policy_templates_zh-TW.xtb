@@ -554,6 +554,28 @@
       如果不設定這項政策，當裝置上的可用磁碟空間小於 20 GB (預設值) 時，系統將無法安裝 <ph name="PLUGIN_VM_NAME" />。
       如果設定這項政策，當裝置上的可用磁碟空間小於政策所要求的值時，系統將無法安裝 <ph name="PLUGIN_VM_NAME" />。</translation>
 <translation id="1690383938831887552">禁止載入採用 Signed HTTP Exchange 技術的內容</translation>
+<translation id="1700458869527146675">你可以透過這項政策，設定 Chrome 和 ARC 應用程式的 Proxy 設定，系統會忽略所有從指令列所指定的 Proxy 相關選項。
+
+       如果不設定這項政策，使用者就能選擇要使用的 Proxy 設定。
+
+      設定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策時，可使用下列欄位：
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 可用來指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> 是 Proxy .pac 檔案的網址
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> 可以防止網路堆疊回到執行無效或無法使用 PAC 指令碼的直接連線
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 是 Proxy 伺服器網址
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 是會略過 Proxy 的一系列主機
+
+       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 欄位已淘汰，請改用 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 欄位。
+
+        如果將 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 的值設為：
+          * <ph name="PROXY_MODE_ENUM_DIRECT" /> - 一律不使用 Proxy，而且會忽略其餘欄位。
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> - 使用系統 Proxy 並忽略其餘欄位。
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> - 忽略其餘欄位。
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> - 使用 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
+
+      * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> - 使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />、<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
+
+      注意：如需詳細範例，請前往 Chromium 專案 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="1700811900332333712">允許裝置要求執行 Powerwash</translation>
 <translation id="1708496595873025510">設定變異版本種子的擷取限制</translation>
 <translation id="1713829924716792485">如果將這項政策設為啟用或不設定，使用者可連線至遠端存取主機，以便在用戶端和主機之間傳輸檔案。遠端協助連線不支援檔案傳輸功能，因此不適用這項政策。
@@ -577,6 +599,11 @@
       如果不設定這項政策，使用者螢幕控制項和自動調整亮度功能皆不會受到影響。
 
       注意：政策設定值應指定為 0 至 100 之間的百分比值。</translation>
+<translation id="1733939382419067578">你可以透過這項政策設定網址模式清單，用於指定可顯示通知的網站。
+
+      在未設定這項政策的情況下，如果已設定 <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> 政策，後者就會適用於所有網站；如未設定，則會採用使用者的個人設定。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="1736269219679256369">允許忽略 SSL 警告網頁，繼續前往原本指定的頁面</translation>
 <translation id="173993509627303617">禁止強制安裝的網頁應用程式查詢裝置屬性。</translation>
 <translation id="174765717426930019">除非要求開啟彈出式視窗的網頁明確拒絕與該彈出式視窗互動，否則一律允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動 </translation>
@@ -2421,6 +2448,11 @@
 <translation id="4043796890723386527">禁止使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
 <translation id="4051723201852944592">啟用視窗遮蔽功能</translation>
 <translation id="4056910949759281379">停用 SPDY 通訊協定</translation>
+<translation id="4061107397839125009">你可以透過這項政策設定網址模式清單，用於指定無法顯示通知的網站。
+
+      在未設定這項政策的情況下，如果已設定 <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> 政策，後者就會適用於所有網站；如未設定，則會採用使用者的個人設定。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="4061590579642538878">回報當機報告相關資訊。</translation>
 <translation id="4075675819066819571">將檔案櫃放在畫面的左側</translation>
 <translation id="408029843066770167">允許向 Google 時間服務傳送查詢</translation>

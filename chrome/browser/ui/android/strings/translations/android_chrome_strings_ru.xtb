@@ -488,6 +488,7 @@
 <translation id="4181841719683918333">Языки</translation>
 <translation id="4183868528246477015">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
+<translation id="4196597275619698563">Создать карту</translation>
 <translation id="4198423547019359126">Нет доступных мест для скачивания</translation>
 <translation id="4209895695669353772">Чтобы мы могли рекомендовать вам интересный контент, включите синхронизацию.</translation>
 <translation id="4225895483398857530">Кнопка на панели инструментов</translation>
@@ -1046,6 +1047,7 @@
 <translation id="7704317875155739195">Заполнять поисковые запросы и URL автоматически</translation>
 <translation id="7707922173985738739">Использовать мобильный Интернет</translation>
 <translation id="7725024127233776428">Здесь будут страницы, которые вы добавляете в закладки.</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Другие действия<ph name="END_LINK1" /> могут сохраняться в аккаунте Google, если вы в него вошли. Их можно удалить в любой момент.</translation>
 <translation id="7757787379047923882">Текст с устройства <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Выбрать дату и время</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@
 <translation id="8854223127042600341">Посмотреть скачанные файлы</translation>
 <translation id="8856607253650333758">Генерировать описания</translation>
 <translation id="8873817150012960745">Нажмите здесь, чтобы начать</translation>
+<translation id="8881973373982641723">История будет удалена, в том числе в окне поиска</translation>
 <translation id="889338405075704026">Открыть настройки Chrome</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей Интернета)</translation>
 <translation id="8909135823018751308">Поделиться...</translation>
@@ -1289,6 +1292,7 @@
 <translation id="9209888181064652401">Звонки недоступны</translation>
 <translation id="9212845824145208577">Не удается прокрутить дальше вниз. Начните делать скриншот ниже на этой странице.</translation>
 <translation id="9219103736887031265">Картинки</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />История поиска<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />другие действия<ph name="END_LINK2" /> могут сохраняться в аккаунте Google, если вы в него вошли. Их можно удалить в любой момент.</translation>
 <translation id="926205370408745186">Удалить данные о действиях в Chrome из сервиса "Цифровое благополучие"</translation>
 <translation id="927968626442779827">Попробуйте упрощенный режим в Google Chrome.</translation>
 <translation id="932327136139879170">Главная страница</translation>

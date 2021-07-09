@@ -617,7 +617,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="164936512206786300">I-unpair ang Bluetooth device</translation>
 <translation id="1651008383952180276">Dapat mong ilagay ang katulad na passphrase nang dalawang beses</translation>
 <translation id="1652326691684645429">I-enable ang Nearby Share</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Idagdag ang printer sa Google Cloud Print nang sa gayon ay makakapag-print ka kahit saan.}one{Idagdag ang # printer sa Google Cloud Print nang sa gayon ay makakapag-print ka kahit saan.}other{Idagdag ang # na printer sa Google Cloud Print nang sa gayon ay makakapag-print ka kahit saan.}}</translation>
 <translation id="1653631694606464309">Karaniwang humihiling ang mga web app na magbukas ng ilang partikular na uri ng mga file para makapagtrabaho ka sa mga file na iyon kung saan mo gusto, gaya ng pagbubukas ng mga dokumento sa iyong gustong word processor</translation>
 <translation id="1656528038316521561">Opacity ng background</translation>
 <translation id="1657406563541664238">Tulungan ang <ph name="PRODUCT_NAME" /> na maging mas mahusay sa pamamagitan ng awtomatikong pagpapadala ng mga istatistika ng paggamit at mga crash report sa Google</translation>
@@ -2919,7 +2918,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4094647278880271855">Gumagamit ka ng hindi sinusuportahang variable ng environment: <ph name="BAD_VAR" />. Magkakaproblema sa stability at seguridad.</translation>
 <translation id="4095264805865317199">Buksan ang UI sa Pag-activate ng Cellular Network</translation>
 <translation id="4095507791297118304">Pangunahing display</translation>
-<translation id="409579654357498729">Idagdag sa Cloud Print</translation>
 <translation id="4096508467498758490">I-disable ang mga extension ng developer mode</translation>
 <translation id="4097406557126260163">Mga App at extension</translation>
 <translation id="409742781329613461">Mga Tip para sa Chrome</translation>
@@ -4396,6 +4394,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5794700615121138172">Mga nakabahaging folder ng Linux</translation>
 <translation id="5794786537412027208">Umalis sa lahat ng Chrome Apps</translation>
 <translation id="5797070761912323120">Maaaring gamitin ng Google ang iyong history para i-personalize ang Search, mga ad, at iba pang serbisyo ng Google</translation>
+<translation id="5797521893972859201">Kini-clear ang history, kasama ang nasa box para sa paghahanap</translation>
 <translation id="5798079537501238810">Puwedeng mag-install ang mga site ng mga tagapangasiwa ng pagbabayad</translation>
 <translation id="579907812742603813">pinoprotektahang content</translation>
 <translation id="579915268381781820">Inalis ang iyong security key.</translation>
@@ -4479,6 +4478,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5900302528761731119">Larawan sa Profile sa Google</translation>
 <translation id="590036993063074298">Mga Detalye ng Kalidad ng Pag-mirror</translation>
 <translation id="5901069264981746702">Secure na sino-store ang data ng iyong fingerprint at hindi ito kailanman aalisin sa <ph name="DEVICE_TYPE" /> mo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Lumipat sa kina-capture na tab</translation>
 <translation id="5901494423252125310">Nakabukas ang takip ng printer</translation>
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5904614460720589786">Hindi ma-set up ang <ph name="APP_NAME" /> dahil sa isang problema sa configuration. Makipag-ugnayan sa iyong administrator. Code ng error: <ph name="ERROR_CODE" />.</translation>
@@ -4751,6 +4751,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6196854373336333322">Kinokontrol na ng extension na "<ph name="EXTENSION_NAME" />" ang iyong mga setting ng proxy, na ang ibig sabihin ay maaari nitong baguhin, sirain o alamin ang anumang bagay na gagawin mo online. Kung hindi ka sigurado kung bakit naganap ang pagbabagong ito, malamang ay hindi mo ito ginustong mangyari.</translation>
 <translation id="6198102561359457428">Mag-sign out pagkatapos ay mag-sign in muli...</translation>
 <translation id="6198252989419008588">Palitan ang PIN</translation>
+<translation id="6200047250927636406">I-discard ang file</translation>
 <translation id="6202304368170870640">Maaari mong gamitin ang iyong PIN para mag-sign in sa o para ma-unlock ang device mo.</translation>
 <translation id="6206311232642889873">Kop&amp;yahin ang Imahe</translation>
 <translation id="6207200176136643843">I-reset sa default na antas ng pag-zoom</translation>
@@ -4836,7 +4837,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart card.</translation>
 <translation id="628352644014831790">4 na segundo</translation>
 <translation id="6285120108426285413">Hindi karaniwang dina-download ang <ph name="FILE_NAME" /> at maaaring mapanganib ito.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Bagong printer sa iyong network}one{Mga bagong printer sa iyong network}other{Mga bagong printer sa iyong network}}</translation>
 <translation id="6285770818046456882">Kinansela ng device na nagbabahagi sa iyo ang paglilipat</translation>
 <translation id="6290613030083731160">Walang available na kalapit na nagbabahaging device. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Vine-verify ang code sa pag-activate. Puwede itong tumagal nang ilang minuto.</translation>
@@ -5319,6 +5319,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6833479554815567477">Inalis ang tab sa grupong <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Lumipat sa isang mahusay at ligtas na browser</translation>
+<translation id="6834652994408928492">Awtomatikong mag-o-on ang dark mode sa paglubog ng araw</translation>
 <translation id="683540480453879381">Open mga <ph name="FILE_EXTENSIONS" /> file</translation>
 <translation id="6835762382653651563">Mangyaring kumonekta sa Internet upang ma-update ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Magtanong kapag gusto ng isang site na magbukas at maglagay ng mga window sa iyong mga screen (inirerekomenda)</translation>
@@ -6031,6 +6032,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7622114377921274169">Nagcha-charge.</translation>
 <translation id="7622768823216805500">Karaniwang nag-i-install ang mga site ng mga tagapangasiwa ng pagbabayad para sa mga feature sa pamimili gaya ng mas madaling pag-check out</translation>
 <translation id="7622903810087708234">Mga detalye ng password</translation>
+<translation id="7622966771025050155">Lumipat sa na-capture na tab</translation>
 <translation id="7624337243375417909">naka-off ang caps lock</translation>
 <translation id="7625568159987162309">Tingnan ang mga pahintulot at data na naka-store sa lahat ng site</translation>
 <translation id="7628201176665550262">Rate ng Pag-refresh</translation>
@@ -6197,6 +6199,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7784067724422331729">Na-block ng mga setting ng seguridad sa iyong computer ang file na ito.</translation>
 <translation id="7784796923038949829">Hindi mabasa o mapalitan ang data ng site</translation>
 <translation id="778480864305029524">Upang magamit ang Instant na Pag-tether, i-on ang mga notification para sa Mga Serbisyo ng Google Play.</translation>
+<translation id="7785471469930192436">Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa iyong history ng paghahanap, kung naaangkop</translation>
 <translation id="7786889348652477777">I-&amp;reload ang App</translation>
 <translation id="7787308148023287649">Ipakita sa isa pang screen</translation>
 <translation id="7788298548579301890">Isa pang program sa iyong computer ang nagdagdag ng app na maaaring magpabago sa paraan ng paggana ng Chrome.
@@ -6810,6 +6813,7 @@ Pumindot ng nakatalagang switch para mag-alis ng pagtatalaga</translation>
 <translation id="8439506636278576865">Mag-alok na magsalin ng mga page sa wikang ito
 </translation>
 <translation id="8440630305826533614">Mga Linux app</translation>
+<translation id="8446225304314102060">Lumipat sa tab na <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Matuto Pa</translation>
 <translation id="8447409163267621480">Isama ang Ctrl o Alt</translation>
 <translation id="8448729345478502352">Paliitin o palakihin ang mga item sa iyong screen</translation>
@@ -7473,6 +7477,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito</translation>
 <translation id="9148058034647219655">Lumabas</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
 <translation id="9148963623915467028">Maa-access ng site na ito ang iyong lokasyon.</translation>
+<translation id="9149529198050266366">Awtomatikong mag-o-off ang dark mode sa pagsikat ng araw</translation>
 <translation id="9149866541089851383">I-edit...</translation>
 <translation id="9150045010208374699">Gamitin ang iyong camera</translation>
 <translation id="9150079578948279438">Hindi maalis ang profile. Pakisubukan ulit o makipag-ugnayan sa iyong carrier para sa technical support.</translation>

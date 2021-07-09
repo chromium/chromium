@@ -488,6 +488,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4183868528246477015">Търсене с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
+<translation id="4196597275619698563">Създаване на карта</translation>
 <translation id="4198423547019359126">Няма местоположения за изтегляне</translation>
 <translation id="4209895695669353772">Включете синхронизирането, за да получавате персонализирано съдържание, предлагано от Google</translation>
 <translation id="4225895483398857530">Пряк път в лентата с инструменти</translation>
@@ -1046,6 +1047,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7704317875155739195">Автоматично довършване на заявки за търсене и URL адреси</translation>
 <translation id="7707922173985738739">Използване на мобилни данни</translation>
 <translation id="7725024127233776428">Запазените от вас отметки към страници се показват тук</translation>
+<translation id="7731260005404856143">Възможно е <ph name="BEGIN_LINK1" />други видове активност<ph name="END_LINK1" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="7757787379047923882">Текст, споделен от <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Избиране на дата и час</translation>
 <translation id="7762668264895820836">SD карта <ph name="SD_CARD_NUMBER" /></translation>
@@ -1236,6 +1238,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8854223127042600341">Преглед на офлайн файловете ви</translation>
 <translation id="8856607253650333758">Получаване на описания</translation>
 <translation id="8873817150012960745">Докоснете тук, за да започнете</translation>
+<translation id="8881973373982641723">Изчиства историята, включително в полето за търсене.</translation>
 <translation id="889338405075704026">Към настройките за Chrome</translation>
 <translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
 <translation id="8909135823018751308">Споделяне…</translation>
@@ -1289,6 +1292,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="9209888181064652401">Не могат да се извършват обаждания</translation>
 <translation id="9212845824145208577">Придвижването по-надолу не е възможно. Започнете от по-долна част на страницата.</translation>
 <translation id="9219103736887031265">Изображения</translation>
+<translation id="923957533152125119">Възможно е <ph name="BEGIN_LINK1" />историята на търсенията<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други видове активност<ph name="END_LINK2" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="926205370408745186">Премахване на активността ви в Chrome от „Дигитално благополучие“</translation>
 <translation id="927968626442779827">Използване на олекотения режим в Google Chrome</translation>
 <translation id="932327136139879170">Начална страница</translation>

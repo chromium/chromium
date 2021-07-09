@@ -613,7 +613,6 @@
 <translation id="164936512206786300">Bluetooth-apparaat ontkoppelen</translation>
 <translation id="1651008383952180276">Je moet twee keer dezelfde wachtwoordzin opgeven</translation>
 <translation id="1652326691684645429">Dichtbij delen aanzetten</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Voeg de printer toe aan Google Cloudprinter zodat je overal kunt afdrukken.}other{Voeg # printers toe aan Google Cloudprinter zodat je overal kunt afdrukken.}}</translation>
 <translation id="1653631694606464309">Web-apps vragen gewoonlijk of bepaalde typen bestanden mogen worden geopend, zodat je waar je wilt aan die bestanden kunt werken (zoals documenten openen in je favoriete tekstverwerker)</translation>
 <translation id="1656528038316521561">Ondoorzichtigheid van achtergrond</translation>
 <translation id="1657406563541664238">Help <ph name="PRODUCT_NAME" /> beter te maken door automatisch gebruiksstatistieken en crashmeldingen naar Google te verzenden</translation>
@@ -2672,7 +2671,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3855676282923585394">Bookmarks en instellingen importeren...</translation>
 <translation id="3856096718352044181">Controleer of dit een geldige provider is of probeer het later opnieuw</translation>
 <translation id="3856800405688283469">Tijdzone selecteren</translation>
-<translation id="3857807444929313943">Til je vinger op en plaats deze opnieuw op de sensor</translation>
+<translation id="3857807444929313943">Raak de sensor opnieuw aan</translation>
 <translation id="3861638017150647085">De gebruikersnaam '<ph name="USERNAME" />' is niet beschikbaar</translation>
 <translation id="3861977424605124250">Tonen bij opstarten</translation>
 <translation id="386239283124269513">G&amp;roep herstellen</translation>
@@ -2902,7 +2901,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4094647278880271855">Je gebruikt een niet-ondersteunde omgevingsvariabele: <ph name="BAD_VAR" />. Dit heeft negatieve gevolgen voor de stabiliteit en beveiliging.</translation>
 <translation id="4095264805865317199">UI voor mobiele activering openen</translation>
 <translation id="4095507791297118304">Primair scherm</translation>
-<translation id="409579654357498729">Toevoegen aan Cloudprinter</translation>
 <translation id="4096508467498758490">Extensies van ontwikkelaarsmodus uitzetten</translation>
 <translation id="4097406557126260163">Apps en extensies</translation>
 <translation id="409742781329613461">Tips voor Chrome</translation>
@@ -4819,7 +4817,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.</translation>
 <translation id="628352644014831790">4 seconden</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> wordt niet vaak gedownload en kan gevaarlijk zijn.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nieuwe printer in je netwerk}other{Nieuwe printers in je netwerk}}</translation>
 <translation id="6285770818046456882">Het apparaat dat met je deelt, heeft de overdracht geannuleerd</translation>
 <translation id="6290613030083731160">Geen beschikbare apparaten die delen in de buurt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Activeringscode verifiëren. Dit kan een paar minuten duren.</translation>

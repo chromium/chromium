@@ -613,7 +613,6 @@
 <translation id="164936512206786300">Koble fra Bluetooth-enheten</translation>
 <translation id="1651008383952180276">Du må skrive inn den samme passordfrasen to ganger</translation>
 <translation id="1652326691684645429">Slå på nærdeling</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Legg til skriveren i Google Cloud Print, slik at du kan skrive ut fra hvor som helst.}other{Legg til # skrivere i Google Cloud Print, slik at du kan skrive ut fra hvor som helst.}}</translation>
 <translation id="1653631694606464309">Nettprogrammer pleier å be om å få åpne visse typer filer slik at du kan jobbe med disse filene hvor du vil, for eksempel ved å åpne dokumenter i tekstbehandlingsprogrammet du foretrekker</translation>
 <translation id="1656528038316521561">Bakgrunnsopasitet</translation>
 <translation id="1657406563541664238">Bidra til å gjøre <ph name="PRODUCT_NAME" /> bedre ved å sende brukerstatistikk og programstopprapporter til Google automatisk</translation>
@@ -2910,7 +2909,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4094647278880271855">Du bruker en miljøvariabel som ikke støttes: <ph name="BAD_VAR" />. Stabiliteten og sikkerheten blir rammet.</translation>
 <translation id="4095264805865317199">Åpne UI for aktivering med mobiltelefon</translation>
 <translation id="4095507791297118304">Hovedskjerm</translation>
-<translation id="409579654357498729">Legg til Cloud Print</translation>
 <translation id="4096508467498758490">Deaktiver utvidelser for utviklermodus</translation>
 <translation id="4097406557126260163">Apper og utvidelser</translation>
 <translation id="409742781329613461">Tips for Chrome</translation>
@@ -4386,6 +4384,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5794700615121138172">Delte mapper i Linux</translation>
 <translation id="5794786537412027208">Avslutt alle Chrome-apper</translation>
 <translation id="5797070761912323120">Google kan bruke loggen din for å gi Søk, annonser og andre Google-tjenester et personlig preg</translation>
+<translation id="5797521893972859201">Tømmer loggen, inkludert loggen i søkefeltet</translation>
 <translation id="5798079537501238810">Nettsteder kan installere betalingsbehandlere</translation>
 <translation id="579907812742603813">beskyttet innhold</translation>
 <translation id="579915268381781820">Sikkerhetsnøkkelen er fjernet.</translation>
@@ -4469,6 +4468,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5900302528761731119">Google-profilbilde</translation>
 <translation id="590036993063074298">Detaljer om speilingskvalitet</translation>
 <translation id="5901069264981746702">Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Bytt til fanen som tar opp</translation>
 <translation id="5901494423252125310">Skriverdekselet er åpent</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5904614460720589786">Kunne ikke konfigurere <ph name="APP_NAME" /> på grunn av et konfigurasjonsproblem. Kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
@@ -4741,6 +4741,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6196854373336333322">Utvidelsen «<ph name="EXTENSION_NAME" />» har tatt kontroll over proxy-tjenerinnstillingene dine, noe som betyr at den kan endre, ødelegge eller spionere på alt du foretar deg på nettet. Hvis du ikke er sikker på hvorfor denne endringen fant sted, vil du mest sannsynlig ikke ha den.</translation>
 <translation id="6198102561359457428">Logg deg av og på igjen</translation>
 <translation id="6198252989419008588">Endre personlig kode</translation>
+<translation id="6200047250927636406">Forkast filen</translation>
 <translation id="6202304368170870640">Du kan bruke PIN-koden til å logge på eller låse opp enheten.</translation>
 <translation id="6206311232642889873">&amp;Kopier bilde</translation>
 <translation id="6207200176136643843">Tilbakestill til standard zoomnivå</translation>
@@ -4826,7 +4827,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.</translation>
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> lastes sjelden ned og kan være farlig.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ny skriver på nettverket}other{Nye skrivere på nettverket}}</translation>
 <translation id="6285770818046456882">Enheten som deler med deg, avbrøt overføringen</translation>
 <translation id="6290613030083731160">Ingen tilgjengelige enheter i nærheten deler. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Bekrefter aktiveringskoden. Dette kan ta noen minutter.</translation>
@@ -5309,6 +5309,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="6833479554815567477">Fanen er fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Bytt til en smart og sikker nettleser</translation>
+<translation id="6834652994408928492">Mørk modus blir slått på automatisk ved solnedgang</translation>
 <translation id="683540480453879381">åpne <ph name="FILE_EXTENSIONS" />-filer</translation>
 <translation id="6835762382653651563">Koble til Internett for å oppdatere <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Spør når nettsteder vil åpne og plassere vinduer på skjermene dine (anbefales)</translation>
@@ -6021,6 +6022,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7622114377921274169">Lader.</translation>
 <translation id="7622768823216805500">Nettsteder installerer vanligvis betalingsbehandlere for å kunne tilby shoppingfunksjoner, som enklere betaling</translation>
 <translation id="7622903810087708234">Passorddetaljer</translation>
+<translation id="7622966771025050155">Bytt til fanen som tas opp</translation>
 <translation id="7624337243375417909">capslock er av</translation>
 <translation id="7625568159987162309">Se tillatelser og data lagret på alle nettsteder</translation>
 <translation id="7628201176665550262">Oppdateringsfrekvens</translation>
@@ -6187,6 +6189,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7784067724422331729">Sikkerhetsinnstillingene på datamaskinen din blokkerte denne filen.</translation>
 <translation id="7784796923038949829">Kan ikke lese eller endre data på nettstedet</translation>
 <translation id="778480864305029524">For å bruke umiddelbar internettdeling, slå på varsler for Google Play Tjenester.</translation>
+<translation id="7785471469930192436">Se eventuelt instruksjonene fra søkemotoren din om hvordan du sletter søkeloggen</translation>
 <translation id="7786889348652477777">&amp;Last inn appen på nytt</translation>
 <translation id="7787308148023287649">Vis på en annen skjerm</translation>
 <translation id="7788298548579301890">Et annet program på datamaskinen har lagt til en app som kan endre måten Chrome fungerer på.
@@ -6798,6 +6801,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen</translation>
 <translation id="8438566539970814960">Gjør søking og surfing bedre</translation>
 <translation id="8439506636278576865">Tilby å oversette nettsider på dette språket</translation>
 <translation id="8440630305826533614">Linux-apper</translation>
+<translation id="8446225304314102060">Bytt til fanen <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8447409163267621480">Inkluder enten Ctrl eller Alt</translation>
 <translation id="8448729345478502352">Gjør elementer på skjermen mindre eller større.</translation>
@@ -7459,6 +7463,7 @@ Du kan tilordne flere brytere til denne handlingen</translation>
 <translation id="9148058034647219655">Avslutt</translation>
 <translation id="9148126808321036104">Logg på igjen</translation>
 <translation id="9148963623915467028">Dette nettstedet har tilgang til posisjonen din.</translation>
+<translation id="9149529198050266366">Mørk modus blir slått av automatisk ved soloppgang</translation>
 <translation id="9149866541089851383">Endre</translation>
 <translation id="9150045010208374699">bruke kameraet ditt</translation>
 <translation id="9150079578948279438">Kunne ikke fjerne profilen. Prøv på nytt, eller kontakt operatøren for å få teknisk støtte.</translation>

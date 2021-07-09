@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
+<translation id="2294675138977897428">Ethernet-yhteyttä ei havaittu</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Löydä lähellä olevat laitteet ottamalla ensin Bluetooth käyttöön.</translation>
 <translation id="2364498172489649528">Onnistui</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
 <translation id="4378373042927530923">Ei suoritettu</translation>
+<translation id="4378551569595875038">Yhdistetään…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
@@ -278,6 +280,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6527081081771465939">Tuntematon Wi-Fi-suojausprotokolla</translation>
 <translation id="65587193855025101">Tasoskanneri</translation>
 <translation id="6564646048574748301">Epäonnistui – Ei yhteyttä tulostimeen</translation>
+<translation id="6603230386432466813">Eikö yhdistäminen onnistu?</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
 <translation id="6620487321149975369">Tulostustyöt näkyvät historiassa, ellei niitä poisteta manuaalisesti</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>

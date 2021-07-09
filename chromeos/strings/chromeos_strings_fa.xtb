@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">اتصال اینترنت وجود ندارد</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">وضعیت فعال‌سازی</translation>
+<translation id="2294675138977897428">اتصال اترنتی شناسایی نشد</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> نقطه در اینچ</translation>
 <translation id="2338501278241028356">برای کاوش دستگاه‌های همین اطراف، بلوتوث را روشن کنید</translation>
 <translation id="2364498172489649528">موفق</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصویر</translation>
 <translation id="4378373042927530923">اجرا نشد</translation>
+<translation id="4378551569595875038">در حال اتصال..</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">‏بلیت Kerberos به‌زودی منقضی می‌شود</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">‏پروتکل امنیتی Wi-Fi ناشناس است</translation>
 <translation id="65587193855025101">صفحه مسطح</translation>
 <translation id="6564646048574748301">انجام نشد - دسترسی به چاپگر ممکن نیست</translation>
+<translation id="6603230386432466813">هنگام متصل شدن با مشکل روبه‌رو هستید؟</translation>
 <translation id="6618744767048954150">درحال اجرا</translation>
 <translation id="6620487321149975369">کارهای چاپ تا زمانی‌که به‌طور دستی برداشته نشوند در سابقه نشان داده می‌شوند</translation>
 <translation id="6643016212128521049">پاک کردن</translation>

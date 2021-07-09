@@ -613,7 +613,6 @@
 <translation id="164936512206786300">Bluetooth cihazı ile eşlemeyi kaldır</translation>
 <translation id="1651008383952180276">Aynı parolayı iki kez girmelisiniz</translation>
 <translation id="1652326691684645429">Yakındakilerle Paylaş'ı etkinleştir</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{İstediğiniz yerden yazdırma işlemi yapabilmek için yazıcıyı Google Cloud Print'e ekleyin.}other{İstediğiniz yerden yazdırma işlemi yapabilmek için # yazıcıyı Google Cloud Print'e ekleyin.}}</translation>
 <translation id="1653631694606464309">Web uygulamaları, genellikle belirli dosya türlerini açmak ister. Böylece, bu dosyalar üzerinde (dokümanlarınızı tercih ettiğiniz kelime işlemcide açmak gibi) istediğiniz yerde çalışabilirsiniz.</translation>
 <translation id="1656528038316521561">Arka plan opaklığı</translation>
 <translation id="1657406563541664238">Google'a otomatik olarak kullanım istatistikleri ve kilitlenme raporları göndererek <ph name="PRODUCT_NAME" /> ürününü iyileştirmemize yardımcı olun.</translation>
@@ -2902,7 +2901,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4094647278880271855">Desteklenmeyen bir ortam değişkeni kullanıyorsunuz: <ph name="BAD_VAR" />. Kararlılık ve güvenlikle ilgili sorun olacaktır.</translation>
 <translation id="4095264805865317199">Hücresel Etkinleştirme Kullanıcı Arayüzü'nü Aç</translation>
 <translation id="4095507791297118304">Birincil ekran</translation>
-<translation id="409579654357498729">Google Cloud Print'e ekle</translation>
 <translation id="4096508467498758490">Geliştirici modu uzantılarını devre dışı bırakın</translation>
 <translation id="4097406557126260163">Uygulamalar ve uzantılar</translation>
 <translation id="409742781329613461">Chrome için ipuçları</translation>
@@ -4379,6 +4377,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5794700615121138172">Linux paylaşılan klasörler</translation>
 <translation id="5794786537412027208">Tüm Chrome Uygulamalarından Çık</translation>
 <translation id="5797070761912323120">Google; Arama, reklamlar ve diğer Google hizmetlerini kişiselleştirmek için geçmişinizi kullanabilir</translation>
+<translation id="5797521893972859201">Arama kutusu da dahil olmak üzere geçmişi temizler</translation>
 <translation id="5798079537501238810">Siteler ödeme işleyici yükleyebilir</translation>
 <translation id="579907812742603813">korunan içerik</translation>
 <translation id="579915268381781820">Güvenlik anahtarınız takılı değil.</translation>
@@ -4462,6 +4461,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5900302528761731119">Google Profil fotoğrafı</translation>
 <translation id="590036993063074298">Yansıtma Kalitesi Ayrıntıları</translation>
 <translation id="5901069264981746702">Parmak izi verileriniz güvenli şekilde depolanır ve her zaman <ph name="DEVICE_TYPE" /> cihazınızda tutulur. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Yakalama sekmesine geç</translation>
 <translation id="5901494423252125310">Yazıcı kapağı açık</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5904614460720589786">Yapılandırma sorunu nedeniyle <ph name="APP_NAME" /> kurulumu yapılamadı. Lütfen yöneticinizle görüşün. Hata kodu: <ph name="ERROR_CODE" />.</translation>
@@ -4734,6 +4734,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" uzantısı proxy ayarlarınızın denetimini ele geçirdi. Bu, uzantının çevrimiçinde yaptıklarınızı değiştirebileceği, kesebileceği veya dinleyebileceği anlamına gelir. Bu değişikliğin neden gerçekleştiğinden emin değilseniz muhtemelen bu değişikliği yapmayı istememişsinizdir.</translation>
 <translation id="6198102561359457428">Oturumu kapatıp tekrar açın...</translation>
 <translation id="6198252989419008588">PIN'i değiştir</translation>
+<translation id="6200047250927636406">Dosyayı sil</translation>
 <translation id="6202304368170870640">Cihazınızda oturum açmak veya cihazınızın kilidini açmak için PIN'inizi kullanabilirsiniz.</translation>
 <translation id="6206311232642889873">Resmi Kop&amp;yala</translation>
 <translation id="6207200176136643843">Varsayılan yakınlaştırma seviyesine sıfırla</translation>
@@ -4819,7 +4820,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <ph name="DOMAIN" />, akıllı kartınızın takılı kalmasını gerektiriyor.</translation>
 <translation id="628352644014831790">4 saniye</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> yaygın indirilen bir öğe değil, tehlikeli olabilir.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ağınızda yeni yazıcı}other{Ağınızda yeni yazıcılar}}</translation>
 <translation id="6285770818046456882">Sizinle içerik paylaşan cihaz aktarımı iptal etti</translation>
 <translation id="6290613030083731160">Yakında paylaşımda bulunan cihaz yok. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Etkinleştirme kodu doğrulanıyor. Bu işlem birkaç dakika sürebilir.</translation>
@@ -5301,6 +5301,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6833479554815567477">Sekme, <ph name="GROUP_NAME" /> adlı gruptan kaldırıldı - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Akıllı ve güvenli bir tarayıcıya geç</translation>
+<translation id="6834652994408928492">Koyu mod, güneş battığında otomatik olarak açılır</translation>
 <translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> dosyalarını açmak</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>
 <translation id="6838034009068684089">Bir site ekranlarımda pencereler açıp yerleştirmek istediğinde sor (önerilir)</translation>
@@ -6013,6 +6014,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="7622114377921274169">Şarj oluyor.</translation>
 <translation id="7622768823216805500">Daha kolay ödeme gibi alışveriş özelliklerinin kullanılması için siteler genellikle ödeme işleyiciler yükler</translation>
 <translation id="7622903810087708234">Şifre ayrıntıları</translation>
+<translation id="7622966771025050155">Yakalanan sekmeye geç</translation>
 <translation id="7624337243375417909">caps lock kapalı</translation>
 <translation id="7625568159987162309">İzinleri ve sitelerde depolanan verileri göster</translation>
 <translation id="7628201176665550262">Yenileme Hızı</translation>
@@ -6179,6 +6181,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="7784067724422331729">Bilgisayarınızdaki güvenlik ayarları bu dosyayı engelledi.</translation>
 <translation id="7784796923038949829">Sitenin verileri okunamıyor veya değiştirilemiyor</translation>
 <translation id="778480864305029524">Anında Tethering'i kullanmak için Google Play Hizmetleri bildirimlerini açın.</translation>
+<translation id="7785471469930192436">Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatlarını (varsa) inceleyin</translation>
 <translation id="7786889348652477777">&amp;Uygulamayı Yeniden Yükle</translation>
 <translation id="7787308148023287649">Başka bir ekranda görüntüle</translation>
 <translation id="7788298548579301890">Bilgisayarınızdaki başka bir program, Chrome'un çalışma şeklini değiştirebilecek bir uygulama ekledi.
@@ -6789,6 +6792,7 @@ Atamayı kaldırmak için atanmış bir anahtara basın</translation>
 <translation id="8438566539970814960">Aramaları ve göz atmayı daha iyi yap</translation>
 <translation id="8439506636278576865">Bu dildeki sayfaları çevirmeyi öner</translation>
 <translation id="8440630305826533614">Linux uygulamaları</translation>
+<translation id="8446225304314102060"><ph name="TAB_ORIGIN" /> sekmesine geç</translation>
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>
 <translation id="8447409163267621480">Ctrl veya Alt tuşunu ekleyin</translation>
 <translation id="8448729345478502352">Ekranınızdaki öğeleri küçültün veya büyütün</translation>
@@ -7450,6 +7454,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz</translation>
 <translation id="9148058034647219655">Çıkış</translation>
 <translation id="9148126808321036104">Tekrar oturum açın</translation>
 <translation id="9148963623915467028">Bu site konumunuza erişebilir.</translation>
+<translation id="9149529198050266366">Koyu mod, güneş doğduğunda otomatik olarak kapatılır</translation>
 <translation id="9149866541089851383">Düzenle...</translation>
 <translation id="9150045010208374699">Kameranızı kullanma</translation>
 <translation id="9150079578948279438">Profil kaldırılamadı. Lütfen tekrar deneyin veya teknik destek için operatörünüzle iletişime geçin.</translation>

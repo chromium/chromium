@@ -616,7 +616,6 @@
 <translation id="164936512206786300">取消配對藍牙裝置</translation>
 <translation id="1651008383952180276">您必須輸入兩次相同的密碼短語</translation>
 <translation id="1652326691684645429">啟用「咫尺共享」功能</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{將打印機新增至「Google 雲端打印」，即可隨時隨地列印。}other{將 # 部打印機新增至「Google 雲端打印」，即可隨時隨地列印。}}</translation>
 <translation id="1653631694606464309">網絡應用程式通常會要求開啟特定類型的檔案，讓您以適當方式處理這些檔案，例如在偏好的文書處理工具中開啟文件</translation>
 <translation id="1656528038316521561">背景透明度</translation>
 <translation id="1657406563541664238">將使用統計資料及當機報告自動傳送給 Google，助我們一臂之力，讓 <ph name="PRODUCT_NAME" /> 更臻完美</translation>
@@ -2917,7 +2916,6 @@
 <translation id="4094647278880271855">您使用的環境變數 (<ph name="BAD_VAR" />) 目前不受支援，有可能會影響穩定性和安全性。</translation>
 <translation id="4095264805865317199">開啟流動網絡啟用使用者介面</translation>
 <translation id="4095507791297118304">主要顯示屏</translation>
-<translation id="409579654357498729">新增至雲端列印</translation>
 <translation id="4096508467498758490">停用開發人員模式擴充功能</translation>
 <translation id="4097406557126260163">應用程式和擴充程式</translation>
 <translation id="409742781329613461">Chrome 提示</translation>
@@ -4394,6 +4392,7 @@
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
 <translation id="5797070761912323120">Google 可能會使用您的記錄，為您提供個人化的搜尋服務、廣告和其他 Google 服務</translation>
+<translation id="5797521893972859201">清除記錄 (包括搜尋框中的記錄)</translation>
 <translation id="5798079537501238810">網站可安裝付款處理常式</translation>
 <translation id="579907812742603813">受保護的內容</translation>
 <translation id="579915268381781820">您的安全密鑰已被移除。</translation>
@@ -4477,6 +4476,7 @@
 <translation id="5900302528761731119">Google 個人檔案相片</translation>
 <translation id="590036993063074298">鏡像品質詳情</translation>
 <translation id="5901069264981746702">系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">切換至目前擷取的分頁</translation>
 <translation id="5901494423252125310">打印機的外蓋應關上</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5904614460720589786">設定發生問題，因此無法設定 <ph name="APP_NAME" />。請聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -4749,6 +4749,7 @@
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網上的行為。如果您不確定這項變更為何發生，建議您停用該擴充功能。</translation>
 <translation id="6198102561359457428">登出然後再次登入…</translation>
 <translation id="6198252989419008588">變更 PIN</translation>
+<translation id="6200047250927636406">捨棄檔案</translation>
 <translation id="6202304368170870640">您可使用 PIN 登入或解鎖裝置。</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
@@ -4834,7 +4835,6 @@
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。</translation>
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 不常下載，代表此檔案可能不安全。</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{您網絡上的新打印機}other{您網絡上的新打印機}}</translation>
 <translation id="6285770818046456882">正在與您分享的裝置現已取消傳輸</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">正在驗證啟動碼。這項操作可能需時數分鐘。</translation>
@@ -5317,6 +5317,7 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6833479554815567477">分頁已經由包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組度移除</translation>
 <translation id="683373380308365518">改用智能且安全的瀏覽器</translation>
+<translation id="6834652994408928492">「暗光模式」會在日落時自動開啟</translation>
 <translation id="683540480453879381">開啟 <ph name="FILE_EXTENSIONS" /> 檔案</translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在網站要求在您的螢幕上開啟並放置視窗時詢問您 (建議)</translation>
@@ -6029,6 +6030,7 @@
 <translation id="7622114377921274169">正在充電。</translation>
 <translation id="7622768823216805500">網站通常會安裝付款處理常式以提供購物功能，例如較易結帳</translation>
 <translation id="7622903810087708234">密碼詳情</translation>
+<translation id="7622966771025050155">切換至已擷取的分頁</translation>
 <translation id="7624337243375417909">大寫鎖定已關閉</translation>
 <translation id="7625568159987162309">查看所有網站的權限和資料</translation>
 <translation id="7628201176665550262">重新整理頻率</translation>
@@ -6195,6 +6197,7 @@
 <translation id="7784067724422331729">您的電腦安全性設定封鎖了這個檔案。</translation>
 <translation id="7784796923038949829">無法讀取或變更網站資料</translation>
 <translation id="778480864305029524">如要使用即時網絡共享功能，請開啟「Google Play 服務」的通知功能。</translation>
+<translation id="7785471469930192436">建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)</translation>
 <translation id="7786889348652477777">重新載入應用程式(&amp;R)</translation>
 <translation id="7787308148023287649">在另一個螢幕上顯示</translation>
 <translation id="7788298548579301890">電腦中的其他程式新增了一個應用程式，可能會變更 Chrome 的運作方式。
@@ -6807,6 +6810,7 @@
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
 <translation id="8439506636278576865">翻譯這個語言的網頁</translation>
 <translation id="8440630305826533614">Linux 應用程式</translation>
+<translation id="8446225304314102060">切換至 <ph name="TAB_ORIGIN" /> 分頁</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8447409163267621480">必須以 Ctrl 或 Alt 鍵開頭</translation>
 <translation id="8448729345478502352">縮小或放大畫面上的項目</translation>
@@ -7468,6 +7472,7 @@
 <translation id="9148058034647219655">結束</translation>
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9148963623915467028">此網站可存取您的位置。</translation>
+<translation id="9149529198050266366">「暗光模式」會在日出時自動關閉</translation>
 <translation id="9149866541089851383">編輯…</translation>
 <translation id="9150045010208374699">使用您的相機。</translation>
 <translation id="9150079578948279438">無法移除設定檔。請再試一次，或聯絡您的流動網絡供應商以獲取技術支援。</translation>

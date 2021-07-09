@@ -614,7 +614,6 @@
 <translation id="164936512206786300">Rasparivanje Bluetooth uređaja</translation>
 <translation id="1651008383952180276">Morate dvaput unijeti istu šifru</translation>
 <translation id="1652326691684645429">Omogući dijeljenje u blizini</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Dodajte pisač na Google Cloud Print kako biste mogli ispisivati s bilo kojeg mjesta.}one{Dodajte # pisač na Google Cloud Print kako biste mogli ispisivati s bilo kojeg mjesta.}few{Dodajte # pisača na Google Cloud Print kako biste mogli ispisivati s bilo kojeg mjesta.}other{Dodajte # pisača na Google Cloud Print kako biste mogli ispisivati s bilo kojeg mjesta.}}</translation>
 <translation id="1653631694606464309">Web-aplikacije obično traže dopuštenje za otvaranje određenih vrsta datoteka kako biste mogli raditi na njima gdje god želite, primjerice otvoriti dokumente u željenom programu za obradu teksta</translation>
 <translation id="1656528038316521561">Prozirnost pozadine</translation>
 <translation id="1657406563541664238">Olakšajte nam poboljšanje preglednika <ph name="PRODUCT_NAME" /> automatskim slanjem statistike o upotrebi i izvješća o padu programa Googleu</translation>
@@ -2905,7 +2904,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4094647278880271855">Koristite nepodržanu varijablu okruženja: <ph name="BAD_VAR" />. Ugrožena je stabilnost i sigurnost.</translation>
 <translation id="4095264805865317199">Otvori korisničko sučelje za mobilnu aktivaciju</translation>
 <translation id="4095507791297118304">Primarni zaslon</translation>
-<translation id="409579654357498729">Dodaj na Cloud Print</translation>
 <translation id="4096508467498758490">Onemogućivanje proširenja u načinu rada razvojnog programera</translation>
 <translation id="4097406557126260163">Aplikacije i proširenja</translation>
 <translation id="409742781329613461">Savjeti za Chrome</translation>
@@ -4824,7 +4822,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <ph name="DOMAIN" /> zahtijeva da vaša pametna kartica ostane umetnuta.</translation>
 <translation id="628352644014831790">Četiri sekunde</translation>
 <translation id="6285120108426285413">Datoteka <ph name="FILE_NAME" /> obično se ne preuzima i mogla bi biti opasna.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Novi pisač na vašoj mreži}one{Novi pisači na vašoj mreži}few{Novi pisači na vašoj mreži}other{Novi pisači na vašoj mreži}}</translation>
 <translation id="6285770818046456882">Dijeljenje uređaja s vama otkazalo je prijenos</translation>
 <translation id="6290613030083731160">U blizini nema uređaja dostupnih za dijeljenje. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">U tijeku je potvrđivanje aktivacijskog koda. To može potrajati nekoliko minuta.</translation>

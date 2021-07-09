@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">אין אינטרנט</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">סטטוס הפעלה</translation>
+<translation id="2294675138977897428">לא זוהה חיבור אתרנט</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> ‏DPI</translation>
 <translation id="2338501278241028356">‏יש להפעיל את Bluetooth כדי לאתר מכשירים קרובים</translation>
 <translation id="2364498172489649528">הילד או הילדה עברו את הבדיקה בהצלחה</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
 <translation id="4378373042927530923">לא הופעל</translation>
+<translation id="4378551569595875038">התחברות...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
 <translation id="4429881212383817840">‏התוקף של כרטיס Kerberos עומד לפוג בקרוב</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>
 <translation id="65587193855025101">שטוח</translation>
 <translation id="6564646048574748301">נכשלה – לא ניתן להתחבר אל המדפסת</translation>
+<translation id="6603230386432466813">נתקלת בקשיים בהתחברות?</translation>
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
 <translation id="6620487321149975369">משימות הדפסה יופיעו תחת היסטוריה אלא אם הן הוסרו ידנית</translation>
 <translation id="6643016212128521049">ניקוי</translation>

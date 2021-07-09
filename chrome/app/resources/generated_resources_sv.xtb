@@ -616,7 +616,6 @@
 <translation id="164936512206786300">Koppla från Bluetooth-enhet</translation>
 <translation id="1651008383952180276">Du måste ange samma lösenfras två gånger</translation>
 <translation id="1652326691684645429">Aktivera Närdelning</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Lägg till skrivaren i Google Cloud Print så att du kan skriva ut var du än befinner dig.}other{Lägg till # skrivare i Google Cloud Print så att du kan skriva ut var du än befinner dig.}}</translation>
 <translation id="1653631694606464309">Webbappar frågar vanligtvis om du vill öppna vissa filtyper så att du kan arbeta med dem där du vill, till exempel öppna dokument i det ordbehandlingsprogram du brukar använda</translation>
 <translation id="1656528038316521561">Bakgrundens genomskinlighet</translation>
 <translation id="1657406563541664238">Hjälp till att göra <ph name="PRODUCT_NAME" /> bättre genom att automatiskt skicka användningsstatistik och felrapporter till Google</translation>
@@ -2918,7 +2917,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4094647278880271855">Du använder en miljövariabel som inte stöds: <ph name="BAD_VAR" />. Detta påverkar stabilitet och säkerhet negativt.</translation>
 <translation id="4095264805865317199">Öppna användargränssnittet för aktivering av mobilnätverk</translation>
 <translation id="4095507791297118304">Primär skärm</translation>
-<translation id="409579654357498729">Lägg till i Cloud Print</translation>
 <translation id="4096508467498758490">Inaktivera tillägg i utvecklarläge</translation>
 <translation id="4097406557126260163">Appar och tillägg</translation>
 <translation id="409742781329613461">Tips för Chrome</translation>
@@ -4395,6 +4393,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5794700615121138172">Delade mappar i Linux</translation>
 <translation id="5794786537412027208">Stäng alla Chrome-appar</translation>
 <translation id="5797070761912323120">Google kan anpassa Sök, annonser och andra Google-tjänster utifrån historiken</translation>
+<translation id="5797521893972859201">Rensar historiken, inklusive från sökrutan</translation>
 <translation id="5798079537501238810">Webbplatser kan installera betalningshanterare</translation>
 <translation id="579907812742603813">skyddat innehåll</translation>
 <translation id="579915268381781820">Säkerhetsnyckeln har tagits bort.</translation>
@@ -4478,6 +4477,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5900302528761731119">Profilbild i Google Profiler</translation>
 <translation id="590036993063074298">Information om speglingskvalitet</translation>
 <translation id="5901069264981746702">Fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Byt till fliken som spelar in</translation>
 <translation id="5901494423252125310">Skrivarens lucka är öppen</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5904614460720589786">Det gick inte att installera <ph name="APP_NAME" /> på grund av ett konfigurationsproblem. Kontakta administratören. Felkod: <ph name="ERROR_CODE" />.</translation>
@@ -4750,6 +4750,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6196854373336333322">Tillägget <ph name="EXTENSION_NAME" /> har tagit kontroll över dina proxyinställningar, vilket innebär att det kan ändra, knäcka eller tjuvlyssna på allt du gör på webben. Om du inte vet varför den här ändringen inträffade är den troligen inte önskvärd.</translation>
 <translation id="6198102561359457428">Logga ut och sedan in igen ...</translation>
 <translation id="6198252989419008588">Byt pinkod</translation>
+<translation id="6200047250927636406">Släng filen</translation>
 <translation id="6202304368170870640">Du kan logga in på eller låsa upp enheten med pinkoden.</translation>
 <translation id="6206311232642889873">Kopiera &amp;bild</translation>
 <translation id="6207200176136643843">Återställ standardzoomnivån</translation>
@@ -4835,7 +4836,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <ph name="DOMAIN" /> kräver att du har smartkortet isatt.</translation>
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> brukar inte laddas ned och kan vara skadlig.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ny skrivare i nätverket}other{Nya skrivare i nätverket}}</translation>
 <translation id="6285770818046456882">Enheten som delar med dig har avbrutit överföringen</translation>
 <translation id="6290613030083731160">Det finns inga enheter i närheten som delar. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktiveringskoden verifieras. Det kan ta några minuter.</translation>
@@ -5318,6 +5318,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6833479554815567477">Fliken togs bort från gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Byt till en smart och säker webbläsare</translation>
+<translation id="6834652994408928492">Mörkt läge aktiveras automatiskt vid solnedgången</translation>
 <translation id="683540480453879381">Öppna filer av typen <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Anslut till internet om du vill uppdatera din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Fråga när en webbplats vill öppna fönster och placera ut dem på skärmen (rekommenderas)</translation>
@@ -6030,6 +6031,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7622114377921274169">Laddas.</translation>
 <translation id="7622768823216805500">Att installera betalningshanterare brukar kunna behövas till exempel för att förenkla hanteringen i kassan på webbplatsen</translation>
 <translation id="7622903810087708234">Lösenordsinformation</translation>
+<translation id="7622966771025050155">Byt till inspelad flik</translation>
 <translation id="7624337243375417909">caps lock av</translation>
 <translation id="7625568159987162309">Visa behörigheter och data som har lagrats på webbplatser</translation>
 <translation id="7628201176665550262">Uppdateringsfrekvens</translation>
@@ -6196,6 +6198,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7784067724422331729">Filen har blockerats av datorns säkerhetsinställningar.</translation>
 <translation id="7784796923038949829">Kan inte läsa eller ändra webbplatsens data</translation>
 <translation id="778480864305029524">Aktivera aviseringar för Google Play-tjänster om du vill använda direktinternetdelning.</translation>
+<translation id="7785471469930192436">Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt</translation>
 <translation id="7786889348652477777">&amp;Läs in appen igen</translation>
 <translation id="7787308148023287649">Visa på en annan skärm</translation>
 <translation id="7788298548579301890">Ett annat program i datorn har lagt till en app som kan ändra hur Chrome fungerar.
@@ -6808,6 +6811,7 @@ Tryck på en brytare som redan tilldelats en åtgärd om du vill ta bort tilldel
 <translation id="8438566539970814960">Förbättra sökningar och surfandet</translation>
 <translation id="8439506636278576865">Erbjud att översätta sidor på detta språk</translation>
 <translation id="8440630305826533614">Linux-appar</translation>
+<translation id="8446225304314102060">Byt till fliken <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Läs mer</translation>
 <translation id="8447409163267621480">Ctrl- eller alt-tangenten måste finnas med</translation>
 <translation id="8448729345478502352">Gör objekt på skärmen mindre eller större</translation>
@@ -7469,6 +7473,7 @@ Du kan tilldela flera brytare denna åtgärd</translation>
 <translation id="9148058034647219655">Avsluta</translation>
 <translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9148963623915467028">Den här webbplatsen har åtkomst till din plats.</translation>
+<translation id="9149529198050266366">Mörkt läge inaktiveras automatiskt vid soluppgången</translation>
 <translation id="9149866541089851383">Redigera...</translation>
 <translation id="9150045010208374699">Använd kameran</translation>
 <translation id="9150079578948279438">Det gick inte att ta bort profilen. Försök igen eller kontakta operatören om du behöver teknisk support.</translation>

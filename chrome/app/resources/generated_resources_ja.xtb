@@ -613,7 +613,6 @@
 <translation id="164936512206786300">Bluetooth デバイスのペア設定の解除</translation>
 <translation id="1651008383952180276">同じパスフレーズを 2 回入力する必要があります</translation>
 <translation id="1652326691684645429">ニアバイシェアを有効にする</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{プリンタを Google クラウド プリントに追加してください。登録したプリンタにはどこからでも印刷できます。}other{# 件のプリンタを Google クラウド プリントに追加してください。登録したプリンタにはどこからでも印刷できます。}}</translation>
 <translation id="1653631694606464309">ウェブアプリは、ユーザーが作業しやすいように、ファイル形式が関連付けられたプログラムを開くよう求めることがあります（普段使用しているワード プロセッサーでドキュメントを開くなど）</translation>
 <translation id="1656528038316521561">背景の透明度</translation>
 <translation id="1657406563541664238">使用統計データや障害レポートを Google に自動送信して <ph name="PRODUCT_NAME" /> の機能向上に役立てる</translation>
@@ -2903,7 +2902,6 @@
 <translation id="4094647278880271855">サポートされていない環境変数が使用されています: <ph name="BAD_VAR" />。これにより、安全性とセキュリティが損なわれます。</translation>
 <translation id="4095264805865317199">モバイル有効化 UI を開く</translation>
 <translation id="4095507791297118304">メイン ディスプレイ</translation>
-<translation id="409579654357498729">クラウド プリントに追加</translation>
 <translation id="4096508467498758490">デベロッパー モードの拡張機能を無効にする</translation>
 <translation id="4097406557126260163">アプリと拡張機能</translation>
 <translation id="409742781329613461">Chrome のヒント</translation>
@@ -4379,6 +4377,7 @@
 <translation id="5794700615121138172">Linux の共有フォルダ</translation>
 <translation id="5794786537412027208">すべての Chrome アプリを終了</translation>
 <translation id="5797070761912323120">検索、広告、その他の Google サービスをカスタマイズするために、Google で履歴が使用されることがあります</translation>
+<translation id="5797521893972859201">検索ボックスなどの履歴を削除します</translation>
 <translation id="5798079537501238810">サイトが支払いハンドラをインストールできるようにする</translation>
 <translation id="579907812742603813">保護されたコンテンツ</translation>
 <translation id="579915268381781820">セキュリティ キーは削除されています。</translation>
@@ -4462,6 +4461,7 @@
 <translation id="5900302528761731119">Google プロフィール写真</translation>
 <translation id="590036993063074298">ミラーリング品質の詳細</translation>
 <translation id="5901069264981746702">指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">キャプチャ中のタブに切り替え</translation>
 <translation id="5901494423252125310">プリンタの扉が開いています</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5904614460720589786">設定に問題があったため、<ph name="APP_NAME" /> をセットアップできませんでした。管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
@@ -4734,6 +4734,7 @@
 <translation id="6196854373336333322">拡張機能「<ph name="EXTENSION_NAME" />」によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>
 <translation id="6198102561359457428">ログアウトしてから再度ログイン...</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
+<translation id="6200047250927636406">ファイルを破棄</translation>
 <translation id="6202304368170870640">デバイスのログインやロック解除に PIN を使用できます。</translation>
 <translation id="6206311232642889873">画像をコピー(&amp;Y)</translation>
 <translation id="6207200176136643843">リセットしてデフォルトのズームレベルに戻す</translation>
@@ -4819,7 +4820,6 @@
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
 <translation id="628352644014831790">4秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> は一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります。</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ネットワーク上の新しいプリンタ}other{ネットワーク上の新しいプリンタ}}</translation>
 <translation id="6285770818046456882">共有元のデバイスによって転送がキャンセルされました</translation>
 <translation id="6290613030083731160">近くに共有可能なデバイスはありません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">アクティベーション コードを確認しています。この処理には数分かかることがあります。</translation>
@@ -5302,6 +5302,7 @@
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">スマートで安全なブラウザをぜひご利用ください</translation>
+<translation id="6834652994408928492">ダークモードは日の入り時刻に自動的にオンになります</translation>
 <translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> ファイルを開く</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
 <translation id="6838034009068684089">サイトから画面上にウィンドウを開いて配置することを求められたときに確認する（推奨）</translation>
@@ -6014,6 +6015,7 @@
 <translation id="7622114377921274169">充電しています。</translation>
 <translation id="7622768823216805500">多くのサイトは、お支払い手続きを簡易化するなど、ショッピングをより快適にするために支払いハンドラをインストールします。</translation>
 <translation id="7622903810087708234">パスワードの詳細</translation>
+<translation id="7622966771025050155">キャプチャしたタブに切り替え</translation>
 <translation id="7624337243375417909">CapsLock オフ</translation>
 <translation id="7625568159987162309">すべてのサイトに保存されている権限とデータを表示</translation>
 <translation id="7628201176665550262">リフレッシュ レート</translation>
@@ -6180,6 +6182,7 @@
 <translation id="7784067724422331729">お使いのパソコンのセキュリティ設定により、このファイルはブロックされました。</translation>
 <translation id="7784796923038949829">サイトのデータを読み取れないか、変更できません</translation>
 <translation id="778480864305029524">インスタント テザリングを使用するには、Google Play 開発者サービスの通知を有効にしてください。</translation>
+<translation id="7785471469930192436">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）</translation>
 <translation id="7786889348652477777">アプリを再読み込み(&amp;R)</translation>
 <translation id="7787308148023287649">別の画面で表示</translation>
 <translation id="7788298548579301890">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のあるアプリが追加されました。
@@ -6791,6 +6794,7 @@
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
 <translation id="8439506636278576865">この言語のページで翻訳ツールを表示する</translation>
 <translation id="8440630305826533614">Linux アプリ</translation>
+<translation id="8446225304314102060"><ph name="TAB_ORIGIN" /> のタブに切り替え</translation>
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8447409163267621480">Ctrl キーまたは Alt キーが必要です</translation>
 <translation id="8448729345478502352">アイテムの表示サイズを変更します</translation>
@@ -7452,6 +7456,7 @@
 <translation id="9148058034647219655">終了</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
 <translation id="9148963623915467028">このサイトでは位置情報へのアクセスが許可されています。</translation>
+<translation id="9149529198050266366">ダークモードは日の出時刻に自動的にオフになります</translation>
 <translation id="9149866541089851383">編集...</translation>
 <translation id="9150045010208374699">カメラを使用する</translation>
 <translation id="9150079578948279438">プロファイルを削除できませんでした。もう一度お試しいただくか、ご利用の携帯通信会社のテクニカル サポートにお問い合わせください。</translation>

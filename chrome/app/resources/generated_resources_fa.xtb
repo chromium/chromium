@@ -614,7 +614,6 @@
 <translation id="164936512206786300">لغو مرتبط‌سازی دستگاه بلوتوث</translation>
 <translation id="1651008383952180276">باید همان گذرعبارت را دو بار وارد کنید</translation>
 <translation id="1652326691684645429">فعال کردن «هم‌رسانی با اطراف»</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{‏چاپگر را به Google Cloud Print اضافه کنید تا بتوانید از هر کجا چاپ کنید.}one{‏# چاپگر را به Google Cloud Print اضافه کنید تا بتوانید از هر کجا چاپ کنید.}other{‏# چاپگر را به Google Cloud Print اضافه کنید تا بتوانید از هر کجا چاپ کنید.}}</translation>
 <translation id="1653631694606464309">برنامه‌های وب معمولاً درخواست می‌کنند تا انواع خاصی از فایل را باز کنند تا بتوانید در جایی‌که می‌خواهید روی آن فایل‌ها کار کنید، مثل باز کردن اسناد در واژه‌پرداز ترجیحی‌تان.</translation>
 <translation id="1656528038316521561">ماتی پس‌زمینه</translation>
 <translation id="1657406563541664238">‏با ارسال خودکار آمار استفاده و گزارش‌های خرابی به Google، به بهتر شدن <ph name="PRODUCT_NAME" /> کمک کنید.</translation>
@@ -2915,7 +2914,6 @@
 <translation id="4094647278880271855">از متغیر محیطی پشتیبانی‌نشده‌ای استفاده می‌کنید: <ph name="BAD_VAR" />. ثبات و امنیت دچار مشکل می‌شود.</translation>
 <translation id="4095264805865317199">باز کردن میانای کاربر فعال‌سازی شبکه داده تلفن همراه</translation>
 <translation id="4095507791297118304">نمایشگر اصلی</translation>
-<translation id="409579654357498729">‏افزودن به Cloud Print</translation>
 <translation id="4096508467498758490">غیرفعال کردن افزونه‌های حالت برنامه‌نویس</translation>
 <translation id="4097406557126260163">برنامه‌ها و افزونه‌ها</translation>
 <translation id="409742781329613461">‏نکاتی درباره Chrome</translation>
@@ -4392,6 +4390,7 @@
 <translation id="5794700615121138172">‏پوشه‌های هم‌رسانی‌شده Linux</translation>
 <translation id="5794786537412027208">‏خروج از همه برنامه‌های Chrome</translation>
 <translation id="5797070761912323120">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو، آگهی‌ها و سایر سرویس‌های Google استفاده کند</translation>
+<translation id="5797521893972859201">سابقه‌ها، ازجمله سابقه موجود در چارگوش جستجو پاک می‌شود</translation>
 <translation id="5798079537501238810">سایت‌ها می‌توانند کنترل‌کننده پرداخت نصب کنند</translation>
 <translation id="579907812742603813">محتوای محافظت‌شده</translation>
 <translation id="579915268381781820">کلید امنیتی‌تان برداشته شد.</translation>
@@ -4475,6 +4474,7 @@
 <translation id="5900302528761731119">‏عکس نمایهٔ Google</translation>
 <translation id="590036993063074298">جزئیات کیفیت بازتاب</translation>
 <translation id="5901069264981746702">داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">رفتن به برگه درحال ضبط</translation>
 <translation id="5901494423252125310">در چاپگر باز است</translation>
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5904614460720589786">به‌دلیل مشکل پیکربندی، <ph name="APP_NAME" /> راه‌اندازی نشد. لطفاً با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
@@ -4747,6 +4747,7 @@
 <translation id="6196854373336333322">افزونه «<ph name="EXTENSION_NAME" />»، کنترل تنظیمات پروکسی شما را در اختیار گرفته است یعنی می‌تواند هر چیزی که در حالت آنلاین انجام می‌دهید تغییر دهد، خراب کند یا استراق سمع کند. اگر مطمئن نیستید چرا این تغییر انجام شده است، احتمالاً این افزونه را نمی‌خواهید.</translation>
 <translation id="6198102561359457428">خارج شده و دوباره وارد سیستم شوید...</translation>
 <translation id="6198252989419008588">تغییر دادن پین</translation>
+<translation id="6200047250927636406">صرف‌نظر کردن از فایل</translation>
 <translation id="6202304368170870640">می‌توانید برای ورود به سیستم یا باز کردن قفل دستگاه از پین استفاده کنید.</translation>
 <translation id="6206311232642889873">&amp;کپی تصویر</translation>
 <translation id="6207200176136643843">بازنشانی به سطح بزرگ‌نمایی پیش‌فرض</translation>
@@ -4832,7 +4833,6 @@
 برای اینکه از سیستم <ph name="DOMAIN" /> خارج نشوید، باید کارت هوشمندتان را در دستگاه نگه دارید.</translation>
 <translation id="628352644014831790">۴ ثانیه</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{چاپگر جدید در شبکه شما}one{چاپگر جدید در شبکه شما}other{چاپگر جدید در شبکه شما}}</translation>
 <translation id="6285770818046456882">دستگاهی که با شما هم‌رسانی می‌کرد انتقال را لغو کرد</translation>
 <translation id="6290613030083731160">دستگاهی که درحال هم‌رسانی با اطراف باشد وجود ندارد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">درحال راستی‌آزمایی کد فعال‌سازی. ممکن است چند دقیقه طول بکشد.</translation>
@@ -5315,6 +5315,7 @@
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6833479554815567477">برگه از گروه <ph name="GROUP_NAME" /> برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">به مرورگری هوشمند و ایمن جابه‌جا شوید</translation>
+<translation id="6834652994408928492">«حالت تاریک» هنگام غروب آفتاب به‌طور خودکار روشن خواهد شد</translation>
 <translation id="683540480453879381">باز کردن فایل‌های <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">برای به‌روزرسانی <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
 <translation id="6838034009068684089">وقتی سایتی می‌خواهد پنجره‌ها را باز کند و در صفحه جای‌گذاری کند سؤال شود (توصیه می‌شود)</translation>
@@ -6027,6 +6028,7 @@
 <translation id="7622114377921274169">درحال شارژ شدن.</translation>
 <translation id="7622768823216805500">سایت‌ها معمولاً کنترل‌کننده‌های پرداخت را برای ارائه ویژگی‌های خرید، مانند تسویه‌حساب آسان‌تر، نصب می‌کنند</translation>
 <translation id="7622903810087708234">جزئیات گذرواژه</translation>
+<translation id="7622966771025050155">رفتن به برگه ضبط‌شده</translation>
 <translation id="7624337243375417909">‏caps lock غیرفعال</translation>
 <translation id="7625568159987162309">مشاهده مجوزها و داده‌های ذخیره‌شده در همه سایت‌ها</translation>
 <translation id="7628201176665550262">نرخ بازخوانی</translation>
@@ -6193,6 +6195,7 @@
 <translation id="7784067724422331729">تنظیمات امنیتی رایانه شما این فایل را مسدود کرد.</translation>
 <translation id="7784796923038949829">خواندن یا تغییر داده‌های سایت امکان‌پذیر نیست</translation>
 <translation id="778480864305029524">‏برای استفاده از «اشتراک‌گذاری اینترنت فوری»، اعلان‌ها را برای «خدمات Google Play» روشن کنید.</translation>
+<translation id="7785471469930192436">برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید</translation>
 <translation id="7786889348652477777">&amp;تازه‌سازی برنامه</translation>
 <translation id="7787308148023287649">نمایش در صفحه دیگر</translation>
 <translation id="7788298548579301890">‏برنامه دیگری در رایانه شما برنامه‌ای اضافه کرده که ممکن است نحوه کارکرد Chrome را تغییر دهد.
@@ -6805,6 +6808,7 @@
 <translation id="8438566539970814960">بهبود جستجوها و مرور</translation>
 <translation id="8439506636278576865">ترجمه صفحات نوشته شده به این زبان پیشنهاد داده شود</translation>
 <translation id="8440630305826533614">‏برنامه‌های Linux</translation>
+<translation id="8446225304314102060">رفتن به برگه <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">بیشتر بیاموزید</translation>
 <translation id="8447409163267621480">‏باید شامل Ctrl یا Alt باشد</translation>
 <translation id="8448729345478502352">بزرگ‌تر با کوچک‌تر کردن موارد روی صفحه</translation>
@@ -7467,6 +7471,7 @@
 <translation id="9148058034647219655">خروج</translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>
 <translation id="9148963623915467028">این سایت می‌تواند به مکان شما دسترسی داشته باشد.</translation>
+<translation id="9149529198050266366">«حالت تاریک» هنگام طلوع آفتاب به‌طور خودکار خاموش خواهد شد</translation>
 <translation id="9149866541089851383">ویرایش...</translation>
 <translation id="9150045010208374699">استفاده از دوربین شما</translation>
 <translation id="9150079578948279438">نمایه برداشته نشد. لطفاً دوباره امتحان کنید یا برای دریافت پشتیبانی فنی، با شرکت مخابراتی‌تان تماس بگیرید.</translation>

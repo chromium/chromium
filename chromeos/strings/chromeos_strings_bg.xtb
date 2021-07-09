@@ -63,6 +63,7 @@
 <translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
+<translation id="2294675138977897428">Не е открита връзка с Ethernet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2364498172489649528">Премината</translation>
@@ -144,6 +145,7 @@
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> изображения</translation>
 <translation id="4378373042927530923">Не е стартирано</translation>
+<translation id="4378551569595875038">Свързване...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Моят диск</translation>
 <translation id="4429881212383817840">Пропускът за Kerberos изтича скоро</translation>
@@ -278,6 +280,7 @@
 <translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
 <translation id="65587193855025101">Плосък скенер</translation>
 <translation id="6564646048574748301">Неуспешно – няма връзка с принтера</translation>
+<translation id="6603230386432466813">Имате проблеми при свързване?</translation>
 <translation id="6618744767048954150">В ход</translation>
 <translation id="6620487321149975369">Заданията за отпечатване ще се показват в историята, освен ако не ги премахнете ръчно</translation>
 <translation id="6643016212128521049">Изчистване</translation>

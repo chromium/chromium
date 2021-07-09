@@ -614,7 +614,6 @@
 <translation id="164936512206786300">Dissocier l'appareil Bluetooth</translation>
 <translation id="1651008383952180276">Vous devez saisir deux fois la même phrase secrète</translation>
 <translation id="1652326691684645429">Activer le Partage à proximité</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Ajoutez l'imprimante à Google Cloud Print pour imprimer des documents où que vous soyez.}one{Ajoutez # imprimante à Google Cloud Print pour imprimer des documents où que vous soyez.}other{Ajoutez # imprimantes à Google Cloud Print pour imprimer des documents où que vous soyez.}}</translation>
 <translation id="1653631694606464309">En général, les applis Web demandent l'autorisation d'ouvrir certains types de fichiers pour vous permettre de travailler sur ces fichiers où vous le souhaitez, par exemple dans votre outil de traitement de texte préféré</translation>
 <translation id="1656528038316521561">Opacité de l'arrière-plan</translation>
 <translation id="1657406563541664238">Nous aider à améliorer <ph name="PRODUCT_NAME" /> en envoyant automatiquement les statistiques d'utilisation et les rapports d'erreur à Google</translation>
@@ -2765,7 +2764,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 au moyen de <ph name="CONTROL_PANEL_APPLET_NAME" /> dans le panneau de configuration.
 
 Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
-<translation id="3942420633017001071">Diagnostics</translation>
+<translation id="3942420633017001071">Diagnostic</translation>
 <translation id="3943494825379372497">Restaurer les applis et les pages ?</translation>
 <translation id="3943582379552582368">R&amp;etour</translation>
 <translation id="3943857333388298514">Coller</translation>
@@ -2904,7 +2903,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4094647278880271855">Vous utilisez une variable d'environnement non compatible : <ph name="BAD_VAR" />. La stabilité et la sécurité en seront affectées.</translation>
 <translation id="4095264805865317199">Ouvrir l'UI d'activation mobile</translation>
 <translation id="4095507791297118304">Affichage principal</translation>
-<translation id="409579654357498729">Ajouter à Google Cloud Print</translation>
 <translation id="4096508467498758490">Désactiver les extensions exécutées en mode développeur ?</translation>
 <translation id="4097406557126260163">Applications et extensions</translation>
 <translation id="409742781329613461">Conseils pour Chrome</translation>
@@ -4821,7 +4819,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="628352644014831790">4 secondes</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> n'est pas un fichier couramment téléchargé. Il est peut-être dangereux.</translation>
-<translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nouvelle imprimante sur le réseau}one{Nouvelle imprimante sur le réseau}other{Nouvelles imprimantes sur le réseau}}</translation>
 <translation id="6285770818046456882">L'appareil qui partage du contenu avec vous a annulé le transfert</translation>
 <translation id="6290613030083731160">Aucun appareil disponible pour partager du contenu à proximité. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Vérification du code d'activation… Cela peut prendre quelques minutes.</translation>
