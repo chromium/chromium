@@ -1218,26 +1218,37 @@ crbug.com/626703 external/wpt/mathml/presentation-markup/fractions/frac-invalid-
 crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction-006.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction-009.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-001.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-002.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-003.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-004.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-005.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-006.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-elements-001.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-001.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-axis-height-1.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/cramped-001.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-004.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-001.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-002.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-axis-height.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/relations/css-styling/ignored-properties-001.html [ Failure Timeout ]
-crbug.com/6606 external/wpt/mathml/relations/css-styling/width-height-001.html [ Failure ]
+
+# These tests fail because we don't support MathML ink metrics.
+crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-001.html [ Failure ]
+crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-002.html [ Failure ]
+crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-003.html [ Failure ]
+crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-004.html [ Failure ]
+crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-005.html [ Failure ]
+crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-006.html [ Failure ]
+
+# These tests fail because we don't support embellished operators.
+crbug.com/1124298 external/wpt/mathml/presentation-markup/operators/embellished-operator-001.html [ Failure ]
+crbug.com/1124298 external/wpt/mathml/presentation-markup/operators/embellished-operator-002.html [ Failure ]
+crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
+crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]
+crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-004.html [ Failure ]
+
+# These tests fail because we don't support MathML tables.
+crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-001.html [ Failure ]
+crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-002.html [ Failure ]
+crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-axis-height.html [ Failure ]
+
+# These tests fail because some CSS properties affect MathML layout.
+crbug.com/1227601 external/wpt/mathml/relations/css-styling/ignored-properties-001.html [ Failure Timeout ]
+crbug.com/1227598 external/wpt/mathml/relations/css-styling/width-height-001.html [ Failure ]
+
+# This test has flaky timeout.
+crbug.com/1093840 external/wpt/mathml/relations/html5-tree/math-global-event-handlers.tentative.html [ Pass Timeout ]
 
 # These tests fail because we don't parse math display values according to the spec.
 crbug.com/1127222 external/wpt/css/css-display/display-math-on-pseudo-elements-001.html [ Failure ]
@@ -6325,7 +6336,6 @@ crbug.com/476553 virtual/scroll-unification-unified-autoplay/external/wpt/featur
 
 # Sheriff 2021-04-05
 crbug.com/921151 http/tests/security/mixedContent/insecure-iframe-with-hsts.https.html [ Failure Pass ]
-crbug.com/1093840 external/wpt/mathml/relations/html5-tree/math-global-event-handlers.tentative.html [ Pass Timeout ]
 
 # Sheriff 2021-04-06
 crbug.com/1032451 [ Linux ] virtual/threaded/animations/stability/animation-iteration-event-destroy-renderer.html [ Failure Pass Timeout ]
