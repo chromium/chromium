@@ -83,10 +83,9 @@
       [UIAlertAction actionWithTitle:title
                                style:style
                              handler:^(UIAlertAction*) {
-                               [weakSelf setNoInteractionAction:nil];
+                               [weakSelf alertDismissed];
                                if (actionBlock)
                                  actionBlock();
-                               [weakSelf alertDismissed];
                              }];
 
   alertAction.enabled = enabled;
