@@ -11,7 +11,6 @@
 
 // Represents tab data at startup.
 struct StartupTab {
-  StartupTab();
   StartupTab(const GURL& url, bool is_pinned);
   ~StartupTab();
 

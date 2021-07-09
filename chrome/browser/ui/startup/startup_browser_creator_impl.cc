@@ -128,12 +128,8 @@ bool ShouldRestoreApps(bool is_post_restart, Profile* profile) {
 #endif
 
 void UrlsToTabs(const std::vector<GURL>& urls, StartupTabs* tabs) {
-  for (const GURL& url : urls) {
-    StartupTab tab;
-    tab.is_pinned = false;
-    tab.url = url;
-    tabs->push_back(tab);
-  }
+  for (const GURL& url : urls)
+    tabs->push_back(StartupTab(url, false));
 }
 
 std::vector<GURL> TabsToUrls(const StartupTabs& tabs) {

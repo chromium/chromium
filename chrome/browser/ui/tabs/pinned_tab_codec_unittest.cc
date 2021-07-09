@@ -15,7 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-typedef BrowserWithTestWindowTest PinnedTabCodecTest;
+using PinnedTabCodecTest = BrowserWithTestWindowTest;
 
 // Make sure nothing is restored when the browser has no pinned tabs.
 TEST_F(PinnedTabCodecTest, NoPinnedTabs) {
