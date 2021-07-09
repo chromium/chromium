@@ -74,7 +74,7 @@ class RenderingContextDescriptionCodec {
 
 RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
     const CanvasRenderingContext* context) {
-  is_valid_ = context->Host() && context->Host()->ResourceProvider();
+  is_valid_ = context->Host();
   if (!is_valid_)
     return;
 
