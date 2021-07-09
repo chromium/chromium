@@ -533,4 +533,21 @@
     Send anyway
   </message>
 
+  <!-- HTTPS-Only Mode interstitial-->
+  <message name="IDS_HTTPS_ONLY_MODE_TITLE" desc="Tab title for HTTPS-only mode warning">
+    Site is not secure
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_HEADING" desc="Large heading of the warning shown when an http only site is loaded with https-only mode active">
+    The connection to <ph name="SITE">$1<ex>example.com</ex></ph> is not secure
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
+    You are seeing this warning because this site does not support HTTPS.
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_BACK_BUTTON" desc="Text for the button in the HTTPS-only mode warning that takes the user back to the previous page">
+    Go back
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_SUBMIT_BUTTON" desc="Text for the button in the HTTPS-only mode warning that bypasses the warning and loads the page">
+    Continue to site
+  </message>
+
 </grit-part>

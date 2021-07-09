@@ -21,6 +21,7 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_blocking_page_quiet.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
+#include "chrome/browser/ssl/https_only_mode_controller_client.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
@@ -30,6 +31,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
+#include "components/security_interstitials/content/https_only_mode_blocking_page.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
 #include "components/security_interstitials/content/legacy_tls_blocking_page.h"
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
@@ -287,6 +289,15 @@ CreateInsecureFormPage(content::WebContents* web_contents) {
                                                      request_url));
 }
 
+std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
+CreateHttpsOnlyModePage(content::WebContents* web_contents) {
+  GURL request_url("http://example.com");
+  return std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
+      web_contents, request_url,
+      std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
+                                                      request_url));
+}
+
 std::unique_ptr<safe_browsing::SafeBrowsingBlockingPage>
 CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SBThreatType threat_type =
@@ -524,6 +535,8 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_delegate = CreateOriginPolicyInterstitialPage(web_contents);
   } else if (path_without_query == "/insecure_form") {
     interstitial_delegate = CreateInsecureFormPage(web_contents);
+  } else if (path_without_query == "/https_only") {
+    interstitial_delegate = CreateHttpsOnlyModePage(web_contents);
   }
 
   if (path_without_query == "/quietsafebrowsing") {

@@ -231,6 +231,14 @@ WebLayerSecurityBlockingPageFactory::CreateInsecureFormBlockingPage(
   return page;
 }
 
+std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
+WebLayerSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
+    content::WebContents* web_contents,
+    const GURL& request_url) {
+  // HTTPS-only mode is not implemented for weblayer.
+  return nullptr;
+}
+
 #if defined(OS_ANDROID)
 // static
 GURL WebLayerSecurityBlockingPageFactory::

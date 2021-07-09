@@ -7,10 +7,11 @@
 #include "base/feature_list.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
-#include "chrome/browser/ssl/https_only_mode_tab_storage.h"
+#include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +26,7 @@ base::TimeDelta g_fallback_delay = base::TimeDelta::FromSeconds(3);
 std::unique_ptr<HttpsOnlyModeNavigationThrottle>
 HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle,
+    std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
     PrefService* prefs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -40,12 +42,15 @@ HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
     return nullptr;
   }
 
-  return std::make_unique<HttpsOnlyModeNavigationThrottle>(handle);
+  return std::make_unique<HttpsOnlyModeNavigationThrottle>(
+      handle, std::move(blocking_page_factory));
 }
 
 HttpsOnlyModeNavigationThrottle::HttpsOnlyModeNavigationThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle) {}
+    content::NavigationHandle* handle,
+    std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory)
+    : content::NavigationThrottle(handle),
+      blocking_page_factory_(std::move(blocking_page_factory)) {}
 
 HttpsOnlyModeNavigationThrottle::~HttpsOnlyModeNavigationThrottle() = default;
 
@@ -54,9 +59,9 @@ HttpsOnlyModeNavigationThrottle::WillStartRequest() {
   // If the navigation was upgraded by the Interceptor, start the timeout timer.
   // Which navigations to upgrade is determined by the Interceptor not the
   // Throttle.
-  auto* tab_storage = HttpsOnlyModeTabStorage::GetOrCreate(
-      navigation_handle()->GetWebContents());
-  if (tab_storage->is_navigation_upgraded()) {
+  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(
+                        navigation_handle()->GetWebContents());
+  if (tab_helper->is_navigation_upgraded()) {
     timer_.Start(FROM_HERE, g_fallback_delay, this,
                  &HttpsOnlyModeNavigationThrottle::OnHttpsLoadTimeout);
   }
@@ -71,30 +76,33 @@ HttpsOnlyModeNavigationThrottle::WillFailRequest() {
   // interstitial in case of SSL errors or other net errors.
   timer_.Stop();
 
+  auto* handle = navigation_handle();
+
   // If there was no certificate error, SSLInfo will be empty.
-  const net::SSLInfo info =
-      navigation_handle()->GetSSLInfo().value_or(net::SSLInfo());
+  const net::SSLInfo info = handle->GetSSLInfo().value_or(net::SSLInfo());
   int cert_status = info.cert_status;
   if (!net::IsCertStatusError(cert_status) &&
-      navigation_handle()->GetNetErrorCode() == net::OK) {
+      handle->GetNetErrorCode() == net::OK) {
     // Don't fallback.
     return content::NavigationThrottle::PROCEED;
   }
 
   // Only show the interstitial if the Interceptor attempted to upgrade the
   // navigation.
-  auto* tab_storage = HttpsOnlyModeTabStorage::GetOrCreate(
-      navigation_handle()->GetWebContents());
-  if (tab_storage->is_navigation_upgraded()) {
-    // For now this just adds the host to a basic tab-scoped allowlist and shows
-    // a placeholder error string.
-    // TODO(crbug.com/1218526): Replace this placeholder with the
-    // actual blocking page HTML.
-    tab_storage->AddHostToAllowlist(navigation_handle()->GetURL().host());
+  auto* contents = handle->GetWebContents();
+  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
+  if (tab_helper->is_navigation_upgraded()) {
+    std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
+        blocking_page = blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
+            contents, handle->GetURL());
+    std::string interstitial_html = blocking_page->GetHTMLContents();
+    security_interstitials::SecurityInterstitialTabHelper::
+        AssociateBlockingPage(handle->GetWebContents(),
+                              handle->GetNavigationId(),
+                              std::move(blocking_page));
     return content::NavigationThrottle::ThrottleCheckResult(
         content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-        std::string(
-            "<html><body>Blocked due to HTTPS-Only Mode</body></html>"));
+        interstitial_html);
   }
 
   return content::NavigationThrottle::PROCEED;
@@ -114,9 +122,9 @@ HttpsOnlyModeNavigationThrottle::WillRedirectRequest() {
   // If the timer is not yet started and this is now an upgraded navigation,
   // then start the timer here. This can happen if the initial request is to
   // HTTPS but then redirects to HTTP.
-  auto* tab_storage = HttpsOnlyModeTabStorage::GetOrCreate(
-      navigation_handle()->GetWebContents());
-  if (tab_storage->is_navigation_upgraded() && !timer_.IsRunning()) {
+  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(
+                        navigation_handle()->GetWebContents());
+  if (tab_helper->is_navigation_upgraded() && !timer_.IsRunning()) {
     timer_.Start(FROM_HERE, g_fallback_delay, this,
                  &HttpsOnlyModeNavigationThrottle::OnHttpsLoadTimeout);
   }
@@ -130,9 +138,9 @@ HttpsOnlyModeNavigationThrottle::WillProcessResponse() {
   timer_.Stop();
 
   // Clear the status for this navigation as it will successfully commit.
-  auto* tab_storage = HttpsOnlyModeTabStorage::GetOrCreate(
-      navigation_handle()->GetWebContents());
-  tab_storage->set_is_navigation_upgraded(false);
+  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(
+                        navigation_handle()->GetWebContents());
+  tab_helper->set_is_navigation_upgraded(false);
 
   return content::NavigationThrottle::PROCEED;
 }
@@ -148,18 +156,5 @@ void HttpsOnlyModeNavigationThrottle::set_timeout_for_testing(
 }
 
 void HttpsOnlyModeNavigationThrottle::OnHttpsLoadTimeout() {
-  // Stop the current navigation and replace it with an error page.
-  auto* web_contents = navigation_handle()->GetWebContents();
-  auto* tab_storage = HttpsOnlyModeTabStorage::GetOrCreate(web_contents);
-  tab_storage->set_is_navigation_upgraded(false);
-
-  // For now this just adds the host to a basic tab-scoped allowlist and shows
-  // a placeholder error string.
-  // TODO(crbug.com/crbug.com/1218526): Replace this placeholder with the
-  // actual blocking page HTML.
-  tab_storage->AddHostToAllowlist(navigation_handle()->GetURL().host());
-  web_contents->GetController().LoadPostCommitErrorPage(
-      web_contents->GetMainFrame(), navigation_handle()->GetURL(),
-      std::string("<html><body>Blocked due to HTTPS-Only Mode</body></html>"),
-      net::ERR_BLOCKED_BY_CLIENT);
+  // TODO(crbug.com/1226232): Trigger WillFailResponse.
 }

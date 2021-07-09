@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ssl/https_defaulted_callbacks.h"
 
-#include "chrome/browser/ssl/https_only_mode_tab_storage.h"
+#include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 #include "chrome/common/chrome_features.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -24,11 +24,11 @@ bool ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
           handle);
 
   // Check HTTPS-Only Mode upgrade status.
-  auto* https_only_mode_storage =
-      HttpsOnlyModeTabStorage::GetOrCreate(handle->GetWebContents());
+  auto* https_only_mode_helper =
+      HttpsOnlyModeTabHelper::FromWebContents(handle->GetWebContents());
   bool is_https_only_mode_upgraded =
       base::FeatureList::IsEnabled(features::kHttpsOnlyMode) &&
-      https_only_mode_storage->is_navigation_upgraded();
+      https_only_mode_helper->is_navigation_upgraded();
 
   return is_upgraded_typed_navigation || is_https_only_mode_upgraded;
 }

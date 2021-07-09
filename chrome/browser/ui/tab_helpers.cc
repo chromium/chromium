@@ -64,6 +64,7 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
+#include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_throttle_manager_factory.h"
 #include "chrome/browser/subresource_redirect/subresource_redirect_observer.h"
@@ -270,6 +271,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents, TopSitesFactory::GetForProfile(profile).get());
   HistoryTabHelper::CreateForWebContents(web_contents);
   HistoryClustersTabHelper::CreateForWebContents(web_contents);
+  HttpsOnlyModeTabHelper::CreateForWebContents(web_contents);
   webapps::InstallableManager::CreateForWebContents(web_contents);
   PrefetchProxyTabHelper::CreateForWebContents(web_contents);
   LiteVideoObserver::MaybeCreateForWebContents(web_contents);

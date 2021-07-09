@@ -76,6 +76,7 @@ function setupEvents() {
   const blockedInterception = interstitialType === 'BLOCKED_INTERCEPTION';
   const legacyTls = interstitialType == 'LEGACY_TLS';
   const insecureForm = interstitialType == 'INSECURE_FORM';
+  const httpsOnly = interstitialType == 'HTTPS_ONLY';
   const hidePrimaryButton = loadTimeData.getBoolean('hide_primary_button');
   const showRecurrentErrorParagraph = loadTimeData.getBoolean(
     'show_recurrent_error_paragraph');
@@ -94,6 +95,8 @@ function setupEvents() {
     $('body').classList.add('lookalike-url');
   } else if (insecureForm) {
     $('body').classList.add('insecure-form');
+  } else if (httpsOnly) {
+    $('body').classList.add('https-only');
   } else {
     $('body').classList.add('safe-browsing');
     // Override the default theme color.
@@ -131,6 +134,7 @@ function setupEvents() {
         case 'ORIGIN_POLICY':
           sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
           break;
+        case 'HTTPS_ONLY':
         case 'INSECURE_FORM':
         case 'LOOKALIKE':
           sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
@@ -142,7 +146,7 @@ function setupEvents() {
     });
   }
 
-  if (lookalike || insecureForm) {
+  if (lookalike || insecureForm || httpsOnly) {
     const proceedButton = 'proceed-button';
     $(proceedButton).classList.remove(HIDDEN_CLASS);
     $(proceedButton).textContent = loadTimeData.getString('proceedButtonText');
@@ -199,9 +203,9 @@ function setupEvents() {
     });
   }
 
-  if (captivePortal || billing || lookalike || insecureForm) {
-    // Captive portal, billing, lookalike pages, and insecure form
-    // interstitials don't have details buttons.
+  if (captivePortal || billing || lookalike || insecureForm || httpsOnly) {
+    // Captive portal, billing, lookalike pages, insecure form, and
+    // HTTPS only mode interstitials don't have details buttons.
     $('details-button').classList.add('hidden');
   } else {
     $('details-button')

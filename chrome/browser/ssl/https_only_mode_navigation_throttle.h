@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/timer/timer.h"
+#include "components/security_interstitials/content/security_blocking_page_factory.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/gurl.h"
 
@@ -20,7 +21,7 @@ class PrefService;
 //
 // Metadata about the navigation state (as it pertains to HTTPS-Only Mode)
 // shared between HttpsOnlyModeUpgradeInterceptor and
-// HttpsOnlyModeNavigationThrottle is stored in an HttpsOnlyModeTabStorage set
+// HttpsOnlyModeNavigationThrottle is stored in an HttpsOnlyModeTabHelper set
 // as user-data on the WebContents in which the navigation occurs. (Such
 // metadata might ordinarily be added to ChromeNavigationUIData, but the
 // Interceptor only receives a clone of the data, so it can't be used as a
@@ -28,9 +29,14 @@ class PrefService;
 class HttpsOnlyModeNavigationThrottle : public content::NavigationThrottle {
  public:
   static std::unique_ptr<HttpsOnlyModeNavigationThrottle>
-  MaybeCreateThrottleFor(content::NavigationHandle* handle, PrefService* prefs);
+  MaybeCreateThrottleFor(
+      content::NavigationHandle* handle,
+      std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
+      PrefService* prefs);
 
-  explicit HttpsOnlyModeNavigationThrottle(content::NavigationHandle* handle);
+  HttpsOnlyModeNavigationThrottle(
+      content::NavigationHandle* handle,
+      std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory);
   ~HttpsOnlyModeNavigationThrottle() override;
 
   HttpsOnlyModeNavigationThrottle(const HttpsOnlyModeNavigationThrottle&) =
@@ -53,6 +59,8 @@ class HttpsOnlyModeNavigationThrottle : public content::NavigationThrottle {
   void OnHttpsLoadTimeout();
 
   base::OneShotTimer timer_;
+
+  std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory_;
 };
 
 #endif  // CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_NAVIGATION_THROTTLE_H_

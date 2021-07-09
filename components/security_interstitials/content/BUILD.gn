@@ -23,6 +23,8 @@ static_library("security_interstitial_page") {
     "connection_help_ui.h",
     "content_metrics_helper.cc",
     "content_metrics_helper.h",
+    "https_only_mode_blocking_page.cc",
+    "https_only_mode_blocking_page.h",
     "insecure_form_blocking_page.cc",
     "insecure_form_blocking_page.h",
     "insecure_form_navigation_throttle.cc",

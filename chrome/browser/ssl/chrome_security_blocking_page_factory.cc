@@ -15,6 +15,7 @@
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
+#include "chrome/browser/ssl/https_only_mode_controller_client.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
@@ -311,6 +312,19 @@ ChromeSecurityBlockingPageFactory::CreateInsecureFormBlockingPage(
       std::make_unique<InsecureFormControllerClient>(web_contents, request_url);
   auto page =
       std::make_unique<security_interstitials::InsecureFormBlockingPage>(
+          web_contents, request_url, std::move(client));
+  return page;
+}
+
+std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
+ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
+    content::WebContents* web_contents,
+    const GURL& request_url) {
+  std::unique_ptr<HttpsOnlyModeControllerClient> client =
+      std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
+                                                      request_url);
+  auto page =
+      std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
           web_contents, request_url, std::move(client));
   return page;
 }

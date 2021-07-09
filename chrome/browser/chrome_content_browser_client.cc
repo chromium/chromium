@@ -4236,12 +4236,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       &throttles);
 #endif
 
-  // TODO(crbug.com/1218526): Pass in a ChromeSecurityBlockingPageFactory so
-  // that the nav throttle can create interstitials.
   if (profile && profile->GetPrefs()) {
-    MaybeAddThrottle(HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
-                         handle, profile->GetPrefs()),
-                     &throttles);
+    MaybeAddThrottle(
+        HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
+            handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
+            profile->GetPrefs()),
+        &throttles);
   }
 
   return throttles;

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/callback.h"
 #include "content/test/mock_ssl_host_state_delegate.h"
+
+#include "base/callback.h"
+#include "base/containers/contains.h"
 
 namespace content {
 
@@ -58,6 +60,14 @@ bool MockSSLHostStateDelegate::DidHostRunInsecureContent(
     InsecureContentType content_type) {
   return hosts_ran_insecure_content_.find(host) !=
          hosts_ran_insecure_content_.end();
+}
+
+void MockSSLHostStateDelegate::AllowHttpForHost(const std::string& host) {
+  allow_http_hosts_.insert(host);
+}
+
+bool MockSSLHostStateDelegate::IsHttpAllowedForHost(const std::string& host) {
+  return base::Contains(allow_http_hosts_, host);
 }
 
 void MockSSLHostStateDelegate::RevokeUserAllowExceptions(

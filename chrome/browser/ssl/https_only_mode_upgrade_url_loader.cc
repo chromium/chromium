@@ -71,6 +71,15 @@ void HttpsOnlyModeUpgradeURLLoader::StartRedirectToHttps(
       weak_ptr_factory_.GetWeakPtr()));
 }
 
+void HttpsOnlyModeUpgradeURLLoader::StartRedirectToOriginalURL(
+    const GURL& original_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CreateRedirectInformation(original_url);
+  std::move(callback_).Run(base::BindOnce(
+      &HttpsOnlyModeUpgradeURLLoader::StartHandlingRedirectToModifiedRequest,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
 void HttpsOnlyModeUpgradeURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,

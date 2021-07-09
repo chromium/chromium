@@ -12,6 +12,7 @@
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
 #include "components/security_interstitials/content/captive_portal_blocking_page.h"
+#include "components/security_interstitials/content/https_only_mode_blocking_page.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
 #include "components/security_interstitials/content/legacy_tls_blocking_page.h"
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
@@ -87,6 +88,10 @@ class SecurityBlockingPageFactory {
   virtual std::unique_ptr<security_interstitials::InsecureFormBlockingPage>
   CreateInsecureFormBlockingPage(content::WebContents* web_contents,
                                  const GURL& request_url) = 0;
+
+  virtual std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
+  CreateHttpsOnlyModeBlockingPage(content::WebContents* web_contents,
+                                  const GURL& request_url) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SecurityBlockingPageFactory);

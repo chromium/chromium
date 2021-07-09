@@ -34,6 +34,8 @@ class HttpsOnlyModeUpgradeURLLoader : public network::mojom::URLLoader {
 
   void StartRedirectToHttps(int frame_tree_node_id);
 
+  void StartRedirectToOriginalURL(const GURL& original_url);
+
  private:
   // network::mojom::URLLoader:
   void FollowRedirect(

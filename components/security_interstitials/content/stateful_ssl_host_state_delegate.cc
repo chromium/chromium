@@ -361,6 +361,17 @@ bool StatefulSSLHostStateDelegate::DidHostRunInsecureContent(
   return false;
 }
 
+// TODO(crbug.com/1218526): Hook up to content settings and expiration logic.
+void StatefulSSLHostStateDelegate::AllowHttpForHost(const std::string& host) {
+  allow_http_hosts_.insert(host);
+}
+
+// TODO(crbug.com/1218526): Hook up to content settings and expiration logic.
+bool StatefulSSLHostStateDelegate::IsHttpAllowedForHost(
+    const std::string& host) {
+  return base::Contains(allow_http_hosts_, host);
+}
+
 void StatefulSSLHostStateDelegate::RevokeUserAllowExceptions(
     const std::string& host) {
   GURL url = GetSecureGURLForHost(host);

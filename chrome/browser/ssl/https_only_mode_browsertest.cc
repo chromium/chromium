@@ -12,6 +12,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -23,6 +24,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
 class HttpsOnlyModeBrowserTest : public InProcessBrowserTest {
@@ -90,6 +92,21 @@ class HttpsOnlyModeBrowserTest : public InProcessBrowserTest {
     return prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
   }
 
+  void ProceedThroughInterstitial(content::WebContents* tab) {
+    content::TestNavigationObserver nav_observer(tab, 1);
+    std::string javascript = "window.certificateErrorPageController.proceed();";
+    ASSERT_TRUE(content::ExecuteScript(tab, javascript));
+    nav_observer.Wait();
+  }
+
+  void DontProceedThroughInterstitial(content::WebContents* tab) {
+    content::TestNavigationObserver nav_observer(tab, 1);
+    std::string javascript =
+        "window.certificateErrorPageController.dontProceed();";
+    ASSERT_TRUE(content::ExecuteScript(tab, javascript));
+    nav_observer.Wait();
+  }
+
   net::EmbeddedTestServer* http_server() { return &http_server_; }
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -152,16 +169,13 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
-  // TODO(crbug.com/1218526): Update this to use the actual interstitial once it
-  // is added.
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(), "HTTPS-Only Mode"));
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
 }
 
-// If the user triggers an HTTPS-Only Mode interstitial for a host and then they
-// then navigate to the HTTP URL again the navigation should end up on that HTTP
-// URL and no interstitial should be shown.
-// TODO(crbug.com/1218526): Update this to be an interstitial bypass test.
+// If the user triggers an HTTPS-Only Mode interstitial for a host and then
+// clicks through the interstitial, they should end up on the HTTP URL.
 IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
                        InterstitialBypassed_HttpFallbackLoaded) {
   GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
@@ -169,9 +183,12 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(), "HTTPS-Only Mode"));
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
 
-  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  // Proceed through the interstitial, which will add the host to the allowlist
+  // and navigate to the HTTP fallback URL.
+  ProceedThroughInterstitial(contents);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 }
 
@@ -186,10 +203,9 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
-  // TODO(crbug.com/1218526): Update this to use the actual interstitial once it
-  // is added.
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(), "HTTPS-Only Mode"));
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
 }
 
 // Navigations in subframes should not get upgraded by HTTPS-Only Mode. They
@@ -225,16 +241,14 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(contents, parent_url));
 
-  // TODO(crbug.com/1218526): Update this to use the actual interstitial once it
-  // is added.
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(), "HTTPS-Only Mode"));
-  // For now, the host is added to the allowlist automatically on showing the
-  // error page. Repeat the navigation and it will succeed.
-  EXPECT_TRUE(content::NavigateToURL(contents, parent_url));
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  // Proceeding through the interstitial will add the hostname to the allowlist.
+  ProceedThroughInterstitial(contents);
 
   // Navigate the iframe to `iframe_url`. It should successfully navigate and
-  // not get upgraded to HTTPS.
+  // not get upgraded to HTTPS as the hostname is now in the allowlist.
   content::TestNavigationObserver nav_observer(contents, 1);
   EXPECT_TRUE(content::NavigateIframeToURL(contents, "test", iframe_url));
   nav_observer.Wait();
@@ -244,7 +258,9 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
 // Tests that a navigation to the HTTP version of a site with an HTTPS version
 // that is slow to respond gets upgraded to HTTPS but times out and shows the
 // HTTPS-Only Mode interstitial.
-IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, SlowHttps_ShouldInterstitial) {
+// TODO(crbug.com/1218526): Re-enable once fast-timeout is working.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       DISABLED_SlowHttps_ShouldInterstitial) {
   // Set timeout to zero so that HTTPS upgrades immediately timeout.
   HttpsOnlyModeNavigationThrottle::set_timeout_for_testing(0);
 
@@ -252,10 +268,9 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, SlowHttps_ShouldInterstitial) {
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(contents, url));
 
-  // TODO(crbug.com/1218526): Update this to use the actual interstitial once it
-  // is added.
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(), "HTTPS-Only Mode"));
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
 }
 
 // Tests that an HTTP POST form navigation to "bar.com" from an HTTP page on
@@ -276,14 +291,12 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, HttpPageHttpPost_NotUpgraded) {
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(
       contents, http_server()->GetURL("bad-https.test", replacement_path)));
-  // TODO(crbug.com/1218526): Update this to use the actual interstitial once it
-  // is added.
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(), "HTTPS-Only Mode"));
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
 
-  // Navigate again to bypass the interstitial.
-  EXPECT_TRUE(content::NavigateToURL(
-      contents, http_server()->GetURL("bad-https.test", replacement_path)));
+  // Proceed through the interstitial to add the hostname to the allowlist.
+  ProceedThroughInterstitial(contents);
 
   // Submit the form and wait for the navigation to complete.
   content::TestNavigationObserver nav_observer(contents, 1);
@@ -347,11 +360,9 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   GURL url = downgrading_server.GetURL("foo.com", "/");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(contents, url));
-
-  // TODO(crbug.com/1218526): Update this to use the actual interstitial once it
-  // is added.
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(), "HTTPS-Only Mode"));
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
 }
 
 // Tests that (if no testing port is specified), the upgraded HTTPS version of
@@ -374,8 +385,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, HttpsUpgrade_DefaultPort) {
   EXPECT_FALSE(nav_observer.last_navigation_succeeded());
   EXPECT_EQ(url::kHttpsScheme, contents->GetLastCommittedURL().scheme());
   EXPECT_EQ(443, contents->GetLastCommittedURL().EffectiveIntPort());
-  // TODO(crbug.com/1218526): Update this to use the actual interstitial once it
-  // is added.
+
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(), "HTTPS-Only Mode"));
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
 }

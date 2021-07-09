@@ -65,6 +65,8 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   bool DidHostRunInsecureContent(const std::string& host,
                                  int child_id,
                                  InsecureContentType content_type) override;
+  void AllowHttpForHost(const std::string& host) override;
+  bool IsHttpAllowedForHost(const std::string& host) override;
   void RevokeUserAllowExceptions(const std::string& host) override;
   bool HasAllowException(const std::string& host,
                          content::WebContents* web_contents) override;
@@ -158,6 +160,11 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // Tracks how many times an error page has been shown for a given error, up
   // to a certain threshold value.
   std::map<int /* error code */, int /* count */> recurrent_errors_;
+
+  // Tracks sites that are allowed to load over HTTP when HTTPS-Only Mode is
+  // enabled. Allowed hosts are exact hostname matches -- subdomains of a host
+  // on the allowlist must be separately allowlisted.
+  std::set<std::string /* host */> allow_http_hosts_;
 
   DISALLOW_COPY_AND_ASSIGN(StatefulSSLHostStateDelegate);
 

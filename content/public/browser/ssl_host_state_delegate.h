@@ -71,6 +71,14 @@ class SSLHostStateDelegate {
                                          int child_id,
                                          InsecureContentType content_type) = 0;
 
+  // Allowlists site so it can be loaded over HTTPS when HTTPS-Only Mode is
+  // enabled.
+  virtual void AllowHttpForHost(const std::string& host) = 0;
+
+  // Returns whether site is allowed to load over HTTPS when HTTPS-Only Mode is
+  // enabled.
+  virtual bool IsHttpAllowedForHost(const std::string& host) = 0;
+
   // Revokes all SSL certificate error allow exceptions made by the user for
   // |host|.
   virtual void RevokeUserAllowExceptions(const std::string& host) = 0;
