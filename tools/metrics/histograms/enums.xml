@@ -49183,6 +49183,7 @@ from previous Chrome versions.
   <int value="423855924" label="enable-tab-switcher-theme-colors"/>
   <int value="425072496" label="GridLayoutForNtpShortcuts:enabled"/>
   <int value="426199960" label="Commander:enabled"/>
+  <int value="426540253" label="PowerScheduler:disabled"/>
   <int value="427184788" label="WebFeed:enabled"/>
   <int value="427945554" label="StrictExtensionIsolation:enabled"/>
   <int value="430776375" label="TextureLayerSkipWaitForActivation:disabled"/>
@@ -50907,6 +50908,7 @@ from previous Chrome versions.
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
   <int value="1858919054" label="SplitSettingsSync:disabled"/>
   <int value="1860597983" label="AndroidSpellChecker:disabled"/>
+  <int value="1860955818" label="PowerScheduler:enabled"/>
   <int value="1861251313"
       label="enable-message-center-always-scroll-up-upon-notification-removal"/>
   <int value="1861521561" label="OmniboxLocalEntitySuggestions:enabled"/>
