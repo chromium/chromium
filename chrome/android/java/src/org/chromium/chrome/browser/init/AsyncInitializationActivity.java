@@ -302,9 +302,25 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @SuppressLint("MissingSuperCall")  // Called in onCreateInternal.
     protected final void onCreate(Bundle savedInstanceState) {
         TraceEvent.begin("AsyncInitializationActivity.onCreate()");
-        onCreateInternal(savedInstanceState);
+        onPreCreate();
+        boolean willCreate = onCreateInternal(savedInstanceState);
+        if (!willCreate) {
+            onAbortCreate();
+        }
         TraceEvent.end("AsyncInitializationActivity.onCreate()");
     }
+
+    /**
+     * Override to perform operations in the first opportunity after the framework calls
+     * {@link #onCreate}. Note the activity may still be aborted by {@link #onCreateInternal}.
+     */
+    protected void onPreCreate() {}
+
+    /**
+     * Override to perform operations after the activity's creation is aborted by {@link
+     * #onCreateInternal}.
+     */
+    protected void onAbortCreate() {}
 
     /**
      * Called from onCreate() to give derived classes a chance to dispatch the intent using
@@ -318,7 +334,10 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         return LaunchIntentDispatcher.Action.CONTINUE;
     }
 
-    private final void onCreateInternal(Bundle savedInstanceState) {
+    /**
+     * @return true if will proceed with Activity creation, false if will abort.
+     */
+    private final boolean onCreateInternal(Bundle savedInstanceState) {
         initializeStartupMetrics();
         setIntent(IntentHandler.rewriteFromHistoryIntent(getIntent()));
 
@@ -326,20 +345,20 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         int dispatchAction = maybeDispatchLaunchIntent(getIntent(), savedInstanceState);
         if (dispatchAction != LaunchIntentDispatcher.Action.CONTINUE) {
             abortLaunch(dispatchAction);
-            return;
+            return false;
         }
 
         Intent intent = getIntent();
         if (!isStartedUpCorrectly(intent)) {
             abortLaunch(LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK);
-            return;
+            return false;
         }
 
         if (requiresFirstRunToBeCompleted(intent)
                 && FirstRunFlowSequencer.launch(this, intent, false /* requiresBroadcast */,
                         shouldPreferLightweightFre(intent))) {
             abortLaunch(LaunchIntentDispatcher.Action.FINISH_ACTIVITY);
-            return;
+            return false;
         }
 
         // Some Samsung devices load fonts from disk, crbug.com/691706.
@@ -354,6 +373,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
         mStartupDelayed = shouldDelayBrowserStartup();
         ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(this);
+        return true;
     }
 
     /**

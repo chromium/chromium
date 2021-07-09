@@ -10,6 +10,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/flags/BooleanCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
     "android/java/src/org/chromium/chrome/browser/flags/DoubleCachedFieldTrialParameter.java",
@@ -23,6 +24,7 @@ android_library("java") {
     "//base:base_java",
     "//build:chromeos_buildflags",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/version:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [
@@ -69,6 +71,7 @@ java_library("flags_junit_tests") {
   testonly = true
   sources = [
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsAnnotationUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsSafeModeUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithProcessorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithoutProcessorUnitTest.java",
@@ -80,6 +83,7 @@ java_library("flags_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
+    "//chrome/browser/preferences:java",
     "//chrome/test/android:chrome_java_test_support",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",

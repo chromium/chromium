@@ -108,6 +108,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.firstrun.ForcedSigninProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -386,6 +387,18 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
+    }
+
+    @Override
+    protected void onPreCreate() {
+        CachedFeatureFlags.onStartOrResumeCheckpoint();
+        super.onPreCreate();
+    }
+
+    @Override
+    protected void onAbortCreate() {
+        super.onAbortCreate();
+        CachedFeatureFlags.onPauseCheckpoint();
     }
 
     @Override

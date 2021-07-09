@@ -377,17 +377,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     What behavior of Safe Mode for CachedFlags (including not engaging it) was
     performed.
 
-    &quot;Engaged&quot; is recorded at the point where whether to engage safe
-    mode is decided. &quot;Cached&quot; is recorded at the point where flags
-    were cached from native to Shared Preferences. The ratio &quot;Cached&quot;
-    / &quot;Engaged&quot; is the success rate for a given mode, and (100% - this
-    ratio) is the crash rate.
+    {Event}
+
+    The ratio &quot;Cached&quot; / (&quot;WillCache&quot; - &quot;Pause&quot;)
+    is the success rate for a given mode, and (100% - success rate) is the crash
+    rate.
 
     Android only.
   </summary>
   <token key="Event">
-    <variant name="Cached"/>
-    <variant name="Engaged"/>
+    <variant name="Cached"
+        summary="&quot;Cached&quot; is recorded at the point where flags were
+                 cached from native to Shared Preferences."/>
+    <variant name="Engaged"
+        summary="&quot;Engaged&quot; is recorded at the point where whether
+                 to engage safe mode is decided."/>
+    <variant name="Pause"
+        summary="&quot;Pause&quot; is recorded when the initialization flow
+                 is aborted."/>
+    <variant name="WillCache"
+        summary="&quot;WillCache&quot; is recorded when the initialization
+                 flow that should result in caching flags is entered."/>
   </token>
 </histogram>
 
