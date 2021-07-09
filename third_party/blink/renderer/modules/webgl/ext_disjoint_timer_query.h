@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/khronos/GLES2/gl2.h"
 
 namespace blink {
 

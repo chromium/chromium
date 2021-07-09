@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERBUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERBUFFER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
 
 namespace blink {

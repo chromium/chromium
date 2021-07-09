@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/khronos/GLES2/gl2.h"
 
 namespace blink {
 class ImageBitmapOptions;

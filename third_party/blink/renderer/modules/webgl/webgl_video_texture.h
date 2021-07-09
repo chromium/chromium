@@ -13,6 +13,8 @@ class VideoFrame;
 
 namespace blink {
 
+class ExceptionState;
+class ExecutionContext;
 class HTMLVideoElement;
 class VideoFrameMetadata;
 struct WebGLVideoFrameUploadMetadata;

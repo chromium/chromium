@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
+#include "third_party/khronos/GLES2/gl2.h"
 
 namespace blink {
 

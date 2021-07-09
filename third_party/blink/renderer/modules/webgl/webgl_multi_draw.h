@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_common.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
