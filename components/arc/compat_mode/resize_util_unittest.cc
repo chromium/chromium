@@ -17,6 +17,8 @@
 #include "components/exo/test/exo_test_base_views.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/display/test/scoped_screen_override.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -95,6 +97,14 @@ class ResizeUtilTest : public exo::test::ExoTestBaseViews {
     widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
     widget_->GetNativeWindow()->SetProperty(ash::kAppIDKey,
                                             std::string(kTestAppId));
+    // FHD size by default.
+    SetDisplayWorkArea(gfx::Rect(0, 0, 1920, 1080));
+  }
+
+  void SetDisplayWorkArea(const gfx::Rect& work_area) {
+    display::Display display = test_screen_.GetPrimaryDisplay();
+    display.set_work_area(work_area);
+    test_screen_.display_list().UpdateDisplay(display);
   }
 
   TestArcResizeLockPrefDelegate* pref_delegate() { return &pref_delegate_; }
@@ -103,6 +113,8 @@ class ResizeUtilTest : public exo::test::ExoTestBaseViews {
  private:
   TestArcResizeLockPrefDelegate pref_delegate_;
   std::unique_ptr<views::Widget> widget_;
+  display::test::TestScreen test_screen_;
+  display::test::ScopedScreenOverride scoped_screen_override_{&test_screen_};
 };
 
 // Test that resize phone works properly in both needs-confirmation and no
@@ -135,6 +147,29 @@ TEST_F(ResizeUtilTest, TestResizeLockToTablet) {
             widget()->GetWindowBoundsInScreen().height());
   EXPECT_EQ(PredictCurrentMode(widget(), pref_delegate()),
             ResizeCompatMode::kTablet);
+}
+
+// Test that resize phone/tablet works properly on small displays.
+TEST_F(ResizeUtilTest, TestResizeLockToPhoneTabletOnSmallDisplay) {
+  pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
+
+  // Set small workarea size.
+  constexpr gfx::Size workarea_size(300, 300);
+  SetDisplayWorkArea(gfx::Rect(workarea_size));
+
+  ResizeLockToPhone(widget(), pref_delegate());
+  EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
+            widget()->GetWindowBoundsInScreen().height());
+  EXPECT_LT(widget()->GetWindowBoundsInScreen().width(), workarea_size.width());
+  EXPECT_LT(widget()->GetWindowBoundsInScreen().height(),
+            workarea_size.height());
+
+  ResizeLockToTablet(widget(), pref_delegate());
+  EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
+            widget()->GetWindowBoundsInScreen().height());
+  EXPECT_LT(widget()->GetWindowBoundsInScreen().width(), workarea_size.width());
+  EXPECT_LT(widget()->GetWindowBoundsInScreen().height(),
+            workarea_size.height());
 }
 
 // Test that enabling resizing works properly in both needs-confirmation and no
