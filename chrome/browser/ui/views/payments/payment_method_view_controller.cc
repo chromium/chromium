@@ -29,6 +29,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/box_layout.h"
@@ -39,24 +40,6 @@
 namespace payments {
 
 namespace {
-
-class MissingInfoLabel : public views::Label {
- public:
-  METADATA_HEADER(MissingInfoLabel);
-
-  MissingInfoLabel(const std::u16string& text, int text_context)
-      : Label(text, text_context) {}
-
-  // views::Label:
-  void OnThemeChanged() override {
-    Label::OnThemeChanged();
-    SetEnabledColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_LinkEnabled));
-  }
-};
-
-BEGIN_METADATA(MissingInfoLabel, views::Label)
-END_METADATA
 
 class PaymentMethodListItem : public PaymentRequestItemList::Item {
  public:
@@ -143,8 +126,12 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
     std::u16string missing_info;
     if (!app_->IsCompleteForPayment()) {
       missing_info = app_->GetMissingInfoLabel();
-      card_info_container->AddChildView(std::make_unique<MissingInfoLabel>(
-          missing_info, CONTEXT_DIALOG_BODY_TEXT_SMALL));
+      views::Label* const label =
+          card_info_container->AddChildView(std::make_unique<views::Label>(
+              missing_info, CONTEXT_DIALOG_BODY_TEXT_SMALL));
+      views::SetCascadingNativeThemeColor(
+          label, views::kCascadingLabelEnabledColor,
+          ui::NativeTheme::kColorId_LinkEnabled);
     }
 
     *accessible_content = l10n_util::GetStringFUTF16(

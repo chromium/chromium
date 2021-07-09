@@ -41,6 +41,7 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -109,8 +110,8 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
   // and return to chrome with the download shelf still open.
   mouse_watcher_.set_notify_on_exit_time(base::TimeDelta::FromSeconds(5));
   SetID(VIEW_ID_DOWNLOAD_SHELF);
-  views::FocusRing::SetBackgroundColorIdForSubtree(
-      this, ThemeProperties::COLOR_TOOLBAR);
+  views::SetCascadingThemeProviderColor(this, views::kCascadingBackgroundColor,
+                                        ThemeProperties::COLOR_TOOLBAR);
 }
 
 DownloadShelfView::~DownloadShelfView() = default;

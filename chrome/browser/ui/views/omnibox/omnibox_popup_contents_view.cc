@@ -31,6 +31,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -175,8 +176,9 @@ OmniboxPopupContentsView::OmniboxPopupContentsView(
             base::Unretained(this)));
   }
 
-  views::FocusRing::SetBackgroundColorIdForSubtree(
-      this, ThemeProperties::COLOR_OMNIBOX_RESULTS_BG);
+  views::SetCascadingThemeProviderColor(
+      this, views::kCascadingBackgroundColor,
+      ThemeProperties::COLOR_OMNIBOX_RESULTS_BG);
 }
 
 OmniboxPopupContentsView::~OmniboxPopupContentsView() {

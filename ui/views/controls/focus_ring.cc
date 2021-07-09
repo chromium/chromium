@@ -10,6 +10,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -19,6 +20,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/style/platform_style.h"
@@ -31,7 +33,6 @@ namespace views {
 
 namespace {
 
-DEFINE_UI_CLASS_PROPERTY_KEY(int, kFocusRingBackgroundColorIdKey, -1)
 DEFINE_UI_CLASS_PROPERTY_KEY(FocusRing*, kFocusRingIdKey, nullptr)
 
 bool IsPathUsable(const SkPath& path) {
@@ -44,20 +45,11 @@ ui::NativeTheme::ColorId ColorIdForValidity(bool valid) {
                : ui::NativeTheme::kColorId_AlertSeverityHigh;
 }
 
-int GetBackgroundColorId(View* view) {
-  int color_id_property = view->GetProperty(kFocusRingBackgroundColorIdKey);
-  if (color_id_property != -1)
-    return color_id_property;
-  if (!view->parent())
-    return -1;
-  return GetBackgroundColorId(view->parent());
-}
-
 SkColor GetBackgroundColor(View* view) {
-  int color_id = GetBackgroundColorId(view);
-  return color_id == -1 ? view->GetNativeTheme()->GetSystemColor(
-                              ui::NativeTheme::kColorId_WindowBackground)
-                        : view->GetThemeProvider()->GetColor(color_id);
+  const absl::optional<SkColor> color =
+      GetCascadingProperty(view, kCascadingBackgroundColor);
+  return color.value_or(view->GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_WindowBackground));
 }
 
 SkColor GetColor(View* focus_ring, bool valid) {
@@ -121,11 +113,6 @@ void FocusRing::Remove(View* host) {
     return;
   host->RemoveChildViewT(focus_ring);
   host->ClearProperty(kFocusRingIdKey);
-}
-
-void FocusRing::SetBackgroundColorIdForSubtree(View* view,
-                                               int background_color_id) {
-  view->SetProperty(kFocusRingBackgroundColorIdKey, background_color_id);
 }
 
 FocusRing::~FocusRing() = default;

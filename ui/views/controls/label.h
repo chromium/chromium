@@ -17,17 +17,22 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/selection_controller_delegate.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
+#include "ui/views/views_export.h"
 #include "ui/views/word_lookup_client.h"
 
 namespace views {
 class LabelSelectionTest;
 class MenuRunner;
 class SelectionController;
+
+VIEWS_EXPORT extern const ui::ClassProperty<CascadingProperty<SkColor>*>* const
+    kCascadingLabelEnabledColor;
 
 // A view subclass that can display a string.
 class VIEWS_EXPORT Label : public View,

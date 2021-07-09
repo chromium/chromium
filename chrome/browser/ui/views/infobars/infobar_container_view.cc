@@ -21,6 +21,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/focus_ring.h"
 
 namespace {
@@ -65,8 +66,8 @@ InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
       content_shadow_(new ContentShadow()) {
   SetID(VIEW_ID_INFO_BAR_CONTAINER);
   AddChildView(content_shadow_);
-  views::FocusRing::SetBackgroundColorIdForSubtree(
-      this, ThemeProperties::COLOR_TOOLBAR);
+  views::SetCascadingThemeProviderColor(this, views::kCascadingBackgroundColor,
+                                        ThemeProperties::COLOR_TOOLBAR);
 }
 
 InfoBarContainerView::~InfoBarContainerView() {
