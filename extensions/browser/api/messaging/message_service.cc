@@ -161,19 +161,6 @@ struct MessageService::OpenChannelParams {
   DISALLOW_COPY_AND_ASSIGN(OpenChannelParams);
 };
 
-namespace {
-
-static content::RenderProcessHost* GetExtensionProcess(
-    BrowserContext* context,
-    const std::string& extension_id) {
-  scoped_refptr<SiteInstance> site_instance =
-      ProcessManager::Get(context)->GetSiteInstanceForURL(
-          Extension::GetBaseURLFromExtensionId(extension_id));
-  return site_instance->HasProcess() ? site_instance->GetProcess() : NULL;
-}
-
-}  // namespace
-
 MessageService::MessageService(BrowserContext* context)
     : context_(context),
       messaging_delegate_(ExtensionsAPIClient::Get()->GetMessagingDelegate()) {
@@ -327,7 +314,6 @@ void MessageService::OpenChannelToExtension(
       source_port_id.GetOppositePortId(), source_endpoint,
       std::move(opener_port), target_extension_id, source_url,
       std::move(source_origin), channel_name, include_guest_process_info));
-
   pending_incognito_channels_[params->receiver_port_id.GetChannelId()] =
       PendingMessagesQueue();
   if (context->IsOffTheRecord() &&
@@ -805,7 +791,7 @@ bool MessageService::MaybeAddPendingLazyContextOpenChannelTask(
     return false;
 
   // If the extension uses spanning incognito mode, make sure we're always
-  // using the original profile since that is what the extension process
+  // using the original profile since that is what the extension processes
   // will use.
   if (!IncognitoInfo::IsSplitMode(extension))
     context = ExtensionsBrowserClient::Get()->GetOriginalContext(context);
@@ -862,19 +848,6 @@ void MessageService::OnOpenChannelAllowed(
   BrowserContext* context = source.browser_context();
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
 
-  // Note: we use the source's profile here. If the source is an incognito
-  // process, we will use the incognito EPM to find the right extension process,
-  // which depends on whether the extension uses spanning or split mode.
-  if (content::RenderProcessHost* extension_process =
-          GetExtensionProcess(context, params->target_extension_id)) {
-    params->receiver = std::make_unique<ExtensionMessagePort>(
-
-        weak_factory_.GetWeakPtr(), params->receiver_port_id,
-        params->target_extension_id, extension_process);
-  } else {
-    params->receiver.reset();
-  }
-
   ExtensionRegistry* registry = ExtensionRegistry::Get(context);
   const Extension* target_extension =
       registry->enabled_extensions().GetByID(params->target_extension_id);
@@ -882,6 +855,14 @@ void MessageService::OnOpenChannelAllowed(
     params->opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
     return;
   }
+
+  BrowserContext* context_to_use_for_extension =
+      IncognitoInfo::IsSplitMode(target_extension)
+          ? context
+          : ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+  params->receiver = ExtensionMessagePort::CreateForExtension(
+      weak_factory_.GetWeakPtr(), params->receiver_port_id,
+      params->target_extension_id, context_to_use_for_extension);
 
   // The target might be a lazy background page or a Service Worker. In that
   // case, we have to check if it is loaded and ready, and if not, queue up the
@@ -902,9 +883,9 @@ void MessageService::PendingLazyContextOpenChannel(
   if (context_info == nullptr)
     return;  // TODO(mpcomplete): notify source of disconnect?
 
-  params->receiver = std::make_unique<ExtensionMessagePort>(
+  params->receiver = ExtensionMessagePort::CreateForExtension(
       weak_factory_.GetWeakPtr(), params->receiver_port_id,
-      params->target_extension_id, context_info->render_process_host);
+      params->target_extension_id, context_info->browser_context);
   const Extension* const extension =
       extensions::ExtensionRegistry::Get(context_info->browser_context)
           ->enabled_extensions()

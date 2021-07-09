@@ -78,6 +78,9 @@ class ProcessManager : public KeyedService,
   void UnregisterServiceWorker(const WorkerId& worker_id);
 
   // Returns the SiteInstance that the given URL belongs to.
+  // NOTE: Usage of this method is potentially error-prone. An extension can
+  // correspond to multiple SiteInstances (e.g. consider a cross origin isolated
+  // extension with non-cross-origin-isolated contexts).
   // TODO(aa): This only returns correct results for extensions and packaged
   // apps, not hosted apps.
   virtual scoped_refptr<content::SiteInstance> GetSiteInstanceForURL(

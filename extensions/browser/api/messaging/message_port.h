@@ -56,7 +56,8 @@ class MessagePort {
   virtual bool IsValidPort() = 0;
 
   // Triggers the check of whether the port is still valid. If the port is
-  // determined to be invalid, the channel will be closed.
+  // determined to be invalid, the channel will be closed. This should only be
+  // called for opener ports.
   virtual void RevalidatePort();
 
   // Notifies the port that the channel has been opened.

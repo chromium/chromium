@@ -25,7 +25,6 @@ class GURL;
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
-class RenderProcessHost;
 }  // namespace content
 
 namespace IPC {
@@ -48,12 +47,14 @@ class ExtensionMessagePort : public MessagePort {
                        const std::string& extension_id,
                        content::RenderFrameHost* rfh,
                        bool include_child_frames);
-  // Create a port that is tied to all frames of an extension, possibly spanning
-  // multiple tabs, including the invisible background page, popups, etc.
-  ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
-                       const PortId& port_id,
-                       const std::string& extension_id,
-                       content::RenderProcessHost* extension_process);
+
+  // Create a port that is tied to all frames and service workers of an
+  // extension.
+  static std::unique_ptr<ExtensionMessagePort> CreateForExtension(
+      base::WeakPtr<ChannelDelegate> channel_delegate,
+      const PortId& port_id,
+      const std::string& extension_id,
+      content::BrowserContext* browser_context);
 
   // Creates a port for any ChannelEndpoint which can be for a render frame or
   // Service Worker.
@@ -150,8 +151,10 @@ class ExtensionMessagePort : public MessagePort {
   const PortId port_id_;
   std::string extension_id_;
   content::BrowserContext* browser_context_ = nullptr;
-  // Only for receivers in an extension process.
-  content::RenderProcessHost* extension_process_ = nullptr;
+
+  // Whether this port corresponds to *all* extension contexts. Should only be
+  // true for a receiver port.
+  bool for_all_extension_contexts_ = false;
 
   // When the port is used as a sender, this set contains only one element.
   // If used as a receiver, it may contain any number of frames.

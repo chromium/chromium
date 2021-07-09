@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -157,40 +157,12 @@ ExtensionMessagePort::ExtensionMessagePort(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
     const std::string& extension_id,
-    content::RenderProcessHost* extension_process)
-    : weak_channel_delegate_(channel_delegate),
-      port_id_(port_id),
-      extension_id_(extension_id),
-      browser_context_(extension_process->GetBrowserContext()),
-      extension_process_(extension_process),
-      did_create_port_(false),
-      background_host_ptr_(nullptr),
-      frame_tracker_(new FrameTracker(this)) {
-  auto all_hosts = ProcessManager::Get(browser_context_)
-                       ->GetRenderFrameHostsForExtension(extension_id);
-  for (content::RenderFrameHost* rfh : all_hosts)
-    RegisterFrame(rfh);
-
-  std::vector<WorkerId> running_workers_in_process =
-      ProcessManager::Get(browser_context_)
-          ->GetServiceWorkers(extension_id_, extension_process_->GetID());
-  for (const WorkerId& running_worker_id : running_workers_in_process)
-    RegisterWorker(running_worker_id);
-
-  frame_tracker_->TrackExtensionProcessFrames();
-}
-
-ExtensionMessagePort::ExtensionMessagePort(
-    base::WeakPtr<ChannelDelegate> channel_delegate,
-    const PortId& port_id,
-    const std::string& extension_id,
     content::RenderFrameHost* rfh,
     bool include_child_frames)
     : weak_channel_delegate_(channel_delegate),
       port_id_(port_id),
       extension_id_(extension_id),
       browser_context_(rfh->GetProcess()->GetBrowserContext()),
-      extension_process_(nullptr),
       did_create_port_(false),
       background_host_ptr_(nullptr),
       frame_tracker_(new FrameTracker(this)) {
@@ -203,6 +175,33 @@ ExtensionMessagePort::ExtensionMessagePort(
   } else {
     RegisterFrame(rfh);
   }
+}
+
+// static
+std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForExtension(
+    base::WeakPtr<ChannelDelegate> channel_delegate,
+    const PortId& port_id,
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context) {
+  std::unique_ptr<ExtensionMessagePort> port(new ExtensionMessagePort(
+      channel_delegate, port_id, extension_id, browser_context));
+  port->frame_tracker_ = std::make_unique<FrameTracker>(port.get());
+  port->frame_tracker_->TrackExtensionProcessFrames();
+
+  port->for_all_extension_contexts_ = true;
+
+  auto* process_manager = ProcessManager::Get(browser_context);
+  auto all_hosts =
+      process_manager->GetRenderFrameHostsForExtension(extension_id);
+  for (content::RenderFrameHost* rfh : all_hosts)
+    port->RegisterFrame(rfh);
+
+  std::vector<WorkerId> running_workers =
+      process_manager->GetServiceWorkersForExtension(extension_id);
+  for (const WorkerId& running_worker_id : running_workers)
+    port->RegisterWorker(running_worker_id);
+
+  return port;
 }
 
 ExtensionMessagePort::ExtensionMessagePort(
@@ -284,12 +283,10 @@ void ExtensionMessagePort::RevalidatePort() {
 
   // Only opener ports need to be revalidated, because these are created in the
   // renderer before the browser knows about them.
-  if (service_workers_.empty())
-    DCHECK(!extension_process_);
-  DCHECK_LE(frames_.size() + service_workers_.size(), 1U);
-
-  DCHECK(frames_.empty() ^ service_workers_.empty())
-      << "Either frame or Service Worker should be present.";
+  DCHECK(!for_all_extension_contexts_);
+  DCHECK_EQ(frames_.size() + service_workers_.size(), 1U)
+      << "RevalidatePort() should only be called for opener ports which "
+         "correspond to a single 'context'.";
 
   // If the port is unknown, the renderer will respond by closing the port.
   // NOTE: There is only one opener target.
@@ -386,7 +383,7 @@ void ExtensionMessagePort::OpenPort(int process_id,
           port_context.frame->routing_id != MSG_ROUTING_NONE) ||
          (port_context.is_for_service_worker() &&
           port_context.worker->thread_id != kMainThreadId) ||
-         extension_process_);
+         for_all_extension_contexts_);
 
   did_create_port_ = true;
 }
@@ -398,7 +395,7 @@ void ExtensionMessagePort::ClosePort(int process_id,
   if (!is_for_service_worker && routing_id == MSG_ROUTING_NONE) {
     // The only non-frame-specific message is the response to an unhandled
     // onConnect event in the extension process.
-    DCHECK(extension_process_);
+    DCHECK(for_all_extension_contexts_);
     ClearFrames();
     if (!HasReceivers())
       CloseChannel();
@@ -488,25 +485,14 @@ void ExtensionMessagePort::UnregisterWorker(int render_process_id,
 
 void ExtensionMessagePort::SendToPort(IPCBuilderCallback ipc_builder) {
   std::vector<IPCTarget> targets;
-  {
-    // Build the list of targets.
-    if (extension_process_) {
-      // All extension frames reside in the same process, so we can just send a
-      // single IPC message to the extension process as an optimization if
-      // there are not Service Worker recipient for this port.
-      // The frame tracking is then only used to make sure that the port gets
-      // closed when all frames have closed / reloaded.
-      targets.push_back({extension_process_, nullptr, kMainThreadId});
-    } else {
-      for (content::RenderFrameHost* frame : frames_)
-        targets.push_back({nullptr, frame, kMainThreadId});
-    }
+  // Build the list of targets.
+  for (content::RenderFrameHost* frame : frames_)
+    targets.push_back({nullptr, frame, kMainThreadId});
 
-    for (const auto& running_worker : service_workers_) {
-      targets.push_back(
-          {content::RenderProcessHost::FromID(running_worker.render_process_id),
-           nullptr, running_worker.thread_id});
-    }
+  for (const auto& running_worker : service_workers_) {
+    targets.push_back(
+        {content::RenderProcessHost::FromID(running_worker.render_process_id),
+         nullptr, running_worker.thread_id});
   }
 
   for (const IPCTarget& target : targets) {
@@ -529,9 +515,7 @@ void ExtensionMessagePort::SendToIPCTarget(const IPCTarget& target,
     return;
   }
 
-  DCHECK(extension_process_);
-  msg->set_routing_id(MSG_ROUTING_CONTROL);
-  extension_process_->Send(msg.release());
+  NOTREACHED();
 }
 
 std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(

@@ -26,14 +26,17 @@ class Extension;
 // The relationship between extensions and processes is complex:
 //
 // - Extensions can be either "split" mode or "spanning" mode.
-// - In spanning mode, extensions share a single process between all incognito
-//   and normal windows. This was the original mode for extensions.
+// - In spanning mode, extensions *generally* share a single process between all
+//   incognito and normal windows. This was the original mode for extensions.
 // - In split mode, extensions have separate processes in incognito windows.
 // - There are also hosted apps, which are a kind of extensions, and those
 //   usually have a process model similar to normal web sites: multiple
 //   processes per-profile.
 // - A single hosted app can have more than one SiteInstance in the same process
 //   if we're over the process limit and force them to share a process.
+// - An extension can also opt into Cross Origin Isolation in which case it can
+//   have multiple processes per profile since cross-origin-isolated and
+//   non-cross-origin-isolated contexts don't share a process.
 //
 // In general, we seem to play with the process model of extensions a lot, so
 // it is safest to assume it is many-to-many in most places in the codebase.
@@ -55,14 +58,12 @@ class Extension;
 //    hosted apps. See crbug.com/102533.
 //
 // 2. An extension can show up in multiple processes. That is why there is no
-//    GetExtensionProcess() method here. There are two cases: a) The extension
-//    is actually a hosted app, in which case this is normal, or b) there is an
-//    incognito window open and the extension is "split mode". It is *not safe*
-//    to assume that there is one process per extension. If you only care about
-//    extensions (not hosted apps), and you are on the UI thread, and you don't
-//    care about incognito version of this extension (or vice versa if you're in
-//    an incognito profile) then use
-//    extensions::ProcessManager::GetSiteInstanceForURL()->[Has|Get]Process().
+//    GetExtensionProcess() method here. There are multiple such cases:
+//      a) The extension is actually a hosted app.
+//      b) There is an incognito window open and the extension is "split mode".
+//      c) The extension is cross origin isolated but has
+//         non-cross-origin-isolated contexts.
+//    It is *not safe* to assume that there is one process per extension.
 //
 // 3. The process ids contained in this class are *not limited* to the Profile
 //    you got this map from. They can also be associated with that profile's
@@ -71,9 +72,9 @@ class Extension;
 //
 // TODO(aa): The above warnings suggest this class could use improvement :).
 //
-// TODO(kalman): This class is not threadsafe, but is used on both the UI and
-//               IO threads. Somebody should fix that, either make it
-//               threadsafe or enforce single thread. Investigation required.
+// TODO(kalman): This class is not threadsafe, but is used on both the UI and IO
+//               threads. Somebody should fix that, either make it threadsafe or
+//               enforce single thread. Investigation required.
 class ProcessMap : public KeyedService {
  public:
   ProcessMap();
