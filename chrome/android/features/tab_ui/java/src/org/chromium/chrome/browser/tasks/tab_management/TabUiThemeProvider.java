@@ -21,10 +21,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 
 /**
- * Color utility class for a Tab Grid card.
+ * Utility class that provides theme related attributes for Tab UI.
  */
-public class TabUiColorProvider {
-    private static final String TAG = "TabUiColorProvider";
+public class TabUiThemeProvider {
+    private static final String TAG = "TabUiThemeProvider";
     /**
      * Returns the {@link ColorStateList} to use for the tab grid card view background based on
      * incognito mode.

@@ -405,28 +405,28 @@ class TabGridViewBinder {
 
         cardView.getBackground().mutate();
         ViewCompat.setBackgroundTintList(cardView,
-                TabUiColorProvider.getCardViewTintList(
+                TabUiThemeProvider.getCardViewTintList(
                         cardView.getContext(), isIncognito, isSelected));
 
         dividerView.setBackgroundColor(
-                TabUiColorProvider.getDividerColor(dividerView.getContext(), isIncognito));
+                TabUiThemeProvider.getDividerColor(dividerView.getContext(), isIncognito));
 
-        titleView.setTextColor(TabUiColorProvider.getTitleTextColor(
+        titleView.setTextColor(TabUiThemeProvider.getTitleTextColor(
                 titleView.getContext(), isIncognito, isSelected));
 
         if (thumbnail.getDrawable() == null) {
             thumbnail.setImageResource(
-                    TabUiColorProvider.getThumbnailPlaceHolderColorResource(isIncognito));
+                    TabUiThemeProvider.getThumbnailPlaceHolderColorResource(isIncognito));
             if (CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
                 thumbnail.setImageTintList(
-                        ColorStateList.valueOf(TabUiColorProvider.getMiniThumbnailPlaceHolderColor(
+                        ColorStateList.valueOf(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
                                 backgroundView.getContext(), isIncognito, isSelected)));
             }
         }
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(rootView.getContext())) {
             ViewCompat.setBackgroundTintList(backgroundView,
-                    TabUiColorProvider.getHoveredCardBackgroundTintList(
+                    TabUiThemeProvider.getHoveredCardBackgroundTintList(
                             backgroundView.getContext(), isIncognito));
         }
     }
@@ -435,7 +435,7 @@ class TabGridViewBinder {
             ViewLookupCachingFrameLayout rootView, boolean isIncognito, boolean isSelected) {
         ImageView actionButton = (ImageView) rootView.fastFindViewById(R.id.action_button);
         ApiCompatibilityUtils.setImageTintList(actionButton,
-                TabUiColorProvider.getActionButtonTintList(
+                TabUiThemeProvider.getActionButtonTintList(
                         actionButton.getContext(), isIncognito, isSelected));
     }
 

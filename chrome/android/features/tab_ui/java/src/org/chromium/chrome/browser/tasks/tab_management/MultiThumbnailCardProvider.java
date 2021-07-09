@@ -233,11 +233,11 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         mEmptyThumbnailPaint.setStyle(Paint.Style.FILL);
         mEmptyThumbnailPaint.setAntiAlias(true);
         mEmptyThumbnailPaint.setColor(
-                TabUiColorProvider.getMiniThumbnailPlaceHolderColor(context, false, false));
+                TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(context, false, false));
 
         mSelectedEmptyThumbnailPaint = new Paint(mEmptyThumbnailPaint);
         mSelectedEmptyThumbnailPaint.setColor(
-                TabUiColorProvider.getMiniThumbnailPlaceHolderColor(context, false, true));
+                TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(context, false, true));
 
         // Paint used to set base for thumbnails, in case mEmptyThumbnailPaint has transparency.
         mThumbnailBasePaint = new Paint(mEmptyThumbnailPaint);
@@ -259,11 +259,11 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         mTextPaint.setFakeBoldText(true);
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTextPaint.setColor(TabUiColorProvider.getTabGroupNumberTextColor(context, false, false));
+        mTextPaint.setColor(TabUiThemeProvider.getTabGroupNumberTextColor(context, false, false));
 
         mSelectedTextPaint = new Paint(mTextPaint);
         mSelectedTextPaint.setColor(
-                TabUiColorProvider.getTabGroupNumberTextColor(context, false, true));
+                TabUiThemeProvider.getTabGroupNumberTextColor(context, false, true));
 
         mFaviconBackgroundPaintColor =
                 ApiCompatibilityUtils.getColor(resource, R.color.favicon_background_color);
@@ -324,20 +324,20 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 boolean isIncognito = newModel.isIncognito();
-                mEmptyThumbnailPaint.setColor(TabUiColorProvider.getMiniThumbnailPlaceHolderColor(
+                mEmptyThumbnailPaint.setColor(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
                         context, isIncognito, false));
                 mTextPaint.setColor(
-                        TabUiColorProvider.getTabGroupNumberTextColor(context, isIncognito, false));
+                        TabUiThemeProvider.getTabGroupNumberTextColor(context, isIncognito, false));
                 mThumbnailFramePaint.setColor(
-                        TabUiColorProvider.getMiniThumbnailFrameColor(context, isIncognito));
+                        TabUiThemeProvider.getMiniThumbnailFrameColor(context, isIncognito));
                 mFaviconBackgroundPaint.setColor(
-                        TabUiColorProvider.getFaviconBackgroundColor(context, isIncognito));
+                        TabUiThemeProvider.getFaviconBackgroundColor(context, isIncognito));
 
                 mSelectedEmptyThumbnailPaint.setColor(
-                        TabUiColorProvider.getMiniThumbnailPlaceHolderColor(
+                        TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
                                 context, isIncognito, true));
                 mSelectedTextPaint.setColor(
-                        TabUiColorProvider.getTabGroupNumberTextColor(context, isIncognito, true));
+                        TabUiThemeProvider.getTabGroupNumberTextColor(context, isIncognito, true));
             }
         };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);

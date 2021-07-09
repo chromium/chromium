@@ -151,7 +151,7 @@ class MessageCardView extends LinearLayout {
      * @param isIncognito Whether the resource is used for incognito mode.
      */
     private void setBackground(boolean isIncognito) {
-        setBackgroundResource(TabUiColorProvider.getMessageCardBackgroundResourceId(isIncognito));
+        setBackgroundResource(TabUiThemeProvider.getMessageCardBackgroundResourceId(isIncognito));
     }
 
     /**
@@ -160,7 +160,7 @@ class MessageCardView extends LinearLayout {
      */
     private void setDescriptionTextAppearance(boolean isIncognito) {
         ApiCompatibilityUtils.setTextAppearance(mDescription,
-                TabUiColorProvider.getMessageCardDescriptionTextAppearance(isIncognito));
+                TabUiThemeProvider.getMessageCardDescriptionTextAppearance(isIncognito));
     }
 
     /**
@@ -169,7 +169,7 @@ class MessageCardView extends LinearLayout {
      */
     private void setActionButtonTextAppearance(boolean isIncognito) {
         ApiCompatibilityUtils.setTextAppearance(mActionButton,
-                TabUiColorProvider.getMessageCardActionButtonTextAppearance(isIncognito));
+                TabUiThemeProvider.getMessageCardActionButtonTextAppearance(isIncognito));
     }
 
     /**
@@ -178,7 +178,7 @@ class MessageCardView extends LinearLayout {
      */
     private void setCloseButtonTint(boolean isIncognito) {
         ApiCompatibilityUtils.setImageTintList(mCloseButton,
-                TabUiColorProvider.getMessageCardCloseButtonTintList(
+                TabUiThemeProvider.getMessageCardCloseButtonTintList(
                         mCloseButton.getContext(), isIncognito));
     }
 
