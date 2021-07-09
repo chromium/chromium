@@ -889,8 +889,8 @@ void UserManagerBase::GuestUserLoggedIn() {
 void UserManagerBase::AddUserRecord(User* user) {
   // Add the user to the front of the user list.
   ListPrefUpdate prefs_users_update(GetLocalState(), kRegularUsersPref);
-  prefs_users_update->Insert(
-      0, std::make_unique<base::Value>(user->GetAccountId().GetUserEmail()));
+  prefs_users_update->Insert(prefs_users_update->GetList().begin(),
+                             base::Value(user->GetAccountId().GetUserEmail()));
   users_.insert(users_.begin(), user);
 }
 
