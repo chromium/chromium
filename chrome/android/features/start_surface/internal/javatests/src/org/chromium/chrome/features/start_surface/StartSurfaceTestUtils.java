@@ -231,7 +231,7 @@ public class StartSurfaceTestUtils {
         // Toolbar layout should be hidden if start surface toolbar is shown on the top of the
         // screen.
         onView(withId(R.id.toolbar))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         // The home button shouldn't show on homepage.
         onView(withId(R.id.home_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
