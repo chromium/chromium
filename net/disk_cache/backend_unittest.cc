@@ -69,6 +69,8 @@ using testing::Field;
 
 #if defined(OS_WIN)
 #include "base/win/scoped_handle.h"
+
+#include <windows.h>
 #endif
 
 // Provide a BackendImpl object to macros from histogram_macros.h.
