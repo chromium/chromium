@@ -833,7 +833,7 @@ bool CryptohomeAuthenticator::VerifyOwner() {
   }
 
   safe_mode_delegate_->CheckSafeModeOwnership(
-      current_state_->user_context,
+      current_state_->user_context.GetUserIDHash(),
       base::BindOnce(&CryptohomeAuthenticator::OnOwnershipChecked, this));
   return false;
 }

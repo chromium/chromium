@@ -10,8 +10,6 @@
 
 namespace chromeos {
 
-class UserContext;
-
 // In case when DeviceSettings get corrupted, it is not possible to rely
 // on them to determine if particular user can sign in. In that case
 // device enters "Safe Mode" where only owner can sign in (to recreate
@@ -38,9 +36,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) SafeModeDelegate {
   virtual bool IsSafeMode() = 0;
 
   // Method to be implemented in child. Have to call |callback| with boolean
-  // parameter that indicates if user in |context| can act as an owner in
-  // safe mode.
-  virtual void CheckSafeModeOwnership(const UserContext& context,
+  // parameter that indicates if user specified by |user_id_hash| can act as an
+  // owner in safe mode.
+  virtual void CheckSafeModeOwnership(const std::string& user_id_hash,
                                       IsOwnerCallback callback) = 0;
 };
 
