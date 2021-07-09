@@ -74,7 +74,8 @@ class GrammarManager {
 
   void DismissSuggestion();
 
-  void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button);
+  void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button,
+                            bool highlighted);
 
   Profile* profile_;
   std::unique_ptr<GrammarServiceClient> grammar_client_;

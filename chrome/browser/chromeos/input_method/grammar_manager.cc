@@ -82,27 +82,41 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
     DismissSuggestion();
     return true;
   }
-  if (event.code() == ui::DomCode::TAB) {
-    if (highlighted_button_ == ui::ime::ButtonId::kSuggestion) {
-      highlighted_button_ = ui::ime::ButtonId::kIgnoreSuggestion;
-      SetButtonHighlighted(ignore_button_);
-    } else {
-      highlighted_button_ = ui::ime::ButtonId::kSuggestion;
-      SetButtonHighlighted(suggestion_button_);
-    }
-    return true;
-  }
-  if (event.code() == ui::DomCode::ENTER) {
-    switch (highlighted_button_) {
-      case ui::ime::ButtonId::kSuggestion:
-        AcceptSuggestion();
+
+  switch (highlighted_button_) {
+    case ui::ime::ButtonId::kNone:
+      if (event.code() == ui::DomCode::TAB ||
+          event.code() == ui::DomCode::ARROW_UP) {
+        highlighted_button_ = ui::ime::ButtonId::kSuggestion;
+        SetButtonHighlighted(suggestion_button_, true);
         return true;
-      case ui::ime::ButtonId::kIgnoreSuggestion:
+      }
+      break;
+    case ui::ime::ButtonId::kSuggestion:
+      switch (event.code()) {
+        case ui::DomCode::TAB:
+          highlighted_button_ = ui::ime::ButtonId::kIgnoreSuggestion;
+          SetButtonHighlighted(ignore_button_, true);
+          return true;
+        case ui::DomCode::ARROW_DOWN:
+          highlighted_button_ = ui::ime::ButtonId::kNone;
+          SetButtonHighlighted(suggestion_button_, false);
+          return true;
+        case ui::DomCode::ENTER:
+          AcceptSuggestion();
+          return true;
+        default:
+          break;
+      }
+      break;
+    case ui::ime::ButtonId::kIgnoreSuggestion:
+      if (event.code() == ui::DomCode::ENTER) {
         IgnoreSuggestion();
         return true;
-      default:
-        break;
-    }
+      }
+      break;
+    default:
+      break;
   }
   return false;
 }
@@ -277,9 +291,11 @@ void GrammarManager::IgnoreSuggestion() {
 }
 
 void GrammarManager::SetButtonHighlighted(
-    const ui::ime::AssistiveWindowButton& button) {
+    const ui::ime::AssistiveWindowButton& button,
+    bool highlighted) {
   std::string error;
-  suggestion_handler_->SetButtonHighlighted(context_id_, button, true, &error);
+  suggestion_handler_->SetButtonHighlighted(context_id_, button, highlighted,
+                                            &error);
   if (!error.empty()) {
     LOG(ERROR) << "Failed to set button highlighted. " << error;
   }
