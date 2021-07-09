@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -154,6 +155,17 @@ content::CdmInfo* GetBundledWidevine() {
   return s_cdm_info->get();
 }
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM) && defined(OS_LINUX)
+
+std::string GetControlKey() {
+  std::string control_key = base::StrCat({" CrKey/", kFrozenCrKeyValue});
+  std::string device_capabilities(DEVICE_CAPABILITIES);
+  if (!device_capabilities.empty()) {
+    device_capabilities = base::StrCat({" (", device_capabilities, ")"});
+    control_key = base::StrCat({control_key, device_capabilities});
+  }
+  return control_key;
+}
+
 }  // namespace
 
 std::string GetUserAgent() {
@@ -174,8 +186,8 @@ std::string GetUserAgent() {
           .c_str()
 #endif
       );
-  return content::BuildUserAgentFromOSAndProduct(os_info, product) + " CrKey/" +
-         kFrozenCrKeyValue;
+  return content::BuildUserAgentFromOSAndProduct(os_info, product) +
+         GetControlKey();
 }
 
 CastContentClient::~CastContentClient() {

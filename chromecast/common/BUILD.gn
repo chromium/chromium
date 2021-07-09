@@ -137,4 +137,6 @@ cast_source_set("common") {
   if (enable_library_cdms) {
     deps += [ "//media/cdm:cdm_paths" ]  # Needed by cast_content_client.cc
   }
+
+  defines = [ "DEVICE_CAPABILITIES=\"${device_capabilities}\"" ]
 }
