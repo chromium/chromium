@@ -93,7 +93,7 @@ bool TrackedSplitPreference::EnforceAndReport(
         dict_value->RemoveKey(*it);
       }
     } else {
-      pref_store_contents->RemovePath(pref_path_, NULL);
+      pref_store_contents->RemovePath(pref_path_);
     }
     was_reset = true;
   }

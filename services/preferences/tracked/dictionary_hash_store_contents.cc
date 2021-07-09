@@ -107,7 +107,7 @@ void DictionaryHashStoreContents::ImportEntry(const std::string& path,
 bool DictionaryHashStoreContents::RemoveEntry(const std::string& path) {
   base::DictionaryValue* macs_dict = GetMutableContents(false);
   if (macs_dict)
-    return macs_dict->RemovePath(path, NULL);
+    return macs_dict->RemovePath(path);
 
   return false;
 }

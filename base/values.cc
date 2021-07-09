@@ -1423,25 +1423,6 @@ bool DictionaryValue::RemoveWithoutPathExpansion(
   return true;
 }
 
-bool DictionaryValue::RemovePath(StringPiece path,
-                                 std::unique_ptr<Value>* out_value) {
-  bool result = false;
-  size_t delimiter_position = path.find('.');
-
-  if (delimiter_position == std::string::npos)
-    return RemoveWithoutPathExpansion(path, out_value);
-
-  StringPiece subdict_path = path.substr(0, delimiter_position);
-  DictionaryValue* subdict = nullptr;
-  if (!GetDictionary(subdict_path, &subdict))
-    return false;
-  result = subdict->RemovePath(path.substr(delimiter_position + 1), out_value);
-  if (result && subdict->DictEmpty())
-    RemoveKey(subdict_path);
-
-  return result;
-}
-
 std::unique_ptr<DictionaryValue> DictionaryValue::DeepCopyWithoutEmptyChildren()
     const {
   std::unique_ptr<DictionaryValue> copy =

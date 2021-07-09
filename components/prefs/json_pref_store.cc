@@ -243,7 +243,7 @@ void JsonPrefStore::SetValueSilently(const std::string& key,
 void JsonPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (prefs_->RemovePath(key, nullptr))
+  if (prefs_->RemovePath(key))
     ReportValueChanged(key, flags);
 }
 
@@ -251,7 +251,7 @@ void JsonPrefStore::RemoveValueSilently(const std::string& key,
                                         uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  prefs_->RemovePath(key, nullptr);
+  prefs_->RemovePath(key);
   ScheduleWrite(flags);
 }
 

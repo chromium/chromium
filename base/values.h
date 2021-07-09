@@ -774,14 +774,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   bool RemoveWithoutPathExpansion(StringPiece key,
                                   std::unique_ptr<Value>* out_value);
 
-  // Removes a path, clearing out all dictionaries on `path` that remain empty
-  // after removing the value at `path`.
-  // DEPRECATED, use `Value::RemovePath(path)` or `Value::ExtractPath(path)`
-  // instead.
-  bool RemovePath(StringPiece path, std::unique_ptr<Value>* out_value);
-
-  using Value::RemovePath;  // DictionaryValue::RemovePath shadows otherwise.
-
   // Makes a copy of `this` but doesn't include empty dictionaries and lists in
   // the copy.  This never returns NULL, even if `this` itself is empty.
   std::unique_ptr<DictionaryValue> DeepCopyWithoutEmptyChildren() const;

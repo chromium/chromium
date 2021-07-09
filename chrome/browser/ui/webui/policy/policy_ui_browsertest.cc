@@ -460,10 +460,8 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
 
   // Change policy values.
   values.Erase(policy::key::kDefaultImagesSetting);
-  expected_values.RemovePath(
-      std::string("chromePolicies.") +
-          std::string(policy::key::kDefaultImagesSetting),
-      nullptr);
+  expected_values.RemovePath(std::string("chromePolicies.") +
+                             std::string(policy::key::kDefaultImagesSetting));
 
   popups_blocked_for_urls.AppendString("ddd");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,

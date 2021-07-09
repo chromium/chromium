@@ -329,11 +329,11 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         ASSERT_TRUE(unprotected_prefs_);
-        unprotected_prefs_->RemovePath(key, NULL);
+        unprotected_prefs_->RemovePath(key);
         break;
       case MOCK_PROTECTED_PREF_STORE:
         ASSERT_TRUE(protected_prefs_);
-        protected_prefs_->RemovePath(key, NULL);
+        protected_prefs_->RemovePath(key);
         break;
     }
   }

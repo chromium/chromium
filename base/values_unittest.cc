@@ -1639,31 +1639,6 @@ TEST(ValuesTest, DictionaryWithoutPathExpansionDeprecated) {
   EXPECT_EQ(Value::Type::NONE, value4->type());
 }
 
-TEST(ValuesTest, DictionaryRemovePath) {
-  DictionaryValue dict;
-  dict.SetInteger("a.long.way.down", 1);
-  dict.SetBoolean("a.long.key.path", true);
-
-  std::unique_ptr<Value> removed_item;
-  EXPECT_TRUE(dict.RemovePath("a.long.way.down", &removed_item));
-  ASSERT_TRUE(removed_item);
-  EXPECT_TRUE(removed_item->is_int());
-  EXPECT_FALSE(dict.HasKey("a.long.way.down"));
-  EXPECT_FALSE(dict.HasKey("a.long.way"));
-  EXPECT_TRUE(dict.Get("a.long.key.path", nullptr));
-
-  removed_item.reset();
-  EXPECT_FALSE(dict.RemovePath("a.long.way.down", &removed_item));
-  EXPECT_FALSE(removed_item);
-  EXPECT_TRUE(dict.Get("a.long.key.path", nullptr));
-
-  removed_item.reset();
-  EXPECT_TRUE(dict.RemovePath("a.long.key.path", &removed_item));
-  ASSERT_TRUE(removed_item);
-  EXPECT_TRUE(removed_item->is_bool());
-  EXPECT_TRUE(dict.DictEmpty());
-}
-
 TEST(ValuesTest, DeepCopy) {
   DictionaryValue original_dict;
   Value* null_weak = original_dict.SetKey("null", Value());

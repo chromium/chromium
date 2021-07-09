@@ -65,7 +65,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
 
   bool was_reset = false;
   if (reset_action == TrackedPreferenceHelper::DO_RESET) {
-    pref_store_contents->RemovePath(pref_path_, NULL);
+    pref_store_contents->RemovePath(pref_path_);
     was_reset = true;
   }
 
