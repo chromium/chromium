@@ -29,10 +29,7 @@ class DeviceNamePolicyHandlerImpl
   ~DeviceNamePolicyHandlerImpl() override;
 
   // DeviceNamePolicyHandler:
-  const std::string& GetDeviceHostname() const override;
-
   DeviceNamePolicy GetDeviceNamePolicy() const override;
-
   absl::optional<std::string> GetHostnameChosenByAdministrator() const override;
 
  private:

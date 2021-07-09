@@ -112,14 +112,14 @@ void DeviceAttributesAsh::GetDeviceHostname(
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
-  std::string result = g_browser_process->platform_part()
-                           ->browser_policy_connector_chromeos()
-                           ->GetDeviceNamePolicyHandler()
-                           ->GetDeviceHostname();
-  if (result.empty()) {
+  absl::optional<std::string> result = g_browser_process->platform_part()
+                                           ->browser_policy_connector_chromeos()
+                                           ->GetDeviceNamePolicyHandler()
+                                           ->GetHostnameChosenByAdministrator();
+  if (!result) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
   } else {
-    std::move(callback).Run(StringResult::NewContents(result));
+    std::move(callback).Run(StringResult::NewContents(*result));
   }
 }
 

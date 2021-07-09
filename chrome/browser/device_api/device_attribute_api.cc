@@ -69,15 +69,12 @@ void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
 
 void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::string attribute = g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
-                                    ->GetDeviceNamePolicyHandler()
-                                    ->GetDeviceHostname();
-  if (attribute.empty())
-    std::move(callback).Run(
-        Result::NewAttribute(absl::optional<std::string>()));
-  else
-    std::move(callback).Run(Result::NewAttribute(attribute));
+  const absl::optional<std::string> attribute =
+      g_browser_process->platform_part()
+          ->browser_policy_connector_chromeos()
+          ->GetDeviceNamePolicyHandler()
+          ->GetHostnameChosenByAdministrator();
+  std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosChromeServiceImpl::Get()
       ->GetRemote<crosapi::mojom::DeviceAttributes>()

@@ -47,10 +47,6 @@ DeviceNamePolicyHandlerImpl::~DeviceNamePolicyHandlerImpl() {
   }
 }
 
-const std::string& DeviceNamePolicyHandlerImpl::GetDeviceHostname() const {
-  return hostname_;
-}
-
 DeviceNamePolicyHandler::DeviceNamePolicy
 DeviceNamePolicyHandlerImpl::GetDeviceNamePolicy() const {
   return device_name_policy_;

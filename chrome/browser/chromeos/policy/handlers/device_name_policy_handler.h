@@ -38,10 +38,6 @@ class DeviceNamePolicyHandler {
 
   virtual ~DeviceNamePolicyHandler();
 
-  // Returns the device hostname that DeviceNamePolicyHandlerImpl has last set
-  // in shill. This is the hostname after formatting (by FormatHostname()).
-  virtual const std::string& GetDeviceHostname() const = 0;
-
   // Provides the type of policy to be used for device name functionality.
   virtual DeviceNamePolicy GetDeviceNamePolicy() const = 0;
 

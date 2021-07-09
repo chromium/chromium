@@ -114,14 +114,18 @@ EnterpriseDeviceAttributesGetDeviceHostnameFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceHostnameFunction::Run() {
+  // If string is nullopt, it means there is no policy set by admin.
   std::string hostname;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
           profile)) {
-    hostname = g_browser_process->platform_part()
-                   ->browser_policy_connector_chromeos()
-                   ->GetDeviceNamePolicyHandler()
-                   ->GetDeviceHostname();
+    absl::optional<std::string> hostname_chosen_by_admin =
+        g_browser_process->platform_part()
+            ->browser_policy_connector_chromeos()
+            ->GetDeviceNamePolicyHandler()
+            ->GetHostnameChosenByAdministrator();
+    if (hostname_chosen_by_admin)
+      hostname = *hostname_chosen_by_admin;
   }
   return RespondNow(ArgumentList(
       api::enterprise_device_attributes::GetDeviceHostname::Results::Create(

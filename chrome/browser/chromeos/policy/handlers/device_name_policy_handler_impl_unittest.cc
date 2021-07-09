@@ -115,13 +115,11 @@ TEST_F(DeviceNamePolicyHandlerImplTest, HostnameChosenByAdministrator) {
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
       after);
 
-  // Check that GetDeviceHostname() and GetHostnameChosenByAdministrator()
-  // both return the expected hostname value.
+  // Check that GetHostnameChosenByAdministrator() returns the expected hostname
+  // value.
   const absl::optional<std::string> hostname_chosen_by_administrator =
       handler_->GetHostnameChosenByAdministrator();
-  const std::string device_hostname = handler_->GetDeviceHostname();
   EXPECT_EQ(hostname_chosen_by_administrator, "chromebook");
-  EXPECT_EQ(device_hostname, "chromebook");
 }
 
 // Check that OnHostnamePolicyChanged() correctly notifies observer when
