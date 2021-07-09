@@ -56,7 +56,7 @@ ChromeBluetoothChooserController::ChromeBluetoothChooserController(
     : permissions::BluetoothChooserController(
           owner,
           event_handler,
-          CreateChooserTitle(
+          CreateExtensionAwareChooserTitle(
               owner,
               IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN,
               IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME)) {

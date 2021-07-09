@@ -21,6 +21,8 @@ source_set("permissions") {
   sources = [
     "chooser_controller.cc",
     "chooser_controller.h",
+    "chooser_title_util.cc",
+    "chooser_title_util.h",
     "constants.cc",
     "constants.h",
     "contexts/accessibility_permission_context.cc",

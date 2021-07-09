@@ -102,8 +102,9 @@ ChromeBluetoothDelegate::ShowBluetoothScanningPrompt(
 
   return std::make_unique<permissions::BluetoothScanningPromptDesktop>(
       frame, event_handler,
-      CreateChooserTitle(frame, IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN,
-                         IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN),
+      CreateExtensionAwareChooserTitle(frame,
+                                       IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN,
+                                       IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN),
       base::BindOnce(chrome::ShowDeviceChooserDialog, frame));
 #endif
 }

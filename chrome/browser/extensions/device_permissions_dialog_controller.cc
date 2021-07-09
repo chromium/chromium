@@ -13,7 +13,7 @@
 DevicePermissionsDialogController::DevicePermissionsDialogController(
     content::RenderFrameHost* owner,
     scoped_refptr<extensions::DevicePermissionsPrompt::Prompt> prompt)
-    : ChooserController(CreateChooserTitle(
+    : ChooserController(CreateExtensionAwareChooserTitle(
           owner,
           prompt->multiple() ? IDS_DEVICE_PERMISSIONS_PROMPT_MULTIPLE_SELECTION
                              : IDS_DEVICE_PERMISSIONS_PROMPT_SINGLE_SELECTION,
