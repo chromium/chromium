@@ -115,6 +115,7 @@
 #include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/local_frame_mojo_receiver.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/pausable_script_executor.h"
@@ -134,7 +135,6 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/window_controls_overlay.h"
-#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -409,43 +409,6 @@ class ResourceSnapshotForWebBundleImpl
   const Deque<SerializedResource> resources_;
 };
 
-class ActiveURLMessageFilter : public mojo::MessageFilter {
- public:
-  explicit ActiveURLMessageFilter(LocalFrame* local_frame)
-      : local_frame_(local_frame) {}
-
-  ~ActiveURLMessageFilter() override {
-    if (debug_url_set_) {
-      Platform::Current()->SetActiveURL(WebURL(), WebString());
-    }
-  }
-
-  // mojo::MessageFilter overrides.
-  bool WillDispatch(mojo::Message* message) override {
-    // We expect local_frame_ always to be set because this MessageFilter
-    // is owned by the LocalFrame. We do not want to introduce a Persistent
-    // reference so we don't cause a cycle. If you hit this CHECK then you
-    // likely didn't reset your mojo receiver in Detach.
-    CHECK(local_frame_);
-    debug_url_set_ = true;
-    Platform::Current()->SetActiveURL(local_frame_->GetDocument()->Url(),
-                                      local_frame_->Top()
-                                          ->GetSecurityContext()
-                                          ->GetSecurityOrigin()
-                                          ->ToString());
-    return true;
-  }
-
-  void DidDispatchOrReject(mojo::Message* message, bool accepted) override {
-    Platform::Current()->SetActiveURL(WebURL(), WebString());
-    debug_url_set_ = false;
-  }
-
- private:
-  WeakPersistent<LocalFrame> local_frame_;
-  bool debug_url_set_ = false;
-};
-
 v8::Local<v8::Context> MainWorldScriptContext(LocalFrame* local_frame) {
   ScriptState* script_state = ToScriptStateForMainWorld(local_frame);
   DCHECK(script_state);
@@ -534,14 +497,13 @@ void LocalFrame::Init(Frame* opener,
       WTF::BindRepeating(&LocalFrame::BindToHighPriorityReceiver,
                          WrapWeakPersistent(this)),
       GetTaskRunner(blink::TaskType::kInternalHighPriorityLocalFrame));
-  GetInterfaceRegistry()->AddAssociatedInterface(
-      WTF::BindRepeating(&LocalFrame::BindFullscreenVideoElementReceiver,
-                         WrapWeakPersistent(this)));
 
   if (IsMainFrame()) {
     GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
         &LocalFrame::BindTextFragmentReceiver, WrapWeakPersistent(this)));
   }
+  DCHECK(!mojo_receiver_);
+  mojo_receiver_ = MakeGarbageCollected<LocalFrameMojoReceiver>(*this);
 
   SetOpenerDoNotNotify(opener);
   loader_.Init(std::move(policy_container));
@@ -640,7 +602,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(main_frame_receiver_);
   visitor->Trace(high_priority_frame_receiver_);
-  visitor->Trace(fullscreen_video_receiver_);
+  visitor->Trace(mojo_receiver_);
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
@@ -3212,23 +3174,6 @@ void LocalFrame::UpdateWindowControlsOverlay(
   }
 }
 
-void LocalFrame::RequestFullscreenVideoElement() {
-  // Find the first video element of the frame.
-  for (auto* child = GetDocument()->documentElement(); child;
-       child = Traversal<HTMLElement>::Next(*child)) {
-    if (IsA<HTMLVideoElement>(child)) {
-      // This is always initiated from browser side (which should require the
-      // user interacting with ui) which suffices for a user gesture even though
-      // there will have been no input to the frame at this point.
-      NotifyUserActivation(
-          mojom::blink::UserActivationNotificationType::kInteraction);
-
-      Fullscreen::RequestFullscreen(*child);
-      return;
-    }
-  }
-}
-
 HitTestResult LocalFrame::HitTestResultForVisualViewportPos(
     const IntPoint& pos_in_viewport) {
   IntPoint root_frame_point(
@@ -4132,18 +4077,6 @@ void LocalFrame::BindToHighPriorityReceiver(
       std::move(receiver),
       GetTaskRunner(blink::TaskType::kInternalHighPriorityLocalFrame));
   high_priority_frame_receiver_.SetFilter(
-      std::make_unique<ActiveURLMessageFilter>(this));
-}
-
-void LocalFrame::BindFullscreenVideoElementReceiver(
-    mojo::PendingAssociatedReceiver<mojom::blink::FullscreenVideoElementHandler>
-        receiver) {
-  if (IsDetached())
-    return;
-
-  fullscreen_video_receiver_.Bind(
-      std::move(receiver), GetTaskRunner(blink::TaskType::kInternalDefault));
-  fullscreen_video_receiver_.SetFilter(
       std::make_unique<ActiveURLMessageFilter>(this));
 }
 

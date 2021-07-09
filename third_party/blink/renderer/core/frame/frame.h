@@ -228,6 +228,12 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return lifecycle_.GetState() == FrameLifecycle::kAttached;
   }
 
+  // Note that IsAttached() and IsDetached() are not strict opposites: frames
+  // that are detaching are considered to be in neither state.
+  bool IsDetached() const {
+    return lifecycle_.GetState() == FrameLifecycle::kDetached;
+  }
+
   // Whether the frame is considered to be an ad subframe by Ad Tagging. Returns
   // true for both root and child ad subframes.
   virtual bool IsAdSubframe() const = 0;
@@ -394,12 +400,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // false if interrupted by reentrant removal of `this`, and true otherwise.
   // See `Detach()` for more information.
   virtual bool DetachImpl(FrameDetachType) = 0;
-
-  // Note that IsAttached() and IsDetached() are not strict opposites: frames
-  // that are detaching are considered to be in neither state.
-  bool IsDetached() const {
-    return lifecycle_.GetState() == FrameLifecycle::kDetached;
-  }
 
   virtual void DidChangeVisibleToHitTesting() = 0;
 
