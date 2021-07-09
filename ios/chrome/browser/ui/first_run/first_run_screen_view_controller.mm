@@ -234,6 +234,12 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
+  // Reset |didReachBottom| to make sure that its value is correctly updated
+  // to reflect the scrolling state when the view reappears and is refreshed
+  // (e.g., when getting back from a full screen view that was hidding this
+  // view controller underneath).
+  self.didReachBottom = NO;
+
   // Only add the scroll view delegate after all the view layouts are fully
   // done.
   dispatch_async(dispatch_get_main_queue(), ^{
