@@ -42,9 +42,9 @@ class FirstRunFieldTrialConfig {
   ~FirstRunFieldTrialConfig();
 
   // Creates and returns a one-time randomized FieldTrial with
-  // |disabled_group_name| with groups configured with Google Variation IDs.
+  // |default_group_name| with groups configured with Google Variation IDs.
   scoped_refptr<base::FieldTrial> CreateOneTimeRandomizedTrial(
-      const std::string& disabled_group_name,
+      const std::string& default_group_name,
       const base::FieldTrial::EntropyProvider& low_entropy_provider);
 
   // Adds a new FieldTrial group of |name| with a probability of |percentage|.

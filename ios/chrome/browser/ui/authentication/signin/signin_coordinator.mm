@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/upgrade_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_coordinator.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
@@ -60,6 +61,7 @@ using signin_metrics::PromoAction;
                     (UINavigationController*)navigationController
                                                         browser:
                                                             (Browser*)browser {
+  DCHECK(!base::FeatureList::IsEnabled(kEnableFREUIModuleIOS));
   UserSigninLogger* logger = [[FirstRunSigninLogger alloc]
         initWithAccessPoint:AccessPoint::ACCESS_POINT_START_PAGE
                 promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO

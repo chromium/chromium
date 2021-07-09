@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
+#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #include "ios/chrome/browser/voice/voice_search_prefs_registration.h"
@@ -129,6 +130,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
   location_permissions_field_trial::RegisterLocalStatePrefs(registry);
+  fre_field_trial::RegisterLocalStatePrefs(registry);
   component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
       registry);
 

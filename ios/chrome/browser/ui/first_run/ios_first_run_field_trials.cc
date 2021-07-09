@@ -22,11 +22,11 @@ FirstRunFieldTrialConfig::~FirstRunFieldTrialConfig() {}
 
 scoped_refptr<base::FieldTrial>
 FirstRunFieldTrialConfig::CreateOneTimeRandomizedTrial(
-    const std::string& disabled_group_name,
+    const std::string& default_group_name,
     const base::FieldTrial::EntropyProvider& low_entropy_provider) {
   scoped_refptr<base::FieldTrial> trial =
       base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          trial_name_, GetTotalProbability(), disabled_group_name,
+          trial_name_, GetTotalProbability(), default_group_name,
           base::FieldTrial::ONE_TIME_RANDOMIZED, 0,
           /*default_group_number=*/nullptr, &low_entropy_provider);
   for (const auto& group : groups_) {

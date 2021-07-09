@@ -9,6 +9,7 @@
 #include "components/metrics/persistent_histograms.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/chrome_paths.h"
+#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 
 void IOSChromeFieldTrials::SetupFieldTrials() {
@@ -30,4 +31,6 @@ void IOSChromeFieldTrials::SetupFeatureControllingFieldTrials(
   location_permissions_field_trial::Create(
       *low_entropy_provider, feature_list,
       GetApplicationContext()->GetLocalState());
+  fre_field_trial::Create(*low_entropy_provider, feature_list,
+                          GetApplicationContext()->GetLocalState());
 }
