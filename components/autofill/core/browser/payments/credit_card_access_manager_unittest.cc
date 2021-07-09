@@ -1978,9 +1978,24 @@ TEST_F(CreditCardAccessManagerTest, IsCardPresentInUnmaskedCache) {
 
   // Verify that only one card is present in the cache.
   EXPECT_TRUE(credit_card_access_manager_->IsCardPresentInUnmaskedCache(
-      unmasked_card->server_id()));
+      *unmasked_card));
   EXPECT_FALSE(credit_card_access_manager_->IsCardPresentInUnmaskedCache(
-      credit_card_access_manager_->GetCreditCard(kTestGUID2)->server_id()));
+      *credit_card_access_manager_->GetCreditCard(kTestGUID2)));
+}
+
+TEST_F(CreditCardAccessManagerTest, IsVirtualCardPresentInUnmaskedCache) {
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
+  CreditCard* unmasked_card =
+      credit_card_access_manager_->GetCreditCard(kTestGUID);
+  unmasked_card->set_record_type(CreditCard::VIRTUAL_CARD);
+
+  // Add the virtual card to the cache.
+  credit_card_access_manager_->CacheUnmaskedCardInfo(*unmasked_card,
+                                                     kTestCvc16);
+
+  // Verify that the virtual card is present in the cache.
+  EXPECT_TRUE(credit_card_access_manager_->IsCardPresentInUnmaskedCache(
+      *unmasked_card));
 }
 
 }  // namespace autofill

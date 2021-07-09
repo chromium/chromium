@@ -132,7 +132,7 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
     if (cached_server_cards_.empty() ||
         !GetManager()
              ->credit_card_access_manager()
-             ->IsCardPresentInUnmaskedCache(card->server_id())) {
+             ->IsCardPresentInUnmaskedCache(*card)) {
       info_to_add.push_back(TranslateCard(card, allow_filling));
     }
   }

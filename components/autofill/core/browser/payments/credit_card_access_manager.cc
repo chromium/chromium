@@ -114,8 +114,9 @@ CreditCardAccessManager::GetCachedUnmaskedCards() const {
 }
 
 bool CreditCardAccessManager::IsCardPresentInUnmaskedCache(
-    const std::string& server_id) const {
-  return unmasked_card_cache_.find(server_id) != unmasked_card_cache_.end();
+    const CreditCard& card) const {
+  return unmasked_card_cache_.find(GetKeyForUnmaskedCardsCache(card)) !=
+         unmasked_card_cache_.end();
 }
 
 bool CreditCardAccessManager::ServerCardsAvailable() {
@@ -266,11 +267,8 @@ void CreditCardAccessManager::FetchCreditCard(
   }
 
   // If card has been previously unmasked, use cached data.
-  std::string identifier = card->record_type() == CreditCard::VIRTUAL_CARD
-                               ? card->server_id() + kVirtualCardIdentifier
-                               : card->server_id();
   std::unordered_map<std::string, CachedServerCardInfo>::iterator it =
-      unmasked_card_cache_.find(identifier);
+      unmasked_card_cache_.find(GetKeyForUnmaskedCardsCache(*card));
   if (it != unmasked_card_cache_.end()) {  // key is in cache
     accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess,
                                   /*credit_card=*/&it->second.card,
@@ -761,6 +759,14 @@ void CreditCardAccessManager::AdditionallyPerformFidoAuth(
                                             response.card_authorization_token,
                                             request_options.Clone());
 #endif
+}
+
+std::string CreditCardAccessManager::GetKeyForUnmaskedCardsCache(
+    const CreditCard& card) const {
+  std::string key = card.server_id();
+  if (card.record_type() == CreditCard::VIRTUAL_CARD)
+    key += kVirtualCardIdentifier;
+  return key;
 }
 
 }  // namespace autofill

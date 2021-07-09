@@ -148,9 +148,8 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // |unamsked_cards_cache_|.
   std::vector<const CachedServerCardInfo*> GetCachedUnmaskedCards() const;
 
-  // Returns true if a |unmasked_cards_cache| contains an entry for the card
-  // with |server_id|.
-  bool IsCardPresentInUnmaskedCache(const std::string& server_id) const;
+  // Returns true if a |unmasked_cards_cache| contains an entry for the card.
+  bool IsCardPresentInUnmaskedCache(const CreditCard& card) const;
 
   CreditCardCVCAuthenticator* GetOrCreateCVCAuthenticator();
 
@@ -258,6 +257,10 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   void AdditionallyPerformFidoAuth(
       const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response,
       base::Value request_options);
+
+  // Returns the key for the given card to be used for inserting or querying the
+  // `unmasked_card_cache_`.
+  std::string GetKeyForUnmaskedCardsCache(const CreditCard& card) const;
 
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
