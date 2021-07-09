@@ -252,10 +252,10 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
 #if defined(OS_WIN)
   constexpr char kChromeCleanupEnabledType[] = "boolean";
-  constexpr char kCount[] = "13";
+  constexpr char kCount[] = "14";
 #else
   constexpr char kChromeCleanupEnabledType[] = "undefined";
-  constexpr char kCount[] = "12";
+  constexpr char kCount[] = "13";
 #endif
 
   constexpr char kTest[] = R"(
@@ -280,6 +280,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
       chrome.test.assertEq
         (typeof info.passwordProtectionWarningTrigger, 'string');
       chrome.test.assertEq(typeof info.chromeCleanupEnabled, '%s');
+      chrome.test.assertEq
+        (typeof info.chromeRemoteDesktopAppBlocked, 'boolean');
 
       chrome.test.notifyPass();
     });)";

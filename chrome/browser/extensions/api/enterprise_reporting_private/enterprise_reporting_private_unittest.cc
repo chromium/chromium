@@ -20,6 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/component_updater/pref_names.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/version_info/version_info.h"
@@ -392,6 +393,15 @@ class EnterpriseReportingPrivateGetContextInfoTest
     return false;
 #endif
   }
+
+  void ExpectDefaultChromeCleanupEnabled(
+      enterprise_reporting_private::ContextInfo& info) {
+#if defined(OS_WIN)
+    EXPECT_TRUE(*info.chrome_cleanup_enabled);
+#else
+    EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
+#endif
+  }
 };
 
 TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
@@ -415,11 +425,8 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
   EXPECT_EQ(
       enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
       info.password_protection_warning_trigger);
-#if defined(OS_WIN)
-  EXPECT_TRUE(*info.chrome_cleanup_enabled);
-#else
-  EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
-#endif
+  ExpectDefaultChromeCleanupEnabled(info);
+  EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
 }
 
 class EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest
@@ -604,6 +611,89 @@ INSTANTIATE_TEST_SUITE_P(
     EnterpriseReportingPrivateGetContextInfoChromeCleanupTest,
     testing::Bool());
 #endif  // defined(OS_WIN)
+
+class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
+    : public EnterpriseReportingPrivateGetContextInfoTest,
+      public testing::WithParamInterface<const char*> {
+ public:
+  void SetURLBlockedPolicy(const std::string& url) {
+    base::Value blockList(base::Value::Type::LIST);
+    blockList.Append(base::Value(url));
+
+    profile()->GetPrefs()->Set(policy::policy_prefs::kUrlBlocklist,
+                               std::move(blockList));
+  }
+  void SetURLAllowedPolicy(const std::string& url) {
+    base::Value allowList(base::Value::Type::LIST);
+    allowList.Append(base::Value(url));
+
+    profile()->GetPrefs()->Set(policy::policy_prefs::kUrlAllowlist,
+                               std::move(allowList));
+  }
+
+  void ExpectDefaultPolicies(enterprise_reporting_private::ContextInfo& info) {
+    EXPECT_TRUE(info.browser_affiliation_ids.empty());
+    EXPECT_TRUE(info.profile_affiliation_ids.empty());
+    EXPECT_TRUE(info.on_file_attached_providers.empty());
+    EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+    EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+    EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+              info.realtime_url_check_mode);
+    EXPECT_TRUE(info.on_security_event_providers.empty());
+    EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+    EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+              info.safe_browsing_protection_level);
+    EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
+              info.built_in_dns_client_enabled);
+    EXPECT_EQ(
+        enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+        info.password_protection_warning_trigger);
+    ExpectDefaultChromeCleanupEnabled(info);
+  }
+};
+
+TEST_P(
+    EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest,
+    BlockedURL) {
+  SetURLBlockedPolicy(GetParam());
+
+  enterprise_reporting_private::ContextInfo info = GetContextInfo();
+
+  ExpectDefaultPolicies(info);
+  EXPECT_TRUE(info.chrome_remote_desktop_app_blocked);
+}
+
+TEST_P(
+    EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest,
+    AllowedURL) {
+  SetURLAllowedPolicy(GetParam());
+
+  enterprise_reporting_private::ContextInfo info = GetContextInfo();
+
+  ExpectDefaultPolicies(info);
+  EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
+}
+
+TEST_P(
+    EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest,
+    BlockedAndAllowedURL) {
+  SetURLBlockedPolicy(GetParam());
+  SetURLAllowedPolicy(GetParam());
+
+  enterprise_reporting_private::ContextInfo info = GetContextInfo();
+
+  ExpectDefaultPolicies(info);
+  EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest,
+    testing::Values("https://remotedesktop.google.com",
+                    "https://remotedesktop.corp.google.com",
+                    "corp.google.com",
+                    "google.com",
+                    "https://*"));
 
 class EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest
     : public EnterpriseReportingPrivateGetContextInfoTest,

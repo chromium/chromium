@@ -64,6 +64,8 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
       signals.chrome_cleanup_enabled.has_value()
           ? std::make_unique<bool>(signals.chrome_cleanup_enabled.value())
           : nullptr;
+  info.chrome_remote_desktop_app_blocked =
+      signals.chrome_remote_desktop_app_blocked;
   switch (signals.realtime_url_check_mode) {
     case safe_browsing::REAL_TIME_CHECK_DISABLED:
       info.realtime_url_check_mode = extensions::api::

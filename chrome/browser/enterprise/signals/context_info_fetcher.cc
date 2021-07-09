@@ -16,11 +16,29 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/component_updater/pref_names.h"
+#include "components/policy/content/policy_blocklist_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "device_management_backend.pb.h"
 
 namespace enterprise_signals {
+
+namespace {
+
+bool IsURLBlocked(const GURL& url, content::BrowserContext* browser_context_) {
+  PolicyBlocklistService* service =
+      PolicyBlocklistFactory::GetForBrowserContext(browser_context_);
+
+  if (!service)
+    return false;
+
+  policy::URLBlocklist::URLBlocklistState state =
+      service->GetURLBlocklistState(url);
+
+  return state == policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+}
+
+}  // namespace
 
 ContextInfo::ContextInfo() = default;
 ContextInfo::ContextInfo(ContextInfo&&) = default;
@@ -67,6 +85,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.password_protection_warning_trigger =
       GetPasswordProtectionWarningTrigger();
   info.chrome_cleanup_enabled = GetChromeCleanupEnabled();
+  info.chrome_remote_desktop_app_blocked = GetChromeRemoteDesktopAppBlocked();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
 }
@@ -133,6 +152,7 @@ ContextInfoFetcher::GetPasswordProtectionWarningTrigger() {
       profile->GetPrefs()->GetInteger(
           prefs::kPasswordProtectionWarningTrigger));
 }
+
 absl::optional<bool> ContextInfoFetcher::GetChromeCleanupEnabled() {
 #if defined(OS_WIN)
   return g_browser_process->local_state()->GetBoolean(
@@ -140,6 +160,13 @@ absl::optional<bool> ContextInfoFetcher::GetChromeCleanupEnabled() {
 #else
   return absl::nullopt;
 #endif
+}
+
+bool ContextInfoFetcher::GetChromeRemoteDesktopAppBlocked() {
+  return IsURLBlocked(GURL("https://remotedesktop.google.com"),
+                      browser_context_) ||
+         IsURLBlocked(GURL("https://remotedesktop.corp.google.com"),
+                      browser_context_);
 }
 
 }  // namespace enterprise_signals

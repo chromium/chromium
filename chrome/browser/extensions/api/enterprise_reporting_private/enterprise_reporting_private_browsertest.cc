@@ -297,6 +297,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
 #else
   EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
 #endif
+  EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,

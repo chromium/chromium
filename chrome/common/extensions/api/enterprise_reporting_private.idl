@@ -73,6 +73,7 @@ namespace enterprise.reportingPrivate {
     boolean builtInDnsClientEnabled;
     PasswordProtectionTrigger passwordProtectionWarningTrigger;
     boolean? chromeCleanupEnabled;
+    boolean chromeRemoteDesktopAppBlocked;
   };
 
   // Invoked by <code>getContextInfo</code> to return context information.
