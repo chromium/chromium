@@ -464,32 +464,26 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 + (void)closeAllExtraWindows {
   if (!base::ios::IsMultipleScenesSupported())
     return;
-
-  if (@available(iOS 13, *)) {
-    NSSet<UISceneSession*>* sessions =
-        UIApplication.sharedApplication.openSessions;
-    if (sessions.count <= 1)
-      return;
-    BOOL foundForegroundScene = NO;
-    for (UISceneSession* session in sessions) {
-      UIScene* scene = session.scene;
-      if (!foundForegroundScene && scene &&
-          (scene.activationState == UISceneActivationStateForegroundActive ||
-           scene.activationState == UISceneActivationStateForegroundInactive)) {
-        foundForegroundScene = YES;
-        // Leave the first foreground scene connected, so there's one open
-        // window left.
-        continue;
-      }
-      // If this isn't the first foreground scene, destroy it.
-      UIWindowSceneDestructionRequestOptions* options =
-          [[UIWindowSceneDestructionRequestOptions alloc] init];
-      options.windowDismissalAnimation =
-          UIWindowSceneDismissalAnimationStandard;
-      [UIApplication.sharedApplication requestSceneSessionDestruction:session
-                                                              options:options
-                                                         errorHandler:nil];
+  SceneState* foreground_scene_state =
+      chrome_test_util::GetMainController().appState.foregroundActiveScene;
+  // New windows get an accessibilityIdentifier equal to the number of windows
+  // when they are created.
+  // Renumber the remaining window to avoid conflicts with future windows.
+  foreground_scene_state.window.accessibilityIdentifier = @"0";
+  NSSet<UISceneSession*>* sessions =
+      UIApplication.sharedApplication.openSessions;
+  if (sessions.count <= 1)
+    return;
+  for (UISceneSession* session in sessions) {
+    if (foreground_scene_state.scene == session.scene) {
+      continue;
     }
+    UIWindowSceneDestructionRequestOptions* options =
+        [[UIWindowSceneDestructionRequestOptions alloc] init];
+    options.windowDismissalAnimation = UIWindowSceneDismissalAnimationStandard;
+    [UIApplication.sharedApplication requestSceneSessionDestruction:session
+                                                            options:options
+                                                       errorHandler:nil];
   }
 }
 
