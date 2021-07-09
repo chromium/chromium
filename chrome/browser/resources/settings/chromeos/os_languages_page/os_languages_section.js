@@ -105,12 +105,16 @@ Polymer({
   },
 
   /**
-   * @param {string} id The input method ID.
+   * @param {string|undefined} id The input method ID.
    * @param {!LanguageHelper} languageHelper The LanguageHelper object.
    * @return {string} The display name of the input method.
    * @private
    */
   getInputMethodDisplayName_(id, languageHelper) {
+    if (id === undefined) {
+      return '';
+    }
+
     if (id === ACCESSIBILITY_COMMON_IME_ID) {
       return '';
     }
