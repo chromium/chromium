@@ -1728,7 +1728,7 @@ void AXObjectCacheImpl::StyleChangedWithCleanLayout(Node* node) {
   if (parent && ui::IsContainerWithSelectableChildren(parent->RoleValue()))
     return;
 
-  MarkAXObjectDirtyWithCleanLayout(obj, false);
+  MarkAXObjectDirtyWithCleanLayout(obj);
 }
 
 void AXObjectCacheImpl::TextChanged(Node* node) {
@@ -1793,7 +1793,7 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
       }
     }
 
-    MarkAXObjectDirtyWithCleanLayout(obj, /*subtree=*/false);
+    MarkAXObjectDirtyWithCleanLayout(obj);
   }
 
   if (optional_node_for_relation_update)
@@ -1827,7 +1827,7 @@ void AXObjectCacheImpl::FocusableChangedWithCleanLayout(Element* element) {
   }
 
   // Refresh the focusable state and State::kIgnored on the exposed object.
-  MarkAXObjectDirtyWithCleanLayout(obj, false);
+  MarkAXObjectDirtyWithCleanLayout(obj);
 }
 
 void AXObjectCacheImpl::DocumentTitleChanged() {
@@ -2156,7 +2156,7 @@ void AXObjectCacheImpl::EmbeddingTokenChanged(HTMLFrameOwnerElement* element) {
   if (!element)
     return;
 
-  MarkElementDirty(element, false);
+  MarkElementDirty(element);
 }
 
 bool AXObjectCacheImpl::IsPopup(Document& document) const {
@@ -2298,7 +2298,7 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     }
 
     AXObject* new_object = refresh(object);
-    MarkAXObjectDirtyWithCleanLayout(new_object, false);
+    MarkAXObjectDirtyWithCleanLayout(new_object);
 
 #if defined(AX_FAIL_FAST_BUILD)
     SANITIZER_CHECK(!new_object ||
@@ -2588,7 +2588,7 @@ void AXObjectCacheImpl::LocationChanged(const LayoutObject* layout_object) {
 
 void AXObjectCacheImpl::ImageLoaded(const LayoutObject* layout_object) {
   AXObject* obj = Get(layout_object);
-  MarkAXObjectDirty(obj, false);
+  MarkAXObjectDirty(obj);
 }
 
 void AXObjectCacheImpl::HandleClicked(Node* node) {
@@ -2631,7 +2631,7 @@ void AXObjectCacheImpl::HandleAriaSelectedChangedWithCleanLayout(Node* node) {
   AXObject* listbox = obj->ParentObjectUnignored();
   if (listbox && listbox->RoleValue() == ax::mojom::Role::kListBox) {
     // Ensure listbox options are in sync as selection status may have changed
-    MarkAXObjectDirty(listbox, true);
+    MarkAXSubtreeDirty(listbox);
     PostNotification(listbox, ax::mojom::Event::kSelectedChildrenChanged);
   }
 }
@@ -2824,7 +2824,7 @@ void AXObjectCacheImpl::HandleAriaHiddenChangedWithCleanLayout(Node* node) {
 
   // Invalidate the subtree because aria-hidden affects the
   // accessibility ignored state for the entire subtree.
-  MarkAXObjectDirtyWithCleanLayout(obj, /*subtree=*/true);
+  MarkAXSubtreeDirtyWithCleanLayout(obj);
   ChildrenChangedWithCleanLayout(obj->CachedParentObject());
 }
 
@@ -2865,14 +2865,14 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
     FocusableChangedWithCleanLayout(element);
   } else if (attr_name == html_names::kDisabledAttr ||
              attr_name == html_names::kReadonlyAttr) {
-    MarkElementDirtyWithCleanLayout(element, false);
+    MarkElementDirtyWithCleanLayout(element);
   } else if (attr_name == html_names::kValueAttr) {
     HandleValueChanged(element);
   } else if (attr_name == html_names::kMinAttr ||
              attr_name == html_names::kMaxAttr) {
-    MarkElementDirtyWithCleanLayout(element, false);
+    MarkElementDirtyWithCleanLayout(element);
   } else if (attr_name == html_names::kStepAttr) {
-    MarkElementDirtyWithCleanLayout(element, false);
+    MarkElementDirtyWithCleanLayout(element);
   } else if (attr_name == html_names::kUsemapAttr) {
     HandleUseMapAttributeChangedWithCleanLayout(element);
   } else if (attr_name == html_names::kNameAttr) {
@@ -2908,9 +2908,9 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
   } else if (attr_name == html_names::kAriaHiddenAttr) {
     HandleAriaHiddenChangedWithCleanLayout(element);
   } else if (attr_name == html_names::kAriaInvalidAttr) {
-    MarkElementDirtyWithCleanLayout(element, false);
+    MarkElementDirtyWithCleanLayout(element);
   } else if (attr_name == html_names::kAriaErrormessageAttr) {
-    MarkElementDirtyWithCleanLayout(element, false);
+    MarkElementDirtyWithCleanLayout(element);
   } else if (attr_name == html_names::kAriaOwnsAttr) {
     if (AXObject* obj = GetOrCreate(element))
       relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
@@ -3059,14 +3059,12 @@ void AXObjectCacheImpl::HandleValidationMessageVisibilityChangedWithCleanLayout(
 
   AXObject* message_ax_object = ValidationMessageObjectIfInvalid(
       /* Fire children changed on root if it gains message child */ true);
-  if (message_ax_object) {
-    MarkAXObjectDirtyWithCleanLayout(message_ax_object,
-                                     false);  // May be invisible now.
-  }
+  if (message_ax_object)  // May be invisible now.
+    MarkAXObjectDirtyWithCleanLayout(message_ax_object);
 
   // If the form control is invalid, it will now have an error message relation
   // to the message container.
-  MarkElementDirtyWithCleanLayout(form_control, false);
+  MarkElementDirtyWithCleanLayout(form_control);
 }
 
 void AXObjectCacheImpl::HandleEventListenerAdded(
@@ -3103,7 +3101,7 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
   // If the |event_type| may affect the ignored state of |node|, which means
   // that the parent's children may have changed.
   modification_count_++;
-  MarkElementDirty(&node, /*subtree=*/false);
+  MarkElementDirty(&node);
 }
 
 void AXObjectCacheImpl::LabelChangedWithCleanLayout(Element* element) {
@@ -3209,10 +3207,8 @@ void AXObjectCacheImpl::PostPlatformNotification(
   }
 }
 
-void AXObjectCacheImpl::MarkAXObjectDirtyHelper(
-    AXObject* obj,
-    bool subtree,
-    ax::mojom::blink::Action event_from_action) {
+void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj,
+                                                               bool subtree) {
   if (!obj || obj->IsDetached() || !obj->GetDocument() ||
       !obj->GetDocument()->View() ||
       !obj->GetDocument()->View()->GetFrame().GetPage()) {
@@ -3221,53 +3217,45 @@ void AXObjectCacheImpl::MarkAXObjectDirtyHelper(
 
   WebLocalFrameImpl* webframe = WebLocalFrameImpl::FromFrame(
       obj->GetDocument()->AXObjectCacheOwner().GetFrame());
-  if (webframe && webframe->Client()) {
-    webframe->Client()->MarkWebAXObjectDirty(WebAXObject(obj), subtree,
-                                             event_from_action);
-  }
+  if (webframe && webframe->Client())
+    webframe->Client()->MarkWebAXObjectDirty(WebAXObject(obj), subtree);
+  obj->UpdateCachedAttributeValuesIfNeeded(true);
 }
 
-void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(
-    AXObject* obj,
-    bool subtree,
-    ax::mojom::blink::Action event_from_action) {
+void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
+  MarkAXObjectDirtyWithCleanLayoutHelper(obj, false);
+}
+
+void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
+  MarkAXObjectDirtyWithCleanLayoutHelper(obj, true);
+}
+
+void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
   if (!obj)
     return;
-  MarkAXObjectDirtyHelper(obj, subtree, event_from_action);
-  UpdateCachedAttributeValuesWithCleanLayout(obj->GetNode(), obj);
+  base::OnceClosure callback =
+      WTF::Bind(&AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout,
+                WrapWeakPersistent(this), WrapWeakPersistent(obj));
+  DeferTreeUpdateInternal(std::move(callback), obj);
 }
 
-void AXObjectCacheImpl::UpdateCachedAttributeValuesWithCleanLayout(
-    Node* node,
-    AXObject* obj) {
-  if (obj)
-    obj->UpdateCachedAttributeValuesIfNeeded(true);
-}
-
-void AXObjectCacheImpl::MarkAXObjectDirty(
-    AXObject* obj,
-    bool subtree,
-    ax::mojom::blink::Action event_from_action) {
+void AXObjectCacheImpl::MarkAXSubtreeDirty(AXObject* obj) {
   if (!obj)
     return;
-  MarkAXObjectDirtyHelper(obj, subtree, event_from_action);
-  if (obj->GetNode()) {
-    DeferTreeUpdate(
-        &AXObjectCacheImpl::UpdateCachedAttributeValuesWithCleanLayout, obj);
-  }
+  base::OnceClosure callback =
+      WTF::Bind(&AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout,
+                WrapWeakPersistent(this), WrapWeakPersistent(obj));
+  DeferTreeUpdateInternal(std::move(callback), obj);
 }
 
-void AXObjectCacheImpl::MarkElementDirty(const Node* element, bool subtree) {
-  // Warning, if no AXObject exists for element, nothing is marked dirty,
-  // including descendant objects when subtree == true.
-  MarkAXObjectDirty(Get(element), subtree);
+void AXObjectCacheImpl::MarkElementDirty(const Node* element) {
+  // Warning, if no AXObject exists for element, nothing is marked dirty.
+  MarkAXObjectDirty(Get(element));
 }
 
-void AXObjectCacheImpl::MarkElementDirtyWithCleanLayout(const Node* element,
-                                                        bool subtree) {
-  // Warning, if no AXObject exists for element, nothing is marked dirty,
-  // including descendant objects when subtree == true.
-  MarkAXObjectDirtyWithCleanLayout(Get(element), subtree);
+void AXObjectCacheImpl::MarkElementDirtyWithCleanLayout(const Node* element) {
+  // Warning, if no AXObject exists for element, nothing is marked dirty.
+  MarkAXObjectDirtyWithCleanLayout(Get(element));
 }
 
 void AXObjectCacheImpl::HandleFocusedUIElementChanged(
@@ -3327,7 +3315,7 @@ void AXObjectCacheImpl::UpdateActiveAriaModalDialog(Node* node) {
 
   active_aria_modal_dialog_ = new_active_aria_modal;
   modification_count_++;
-  MarkAXObjectDirty(Root(), true);
+  MarkAXSubtreeDirty(Root());
 }
 
 AXObject* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
@@ -3437,7 +3425,7 @@ void AXObjectCacheImpl::HandleValueChanged(Node* node) {
 
 void AXObjectCacheImpl::HandleUpdateActiveMenuOption(Node* menu_list) {
   if (!use_ax_menu_list_) {
-    MarkElementDirty(menu_list, false);
+    MarkElementDirty(menu_list);
     return;
   }
 
@@ -3462,7 +3450,7 @@ void AXObjectCacheImpl::DidShowMenuListPopup(LayoutObject* menu_list) {
 
 void AXObjectCacheImpl::DidShowMenuListPopupWithCleanLayout(Node* menu_list) {
   if (!use_ax_menu_list_) {
-    MarkAXObjectDirtyWithCleanLayout(Get(menu_list), false);
+    MarkAXObjectDirtyWithCleanLayout(Get(menu_list));
     return;
   }
 
@@ -3481,7 +3469,7 @@ void AXObjectCacheImpl::DidHideMenuListPopup(LayoutObject* menu_list) {
 
 void AXObjectCacheImpl::DidHideMenuListPopupWithCleanLayout(Node* menu_list) {
   if (!use_ax_menu_list_) {
-    MarkAXObjectDirtyWithCleanLayout(Get(menu_list), false);
+    MarkAXObjectDirtyWithCleanLayout(Get(menu_list));
     return;
   }
 
@@ -3539,7 +3527,7 @@ void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {
 }
 
 void AXObjectCacheImpl::HandleFrameRectsChanged(Document& document) {
-  MarkAXObjectDirty(Get(&document), false);
+  MarkElementDirty(&document);
 }
 
 void AXObjectCacheImpl::InvalidateBoundingBox(
@@ -3553,7 +3541,7 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*frame_view->GetFrame().GetDocument());
 
   InvalidateBoundingBoxForFixedOrStickyPosition();
-  MarkElementDirty(document_, false);
+  MarkElementDirty(document_);
   DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document_,
                   ax::mojom::blink::Event::kLayoutComplete);
 }
@@ -3564,7 +3552,7 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   InvalidateBoundingBoxForFixedOrStickyPosition();
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
-    MarkElementDirty(node, false);
+    MarkElementDirty(node);
     DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, node,
                     ax::mojom::blink::Event::kLayoutComplete);
   }
@@ -3721,7 +3709,7 @@ void AXObjectCacheImpl::SetAutofillState(AXID id, WebAXAutofillState state) {
   WebAXAutofillState previous_state = GetAutofillState(id);
   if (state != previous_state) {
     autofill_state_map_.Set(id, state);
-    MarkAXObjectDirty(ObjectFromAXID(id), false);
+    MarkAXObjectDirty(ObjectFromAXID(id));
   }
 }
 

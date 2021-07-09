@@ -230,6 +230,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ChildrenChangedWithCleanLayout(Node* optional_node_for_relation_update,
                                       AXObject*);
 
+  void MarkAXObjectDirtyWithCleanLayout(AXObject*);
+  void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
+
   // When an object is created or its id changes, this must be called so that
   // the relation cache is updated.
   void MaybeNewRelationTarget(Node& node, AXObject* obj);
@@ -270,11 +273,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // TODO(accessibility) Find out if we can merge with EnsurePostNotification().
   void PostNotification(Node*, ax::mojom::blink::Event);
   void PostNotification(AXObject*, ax::mojom::blink::Event);
-  void MarkAXObjectDirtyWithCleanLayout(
-      AXObject*,
-      bool subtree,
-      ax::mojom::blink::Action event_from_action =
-          ax::mojom::blink::Action::kNone);
 
   //
   // Aria-owns support.
@@ -435,17 +433,11 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   ax::mojom::blink::EventFrom ComputeEventFrom();
 
-  void UpdateCachedAttributeValuesWithCleanLayout(Node* node, AXObject* obj);
-  void MarkAXObjectDirtyHelper(AXObject* obj,
-                               bool subtree,
-                               ax::mojom::blink::Action event_from_action);
-  void MarkAXObjectDirty(AXObject*,
-                         bool subtree,
-                         ax::mojom::blink::Action event_from_action =
-                             ax::mojom::blink::Action::kNone);
-  void MarkElementDirty(const Node*, bool subtree);
-  void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
-  void MarkElementDirtyWithCleanLayout(const Node*, bool subtree);
+  void MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj, bool subtree);
+  void MarkAXObjectDirty(AXObject*);
+  void MarkAXSubtreeDirty(AXObject*);
+  void MarkElementDirty(const Node*);
+  void MarkElementDirtyWithCleanLayout(const Node*);
 
   // Helper that clears children up to the first included ancestor and returns
   // the ancestor if a children changed notification should be fired on it.

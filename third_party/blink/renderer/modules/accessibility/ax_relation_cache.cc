@@ -488,18 +488,18 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     HeapVector<Member<AXObject>> related_sources;
     GetReverseRelated(current_node, related_sources);
     for (AXObject* related : related_sources) {
-      if (related) {
-        object_cache_->MarkAXObjectDirtyWithCleanLayout(related,
-                                                        /*subtree=*/false);
-      }
+      if (related && related->AccessibilityIsIncludedInTree())
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
     }
 
     // Ancestors that may derive their accessible name from descendant content
     // should also handle text changed events when descendant content changes.
     if (current_node != node) {
       AXObject* obj = Get(current_node);
-      if (obj && obj->SupportsNameFromContents(/*recursive=*/false))
-        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj, /*subtree=*/false);
+      if (obj && obj->AccessibilityIsIncludedInTree() &&
+          obj->SupportsNameFromContents(/*recursive=*/false)) {
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
+      }
     }
 
     // Forward relation via <label for="[id]">.
@@ -559,9 +559,9 @@ void AXRelationCache::LabelChanged(Node* node) {
       To<HTMLElement>(node)->FastGetAttribute(html_names::kForAttr);
   if (!id.IsEmpty()) {
     all_previously_seen_label_target_ids_.insert(id);
-    if (auto* control = To<HTMLLabelElement>(node)->control()) {
-      if (AXObject* obj = Get(control))
-        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj, /*subtree=*/false);
+    if (AXObject* obj = Get(To<HTMLLabelElement>(node)->control())) {
+      if (obj->AccessibilityIsIncludedInTree())
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
     }
   }
 }
