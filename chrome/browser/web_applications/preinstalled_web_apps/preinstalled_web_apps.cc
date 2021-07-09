@@ -35,16 +35,13 @@ namespace {
 std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
     nullptr;
 
-bool g_force_use_preinstalled_web_apps_for_testing = false;
-
 }  // namespace
 
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
   if (g_preinstalled_app_data_for_testing)
     return *g_preinstalled_app_data_for_testing;
 
-  if (!g_force_use_preinstalled_web_apps_for_testing &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kDisablePreinstalledApps)) {
     return {};
   }
@@ -77,10 +74,6 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   return {};
-}
-
-void ForceUsePreinstalledWebAppsForTesting() {
-  g_force_use_preinstalled_web_apps_for_testing = true;
 }
 
 ScopedTestingPreinstalledAppData::ScopedTestingPreinstalledAppData() {

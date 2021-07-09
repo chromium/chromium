@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -24,12 +25,19 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest {
     PreinstalledWebAppManager::SkipStartupForTesting();
     // Ignore any default app configs on disk.
     PreinstalledWebAppManager::SetConfigDirForTesting(&empty_path_);
-    ForceUsePreinstalledWebAppsForTesting();
     WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
         [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
           return std::make_unique<TestOsIntegrationManager>(
               profile, nullptr, nullptr, nullptr, nullptr);
         });
+  }
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+
+    // This was added by PrepareBrowserCommandLineForTests(), re-enable default
+    // apps as we wish to test that they get installed.
+    command_line->RemoveSwitch(switches::kDisablePreinstalledApps);
   }
 
   base::FilePath empty_path_;
