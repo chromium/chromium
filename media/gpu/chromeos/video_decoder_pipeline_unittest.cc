@@ -257,6 +257,14 @@ class VideoDecoderPipelineTest
 
   DecoderInterface* GetUnderlyingDecoder() { return decoder_->decoder_.get(); }
 
+  void DetachDecoderSequenceChecker() {
+    // |decoder_| will be destroyed on its |decoder_task_runner| via
+    // DestroyAsync(). This will trip its |decoder_sequence_checker_| if it has
+    // been pegged to the test task runner, e.g. in PickDecoderOutputFormat().
+    // Since in that case we don't care about threading, just detach it.
+    DETACH_FROM_SEQUENCE(decoder_->decoder_sequence_checker_);
+  }
+
   base::test::TaskEnvironment task_environment_;
   const VideoDecoderConfig config_;
 
@@ -569,6 +577,7 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
         << test_vector.expected_chosen_candidate.first.ToString()
         << ", actual: " << chosen_candidate->first.ToString();
   }
+  DetachDecoderSequenceChecker();
 }
 
 }  // namespace media
