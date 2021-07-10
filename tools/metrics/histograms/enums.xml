@@ -46101,6 +46101,7 @@ from previous Chrome versions.
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
   <int value="-2127319228" label="enable-media-internals:disabled"/>
   <int value="-2126697213" label="EnablePalmSuppression:disabled"/>
+  <int value="-2126275491" label="WebViewAppsPackageNamesAllowlist:disabled"/>
   <int value="-2124839789"
       label="OmniboxUIExperimentHideSteadyStateUrlSchemeAndSubdomains:enabled"/>
   <int value="-2124685253" label="USBGuard:enabled"/>
@@ -49059,6 +49060,7 @@ from previous Chrome versions.
   <int value="316182183" label="MediaDocumentDownloadButton:disabled"/>
   <int value="317432596" label="DisplayLocking:disabled"/>
   <int value="317889969" label="AutofillAddressProfileSavePrompt:disabled"/>
+  <int value="318277328" label="WebViewAppsPackageNamesAllowlist:enabled"/>
   <int value="319683583" label="ContentSuggestionsDebugLog:enabled"/>
   <int value="320121752" label="DelegateOverscrollSwipes:disabled"/>
   <int value="321366101" label="WebXRARDOMOverlay:enabled"/>

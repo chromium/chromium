@@ -138,5 +138,9 @@ public final class ProductionSupportedFlagList {
                     BlinkFeatures.LAYOUT_NG_TABLE, "Enables Blink's next generation table layout."),
             Flag.baseFeature(
                     NetworkServiceFeatures.TRUST_TOKENS, "Enables the prototype Trust Tokens API."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST,
+                    "Enables using a server-defined allowlist of apps whose name can be recorded "
+                            + "in UMA logs. The allowlist is downloaded and fetched via component "
+                            + "updater services in WebView."),
     };
 }
