@@ -11390,6 +11390,20 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Google Drive
     </message>
 
+    <!-- Enterprise file system connector sign in on first download confirmation dialog -->
+    <message name="IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_REQUIRED_TITLE" desc="Title shown in modal shown upon first eligible download to be uploaded, before sign in dia;pg">
+      Sign into <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph> to complete download
+    </message>
+    <message name="IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_REQUIRED_MESSAGE" desc="Meesage shown in above-mentioned modal">
+      Your organization requires eligible downloads to be saved to <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph>. Upon signing in, an unique authentication token will be stored and used for all future eligible downloads.
+    </message>
+    <message name="IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_REQUIRED_CANCEL_BUTTON" desc="Text displayed for cancel button in above-mentioned modal">
+      Cancel download
+    </message>
+    <message name="IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_REQUIRED_ACCEPT_BUTTON" desc="Text displayed for accept button in above-mentioned modal">
+      Sign in
+    </message>
+
     <!-- Enterprise file system connector sign in dialog -->
     <message name="IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_DIALOG_TITLE" desc="Title shown in dialog when prompting user to sign in to link a web drive account.">
       Link <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph> account for Downloads

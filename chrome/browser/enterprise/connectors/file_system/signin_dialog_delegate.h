@@ -38,11 +38,6 @@ class FileSystemSigninDialogDelegate
   using AuthorizationCompletedCallback = AccessTokenFetcher::TokenCallback;
 
   ~FileSystemSigninDialogDelegate() override;
-
-  static void ShowDialog(content::WebContents* web_contents,
-                         const FileSystemSettings& settings,
-                         AuthorizationCompletedCallback callback);
-
   FileSystemSigninDialogDelegate(content::BrowserContext* browser_context,
                                  const FileSystemSettings& settings,
                                  AuthorizationCompletedCallback callback);

@@ -9,16 +9,13 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/base/escape.h"
@@ -49,31 +46,6 @@ const char kOAuthConsumerName[] = "file_system_signin_dialog";
 //     5/ It is controlled by Google.
 bool IsOAuth2RedirectURI(const GURL& url) {
   return url.host() == "google.com" && url.path() == "/generate_204";
-}
-
-gfx::NativeWindow FindMostRelevantContextWindow(
-    const content::WebContents* web_contents) {
-  // Can't just use web_contents->GetNativeView(): it results in a dialog that
-  // disappears upon browser going out of focus and cannot be re-activated or
-  // closed by user.
-  auto* browser =
-      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
-
-  // Back up methods are needed to find a window to attach the dialog to,
-  // because the |web_contents| from |download_item| is stored as a mapping
-  // inside of it and is not guaranteed to always exist or be valid. Example: if
-  // the original window got closed when download was still in progress; or if
-  // we need to resume file upload upon browser restart.
-  if (!browser) {
-    LOG(ERROR) << "Can't find window from download item; using active window";
-    browser = chrome::FindBrowserWithActiveWindow();
-  }
-  if (!browser) {
-    LOG(ERROR) << "Can't find active window; using last active window";
-    browser = chrome::FindLastActive();
-  }
-  DCHECK(browser);
-  return browser->window()->GetNativeWindow();
 }
 
 }  // namespace
@@ -128,27 +100,6 @@ FileSystemSigninDialogDelegate::~FileSystemSigninDialogDelegate() {
   }
 }
 
-// static
-void FileSystemSigninDialogDelegate::ShowDialog(
-    content::WebContents* web_contents,
-    const FileSystemSettings& settings,
-    AuthorizationCompletedCallback callback) {
-  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  gfx::NativeWindow context = FindMostRelevantContextWindow(web_contents);
-
-  std::unique_ptr<FileSystemSigninDialogDelegate> delegate =
-      std::make_unique<FileSystemSigninDialogDelegate>(
-          browser_context, settings, std::move(callback));
-
-  // We want a dialog whose lifetime is independent from that of |web_contents|,
-  // therefore using FindMostRelevantContextWindow() as context, instead of
-  // using web_contents->GetNativeView() as parent. This gives us a new
-  // top-level window.
-  auto* widget = views::DialogDelegate::CreateDialogWidget(
-      std::move(delegate), context, /* parent = */ nullptr);
-  widget->Show();
-}
-
 web_modal::WebContentsModalDialogHost*
 FileSystemSigninDialogDelegate::GetWebContentsModalDialogHost() {
   return this;
@@ -190,9 +141,7 @@ views::View* FileSystemSigninDialogDelegate::GetInitiallyFocusedView() {
 }
 
 void FileSystemSigninDialogDelegate::OnCancellation() {
-  std::move(callback_).Run(
-      GoogleServiceAuthError{GoogleServiceAuthError::State::REQUEST_CANCELED},
-      std::string(), std::string());
+  ReturnCancellation(std::move(callback_));
 }
 
 void FileSystemSigninDialogDelegate::DidFinishNavigation(

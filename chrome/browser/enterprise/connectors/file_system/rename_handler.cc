@@ -10,7 +10,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
-#include "chrome/browser/enterprise/connectors/file_system/signin_dialog_delegate.h"
+#include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -134,7 +134,7 @@ void FileSystemRenameHandler::TryUploaderTask(content::BrowserContext* context,
 
 void FileSystemRenameHandler::PromptUserSignInForAuthorization(
     content::WebContents* contents) {
-  FileSystemSigninDialogDelegate::ShowDialog(
+  StartSigninExperienceForDownloadItem(
       contents, settings_,
       base::BindOnce(&FileSystemRenameHandler::OnAuthorization,
                      weak_factory_.GetWeakPtr()));
