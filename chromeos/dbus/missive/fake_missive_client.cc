@@ -5,7 +5,9 @@
 #include "chromeos/dbus/missive/fake_missive_client.h"
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/missive_storage_module.h"
@@ -22,16 +24,27 @@ FakeMissiveClient::FakeMissiveClient() = default;
 FakeMissiveClient::~FakeMissiveClient() = default;
 
 void FakeMissiveClient::Init() {
+  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+  sequenced_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+
   auto missive_storage_module_delegate =
       std::make_unique<MissiveStorageModuleDelegateImpl>(
-          base::BindRepeating(&FakeMissiveClient::EnqueueRecord,
-                              weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&FakeMissiveClient::Flush,
-                              weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&FakeMissiveClient::ReportSuccess,
-                              weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&FakeMissiveClient::UpdateEncryptionKey,
-                              weak_ptr_factory_.GetWeakPtr()));
+          base::BindPostTask(
+              sequenced_task_runner_,
+              base::BindRepeating(&FakeMissiveClient::EnqueueRecord,
+                                  weak_ptr_factory_.GetWeakPtr())),
+          base::BindPostTask(
+              sequenced_task_runner_,
+              base::BindRepeating(&FakeMissiveClient::Flush,
+                                  weak_ptr_factory_.GetWeakPtr())),
+          base::BindPostTask(
+              sequenced_task_runner_,
+              base::BindRepeating(&FakeMissiveClient::ReportSuccess,
+                                  weak_ptr_factory_.GetWeakPtr())),
+          base::BindPostTask(
+              sequenced_task_runner_,
+              base::BindRepeating(&FakeMissiveClient::UpdateEncryptionKey,
+                                  weak_ptr_factory_.GetWeakPtr())));
   missive_storage_module_ =
       MissiveStorageModule::Create(std::move(missive_storage_module_delegate));
 }

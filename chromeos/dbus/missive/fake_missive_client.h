@@ -39,6 +39,10 @@ class FakeMissiveClient : public MissiveClient {
   void UpdateEncryptionKey(
       const reporting::SignedEncryptionInfo& encryption_info);
 
+  // Sequenced task runner - must be first member of the class.
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+
+  // Weak pointer factory - must be last member of the class.
   base::WeakPtrFactory<FakeMissiveClient> weak_ptr_factory_{this};
 };
 
