@@ -17,8 +17,6 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.annotations.RemovableInRelease;
-
 /**
  * Implementation of BitmapDrawable that allows to tint the color of the drawable for all
  * bitmap drawable states.
@@ -91,7 +89,6 @@ public class TintedDrawable extends BitmapDrawable {
      * @return True iff the loaded resource is either a {@link VectorDrawableCompat} or
      * a {@link VectorDrawable}. The latter is only checked for Android L and later.
      */
-    @RemovableInRelease
     private static boolean isVectorDrawable(Context context, @DrawableRes int drawableId) {
         Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
         return drawable instanceof VectorDrawableCompat || drawable instanceof VectorDrawable;

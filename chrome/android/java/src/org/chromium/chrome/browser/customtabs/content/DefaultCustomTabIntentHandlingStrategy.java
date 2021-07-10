@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import android.text.TextUtils;
 
-import org.chromium.base.annotations.RemovableInRelease;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
@@ -56,10 +57,10 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         }
     }
 
-    @RemovableInRelease
     // TODO(yfriedman): Remove & inline once CustomTabs junit tests can be created from a provided
     // GURL. This depends on switching *IntentDataProvider over to GURL.
     // https://crbug.com/783819
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public GURL getGurlForUrl(String url) {
         // TODO(mthiesse): As this is user-provided it should be going through UrlFormatter.fixupUrl
         return new GURL(url);

@@ -18,7 +18,6 @@ import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.Function;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chromecast.base.Controller;
 import org.chromium.chromecast.base.Observable;
 import org.chromium.chromecast.base.Observers;
@@ -99,12 +98,10 @@ public class CastWebContentsService extends Service {
         return mMediaSessionGetter.apply(webContents);
     }
 
-    @RemovableInRelease
     Observable<WebContents> observeWebContentsStateForTesting() {
         return mWebContentsState;
     }
 
-    @RemovableInRelease
     void setMediaSessionImplGetterForTesting(Function<WebContents, MediaSessionImpl> getter) {
         mMediaSessionGetter = getter;
     }
