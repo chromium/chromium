@@ -734,7 +734,7 @@ void WaitForMultipleFullscreenEvents(
 // - fullscreen CSS is applied correctly in both frames.
 //
 #if defined(OS_MAC)
-// https://crbug.com/845389
+// https://crbug.com/850594
 #define MAYBE_FullscreenElementInSubframe DISABLED_FullscreenElementInSubframe
 #else
 #define MAYBE_FullscreenElementInSubframe FullscreenElementInSubframe

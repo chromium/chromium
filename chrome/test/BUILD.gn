@@ -3611,10 +3611,6 @@ if (!is_android) {
         "../browser/ui/cocoa/touchbar/browser_window_touch_bar_controller_browsertest.mm",
         "../browser/ui/views/frame/browser_non_client_frame_view_mac_browsertest.mm",
         "../common/profiler/thread_profiler_browsertest.cc",
-
-        # TODO(crbug/845389): Re-Enable the following, which were temporarily
-        # omitted from the build, but are still in use.
-        # "../browser/ui/cocoa/page_info/page_info_bubble_views_mac_browsertest.mm",
       ]
       sources -= [
         # TODO(groby): This test depends on hunspell and we cannot run it on

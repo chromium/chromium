@@ -1187,7 +1187,6 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, RestartSearchFromF3) {
 // The only exception is if there is a global pasteboard (for example on Mac).
 // http://crbug.com/30006
 #if defined(OS_MAC)
-// https://crbug.com/845389
 #define MAYBE_PreferPreviousSearch DISABLED_PreferPreviousSearch
 #else
 #define MAYBE_PreferPreviousSearch PreferPreviousSearch

@@ -1,6 +1,0 @@
-# Please use Cocoa OWNERS for macOS code LGTM
-file://chrome/browser/ui/cocoa/OWNERS
-
-# Security team owners
-estark@chromium.org
-meacer@chromium.org
