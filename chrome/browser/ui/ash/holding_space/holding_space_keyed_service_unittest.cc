@@ -590,7 +590,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
   EXPECT_EQ(primary_holding_space_model,
             primary_holding_space_service->model_for_testing());
 
-  base::ListValue persisted_holding_space_items;
+  base::Value persisted_holding_space_items(base::Value::Type::LIST);
 
   // Verify persistent storage is updated when adding each type of item.
   for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -662,7 +662,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
   auto* finalized_holding_space_item_ptr = finalized_holding_space_item.get();
   holding_space_model->AddItem(std::move(finalized_holding_space_item));
 
-  base::ListValue persisted_holding_space_items;
+  base::Value persisted_holding_space_items(base::Value::Type::LIST);
   persisted_holding_space_items.Append(
       finalized_holding_space_item_ptr->Serialize());
 
@@ -747,8 +747,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
 
   ASSERT_EQ(persisted_holding_space_items.GetList().size(), 2u);
   persisted_holding_space_items.Insert(
-      1u, base::Value::ToUniquePtrValue(
-              in_progress_holding_space_item_ptr->Serialize()));
+      persisted_holding_space_items.GetList().begin() + 1u,
+      in_progress_holding_space_item_ptr->Serialize());
 
   EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
@@ -776,7 +776,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
       file_manager::util::GetFileManagerFileSystemContext(GetProfile());
   ASSERT_TRUE(context);
 
-  base::ListValue persisted_holding_space_items;
+  base::Value persisted_holding_space_items(base::Value::Type::LIST);
 
   // Verify persistent storage is updated when adding each type of item.
   for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -908,7 +908,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
   };
   std::map<HoldingSpaceItem::Type, TestCase> test_config;
 
-  base::ListValue persisted_holding_space_items;
+  base::Value persisted_holding_space_items(base::Value::Type::LIST);
 
   // Configure holding space state for the test. For each item adds two holding
   // space items to the model - "src" and "dst" (during the test, the src item's
@@ -945,7 +945,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items);
 
-  base::ListValue final_persisted_holding_space_items;
+  base::Value final_persisted_holding_space_items(base::Value::Type::LIST);
   // Runs the test logic.
   for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
     const TestCase& test_case = test_config[type];
@@ -1024,13 +1024,14 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
 
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::ListValue persisted_holding_space_items_after_restoration;
+  base::Value persisted_holding_space_items_after_restoration(
+      base::Value::Type::LIST);
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        auto persisted_holding_space_items_before_restoration =
-            std::make_unique<base::ListValue>();
+        base::Value persisted_holding_space_items_before_restoration(
+            base::Value::Type::LIST);
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1044,7 +1045,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
                                  primary_holding_space_service
                                      ->thumbnail_loader_for_testing()));
 
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
 
           // We expect the `fresh_holding_space_item` to still be in persistence
@@ -1067,13 +1068,14 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
           // NOTE: While the `stale_holding_space_item` is persisted here, we do
           // *not* expect it to be restored or to be persisted after model
           // restoration since its backing file does *not* exist.
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               stale_holding_space_item->Serialize());
         }
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::move(persisted_holding_space_items_before_restoration),
+            base::Value::ToUniquePtrValue(
+                std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
 
@@ -1127,14 +1129,16 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
   std::vector<std::string> initialized_items_before_delayed_mount;
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::ListValue persisted_holding_space_items_after_restoration;
-  base::ListValue persisted_holding_space_items_after_delayed_mount;
+  base::Value persisted_holding_space_items_after_restoration(
+      base::Value::Type::LIST);
+  base::Value persisted_holding_space_items_after_delayed_mount(
+      base::Value::Type::LIST);
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        auto persisted_holding_space_items_before_restoration =
-            std::make_unique<base::ListValue>();
+        base::Value persisted_holding_space_items_before_restoration(
+            base::Value::Type::LIST);
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1146,7 +1150,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
                   base::BindOnce(&CreateTestHoldingSpaceImage));
           // The item should be restored after delayed volume mount, and remain
           // in persistent storage.
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               delayed_holding_space_item->Serialize());
           persisted_holding_space_items_after_restoration.Append(
               delayed_holding_space_item->Serialize());
@@ -1165,7 +1169,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           // after delayed volume mount (when it can be confirmed the backing
           // file does not exist) - the item should remain in persistent storage
           // until the associated volume is mounted.
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               non_existant_delayed_holding_space_item->Serialize());
           persisted_holding_space_items_after_restoration.Append(
               non_existant_delayed_holding_space_item->Serialize());
@@ -1181,7 +1185,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
           // The item should be immediately added to the model, and remain in
           // the persistent storage.
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
           initialized_items_before_delayed_mount.push_back(
               fresh_holding_space_item->id());
@@ -1195,7 +1199,8 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::move(persisted_holding_space_items_before_restoration),
+            base::Value::ToUniquePtrValue(
+                std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
 
@@ -1283,13 +1288,14 @@ TEST_F(HoldingSpaceKeyedServiceTest,
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
 
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::ListValue persisted_holding_space_items_after_delayed_mount;
+  base::Value persisted_holding_space_items_after_delayed_mount(
+      base::Value::Type::LIST);
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        auto persisted_holding_space_items_before_restoration =
-            std::make_unique<base::ListValue>();
+        base::Value persisted_holding_space_items_before_restoration(
+            base::Value::Type::LIST);
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1301,7 +1307,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
                   base::BindOnce(&CreateTestHoldingSpaceImage));
           // The item should be restored after delayed volume mount, and remain
           // in persistent storage.
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               delayed_holding_space_item->Serialize());
           persisted_holding_space_items_after_delayed_mount.Append(
               delayed_holding_space_item->Serialize());
@@ -1318,7 +1324,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           // after delayed volume mount (when it can be confirmed the backing
           // file does not exist) - the item should remain in persistent storage
           // until the associated volume is mounted.
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               non_existant_delayed_holding_space_item->Serialize());
 
           const base::FilePath file = downloads_mount->CreateArbitraryFile();
@@ -1332,7 +1338,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
           // The item should be immediately added to the model, and remain in
           // the persistent storage.
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
           persisted_holding_space_items_after_delayed_mount.Append(
               fresh_holding_space_item->Serialize());
@@ -1342,7 +1348,8 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::move(persisted_holding_space_items_before_restoration),
+            base::Value::ToUniquePtrValue(
+                std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
 
@@ -1412,14 +1419,16 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
   std::vector<std::string> initialized_items_before_delayed_mount;
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::ListValue persisted_holding_space_items_after_restoration;
-  base::ListValue persisted_holding_space_items_after_delayed_mount;
+  base::Value persisted_holding_space_items_after_restoration(
+      base::Value::Type::LIST);
+  base::Value persisted_holding_space_items_after_delayed_mount(
+      base::Value::Type::LIST);
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        auto persisted_holding_space_items_before_restoration =
-            std::make_unique<base::ListValue>();
+        base::Value persisted_holding_space_items_before_restoration(
+            base::Value::Type::LIST);
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1434,7 +1443,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
           // The item should be immediately added to the model, and remain in
           // the persistent storage.
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
           initialized_items_before_delayed_mount.push_back(
               fresh_holding_space_item->id());
@@ -1448,7 +1457,8 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::move(persisted_holding_space_items_before_restoration),
+            base::Value::ToUniquePtrValue(
+                std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
 
@@ -1569,13 +1579,14 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
 
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::ListValue persisted_holding_space_items_after_restoration;
+  base::Value persisted_holding_space_items_after_restoration(
+      base::Value::Type::LIST);
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        auto persisted_holding_space_items_before_restoration =
-            std::make_unique<base::ListValue>();
+        base::Value persisted_holding_space_items_before_restoration(
+            base::Value::Type::LIST);
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1589,7 +1600,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
                                  primary_holding_space_service
                                      ->thumbnail_loader_for_testing()));
 
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
 
           // Only pinned files are exempt from age checks. In this test, we
@@ -1614,13 +1625,14 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
           // NOTE: While the `stale_holding_space_item` is persisted here, we do
           // *not* expect it to be restored or to be persisted after model
           // restoration since its backing file does *not* exist.
-          persisted_holding_space_items_before_restoration->Append(
+          persisted_holding_space_items_before_restoration.Append(
               stale_holding_space_item->Serialize());
         }
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::move(persisted_holding_space_items_before_restoration),
+            base::Value::ToUniquePtrValue(
+                std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
 
