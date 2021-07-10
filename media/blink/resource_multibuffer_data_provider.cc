@@ -273,6 +273,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   // successful (in particular range request). So we only verify the partial
   // response for HTTP and HTTPS protocol.
   if (destination_url_data->url().SchemeIsHTTPOrHTTPS()) {
+    recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #1");
+
     bool partial_response = (response.HttpStatusCode() == kHttpPartialContent);
     bool ok_response = (response.HttpStatusCode() == kHttpOK);
 
@@ -287,11 +289,13 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     // without advertising "Accept-Ranges: bytes".
     if (partial_response &&
         VerifyPartialResponse(response, destination_url_data)) {
+      recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #2");
       destination_url_data->set_range_supported();
     } else if (ok_response) {
       // We accept a 200 response for a Range:0- request, trusting the
       // Accept-Ranges header, because Apache thinks that's a reasonable thing
       // to return.
+      recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #3");
       destination_url_data->set_length(content_length);
       bytes_to_discard_ = byte_pos();
     } else if (response.HttpStatusCode() == kHttpRangeNotSatisfiable) {
@@ -300,6 +304,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
       // if we do, let's handle it in a sane way.
       // Note, we can't just call OnDataProviderEvent() here, because
       // url_data_ hasn't been updated to the final destination yet.
+      recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #4");
       end_of_file = true;
     } else {
       recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #5");
