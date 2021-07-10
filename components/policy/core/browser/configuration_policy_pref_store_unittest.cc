@@ -56,17 +56,17 @@ TEST_F(ConfigurationPolicyPrefStoreListTest, GetDefault) {
 }
 
 TEST_F(ConfigurationPolicyPrefStoreListTest, SetValue) {
-  std::unique_ptr<base::ListValue> in_value(new base::ListValue());
-  in_value->AppendString("test1");
-  in_value->AppendString("test2,");
+  base::Value in_value(base::Value::Type::LIST);
+  in_value.Append("test1");
+  in_value.Append("test2,");
   PolicyMap policy;
   policy.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-             POLICY_SOURCE_CLOUD, in_value->Clone(), nullptr);
+             POLICY_SOURCE_CLOUD, in_value.Clone(), nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(in_value->Equals(value));
+  EXPECT_EQ(in_value, *value);
 }
 
 // Test cases for string-valued policy settings.

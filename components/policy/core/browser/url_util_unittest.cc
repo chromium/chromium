@@ -79,10 +79,10 @@ bool MatchFilters(const std::vector<std::string>& patterns,
                   const std::string& url) {
   // Add the pattern to the matcher.
   url_matcher::URLMatcher matcher;
-  auto list = std::make_unique<base::ListValue>();
+  base::Value list(base::Value::Type::LIST);
   for (const auto& pattern : patterns)
-    list->AppendString(pattern);
-  AddAllowFilters(&matcher, list.get());
+    list.Append(pattern);
+  AddAllowFilters(&matcher, &base::Value::AsListValue(list));
   return !matcher.MatchURL(GURL(url)).empty();
 }
 
