@@ -51,12 +51,6 @@ void WebrtcDataStreamAdapter::Start(EventHandler* event_handler) {
 
 void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
                                    base::OnceClosure done) {
-  // This shouldn't DCHECK in the CLOSED case, because the connection may be
-  // abruptly closed at any time and the caller may not have been notified, yet.
-  // The message will still be enqueued so that the outstanding done callbacks
-  // are dropped at the expected time in the expected order.
-  DCHECK(state_ != State::CONNECTING);
-
   rtc::CopyOnWriteBuffer buffer;
   buffer.SetSize(message->ByteSize());
   message->SerializeWithCachedSizesToArray(buffer.MutableData());
