@@ -4,11 +4,13 @@
 
 #include "chrome/services/sharing/nearby/nearby_connections.h"
 
+#include <algorithm>
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/platform/input_file.h"
@@ -468,8 +470,20 @@ void NearbyConnections::RequestConnection(
     mojom::ConnectionOptionsPtr options,
     mojo::PendingRemote<mojom::ConnectionLifecycleListener> listener,
     RequestConnectionCallback callback) {
+  int keep_alive_interval_millis =
+      options->keep_alive_interval
+          ? options->keep_alive_interval->InMilliseconds()
+          : 0;
+  int keep_alive_timeout_millis =
+      options->keep_alive_timeout
+          ? options->keep_alive_timeout->InMilliseconds()
+          : 0;
+
   ConnectionOptions connection_options{
-      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get())};
+      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
+      .keep_alive_interval_millis = std::max(keep_alive_interval_millis, 0),
+      .keep_alive_timeout_millis = std::max(keep_alive_timeout_millis, 0),
+  };
   if (options->remote_bluetooth_mac_address) {
     connection_options.remote_bluetooth_mac_address =
         ByteArrayFromMojom(*options->remote_bluetooth_mac_address);

@@ -6,6 +6,7 @@ module location.nearby.connections.mojom;
 
 import "device/bluetooth/public/mojom/uuid.mojom";
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Generic result status of NearbyConnections API calls. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
@@ -173,6 +174,14 @@ struct ConnectionOptions {
   MediumSelection allowed_mediums;
   // Bluetooth MAC address of remote device in byte format.
   array<uint8, 6>? remote_bluetooth_mac_address;
+  // How often to send a keep alive message on the channel. An unspecified or
+  // negative value will result in the Nearby Connections default of 5 seconds
+  // being used.
+  mojo_base.mojom.TimeDelta? keep_alive_interval;
+  // The connection will time out if no message is received on the channel
+  // for this length of time. An unspecified or negative value will result in
+  // the Nearby Connections default of 30 seconds being used.
+  mojo_base.mojom.TimeDelta? keep_alive_timeout;
 };
 
 // A simple payload containing raw bytes.

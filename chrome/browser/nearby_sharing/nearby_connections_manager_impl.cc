@@ -261,7 +261,9 @@ void NearbyConnectionsManagerImpl::Connect(
   process_reference_->GetNearbyConnections()->RequestConnection(
       kServiceId, endpoint_info, endpoint_id,
       ConnectionOptions::New(std::move(allowed_mediums),
-                             std::move(bluetooth_mac_address)),
+                             std::move(bluetooth_mac_address),
+                             /*keep_alive_interval_millis=*/absl::nullopt,
+                             /*keep_alive_timeout_millis=*/absl::nullopt),
       std::move(lifecycle_listener),
       base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionRequested,
                      weak_ptr_factory_.GetWeakPtr(), endpoint_id));
