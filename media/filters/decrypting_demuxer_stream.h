@@ -18,6 +18,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/waiting.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -65,6 +66,9 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   Liveness liveness() const override;
   void EnableBitstreamConverter() override;
   bool SupportsConfigChanges() override;
+
+  // Returns whether the stream has clear lead.
+  bool HasClearLead() const;
 
  private:
   // See this link for a detailed state diagram: http://shortn/_1nXgoVIrps
@@ -164,6 +168,8 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   VideoDecoderConfig video_config_;
 
   Decryptor* decryptor_ = nullptr;
+
+  absl::optional<bool> has_clear_lead_;
 
   // The buffer returned by the demuxer that needs to be decrypted.
   scoped_refptr<media::DecoderBuffer> pending_buffer_to_decrypt_;

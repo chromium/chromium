@@ -776,7 +776,7 @@ TEST_F(VideoRendererImplTest, RenderingStartedThenStopped) {
     EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
         .WillOnce(RunOnceClosure(event.GetClosure()));
     EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_))
-        .Times(4)
+        .Times(5)
         .WillRepeatedly(SaveArg<0>(&last_pipeline_statistics));
     EXPECT_CALL(mock_cb_, FrameReceived(HasTimestampMatcher(0)));
     EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
@@ -1457,7 +1457,7 @@ TEST_F(VideoRendererLatencyHintTest, HaveEnough_LowLatencyHint) {
 
   // Initial frames should trigger various callbacks.
   EXPECT_CALL(mock_cb_, FrameReceived(HasTimestampMatcher(0)));
-  EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(1);
+  EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(2);
   EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
   EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _));

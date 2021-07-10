@@ -62,7 +62,48 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
     }
 
     NOTREACHED();
-    *output = static_cast<::media::CdmSessionClosedReason>(input);
+    return false;
+  }
+};
+
+template <>
+struct EnumTraits<media::mojom::EncryptionType, ::media::EncryptionType> {
+  static media::mojom::EncryptionType ToMojom(::media::EncryptionType input) {
+    switch (input) {
+      case ::media::EncryptionType::kNone:
+        return media::mojom::EncryptionType::kNone;
+      case ::media::EncryptionType::kClear:
+        return media::mojom::EncryptionType::kClear;
+      case ::media::EncryptionType::kEncrypted:
+        return media::mojom::EncryptionType::kEncrypted;
+      case ::media::EncryptionType::kEncryptedWithClearLead:
+        return media::mojom::EncryptionType::kEncryptedWithClearLead;
+    }
+
+    NOTREACHED();
+    return static_cast<media::mojom::EncryptionType>(input);
+  }
+
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::mojom::EncryptionType input,
+                        ::media::EncryptionType* output) {
+    switch (input) {
+      case media::mojom::EncryptionType::kNone:
+        *output = ::media::EncryptionType::kNone;
+        return true;
+      case media::mojom::EncryptionType::kClear:
+        *output = ::media::EncryptionType::kClear;
+        return true;
+      case media::mojom::EncryptionType::kEncrypted:
+        *output = ::media::EncryptionType::kEncrypted;
+        return true;
+      case media::mojom::EncryptionType::kEncryptedWithClearLead:
+        *output = ::media::EncryptionType::kEncryptedWithClearLead;
+        return true;
+    }
+
+    NOTREACHED();
     return false;
   }
 };
@@ -105,8 +146,7 @@ struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
     }
 
     NOTREACHED();
-    *output = static_cast<::media::VideoRotation>(input);
-    return true;
+    return false;
   }
 };
 
@@ -140,7 +180,6 @@ struct EnumTraits<media::mojom::CopyMode,
     }
 
     NOTREACHED();
-    *output = static_cast<::media::VideoFrameMetadata::CopyMode>(input);
     return false;
   }
 };
@@ -213,7 +252,6 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
     }
 
     NOTREACHED();
-    *output = static_cast<::media::RendererType>(input);
     return false;
   }
 };

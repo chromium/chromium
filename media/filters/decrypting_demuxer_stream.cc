@@ -146,6 +146,10 @@ bool DecryptingDemuxerStream::SupportsConfigChanges() {
   return demuxer_stream_->SupportsConfigChanges();
 }
 
+bool DecryptingDemuxerStream::HasClearLead() const {
+  return has_clear_lead_.value_or(false);
+}
+
 DecryptingDemuxerStream::~DecryptingDemuxerStream() {
   DVLOG(2) << __func__ << " : state_ = " << state_;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -221,6 +225,11 @@ void DecryptingDemuxerStream::OnBufferReadFromDemuxerStream(
     state_ = kIdle;
     std::move(read_cb_).Run(kOk, std::move(buffer));
     return;
+  }
+
+  // One time set of `has_clear_lead_`.
+  if (!has_clear_lead_.has_value()) {
+    has_clear_lead_ = !buffer->decrypt_config();
   }
 
   if (!buffer->decrypt_config()) {

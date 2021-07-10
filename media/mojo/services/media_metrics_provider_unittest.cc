@@ -128,6 +128,10 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
   provider_->SetIsEME();
   provider_->SetKeySystem(kClearKeyKeySystem);
   provider_->SetIsHardwareSecure();
+  provider_->SetAudioPipelineInfo(
+      {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
+  provider_->SetVideoPipelineInfo(
+      {false, false, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
   provider_->SetTimeToMetadata(kMetadataTime);
   provider_->SetTimeToFirstFrame(kFirstFrameTime);
   provider_->SetTimeToPlayReady(kPlayReadyTime);
@@ -147,6 +151,10 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
       EXPECT_UKM(UkmEntry::kIsEMEName, true);
       EXPECT_UKM(UkmEntry::kKeySystemName, 1);
       EXPECT_UKM(UkmEntry::kIsHardwareSecureName, true);
+      EXPECT_UKM(UkmEntry::kAudioEncryptionTypeName,
+                 static_cast<int64_t>(EncryptionType::kClear));
+      EXPECT_UKM(UkmEntry::kVideoEncryptionTypeName,
+                 static_cast<int64_t>(EncryptionType::kEncrypted));
       EXPECT_UKM(UkmEntry::kIsMSEName, false);
       EXPECT_UKM(UkmEntry::kURLSchemeName,
                  static_cast<int64_t>(mojom::MediaURLScheme::kHttps));
@@ -201,8 +209,10 @@ TEST_F(MediaMetricsProviderTest, TestUkmMediaStream) {
 TEST_F(MediaMetricsProviderTest, TestPipelineUMA) {
   base::HistogramTester histogram_tester;
   Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
-  provider_->SetAudioPipelineInfo({false, false, AudioDecoderType::kMojo});
-  provider_->SetVideoPipelineInfo({false, false, VideoDecoderType::kMojo});
+  provider_->SetAudioPipelineInfo(
+      {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
+  provider_->SetVideoPipelineInfo(
+      {false, false, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
   provider_->SetHasAudio(AudioCodec::kCodecVorbis);
   provider_->SetHasVideo(VideoCodec::kCodecVP9);
   provider_->SetHasPlayed();
@@ -219,8 +229,10 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMAMediaStream) {
   base::HistogramTester histogram_tester;
   Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps,
              mojom::MediaStreamType::kRemote);
-  provider_->SetAudioPipelineInfo({false, false, AudioDecoderType::kMojo});
-  provider_->SetVideoPipelineInfo({false, false, VideoDecoderType::kMojo});
+  provider_->SetAudioPipelineInfo(
+      {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
+  provider_->SetVideoPipelineInfo(
+      {false, false, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
   provider_->SetHasAudio(AudioCodec::kCodecVorbis);
   provider_->SetHasVideo(VideoCodec::kCodecVP9);
   provider_->SetHasPlayed();
@@ -237,7 +249,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMANoAudioWithEme) {
   base::HistogramTester histogram_tester;
   Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
-  provider_->SetVideoPipelineInfo({true, true, VideoDecoderType::kMojo});
+  provider_->SetVideoPipelineInfo(
+      {true, true, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
   provider_->SetHasVideo(VideoCodec::kCodecAV1);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
@@ -254,8 +267,10 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMADecoderFallback) {
   base::HistogramTester histogram_tester;
   Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
-  provider_->SetAudioPipelineInfo({false, false, AudioDecoderType::kMojo});
-  provider_->SetVideoPipelineInfo({true, false, VideoDecoderType::kD3D11});
+  provider_->SetAudioPipelineInfo(
+      {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
+  provider_->SetVideoPipelineInfo(
+      {true, false, VideoDecoderType::kD3D11, EncryptionType::kEncrypted});
   provider_->SetHasVideo(VideoCodec::kCodecVP9);
   provider_->SetHasAudio(AudioCodec::kCodecVorbis);
   provider_->SetHasPlayed();

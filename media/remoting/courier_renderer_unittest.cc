@@ -53,8 +53,10 @@ PipelineStatistics DefaultStats() {
   stats.audio_memory_usage = 5678;
   stats.video_memory_usage = 6789;
   stats.video_keyframe_distance_average = base::TimeDelta::Max();
-  stats.audio_pipeline_info = {false, false, AudioDecoderType::kUnknown};
-  stats.video_pipeline_info = {false, false, VideoDecoderType::kUnknown};
+  stats.audio_pipeline_info = {false, false, AudioDecoderType::kUnknown,
+                               EncryptionType::kClear};
+  stats.video_pipeline_info = {false, false, VideoDecoderType::kUnknown,
+                               EncryptionType::kClear};
   return stats;
 }
 

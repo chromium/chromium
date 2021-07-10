@@ -222,6 +222,8 @@ class MEDIA_EXPORT DecoderStream {
   void OnPreparedOutputReady(scoped_refptr<Output> frame);
   void CompletePrepare(const Output* output);
 
+  void ReportEncryptionType(const scoped_refptr<DecoderBuffer>& buffer);
+
   std::unique_ptr<DecoderStreamTraits<StreamType>> traits_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -294,6 +296,8 @@ class MEDIA_EXPORT DecoderStream {
 
   // Timestamp after which all outputs need to be prepared.
   base::TimeDelta skip_prepare_until_timestamp_;
+
+  bool encryption_type_reported_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<DecoderStream<StreamType>> weak_factory_{this};

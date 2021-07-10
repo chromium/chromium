@@ -323,6 +323,7 @@ void ConvertProtoToPipelineStatistics(
     stats->audio_pipeline_info.is_platform_decoder =
         audio_info.is_platform_decoder();
     stats->audio_pipeline_info.has_decrypting_demuxer_stream = false;
+    stats->audio_pipeline_info.encryption_type = EncryptionType::kClear;
   }
   if (stats_message.has_video_decoder_info()) {
     auto video_info = stats_message.video_decoder_info();
@@ -331,6 +332,7 @@ void ConvertProtoToPipelineStatistics(
     stats->video_pipeline_info.is_platform_decoder =
         video_info.is_platform_decoder();
     stats->video_pipeline_info.has_decrypting_demuxer_stream = false;
+    stats->video_pipeline_info.encryption_type = EncryptionType::kClear;
   }
   if (stats_message.has_video_frame_duration_average_usec()) {
     stats->video_frame_duration_average = base::TimeDelta::FromMicroseconds(

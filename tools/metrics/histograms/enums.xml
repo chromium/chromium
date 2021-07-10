@@ -53207,6 +53207,13 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="CBCS"/>
 </enum>
 
+<enum name="MediaEncryptionType">
+  <int value="0" label="None"/>
+  <int value="1" label="Clear"/>
+  <int value="2" label="Encrypted"/>
+  <int value="3" label="Encrypted With Clear Lead"/>
+</enum>
+
 <enum name="MediaEngagementClearReason">
   <obsolete>
     Deprecated 07/2019 as no longer needed.

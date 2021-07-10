@@ -9042,6 +9042,12 @@ be describing additional metrics about the same event.
     Final state of WebMediaPlayerImpl instance. Records only immutable playback
     properties. Contains a PlaybackID which links to Media.BasicPlayback events.
   </summary>
+  <metric name="AudioEncryptionType" enum="MediaEncryptionType">
+    <summary>
+      Encryption type of the audio stream such as whether audio is encrypted and
+      if so whether it has clear lead.
+    </summary>
+  </metric>
   <metric name="ContainerName">
     <summary>
       media::container_names::MediaContainerName enum value. Only recorded for
@@ -9123,6 +9129,12 @@ be describing additional metrics about the same event.
       media::mojom::MediaURLScheme enum value. Only recorded for !IsMSE src=URL
       playbacks, this is the scheme of that URL; E.g., http, https, filesystem,
       etc.
+    </summary>
+  </metric>
+  <metric name="VideoEncryptionType" enum="MediaEncryptionType">
+    <summary>
+      Encryption type of the video stream such as whether video is encrypted and
+      if so whether it has clear lead.
     </summary>
   </metric>
 </event>

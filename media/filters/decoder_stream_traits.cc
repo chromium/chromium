@@ -46,6 +46,11 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::SetIsDecryptingDemuxerStream(
   stats_.audio_pipeline_info.has_decrypting_demuxer_stream = is_dds;
 }
 
+void DecoderStreamTraits<DemuxerStream::AUDIO>::SetEncryptionType(
+    EncryptionType encryption_type) {
+  stats_.audio_pipeline_info.encryption_type = encryption_type;
+}
+
 DecoderStreamTraits<DemuxerStream::AUDIO>::DecoderStreamTraits(
     MediaLog* media_log,
     ChannelLayout initial_hw_layout)
@@ -161,6 +166,11 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::SetIsPlatformDecoder(
 void DecoderStreamTraits<DemuxerStream::VIDEO>::SetIsDecryptingDemuxerStream(
     bool is_dds) {
   stats_.video_pipeline_info.has_decrypting_demuxer_stream = is_dds;
+}
+
+void DecoderStreamTraits<DemuxerStream::VIDEO>::SetEncryptionType(
+    EncryptionType encryption_type) {
+  stats_.video_pipeline_info.encryption_type = encryption_type;
 }
 
 DecoderStreamTraits<DemuxerStream::VIDEO>::DecoderStreamTraits(

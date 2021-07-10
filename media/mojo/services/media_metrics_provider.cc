@@ -76,6 +76,10 @@ MediaMetricsProvider::~MediaMetricsProvider() {
   builder.SetRendererType(static_cast<int>(renderer_type_));
   builder.SetKeySystem(GetKeySystemIntForUKM(key_system_));
   builder.SetIsHardwareSecure(is_hardware_secure_);
+  builder.SetAudioEncryptionType(
+      static_cast<int>(uma_info_.audio_pipeline_info.encryption_type));
+  builder.SetVideoEncryptionType(
+      static_cast<int>(uma_info_.video_pipeline_info.encryption_type));
   builder.SetFinalPipelineStatus(uma_info_.last_pipeline_status);
   if (!is_mse_) {
     builder.SetURLScheme(static_cast<int64_t>(url_scheme_));

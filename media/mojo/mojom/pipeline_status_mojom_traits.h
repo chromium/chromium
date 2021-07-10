@@ -61,12 +61,18 @@ struct StructTraits<media::mojom::AudioPipelineInfoDataView,
     return input.has_decrypting_demuxer_stream;
   }
 
+  static media::EncryptionType encryption_type(
+      const media::AudioPipelineInfo& input) {
+    return input.encryption_type;
+  }
+
   static bool Read(media::mojom::AudioPipelineInfoDataView data,
                    media::AudioPipelineInfo* output) {
     output->is_platform_decoder = data.is_platform_decoder();
     output->has_decrypting_demuxer_stream =
         data.has_decrypting_demuxer_stream();
-    return data.ReadDecoderType(&output->decoder_type);
+    return data.ReadEncryptionType(&output->encryption_type) &&
+           data.ReadDecoderType(&output->decoder_type);
   }
 };
 
@@ -87,12 +93,18 @@ struct StructTraits<media::mojom::VideoPipelineInfoDataView,
     return input.has_decrypting_demuxer_stream;
   }
 
+  static media::EncryptionType encryption_type(
+      const media::VideoPipelineInfo& input) {
+    return input.encryption_type;
+  }
+
   static bool Read(media::mojom::VideoPipelineInfoDataView data,
                    media::VideoPipelineInfo* output) {
     output->is_platform_decoder = data.is_platform_decoder();
     output->has_decrypting_demuxer_stream =
         data.has_decrypting_demuxer_stream();
-    return data.ReadDecoderType(&output->decoder_type);
+    return data.ReadEncryptionType(&output->encryption_type) &&
+           data.ReadDecoderType(&output->decoder_type);
   }
 };
 

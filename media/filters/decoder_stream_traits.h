@@ -58,6 +58,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
   void ReportStatistics(const StatisticsCB& statistics_cb, int bytes_decoded);
   void SetIsPlatformDecoder(bool is_platform_decoder);
   void SetIsDecryptingDemuxerStream(bool is_dds);
+  void SetEncryptionType(EncryptionType decryption_type);
   void InitializeDecoder(DecoderType* decoder,
                          const DecoderConfigType& config,
                          bool low_delay,
@@ -116,6 +117,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
   void ReportStatistics(const StatisticsCB& statistics_cb, int bytes_decoded);
   void SetIsPlatformDecoder(bool is_platform_decoder);
   void SetIsDecryptingDemuxerStream(bool is_dds);
+  void SetEncryptionType(EncryptionType decryption_type);
   void InitializeDecoder(DecoderType* decoder,
                          const DecoderConfigType& config,
                          bool low_delay,

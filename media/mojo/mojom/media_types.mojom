@@ -130,6 +130,14 @@ struct EncryptionPattern {
 [Native]
 enum EncryptionScheme;
 
+// See media::EncryptionType for descriptions.
+enum EncryptionType {
+  kNone,
+  kClear,
+  kEncrypted,
+  kEncryptedWithClearLead,
+};
+
 // This defines a mojo transport format for media::VideoColorSpace.
 // See media/base/video_color_space.h for description.
 struct VideoColorSpace {
@@ -450,6 +458,7 @@ struct AudioPipelineInfo {
   AudioDecoderType decoder_type;
   bool is_platform_decoder = false;
   bool has_decrypting_demuxer_stream = false;
+  EncryptionType encryption_type;
 };
 
 // See media/base/pipeline_status.h for descriptions.
@@ -457,6 +466,7 @@ struct VideoPipelineInfo {
   VideoDecoderType decoder_type;
   bool is_platform_decoder = false;
   bool has_decrypting_demuxer_stream = false;
+  EncryptionType encryption_type;
 };
 
 // See media/base/status.h for descriptions.

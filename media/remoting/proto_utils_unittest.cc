@@ -127,9 +127,11 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
   original.video_keyframe_distance_average = base::TimeDelta::Max();
   original.video_frame_duration_average = base::TimeDelta::Max();
   original.audio_pipeline_info = {false, false,
-                                  media::AudioDecoderType::kUnknown};
+                                  media::AudioDecoderType::kUnknown,
+                                  media::EncryptionType::kClear};
   original.video_pipeline_info = {false, false,
-                                  media::VideoDecoderType::kUnknown};
+                                  media::VideoDecoderType::kUnknown,
+                                  media::EncryptionType::kClear};
 
   // There is no convert-to-proto function, so just do that here.
   openscreen::cast::PipelineStatistics pb_stats;

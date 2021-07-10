@@ -83,11 +83,29 @@ MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, PipelineStatus status);
 using PipelineStatusCB = base::RepeatingCallback<void(PipelineStatus)>;
 using PipelineStatusCallback = base::OnceCallback<void(PipelineStatus)>;
 
+// Information on how an audio/video stream is encrypted.
+// Warning: Reported to UKM. Do not reuse or change existing values.
+// Note: A stream can be marked as clear (unencrypted) or encrypted in the
+// config. In a clear stream, all buffers must be clear. In an encrypted stream,
+// buffers can be clear or encrypted. The term "clear lead" generally indicates
+// the case where an encrypted stream starts with one or more clear buffers. In
+// implementation, since a playback can start from the middle of a stream, the
+// playback may not hit clear lead even if the stream has clear lead, so it'll
+// be reported as `kEncrypted`, which is okay for metrics' purpose.
+enum class EncryptionType {
+  kNone = 0,                    // No corresponding audio/video stream
+  kClear = 1,                   // Stream is clear (not encrypted)
+  kEncrypted = 2,               // Stream is encrypted without clear lead
+  kEncryptedWithClearLead = 3,  // Stream is encrypted but has clear lead
+  kMaxValue = kEncryptedWithClearLead,
+};
+
 template <typename DecoderType>
 struct PipelineInfo {
   bool is_platform_decoder = false;
   bool has_decrypting_demuxer_stream = false;
   DecoderType decoder_type = DecoderType::kUnknown;
+  EncryptionType encryption_type = EncryptionType::kNone;
 };
 
 using AudioPipelineInfo = PipelineInfo<AudioDecoderType>;
@@ -99,7 +117,8 @@ MEDIA_EXPORT inline bool operator==(const PipelineInfo<DecoderType>& first,
   return first.decoder_type == second.decoder_type &&
          first.is_platform_decoder == second.is_platform_decoder &&
          first.has_decrypting_demuxer_stream ==
-             second.has_decrypting_demuxer_stream;
+             second.has_decrypting_demuxer_stream &&
+         first.encryption_type == second.encryption_type;
 }
 
 template <typename DecoderType>
@@ -115,7 +134,9 @@ MEDIA_EXPORT inline std::ostream& operator<<(
   return out << "{decoder_type:" << GetDecoderName(info.decoder_type) << ","
              << "is_platform_decoder:" << info.is_platform_decoder << ","
              << "has_decrypting_demuxer_stream:"
-             << info.has_decrypting_demuxer_stream << "}";
+             << info.has_decrypting_demuxer_stream << ","
+             << "encryption_type:" << static_cast<int>(info.encryption_type)
+             << "}";
 }
 
 struct MEDIA_EXPORT PipelineStatistics {
