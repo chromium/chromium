@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.payments.secure_payment_confirmation.PaymentCredentialEnrollmentController;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -16,22 +17,34 @@ import org.chromium.content_public.browser.WebContents;
  * controller logic, please try to make it cross-platform and share with the Desktop side.
  */
 public class PaymentCredentialEnrollmentBridgeAndroid {
+    private static PaymentCredentialEnrollmentController sSPCEnrollmentController;
+
     @CalledByNative
     private static void showDialog(WebContents webContents, String instrumentName,
             boolean isIncognito, Bitmap icon, final long responseCallback) {
-        // TODO(crbug.com/1204564): Before the UI is implemented, the enrollment request is
-        // automatically accepted.
-        PaymentCredentialEnrollmentBridgeAndroidJni.get().onResponse(responseCallback, true);
+        assert sSPCEnrollmentController == null;
+        sSPCEnrollmentController = new PaymentCredentialEnrollmentController();
+        if (!sSPCEnrollmentController.show(webContents, (accepted) -> {
+                closeDialog();
+                PaymentCredentialEnrollmentBridgeAndroidJni.get().onResponse(
+                        responseCallback, accepted);
+            }, instrumentName, icon, isIncognito)) {
+            closeDialog();
+        }
     }
 
+    // TODO(crbug.com/1227490): Remove this method from the native interface as it's not being used.
     @CalledByNative
     private static void showProcessingSpinner() {
-        // TODO(crbug.com/1204564): Implement it.
+        // SPC Enrollment UI will be covered by FIDO UI, not needed for Android implementation.
     }
 
     @CalledByNative
     private static void closeDialog() {
-        // TODO(crbug.com/1204564): Implement it.
+        if (sSPCEnrollmentController != null) {
+            sSPCEnrollmentController.hide();
+            sSPCEnrollmentController = null;
+        }
     }
 
     @NativeMethods

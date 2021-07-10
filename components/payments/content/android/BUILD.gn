@@ -182,10 +182,14 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/WebAppManifestSection.java",
     "java/src/org/chromium/components/payments/intent/IsReadyToPayServiceHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverter.java",
-    "java/src/org/chromium/components/payments/spcauthn/SecurePaymentConfirmationAuthnController.java",
-    "java/src/org/chromium/components/payments/spcauthn/SecurePaymentConfirmationAuthnProperties.java",
-    "java/src/org/chromium/components/payments/spcauthn/SecurePaymentConfirmationAuthnView.java",
-    "java/src/org/chromium/components/payments/spcauthn/SecurePaymentConfirmationAuthnViewBinder.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentController.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentProperties.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentView.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentViewBinder.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnController.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnProperties.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnView.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnViewBinder.java",
   ]
   resources_package = "org.chromium.components.payments"
   deps = [

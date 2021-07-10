@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:paddingVertical="@dimen/secure_payment_confirmation_authn_ui_drag_handle_spacing"
+        android:paddingVertical="@dimen/secure_payment_confirmation_ui_drag_handle_spacing"
         android:importantForAccessibility="no"
         android:layout_centerHorizontal="true"
         android:src="@drawable/drag_handlebar" />
@@ -27,8 +27,8 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:textDirection="locale"
-            android:paddingHorizontal="@dimen/secure_payment_confirmation_authn_ui_horizontal_padding"
-            android:paddingVertical="@dimen/secure_payment_confirmation_authn_ui_vertical_padding">
+            android:paddingHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
+            android:paddingVertical="@dimen/secure_payment_confirmation_ui_medium_padding">
 
             <!-- Shopping cart image -->
             <ImageView
@@ -44,8 +44,8 @@
                 android:layout_below="@id/secure_payment_confirmation_image"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginBottom="@dimen/secure_payment_confirmation_authn_ui_vertical_padding"
-                android:paddingVertical="@dimen/secure_payment_confirmation_authn_ui_vertical_padding"
+                android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
+                android:paddingVertical="@dimen/secure_payment_confirmation_ui_medium_padding"
                 android:layout_centerHorizontal="true"
                 android:textAppearance="@style/TextAppearance.Headline.Primary"
                 android:text="@string/secure_payment_confirmation_verify_purchase"/>
@@ -58,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="@dimen/secure_payment_confirmation_authn_ui_label_size"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+                android:layout_marginEnd="@dimen/secure_payment_confirmation_ui_medium_padding"
                 android:text="@string/secure_payment_confirmation_store_label"/>
 
             <!-- "Store" field -->
@@ -74,7 +75,7 @@
                 style="@style/HorizontalDivider"
                 android:id="@+id/store_divider"
                 android:layout_below="@id/store_label"
-                android:layout_marginVertical="@dimen/secure_payment_confirmation_authn_ui_vertical_padding"/>
+                android:layout_marginVertical="@dimen/secure_payment_confirmation_ui_medium_padding"/>
 
             <!-- "Payment" row -->
             <LinearLayout
@@ -89,20 +90,21 @@
                     android:layout_height="wrap_content"
                     android:layout_width="@dimen/secure_payment_confirmation_authn_ui_label_size"
                     android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+                    android:layout_marginEnd="@dimen/secure_payment_confirmation_ui_medium_padding"
                     android:text="@string/payment_request_payment_method_section_name"/>
 
                 <ImageView
                     android:id="@+id/payment_icon"
                     android:importantForAccessibility="no"
-                    android:layout_height="@dimen/secure_payment_confirmation_authn_ui_icon_size"
-                    android:layout_width="@dimen/secure_payment_confirmation_authn_ui_icon_size"
+                    android:layout_height="@dimen/secure_payment_confirmation_ui_medium_padding"
+                    android:layout_width="@dimen/secure_payment_confirmation_ui_medium_padding"
                     android:scaleType="centerCrop"/>
 
                 <TextView
                     android:id="@+id/payment"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:paddingHorizontal="@dimen/secure_payment_confirmation_authn_ui_payment_icon_label_spacing"
+                    android:paddingHorizontal="@dimen/secure_payment_confirmation_ui_small_padding"
                     android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
             </LinearLayout>
@@ -112,7 +114,7 @@
                 style="@style/HorizontalDivider"
                 android:id="@+id/payment_divider"
                 android:layout_below="@id/payment_row"
-                android:layout_marginVertical="@dimen/secure_payment_confirmation_authn_ui_vertical_padding"/>
+                android:layout_marginVertical="@dimen/secure_payment_confirmation_ui_medium_padding"/>
 
             <!-- "Total" label -->
             <TextView
@@ -122,6 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="@dimen/secure_payment_confirmation_authn_ui_label_size"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+                android:layout_marginEnd="@dimen/secure_payment_confirmation_ui_medium_padding"
                 android:text="@string/secure_payment_confirmation_total_label"/>
 
             <!-- "Total" field -->
@@ -148,14 +151,17 @@
                 style="@style/HorizontalDivider"
                 android:id="@+id/total_divider"
                 android:layout_below="@id/total_label"
-                android:layout_marginVertical="@dimen/secure_payment_confirmation_authn_ui_vertical_padding"/>
+                android:layout_marginVertical="@dimen/secure_payment_confirmation_ui_medium_padding"/>
 
+            <!-- TODO(crbug.com/1227823): Clean up spacing between continue and cancel buttons.-->
             <!-- "Continue" button -->
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/continue_button"
                 android:layout_below="@id/total_divider"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_button_spacing"
+                android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
                 android:text="@string/payments_continue_button"
                 style="@style/FilledButton.Flat"/>
 
@@ -165,11 +171,11 @@
                 android:layout_below="@id/continue_button"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_large_padding"
+                android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
                 android:text="@string/cancel"
                 style="@style/TextButton"/>
 
         </RelativeLayout>
-
     </ScrollView>
-
 </RelativeLayout>
