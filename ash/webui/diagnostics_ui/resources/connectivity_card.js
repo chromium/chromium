@@ -7,12 +7,12 @@ import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 import './network_info.js';
 import './routine_section.js';
-
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
-import {getNetworkType} from './diagnostics_utils.js';
+import {getNetworkState, getNetworkType} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 
@@ -84,6 +84,12 @@ Polymer({
       value: '',
     },
 
+    /** @private {string} */
+    networkState_: {
+      type: String,
+      value: '',
+    },
+
     /** @private {boolean} */
     expanded_: {
       type: Boolean,
@@ -126,6 +132,7 @@ Polymer({
    */
   onNetworkStateChanged(network) {
     this.networkType_ = getNetworkType(network.type);
+    this.networkState_ = getNetworkState(network.state);
     this.set('network', network);
   },
 
@@ -133,5 +140,16 @@ Polymer({
   getEstimateRuntimeInMinutes_() {
     // Connectivity routines will always last <= 1 minute.
     return 1;
+  },
+
+  /** @protected */
+  getNetworkCardTitle_() {
+    // TODO(michaelcheco): Map network state to an icon or localize.
+    var title = this.networkType_;
+    if (this.networkState_) {
+      title = title + ' (' + this.networkState_ + ')';
+    }
+
+    return title;
   },
 });

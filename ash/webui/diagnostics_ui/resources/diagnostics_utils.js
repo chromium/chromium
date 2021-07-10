@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {NetworkType} from './diagnostics_types.js';
+import {NetworkState, NetworkType} from './diagnostics_types.js';
 
 /**
  * Converts a KiB storage value to GiB and returns a fixed-point string
@@ -38,6 +38,29 @@ export function getNetworkType(type) {
       return 'Ethernet';
     case NetworkType.kCellular:
       return 'Cellular';
+    default:
+      assertNotReached();
+      return '';
+  }
+}
+
+/**
+ * @param {!NetworkState} state
+ * @return {string}
+ */
+export function getNetworkState(state) {
+  // TODO(michaelcheco): Add localized strings.
+  switch (state) {
+    case NetworkState.kOnline:
+      return 'Online';
+    case NetworkState.kConnected:
+      return 'Connected';
+    case NetworkState.kPortal:
+      return 'Portal';
+    case NetworkState.kConnecting:
+      return 'Connecting';
+    case NetworkState.kNotConnected:
+      return 'Not Connected';
     default:
       assertNotReached();
       return '';

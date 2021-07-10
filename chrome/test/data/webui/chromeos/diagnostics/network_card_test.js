@@ -55,10 +55,17 @@ export function networkCardTestSuite() {
     return flushTasks();
   }
 
-  test('CardTitleInitializedCorrectly', () => {
+  test('CardTitleWiFiConnectedInitializedCorrectly', () => {
     return initializeNetworkCard('wifiGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'WiFi');
+          networkCardElement.$$('#cardTitle'), 'WiFi (Connected)');
+    });
+  });
+
+  test('CardTitleEthernetOnlineInitializedCorrectly', () => {
+    return initializeNetworkCard('ethernetGuid').then(() => {
+      dx_utils.assertElementContainsText(
+          networkCardElement.$$('#cardTitle'), 'Ethernet (Online)');
     });
   });
 

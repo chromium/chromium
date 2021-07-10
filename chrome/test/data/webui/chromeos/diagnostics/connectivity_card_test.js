@@ -79,6 +79,14 @@ export function connectivityCardTestSuite() {
     return flushTasks();
   }
 
+  test('CardTitleEthernetOnlineInitializedCorrectly', () => {
+    return initializeConnectivityCard('ethernetGuid', [fakeEthernetNetwork])
+        .then(() => {
+          dx_utils.assertElementContainsText(
+              connectivityCardElement.$$('#cardTitle'), 'Ethernet (Online)');
+        });
+  });
+
   test('ConnectivityCardPopulated', () => {
     return initializeConnectivityCard('ethernetGuid', [fakeEthernetNetwork])
         .then(() => {

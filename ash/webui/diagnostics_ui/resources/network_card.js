@@ -11,7 +11,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType} from './diagnostics_types.js';
-import {getNetworkType} from './diagnostics_utils.js';
+import {getNetworkState, getNetworkType} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 /**
@@ -45,6 +45,12 @@ Polymer({
 
     /** @private {string} */
     networkType_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private {string} */
+    networkState_: {
       type: String,
       value: '',
     },
@@ -96,6 +102,7 @@ Polymer({
    */
   onNetworkStateChanged(network) {
     this.networkType_ = getNetworkType(network.type);
+    this.networkState_ = getNetworkState(network.state);
     this.showTroubleConnectingState_ = network.type === NetworkType.kEthernet;
     this.set('network', network);
   },
@@ -104,5 +111,16 @@ Polymer({
   onTroubleConnectingClicked_() {
     // TODO(michaelcheco): Add correct URL.
     window.open('https://support.google.com/chromebook?p=diagnostics_');
+  },
+
+  /** @protected */
+  getNetworkCardTitle_() {
+    // TODO(michaelcheco): Map network state to an icon or localize.
+    var title = this.networkType_;
+    if (this.networkState_) {
+      title = title + ' (' + this.networkState_ + ')';
+    }
+
+    return title;
   },
 });

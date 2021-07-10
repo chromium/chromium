@@ -30,7 +30,9 @@
         </span>
       </div>
     </template>
-  <div id="cardTitle" slot="title">[[networkType_]]</div>
+  <div id="cardTitle" slot="title">
+    [[getNetworkCardTitle_(networkType_, networkState_)]]
+  </div>
   <network-info slot="body" guid="[[guid]]" network="[[network]]">
   </network-info>
 </diagnostics-card>
