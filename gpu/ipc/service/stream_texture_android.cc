@@ -106,22 +106,22 @@ StreamTexture::StreamTexture(
           std::move(receiver),
           base::MakeRefCounted<SchedulerTaskRunner>(*channel_->scheduler(),
                                                     sequence_)) {
-  context_state_->AddContextLostObserver(this);
   channel_->AddRoute(route_id, sequence_);
-
   texture_owner_->SetFrameAvailableCallback(base::BindRepeating(
       &StreamTexture::RunCallback, base::ThreadTaskRunnerHandle::Get(),
       weak_factory_.GetWeakPtr()));
 }
 
 StreamTexture::~StreamTexture() {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+
   // |channel_| is always released before GpuChannel releases its reference to
   // this class.
   DCHECK(!channel_);
-  context_state_->RemoveContextLostObserver(this);
 }
 
 void StreamTexture::ReleaseChannel() {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   DCHECK(channel_);
   receiver_.ResetFromAnotherSequenceUnsafe();
   channel_->RemoveRoute(route_id_);
@@ -138,7 +138,9 @@ bool StreamTexture::IsUsingGpuMemory() const {
 }
 
 void StreamTexture::UpdateAndBindTexImage(GLuint service_id) {
-  UpdateTexImage(BindingsMode::kEnsureTexImageBound, service_id);
+  // UpdateTexImage happens via OnFrameAvailable callback now. So we
+  // just need to ensure that image is bound to the correct texture id.
+  EnsureBoundIfNeeded(BindingsMode::kEnsureTexImageBound, service_id);
 }
 
 bool StreamTexture::HasTextureOwner() const {
@@ -162,24 +164,13 @@ bool StreamTexture::TextureOwnerBindsTextureOnUpdate() {
   return texture_owner_->binds_texture_on_update();
 }
 
-void StreamTexture::OnContextLost() {
-  texture_owner_ = nullptr;
-}
-
 void StreamTexture::UpdateTexImage(BindingsMode bindings_mode,
                                    GLuint service_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   DCHECK(texture_owner_.get());
 
-  if (!has_pending_frame_) {
-    // Same frame can be bound multiple times to a different |service_id|. For
-    // eg: SharedImageVideo::ProduceGLTexture/ProduceSkia() and hence
-    // BeginAccess() can happen multiple times with the same frame by the time
-    // next frame is available. In those cases new service_id is generated and
-    // the frame although doesn't require any update, still needs to be bound to
-    // new service_id.
-    EnsureBoundIfNeeded(bindings_mode, service_id);
+  if (!has_pending_frame_)
     return;
-  }
 
   std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current;
   absl::optional<ScopedRestoreTextureBinding> scoped_restore_texture;
@@ -201,7 +192,6 @@ void StreamTexture::UpdateTexImage(BindingsMode bindings_mode,
     }
   }
   texture_owner_->UpdateTexImage();
-  EnsureBoundIfNeeded(bindings_mode, service_id);
   has_pending_frame_ = false;
 }
 
@@ -222,6 +212,7 @@ void StreamTexture::EnsureBoundIfNeeded(BindingsMode mode, GLuint service_id) {
 }
 
 bool StreamTexture::CopyTexImage(unsigned target) {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   if (target != GL_TEXTURE_EXTERNAL_OES)
     return false;
 
@@ -243,13 +234,16 @@ bool StreamTexture::CopyTexImage(unsigned target) {
 
   // On some devices GL_TEXTURE_BINDING_EXTERNAL_OES is not supported as
   // glGetIntegerv() parameter. In this case the value of |texture_id| will be
-  // zero and we assume that it is properly bound to TextureOwner's texture id..
-  UpdateTexImage(BindingsMode::kEnsureTexImageBound,
-                 texture_owner_->GetTextureId());
+  // zero and we assume that it is properly bound to TextureOwner's texture id.
+  // UpdateTexImage happens via OnFrameAvailable callback now. So we
+  // just need to ensure that image is bound to the correct texture id.
+  EnsureBoundIfNeeded(BindingsMode::kEnsureTexImageBound,
+                      texture_owner_->GetTextureId());
   return true;
 }
 
 void StreamTexture::OnFrameAvailable() {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   has_pending_frame_ = true;
 
   if (!client_ || !texture_owner_)
@@ -290,6 +284,7 @@ void StreamTexture::OnFrameAvailable() {
 }
 
 gfx::Size StreamTexture::GetSize() {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   return coded_size_;
 }
 
@@ -317,6 +312,7 @@ void StreamTexture::ForwardForSurfaceRequest(
 }
 
 gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   // We do not update |texture_owner_texture_|'s internal gles2::Texture's
   // size. This is because the gles2::Texture is never used directly, the
   // associated |texture_owner_texture_id_| being the only part of that
@@ -340,6 +336,7 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
 
 void StreamTexture::UpdateRotatedVisibleSize(
     const gfx::Size& rotated_visible_size) {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   DCHECK(channel_);
   bool was_empty = rotated_visible_size_.IsEmpty();
   rotated_visible_size_ = rotated_visible_size;
@@ -395,10 +392,6 @@ std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 StreamTexture::GetAHardwareBuffer() {
   DCHECK(texture_owner_);
 
-  // Using BindingsMode::kDontRestoreIfBound here since we do not want to bind
-  // the image. We just want to get the AHardwareBuffer from the latest image.
-  // Hence pass service_id as 0.
-  UpdateTexImage(BindingsMode::kDontRestoreIfBound, /*service_id=*/0);
   return texture_owner_->GetAHardwareBuffer();
 }
 

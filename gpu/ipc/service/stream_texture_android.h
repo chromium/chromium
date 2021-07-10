@@ -31,8 +31,10 @@ namespace gpu {
 class GpuChannel;
 struct Mailbox;
 
+// This class is thread safe to be used by multiple gpu threads as
+// |texture_owner_| is thread safe and all other members are only accessed on
+// gpu main thread.
 class StreamTexture : public StreamTextureSharedImageInterface,
-                      public SharedContextState::ContextLostObserver,
                       public mojom::StreamTexture {
  public:
   static scoped_refptr<StreamTexture> Create(
@@ -94,9 +96,6 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   bool RenderToOverlay() override;
   bool TextureOwnerBindsTextureOnUpdate() override;
 
-  // SharedContextState::ContextLostObserver implementation.
-  void OnContextLost() override;
-
   // Update the TextureOwner to get the latest image. Also bind the latest image
   // to the provided |service_id| if TextureOwner does not binds texture on
   // update. If |bindings_mode| is other than kEnsureTexImageBound, then
@@ -138,6 +137,10 @@ class StreamTexture : public StreamTextureSharedImageInterface,
 
   gfx::Size coded_size_;
   gfx::Rect visible_rect_;
+
+  // Bound to the thread on which StreamTexture is created. Some methods can
+  // only be called on this thread. StreamTexture is created on gpu main thread.
+  THREAD_CHECKER(gpu_main_thread_checker_);
 
   base::WeakPtrFactory<StreamTexture> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(StreamTexture);

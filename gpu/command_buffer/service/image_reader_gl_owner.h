@@ -44,9 +44,15 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
   bool GetCodedSizeAndVisibleRect(gfx::Size rotated_visible_size,
                                   gfx::Size* coded_size,
                                   gfx::Rect* visible_rect) override;
+
+  // This method is never called in MediaPlayer path. Hence removing thread
+  // safety analysis until thread safety is implemented in MCVD path.
   void RunWhenBufferIsAvailable(base::OnceClosure callback) override;
 
-  const AImageReader* image_reader_for_testing() const { return image_reader_; }
+  const AImageReader* image_reader_for_testing() const
+      NO_THREAD_SAFETY_ANALYSIS {
+    return image_reader_;
+  }
   int32_t max_images_for_testing() const { return max_images_; }
 
  protected:
@@ -87,19 +93,26 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
   // Registers and releases a ref on the image. Once the ref-count for an image
   // goes to 0, it is released back to the AImageReader with an optional release
   // fence if needed.
-  void RegisterRefOnImage(AImage* image);
+  void RegisterRefOnImageLocked(AImage* image);
+  void ReleaseRefOnImageLocked(AImage* image, base::ScopedFD fence_fd);
+
+  // This method acquires |lock_| and calls ReleaseRefOnImageLocked().
   void ReleaseRefOnImage(AImage* image, base::ScopedFD fence_fd);
 
-  gfx::Rect GetCropRect();
+  gfx::Rect GetCropRectLocked();
 
   static void OnFrameAvailable(void* context, AImageReader* reader);
 
-  // AImageReader instance
-  AImageReader* image_reader_;
+  // All members which can be concurrently accessed from multiple threads will
+  // be guarded by |lock_|.
+  mutable base::Lock lock_;
+
+  // AImageReader instance.
+  AImageReader* image_reader_ GUARDED_BY(lock_);
 
   // Most recently acquired image using image reader. This works like a cached
   // image until next new image is acquired which overwrites this.
-  absl::optional<ScopedCurrentImageRef> current_image_ref_;
+  absl::optional<ScopedCurrentImageRef> current_image_ref_ GUARDED_BY(lock_);
   std::unique_ptr<AImageReader_ImageListener> listener_;
 
   // A map consisting of pending refs on an AImage. If an image has any refs, it
@@ -117,7 +130,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
     DISALLOW_COPY_AND_ASSIGN(ImageRef);
   };
   using AImageRefMap = base::flat_map<AImage*, ImageRef>;
-  AImageRefMap image_refs_;
+  AImageRefMap image_refs_ GUARDED_BY(lock_);
 
   // reference to the class instance which is used to dynamically
   // load the functions in android libraries at runtime.
@@ -134,9 +147,10 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
   base::RepeatingClosure frame_available_cb_;
 
   // Runs when free buffer is available.
-  base::OnceClosure buffer_available_cb_;
+  base::OnceClosure buffer_available_cb_ GUARDED_BY(lock_);
 
-  THREAD_CHECKER(thread_checker_);
+  // This class is created on gpu main thread.
+  THREAD_CHECKER(gpu_main_thread_checker_);
 
   base::WeakPtrFactory<ImageReaderGLOwner> weak_factory_{this};
 

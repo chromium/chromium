@@ -104,7 +104,7 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
         image_(image),
         task_runner_(base::ThreadTaskRunnerHandle::Get()) {
     DCHECK(image_);
-    texture_owner_->RegisterRefOnImage(image_);
+    texture_owner_->RegisterRefOnImageLocked(image_);
   }
 
   ~ScopedHardwareBufferImpl() override {
@@ -201,7 +201,7 @@ ImageReaderGLOwner::ImageReaderGLOwner(
 }
 
 ImageReaderGLOwner::~ImageReaderGLOwner() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
 
   // Call ReleaseResources() if it hasn't already. This will do nothing if the
   // texture and other resources has already been destroyed due to context loss.
@@ -211,6 +211,8 @@ ImageReaderGLOwner::~ImageReaderGLOwner() {
 }
 
 void ImageReaderGLOwner::ReleaseResources() {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  base::AutoLock auto_lock(lock_);
   // Either TextureOwner is being destroyed or the TextureOwner's shared context
   // is lost. Cleanup is it hasn't already.
   if (image_reader_) {
@@ -239,6 +241,8 @@ void ImageReaderGLOwner::SetFrameAvailableCallback(
 }
 
 gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
+  base::AutoLock auto_lock(lock_);
+
   // If we've already lost the texture, then do nothing.
   if (!image_reader_) {
     DLOG(ERROR) << "Already lost texture / image reader";
@@ -263,7 +267,8 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
 }
 
 void ImageReaderGLOwner::UpdateTexImage() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  base::AutoLock auto_lock(lock_);
 
   // If we've lost the texture, then do nothing.
   if (!texture())
@@ -337,12 +342,14 @@ void ImageReaderGLOwner::UpdateTexImage() {
 }
 
 void ImageReaderGLOwner::EnsureTexImageBound(GLuint service_id) {
+  base::AutoLock auto_lock(lock_);
   if (current_image_ref_)
     current_image_ref_->EnsureBound(service_id);
 }
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 ImageReaderGLOwner::GetAHardwareBuffer() {
+  base::AutoLock auto_lock(lock_);
   if (!current_image_ref_)
     return nullptr;
 
@@ -362,7 +369,9 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
       current_image_ref_->GetReadyFence());
 }
 
-gfx::Rect ImageReaderGLOwner::GetCropRect() {
+gfx::Rect ImageReaderGLOwner::GetCropRectLocked() {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  lock_.AssertAcquired();
   if (!current_image_ref_)
     return gfx::Rect();
 
@@ -383,7 +392,8 @@ gfx::Rect ImageReaderGLOwner::GetCropRect() {
                    crop_rect.bottom - crop_rect.top);
 }
 
-void ImageReaderGLOwner::RegisterRefOnImage(AImage* image) {
+void ImageReaderGLOwner::RegisterRefOnImageLocked(AImage* image) {
+  lock_.AssertAcquired();
   DCHECK(image_reader_);
 
   // Add a ref that the caller will release.
@@ -392,6 +402,13 @@ void ImageReaderGLOwner::RegisterRefOnImage(AImage* image) {
 
 void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
                                            base::ScopedFD fence_fd) {
+  base::AutoLock auto_lock(lock_);
+  ReleaseRefOnImageLocked(image, std::move(fence_fd));
+}
+
+void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
+                                                 base::ScopedFD fence_fd) {
+  lock_.AssertAcquired();
   // During cleanup on losing the texture, all images are synchronously released
   // and the |image_reader_| is destroyed.
   if (!image_reader_)
@@ -423,17 +440,17 @@ void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
 }
 
 void ImageReaderGLOwner::ReleaseBackBuffers() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   // ReleaseBackBuffers() call is not required with image reader.
 }
 
 gl::GLContext* ImageReaderGLOwner::GetContext() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   return context_.get();
 }
 
 gl::GLSurface* ImageReaderGLOwner::GetSurface() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   return surface_.get();
 }
 
@@ -448,23 +465,44 @@ void ImageReaderGLOwner::OnFrameAvailable(void* context, AImageReader* reader) {
 }
 
 void ImageReaderGLOwner::RunWhenBufferIsAvailable(base::OnceClosure callback) {
-  // Note that we handle only one simultaneous request, this is not issue
-  // because FrameInfoHelper maintain request queue and has only single
-  // outstanding request on GPU thread.
-  DCHECK(!buffer_available_cb_);
-  // If `max_images` == 1 we will drop it before acquiring new buffer. Note that
-  // this must never happen with SurfaceControl and the ImageReaderGLOwner is
-  // the sole owner of the images.
-  if (max_images_ == 1 || static_cast<int>(image_refs_.size()) < max_images_)
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  int image_refs_size = 0;
+  {
+    base::AutoLock auto_lock(lock_);
+    // Note that we handle only one simultaneous request, this is not issue
+    // because FrameInfoHelper maintain request queue and has only single
+    // outstanding request on GPU thread.
+    DCHECK(!buffer_available_cb_);
+    image_refs_size = static_cast<int>(image_refs_.size());
+  }
+  // If `max_images` == 1 we will drop it before acquiring new buffer. Note
+  // that this must never happen with SurfaceControl and the
+  // ImageReaderGLOwner is the sole owner of the images.
+  if (max_images_ == 1 || image_refs_size < max_images_) {
+    // This callback is run from here as well as from ReleaseRefOnImage() where
+    // we remove one image from image reader queue before callback is run.
+    // Once the |lock_| is dropped in this method here, another thread can
+    // UpdateTexImage() before callback is run and hence cause the image reader
+    // queue to become full. In that case callback will not be able to render
+    // and acquire updated image and hence will use FrameInfo of the previous
+    // image which will result in wrong coded size for all future frames. To
+    // avoid, this no other threads should try to UpdateTexImage() when this
+    // callback is run.
+    // TODO(vikassoni) : Fix this issue when MCVD path is made thread safe using
+    // global locks. For MediaPlayer path we never call this method.
     std::move(callback).Run();
-  else
+  } else {
+    base::AutoLock auto_lock(lock_);
     buffer_available_cb_ = std::move(callback);
+  }
 }
 
 bool ImageReaderGLOwner::GetCodedSizeAndVisibleRect(
     gfx::Size rotated_visible_size,
     gfx::Size* coded_size,
     gfx::Rect* visible_rect) {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  base::AutoLock auto_lock(lock_);
   DCHECK(visible_rect);
   DCHECK(coded_size);
 
@@ -485,7 +523,7 @@ bool ImageReaderGLOwner::GetCodedSizeAndVisibleRect(
   AHardwareBuffer_Desc desc;
   base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer, &desc);
 
-  *visible_rect = GetCropRect();
+  *visible_rect = GetCropRectLocked();
   *coded_size = gfx::Size(desc.width, desc.height);
 
   return true;
@@ -504,11 +542,14 @@ ImageReaderGLOwner::ScopedCurrentImageRef::ScopedCurrentImageRef(
     : texture_owner_(texture_owner),
       image_(image),
       ready_fence_(std::move(ready_fence)) {
+  DCHECK(texture_owner_);
+  texture_owner_->lock_.AssertAcquired();
   DCHECK(image_);
-  texture_owner_->RegisterRefOnImage(image_);
+  texture_owner_->RegisterRefOnImageLocked(image_);
 }
 
 ImageReaderGLOwner::ScopedCurrentImageRef::~ScopedCurrentImageRef() {
+  texture_owner_->lock_.AssertAcquired();
   base::ScopedFD release_fence;
   // If there is no |image_reader_|, we are in tear down so no fence is
   // required.
@@ -516,7 +557,7 @@ ImageReaderGLOwner::ScopedCurrentImageRef::~ScopedCurrentImageRef() {
     release_fence = CreateEglFenceAndExportFd();
   else
     release_fence = std::move(ready_fence_);
-  texture_owner_->ReleaseRefOnImage(image_, std::move(release_fence));
+  texture_owner_->ReleaseRefOnImageLocked(image_, std::move(release_fence));
 }
 
 base::ScopedFD ImageReaderGLOwner::ScopedCurrentImageRef::GetReadyFence()
