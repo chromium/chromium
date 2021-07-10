@@ -1,0 +1,11 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum VideoTransferCharacteristics {
+  "bt709",         // BT.709
+  "smpte170m",     // BT.601 (functionally the same as bt709)
+  "iec61966-2-1",  // sRGB
+};

@@ -9083,6 +9083,14 @@ interface ValidityState
     getter valid
     getter valueMissing
     method constructor
+interface VideoColorSpace
+    attribute @@toStringTag
+    getter fullRange
+    getter matrix
+    getter primaries
+    getter transfer
+    method constructor
+    method toJSON
 interface VideoDecoder
     static method isConfigSupported
     attribute @@toStringTag

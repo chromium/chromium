@@ -9,14 +9,10 @@
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_matrix_id.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_primary_id.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_range_id.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_transfer_id.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_webcodecs_texture_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_webcodecs_video_frame_handle.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -39,184 +35,6 @@ const char kRequiredExtension[] = "GL_OES_EGL_image_external";
 #else
 const char kRequiredExtension[] = "";
 #endif
-
-void FillVideoColorSpace(VideoColorSpace* video_color_space,
-                         gfx::ColorSpace& gfx_color_space) {
-  gfx::ColorSpace::PrimaryID primaries = gfx_color_space.GetPrimaryID();
-  absl::optional<V8ColorSpacePrimaryID> primary_id;
-  switch (primaries) {
-    case gfx::ColorSpace::PrimaryID::BT709:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT709);
-      break;
-    case gfx::ColorSpace::PrimaryID::BT470M:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT470M);
-      break;
-    case gfx::ColorSpace::PrimaryID::BT470BG:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT470BG);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTE170M:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSMPTE170M);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTE240M:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSMPTE240M);
-      break;
-    case gfx::ColorSpace::PrimaryID::FILM:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kFILM);
-      break;
-    case gfx::ColorSpace::PrimaryID::BT2020:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT2020);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTEST428_1:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSmptest4281);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSmptest4312);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSmptest4321);
-      break;
-    // TODO(jie.a.chen@intel.com): Need to check EBU_3213_E.
-    default:;
-  }
-  if (primary_id) {
-    video_color_space->setPrimaryID(*primary_id);
-  }
-
-  gfx::ColorSpace::TransferID transfer = gfx_color_space.GetTransferID();
-  absl::optional<V8ColorSpaceTransferID> transfer_id;
-  switch (transfer) {
-    case gfx::ColorSpace::TransferID::BT709:
-#if defined(OS_MAC)
-    // TODO(jie.a.chen@intel.com): BT709_APPLE is not available in WebCodecs.
-    case gfx::ColorSpace::TransferID::BT709_APPLE:
-#endif
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBT709);
-      break;
-    case gfx::ColorSpace::TransferID::GAMMA22:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kGAMMA22);
-      break;
-    case gfx::ColorSpace::TransferID::GAMMA28:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kGAMMA28);
-      break;
-    case gfx::ColorSpace::TransferID::SMPTE170M:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSMPTE170M);
-      break;
-    case gfx::ColorSpace::TransferID::SMPTE240M:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSMPTE240M);
-      break;
-    case gfx::ColorSpace::TransferID::LINEAR:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kLINEAR);
-      break;
-    case gfx::ColorSpace::TransferID::LOG:
-      transfer_id = V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kLOG);
-      break;
-    case gfx::ColorSpace::TransferID::LOG_SQRT:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kLogSqrt);
-      break;
-    case gfx::ColorSpace::TransferID::IEC61966_2_4:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kIec6196624);
-      break;
-    case gfx::ColorSpace::TransferID::BT1361_ECG:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBt1361Ecg);
-      break;
-    case gfx::ColorSpace::TransferID::IEC61966_2_1:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kIec6196621);
-      break;
-    case gfx::ColorSpace::TransferID::BT2020_10:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBt202010);
-      break;
-
-    case gfx::ColorSpace::TransferID::BT2020_12:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBt202012);
-      break;
-    case gfx::ColorSpace::TransferID::SMPTEST2084:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSMPTEST2084);
-      break;
-    case gfx::ColorSpace::TransferID::SMPTEST428_1:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSmptest4281);
-      break;
-    default:;
-  }
-  if (transfer_id) {
-    video_color_space->setTransferID(*transfer_id);
-  }
-
-  gfx::ColorSpace::MatrixID matrix = gfx_color_space.GetMatrixID();
-  absl::optional<V8ColorSpaceMatrixID> matrix_id;
-  switch (matrix) {
-    case gfx::ColorSpace::MatrixID::RGB:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kRGB);
-      break;
-    case gfx::ColorSpace::MatrixID::BT709:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBT709);
-      break;
-    case gfx::ColorSpace::MatrixID::FCC:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kFCC);
-      break;
-    case gfx::ColorSpace::MatrixID::BT470BG:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBT470BG);
-      break;
-    case gfx::ColorSpace::MatrixID::SMPTE170M:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kSMPTE170M);
-      break;
-    case gfx::ColorSpace::MatrixID::SMPTE240M:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kSMPTE240M);
-      break;
-    case gfx::ColorSpace::MatrixID::YCOCG:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kYCOCG);
-      break;
-    case gfx::ColorSpace::MatrixID::BT2020_NCL:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBt2020Ncl);
-      break;
-    case gfx::ColorSpace::MatrixID::BT2020_CL:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBt2020Cl);
-      break;
-    case gfx::ColorSpace::MatrixID::YDZDX:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kYDZDX);
-      break;
-    default:;
-  }
-  if (matrix_id) {
-    video_color_space->setMatrixID(*matrix_id);
-  }
-
-  gfx::ColorSpace::RangeID range = gfx_color_space.GetRangeID();
-  absl::optional<V8ColorSpaceRangeID> range_id;
-  switch (range) {
-    case gfx::ColorSpace::RangeID::LIMITED:
-      range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kLIMITED);
-      break;
-    case gfx::ColorSpace::RangeID::FULL:
-      range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kFULL);
-      break;
-    case gfx::ColorSpace::RangeID::DERIVED:
-      range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kDERIVED);
-      break;
-    default:;
-  }
-  if (range_id) {
-    video_color_space->setRangeID(*range_id);
-  }
-}
 
 void GetMediaTaskRunnerAndGpuFactoriesOnMainThread(
     scoped_refptr<base::SingleThreadTaskRunner>* media_task_runner_out,
@@ -423,8 +241,7 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   src_color_space = src_color_space.GetAsFullRangeRGB();
 #endif
   VideoColorSpace* video_frame_color_space =
-      MakeGarbageCollected<VideoColorSpace>();
-  FillVideoColorSpace(video_frame_color_space, src_color_space);
+      MakeGarbageCollected<VideoColorSpace>(src_color_space);
   video_frame_handle->setColorSpace(video_frame_color_space);
 
   gfx::ColorSpace dst_color_space = gfx::ColorSpace::CreateSRGB();

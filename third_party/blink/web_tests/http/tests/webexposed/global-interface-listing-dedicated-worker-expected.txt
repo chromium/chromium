@@ -1795,6 +1795,14 @@ Starting worker: resources/global-interface-listing-worker.js.php
 [Worker]     getter hasBeenActive
 [Worker]     getter isActive
 [Worker]     method constructor
+[Worker] interface VideoColorSpace
+[Worker]     attribute @@toStringTag
+[Worker]     getter fullRange
+[Worker]     getter matrix
+[Worker]     getter primaries
+[Worker]     getter transfer
+[Worker]     method constructor
+[Worker]     method toJSON
 [Worker] interface VideoDecoder
 [Worker]     static method isConfigSupported
 [Worker]     attribute @@toStringTag

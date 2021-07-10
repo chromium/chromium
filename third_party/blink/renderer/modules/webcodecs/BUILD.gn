@@ -54,6 +54,8 @@ blink_modules_sources("webcodecs") {
     "parsed_copy_to_options.h",
     "plane.cc",
     "plane.h",
+    "video_color_space.cc",
+    "video_color_space.h",
     "video_decoder.cc",
     "video_decoder.h",
     "video_decoder_broker.cc",

@@ -1,16 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // https://github.com/WICG/web-codecs
 
-// Described in ISO 23001-8:2016
-// See also: https://source.chromium.org/chromium/chromium/src/+/master:media/base/video_color_space.h
-dictionary VideoColorSpace {
-  ColorSpacePrimaryID? primaryID;
-  ColorSpaceTransferID? transferID;
-  ColorSpaceMatrixID? matrixID;
-  ColorSpaceRangeID? rangeID;
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface VideoColorSpace {
+  constructor(VideoColorSpaceInit init);
 
-  // TODO(sandersd): custom primary/matrix support.
+  readonly attribute VideoColorPrimaries? primaries;
+  readonly attribute VideoTransferCharacteristics? transfer;
+  readonly attribute VideoMatrixCoefficients? matrix;
+  readonly attribute boolean? fullRange;
+
+  // Note: [Default] implementation would be correct.
+  VideoColorSpaceInit toJSON();
 };
