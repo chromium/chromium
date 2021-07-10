@@ -6,15 +6,18 @@
 
 #include <unordered_set>
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/federated_learning/floc_event_logger.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
+#include "chrome/browser/ui/webui/federated_learning/floc_internals.mojom.h"
 #include "components/federated_learning/features/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 
 namespace federated_learning {
@@ -156,6 +159,36 @@ blink::mojom::InterestCohortPtr FlocIdProviderImpl::GetInterestCohortForJsApi(
     return blink::mojom::InterestCohort::New();
 
   return floc_id_.ToInterestCohortForJsApi();
+}
+
+mojom::WebUIFlocStatusPtr FlocIdProviderImpl::GetFlocStatusForWebUi() const {
+  mojom::WebUIFlocStatusPtr status = mojom::WebUIFlocStatus::New();
+
+  if (floc_id_.IsValid()) {
+    status->id = base::NumberToString(floc_id_.ToUint64());
+    status->version = base::StrCat(
+        {"chrome.", base::NumberToString(floc_id_.finch_config_version()), ".",
+         base::NumberToString(floc_id_.sorting_lsh_version())});
+  }
+
+  status->compute_time = floc_id_.compute_time();
+
+  status->feature_pages_with_ad_resources_default_included_in_floc_computation =
+      base::FeatureList::IsEnabled(
+          kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation);
+  status->feature_interest_cohort_api_origin_trial =
+      base::FeatureList::IsEnabled(
+          blink::features::kInterestCohortAPIOriginTrial);
+  status->feature_interest_cohort_feature_policy = base::FeatureList::IsEnabled(
+      blink::features::kInterestCohortFeaturePolicy);
+
+  status->feature_param_scheduled_update_interval =
+      kFlocIdScheduledUpdateInterval.Get();
+  status->feature_param_minimum_history_domain_size_required =
+      kFlocIdMinimumHistoryDomainSizeRequired.Get();
+  status->feature_param_finch_config_version = kFlocIdFinchConfigVersion.Get();
+
+  return status;
 }
 
 void FlocIdProviderImpl::MaybeRecordFlocToUkm(ukm::SourceId source_id) {

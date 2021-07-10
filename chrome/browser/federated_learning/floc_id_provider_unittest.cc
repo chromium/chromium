@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/federated_learning/floc_event_logger.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
+#include "chrome/browser/ui/webui/federated_learning/floc_internals.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -1101,6 +1102,29 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   ukm_recorder.ExpectEntryMetric(entries.back(),
                                  ukm::builders::FlocPageLoad::kFlocIdName,
                                  /*expected_value=*/456);
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, GetFlocStatusForWebUiMethod) {
+  InitializeFlocIdProviderAndSortingLsh(base::Version("999.0.0"));
+  task_environment_.RunUntilIdle();
+
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
+  set_floc_id(FlocId::CreateValid(123, kTime, kTime, 999));
+
+  mojom::WebUIFlocStatusPtr status = floc_id_provider_->GetFlocStatusForWebUi();
+  EXPECT_EQ(status->id, "123");
+  EXPECT_EQ(status->version, "chrome.1.999");
+  EXPECT_EQ(status->compute_time, base::Time::Now());
+  EXPECT_EQ(
+      status
+          ->feature_pages_with_ad_resources_default_included_in_floc_computation,
+      false);
+  EXPECT_EQ(status->feature_interest_cohort_api_origin_trial, false);
+  EXPECT_EQ(status->feature_interest_cohort_feature_policy, false);
+  EXPECT_EQ(status->feature_param_scheduled_update_interval,
+            base::TimeDelta::FromDays(1));
+  EXPECT_EQ(status->feature_param_minimum_history_domain_size_required, 1);
+  EXPECT_EQ(status->feature_param_finch_config_version, 1);
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,

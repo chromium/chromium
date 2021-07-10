@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FEDERATED_LEARNING_FLOC_ID_PROVIDER_H_
 #define CHROME_BROWSER_FEDERATED_LEARNING_FLOC_ID_PROVIDER_H_
 
+#include "chrome/browser/ui/webui/federated_learning/floc_internals.mojom-forward.h"
 #include "components/federated_learning/floc_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cookies/site_for_cookies.h"
@@ -26,6 +27,9 @@ class FlocIdProvider : public KeyedService {
   virtual blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
       const GURL& url,
       const absl::optional<url::Origin>& top_frame_origin) const = 0;
+
+  // Get the relevant floc status to show in the chrome://floc-internals/ page.
+  virtual mojom::WebUIFlocStatusPtr GetFlocStatusForWebUi() const = 0;
 
   // Record the floc id to UKM if this is the first recording attempt after each
   // time the floc is (re-)computed. No-op if the existing floc was already

@@ -15,6 +15,7 @@
 #include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/federated_learning/floc_internals.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -49,6 +50,10 @@ class MockFlocIdProvider : public federated_learning::FlocIdProvider {
       const absl::optional<url::Origin>& top_frame_origin) const override {
     return blink::mojom::InterestCohort::New();
   }
+  MOCK_METHOD(federated_learning::mojom::WebUIFlocStatusPtr,
+              GetFlocStatusForWebUi,
+              (),
+              (const, override));
   MOCK_METHOD(void, MaybeRecordFlocToUkm, (ukm::SourceId), (override));
   MOCK_METHOD(base::Time, GetApproximateNextComputeTime, (), (const, override));
 };

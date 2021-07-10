@@ -95,6 +95,8 @@ class FlocIdProviderImpl : public FlocIdProvider,
       const GURL& url,
       const absl::optional<url::Origin>& top_frame_origin) const override;
 
+  mojom::WebUIFlocStatusPtr GetFlocStatusForWebUi() const override;
+
   void MaybeRecordFlocToUkm(ukm::SourceId source_id) override;
 
   base::Time GetApproximateNextComputeTime() const override;

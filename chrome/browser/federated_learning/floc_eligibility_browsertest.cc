@@ -9,6 +9,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/federated_learning/floc_internals.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
@@ -43,6 +44,11 @@ class FixedFlocIdProvider : public federated_learning::FlocIdProvider {
     cohort->id = "12345";
     cohort->version = "chrome.6.7.8.9";
     return cohort;
+  }
+
+  federated_learning::mojom::WebUIFlocStatusPtr GetFlocStatusForWebUi()
+      const override {
+    return nullptr;
   }
 
   void MaybeRecordFlocToUkm(ukm::SourceId source_id) override {}

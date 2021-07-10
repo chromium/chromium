@@ -262,6 +262,10 @@
   # END chrome/browser section.
 
   # START chrome/ WebUI resources section
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/federated_learning/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2010],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/bluetooth_internals/resources.grd": {
     "META": {"sizes": {"includes": [30],}},
     "includes": [2020],
