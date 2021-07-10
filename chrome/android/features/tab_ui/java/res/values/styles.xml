@@ -12,4 +12,17 @@
         <item name="colorControlActivated">@color/filled_button_bg_color</item>
         <item name="colorControlHighlight">@color/filled_button_bg_color</item>
     </style>
+
+    <integer name="view_visible">0</integer> <!-- This is VISIBLE -->
+    <integer name="view_gone">2</integer> <!-- This is GONE -->
+
+    <!-- Theme overlay for theme refactor 2021 -->
+    <style name="ThemeRefactorOverlay.Disabled.TabUi" parent="">
+        <item name="tabDividerVisible">@integer/view_visible</item>
+    </style>
+
+    <style name="ThemeRefactorOverlay.Enabled.TabUi" parent="">
+        <item name="tabDividerVisible">@integer/view_gone</item>
+    </style>
+
 </resources>

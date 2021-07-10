@@ -55,7 +55,7 @@ public class TabGridDialogViewTest extends DummyUiActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-
+        TabUiTestHelper.applyThemeOverlays(getActivity());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mDummyParent = new FrameLayout(getActivity());
             getActivity().setContentView(mDummyParent);

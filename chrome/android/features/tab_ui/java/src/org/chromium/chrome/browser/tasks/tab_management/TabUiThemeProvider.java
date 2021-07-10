@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.MaterialColors;
@@ -321,6 +322,17 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito) {
         return AppCompatResources.getColorStateList(context,
                 isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color);
+    }
+
+    /**
+     * Returns the style resource Id that requires for Tab UI.
+     *
+     * @return The resource Id for the theme overlay used for tab UI.
+     */
+    @StyleRes
+    public static int getThemeOverlayStyleResourceId() {
+        return themeRefactorEnabled() ? R.style.ThemeRefactorOverlay_Enabled_TabUi
+                                      : R.style.ThemeRefactorOverlay_Disabled_TabUi;
     }
 
     private static boolean themeRefactorEnabled() {

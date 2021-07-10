@@ -119,10 +119,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         super.onCreate(savedInstanceState);
 
-        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
-            setTheme(R.style.ThemeRefactorOverlay_Disabled_Settings);
-        }
-
         setContentView(R.layout.settings_activity);
 
         Toolbar actionBar = findViewById(R.id.action_bar);
@@ -391,6 +387,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         } catch (NameNotFoundException ex) {
             // Something terribly wrong has happened.
             throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    protected void applyThemeOverlays() {
+        super.applyThemeOverlays();
+
+        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
+            setTheme(R.style.ThemeRefactorOverlay_Disabled_Settings);
         }
     }
 

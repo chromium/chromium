@@ -73,10 +73,7 @@ public class ChromeBaseAppCompatActivity
 
         initializeNightModeStateProvider();
         mNightModeStateProvider.addObserver(this);
-        setTheme(R.style.ColorOverlay);
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_ANDROID)) {
-            new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
-        }
+        applyThemeOverlays();
         super.onCreate(savedInstanceState);
 
         // Activity level locale overrides must be done in onCreate.
@@ -158,6 +155,18 @@ public class ChromeBaseAppCompatActivity
      * state.
      */
     protected void initializeNightModeStateProvider() {}
+
+    /**
+     * Apply theme overlay to this activity class.
+     */
+    @CallSuper
+    protected void applyThemeOverlays() {
+        setTheme(R.style.ColorOverlay);
+
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_ANDROID)) {
+            new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
+        }
+    }
 
     // NightModeStateProvider.Observer implementation.
     @Override

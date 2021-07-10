@@ -2,7 +2,8 @@
 <!-- Copyright 2019 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<!-- TODO(crbug/928388): Handle elevation for KitKat.-->
+<!-- This layout is depending on theme overlays to inflate correctly. See
+     {@link TabManagementDelegate#applyThemeOverlays} -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
     <org.chromium.ui.widget.ChromeImageView
@@ -82,6 +83,7 @@
                 android:id="@+id/divider_view"
                 style="@style/HorizontalDivider"
                 android:layout_below="@id/tab_title"
+                android:visibility="?attr/tabDividerVisible"
                 android:background="@color/divider_line_bg_color"/>
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/create_group_button"

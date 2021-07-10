@@ -63,6 +63,7 @@ public class TabGridPanelViewBinderTest extends DummyUiActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+        TabUiTestHelper.applyThemeOverlays(getActivity());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             FrameLayout parentView = new FrameLayout(getActivity());
             getActivity().setContentView(parentView);
