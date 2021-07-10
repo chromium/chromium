@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
