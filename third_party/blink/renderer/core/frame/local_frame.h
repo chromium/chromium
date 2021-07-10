@@ -145,8 +145,7 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 class CORE_EXPORT LocalFrame final : public Frame,
                                      public FrameScheduler::Delegate,
                                      public Supplementable<LocalFrame>,
-                                     public mojom::blink::LocalFrame,
-                                     public mojom::blink::LocalMainFrame {
+                                     public mojom::blink::LocalFrame {
  public:
   // Returns the LocalFrame instance for the given |frame_token|.
   static LocalFrame* FromFrameToken(const LocalFrameToken& frame_token);
@@ -722,43 +721,16 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void GetCanonicalUrlForSharing(
       GetCanonicalUrlForSharingCallback callback) final;
 
-  // blink::mojom::LocalMainFrame overrides:
-  void AnimateDoubleTapZoom(const gfx::Point& point,
-                            const gfx::Rect& rect) override;
-  void SetScaleFactor(float scale) override;
-  void ClosePage(
-      mojom::blink::LocalMainFrame::ClosePageCallback callback) override;
-  void PluginActionAt(const gfx::Point& location,
-                      mojom::blink::PluginActionType action) override;
-  void SetInitialFocus(bool reverse) override;
-  void EnablePreferredSizeChangedMode() override;
-  void ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) override;
+  void SetScaleFactor(float scale);
+  void ClosePageForTesting();
+  void SetInitialFocus(bool reverse);
+
 #if defined(OS_MAC)
   void GetCharacterIndexAtPoint(const gfx::Point& point) final;
   void GetFirstRectForRange(const gfx::Range& range) final;
   void GetStringForRange(const gfx::Range& range,
                          GetStringForRangeCallback callback) final;
 #endif
-  void InstallCoopAccessMonitor(
-      network::mojom::blink::CoopAccessReportType report_type,
-      const FrameToken& accessed_window,
-      mojo::PendingRemote<
-          network::mojom::blink::CrossOriginOpenerPolicyReporter> reporter,
-      bool endpoint_defined,
-      const WTF::String& reported_window_url) final;
-  void OnPortalActivated(
-      const PortalToken& portal_token,
-      mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,
-      mojo::PendingAssociatedReceiver<mojom::blink::PortalClient> portal_client,
-      BlinkTransferableMessage data,
-      uint64_t trace_id,
-      OnPortalActivatedCallback callback) final;
-  void ForwardMessageFromHost(
-      BlinkTransferableMessage message,
-      const scoped_refptr<const SecurityOrigin>& source_origin) final;
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate) override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect_in_dips);
 
   SystemClipboard* GetSystemClipboard();
@@ -933,9 +905,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
   static void BindToReceiver(
       blink::LocalFrame* frame,
       mojo::PendingAssociatedReceiver<mojom::blink::LocalFrame> receiver);
-  static void BindToMainFrameReceiver(
-      blink::LocalFrame* frame,
-      mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrame> receiver);
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
 
@@ -1060,9 +1029,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
   // LocalFrame can be reused by multiple ExecutionContext.
   HeapMojoAssociatedReceiver<mojom::blink::LocalFrame, LocalFrame> receiver_{
       this, nullptr};
-  // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoAssociatedReceiver<mojom::blink::LocalMainFrame, LocalFrame>
-      main_frame_receiver_{this, nullptr};
   // TODO(crbug.com/1227229): Move the above HeapMojoReceivers to
   // LocalFrameMojoReceiver.
   Member<LocalFrameMojoReceiver> mojo_receiver_;

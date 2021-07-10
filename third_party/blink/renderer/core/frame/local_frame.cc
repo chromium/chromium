@@ -72,7 +72,6 @@
 #include "third_party/blink/public/web/web_content_capture_client.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -143,19 +142,14 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/plugin_document.h"
-#include "third_party/blink/renderer/core/html/portal/dom_window_portal_host.h"
-#include "third_party/blink/renderer/core/html/portal/portal_activate_event.h"
-#include "third_party/blink/renderer/core/html/portal/portal_host.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_reporter.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
-#include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -177,7 +171,6 @@
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
@@ -321,19 +314,6 @@ mojo::PendingRemote<mojom::blink::Blob> DataURLToBlob(const String& data_url) {
   scoped_refptr<BlobDataHandle> blob_data_handle =
       BlobDataHandle::Create(std::move(blob_data), data_url_utf8.size());
   return blob_data_handle->CloneBlobRemote();
-}
-
-HitTestResult HitTestResultForRootFramePos(
-    LocalFrame* main_frame,
-    const PhysicalOffset& pos_in_root_frame) {
-  DCHECK(main_frame->IsMainFrame());
-
-  HitTestLocation location(
-      main_frame->View()->ConvertFromRootFrame(pos_in_root_frame));
-  HitTestResult result = main_frame->GetEventHandler().HitTestResultAtLocation(
-      location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
-  result.SetToShadowHostIfInRestrictedShadowRoot();
-  return result;
 }
 
 RemoteFrame* SourceFrameForOptionalToken(
@@ -596,7 +576,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(local_frame_host_remote_);
   visitor->Trace(back_forward_cache_controller_host_remote_);
   visitor->Trace(receiver_);
-  visitor->Trace(main_frame_receiver_);
   visitor->Trace(mojo_receiver_);
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
@@ -827,7 +806,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   supplements_.clear();
   frame_scheduler_.reset();
   receiver_.reset();
-  main_frame_receiver_.reset();
   mojo_receiver_->DidDetachFrame();
   WeakIdentifierMap<LocalFrame>::NotifyObjectDestroyed(this);
 
@@ -2873,8 +2851,7 @@ RawSystemClipboard* LocalFrame::GetRawSystemClipboard() {
 }
 
 void LocalFrame::WasAttachedAsLocalMainFrame() {
-  GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
-      &LocalFrame::BindToMainFrameReceiver, WrapWeakPersistent(this)));
+  mojo_receiver_->WasAttachedAsLocalMainFrame();
 }
 
 void LocalFrame::EvictFromBackForwardCache(
@@ -2894,11 +2871,6 @@ bool LocalFrame::CanContinueBufferingWhileInBackForwardCache() {
   return GetBackForwardCacheBufferLimitTracker().IsUnderPerProcessBufferLimit();
 }
 
-void LocalFrame::AnimateDoubleTapZoom(const gfx::Point& point,
-                                      const gfx::Rect& rect) {
-  GetPage()->GetChromeClient().AnimateDoubleTapZoom(point, rect);
-}
-
 void LocalFrame::SetScaleFactor(float scale_factor) {
   DCHECK(IsMainFrame());
 
@@ -2910,64 +2882,8 @@ void LocalFrame::SetScaleFactor(float scale_factor) {
   GetPage()->GetVisualViewport().SetScale(scale_factor);
 }
 
-void LocalFrame::ClosePage(
-    mojom::blink::LocalMainFrame::ClosePageCallback completion_callback) {
-  SECURITY_CHECK(IsMainFrame());
-
-  // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
-  VLOG(1) << "LocalFrame::ClosePage() URL = " << GetDocument()->Url();
-
-  // There are two ways to close a page:
-  //
-  // 1/ Via webview()->Close() that currently sets the WebView's delegate_ to
-  // NULL, and prevent any JavaScript dialogs in the onunload handler from
-  // appearing.
-  //
-  // 2/ Calling the FrameLoader's CloseURL method directly.
-  //
-  // TODO(creis): Having a single way to close that can run onunload is also
-  // useful for fixing http://b/issue?id=753080.
-
-  SubframeLoadingDisabler disabler(GetDocument());
-  // https://html.spec.whatwg.org/C/browsing-the-web.html#unload-a-document
-  // The ignore-opens-during-unload counter of a Document must be incremented
-  // when unloading itself.
-  IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
-      GetDocument());
-  Loader().DispatchUnloadEvent(nullptr, nullptr);
-
-  std::move(completion_callback).Run();
-}
-
-void LocalFrame::PluginActionAt(const gfx::Point& location,
-                                mojom::blink::PluginActionType action) {
-  SECURITY_CHECK(IsMainFrame());
-
-  // TODO(bokan): Location is probably in viewport coordinates
-  HitTestResult result =
-      HitTestResultForRootFramePos(this, PhysicalOffset(IntPoint(location)));
-  Node* node = result.InnerNode();
-  if (!IsA<HTMLObjectElement>(*node) && !IsA<HTMLEmbedElement>(*node))
-    return;
-
-  auto* embedded = DynamicTo<LayoutEmbeddedContent>(node->GetLayoutObject());
-  if (!embedded)
-    return;
-
-  WebPluginContainerImpl* plugin_view = embedded->Plugin();
-  if (!plugin_view)
-    return;
-
-  switch (action) {
-    case mojom::blink::PluginActionType::kRotate90Clockwise:
-      plugin_view->Plugin()->RotateView(WebPlugin::kRotationType90Clockwise);
-      return;
-    case mojom::blink::PluginActionType::kRotate90Counterclockwise:
-      plugin_view->Plugin()->RotateView(
-          WebPlugin::kRotationType90Counterclockwise);
-      return;
-  }
-  NOTREACHED();
+void LocalFrame::ClosePageForTesting() {
+  mojo_receiver_->ClosePageForTesting();
 }
 
 void LocalFrame::SetInitialFocus(bool reverse) {
@@ -2975,14 +2891,6 @@ void LocalFrame::SetInitialFocus(bool reverse) {
   GetPage()->GetFocusController().SetInitialFocus(
       reverse ? mojom::blink::FocusType::kBackward
               : mojom::blink::FocusType::kForward);
-}
-
-void LocalFrame::EnablePreferredSizeChangedMode() {
-  GetPage()->GetChromeClient().EnablePreferredSizeChangedMode();
-}
-
-void LocalFrame::ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) {
-  GetPage()->GetChromeClient().ZoomToFindInPageRect(rect_in_root_frame);
 }
 
 #if defined(OS_MAC)
@@ -3026,80 +2934,6 @@ void LocalFrame::GetStringForRange(const gfx::Range& range,
   std::move(callback).Run(std::move(attributed_string), baseline_point);
 }
 #endif
-
-void LocalFrame::InstallCoopAccessMonitor(
-    network::mojom::blink::CoopAccessReportType report_type,
-    const FrameToken& accessed_window,
-    mojo::PendingRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
-        reporter,
-    bool endpoint_defined,
-    const WTF::String& reported_window_url) {
-  blink::Frame* accessed_frame = Frame::ResolveFrame(accessed_window);
-  // The Frame might have been deleted during the cross-process communication.
-  if (!accessed_frame)
-    return;
-
-  accessed_frame->DomWindow()->InstallCoopAccessMonitor(
-      report_type, this, std::move(reporter), endpoint_defined,
-      std::move(reported_window_url));
-}
-
-void LocalFrame::OnPortalActivated(
-    const PortalToken& portal_token,
-    mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,
-    mojo::PendingAssociatedReceiver<mojom::blink::PortalClient> portal_client,
-    BlinkTransferableMessage data,
-    uint64_t trace_id,
-    OnPortalActivatedCallback callback) {
-  DCHECK(GetDocument());
-  PaintTiming::From(*GetDocument()).OnPortalActivate();
-
-  TRACE_EVENT_WITH_FLOW0("navigation", "LocalFrame::OnPortalActivated",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN);
-
-  DOMWindowPortalHost::portalHost(*DomWindow())->OnPortalActivated();
-  GetPage()->SetInsidePortal(false);
-
-  DCHECK(!data.locked_agent_cluster_id)
-      << "portal activation is always cross-agent-cluster and should be "
-         "diagnosed early";
-  MessagePortArray* ports =
-      MessagePort::EntanglePorts(*DomWindow(), std::move(data.ports));
-
-  PortalActivateEvent* event = PortalActivateEvent::Create(
-      this, portal_token, std::move(portal), std::move(portal_client),
-      std::move(data.message), ports, std::move(callback));
-
-  ThreadDebugger* debugger = MainThreadDebugger::Instance();
-  if (debugger)
-    debugger->ExternalAsyncTaskStarted(data.sender_stack_trace_id);
-  DomWindow()->DispatchEvent(*event);
-  if (debugger)
-    debugger->ExternalAsyncTaskFinished(data.sender_stack_trace_id);
-  event->ExpireAdoptionLifetime();
-}
-
-void LocalFrame::ForwardMessageFromHost(
-    BlinkTransferableMessage message,
-    const scoped_refptr<const SecurityOrigin>& source_origin) {
-  PortalHost::From(*DomWindow())
-      .ReceiveMessage(std::move(message), source_origin);
-}
-
-void LocalFrame::UpdateBrowserControlsState(
-    cc::BrowserControlsState constraints,
-    cc::BrowserControlsState current,
-    bool animate) {
-  DCHECK(IsMainFrame());
-  TRACE_EVENT2("renderer", "LocalFrame::UpdateBrowserControlsState",
-               "Constraint", static_cast<int>(constraints), "Current",
-               static_cast<int>(current));
-  TRACE_EVENT_INSTANT1("renderer", "is_animated", TRACE_EVENT_SCOPE_THREAD,
-                       "animated", animate);
-
-  GetWidgetForLocalRoot()->UpdateBrowserControlsState(constraints, current,
-                                                      animate);
-}
 
 void LocalFrame::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect_in_dips) {
@@ -4042,20 +3876,6 @@ void LocalFrame::BindToReceiver(
       std::move(receiver),
       frame->GetTaskRunner(blink::TaskType::kInternalDefault));
   frame->receiver_.SetFilter(std::make_unique<ActiveURLMessageFilter>(frame));
-}
-
-void LocalFrame::BindToMainFrameReceiver(
-    blink::LocalFrame* frame,
-    mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrame> receiver) {
-  DCHECK(frame);
-  if (frame->IsDetached())
-    return;
-
-  frame->main_frame_receiver_.Bind(
-      std::move(receiver),
-      frame->GetTaskRunner(blink::TaskType::kInternalDefault));
-  frame->main_frame_receiver_.SetFilter(
-      std::make_unique<ActiveURLMessageFilter>(frame));
 }
 
 void LocalFrame::BindTextFragmentReceiver(
