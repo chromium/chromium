@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -31,12 +32,12 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -222,18 +223,22 @@ class TabListRecyclerView
         if (mShadowImageView == null) {
             Context context = getContext();
             mShadowImageView = new ImageView(context);
-            mShadowImageView.setImageDrawable(AppCompatResources.getDrawable(
-                    context, org.chromium.chrome.R.drawable.modern_toolbar_shadow));
+            boolean themeRefactorEnabled =
+                    CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID);
+            Drawable drawable =
+                    context.getDrawable(themeRefactorEnabled ? R.drawable.toolbar_hairline
+                                                             : R.drawable.modern_toolbar_shadow);
+            mShadowImageView.setImageDrawable(drawable);
             mShadowImageView.setScaleType(ImageView.ScaleType.FIT_XY);
             mShadowImageView.setTag(SHADOW_VIEW_TAG);
             Resources res = context.getResources();
+            int shadowHeight =
+                    res.getDimensionPixelSize(themeRefactorEnabled ? R.dimen.toolbar_hairline_height
+                                                                   : R.dimen.toolbar_shadow_height);
             if (getParent() instanceof FrameLayout) {
                 // Add shadow for grid tab switcher.
-                FrameLayout.LayoutParams params =
-                        new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                                res.getDimensionPixelSize(
-                                        org.chromium.chrome.R.dimen.toolbar_shadow_height),
-                                Gravity.TOP);
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                        LayoutParams.MATCH_PARENT, shadowHeight, Gravity.TOP);
                 mShadowImageView.setLayoutParams(params);
                 mShadowImageView.setTranslationY(mShadowTopOffset);
                 FrameLayout parent = (FrameLayout) getParent();
@@ -244,10 +249,8 @@ class TabListRecyclerView
                 View toolbar = parent.getChildAt(0);
                 if (!(toolbar instanceof TabGroupUiToolbarView)) return;
 
-                RelativeLayout.LayoutParams params =
-                        new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                res.getDimensionPixelSize(
-                                        org.chromium.chrome.R.dimen.toolbar_shadow_height));
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, shadowHeight);
                 params.addRule(RelativeLayout.BELOW, toolbar.getId());
                 parent.addView(mShadowImageView, params);
             }

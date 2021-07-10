@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Pair;
 import android.view.KeyEvent;
+import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -41,6 +42,8 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
@@ -368,6 +371,18 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     public int getControlContainerHeightResource() {
         return R.dimen.custom_tabs_control_container_height;
+    }
+
+    @Override
+    protected int getToolbarShadowResource() {
+        final boolean themeRefactorEnabled =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID);
+        return themeRefactorEnabled ? R.drawable.toolbar_hairline : R.drawable.toolbar_shadow;
+    }
+
+    @Override
+    protected int getToolbarShadowLayoutHeight() {
+        return LayoutParams.WRAP_CONTENT;
     }
 
     @Override

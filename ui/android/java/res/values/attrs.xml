@@ -28,6 +28,9 @@
     <!-- Used in SwitchMaterial thumb tint list for the disabled state. -->
     <attr name="colorFixedOnSurfaceAlpha38OverSurface" format="color"/>
 
+    <!-- Semantic names that support dynamic colors. -->
+    <attr name="divider_line_bg_color" format="color"/>
+
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->
         <attr name="buttonColor" format="color"/>

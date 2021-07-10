@@ -4,7 +4,6 @@
      found in the LICENSE file. -->
 <org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/control_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,12 +23,11 @@
 
         <ImageView
             android:id="@+id/toolbar_shadow"
-            android:src="@drawable/modern_toolbar_shadow"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_shadow_height"
+            android:layout_height="0dp"
             android:layout_marginTop="@dimen/tab_strip_and_toolbar_height"
             android:scaleType="fitXY"
-            tools:ignore="ContentDescription" />
+            android:importantForAccessibility="no" />
 
         <ViewStub
             android:id="@+id/find_toolbar_stub"

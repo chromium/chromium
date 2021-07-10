@@ -16,4 +16,5 @@
 
     <!-- Toolbar dimensions -->
     <dimen name="toolbar_shadow_height">8dp</dimen>
+    <dimen name="toolbar_hairline_height">1dp</dimen>
 </resources>
