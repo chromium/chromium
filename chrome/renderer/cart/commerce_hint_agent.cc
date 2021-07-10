@@ -185,6 +185,12 @@ void OnPurchase(content::RenderFrame* render_frame) {
   observer->OnPurchase();
 }
 
+void OnFormSubmit(content::RenderFrame* render_frame, bool is_purchase) {
+  mojo::Remote<mojom::CommerceHintObserver> observer =
+      GetObserver(render_frame);
+  observer->OnFormSubmit(is_purchase);
+}
+
 bool PartialMatch(base::StringPiece str, const re2::RE2& re) {
   return RE2::PartialMatch(re2::StringPiece(str.data(), str.size()), re);
 }
@@ -795,13 +801,16 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
 
+  bool is_purchase = false;
   for (const std::string& button_text : ExtractButtonTexts(form)) {
     if (IsPurchase(url, button_text)) {
       RecordCommerceEvent(CommerceEvent::kPurchaseByForm);
       OnPurchase(render_frame());
-      return;
+      is_purchase = true;
+      break;
     }
   }
+  OnFormSubmit(render_frame(), is_purchase);
 }
 
 // TODO(crbug/1164236): use MutationObserver on cart instead.

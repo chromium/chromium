@@ -14516,6 +14516,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.FormSubmitted">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <summary>
+    Recorded when user submits a form.
+  </summary>
+  <metric name="IsTransaction" enum="Boolean">
+    <summary>
+      Whether the form submission is a shopping transaction. This has 50% chance
+      randomized.
+    </summary>
+  </metric>
+</event>
+
 <event name="SiteIsolation.XSD.Browser.Blocked">
   <obsolete>
     Removed in June 2019 / M77. Some old data has been saved in a

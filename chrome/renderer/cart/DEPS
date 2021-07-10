@@ -9,5 +9,7 @@ include_rules = [
 specific_include_rules = {
    "commerce_hint_agent_browsertest.cc": [
       "+components/optimization_guide/core/optimization_guide_features.h",
+      "+components/ukm",
+      "+services/metrics/public/cpp/ukm_builders.h",
    ],
 }

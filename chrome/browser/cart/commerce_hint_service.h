@@ -28,6 +28,7 @@ class CommerceHintService
                    const absl::optional<GURL>& cart_url,
                    const std::string& product_id = std::string());
   void OnRemoveCart(const GURL& url);
+  void OnFormSubmit(bool is_purchase);
   void OnCartUpdated(const GURL& cart_url,
                      std::vector<mojom::ProductPtr> products);
 

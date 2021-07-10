@@ -33,4 +33,7 @@ interface CommerceHintObserver {
 
   // Purchase action is detected.
   OnPurchase();
+
+  // A form is submitted.
+  OnFormSubmit(bool is_purchase);
 };

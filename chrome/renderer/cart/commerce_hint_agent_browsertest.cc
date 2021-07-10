@@ -20,12 +20,14 @@
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -158,6 +160,8 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 // Tests CommerceHintAgent.
 class CommerceHintAgentTest : public PlatformBrowserTest {
  public:
+  using Entry = ukm::builders::Shopping_FormSubmitted;
+
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ntp_features::kNtpChromeCartModule,
@@ -188,6 +192,8 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     https_server_.RegisterRequestHandler(base::BindRepeating(&BasicResponse));
     ASSERT_TRUE(https_server_.InitializeAndListen());
     https_server_.StartAcceptingConnections();
+
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
  protected:
@@ -344,9 +350,26 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     std::move(closure).Run();
   }
 
+  void ExpectUKM(const std::string& metric_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    ASSERT_FALSE(entries.empty());
+
+    for (const auto* const entry : entries) {
+      if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
+        SUCCEED();
+        return;
+      }
+    }
+    FAIL() << "Expected UKM \"" << metric_name << "\" was not recorded";
+  }
+
+  ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   CartService* service_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   bool satisfied_;
 };
 
@@ -445,6 +468,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
   content::TestNavigationObserver load_observer(web_contents());
   load_observer.WaitForNavigationFinished();
   WaitForCartCount(kEmptyExpected);
+  ExpectUKM("IsTransaction");
 }
 
 // TODO(crbug.com/1180268): CrOS multi-profiles implementation is different from
