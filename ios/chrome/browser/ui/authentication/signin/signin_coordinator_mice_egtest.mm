@@ -102,7 +102,8 @@ using chrome_test_util::SettingsCollectionView;
 
 // Tests that opening the sign-in screen from the Sync Off tab and signin in
 // will turn Sync On.
-- (void)testSignInFromSyncOffLink {
+// TODO(crbug.com/1227847) - fix and re-enable
+- (void)DISABLED_testSignInFromSyncOffLink {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
