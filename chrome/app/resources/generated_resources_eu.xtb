@@ -1360,7 +1360,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2445081178310039857">Luzapenaren erroaren direktorioa behar da.</translation>
 <translation id="2445484935443597917">Sortu profil bat</translation>
 <translation id="2448312741937722512">Mota</translation>
-<translation id="2448810255793562605">Erabilerraztasun-osagarriaren bilaketa automatikoa</translation>
+<translation id="2448810255793562605">Erabilerraztasun-osagarriaren pantailan automatikoki mugitzeko aukera</translation>
 <translation id="2450223707519584812">Ezin izango dituzu erabiltzaileak gehitu, Google APIko gakoak falta direlako. Xehetasun gehiago nahi badituzu, ikusi <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Ez dago ikuspegi aktiborik</translation>
 <translation id="2451298179137331965">2x</translation>
@@ -1806,7 +1806,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2911433807131383493">Ireki ChromeVox tutoriala</translation>
 <translation id="2913331724188855103">Baimendu webguneei cookieen datuak gordetzea eta irakurtzea (gomendatua)</translation>
 <translation id="2915102088417824677">Ikusi jardueren erregistroa</translation>
-<translation id="2915873080513663243">Bilaketa automatikoa</translation>
+<translation id="2915873080513663243">Pantailan automatikoki mugitzeko aukera</translation>
 <translation id="2916073183900451334">Web-orrietan tabulazio-tekla sakatzen denean, estekak eta inprimakien eremuak nabarmentzen dira.</translation>
 <translation id="2916745397441987255">Bilatu luzapenak</translation>
 <translation id="2918484644467055090">Ezin da erregistratu gailua zure kontuari dagokion erakundean, gailua beste erakunde batek kudeatzeko markatuta dagoelako.</translation>
@@ -3514,7 +3514,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4808667324955055115">Leiho gainerakorrak blokeatuta daude:</translation>
 <translation id="4809079943450490359">Gailuaren administratzailearen argibideak:</translation>
 <translation id="480990236307250886">Ireki orri nagusia</translation>
-<translation id="4811212958317149293">Erabilerraztasun-osagarriaren teklatu bidezko bilaketa automatikoa</translation>
+<translation id="4811212958317149293">Erabilerraztasun-osagarriaren teklatu bidezko pantailan automatikoki mugitzeko aukera</translation>
 <translation id="4811503964269049987">Taldekatu hautatutako fitxa</translation>
 <translation id="4813136279048157860">Nire irudiak</translation>
 <translation id="4813512666221746211">Sareko errorea</translation>
@@ -7259,7 +7259,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8910222113987937043">Aurrerantzean, ez dira sinkronizatuko Google-ko kontuarekin laster-marketan, historian, pasahitzetan eta bestelako ezarpenetan egindako aldaketak. Hala ere, Google-ko kontuan biltegiratuko dira lehendik dauden datuak, eta <ph name="BEGIN_LINK" />Google-ren Panela<ph name="END_LINK" /> atalaren bidez kudea daitezke.</translation>
 <translation id="8912362522468806198">Google-ko kontua</translation>
 <translation id="8912793549644936705">Zabaldu</translation>
-<translation id="8912810933860534797">Gaitu bilaketa automatikoa</translation>
+<translation id="8912810933860534797">Gaitu pantailan automatikoki mugitzeko aukera</translation>
 <translation id="8915370057835397490">Iradokizuna kargatzen</translation>
 <translation id="8916476537757519021">Ezkutuko moduko azpimarkoa: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> erabiltzailearen <ph name="DEVICE_TYPE" /> gailua</translation>

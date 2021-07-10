@@ -2424,7 +2424,7 @@
 <translation id="3587482841069643663">அனைத்தும்</translation>
 <translation id="3588790464166520201">பேமெண்ட் ஹேண்ட்லர்களை நிறுவ அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="3589766037099229847">பாதுகாப்பற்ற உள்ளடக்கம் தடுக்கப்பட்டுள்ளது</translation>
-<translation id="3590194807845837023">சுயவிவரத்தைத் தடைநீக்கி, மீண்டும் இயக்கு</translation>
+<translation id="3590194807845837023">சுயவிவரத்தை அன்லாக் செய்து மீண்டும் இயக்கு</translation>
 <translation id="3590295622232282437">நிர்வகிக்கப்பட்ட அமர்வில் உள்நுழைகிறது.</translation>
 <translation id="3592260987370335752">&amp;மேலும் அறிக</translation>
 <translation id="359283478042092570">உள்நுழைக</translation>
@@ -2583,7 +2583,7 @@
 <translation id="3748706263662799310">பிழையைப் புகாரளி</translation>
 <translation id="3752582316358263300">சரி...</translation>
 <translation id="3753033997400164841">ஒரு முறை சேமித்து. எங்கும் பயன்படுத்தலாம்</translation>
-<translation id="3755411799582650620">உங்கள் <ph name="PHONE_NAME" /> இப்போது <ph name="DEVICE_TYPE" /> ஐயும் தடைநீக்க முடியும்.</translation>
+<translation id="3755411799582650620">உங்கள் <ph name="PHONE_NAME" /> இப்போது <ph name="DEVICE_TYPE" /> ஐயும் அன்லாக் செய்ய முடியும்.</translation>
 <translation id="375636864092143889">தளமானது உங்கள் மைக்ரோஃபோனைப் பயன்படுத்துகிறது</translation>
 <translation id="3756578970075173856">பின்னை அமைத்தல்</translation>
 <translation id="3757733214359997190">தளங்கள் இல்லை</translation>
@@ -3592,7 +3592,7 @@
 <translation id="4871719318659334896">குழுவை மூடுக</translation>
 <translation id="4873312501243535625">மீடியா ஃபைல் செக்கர்</translation>
 <translation id="4876273079589074638">இந்தச் சிதைவிற்கான காரணங்களை ஆராய்ந்து, சரிசெய்வதற்கு எங்கள் பொறியாளர்களுக்கு உதவவும். முடிந்தால், என்ன நடந்தது என்பதைத் துல்லியமாகப் பட்டியலிடவும். நீங்கள் வழங்கும் சிறிய தகவலும் எங்களுக்கு உதவும்!</translation>
-<translation id="4876895919560854374">திரையைப் பூட்டவும் மற்றும் தடைநீக்கவும்</translation>
+<translation id="4876895919560854374">திரையை லாக் மற்றும் அன்லாக் செய்தல்</translation>
 <translation id="4877276003880815204">கூறுகளை ஆய்வு செய்</translation>
 <translation id="4878634973244289103">கருத்தை அனுப்ப முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="4878653975845355462">பிரத்தியேகமான பின்புலங்கள் உங்கள் நிர்வாகியால் முடக்கப்பட்டுள்ளன</translation>
@@ -4327,7 +4327,7 @@
 <translation id="5696177755977520104">Chrome OS அமைப்புகள் ஒத்திசைவு</translation>
 <translation id="5696679855467848181">தற்போது உபயோகத்திலுள்ள PPD கோப்பு: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ஈமோஜி தேர்வுக் கருவி</translation>
-<translation id="5698411045597658393"><ph name="NETWORK_NAME" />, அனலாக் செய்யும்</translation>
+<translation id="5698411045597658393"><ph name="NETWORK_NAME" />, அன்லாக் செய்யும்</translation>
 <translation id="570043786759263127">Google Play ஆப்ஸ் மற்றும் சேவைகள்</translation>
 <translation id="5700836101007545240">உங்கள் நிர்வாகி இணைய இணைப்பைச் சேர்ப்பதை முடக்கியுள்ளார்</translation>
 <translation id="5701080607174488915">சேவையகத்திலிருந்து கொள்கையைப் பெறுவதில் பிழை.</translation>
