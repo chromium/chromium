@@ -3256,6 +3256,69 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.LoadDataWithBaseUrl.HistoryUrl.{Timing}"
+    enum="URLValueForLoadDataWithBaseURL" expires_after="M95">
+  <owner>rakina@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the history_url_for_data_url parameter used for a
+    loadDataWithBaseURL commit is empty/null, invalid, the same as the baseUrl
+    parameter, the same as the data: URL, or an entirely different value.
+    Recorded at navigation at {Timing}.
+  </summary>
+  <token key="Timing">
+    <variant name="DidCommitNavigation"/>
+    <variant name="NavigationRequestCreated"/>
+  </token>
+</histogram>
+
+<histogram name="Android.WebView.LoadDataWithBaseUrl.IsInMainFrame"
+    enum="BooleanMainFrame" expires_after="M95">
+  <owner>rakina@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    When the base_url_for_data_url parameter is set and the URL is a data: URL
+    (NavigationRequest::IsLoadDataWithBaseURL() returns true), records whether
+    the navigation happens on a main frame or a subframe. Recorded when the
+    NavigationRequest is created.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.LoadDataWithBaseUrl.LoadingUrl"
+    enum="URLValueForLoadDataWithBaseURL" expires_after="M95">
+  <owner>rakina@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the loading URL (DidCommitParams' URL) used for a
+    loadDataWithBaseURL commit is empty/null, invalid, the same as the baseUrl
+    parameter, the same as the data: URL, or an entirely different value.
+    Recorded at DidCommitNavigation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.LoadDataWithBaseUrl.NextNavigationIsSameDocument"
+    enum="Boolean" expires_after="M95">
+  <owner>rakina@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether a navigation that happens on/away from a document loaded
+    through a loadDataWithBaseUrl navigation is same-document or not. Recorded
+    at DidCommitNavigation.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.LoadDataWithBaseUrl.SameUrlReplacement"
+    enum="Boolean" expires_after="M95">
+  <owner>rakina@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether a loadDataWithBaseURL navigation is categorized as a
+    same-URL-replacement navigation or not. Recorded from
+    NavigationRequest::StartNavigation().
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.LoadUrl.UrlScheme" enum="WebViewUrlScheme"
     expires_after="2022-03-29">
   <owner>ntfschr@chromium.org</owner>

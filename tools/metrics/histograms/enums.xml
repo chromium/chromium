@@ -82311,6 +82311,15 @@ Full version information for the fingerprint enum values:
   <int value="13" label="kContentId"/>
 </enum>
 
+<enum name="URLValueForLoadDataWithBaseURL">
+  <int value="0" label="Different from baseUrl and commit/data: URL"/>
+  <int value="1" label="Empty"/>
+  <int value="2" label="Invalid"/>
+  <int value="3" label="Same as base URL"/>
+  <int value="4" label="Same as commit / data: URL"/>
+  <int value="5" label="about:blank"/>
+</enum>
+
 <enum name="UsageStatsEvents">
   <int value="0" label="Opt In"/>
   <int value="1" label="Opt Out"/>
