@@ -133,8 +133,6 @@ executable("cast_runner_exe") {
 # and add the targets that generate these to assert_no_deps in
 # cast_runner_core and web_runner_exe.
 _web_instance_host_deps_files_to_exclude = [
-  "data/vulkan/explicit_layer.d/VkLayer_image_pipe_swapchain.json",
-  "lib/VkLayer_image_pipe_swapchain.so",
   "lib/libEGL.so",
   "lib/libGLESv2.so",
   "lib/libtrace-engine.so",

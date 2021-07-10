@@ -107,6 +107,7 @@ if (is_fuchsia) {
     binary = ":ozone_demo"
     package_name_override = "ozone_demo"
     manifest = "//build/config/fuchsia/gfx_tests.cmx"
+    deps = [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan_layers:VkLayer_image_pipe_swapchain" ]
   }
 
   fuchsia_package_runner("ozone_demo_fuchsia") {

@@ -33,6 +33,25 @@
 
 namespace ui {
 
+namespace {
+
+constexpr char kFuchsiaSwapchainLayerName[] =
+    "VK_LAYER_FUCHSIA_imagepipe_swapchain";
+
+bool CheckSwapchainAvailable() {
+  uint32_t num_instance_exts;
+  VkResult result = vkEnumerateInstanceExtensionProperties(
+      kFuchsiaSwapchainLayerName, &num_instance_exts, nullptr);
+  return result == VK_SUCCESS;
+}
+
+bool IsSwapchainEnabled() {
+  static bool is_swapchain_enabled = CheckSwapchainAvailable();
+  return is_swapchain_enabled;
+}
+
+}  // namespace
+
 VulkanImplementationScenic::VulkanImplementationScenic(
     ScenicSurfaceFactory* scenic_surface_factory,
     SysmemBufferManager* sysmem_buffer_manager,
@@ -56,14 +75,21 @@ bool VulkanImplementationScenic::InitializeVulkanInstance(bool using_surface) {
   gpu::VulkanFunctionPointers* vulkan_function_pointers =
       gpu::GetVulkanFunctionPointers();
   vulkan_function_pointers->vulkan_loader_library = handle;
+
+  if (!vulkan_function_pointers->BindUnassociatedFunctionPointers())
+    return false;
+
   std::vector<const char*> required_extensions = {
-      VK_KHR_SURFACE_EXTENSION_NAME,
-      VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME,
       VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
   };
-  std::vector<const char*> required_layers = {
-      "VK_LAYER_FUCHSIA_imagepipe_swapchain",
+  std::vector<const char*> required_layers;
+
+  if (IsSwapchainEnabled()) {
+    required_layers.push_back(kFuchsiaSwapchainLayerName);
+    required_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+    required_extensions.push_back(VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME);
   };
+
   return vulkan_instance_.Initialize(required_extensions, required_layers);
 }
 
@@ -73,20 +99,11 @@ gpu::VulkanInstance* VulkanImplementationScenic::GetVulkanInstance() {
 
 std::unique_ptr<gpu::VulkanSurface>
 VulkanImplementationScenic::CreateViewSurface(gfx::AcceleratedWidget window) {
-  // TODO(crbug.com/982922): Remove these checks after swapchain update and
-  // ImagePipe2 rollout completes.
-  uint32_t image_pipe_swapchain_implementation_version = 0;
-  constexpr base::StringPiece image_pipe_swapchain(
-      "VK_LAYER_FUCHSIA_imagepipe_swapchain");
-  for (const VkLayerProperties& layer_property :
-       vulkan_instance_.vulkan_info().instance_layers) {
-    if (image_pipe_swapchain != layer_property.layerName)
-      continue;
-    image_pipe_swapchain_implementation_version =
-        layer_property.implementationVersion;
-    break;
+  if (!IsSwapchainEnabled()) {
+    LOG(FATAL) << "CreateViewSurface() called while swapchain extension isn't "
+                  "enabled.";
   }
-  DCHECK_GT(image_pipe_swapchain_implementation_version, 0u);
+
   ScenicSurface* scenic_surface = scenic_surface_factory_->GetSurface(window);
   fuchsia::images::ImagePipe2Ptr image_pipe;
   scenic_surface->SetTextureToNewImagePipe(image_pipe.NewRequest());
@@ -120,7 +137,7 @@ bool VulkanImplementationScenic::GetPhysicalDevicePresentationSupport(
 
 std::vector<const char*>
 VulkanImplementationScenic::GetRequiredDeviceExtensions() {
-  return {
+  std::vector<const char*> result = {
       VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
@@ -131,8 +148,12 @@ VulkanImplementationScenic::GetRequiredDeviceExtensions() {
       VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME,
       VK_KHR_MAINTENANCE1_EXTENSION_NAME,
       VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
-      VK_KHR_SWAPCHAIN_EXTENSION_NAME,
   };
+
+  if (IsSwapchainEnabled())
+    result.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+  return result;
 }
 
 std::vector<const char*>

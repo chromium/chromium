@@ -7,13 +7,6 @@ assert(is_fuchsia)
 import("//build/toolchain/toolchain.gni")
 import("//third_party/fuchsia-sdk/sdk/build/fuchsia_sdk_pkg.gni")
 
-group("vulkan_base") {
-  data_deps = [
-    "sdk/pkg/vulkan",
-    "sdk/pkg/vulkan_layers:VkLayer_image_pipe_swapchain",
-  ]
-}
-
 group("vulkan_validation") {
   data_deps = [ "sdk/pkg/vulkan_layers:VkLayer_khronos_validation" ]
 }

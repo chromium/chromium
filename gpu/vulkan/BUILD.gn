@@ -143,7 +143,7 @@ if (enable_vulkan) {
 
       public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
 
-      data_deps += [ "//third_party/fuchsia-sdk:vulkan_base" ]
+      data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan" ]
 
       # VulkanInstance enables validation layer in Debug builds and when DCHECKs
       # are enabled in Release builds. In these cases the validation layer
