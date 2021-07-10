@@ -1715,9 +1715,18 @@ bool ChromePasswordProtectionService::IsURLAllowlistedForPasswordEntry(
     return false;
 
   PrefService* prefs = profile_->GetPrefs();
-  return IsURLAllowlistedByPolicy(url, *prefs) ||
-         MatchesPasswordProtectionChangePasswordURL(url, *prefs) ||
-         MatchesPasswordProtectionLoginURL(url, *prefs);
+  bool is_url_allowlisted_by_policy = IsURLAllowlistedByPolicy(url, *prefs);
+  bool matches_change_password_url =
+      MatchesPasswordProtectionChangePasswordURL(url, *prefs);
+  bool matches_login_url = MatchesPasswordProtectionLoginURL(url, *prefs);
+
+  CRSBLOG << __func__ << " URL that is being checked if allowlisted: " << url
+          << " matches URL allowlist? " << is_url_allowlisted_by_policy
+          << " matches password protection change password URL? "
+          << matches_change_password_url
+          << " matches password protection login URL? " << matches_login_url;
+  return is_url_allowlisted_by_policy || matches_change_password_url ||
+         matches_login_url;
 }
 
 void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(

@@ -19,6 +19,7 @@ function initialize() {
   sendWithPromise('getExperiments', [])
       .then((experiments) => addExperiments(experiments));
   sendWithPromise('getPrefs', []).then((prefs) => addPrefs(prefs));
+  sendWithPromise('getPolicies', []).then((policies) => addPolicies(policies));
   sendWithPromise('getCookie', []).then((cookie) => addCookie(cookie));
   sendWithPromise('getSavedPasswords', [])
       .then((passwords) => addSavedPasswords(passwords));
@@ -203,6 +204,18 @@ function addPrefs(result) {
     preferencesListFormatted.querySelectorAll('span')[1].textContent =
         result[i];
     $('preferences-list').appendChild(preferencesListFormatted);
+  }
+}
+
+function addPolicies(result) {
+  const resLength = result.length;
+
+  for (let i = 0; i < resLength; i += 2) {
+    const policiesListFormatted = $('result-template').content.cloneNode(true);
+    policiesListFormatted.querySelectorAll('span')[0].textContent =
+        result[i + 1] + ': ';
+    policiesListFormatted.querySelectorAll('span')[1].textContent = result[i];
+    $('policies-list').appendChild(policiesListFormatted);
   }
 }
 

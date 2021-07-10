@@ -1925,6 +1925,15 @@ void SafeBrowsingUIHandler::GetPrefs(const base::ListValue* args) {
                                 user_prefs::UserPrefs::Get(browser_context_)));
 }
 
+void SafeBrowsingUIHandler::GetPolicies(const base::ListValue* args) {
+  AllowJavascript();
+  std::string callback_id;
+  args->GetString(0, &callback_id);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            safe_browsing::GetSafeBrowsingPoliciesList(
+                                user_prefs::UserPrefs::Get(browser_context_)));
+}
+
 void SafeBrowsingUIHandler::GetCookie(const base::ListValue* args) {
   std::string callback_id;
   args->GetString(0, &callback_id);
@@ -2403,6 +2412,9 @@ void SafeBrowsingUIHandler::RegisterMessages() {
       "getExperiments",
       base::BindRepeating(&SafeBrowsingUIHandler::GetExperiments,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getPolicies", base::BindRepeating(&SafeBrowsingUIHandler::GetPolicies,
+                                         base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getPrefs", base::BindRepeating(&SafeBrowsingUIHandler::GetPrefs,
                                       base::Unretained(this)));

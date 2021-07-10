@@ -96,6 +96,9 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // Get the Safe Browsing related preferences for the current user.
   void GetPrefs(const base::ListValue* args);
 
+  // Get the Safe Browsing related policies for the current user.
+  void GetPolicies(const base::ListValue* args);
+
   // Get the Safe Browsing cookie.
   void GetCookie(const base::ListValue* args);
 

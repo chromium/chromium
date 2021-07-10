@@ -263,6 +263,11 @@ void UpdatePrefsBeforeSecurityInterstitial(PrefService* prefs);
 // values represented as strings.
 base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs);
 
+// Returns a list of policies to be shown in chrome://safe-browsing. The
+// policies are passed as an alternating sequence of policy names and
+// values represented as strings.
+base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs);
+
 // Returns a list of valid domains that Safe Browsing service trusts.
 void GetSafeBrowsingAllowlistDomainsPref(
     const PrefService& prefs,
