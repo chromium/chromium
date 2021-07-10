@@ -376,7 +376,7 @@ wtf_size_t PaintController::FindItemFromIdIndexMap(
     const DisplayItem::Id& id,
     const IdIndexMap& display_item_id_index_map,
     const DisplayItemList& list) {
-  auto it = display_item_id_index_map.find(IdAsHashKey(id));
+  auto it = display_item_id_index_map.find(id.AsHashKey());
   if (it == display_item_id_index_map.end())
     return kNotFound;
 
@@ -391,8 +391,8 @@ wtf_size_t PaintController::FindItemFromIdIndexMap(
 void PaintController::AddToIdIndexMap(const DisplayItem::Id& id,
                                       wtf_size_t index,
                                       IdIndexMap& map) {
-  DCHECK(!map.Contains(IdAsHashKey(id)));
-  map.insert(IdAsHashKey(id), index);
+  DCHECK(!map.Contains(id.AsHashKey()));
+  map.insert(id.AsHashKey(), index);
 }
 
 wtf_size_t PaintController::FindCachedItem(const DisplayItem::Id& id) {
@@ -732,7 +732,7 @@ void PaintController::ValidateNewChunkId(const PaintChunk::Id& id) {
   if (DisplayItem::IsForeignLayerType(id.type))
     return;
 
-  auto it = new_paint_chunk_id_index_map_.find(IdAsHashKey(id));
+  auto it = new_paint_chunk_id_index_map_.find(id.AsHashKey());
   if (it != new_paint_chunk_id_index_map_.end()) {
     ShowDebugData();
     NOTREACHED() << "New paint chunk id " << id

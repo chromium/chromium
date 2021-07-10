@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -170,6 +172,22 @@ class PLATFORM_EXPORT DisplayItem {
     const DisplayItemClient& client;
     const Type type;
     const wtf_size_t fragment;
+
+    struct HashKey {
+      HashKey() = default;
+      explicit HashKey(const DisplayItem::Id& id)
+          : client(&id.client), type(id.type), fragment(id.fragment) {}
+      bool operator==(const HashKey& other) const {
+        return client == other.client && type == other.type &&
+               fragment == other.fragment;
+      }
+
+      const DisplayItemClient* client = nullptr;
+      DisplayItem::Type type = static_cast<DisplayItem::Type>(0);
+      wtf_size_t fragment = 0;
+    };
+
+    HashKey AsHashKey() const { return HashKey(*this); }
   };
 
   Id GetId() const { return Id(*client_, GetType(), fragment_); }
@@ -320,5 +338,36 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem::Id&);
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem&);
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct HashTraits<blink::DisplayItem::Id::HashKey>
+    : GenericHashTraits<blink::DisplayItem::Id::HashKey> {
+  using Key = blink::DisplayItem::Id::HashKey;
+  static void ConstructDeletedValue(Key& slot, bool) {
+    const_cast<wtf_size_t&>(slot.fragment) = kNotFound;
+  }
+  static bool IsDeletedValue(const Key& id) { return id.fragment == kNotFound; }
+};
+
+template <>
+struct DefaultHash<blink::DisplayItem::Id::HashKey> {
+  struct Hash {
+    STATIC_ONLY(Hash);
+    using Key = blink::DisplayItem::Id::HashKey;
+    static unsigned GetHash(const Key& id) {
+      unsigned hash =
+          PtrHash<const blink::DisplayItemClient>::GetHash(id.client);
+      WTF::AddIntToHash(hash, id.type);
+      WTF::AddIntToHash(hash, id.fragment);
+      return hash;
+    }
+    static bool Equal(const Key& a, const Key& b) { return a == b; }
+    static const bool safe_to_compare_to_empty_or_deleted = false;
+  };
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_H_

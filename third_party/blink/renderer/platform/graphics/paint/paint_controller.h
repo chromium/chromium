@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -307,46 +306,8 @@ class PLATFORM_EXPORT PaintController {
   void CheckNewItem(DisplayItem&);
   void CheckNewChunk();
 
-  struct IdAsHashKey {
-    IdAsHashKey() = default;
-    explicit IdAsHashKey(const DisplayItem::Id& id)
-        : client(&id.client), type(id.type), fragment(id.fragment) {}
-    explicit IdAsHashKey(WTF::HashTableDeletedValueType) {
-      HashTraits<const DisplayItemClient*>::ConstructDeletedValue(client,
-                                                                  false);
-    }
-    bool IsHashTableDeletedValue() const {
-      return HashTraits<const DisplayItemClient*>::IsDeletedValue(client);
-    }
-    bool operator==(const IdAsHashKey& other) const {
-      return client == other.client && type == other.type &&
-             fragment == other.fragment;
-    }
-
-    const DisplayItemClient* client = nullptr;
-    DisplayItem::Type type = static_cast<DisplayItem::Type>(0);
-    wtf_size_t fragment = 0;
-  };
-
-  struct IdHash {
-    STATIC_ONLY(IdHash);
-    static unsigned GetHash(const IdAsHashKey& id) {
-      unsigned hash = PtrHash<const DisplayItemClient>::GetHash(id.client);
-      WTF::AddIntToHash(hash, id.type);
-      WTF::AddIntToHash(hash, id.fragment);
-      return hash;
-    }
-    static bool Equal(const IdAsHashKey& a, const IdAsHashKey& b) {
-      return a == b;
-    }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
-
   // Maps a display item id to the index of the display item or the paint chunk.
-  using IdIndexMap = HashMap<IdAsHashKey,
-                             wtf_size_t,
-                             IdHash,
-                             SimpleClassHashTraits<IdAsHashKey>>;
+  using IdIndexMap = HashMap<DisplayItem::Id::HashKey, wtf_size_t>;
 
   static wtf_size_t FindItemFromIdIndexMap(const DisplayItem::Id&,
                                            const IdIndexMap&,
