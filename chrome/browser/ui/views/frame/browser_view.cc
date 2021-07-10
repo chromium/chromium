@@ -3344,9 +3344,23 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
         screen->GetDisplayNearestWindow(GetNativeWindow());
     if (screen && screen->GetDisplayWithDisplayId(display_id, &display) &&
         current_display.id() != display_id) {
-      if (!IsFullscreen()) {
-        const gfx::Rect current_bounds = frame_->GetWindowBoundsInScreen();
-        const bool is_maximized = frame_->IsMaximized();
+      entering_cross_screen_fullscreen = true;
+
+      // Fullscreen windows must exit fullscreen to move to another display.
+      if (IsFullscreen())
+        frame_->SetFullscreen(false);
+
+      // Maximized windows must be restored to move to another display.
+      const bool was_maximized = frame_->IsMaximized();
+      if (was_maximized)
+        frame_->Restore();
+
+      if (restore_pre_fullscreen_bounds_callback_.is_null()) {
+        // TODO(crbug.com/1227805): GetRestoredBounds() yields maximized bounds
+        // on Linux when the window is maximized and then made fullscreen on the
+        // current screen, before (now) requesting fullscreen on another screen.
+        // This causes the window's pre-maximized (restored) bounds to be lost.
+        const gfx::Rect restored_bounds = frame_->GetRestoredBounds();
         restore_pre_fullscreen_bounds_callback_ = base::BindOnce(
             [](base::WeakPtr<BrowserView> view, const gfx::Rect& bounds,
                bool maximize) {
@@ -3358,14 +3372,9 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
                   view->frame()->Maximize();
               }
             },
-            weak_ptr_factory_.GetWeakPtr(), current_bounds, is_maximized);
-        // Maximized windows must be restored to actually move between displays.
-        if (is_maximized)
-          frame_->Restore();
-      } else {
-        frame_->SetFullscreen(false);
+            weak_ptr_factory_.GetWeakPtr(), restored_bounds, was_maximized);
       }
-      entering_cross_screen_fullscreen = true;
+
       frame_->SetBounds({display.work_area().origin(),
                          frame_->GetWindowBoundsInScreen().size()});
     }
