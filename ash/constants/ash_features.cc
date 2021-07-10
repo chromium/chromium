@@ -700,6 +700,11 @@ const base::Feature kMojoDBusRelay{"MojoDBusRelay",
 const base::Feature kMultilingualTyping{"MultilingualTyping",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Nearby Connections to specificy KeepAlive interval and timeout while
+// also making the Nearby Connections WebRTC defaults longer.
+const base::Feature kNearbyKeepAliveFix{"NearbyKeepAliveFix",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether new OOBE layout is shown or not.
 const base::Feature kNewOobeLayout{"NewOobeLayout",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1315,6 +1320,10 @@ bool IsMinimumChromeVersionEnabled() {
 
 bool IsMinorModeRestrictionEnabled() {
   return base::FeatureList::IsEnabled(kMinorModeRestriction);
+}
+
+bool IsNearbyKeepAliveFixEnabled() {
+  return base::FeatureList::IsEnabled(kNearbyKeepAliveFix);
 }
 
 bool IsNetworkingInDiagnosticsAppEnabled() {

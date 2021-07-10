@@ -4898,6 +4898,12 @@ const char kMultilingualTypingName[] = "Multilingual typing on CrOS";
 const char kMultilingualTypingDescription[] =
     "Enables support for multilingual assistive typing on Chrome OS.";
 
+const char kNearbyKeepAliveFixName[] = "Nearby Keep Alive Fix";
+const char kNearbyKeepAliveFixDescription[] =
+    "Enables custom KeepAlive interval and timeout for Nearby Connections and "
+    "makes Nearby Connections WebRTC KeepAlive less chatty to help with "
+    "battery life.";
+
 const char kNearbySharingName[] = "Nearby Sharing";
 const char kNearbySharingDescription[] =
     "Enables Nearby Sharing for sharing content between devices.";

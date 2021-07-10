@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 include_rules = [
+  '+ash/constants/ash_features.h',
   '+device/bluetooth/public',
   '+third_party/abseil-cpp/absl/strings/string_view.h',
   '+third_party/abseil-cpp/absl/time/time.h',

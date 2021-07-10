@@ -2827,6 +2827,9 @@ extern const char kMicrophoneMuteSwitchDeviceDescription[];
 extern const char kMultilingualTypingName[];
 extern const char kMultilingualTypingDescription[];
 
+extern const char kNearbyKeepAliveFixName[];
+extern const char kNearbyKeepAliveFixDescription[];
+
 extern const char kNearbySharingName[];
 extern const char kNearbySharingDescription[];
 

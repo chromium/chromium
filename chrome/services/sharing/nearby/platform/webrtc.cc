@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/webrtc/ipc_network_manager.h"
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
@@ -26,6 +27,29 @@ namespace nearby {
 namespace chrome {
 
 namespace {
+
+// The following constants are RTCConfiguration defaults designed to help with
+// battery life for persistent connections like Phone Hub. These values were
+// chosen by doing battery drain tests on an Android phone with a persistent
+// Phone Hub connection upgraded to WebRtc. The goal here is prevent chatty
+// KeepAlive pings at the WebRtc layer from waking up the Phone's kernel too
+// frequently and causing battery drain.
+//
+// NOTE: Nearby Connections also has its own KeepAlive interval and timeout that
+// are different from these core WebRtc values. They operate at a different
+// layer and don't directly affect the values chosen for WebRtc. However, both
+// values need to be greater than the defaults for battery saving to happen and
+// the most frequent ping ultimately determines the worst case number of wake
+// ups.
+//
+// See: b/183505430 for more context.
+constexpr base::TimeDelta kIceConnectionReceivingTimeout =
+    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kIceCheckIntervalStrongConnectivity =
+    base::TimeDelta::FromMilliseconds(2500);
+constexpr base::TimeDelta kStableWritableConnectionPingInterval =
+    base::TimeDelta::FromSeconds(30);
+
 net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("nearby_webrtc_connection", R"(
         semantics {
@@ -483,6 +507,19 @@ void WebRtcMedium::OnIceServersFetched(
     if (ice_server->credential)
       ice_turn_server.password = *ice_server->credential;
     rtc_config.servers.push_back(ice_turn_server);
+  }
+
+  // This prevents WebRTC from being chatty with keep alive messages which was
+  // causing battery drain for Phone Hub's persistent connection.
+  // Ideally these options should be configurable per connection, but right now
+  // we have a single share factory for all peer connections.
+  if (ash::features::IsNearbyKeepAliveFixEnabled()) {
+    rtc_config.ice_connection_receiving_timeout =
+        kIceConnectionReceivingTimeout.InMilliseconds();
+    rtc_config.ice_check_interval_strong_connectivity =
+        kIceCheckIntervalStrongConnectivity.InMilliseconds();
+    rtc_config.stable_writable_connection_ping_interval_ms =
+        kStableWritableConnectionPingInterval.InMilliseconds();
   }
 
   webrtc::PeerConnectionDependencies dependencies(observer);

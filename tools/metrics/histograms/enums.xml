@@ -48889,6 +48889,7 @@ from previous Chrome versions.
   <int value="160506687" label="ArcRtVcpuDualCore:disabled"/>
   <int value="160524775" label="PDFTwoUpView:disabled"/>
   <int value="160838658" label="SmartDimModelV3:enabled"/>
+  <int value="161008398" label="NearbyKeepAliveFix:disabled"/>
   <int value="161409456" label="AutofillUseMobileLabelDisambiguation:disabled"/>
   <int value="161694478" label="OmniboxNewAnswerLayout:enabled"/>
   <int value="168025622" label="EnableInputEventLogging:enabled"/>
@@ -50897,6 +50898,7 @@ from previous Chrome versions.
   <int value="1829259057" label="MediaAppHandlesPdf:enabled"/>
   <int value="1830460973" label="disable-network-settings-config"/>
   <int value="1831103529" label="MediaNotificationsCounter:disabled"/>
+  <int value="1831156636" label="NearbyKeepAliveFix:enabled"/>
   <int value="1831545645" label="query-tiles-single-tier"/>
   <int value="1831593339" label="stop-in-background:disabled"/>
   <int value="1831777433" label="query-tiles-rank-tiles"/>
