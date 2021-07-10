@@ -96,8 +96,12 @@ void HttpsOnlyModeUpgradeURLLoader::SetPriority(net::RequestPriority priority,
   // Do nothing.
 }
 
-void HttpsOnlyModeUpgradeURLLoader::PauseReadingBodyFromNet() {}
-void HttpsOnlyModeUpgradeURLLoader::ResumeReadingBodyFromNet() {}
+void HttpsOnlyModeUpgradeURLLoader::PauseReadingBodyFromNet() {
+  // Do nothing.
+}
+void HttpsOnlyModeUpgradeURLLoader::ResumeReadingBodyFromNet() {
+  // Do nothing.
+}
 
 void HttpsOnlyModeUpgradeURLLoader::StartHandlingRedirectToModifiedRequest(
     const network::ResourceRequest& resource_request,

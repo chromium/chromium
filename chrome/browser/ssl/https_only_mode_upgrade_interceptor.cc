@@ -26,20 +26,19 @@ int g_https_port_for_testing = 0;
 int g_http_port_for_testing = 0;
 
 // Only serve upgrade redirects for main frame, GET requests to HTTP URLs.
+// The loader also handles redirecting fallback navigations back to HTTP after
+// proceeding through the interstitial.
 // TODO(crbug.com/1218526): Consider excluding IP addresses and non-unique
 // hostnames (as these are likely intranet or unable to have publicly trusted
 // certificates).
 bool ShouldCreateLoader(const network::ResourceRequest& resource_request,
                         HttpsOnlyModeTabHelper* tab_helper) {
-  if (resource_request.resource_type !=
-          static_cast<int>(blink::mojom::ResourceType::kMainFrame) ||
-      (!resource_request.url.SchemeIs(url::kHttpScheme) &&
-       !tab_helper->is_navigation_fallback()) ||
-      resource_request.method != "GET" || !resource_request.is_main_frame) {
-    return false;
+  if (resource_request.is_main_frame && resource_request.method == "GET" &&
+      (resource_request.url.SchemeIs(url::kHttpScheme) ||
+       tab_helper->is_navigation_fallback())) {
+    return true;
   }
-
-  return true;
+  return false;
 }
 
 }  // namespace
@@ -50,7 +49,6 @@ HttpsOnlyModeUpgradeInterceptor::HttpsOnlyModeUpgradeInterceptor(
 
 HttpsOnlyModeUpgradeInterceptor::~HttpsOnlyModeUpgradeInterceptor() = default;
 
-// content::URLLoaderRequestInterceptor:
 void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,
     content::BrowserContext* browser_context,

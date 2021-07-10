@@ -102,6 +102,21 @@ SecurityLevel GetSecurityLevel(
     return DANGEROUS;
   }
 
+  // If the navigation was upgraded to HTTPS because of HTTPS-Only Mode, but did
+  // not succeed (either currently showing the HTTPS-Only Mode interstitial, or
+  // the navigation fell back to HTTP), set the security level to WARNING. The
+  // HTTPS-Only Mode interstitial warning is considered "less serious" than the
+  // general certificate error interstitials.
+  //
+  // This check must come before the checks for `connection_info_initialized`
+  // (because the HTTPS-Only Mode intersitital can trigger if the HTTPS version
+  // of the page does not commit) and certificate errors (because the HTTPS-Only
+  // Mode interstitial takes precedent if the certificate error occurred due to
+  // an upgraded main-frame navigation).
+  if (visible_security_state.is_https_only_mode_upgraded) {
+    return WARNING;
+  }
+
   if (!visible_security_state.connection_info_initialized) {
     return NONE;
   }
@@ -240,7 +255,8 @@ VisibleSecurityState::VisibleSecurityState()
       is_view_source(false),
       is_devtools(false),
       is_reader_mode(false),
-      should_treat_displayed_mixed_forms_as_secure(false) {}
+      should_treat_displayed_mixed_forms_as_secure(false),
+      is_https_only_mode_upgraded(false) {}
 
 VisibleSecurityState::VisibleSecurityState(const VisibleSecurityState& other) =
     default;

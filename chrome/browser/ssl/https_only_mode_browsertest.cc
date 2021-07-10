@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
 #include "chrome/browser/ssl/https_only_mode_upgrade_interceptor.h"
+#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -389,4 +390,56 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, HttpsUpgrade_DefaultPort) {
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
       contents->GetMainFrame(),
       l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+}
+
+// Tests that the security level is WARNING when the HTTPS-Only Mode
+// interstitial is shown for a net error on HTTPS. (Without HTTPS-Only Mode, a
+// net error would be a security level of NONE.) After clicking through the
+// interstitial, the security level should still be WARNING.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       NetErrorOnUpgrade_SecurityLevelWarning) {
+  GURL http_url = http_server()->GetURL("foo.com", "/close-socket");
+  GURL https_url = https_server()->GetURL("foo.com", "/close-socket");
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+
+  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
+  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+
+  // Proceed through the interstitial to navigate to the HTTP page. The security
+  // level should still be WARNING.
+  ProceedThroughInterstitial(contents);
+  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+}
+
+// Tests that the security level is WARNING when the HTTPS-Only Mode
+// interstitial is shown for a cert error on HTTPS. (Without HTTPS-Only Mode, a
+// a cert error would be a security level of DANGEROUS.) After clicking through
+// the interstitial, the security level should still be WARNING.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       BrokenSSLOnUpgrade_SecurityLevelWarning) {
+  GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
+  GURL https_url = https_server()->GetURL("bad-https.test", "/simple.html");
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+
+  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
+  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+
+  // Proceed through the interstitial to navigate to the HTTP page. The security
+  // level should still be WARNING.
+  ProceedThroughInterstitial(contents);
+  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 }

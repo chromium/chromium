@@ -18,6 +18,8 @@
 
 namespace {
 
+// Time that the throttle will wait before canceling the upgraded navigation and
+// showing the HTTPS-Only Mode interstitial.
 base::TimeDelta g_fallback_delay = base::TimeDelta::FromSeconds(3);
 
 }  // namespace

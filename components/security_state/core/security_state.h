@@ -205,6 +205,8 @@ struct VisibleSecurityState {
   // state perspective (for example, if a different warning is being shown for
   // them).
   bool should_treat_displayed_mixed_forms_as_secure;
+  // True if the page was the result of an HTTPS-Only Mode upgrade.
+  bool is_https_only_mode_upgraded;
 };
 
 // These security levels describe the treatment given to pages that

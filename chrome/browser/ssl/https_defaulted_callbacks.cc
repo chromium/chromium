@@ -18,17 +18,19 @@ bool ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
   DCHECK_EQ(url::kHttpsScheme, handle->GetURL().scheme());
 
   // Check typed navigation upgrade status.
-  bool is_upgraded_typed_navigation =
-      base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps) &&
+  if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps) &&
       TypedNavigationUpgradeThrottle::IsNavigationUsingHttpsAsDefaultScheme(
-          handle);
+          handle)) {
+    return true;
+  }
 
   // Check HTTPS-Only Mode upgrade status.
   auto* https_only_mode_helper =
       HttpsOnlyModeTabHelper::FromWebContents(handle->GetWebContents());
-  bool is_https_only_mode_upgraded =
-      base::FeatureList::IsEnabled(features::kHttpsOnlyMode) &&
-      https_only_mode_helper->is_navigation_upgraded();
+  if (base::FeatureList::IsEnabled(features::kHttpsOnlyMode) &&
+      https_only_mode_helper->is_navigation_upgraded()) {
+    return true;
+  }
 
-  return is_upgraded_typed_navigation || is_https_only_mode_upgraded;
+  return false;
 }

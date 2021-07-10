@@ -19,6 +19,7 @@
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
+#include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -123,6 +124,13 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
         profile->GetPrefs()->GetBoolean(prefs::kMixedFormsWarningsEnabled)) {
       state->should_treat_displayed_mixed_forms_as_secure = true;
     }
+  }
+
+  auto* https_only_mode_tab_helper =
+      HttpsOnlyModeTabHelper::FromWebContents(web_contents());
+  if (https_only_mode_tab_helper &&
+      https_only_mode_tab_helper->is_navigation_upgraded()) {
+    state->is_https_only_mode_upgraded = true;
   }
 
   return state;
