@@ -280,9 +280,7 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
 
 using ScrollThroughputBrowserTest = ScrollLatencyBrowserTest;
 
-// This test flakes on most platforms: https://crbug.com/1067492.
-IN_PROC_BROWSER_TEST_F(ScrollThroughputBrowserTest,
-                       DISABLED_ScrollThroughputMetrics) {
+IN_PROC_BROWSER_TEST_F(ScrollThroughputBrowserTest, ScrollThroughputMetrics) {
   LoadURL();
   auto scroll_update_watcher = std::make_unique<InputMsgWatcher>(
       GetWidgetHost(), blink::WebInputEvent::Type::kGestureScrollEnd);
@@ -303,21 +301,20 @@ IN_PROC_BROWSER_TEST_F(ScrollThroughputBrowserTest,
       base::BindOnce(&ScrollLatencyBrowserTest::OnSyntheticGestureCompleted,
                      base::Unretained(this)));
   run_loop_->Run();
+  scroll_update_watcher->GetAckStateWaitIfNecessary();
 
-  while (!GetSampleCountForHistogram(
-      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread."
-      "TouchScroll")) {
+  const char histogram_name[] =
+      "Graphics.Smoothness.PercentDroppedFrames.ScrollingThread.TouchScroll";
+  while (!GetSampleCountForHistogram(histogram_name)) {
     GiveItSomeTime();
     FetchHistogramsFromChildProcesses();
   }
-  EXPECT_TRUE(VerifyRecordedSamplesForHistogram(
-      1,
-      "Graphics.Smoothness.PercentDroppedFrames.ScrollingThread.TouchScroll"));
 
-  RunUntilInputProcessed(GetWidgetHost());
-  FetchHistogramsFromChildProcesses();
-  EXPECT_TRUE(VerifyRecordedSamplesForHistogram(
-      1, "Event.Latency.ScrollBegin.Touch.BrowserNotifiedToBeforeGpuSwap2"));
+  // TODO(crbug.com/1067492): The following check is flaky.
+  // RunUntilInputProcessed(GetWidgetHost());
+  // FetchHistogramsFromChildProcesses();
+  // EXPECT_TRUE(VerifyRecordedSamplesForHistogram(
+  //     1, "Event.Latency.ScrollBegin.Touch.BrowserNotifiedToBeforeGpuSwap2"));
 }
 
 class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
