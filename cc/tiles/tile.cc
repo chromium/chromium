@@ -40,6 +40,10 @@ Tile::Tile(TileManager* tile_manager,
       can_use_lcd_text_(info.can_use_lcd_text),
       raster_task_scheduled_with_checker_images_(false),
       id_(tile_manager->GetUniqueTileId()) {
+  recordreplay::RegisterPointer(this);
+  recordreplay::Assert("Tile::Tile %d %d %d %d",
+                       enclosing_layer_rect_.x(), enclosing_layer_rect_.y(),
+                       enclosing_layer_rect_.width(), enclosing_layer_rect_.height());
   raster_rects_.emplace_back(info.content_rect, info.raster_transform);
 }
 
@@ -47,6 +51,7 @@ Tile::~Tile() {
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"),
       "cc::Tile", this);
+  recordreplay::UnregisterPointer(this);
   tile_manager_->Release(this);
 }
 

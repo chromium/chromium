@@ -952,7 +952,8 @@ void TileManager::PartitionImagesForCheckering(
   Tile* tile = prioritized_tile.tile();
   std::vector<const DrawImage*> images_in_tile;
   gfx::Rect enclosing_rect = tile->enclosing_layer_rect();
-  recordreplay::Assert("TileManager::PartitionImagesForCheckering #0.1 %d %d %d %d",
+  recordreplay::Assert("TileManager::PartitionImagesForCheckering #0.1 %d %d %d %d %d",
+                       recordreplay::PointerId(tile),
                        enclosing_rect.x(), enclosing_rect.y(),
                        enclosing_rect.width(), enclosing_rect.height());
   if (invalidated_rect) {
