@@ -99,10 +99,12 @@ bool IsValidBookmarkDropLocation(Profile* profile,
                                  size_t index);
 
 #if defined(TOOLKIT_VIEWS)
-// |text_color| is the color of associated text and is used to derive the icon's
-// color.
-ui::ImageModel GetBookmarkFolderIcon(SkColor text_color);
-ui::ImageModel GetBookmarkManagedFolderIcon(SkColor text_color);
+enum class BookmarkFolderIconType {
+  kNormal,
+  kManaged,
+};
+ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
+                                     absl::variant<int, SkColor> color);
 #endif
 
 }  // namespace chrome

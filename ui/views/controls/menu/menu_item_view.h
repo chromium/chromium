@@ -174,13 +174,13 @@ class VIEWS_EXPORT MenuItemView : public View {
   // icon       The icon.
   MenuItemView* AppendMenuItem(int item_id,
                                const std::u16string& label = std::u16string(),
-                               const gfx::ImageSkia& icon = gfx::ImageSkia());
+                               const ui::ImageModel& icon = ui::ImageModel());
 
   // Append a submenu to this menu.
   // The returned pointer is owned by this menu.
   MenuItemView* AppendSubMenu(int item_id,
                               const std::u16string& label,
-                              const gfx::ImageSkia& icon = gfx::ImageSkia());
+                              const ui::ImageModel& icon = ui::ImageModel());
 
   // Adds a separator to this menu
   void AppendSeparator();
@@ -191,7 +191,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   // All the AppendXXX methods funnel into this.
   MenuItemView* AppendMenuItemImpl(int item_id,
                                    const std::u16string& label,
-                                   const gfx::ImageSkia& icon,
+                                   const ui::ImageModel& icon,
                                    Type type);
 
   // Returns the view that contains child menu items. If the submenu has

@@ -19,6 +19,8 @@ struct VectorIcon;
 
 namespace ui {
 
+class NativeTheme;
+
 // The following classes encapsulate the various ways that a model may provide
 // or otherwise specify an icon or image. Most notably, these are used by the
 // MenuModel and SimpleMenuModel for building actual menus.
@@ -76,6 +78,9 @@ class COMPONENT_EXPORT(UI_BASE) VectorIconModel {
 
 class COMPONENT_EXPORT(UI_BASE) ImageModel {
  public:
+  using ImageGenerator =
+      base::RepeatingCallback<gfx::ImageSkia(const ui::NativeTheme*)>;
+
   ImageModel();
   ImageModel(const ImageModel&);
   ImageModel& operator=(const ImageModel&);
@@ -94,25 +99,45 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
   static ImageModel FromImage(const gfx::Image& image);
   static ImageModel FromImageSkia(const gfx::ImageSkia& image_skia);
   static ImageModel FromResourceId(int resource_id);
+  // `size` must be the size of the image the `generator` returns.
+  // NOTE: If this proves onerous, we could allow autodetection, at the cost of
+  // requiring `generator` to be runnable with a null NativeTheme*.
+  static ImageModel FromImageGenerator(ImageGenerator generator,
+                                       gfx::Size size);
 
   bool IsEmpty() const;
   bool IsVectorIcon() const;
   bool IsImage() const;
+  bool IsImageGenerator() const;
   gfx::Size Size() const;
   // Only valid if IsVectorIcon() or IsImage() return true, respectively.
   VectorIconModel GetVectorIcon() const;
   gfx::Image GetImage() const;
+  ImageGenerator GetImageGenerator() const;
 
-  // Checks if both model yield equal images.
+  // Checks if both models yield equal images.
   bool operator==(const ImageModel& other) const;
   bool operator!=(const ImageModel& other) const;
 
  private:
-  ImageModel(const gfx::Image& image);
-  ImageModel(const gfx::ImageSkia& image_skia);
-  ImageModel(const VectorIconModel& vector_icon_model);
+  struct ImageGeneratorAndSize {
+    ImageGeneratorAndSize(ImageGenerator generator, gfx::Size size);
+    ImageGeneratorAndSize(const ImageGeneratorAndSize&);
+    ImageGeneratorAndSize& operator=(const ImageGeneratorAndSize&);
+    ~ImageGeneratorAndSize();
 
-  absl::variant<VectorIconModel, gfx::Image> icon_;
+    bool operator==(const ImageGeneratorAndSize& other) const;
+
+    ImageGenerator generator;
+    gfx::Size size;
+  };
+
+  explicit ImageModel(const VectorIconModel& vector_icon_model);
+  explicit ImageModel(const gfx::Image& image);
+  explicit ImageModel(const gfx::ImageSkia& image_skia);
+  explicit ImageModel(ImageGeneratorAndSize image_generator);
+
+  absl::variant<VectorIconModel, gfx::Image, ImageGeneratorAndSize> icon_;
 };
 
 }  // namespace ui

@@ -55,20 +55,6 @@ namespace {
 // both IE and FF restrict the max width of a menu.
 const int kMaxMenuWidth = 400;
 
-SkColor TextColorForMenu(MenuItemView* menu, views::Widget* widget) {
-#if !defined(OS_MAC)
-  // macOS incognito currently has a light on dark bookmark bar, but
-  // dark on light menus, so using the theme color in the folders is
-  // incorrect.
-  if (widget && widget->GetThemeProvider()) {
-    return widget->GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_BOOKMARK_TEXT);
-  }
-#endif
-  return menu->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor);
-}
-
 }  // namespace
 
 BookmarkMenuDelegate::BookmarkMenuDelegate(
@@ -501,12 +487,14 @@ void BookmarkMenuDelegate::BuildMenusForPermanentNodes(
   bool added_separator = false;
   BuildMenuForPermanentNode(
       model->other_node(),
-      chrome::GetBookmarkFolderIcon(TextColorForMenu(menu, parent())), menu,
-      &added_separator);
+      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                    ui::NativeTheme::kColorId_MenuIconColor),
+      menu, &added_separator);
   BuildMenuForPermanentNode(
       model->mobile_node(),
-      chrome::GetBookmarkFolderIcon(TextColorForMenu(menu, parent())), menu,
-      &added_separator);
+      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                    ui::NativeTheme::kColorId_MenuIconColor),
+      menu, &added_separator);
 }
 
 void BookmarkMenuDelegate::BuildMenuForPermanentNode(const BookmarkNode* node,
@@ -522,8 +510,7 @@ void BookmarkMenuDelegate::BuildMenuForPermanentNode(const BookmarkNode* node,
   }
 
   AddMenuToMaps(menu->AppendSubMenu(GetAndIncrementNextMenuID(),
-                                    MaybeEscapeLabel(node->GetTitle()),
-                                    *icon.GetImage().ToImageSkia()),
+                                    MaybeEscapeLabel(node->GetTitle()), icon),
                 node);
 }
 
@@ -533,7 +520,8 @@ void BookmarkMenuDelegate::BuildMenuForManagedNode(MenuItemView* menu) {
   const BookmarkNode* node = GetManagedBookmarkService()->managed_node();
   BuildMenuForPermanentNode(
       node,
-      chrome::GetBookmarkManagedFolderIcon(TextColorForMenu(menu, parent())),
+      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
+                                    ui::NativeTheme::kColorId_MenuIconColor),
       menu, &added_separator);
 }
 
@@ -543,7 +531,8 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
   DCHECK_LE(start_child_index, parent->children().size());
   ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
   const ui::ImageModel folder_icon =
-      chrome::GetBookmarkFolderIcon(TextColorForMenu(menu, parent_));
+      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                    ui::NativeTheme::kColorId_MenuIconColor);
   for (auto i = parent->children().cbegin() + start_child_index;
        i != parent->children().cend(); ++i) {
     const BookmarkNode* node = i->get();
@@ -554,16 +543,16 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
       const gfx::ImageSkia* icon = image.IsEmpty() ?
           rb->GetImageSkiaNamed(IDR_DEFAULT_FAVICON) : image.ToImageSkia();
       child_menu_item =
-          menu->AppendMenuItem(id, MaybeEscapeLabel(node->GetTitle()), *icon);
+          menu->AppendMenuItem(id, MaybeEscapeLabel(node->GetTitle()),
+                               ui::ImageModel::FromImageSkia(*icon));
       child_menu_item->GetViewAccessibility().OverrideDescription(
           url_formatter::FormatUrl(
               node->url(), url_formatter::kFormatUrlOmitDefaults,
               net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
     } else {
       DCHECK(node->is_folder());
-      child_menu_item =
-          menu->AppendSubMenu(id, MaybeEscapeLabel(node->GetTitle()),
-                              *folder_icon.GetImage().ToImageSkia());
+      child_menu_item = menu->AppendSubMenu(
+          id, MaybeEscapeLabel(node->GetTitle()), folder_icon);
       child_menu_item->GetViewAccessibility().OverrideDescription("");
     }
     AddMenuToMaps(child_menu_item, node);

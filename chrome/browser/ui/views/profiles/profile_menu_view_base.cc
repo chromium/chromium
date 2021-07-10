@@ -164,6 +164,7 @@ const gfx::ImageSkia ImageForMenu(const gfx::VectorIcon& icon,
 }
 
 ui::ImageModel SizeImageModel(const ui::ImageModel& image_model, int size) {
+  DCHECK(!image_model.IsImageGenerator());  // Not prepared to handle these.
   if (image_model.IsImage()) {
     return ui::ImageModel::FromImageSkia(
         CropCircle(SizeImage(image_model.GetImage().AsImageSkia(), size)));

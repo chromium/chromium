@@ -19,6 +19,9 @@ gfx::ImageSkia GetImageSkiaFromImageModel(const ui::ImageModel& model,
         .GetImageSkia(native_theme);
   }
 
+  if (model.IsImageGenerator())
+    return model.GetImageGenerator().Run(native_theme);
+
   return gfx::ImageSkia();
 }
 

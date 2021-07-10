@@ -1296,8 +1296,8 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
                : ui::ImageModel::FromImage(image);
   } else {
     icon =
-        chrome::GetBookmarkFolderIcon(widget->GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_LabelEnabledColor));
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                      ui::NativeTheme::kColorId_MenuIconColor);
   }
 
   button_drag_utils::SetDragImage(node->url(), node->GetTitle(),
@@ -1612,8 +1612,18 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     text_color = tp->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
     button->SetEnabledTextColors(text_color);
     if (node->is_folder()) {
-      button->SetImageModel(views::Button::STATE_NORMAL,
-                            chrome::GetBookmarkFolderIcon(text_color));
+      if (tp->HasCustomColor(ThemeProperties::COLOR_BOOKMARK_TEXT)) {
+        button->SetImageModel(
+            views::Button::STATE_NORMAL,
+            chrome::GetBookmarkFolderIcon(
+                chrome::BookmarkFolderIconType::kNormal,
+                color_utils::DeriveDefaultIconColor(text_color)));
+      } else {
+        button->SetImageModel(views::Button::STATE_NORMAL,
+                              chrome::GetBookmarkFolderIcon(
+                                  chrome::BookmarkFolderIconType::kNormal,
+                                  ui::NativeTheme::kColorId_DefaultIconColor));
+      }
     }
   }
 
@@ -1978,11 +1988,29 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
   const SkColor color =
       theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
   other_bookmarks_button_->SetEnabledTextColors(color);
-  other_bookmarks_button_->SetImageModel(views::Button::STATE_NORMAL,
-                                         chrome::GetBookmarkFolderIcon(color));
   managed_bookmarks_button_->SetEnabledTextColors(color);
-  managed_bookmarks_button_->SetImageModel(
-      views::Button::STATE_NORMAL, chrome::GetBookmarkManagedFolderIcon(color));
+  if (theme_provider->HasCustomColor(ThemeProperties::COLOR_BOOKMARK_TEXT)) {
+    SkColor folder_color = color_utils::DeriveDefaultIconColor(color);
+    other_bookmarks_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                      folder_color));
+    managed_bookmarks_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
+                                      folder_color));
+  } else {
+    other_bookmarks_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        chrome::GetBookmarkFolderIcon(
+            chrome::BookmarkFolderIconType::kNormal,
+            ui::NativeTheme::kColorId_DefaultIconColor));
+    managed_bookmarks_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        chrome::GetBookmarkFolderIcon(
+            chrome::BookmarkFolderIconType::kManaged,
+            ui::NativeTheme::kColorId_DefaultIconColor));
+  }
 
   if (apps_page_shortcut_->GetVisible())
     apps_page_shortcut_->SetEnabledTextColors(color);

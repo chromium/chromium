@@ -118,6 +118,11 @@ bool ImageView::IsImageEqual(const ui::ImageModel& image_model) const {
   if (image_model != image_model_)
     return false;
 
+  // It's not feasible to run the old and new generators and compare output
+  // here, so for safety, simply assume the new generator's output differs.
+  if (image_model.IsImageGenerator())
+    return false;
+
   if (!image_model.IsImage())
     return true;
 
@@ -229,10 +234,12 @@ void ImageView::PreferredSizeChanged() {
 
 void ImageView::OnThemeChanged() {
   View::OnThemeChanged();
-  if (!image_model_.IsVectorIcon() || image_model_.GetVectorIcon().has_color())
-    return;  // Bitmaps don't need updating on theme changes.
-  scaled_image_ = gfx::ImageSkia();
-  SchedulePaint();
+  if (image_model_.IsImageGenerator() ||
+      (image_model_.IsVectorIcon() &&
+       !image_model_.GetVectorIcon().has_color())) {
+    scaled_image_ = gfx::ImageSkia();
+    SchedulePaint();
+  }
 }
 
 void ImageView::OnPaintImage(gfx::Canvas* canvas) {
@@ -265,8 +272,9 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
   if (image_model_.IsEmpty())
     return gfx::ImageSkia();
 
-  if (image_model_.IsImage()) {
-    const gfx::ImageSkia& image = image_model_.GetImage().AsImageSkia();
+  if (image_model_.IsImage() || image_model_.IsImageGenerator()) {
+    const gfx::ImageSkia image =
+        views::GetImageSkiaFromImageModel(image_model_, GetNativeTheme());
     if (image.isNull())
       return image;
 

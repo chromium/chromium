@@ -37,6 +37,7 @@
 #include "ui/gfx/render_text.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/drag_utils.h"
+#include "ui/views/image_model_utils.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -169,11 +170,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
         (new BookmarkDragHelper(profile, params, std::move(do_drag_callback)))
             ->GetWeakPtr();
 
-    Browser* browser = FindBrowserWithWebContents(params.web_contents);
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    SkColor icon_color = browser_view->GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_LabelEnabledColor);
-    ptr->Start(params.nodes.at(params.drag_node_index), icon_color);
+    ptr->Start(params.nodes.at(params.drag_node_index));
     return ptr;
   }
 
@@ -199,7 +196,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
       operation_ |= ui::DragDropTypes::DRAG_MOVE;
   }
 
-  void Start(const BookmarkNode* drag_node, SkColor icon_color) {
+  void Start(const BookmarkNode* drag_node) {
     drag_node_id_ = drag_node->id();
 
     ui::ImageModel icon;
@@ -215,7 +212,8 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
       icon = ui::ImageModel::FromImage(image);
     } else {
-      icon = GetBookmarkFolderIcon(icon_color);
+      icon = GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                   ui::NativeTheme::kColorId_MenuIconColor);
     }
 
     OnBookmarkIconLoaded(drag_node, icon);
@@ -223,13 +221,19 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
   void OnBookmarkIconLoaded(const BookmarkNode* drag_node,
                             const ui::ImageModel& icon) {
+    auto* widget =
+        views::Widget::GetWidgetForNativeView(web_contents_->GetNativeView());
+    ui::NativeTheme* native_theme = widget ? widget->GetNativeTheme() : nullptr;
     gfx::ImageSkia drag_image(
         std::make_unique<BookmarkDragImageSource>(
             drag_node->GetTitle(),
-            icon.IsEmpty()
+            // It's not clear if the "generator without native theme" case can
+            // occur, but if it can, better to wrongly show the default favicon
+            // than to crash.
+            (icon.IsEmpty() || (icon.IsImageGenerator() && !native_theme))
                 ? *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                       IDR_DEFAULT_FAVICON)
-                : *icon.GetImage().ToImageSkia(),
+                : views::GetImageSkiaFromImageModel(icon, native_theme),
             count_),
         BookmarkDragImageSource::kBookmarkDragImageSize);
 

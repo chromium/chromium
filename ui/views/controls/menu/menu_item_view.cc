@@ -406,18 +406,18 @@ void MenuItemView::RemoveAllMenuItems() {
 
 MenuItemView* MenuItemView::AppendMenuItem(int item_id,
                                            const std::u16string& label,
-                                           const gfx::ImageSkia& icon) {
+                                           const ui::ImageModel& icon) {
   return AppendMenuItemImpl(item_id, label, icon, Type::kNormal);
 }
 
 MenuItemView* MenuItemView::AppendSubMenu(int item_id,
                                           const std::u16string& label,
-                                          const gfx::ImageSkia& icon) {
+                                          const ui::ImageModel& icon) {
   return AppendMenuItemImpl(item_id, label, icon, Type::kSubMenu);
 }
 
 void MenuItemView::AppendSeparator() {
-  AppendMenuItemImpl(0, std::u16string(), gfx::ImageSkia(), Type::kSeparator);
+  AppendMenuItemImpl(0, std::u16string(), ui::ImageModel(), Type::kSeparator);
 }
 
 void MenuItemView::AddSeparatorAt(int index) {
@@ -432,13 +432,12 @@ void MenuItemView::AddSeparatorAt(int index) {
 
 MenuItemView* MenuItemView::AppendMenuItemImpl(int item_id,
                                                const std::u16string& label,
-                                               const gfx::ImageSkia& icon,
+                                               const ui::ImageModel& icon,
                                                Type type) {
   const int index =
       submenu_ ? static_cast<int>(submenu_->children().size()) : 0;
   return AddMenuItemAt(index, item_id, label, std::u16string(),
-                       std::u16string(), ui::ImageModel(),
-                       ui::ImageModel::FromImageSkia(icon), type,
+                       std::u16string(), ui::ImageModel(), icon, type,
                        ui::NORMAL_SEPARATOR);
 }
 

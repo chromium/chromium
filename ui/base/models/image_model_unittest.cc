@@ -65,12 +65,30 @@ TEST(ImageModelTest, CheckForImage) {
   EXPECT_TRUE(image_model.IsImage());
 }
 
+TEST(ImageModelTest, CheckForImageGenerator) {
+  ImageModel image_model = ImageModel::FromImageGenerator(
+      base::BindRepeating([](const ui::NativeTheme*) {
+        return gfx::test::CreateImage(16, 16).AsImageSkia();
+      }),
+      gfx::Size(16, 16));
+
+  EXPECT_FALSE(image_model.IsEmpty());
+  EXPECT_TRUE(image_model.IsImageGenerator());
+}
+
 TEST(ImageModelTest, Size) {
   EXPECT_EQ(gfx::Size(), ImageModel().Size());
   EXPECT_EQ(gfx::Size(16, 16),
             ImageModel::FromVectorIcon(GetCircleVectorIcon(), -1, 16).Size());
   EXPECT_EQ(gfx::Size(16, 16),
             ImageModel::FromImage(gfx::test::CreateImage(16, 16)).Size());
+  EXPECT_EQ(gfx::Size(16, 16),
+            ImageModel::FromImageGenerator(
+                base::BindRepeating([](const ui::NativeTheme*) {
+                  return gfx::test::CreateImage(16, 16).AsImageSkia();
+                }),
+                gfx::Size(16, 16))
+                .Size());
 }
 
 TEST(ImageModelTest, CheckAssignVectorIcon) {
@@ -93,13 +111,11 @@ TEST(ImageModelTest, CheckAssignImage) {
   EXPECT_TRUE(image_model_dest.IsEmpty());
   EXPECT_FALSE(image_model_src.IsEmpty());
   EXPECT_TRUE(image_model_src.IsImage());
-  EXPECT_FALSE(image_model_src.IsVectorIcon());
 
   image_model_dest = image_model_src;
 
   EXPECT_FALSE(image_model_dest.IsEmpty());
   EXPECT_TRUE(image_model_dest.IsImage());
-  EXPECT_FALSE(image_model_dest.IsVectorIcon());
 
   image_model_src = ImageModel::FromVectorIcon(GetCircleVectorIcon(), -1, 16);
 
@@ -108,7 +124,18 @@ TEST(ImageModelTest, CheckAssignImage) {
   image_model_dest = image_model_src;
 
   EXPECT_TRUE(image_model_dest.IsVectorIcon());
-  EXPECT_FALSE(image_model_dest.IsImage());
+
+  image_model_src = ImageModel::FromImageGenerator(
+      base::BindRepeating([](const ui::NativeTheme*) {
+        return gfx::test::CreateImage(16, 16).AsImageSkia();
+      }),
+      gfx::Size(16, 16));
+
+  EXPECT_TRUE(image_model_src.IsImageGenerator());
+
+  image_model_dest = image_model_src;
+
+  EXPECT_TRUE(image_model_dest.IsImageGenerator());
 }
 
 TEST(ImageModelTest, CheckEqual) {
@@ -155,6 +182,26 @@ TEST(ImageModelTest, CheckEqual) {
   image_model_dest =
       ImageModel::FromVectorIcon(GetCircleVectorIcon(), SK_ColorMAGENTA, 2);
   EXPECT_NE(image_model_src, image_model_dest);
+
+  auto generator = base::BindRepeating([](const ui::NativeTheme*) {
+    return gfx::test::CreateImage(16, 16).AsImageSkia();
+  });
+  image_model_src =
+      ImageModel::FromImageGenerator(generator, gfx::Size(16, 16));
+  EXPECT_NE(image_model_src, image_model_dest);
+  image_model_dest =
+      ImageModel::FromImageGenerator(generator, gfx::Size(16, 16));
+  EXPECT_EQ(image_model_src, image_model_dest);
+  image_model_dest = ImageModel::FromImageGenerator(generator, gfx::Size(8, 8));
+  EXPECT_NE(image_model_src, image_model_dest);
+  image_model_dest = ImageModel::FromImageGenerator(
+      base::BindRepeating([](const ui::NativeTheme*) {
+        return gfx::test::CreateImage(8, 8).AsImageSkia();
+      }),
+      gfx::Size(16, 16));
+  EXPECT_NE(image_model_src, image_model_dest);
+  image_model_src = image_model_dest;
+  EXPECT_EQ(image_model_src, image_model_dest);
 }
 
 }  // namespace ui

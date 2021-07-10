@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -35,16 +36,14 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 
 #if defined(TOOLKIT_VIEWS)
+#include "chrome/grit/theme_resources.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
-#endif
-
-#if defined(OS_WIN) || defined(OS_MAC)
-#include "chrome/grit/theme_resources.h"
-#include "ui/base/resource/resource_bundle.h"
+#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/resources/grit/ui_resources.h"
 #endif
 
@@ -74,13 +73,6 @@ class RTLFlipSource : public gfx::ImageSkiaSource {
  private:
   const gfx::ImageSkia source_;
 };
-
-#if !defined(OS_WIN) && !defined(OS_MAC)
-gfx::ImageSkia GetFolderIcon(const gfx::VectorIcon& icon, SkColor text_color) {
-  return gfx::CreateVectorIcon(icon,
-                               color_utils::DeriveDefaultIconColor(text_color));
-}
-#endif  // !defined(OS_WIN) && !defined(OS_MAC)
 #endif  // defined(TOOLKIT_VIEWS)
 
 }  // namespace
@@ -270,54 +262,65 @@ bool IsValidBookmarkDropLocation(Profile* profile,
 }
 
 #if defined(TOOLKIT_VIEWS)
-// TODO(bsep): vectorize the Windows versions: crbug.com/564112
-ui::ImageModel GetBookmarkFolderIcon(SkColor text_color) {
-  gfx::ImageSkia folder;
-#if defined(OS_WIN)
-  folder = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_FOLDER_CLOSED);
-#elif defined(OS_MAC)
-  int resource_id = color_utils::IsDark(text_color) ? IDR_FOLDER_CLOSED
-                                                    : IDR_FOLDER_CLOSED_WHITE;
-  folder = *ui::ResourceBundle::GetSharedInstance()
-                .GetNativeImageNamed(resource_id)
-                .ToImageSkia();
-#else
-  folder = GetFolderIcon(ui::TouchUiController::Get()->touch_ui()
-                             ? vector_icons::kFolderTouchIcon
-                             : vector_icons::kFolderIcon,
-                         text_color);
+ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
+                                     absl::variant<int, SkColor> color) {
+  int default_id = IDR_FOLDER_CLOSED;
+#if defined(OS_WIN) || defined(OS_MAC)
+  // This block must be #ifdefed because only these platforms actually have this
+  // resource ID.
+  if (icon_type == BookmarkFolderIconType::kManaged)
+    default_id = IDR_BOOKMARK_BAR_FOLDER_MANAGED;
 #endif
-  // TODO(crbug.com/1119823): Return the unflipped image here
-  // (as a vector if possible); callers should have the responsibility to flip
-  // when painting as necessary.
-  return ui::ImageModel::FromImageSkia(
-      gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder), folder.size()));
-}
-
-ui::ImageModel GetBookmarkManagedFolderIcon(SkColor text_color) {
-  gfx::ImageSkia folder;
+  const auto generator = [](int default_id, BookmarkFolderIconType icon_type,
+                            absl::variant<int, SkColor> color,
+                            const ui::NativeTheme* native_theme) {
+    gfx::ImageSkia folder;
 #if defined(OS_WIN)
-  folder = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_BOOKMARK_BAR_FOLDER_MANAGED);
+    // TODO(bsep): vectorize the Windows versions: crbug.com/564112
+    folder =
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(default_id);
 #elif defined(OS_MAC)
-  int resource_id = color_utils::IsDark(text_color)
-                        ? IDR_BOOKMARK_BAR_FOLDER_MANAGED
-                        : IDR_BOOKMARK_BAR_FOLDER_MANAGED_WHITE;
-  folder = *ui::ResourceBundle::GetSharedInstance()
-                .GetNativeImageNamed(resource_id)
-                .ToImageSkia();
+    SkColor sk_color;
+    if (absl::holds_alternative<SkColor>(color)) {
+      sk_color = absl::get<SkColor>(color);
+    } else {
+      DCHECK(native_theme);
+      sk_color = native_theme->GetSystemColor(
+          static_cast<ui::NativeTheme::ColorId>(absl::get<int>(color)));
+    }
+    const int white_id = (icon_type == BookmarkFolderIconType::kNormal)
+                             ? IDR_FOLDER_CLOSED_WHITE
+                             : IDR_BOOKMARK_BAR_FOLDER_MANAGED_WHITE;
+    const int resource_id =
+        color_utils::IsDark(sk_color) ? default_id : white_id;
+    folder = *ui::ResourceBundle::GetSharedInstance()
+                  .GetNativeImageNamed(resource_id)
+                  .ToImageSkia();
 #else
-  folder = GetFolderIcon(ui::TouchUiController::Get()->touch_ui()
-                             ? vector_icons::kFolderManagedTouchIcon
-                             : vector_icons::kFolderManagedIcon,
-                         text_color);
+    const gfx::VectorIcon* id;
+    if (icon_type == BookmarkFolderIconType::kNormal) {
+      id = ui::TouchUiController::Get()->touch_ui()
+               ? &vector_icons::kFolderTouchIcon
+               : &vector_icons::kFolderIcon;
+    } else {
+      id = ui::TouchUiController::Get()->touch_ui()
+               ? &vector_icons::kFolderManagedTouchIcon
+               : &vector_icons::kFolderManagedIcon;
+    }
+    const ui::ThemedVectorIcon icon =
+        absl::holds_alternative<SkColor>(color)
+            ? ui::ThemedVectorIcon(id, absl::get<SkColor>(color))
+            : ui::ThemedVectorIcon(id, absl::get<int>(color));
+    folder = icon.GetImageSkia(native_theme);
 #endif
-  // TODO(crbug.com/1119823): Return the unflipped image here
-  // (as a vector if possible); callers should have the responsibility to flip
-  // when painting as necessary.
-  return ui::ImageModel::FromImageSkia(
-      gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder), folder.size()));
+    return gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder),
+                          folder.size());
+  };
+  const gfx::Size size =
+      ui::ResourceBundle::GetSharedInstance().GetImageNamed(default_id).Size();
+  return ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(generator, default_id, icon_type, std::move(color)),
+      size);
 }
 #endif
 

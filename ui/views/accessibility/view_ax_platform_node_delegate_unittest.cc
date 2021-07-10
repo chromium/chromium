@@ -261,21 +261,21 @@ class ViewAXPlatformNodeDelegateMenuTest
     menu_ = new views::TestMenuItemView(menu_delegate_.get());
     runner_ = std::make_unique<MenuRunner>(menu_, 0);
 
-    menu_->AppendMenuItemImpl(0, u"normal", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(0, u"normal", ui::ImageModel(),
                               MenuItemView::Type::kNormal);
-    menu_->AppendMenuItemImpl(1, u"submenu", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(1, u"submenu", ui::ImageModel(),
                               MenuItemView::Type::kSubMenu);
-    menu_->AppendMenuItemImpl(2, u"actionable", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(2, u"actionable", ui::ImageModel(),
                               MenuItemView::Type::kActionableSubMenu);
-    menu_->AppendMenuItemImpl(3, u"checkbox", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(3, u"checkbox", ui::ImageModel(),
                               MenuItemView::Type::kCheckbox);
-    menu_->AppendMenuItemImpl(4, u"radio", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(4, u"radio", ui::ImageModel(),
                               MenuItemView::Type::kRadio);
-    menu_->AppendMenuItemImpl(5, u"separator", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(5, u"separator", ui::ImageModel(),
                               MenuItemView::Type::kSeparator);
-    menu_->AppendMenuItemImpl(6, u"highlighted", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(6, u"highlighted", ui::ImageModel(),
                               MenuItemView::Type::kHighlighted);
-    menu_->AppendMenuItemImpl(7, u"title", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(7, u"title", ui::ImageModel(),
                               MenuItemView::Type::kTitle);
 
     submenu_ = menu_->GetSubmenu();

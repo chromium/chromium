@@ -4,6 +4,7 @@
 
 #include <tuple>
 
+#include "base/callback.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -52,14 +53,6 @@ bool VectorIconModel::operator!=(const VectorIconModel& other) const {
 
 ImageModel::ImageModel() = default;
 
-ImageModel::ImageModel(const VectorIconModel& vector_icon_model)
-    : icon_(vector_icon_model) {}
-
-ImageModel::ImageModel(const gfx::Image& image) : icon_(image) {}
-
-ImageModel::ImageModel(const gfx::ImageSkia& image_skia)
-    : ImageModel(gfx::Image(image_skia)) {}
-
 ImageModel::~ImageModel() = default;
 
 ImageModel::ImageModel(const ImageModel&) = default;
@@ -107,8 +100,14 @@ ImageModel ImageModel::FromResourceId(int resource_id) {
       ResourceBundle::GetSharedInstance().GetImageNamed(resource_id));
 }
 
+// static
+ImageModel ImageModel::FromImageGenerator(ImageGenerator generator,
+                                          gfx::Size size) {
+  return ImageModel(ImageGeneratorAndSize(generator, size));
+}
+
 bool ImageModel::IsEmpty() const {
-  return !IsVectorIcon() && !IsImage();
+  return !IsVectorIcon() && !IsImage() && !IsImageGenerator();
 }
 
 bool ImageModel::IsVectorIcon() const {
@@ -121,12 +120,20 @@ bool ImageModel::IsImage() const {
          !absl::get<gfx::Image>(icon_).IsEmpty();
 }
 
+bool ImageModel::IsImageGenerator() const {
+  return absl::holds_alternative<ImageGeneratorAndSize>(icon_) &&
+         !absl::get<ImageGeneratorAndSize>(icon_).size.IsEmpty();
+}
+
 gfx::Size ImageModel::Size() const {
   if (IsVectorIcon()) {
     const int icon_size = GetVectorIcon().icon_size_;
     return gfx::Size(icon_size, icon_size);
   }
-  return IsImage() ? GetImage().Size() : gfx::Size();
+  if (IsImage())
+    return GetImage().Size();
+  return IsImageGenerator() ? absl::get<ImageGeneratorAndSize>(icon_).size
+                            : gfx::Size();
 }
 
 VectorIconModel ImageModel::GetVectorIcon() const {
@@ -139,6 +146,11 @@ gfx::Image ImageModel::GetImage() const {
   return absl::get<gfx::Image>(icon_);
 }
 
+ImageModel::ImageGenerator ImageModel::GetImageGenerator() const {
+  DCHECK(IsImageGenerator());
+  return absl::get<ImageGeneratorAndSize>(icon_).generator;
+}
+
 bool ImageModel::operator==(const ImageModel& other) const {
   return icon_ == other.icon_;
 }
@@ -146,5 +158,34 @@ bool ImageModel::operator==(const ImageModel& other) const {
 bool ImageModel::operator!=(const ImageModel& other) const {
   return !(*this == other);
 }
+
+ImageModel::ImageGeneratorAndSize::ImageGeneratorAndSize(
+    ImageGenerator generator,
+    gfx::Size size)
+    : generator(std::move(generator)), size(std::move(size)) {}
+
+ImageModel::ImageGeneratorAndSize::ImageGeneratorAndSize(
+    const ImageGeneratorAndSize&) = default;
+
+ImageModel::ImageGeneratorAndSize& ImageModel::ImageGeneratorAndSize::operator=(
+    const ImageGeneratorAndSize&) = default;
+
+ImageModel::ImageGeneratorAndSize::~ImageGeneratorAndSize() = default;
+
+bool ImageModel::ImageGeneratorAndSize::operator==(
+    const ImageGeneratorAndSize& other) const {
+  return std::tie(generator, size) == std::tie(other.generator, other.size);
+}
+
+ImageModel::ImageModel(const VectorIconModel& vector_icon_model)
+    : icon_(vector_icon_model) {}
+
+ImageModel::ImageModel(const gfx::Image& image) : icon_(image) {}
+
+ImageModel::ImageModel(const gfx::ImageSkia& image_skia)
+    : ImageModel(gfx::Image(image_skia)) {}
+
+ImageModel::ImageModel(ImageGeneratorAndSize image_generator)
+    : icon_(std::move(image_generator)) {}
 
 }  // namespace ui
