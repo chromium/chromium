@@ -210,7 +210,7 @@ Polymer({
         .then(response => {
           const properties = response.result;
           if (!properties) {
-            console.error('Properties not found for: ' + this.selectedGuid_);
+            console.warn('Properties not found for: ' + this.selectedGuid_);
             return;
           }
           if (properties.priority &&
@@ -237,7 +237,7 @@ Polymer({
     this.networkConfig_.setProperties(this.selectedGuid_, config)
         .then(response => {
           if (!response.success) {
-            console.error(
+            console.warn(
                 'Unable to set properties for: ' + this.selectedGuid_ + ': ' +
                 JSON.stringify(config));
           }
@@ -267,7 +267,7 @@ Polymer({
   onForgetTap_() {
     this.networkConfig_.forgetNetwork(this.selectedGuid_).then(response => {
       if (!response.success) {
-        console.error('Froget network failed for: ' + this.selectedGuid_);
+        console.warn('Froget network failed for: ' + this.selectedGuid_);
       }
     });
 

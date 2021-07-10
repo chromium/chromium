@@ -1077,7 +1077,7 @@ Polymer({
     }
     this.networkConfig_.setProperties(this.guid, config).then(response => {
       if (!response.success) {
-        console.error('Unable to set properties: ' + JSON.stringify(config));
+        console.warn('Unable to set properties: ' + JSON.stringify(config));
         // An error typically indicates invalid input; request the properties
         // to update any invalid fields.
         this.getNetworkDetails_();
@@ -1563,7 +1563,7 @@ Polymer({
   handleDisconnectTap_() {
     this.networkConfig_.startDisconnect(this.guid).then(response => {
       if (!response.success) {
-        console.error('Disconnect failed for: ' + this.guid);
+        console.warn('Disconnect failed for: ' + this.guid);
       }
     });
     settings.recordSettingChange();
@@ -1638,7 +1638,7 @@ Polymer({
   onForgetTap_() {
     this.networkConfig_.forgetNetwork(this.guid).then(response => {
       if (!response.success) {
-        console.error('Froget network failed for: ' + this.guid);
+        console.warn('Froget network failed for: ' + this.guid);
       }
       // A forgotten network no longer has a valid GUID, close the subpage.
       this.close();
@@ -1720,7 +1720,7 @@ Polymer({
     const valueType = typeof value;
     if (valueType !== 'string' && valueType !== 'number' &&
         valueType !== 'boolean' && !Array.isArray(value)) {
-      console.error(
+      console.warn(
           'Unexpected property change event, Key: ' + field +
           ' Value: ' + JSON.stringify(value));
       return;

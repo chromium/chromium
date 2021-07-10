@@ -1582,7 +1582,7 @@ Polymer({
    */
   setPropertiesCallback_(success, errorMessage, connect) {
     if (!success) {
-      console.error(
+      console.warn(
           'Unable to set properties for: ' + this.guid +
           ' Error: ' + errorMessage);
       this.propertiesSent_ = false;
@@ -1609,7 +1609,7 @@ Polymer({
    */
   createNetworkCallback_(guid, errorMessage, connect) {
     if (!guid) {
-      console.error(
+      console.warn(
           'Unable to configure network: ' + guid + ' Error: ' + errorMessage);
       this.propertiesSent_ = false;
       this.setError_(errorMessage);
@@ -1641,7 +1641,7 @@ Polymer({
         return;
       }
       this.setError_(response.message);
-      console.error(
+      console.warn(
           'Error connecting to network: ' + guid + ': ' + result.toString() +
           ' Message: ' + response.message);
       this.propertiesSent_ = false;
