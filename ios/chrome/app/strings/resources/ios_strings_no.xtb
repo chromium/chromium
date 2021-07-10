@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
 <translation id="1013952917065545813">Du kan komme tilbake hit for å gjenåpne faner du nylig har lukket</translation>
 <translation id="1016495303386450659">Elementet er oppdatert</translation>
-<translation id="1027850213405719822">Dette medfører at synkroniseringen blir slått av.</translation>
 <translation id="1044891598689252897">Nettsteder kommer til å fungere som normalt</translation>
 <translation id="1047726139967079566">Legg til bokmerke for denne siden...</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -208,7 +207,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="3112556859945124369">Merk…</translation>
 <translation id="3131206671572504478">Blokkér alle</translation>
 <translation id="313283613037595347">Åpne ny inkognitofane.</translation>
-<translation id="3134493362339304186">Se eventuelt instruksjonene fra søkemotoren din om hvordan du sletter søkeloggen din. Du blir ikke logget av Google-kontoen din. For å slette andre former for logg, besøk <ph name="BEGIN_LINK" />Min Google-aktivitet<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Lagre kortet</translation>
 <translation id="3157387275655328056">Legg til i leselisten</translation>
 <translation id="3157684681743766797">Merk alle…</translation>
@@ -231,7 +229,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="3285962946108803577">Del siden</translation>
 <translation id="3290875554372353449">Velg konto</translation>
 <translation id="3311748811247479259">Av</translation>
-<translation id="3317580614754548493">Du blir ikke logget av Google-kontoen din. For å tømme <ph name="BEGIN_LINK" />søkeloggen<ph name="END_LINK" /> eller andre logger, besøk <ph name="BEGIN_LINK" />Min Google-konto<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informasjon om nettstedet</translation>
 <translation id="3329904751041170572">Kunne ikke koble til tjeneren.</translation>
@@ -263,7 +260,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="3533436815740441613">Ny fane</translation>
 <translation id="3551320343578183772">Lukk fanen</translation>
 <translation id="3581564640715911333">Tilby å oversette sider på andre språk</translation>
-<translation id="3588492282865875287">Vil du logge av?</translation>
 <translation id="3588820906588687999">Åpne bildet i en ny fane</translation>
 <translation id="359441731697487922">Du kan åpne linker i Chrome automatisk ved å angi den som standard nettleserapp.
 
@@ -560,7 +556,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="651505212789431520">Vil du avbryte synkroniseringen? Du kan når som helst slå på synkronisering i Innstillinger.</translation>
 <translation id="6524918542306337007">Inkognitomodus er ikke tilgjengelig</translation>
-<translation id="6560725150890787329">Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din. Du blir ikke logget av Google-kontoen din. For å slette andre former for logg, besøk <ph name="BEGIN_LINK" />Min Google-aktivitet<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zoom inn</translation>
 <translation id="6585618849026997638">Du kan komme tilbake til sider som er viktige for deg, ved å legge til bokmerker</translation>
 <translation id="6603393121510733479">Organisasjonen din har slått av privat surfing.

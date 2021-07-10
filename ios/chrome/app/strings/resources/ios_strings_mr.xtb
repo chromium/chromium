@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">तुम्ही नुकतीच बंद केलेले टॅब पुन्हा उघडण्यासाठी, तुम्ही परत येथे येऊ शकता</translation>
 <translation id="1016495303386450659">आयटम अपडेट केला</translation>
-<translation id="1027850213405719822">यामुळे सिंक बंद होईल.</translation>
 <translation id="1044891598689252897">साइट सामान्यपणे काम करतील</translation>
 <translation id="1047726139967079566">हे पृष्ठ बुकमार्क करा...</translation>
 <translation id="1049743911850919806">गुप्त</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">चिन्हांकित करा…</translation>
 <translation id="3131206671572504478">सर्व ब्लॉक करा</translation>
 <translation id="313283613037595347">नवीन गुप्त टॅब तयार करा.</translation>
-<translation id="3134493362339304186">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, तुमच्या शोध इंजीनच्या सूचना पहा. तुम्हाला तुमच्या Google खाते मधून साइन आउट केले जाणार नाही. इतर प्रकारचा इतिहास साफ करण्यासाठी, <ph name="BEGIN_LINK" />माझी Google अ‍ॅक्टिव्हिटी<ph name="END_LINK" /> ला भेट द्या.</translation>
 <translation id="3153862085237805241">कार्ड सेव्ह करा</translation>
 <translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
 <translation id="3157684681743766797">सर्व चिन्हांकित करा…</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">पेज शेअर करा...</translation>
 <translation id="3290875554372353449">एक खाते निवडा</translation>
 <translation id="3311748811247479259">बंद</translation>
-<translation id="3317580614754548493">तुम्हाला तुमच्या Google खाते मधून साइन आउट केले जाणार नाही. <ph name="BEGIN_LINK" />शोध<ph name="END_LINK" /> किंवा इतिहासाचे इतर प्रकार साफ करण्यासाठी, <ph name="BEGIN_LINK" />माझे Google खाते<ph name="END_LINK" /> ला भेट द्या</translation>
 <translation id="3324193307694657476">पत्ता 2</translation>
 <translation id="3328801116991980348">साइट माहिती</translation>
 <translation id="3329904751041170572">सर्व्हरशी कनेक्ट करू शकलो नाही.</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">नवीन टॅब</translation>
 <translation id="3551320343578183772">टॅब बंद करा</translation>
 <translation id="3581564640715911333">पेजचे अन्य भाषांमध्ये भाषांतर उपलब्ध करा</translation>
-<translation id="3588492282865875287">साइन आउट करायचे?</translation>
 <translation id="3588820906588687999">नवीन टॅबमध्ये इमेज उघडा</translation>
 <translation id="359441731697487922">तुम्ही Chrome ला तुमचे डीफॉल्ट ब्राउझर अ‍ॅप सेट करून त्यामध्ये आपोआप लिंक उघडू शकता.
       
@@ -562,7 +558,6 @@
 प्रत्येक साइटसाठी युनिक पासवर्ड वापरण्याचा प्रयत्न करा.</translation>
 <translation id="651505212789431520">सिंक रद्द करायचे का? तुम्ही सेटिंग्ज मध्ये कधीही सिंक करणे सुरू करू शकता.</translation>
 <translation id="6524918542306337007">गुप्त मोड उपलब्ध नाही</translation>
-<translation id="6560725150890787329"><ph name="DSE_NAME" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा. तुम्हाला तुमच्या Google खाते मधून साइन आउट केले जाणार नाही. इतर प्रकारचा इतिहास साफ करण्यासाठी, <ph name="BEGIN_LINK" />माझी Google अ‍ॅक्टिव्हिटी<ph name="END_LINK" /> ला भेट द्या.</translation>
 <translation id="6561262006871132942">झूम इन करा</translation>
 <translation id="6585618849026997638">बुकमार्क जोडून तुम्ही तुमच्यासाठी महत्त्वाच्या असलेल्या पेजवर परत जाऊ शकता</translation>
 <translation id="6603393121510733479">तुमच्या संस्थेने खाजगी ब्राउझिंग बंद केले आहे.
@@ -802,7 +797,7 @@
 <translation id="8881801611828450202">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="8909135823018751308">शेअर करा...</translation>
 <translation id="8917490105272468696">होय, मला मान्य आहे</translation>
-<translation id="895541991026785598">समस्या नोंदवणे</translation>
+<translation id="895541991026785598">समस्या नोंदवा</translation>
 <translation id="8976382372951310360">मदत</translation>
 <translation id="8976414606286374109">कार्ड तुमच्या Google खाते मध्ये सेव्ह केली जातात.</translation>
 <translation id="8981454092730389528">Google ॲक्टिव्हिटी नियंत्रणे</translation>

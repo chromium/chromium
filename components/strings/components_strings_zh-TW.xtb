@@ -84,14 +84,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">你在不是由貴機構管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
-<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
-        這部裝置不會儲存的活動：
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />你在這個視窗中瀏覽的頁面
-          <ph name="LIST_ITEM" />Cookie 和網站資料
-          <ph name="LIST_ITEM" />帳戶資訊 (<ph name="LINK_BEGIN" />登出<ph name="LINK_END" />)
-        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">取件方式</translation>
 <translation id="1281476433249504884">堆疊出紙器 1</translation>
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
@@ -604,7 +596,6 @@
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3209034400446768650">這個頁面可能會產生費用</translation>
 <translation id="3212581601480735796">你在 <ph name="HOSTNAME" /> 上進行的活動正遭到監控</translation>
-<translation id="3212623355668894776">只要關閉所有訪客視窗，你的瀏覽活動就會從這部裝置刪除。</translation>
 <translation id="3215092763954878852">無法使用 WebAuthn</translation>
 <translation id="3218181027817787318">相對</translation>
 <translation id="3223287115535306850">應用程式啟動中動畫</translation>
@@ -915,6 +906,7 @@
 <translation id="4270541775497538019">堆疊出紙器 6</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4277028893293644418">重設密碼</translation>
+<translation id="4278390842282768270">允許</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{這張卡片已儲存到你的 Google 帳戶}other{這些卡片已儲存到你的 Google 帳戶}}</translation>
 <translation id="4287885627794386150">符合適用條件但尚未啟用</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 頁的縮圖</translation>
@@ -1009,7 +1001,6 @@
 <translation id="4668929960204016307">，</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
 <translation id="4673460618347856347">恐龍遊戲，開始暢玩</translation>
-<translation id="4675657451653251260">在訪客模式中，你無法查看任何 Chrome 設定檔的資訊。你可以<ph name="LINK_BEGIN" />登入<ph name="LINK_END" />帳戶，以存取自己的 Google 帳戶資訊，例如密碼或付款方式。</translation>
 <translation id="467662567472608290">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證含有錯誤。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> 要求回應無障礙事件</translation>
 <translation id="467809019005607715">Google 簡報</translation>
@@ -1042,12 +1033,6 @@
 <translation id="4761869838909035636">執行 Chrome 安全檢查</translation>
 <translation id="4764776831041365478"><ph name="URL" /> 的網頁可能暫時離線，或是已經遷移到另一個網址。</translation>
 <translation id="4766713847338118463">雙釘 (底部)</translation>
-<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
-        這部裝置會儲存的活動：
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />你在這個視窗下載的所有檔案
-        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">發生不明的錯誤。</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{已封鎖彈出式視窗}other{已封鎖 # 個彈出式視窗}}</translation>
 <translation id="4780366598804516005">出紙槽 1</translation>
@@ -1233,7 +1218,6 @@
 <translation id="5421136146218899937">清除瀏覽資料...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給你</translation>
 <translation id="5428105026674456456">西班牙文</translation>
-<translation id="542872847390508405">你目前是以訪客身分瀏覽</translation>
 <translation id="5430298929874300616">移除書籤</translation>
 <translation id="5439770059721715174">「<ph name="ERROR_PATH" />」發生架構驗證錯誤：<ph name="ERROR" /></translation>
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
@@ -1947,6 +1931,7 @@
 <translation id="8103161714697287722">付款方式</translation>
 <translation id="8105368624971345109">關閉</translation>
 <translation id="810875025413331850">找不到附近的裝置。</translation>
+<translation id="8116925261070264013">已設為靜音</translation>
 <translation id="8118489163946903409">付款方式</translation>
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」未正確安裝在電腦或網路上。請通知 IT 管理員解決這個問題。</translation>
 <translation id="8128526133099929547">你剛才在詐騙網站上輸入了密碼。Chrome 建議你立即前往 <ph name="WEBSITE_1" /> 以及也使用這個密碼的其他網站變更密碼。</translation>
@@ -2063,13 +2048,6 @@
 <translation id="8559762987265718583">你裝置的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法與 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私人連線。</translation>
 <translation id="8564182942834072828">個別文件/未自動分頁的副本</translation>
 <translation id="8564985650692024650">如果你在其他網站上重複使用過你的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chromium 會建議你重設密碼。</translation>
-<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
-        這部裝置不會儲存的活動：
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />你在這個視窗中瀏覽的頁面
-          <ph name="LIST_ITEM" />Cookie 和網站資料
-        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">使用 Touch ID 加快卡片驗證速度</translation>
 <translation id="8577348305244205642">虛擬卡片無法使用</translation>
 <translation id="858637041960032120">新增電話號碼</translation>
@@ -2077,9 +2055,6 @@
 <translation id="8600271352425265729">僅限這次</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8606726445206553943">使用您的 MIDI 裝置</translation>
-<translation id="8612761427948161954"><ph name="USERNAME" />，你好：
-        <ph name="BR" />
-        你正在以訪客身分瀏覽</translation>
 <translation id="861775596732816396">粗細：4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">找不到相符的密碼。顯示所有已儲存的密碼。</translation>

@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">RRRR</translation>
 <translation id="1013952917065545813">Môžete sa sem vrátiť a znova otvoriť karty, ktoré ste nedávno zatvorili</translation>
 <translation id="1016495303386450659">Položka bola aktualizovaná</translation>
-<translation id="1027850213405719822">Týmto sa vypne synchronizácia.</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
 <translation id="1047726139967079566">Pridať stránku medzi záložky…</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -208,7 +207,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="3112556859945124369">Označiť…</translation>
 <translation id="3131206671572504478">Blokovať všetky</translation>
 <translation id="313283613037595347">Vytvoriť novú kartu inkognito.</translation>
-<translation id="3134493362339304186">Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania (ak je to možné). Vaše prihlásenie v účte Google bude naďalej aktívne. Ak chcete vymazať ostatné formy histórie, prejdite na stránku <ph name="BEGIN_LINK" />Moju aktivitu na Googli<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Uložiť kartu</translation>
 <translation id="3157387275655328056">Pridať do čitateľského zoznamu</translation>
 <translation id="3157684681743766797">Označiť všetko…</translation>
@@ -231,7 +229,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="3285962946108803577">Zdieľať stránku...</translation>
 <translation id="3290875554372353449">Výber účtu</translation>
 <translation id="3311748811247479259">Vypnuté</translation>
-<translation id="3317580614754548493">Vaše prihlásenie v účte Google bude naďalej aktívne. Ak chcete vymazať <ph name="BEGIN_LINK" />vyhľadávanie<ph name="END_LINK" /> alebo inú formu histórie, prejdite na stránku <ph name="BEGIN_LINK" />Môj účet Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informácie o stránkach</translation>
 <translation id="3329904751041170572">Nepodarilo sa pripojiť k serveru.</translation>
@@ -263,7 +260,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="3533436815740441613">Nová karta</translation>
 <translation id="3551320343578183772">Zatvoriť kartu</translation>
 <translation id="3581564640715911333">Ponúkať preklad stránok v ďalších jazykoch</translation>
-<translation id="3588492282865875287">Chcete sa odhlásiť?</translation>
 <translation id="3588820906588687999">Otvoriť obrázok na novej karte</translation>
 <translation id="359441731697487922">Odkazy môžete v Chrome otvárať automaticky, keď si ho nastavíte ako predvolenú aplikáciu prehliadača.
       
@@ -560,7 +556,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="651505212789431520">Chcete zrušiť synchronizáciu? Môžete ju kedykoľvek zapnúť v Nastaveniach.</translation>
 <translation id="6524918542306337007">Režim inkognito nie je k dispozícii</translation>
-<translation id="6560725150890787329">Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, ako odstrániť históriu vyhľadávania (ak je to možné). Vaše prihlásenie v účte Google bude naďalej aktívne. Ak chcete vymazať ostatné formy histórie, prejdite na stránku <ph name="BEGIN_LINK" />Moju aktivitu na Googli<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Priblížiť</translation>
 <translation id="6585618849026997638">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť pridaním záložky</translation>
 <translation id="6603393121510733479">Vaša organizácia vypla anonymné prehliadanie.

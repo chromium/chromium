@@ -84,14 +84,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Вы ввели пароль на сайте, которым не управляет ваша организация. Чтобы защитить свой аккаунт, не используйте этот пароль для других приложений и сайтов.</translation>
 <translation id="1263231323834454256">Список для чтения</translation>
-<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
-        На этом устройстве не будут сохраняться:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />страницы, которые вы просматриваете в этом окне;
-          <ph name="LIST_ITEM" />файлы cookie и данные сайтов;
-          <ph name="LIST_ITEM" />информация об аккаунте (<ph name="LINK_BEGIN" />выйти<ph name="LINK_END" />).
-        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Способ получения</translation>
 <translation id="1281476433249504884">Укладчик 1</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
@@ -603,7 +595,6 @@
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3209034400446768650">На этой странице может взиматься плата</translation>
 <translation id="3212581601480735796">Ваши действия на сайте <ph name="HOSTNAME" /> отслеживаются</translation>
-<translation id="3212623355668894776">Чтобы удалить с этого устройства данные о своих действиях в браузере, закройте окна, открытые в гостевом режиме.</translation>
 <translation id="3215092763954878852">Не удалось использовать WebAuthn</translation>
 <translation id="3218181027817787318">Относительный</translation>
 <translation id="3223287115535306850">Троббер запуска приложения</translation>
@@ -914,6 +905,7 @@
 <translation id="4270541775497538019">Укладчик 6</translation>
 <translation id="4275830172053184480">Перезапуск устройства</translation>
 <translation id="4277028893293644418">Сбросить пароль</translation>
+<translation id="4278390842282768270">Разрешено</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Карта сохранена в аккаунте Google.}one{Карты сохранены в аккаунте Google.}few{Карты сохранены в аккаунте Google.}many{Карты сохранены в аккаунте Google.}other{Карты сохранены в аккаунте Google.}}</translation>
 <translation id="4287885627794386150">Пробная функция доступна, но не активирована</translation>
 <translation id="4297502707443874121">Уменьшенное изображение страницы <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1008,7 +1000,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Виртуальная реальность</translation>
 <translation id="4673460618347856347">Играть в игру Dino</translation>
-<translation id="4675657451653251260">В гостевом режиме вы не увидите информацию профиля Chrome. Чтобы получить доступ к своим данным, например паролям и способам оплаты, <ph name="LINK_BEGIN" />войдите в аккаунт Google<ph name="LINK_END" />.</translation>
 <translation id="467662567472608290">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности содержит ошибки. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="4677585247300749148">Сайт <ph name="URL" /> запрашивает доступ к специальным возможностям.</translation>
 <translation id="467809019005607715">Google Презентации</translation>
@@ -1041,12 +1032,6 @@
 <translation id="4761869838909035636">Запустить проверку безопасности</translation>
 <translation id="4764776831041365478">Веб-страница по адресу <ph name="URL" />, возможно, временно недоступна или постоянно перемещена по новому адресу.</translation>
 <translation id="4766713847338118463">Две скобы снизу</translation>
-<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
-        На этом устройстве будут сохранены:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />файлы, которые вы скачиваете в этом окне.
-        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Произошла неизвестная ошибка.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Всплывающее окно заблокировано}one{Заблокировано # всплывающее окно}few{Заблокировано # всплывающих окна}many{Заблокировано # всплывающих окон}other{Заблокировано # всплывающ. окна}}</translation>
 <translation id="4780366598804516005">Почтовый ящик 1</translation>
@@ -1232,7 +1217,6 @@
 <translation id="5421136146218899937">Очистить историю...</translation>
 <translation id="5426179911063097041">С сайта <ph name="SITE" /> поступил запрос на отправку уведомлений.</translation>
 <translation id="5428105026674456456">Испанский</translation>
-<translation id="542872847390508405">Вы вошли в гостевом режиме</translation>
 <translation id="5430298929874300616">Удалить закладку</translation>
 <translation id="5439770059721715174">Ошибка проверки схемы, <ph name="ERROR_PATH" />: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">В обратном порядке лицевой стороной вверх</translation>
@@ -1946,6 +1930,7 @@
 <translation id="8103161714697287722">Способ оплаты</translation>
 <translation id="8105368624971345109">Отключить</translation>
 <translation id="810875025413331850">Устройства поблизости не найдены.</translation>
+<translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="8118489163946903409">Способ оплаты</translation>
 <translation id="8127301229239896662">Программа "<ph name="SOFTWARE_NAME" />" была установлена неправильно. Обратитесь за помощью к системному администратору.</translation>
 <translation id="8128526133099929547">Вы только что ввели пароль на поддельном сайте. Рекомендуем немедленно сменить пароль для ресурса <ph name="WEBSITE_1" /> и других сайтов, на которых вы используете введенный пароль.</translation>
@@ -2062,13 +2047,6 @@
 <translation id="8559762987265718583">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Несколько документов/без разбора по копиям</translation>
 <translation id="8564985650692024650">Chromium рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
-<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
-        На этом устройстве не будут сохраняться:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />страницы, которые вы просматриваете в этом окне;
-          <ph name="LIST_ITEM" />файлы cookie и данные сайтов.
-        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Использовать Touch ID для быстрого подтверждения карт</translation>
 <translation id="8577348305244205642">Виртуальная карта недоступна</translation>
 <translation id="858637041960032120">Добавьте номер</translation>
@@ -2076,9 +2054,6 @@
 <translation id="8600271352425265729">Только в этот раз</translation>
 <translation id="860043288473659153">Имя владельца карты</translation>
 <translation id="8606726445206553943">использование MIDI-устройств</translation>
-<translation id="8612761427948161954">Здравствуйте, <ph name="USERNAME" />!
-        <ph name="BR" />
-        Вы используете гостевой режим.</translation>
 <translation id="861775596732816396">Размер: 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Нет подходящих паролей. Показать все сохраненные пароли.</translation>

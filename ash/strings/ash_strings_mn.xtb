@@ -181,7 +181,6 @@
 <translation id="2352467521400612932">Мэдрэгч үзэгний тохиргоо</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> идэвхжүүлж байна</translation>
 <translation id="2359808026110333948">Цааш</translation>
-<translation id="2365393535144473978">Мобайл датаг идэвхжүүлснээр Bluetooth мөн идэвхжинэ.</translation>
 <translation id="2369165858548251131">"Сайн байна уу?"-г хятад хэлээр</translation>
 <translation id="2390318262976603432">Хэл болон улсын кодын тохиргоо</translation>
 <translation id="2391579633712104609">180 °</translation>
@@ -723,7 +722,6 @@
 <translation id="6696025732084565524">Та салгах боломжтой гараа зайлшгүй шинэчлэх шаардлагатай байна</translation>
 <translation id="6700713906295497288">IME цэсийн товчлуур</translation>
 <translation id="6713285437468012787">Bluetooth <ph name="DEVICE_NAME" />-г идэвхжүүлсэн байгаа тул бүх хэрэглэгчид ашиглах боломжтой байна. Та тохиргооны хэсгийг ашиглан идэвхжүүлсэн тохиргоог өөрчлөх боломжтой.</translation>
-<translation id="6715542151869432661">Мобайл төхөөрөмж олдсонгүй.</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
 <translation id="6727969043791803658">Холбогдсон, батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>

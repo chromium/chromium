@@ -85,14 +85,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">អ្នក​បានបញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​ទំព័រដែល​មិនបាន​គ្រប់គ្រង​ដោយស្ថាប័ន​របស់អ្នក។ ដើម្បី​ការពារ​គណនី​របស់អ្នក សូមកុំ​ប្រើពាក្យ​សម្ងាត់​របស់អ្នក​ម្តងទៀត​នៅលើ​កម្មវិធី និង​ទំព័រផ្សេង​។</translation>
 <translation id="1263231323834454256">បញ្ជី​អាន</translation>
-<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
-        សកម្មភាពដែលនឹងមិនស្ថិតនៅក្នុងឧបករណ៍នេះ៖
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ទំព័រដែលអ្នកមើលនៅក្នុងវិនដូនេះ
-          <ph name="LIST_ITEM" />ទិន្នន័យគេហទំព័រ និងខូគី
-          <ph name="LIST_ITEM" />ព័ត៌មានគណនី (<ph name="LINK_BEGIN" />ចេញ<ph name="LINK_END" />)
-        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">មធ្យោបាយ​ទៅយក</translation>
 <translation id="1281476433249504884">ទម្រគំនរ​ទី 1</translation>
 <translation id="1285320974508926690">មិនបកប្រែគេហទំព័រនេះទៀតឡើយ</translation>
@@ -611,7 +603,6 @@
 <translation id="3207960819495026254">បានចំណាំ</translation>
 <translation id="3209034400446768650">ទំព័រអាច​នឹង​គិតប្រាក់</translation>
 <translation id="3212581601480735796">សកម្មភាព​របស់អ្នក​នៅលើ <ph name="HOSTNAME" /> កំពុងត្រូវ​បានឃ្លាំមើល</translation>
-<translation id="3212623355668894776">បិទវិនដូភ្ញៀវទាំងអស់ ដើម្បីលុបសកម្មភាព​រុករក​តាមអ៊ីនធឺណិតរបស់អ្នកចេញពីឧបករណ៍នេះ។</translation>
 <translation id="3215092763954878852">មិនអាចប្រើ WebAuthn បានទេ</translation>
 <translation id="3218181027817787318">ពាក់ព័ន្ធ</translation>
 <translation id="3223287115535306850">រូបកំពុងដំណើរការនៃការចាប់ផ្ដើមកម្មវិធី</translation>
@@ -927,6 +918,7 @@
 <translation id="4270541775497538019">ទម្រគំនរ​ទី 6</translation>
 <translation id="4275830172053184480">ចាប់ផ្តើមឧបករណ៍របស់អ្នកឡើងវិញ</translation>
 <translation id="4277028893293644418">កំណត់​ពាក្យ​សម្ងាត់​ឡើងវិញ</translation>
+<translation id="4278390842282768270">បានអនុញ្ញាត</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{បណ្ណនេះ​ត្រូវបានរក្សាទុក​នៅក្នុងគណនី Google របស់អ្នក}other{បណ្ណទាំងនេះ​ត្រូវបានរក្សាទុក​នៅក្នុងគណនី Google របស់អ្នក}}</translation>
 <translation id="4287885627794386150">អាច​សាកល្បងបាន ប៉ុន្តែ​មិនដំណើរការទេ</translation>
 <translation id="4297502707443874121">រូបភាព​តូចៗសម្រាប់ទំព័រ <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1022,7 +1014,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">VR</translation>
 <translation id="4673460618347856347">ហ្គេមដាយណូស័រ, លេង</translation>
-<translation id="4675657451653251260">អ្នកនឹងមិនឃើញព័ត៌មានរបស់កម្រងព័ត៌មាន Chrome នៅក្នុងមុខងារ​ភ្ញៀវទេ។ អ្នកអាច<ph name="LINK_BEGIN" />ចូល<ph name="LINK_END" /> ដើម្បីចូលប្រើព័ត៌មានគណនី Google របស់អ្នកដូចជា ពាក្យសម្ងាត់ និងវិធីបង់ប្រាក់ជាដើម។</translation>
 <translation id="467662567472608290">ម៉ាស៊ីនមេនេះមិនអាចបង្ហាញថាវាជា <ph name="DOMAIN" /> ទេ វិញ្ញាបនប័ត្រសុវត្ថិភាពរបស់វាផ្ទុកកំហុសឆ្គង។ នេះអាចបណ្តាលមកពីការកំណត់មិនត្រឹមត្រូវ ឬមានការស្ទាក់ការភ្ជាប់របស់អ្នកពីអ្នកវាយប្រហារ។</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ចង់ឆ្លើយតប​នឹងព្រឹត្តិការណ៍​ភាពងាយស្រួល</translation>
 <translation id="467809019005607715">Google បទបង្ហាញ</translation>
@@ -1055,12 +1046,6 @@
 <translation id="4761869838909035636">ដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព Chrome</translation>
 <translation id="4764776831041365478">គេហទំព័រនៅ <ph name="URL" /> អាចមិនដំណើរការបណ្តោះអាសន្ន ឬវាអាចត្រូវបានផ្លាស់ទីទៅអាសយដ្ឋានគេហទំព័រថ្មី។</translation>
 <translation id="4766713847338118463">កិប​ពីរគ្រាប់​ខាងក្រោម</translation>
-<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
-        សកម្មភាពរបស់អ្នកដែលស្ថិតនៅក្នុងឧបករណ៍នេះ៖
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ឯកសារទាំងឡាយដែលអ្នកទាញយកនៅក្នុងវិនដូនេះ
-        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">កំហុសឆ្គងមិនស្គាល់បានកើតឡើង។</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{​ផ្ទាំងផុសត្រូវ​បាន​ទប់ស្កាត់}other{​ផ្ទាំងផុស # ត្រូវ​បាន​ទប់ស្កាត់}}</translation>
 <translation id="4780366598804516005">ប្រអប់​សំបុត្រទី 1</translation>
@@ -1246,7 +1231,6 @@
 <translation id="5421136146218899937">ជម្រះទិន្នន័យរុករក...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ចង់​ផ្ញើ​ការជូន​ដំណឹងទៅអ្នក</translation>
 <translation id="5428105026674456456">ភាសាអេស្ប៉ាញ</translation>
-<translation id="542872847390508405">អ្នកកំពុងរុករកជារបៀបភ្ញៀវ</translation>
 <translation id="5430298929874300616">ដកចំណាំចេញ</translation>
 <translation id="5439770059721715174">កំហុសឆ្គងសុពលភាពសញ្ញាតំណាងនៅ "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">ផ្ងារឡើងតាមលំដាប់លំដោយ​បញ្ច្រាស</translation>
@@ -1961,6 +1945,7 @@
 <translation id="8103161714697287722">វិធី​បង់ប្រាក់</translation>
 <translation id="8105368624971345109">បិទ</translation>
 <translation id="810875025413331850">រក​មិនឃើញ​ឧបករណ៍​ដែលនៅជិត​ទេ។</translation>
+<translation id="8116925261070264013">បានបិទសំឡេង</translation>
 <translation id="8118489163946903409">វិធីបង់ប្រាក់</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" មិនបានដំឡើងត្រឹមត្រូវនៅលើកុំព្យូទ័រ ឬបណ្តាញរបស់អ្នកទេ។ សូមស្នើឱ្យអ្នកគ្រប់គ្រងផ្នែកព័ត៌មានវិទ្យារបស់អ្នកដោះស្រោយបញ្ហានេះ។</translation>
 <translation id="8128526133099929547">អ្នកទើបតែ​បានបញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​គេហទំព័របញ្ឆោត។ Chrome សូមណែនាំឱ្យ​ចូលទៅកាន់ <ph name="WEBSITE_1" /> និងគេហទំព័រ​ផ្សេងទៀត ​ដែល​អ្នកប្រើ​ពាក្យសម្ងាត់​នេះ រួច​ប្ដូរ​ពាក្យសម្ងាត់​ឥឡូវនេះ។</translation>
@@ -2077,13 +2062,6 @@
 <translation id="8559762987265718583">ការភ្ជាប់ឯកជនទៅ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> មិនអាចធ្វើឡើងទេ ពីព្រោះកាលបរិច្ឆេទ និងម៉ោងឧបករណ៍របស់អ្នក (<ph name="DATE_AND_TIME" />)មិនត្រឹមត្រូវ។</translation>
 <translation id="8564182942834072828">ឯកសារ​ដាច់ដោយឡែក/ច្បាប់ចម្លង​ដាច់ដោយឡែក</translation>
 <translation id="8564985650692024650">Chromium ណែនាំឱ្យ​កំណត់​ពាក្យសម្ងាត់ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> របស់អ្នក​ឡើងវិញ ប្រសិនបើ​អ្នកបាន​ប្រើ​វាម្តងទៀត​នៅលើ​ទំព័រផ្សេង។</translation>
-<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
-        សកម្មភាពដែលនឹងមិនស្ថិតនៅលើឧបករណ៍នេះ៖
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ទំព័រដែលអ្នកមើលនៅក្នុងវិនដូនេះ
-          <ph name="LIST_ITEM" />ទិន្នន័យគេហទំព័រ និងខូគី
-        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">ប្រើ Touch ID ដើម្បី​បញ្ជាក់​បណ្ណឱ្យ​បាន​រហ័ស​ជាងមុន</translation>
 <translation id="8577348305244205642">មិនអាចប្រើ​កាតនិមិ្មតបានទេ</translation>
 <translation id="858637041960032120">បន្ថែមលេខទូរស័ព្ទ</translation>
@@ -2091,9 +2069,6 @@
 <translation id="8600271352425265729">តែពេលនេះ​ប៉ុណ្ណោះ</translation>
 <translation id="860043288473659153">ឈ្មោះ​ម្ចាស់​កាត</translation>
 <translation id="8606726445206553943">ប្រើឧបករណ៍ MIDI របស់អ្នក</translation>
-<translation id="8612761427948161954">សួស្ដី <ph name="USERNAME" />
-        <ph name="BR" />
-        អ្នកកំពុងរុករកក្នុងនាមជាភ្ញៀវ</translation>
 <translation id="861775596732816396">ទំហំ 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">គ្មាន​ពាក្យសម្ងាត់​ដែលត្រូវគ្នាទេ។ បង្ហាញ​ពាក្យសម្ងាត់​ដែលបានរក្សាទុក​ទាំងអស់។</translation>

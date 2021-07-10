@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Pode voltar aqui para reabrir separadores que tenha fechado recentemente.</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
-<translation id="1027850213405719822">Esta ação desativa a sincronização.</translation>
 <translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
 <translation id="1047726139967079566">Marcar esta página...</translation>
 <translation id="1049743911850919806">Navegação anónima</translation>
@@ -208,7 +207,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="313283613037595347">Crie um novo separador de navegação anónima.</translation>
-<translation id="3134493362339304186">Se aplicável, consulte as instruções do motor de pesquisa para eliminar o histórico de pesquisas. A sessão na sua Conta Google não é terminada. Para limpar outras formas do histórico, visite <ph name="BEGIN_LINK" />A minha atividade Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Guardar cartão</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo…</translation>
@@ -231,7 +229,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="3285962946108803577">Partilhar página…</translation>
 <translation id="3290875554372353449">Selecione uma conta</translation>
 <translation id="3311748811247479259">Desativado</translation>
-<translation id="3317580614754548493">A sessão na sua Conta Google não é terminada. Para limpar a <ph name="BEGIN_LINK" />pesquisa<ph name="END_LINK" /> ou outras formas do histórico, visite <ph name="BEGIN_LINK" />A minha Conta Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Morada 2</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3329904751041170572">Não foi possível ligar ao servidor.</translation>
@@ -263,7 +260,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="3533436815740441613">Novo separador</translation>
 <translation id="3551320343578183772">Fechar Separador</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
-<translation id="3588492282865875287">Pretende terminar sessão?</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
 <translation id="359441731697487922">Pode abrir links no Chrome automaticamente ao torná-lo a sua app de navegador predefinida.
       
@@ -560,7 +556,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="651505212789431520">Pretende cancelar a sincronização? Pode ativar a sincronização em qualquer altura nas Definições.</translation>
 <translation id="6524918542306337007">O Modo de navegação anónima está indisponível</translation>
-<translation id="6560725150890787329">O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas. A sessão na sua Conta Google não é terminada. Para limpar outras formas do histórico, visite <ph name="BEGIN_LINK" />A minha atividade Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Aumentar zoom</translation>
 <translation id="6585618849026997638">Pode regressar a uma página importante para si ao adicionar um marcador.</translation>
 <translation id="6603393121510733479">A sua entidade desativou a navegação anónima.

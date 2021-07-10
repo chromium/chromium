@@ -84,14 +84,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Έχετε εισαγάγει τον κωδικό πρόσβασής σας σε έναν ιστότοπο τον οποίο δεν διαχειρίζεται ο οργανισμός σας. Για να προστατεύσετε τον λογαριασμό σας, μην χρησιμοποιήσετε ξανά αυτόν τον κωδικό πρόσβασης σε άλλες εφαρμογές και ιστοτόπους.</translation>
 <translation id="1263231323834454256">Λίστα ανάγνωσης</translation>
-<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
-        Δραστηριότητα που δεν θα παραμένει σε αυτήν τη συσκευή:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Σελίδες που προβάλετε σε αυτό το παράθυρο
-          <ph name="LIST_ITEM" />Cookie και δεδομένα ιστοτόπου
-          <ph name="LIST_ITEM" />Πληροφορίες λογαριασμού (<ph name="LINK_BEGIN" />αποσύνδεση<ph name="LINK_END" />)
-        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Τρόπος παραλαβής</translation>
 <translation id="1281476433249504884">Μονάδα στοίβαξης 1</translation>
 <translation id="1285320974508926690">Να μην γίνεται ποτέ μετάφραση αυτού του ιστότοπου</translation>
@@ -608,7 +600,6 @@
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
 <translation id="3209034400446768650">Η σελίδα ενδέχεται να σας χρεώσει</translation>
 <translation id="3212581601480735796">Η δραστηριότητά σας στο <ph name="HOSTNAME" /> παρακολουθείται</translation>
-<translation id="3212623355668894776">Κλείστε όλα τα παράθυρα περιήγησης επισκέπτη, έτσι ώστε η δραστηριότητα περιήγησής σας να διαγραφεί από αυτήν τη συσκευή.</translation>
 <translation id="3215092763954878852">Δεν ήταν δυνατή η χρήση του WebAuthn</translation>
 <translation id="3218181027817787318">Σχετική</translation>
 <translation id="3223287115535306850">Ένδειξη εκκίνησης εφαρμογής</translation>
@@ -926,6 +917,7 @@
 <translation id="4270541775497538019">Μονάδα στοίβαξης 6</translation>
 <translation id="4275830172053184480">Επανεκκινήστε τη συσκευή σας</translation>
 <translation id="4277028893293644418">Επαναφορά κωδικού πρόσβασης</translation>
+<translation id="4278390842282768270">Επιτρέπεται</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Αυτή η κάρτα αποθηκεύτηκε στον Λογαριασμό σας Google}other{Αυτές οι κάρτες αποθηκεύτηκαν στον Λογαριασμό σας Google}}</translation>
 <translation id="4287885627794386150">Πληροί τις προϋποθέσεις για δοκιμή αλλά δεν έχει ενεργοποιηθεί</translation>
 <translation id="4297502707443874121">Μικρογραφία για τη σελίδα <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1020,7 +1012,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Εικονική πραγματικότητα</translation>
 <translation id="4673460618347856347">Παιχνίδι Dino, παίξτε</translation>
-<translation id="4675657451653251260">Δεν θα βλέπετε πληροφορίες προφίλ Chrome στη λειτουργία επισκέπτη. Μπορείτε να <ph name="LINK_BEGIN" />συνδεθείτε<ph name="LINK_END" /> για να αποκτήσετε πρόσβαση στις πληροφορίες του Λογαριασμού σας Google όπως κωδικούς πρόσβασης και τρόπους πληρωμής.</translation>
 <translation id="467662567472608290">Ο διακομιστής δεν κατάφερε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του περιέχει σφάλματα. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
 <translation id="4677585247300749148">Ο ιστότοπος <ph name="URL" /> επιθυμεί να απαντήσει σε συμβάντα προσβασιμότητας</translation>
 <translation id="467809019005607715">Παρουσιάσεις Google</translation>
@@ -1053,12 +1044,6 @@
 <translation id="4761869838909035636">Εκτέλεση Ελέγχου ασφαλείας Chrome</translation>
 <translation id="4764776831041365478">Η ιστοσελίδα στη διεύθυνση <ph name="URL" /> μπορεί να βρίσκεται προσωρινά εκτός λειτουργίας ή ίσως έχει μεταφερθεί μόνιμα σε νέα διεύθυνση ιστού.</translation>
 <translation id="4766713847338118463">Διπλή συρραφή στο κάτω μέρος</translation>
-<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
-        Η δραστηριότητά σας που παραμένει σε αυτήν τη συσκευή:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Τυχόν αρχεία που κατεβάζετε σε αυτό το παράθυρο
-        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Παρουσιάστηκε άγνωστο σφάλμα.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Το αναδυόμενο παράθυρο αποκλ.}other{# αναδυόμενα παράθυρα αποκλείστηκαν}}</translation>
 <translation id="4780366598804516005">Γραμματοκιβώτιο 1</translation>
@@ -1246,7 +1231,6 @@
 <translation id="5426179911063097041">Η διεύθυνση <ph name="SITE" /> θέλει να σας στείλει ειδοποιήσεις</translation>
 <translation id="5428105026674456456">Ισπανικά
 </translation>
-<translation id="542872847390508405">Πραγματοποιείτε περιήγηση ως Επισκέπτης</translation>
 <translation id="5430298929874300616">Κατάργηση σελιδοδείκτη</translation>
 <translation id="5439770059721715174">Σφάλμα επαλήθευσης σχήματος σε "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Αντίστροφη σειρά με την πρόσοψη προς τα επάνω</translation>
@@ -1960,6 +1944,7 @@
 <translation id="8103161714697287722">Τρόπος πληρωμής</translation>
 <translation id="8105368624971345109">Απενεργοποίηση</translation>
 <translation id="810875025413331850">Δεν βρέθηκαν κοντινές συσκευές.</translation>
+<translation id="8116925261070264013">Σε σίγαση</translation>
 <translation id="8118489163946903409">Τρόπος πληρωμής</translation>
 <translation id="8127301229239896662">Το λογισμικό "<ph name="SOFTWARE_NAME" />" δεν εγκαταστάθηκε σωστά στον υπολογιστή ή στο δίκτυό σας. Ζητήστε από τον διαχειριστή IT να επιλύσει αυτό το πρόβλημα.</translation>
 <translation id="8128526133099929547">Μόλις καταχωρίσατε τον κωδικό πρόσβασής σας σε έναν παραπλανητικό ιστότοπο. Το Chrome συνιστά να μεταβείτε στον ιστότοπο <ph name="WEBSITE_1" /> και σε άλλους ιστοτόπους όπου μπορείτε να χρησιμοποιήσετε αυτόν τον κωδικό πρόσβασης και να τον αλλάξετε τώρα.</translation>
@@ -2077,13 +2062,6 @@
 <translation id="8559762987265718583">Δεν είναι δυνατή η επίτευξη ιδιωτικής σύνδεσης με τον τομέα <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> επειδή η ημερομηνία και η ώρα (<ph name="DATE_AND_TIME" />) της συσκευής σας είναι λανθασμένες.</translation>
 <translation id="8564182942834072828">Ξεχωριστά έγγραφα/Αντίγραφα χωρίς συρραφή</translation>
 <translation id="8564985650692024650">Το Chromium συνιστά την επαναφορά του κωδικού πρόσβασης <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, εάν τον έχετε χρησιμοποιήσει και σε άλλους ιστοτόπους.</translation>
-<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
-        Δραστηριότητα που δεν θα παραμένει σε αυτήν τη συσκευή:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Σελίδες που προβάλετε σε αυτό το παράθυρο
-          <ph name="LIST_ITEM" />Cookie και δεδομένα ιστοτόπου
-        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Χρησιμοποιήστε το Touch ID για πιο γρήγορη επιβεβαίωση καρτών</translation>
 <translation id="8577348305244205642">Η εικονική κάρτα δεν είναι διαθέσιμη</translation>
 <translation id="858637041960032120">Προσθ. τηλεφ.
@@ -2092,9 +2070,6 @@
 <translation id="8600271352425265729">Μόνο αυτήν τη φορά</translation>
 <translation id="860043288473659153">Όνομα κατόχου κάρτας</translation>
 <translation id="8606726445206553943">Χρήση των συσκευών σας MIDI</translation>
-<translation id="8612761427948161954">Γεια σας <ph name="USERNAME" />,
-        <ph name="BR" />
-        Πραγματοποιείτε περιήγηση ως Επισκέπτης</translation>
 <translation id="861775596732816396">Μέγεθος 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Δεν αντιστοιχούν κωδικοί πρόσβασης. Εμφάνιση όλων των αποθηκευμένων κωδικών πρόσβασης.</translation>

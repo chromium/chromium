@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">آپ ان ٹیبز کو دوبارہ کھولنے کے لیے یہاں واپس آ سکتے ہیں جنہیں آپ نے حال ہی میں بند کر دیا ہے</translation>
 <translation id="1016495303386450659">آئٹم اپ ڈيٹ ہوگیا</translation>
-<translation id="1027850213405719822">اس سے مطابقت پذیری آف ہو جائے گی۔</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
 <translation id="1047726139967079566">یہ صفحہ بُک مارک کریں…</translation>
 <translation id="1049743911850919806">پوشیدگی</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">نشان زد کریں…</translation>
 <translation id="3131206671572504478">سبھی کو مسدود کریں</translation>
 <translation id="313283613037595347">نیا پوشیدگی ٹیب بنائیں۔</translation>
-<translation id="3134493362339304186">‏اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کے لیے اپنے سرچ انجن کی ہدایات دیکھیں۔ آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ کسی اور طرح کی سرگزشت کو صاف کرنے کے لیے <ph name="BEGIN_LINK" />Google کی میری سرگرمی<ph name="END_LINK" /> ملاحظہ کریں۔</translation>
 <translation id="3153862085237805241">کارڈ محفوظ کریں</translation>
 <translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="3157684681743766797">سبھی کو نشان زد کریں…</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">صفحہ کا اشتراک کریں...</translation>
 <translation id="3290875554372353449">اکاؤنٹ منتخب کریں</translation>
 <translation id="3311748811247479259">آف</translation>
-<translation id="3317580614754548493">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ <ph name="BEGIN_LINK" />تلاش<ph name="END_LINK" /> یا کسی اور طرح کی سرگزشت کو صاف کرنے کے لیے <ph name="BEGIN_LINK" />میرا Google اکاؤنٹ<ph name="END_LINK" /> ملاحظہ کریں</translation>
 <translation id="3324193307694657476">پتہ 2</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
 <translation id="3329904751041170572">سرور سے منسلک نہیں ہو سکے۔</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">نیا ٹیب</translation>
 <translation id="3551320343578183772">ٹیب بند کریں</translation>
 <translation id="3581564640715911333">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
-<translation id="3588492282865875287">سائن آؤٹ کریں؟</translation>
 <translation id="3588820906588687999">تصویر نئے ٹیب میں کھولیں</translation>
 <translation id="359441731697487922">‏آپ Chrome کو اپنی ڈیفالٹ براؤزر ایپ بنا کر میں لنکس کو خود کار طور پر کھول سکتے ہیں۔
       
@@ -560,7 +556,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 ہر سائٹ کے لئے ایک منفرد پاس ورڈ استعمال کرنے کی کوشش کریں۔</translation>
 <translation id="651505212789431520">مطابقت پذیری منسوخ کریں؟ آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں۔</translation>
 <translation id="6524918542306337007">پوشیدگی وضع دستیاب نہیں ہے</translation>
-<translation id="6560725150890787329">‏آپ کا سرچ انجن <ph name="DSE_NAME" /> ہے۔ اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت حذف کرنے کے لیے ان کی ہدایات دیکھیں۔ آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ کسی اور طرح کی سرگزشت کو صاف کرنے کے لیے <ph name="BEGIN_LINK" />Google کی میری سرگرمی<ph name="END_LINK" /> ملاحظہ کریں۔</translation>
 <translation id="6561262006871132942">زوم ان کریں</translation>
 <translation id="6585618849026997638">بُک مارک شامل کر کے آپ کسی ایسے صفحے پر واپس جا سکتے ہیں جو آپ کیلئے اہم ہے</translation>
 <translation id="6603393121510733479">آپ کی تنظیم نے نجی براؤزنگ کو آف کر دیا ہے۔

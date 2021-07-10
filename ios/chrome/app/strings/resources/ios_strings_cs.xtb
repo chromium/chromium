@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">RRRR</translation>
 <translation id="1013952917065545813">Tady můžete znovu otevřít karty, které jste nedávno zavřeli</translation>
 <translation id="1016495303386450659">Položka byla aktualizována</translation>
-<translation id="1027850213405719822">Tato akce vypne synchronizaci.</translation>
 <translation id="1044891598689252897">Weby budou fungovat normálně</translation>
 <translation id="1047726139967079566">Přidat stránku do záložek...</translation>
 <translation id="1049743911850919806">Anonymní režim</translation>
@@ -208,7 +207,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="3112556859945124369">Označit…</translation>
 <translation id="3131206671572504478">Blokovat vše</translation>
 <translation id="313283613037595347">Vytvořit novou anonymní kartu.</translation>
-<translation id="3134493362339304186">Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici). Z účtu Google odhlášeni nebudete. Pokud chcete vymazat jiné formy historie, navštivte <ph name="BEGIN_LINK" />Moji aktivitu na Googlu<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Uložit kartu</translation>
 <translation id="3157387275655328056">Přidat do seznamu četby</translation>
 <translation id="3157684681743766797">Označit vše…</translation>
@@ -231,7 +229,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="3285962946108803577">Sdílet stránku…</translation>
 <translation id="3290875554372353449">Vyberte účet</translation>
 <translation id="3311748811247479259">Vypnuto</translation>
-<translation id="3317580614754548493">Z účtu Google odhlášeni nebudete. Pokud chcete vymazat <ph name="BEGIN_LINK" />vyhledávání<ph name="END_LINK" /> nebo jiné formy historie, přejděte do <ph name="BEGIN_LINK" />svého účtu Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Druhý řádek adresy</translation>
 <translation id="3328801116991980348">Informace o stránkách</translation>
 <translation id="3329904751041170572">Nelze se připojit k serveru.</translation>
@@ -263,7 +260,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="3533436815740441613">Nová karta</translation>
 <translation id="3551320343578183772">Zavřít kartu</translation>
 <translation id="3581564640715911333">Nabízet překlad stránek v jiných jazycích</translation>
-<translation id="3588492282865875287">Odhlásit se?</translation>
 <translation id="3588820906588687999">Otevřít obrázek na nové kartě</translation>
 <translation id="359441731697487922">Pokud chcete odkazy otevírat automaticky v Chromu, nastavte si ho jako výchozí prohlížeč.
       
@@ -560,7 +556,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="651505212789431520">Zrušit synchronizaci? Synchronizaci můžete kdykoliv zapnout v Nastavení.</translation>
 <translation id="6524918542306337007">Anonymní režim není k dispozici</translation>
-<translation id="6560725150890787329">Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici) Z účtu Google odhlášeni nebudete. Pokud chcete vymazat jiné formy historie, navštivte <ph name="BEGIN_LINK" />Moji aktivitu na Googlu<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Přiblížit</translation>
 <translation id="6585618849026997638">Na stránky, které si přidáte do záložek, se budete moci snadno rychle vrátit</translation>
 <translation id="6603393121510733479">Vaše organizace vypnula soukromé prohlížení.

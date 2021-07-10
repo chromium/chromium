@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">연도</translation>
 <translation id="1013952917065545813">여기에 다시 돌아와 최근에 닫았던 탭을 다시 열 수 있습니다.</translation>
 <translation id="1016495303386450659">북마크가 업데이트되었습니다.</translation>
-<translation id="1027850213405719822">동기화가 사용 중지됩니다.</translation>
 <translation id="1044891598689252897">사이트가 정상적으로 작동합니다.</translation>
 <translation id="1047726139967079566">현재 페이지를 북마크에 추가...</translation>
 <translation id="1049743911850919806">시크릿</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">표시…</translation>
 <translation id="3131206671572504478">모두 차단</translation>
 <translation id="313283613037595347">새 시크릿 탭 만들기</translation>
-<translation id="3134493362339304186">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요. Google 계정에서 로그아웃되지 않습니다. 다른 형식의 기록을 삭제하려면 <ph name="BEGIN_LINK" />내 Google 활동<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="3153862085237805241">카드 저장</translation>
 <translation id="3157387275655328056">읽기 목록에 추가</translation>
 <translation id="3157684681743766797">모두 표시...</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">페이지 공유...</translation>
 <translation id="3290875554372353449">계정 선택</translation>
 <translation id="3311748811247479259">사용 안함</translation>
-<translation id="3317580614754548493">Google 계정에서 로그아웃되지 않습니다. <ph name="BEGIN_LINK" />검색<ph name="END_LINK" /> 또는 다른 형식의 기록을 삭제하려면 <ph name="BEGIN_LINK" />내 Google 계정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="3324193307694657476">주소 2</translation>
 <translation id="3328801116991980348">사이트 정보</translation>
 <translation id="3329904751041170572">서버에 연결하지 못했습니다.</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">새 탭</translation>
 <translation id="3551320343578183772">탭 닫기</translation>
 <translation id="3581564640715911333">다른 언어로 된 페이지의 번역 옵션 제공</translation>
-<translation id="3588492282865875287">로그아웃하시겠습니까?</translation>
 <translation id="3588820906588687999">새 탭에서 이미지 열기</translation>
 <translation id="359441731697487922">Chrome을 기본 브라우저 앱으로 설정하면 링크가 자동으로 Chrome에서 열립니다.
       
@@ -560,7 +556,6 @@
 하지만 사이트마다 고유한 비밀번호를 사용하는 것이 좋습니다.</translation>
 <translation id="651505212789431520">동기화를 취소하시겠습니까? 언제든지 설정에서 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="6524918542306337007">시크릿 모드를 사용할 수 없음</translation>
-<translation id="6560725150890787329">사용 중인 검색엔진은 <ph name="DSE_NAME" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요. Google 계정에서 로그아웃되지 않습니다. 다른 형식의 기록을 삭제하려면 <ph name="BEGIN_LINK" />내 Google 활동<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="6561262006871132942">확대</translation>
 <translation id="6585618849026997638">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
 <translation id="6603393121510733479">조직에서 시크릿 브라우징을 사용 중지했습니다.

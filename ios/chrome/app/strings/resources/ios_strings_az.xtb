@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">Bura qayıdaraq son zamanlarda bağladığınız tabları yenidən aça bilərsiniz</translation>
 <translation id="1016495303386450659">Element yeniləndi</translation>
-<translation id="1027850213405719822">Bununla sinxronlaşdırma deaktiv olacaq.</translation>
 <translation id="1044891598689252897">Saytlar normal qaydada işləyəcək</translation>
 <translation id="1047726139967079566">Bu səhifəni əlfəcinləyin...</translation>
 <translation id="1049743911850919806">Gizli Rejim</translation>
@@ -208,7 +207,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="3112556859945124369">Qeyd edin...</translation>
 <translation id="3131206671572504478">Hamısını blok edin</translation>
 <translation id="313283613037595347">Yeni Anonim tab yaradın.</translation>
-<translation id="3134493362339304186">Axtarış tarixçənizi silmək üçün axtarış sisteminizin təlimatlarına (təmin edilibsə) baxın. Google Hesabınızdan çıxmayacaqsınız. Digər tarixçə formalarını təmizləmək üçün <ph name="BEGIN_LINK" />Google Fəaliyyətim<ph name="END_LINK" /> bölməsini ziyarət edin.</translation>
 <translation id="3153862085237805241">Kartı Yadda saxlayın</translation>
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
 <translation id="3157684681743766797">Hamısını Qeyd Edin…</translation>
@@ -231,7 +229,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="3285962946108803577">Səhifəni Paylaşın...</translation>
 <translation id="3290875554372353449">Hesab seçin</translation>
 <translation id="3311748811247479259">Deaktiv</translation>
-<translation id="3317580614754548493">Google Hesabınızdan çıxmayacaqsınız. <ph name="BEGIN_LINK" />Axtarış<ph name="END_LINK" /> və ya digər tarixçə formalarını təmizləmək üçün <ph name="BEGIN_LINK" />Google Hesabım<ph name="END_LINK" /> bölməsini ziyarət edin</translation>
 <translation id="3324193307694657476">Ünvan 2</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
 <translation id="3329904751041170572">Server qoşulmaq mümkün olması.</translation>
@@ -263,7 +260,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="3533436815740441613">Yeni Tab</translation>
 <translation id="3551320343578183772">Paneli qapadın</translation>
 <translation id="3581564640715911333">Səhifələrin digər dillərdə tərcümə edilməsini təklif edin</translation>
-<translation id="3588492282865875287">Hesabdan çıxış edilsin?</translation>
 <translation id="3588820906588687999">Şəkli Yeni Paneldə Açın</translation>
 <translation id="359441731697487922">Defolt Brauzer Tətbiqiniz etməklə, keçidləri Chrome'da avtomatik aça bilərsiniz.
 
@@ -560,7 +556,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="651505212789431520">Sinxronizasiya Ləğv Edilsin? Sinxronizasiyanı istənilən vaxt Ayarlarda aktiv edə bilərsiniz.</translation>
 <translation id="6524918542306337007">Anonim rejim əlçatan deyil</translation>
-<translation id="6560725150890787329">Axtarış sisteminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək üçün onun təlimatlarına (təmin edilibsə) baxın. Google Hesabınızdan çıxmayacaqsınız. Digər tarixçə formalarını təmizləmək üçün <ph name="BEGIN_LINK" />Google Fəaliyyətim<ph name="END_LINK" /> bölməsini ziyarət edin.</translation>
 <translation id="6561262006871132942">Böyüdün</translation>
 <translation id="6585618849026997638">Əlfəcin əlavə etməklə vacib səhifəyə qayıda bilərsiniz</translation>
 <translation id="6603393121510733479">Təşkilatınız şəxsi baxış keçirməni deaktiv edib.

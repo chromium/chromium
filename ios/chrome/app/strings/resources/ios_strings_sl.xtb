@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">LLLL</translation>
 <translation id="1013952917065545813">Tukaj lahko znova odprete zavihke, ki ste jih nedavno zaprli</translation>
 <translation id="1016495303386450659">Item updated</translation>
-<translation id="1027850213405719822">S tem bo sinhronizacija izklopljena.</translation>
 <translation id="1044891598689252897">Spletna mesta bodo delovala normalno</translation>
 <translation id="1047726139967079566">Zaznamek za to stran ...</translation>
 <translation id="1049743911850919806">Anonimni način</translation>
@@ -208,7 +207,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="3112556859945124369">Označi …</translation>
 <translation id="3131206671572504478">Blokiraj vse</translation>
 <translation id="313283613037595347">Ustvarjanje novega anonimnega zavihka</translation>
-<translation id="3134493362339304186">Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo. Iz računa Google ne boste odjavljeni. Če želite izbrisati druge oblike zgodovine, obiščite <ph name="BEGIN_LINK" />mojo dejavnost v Googlu<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Shranjevanje kartice</translation>
 <translation id="3157387275655328056">Dodaj na bralni seznam</translation>
 <translation id="3157684681743766797">Označi vse …</translation>
@@ -231,7 +229,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="3285962946108803577">Deljenje strani …</translation>
 <translation id="3290875554372353449">Izberite račun</translation>
 <translation id="3311748811247479259">Izklopljeno</translation>
-<translation id="3317580614754548493">Iz računa Google ne boste odjavljeni. Če želite izbrisati zgodovino <ph name="BEGIN_LINK" />iskanja<ph name="END_LINK" /> ali druge oblike zgodovine, odprite <ph name="BEGIN_LINK" />Moj račun Google<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">Naslov 2</translation>
 <translation id="3328801116991980348">Podatki o mestu</translation>
 <translation id="3329904751041170572">Povezave s strežnikom ni mogoče vzpostaviti.</translation>
@@ -263,7 +260,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="3533436815740441613">Nov zavihek</translation>
 <translation id="3551320343578183772">Zapri zavihek</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
-<translation id="3588492282865875287">Se želite odjaviti?</translation>
 <translation id="3588820906588687999">Odpri sliko na novem zavihku</translation>
 <translation id="359441731697487922">Če nastavite Chrome kot privzeto aplikacijo za brskanje, lahko samodejno odpirate povezave v njem.
       
@@ -560,7 +556,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="651505212789431520">Želite preklicati sinhronizacijo? Sinhronizacijo lahko kadarkoli vklopite v nastavitvah.</translation>
 <translation id="6524918542306337007">Anonimni način ni na voljo</translation>
-<translation id="6560725150890787329">Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo. Iz računa Google ne boste odjavljeni. Če želite izbrisati druge oblike zgodovine, obiščite <ph name="BEGIN_LINK" />mojo dejavnost v Googlu<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Povečaj</translation>
 <translation id="6585618849026997638">Na stran, ki vam je pomembna, se lahko vrnete tako, da jo dodate med zaznamke.</translation>
 <translation id="6603393121510733479">Vaša organizacija je izklopila zasebno brskanje.

@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">سنة</translation>
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
-<translation id="1027850213405719822">سيؤدي تسجيل الخروج إلى إيقاف المزامنة.</translation>
 <translation id="1044891598689252897">ستعمل المواقع الإلكترونية بشكلٍ طبيعي.</translation>
 <translation id="1047726139967079566">وضع إشارة مرجعية على هذه الصفحة...</translation>
 <translation id="1049743911850919806">التصفح المتخفي</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">وضع علامة...</translation>
 <translation id="3131206671572504478">حظر الكل</translation>
 <translation id="313283613037595347">إنشاء علامة تبويب جديدة في وضع التصفُّح المتخفي</translation>
-<translation id="3134493362339304186">‏اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن. لن يتم تسجيل خروجك من حساب Google. لمحو أنواع السجلّات الأخرى، انتقِل إلى صفحة <ph name="BEGIN_LINK" />نشاطي على Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">حفظ البطاقة</translation>
 <translation id="3157387275655328056">إضافة إلى قائمة القراءة</translation>
 <translation id="3157684681743766797">وضع علامة على الكل...</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">مشاركة الصفحة...</translation>
 <translation id="3290875554372353449">اختيار حساب</translation>
 <translation id="3311748811247479259">غير مفعَّل</translation>
-<translation id="3317580614754548493">‏لن يتم تسجيل خروجك من حساب Google. لمحو <ph name="BEGIN_LINK" />سجلّ البحث<ph name="END_LINK" /> أو غيره من السجلّات، انتقِل إلى صفحة <ph name="BEGIN_LINK" />حسابي على Google<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">العنوان 2</translation>
 <translation id="3328801116991980348">معلومات الموقع الإلكتروني</translation>
 <translation id="3329904751041170572">تعذر الاتصال بالخادم.</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">علامة تبويب جديدة</translation>
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
-<translation id="3588492282865875287">هل تريد تسجيل الخروج؟</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
 <translation id="359441731697487922">‏يمكنك فتح الروابط في Chrome تلقائيًا من خلال جعله تطبيق المتصفِّح التلقائي.
       
@@ -560,7 +556,6 @@
 حاوِل استخدام كلمة مرور فريدة لكل موقع إلكتروني.</translation>
 <translation id="651505212789431520">هل تريد إلغاء المزامنة؟ يمكنك تفعيل المزامنة في أي وقت في "الإعدادات".</translation>
 <translation id="6524918542306337007">"وضع التصفُّح المتخفي" غير متاح</translation>
-<translation id="6560725150890787329">‏محرّك بحثك هو <ph name="DSE_NAME" />. اطّلِع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث، إن أمكن. لن يتم تسجيل خروجك من حساب Google. لمحو أنواع السجلّات الأخرى، انتقِل إلى صفحة <ph name="BEGIN_LINK" />نشاطي على Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">تكبير</translation>
 <translation id="6585618849026997638">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها.</translation>
 <translation id="6603393121510733479">أوقفت مؤسستك وضع "التصفّح بخصوصيّة تامّة".

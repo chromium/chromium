@@ -84,14 +84,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Դուք մուտքագրել եք գաղտնաբառը մի կայքում, որը չի կառավարվում ձեր կազմակերպության կողմից: Ձեր հաշիվը պաշտպանելու համար խորհուրդ ենք տալիս չօգտագործել այդ գաղտնաբառը այլ հավելվածներում և կայքերում:</translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
-<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
-        Այս սարքում չեն պահվի՝
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />էջերը, որոնք դիտում եք այս պատուհանում,
-          <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները,
-          <ph name="LIST_ITEM" />հաշվի տվյալները (<ph name="LINK_BEGIN" />դուրս գալ<ph name="LINK_END" />)։
-        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Ստացման եղանակը</translation>
 <translation id="1281476433249504884">Շեղջիչ 1</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
@@ -608,7 +600,6 @@
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3209034400446768650">Այս էջը կարող է գումար գանձել ձեզնից</translation>
 <translation id="3212581601480735796">Ձեր գործողությունները <ph name="HOSTNAME" /> կայքում հետագծվում են</translation>
-<translation id="3212623355668894776">Այս սարքից դիտարկիչում արված ձեր գործողությունները ջնջելու համար փակեք հյուրի ռեժիմում բացված բոլոր պատուհանները։</translation>
 <translation id="3215092763954878852">Չհաջողվեց օգտագործել WebAuthn-ը</translation>
 <translation id="3218181027817787318">Հարաբերական</translation>
 <translation id="3223287115535306850">Հավելվածի գործարկման ընթացքի պատկերակ</translation>
@@ -924,6 +915,7 @@
 <translation id="4270541775497538019">Շեղջիչ 6</translation>
 <translation id="4275830172053184480">Սարքի վերագործարկում:</translation>
 <translation id="4277028893293644418">Փոխել գաղտնաբառը</translation>
+<translation id="4278390842282768270">Թույլատրված է</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Քարտը պահվեց ձեր Google հաշվում}one{Քարտը պահվեց ձեր Google հաշվում}other{Քարտերը պահվեցին ձեր Google հաշվում}}</translation>
 <translation id="4287885627794386150">Փորձնական գործառույթը հասանելի է, սակայն ակտիվացված չէ</translation>
 <translation id="4297502707443874121">Էջ <ph name="THUMBNAIL_PAGE" />-ի մանրապատկեր</translation>
@@ -1018,7 +1010,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Վիրտուալ իրականություն</translation>
 <translation id="4673460618347856347">Խաղալ Dino խաղը</translation>
-<translation id="4675657451653251260">Հյուրի ռեժիմում դուք չեք տեսնի Chrome-ի պրոֆիլի տեղեկությունները։ <ph name="LINK_BEGIN" />Մուտք գործեք<ph name="LINK_END" />՝ ձեր տեղեկությունները, օրինակ՝ գաղտնաբառերն ու վճարման եղանակները օգտագործելու համար։</translation>
 <translation id="467662567472608290">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը սխալներ է պարունակում: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="4677585247300749148"><ph name="URL" /> կայքն ուզում է օգտագործել հատուկ գործողությունները</translation>
 <translation id="467809019005607715">Google Սլայդներ</translation>
@@ -1051,12 +1042,6 @@
 <translation id="4761869838909035636">Անցնել Chrome-ի անվտանգության ստուգում</translation>
 <translation id="4764776831041365478">Հնարավոր է, <ph name="URL" />-ի վեբէջը ժամանակավորապես ծանրաբեռնված է կամ մշտապես տեղափոխվել է նոր հասցեով:</translation>
 <translation id="4766713847338118463">Երկու ամրակ ներքևում</translation>
-<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
-        Այս սարքում կպահվեն՝
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ֆայլերը, որոնք ներբեռնում եք այս պատուհանում։
-        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Անհայտ սխալ է տեղի ունեցել:</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Ելնող պատուհանն արգելափակված է}one{# ելնող պատուհան արգելափակված է}other{# ելնող պատուհան արգելափակված է}}</translation>
 <translation id="4780366598804516005">Փոստարկղ 1</translation>
@@ -1242,7 +1227,6 @@
 <translation id="5421136146218899937">Մաքրել դիտարկումների տվյալները…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> կայքն ուզում է ձեզ ծանուցումներ ուղարկել</translation>
 <translation id="5428105026674456456">Իսպանական</translation>
-<translation id="542872847390508405">Դուք մտել եք հյուրի ռեժիմ</translation>
 <translation id="5430298929874300616">Հեռացնել էջանիշը</translation>
 <translation id="5439770059721715174">Սխեմայի ստուգման սխալ «<ph name="ERROR_PATH" />»-ում` <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Հակառակ հերթականությամբ՝ երեսի կողմով վերև</translation>
@@ -1956,6 +1940,7 @@
 <translation id="8103161714697287722">Վճարման եղանակ</translation>
 <translation id="8105368624971345109">Անջատել</translation>
 <translation id="810875025413331850">Մոտակա սարքեր չեն գտնվել:</translation>
+<translation id="8116925261070264013">Անջատած ձայնով կայքեր</translation>
 <translation id="8118489163946903409">Վճարման եղանակ</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» ծրագիրը ձեր համակարգչում կամ ցանցում ճիշտ չէ տեղադրվել: Հարցրեք ձեր ՏՏ ադմինիստրատորին կամ ինքներդ լուծեք այս խնդիրը:</translation>
 <translation id="8128526133099929547">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Խորհուրդ ենք տալիս փոխել ձեր գաղտնաբառը, որն օգտագործում եք <ph name="WEBSITE_1" /> և այլ կայքերում։</translation>
@@ -2072,13 +2057,6 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-ի հետ կապակցում չի կարող հաստատվել, քանի որ ձեր սարքի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ է:</translation>
 <translation id="8564182942834072828">Մի քանի փաստաթուղթ/չառանձնացված պատճեններ</translation>
 <translation id="8564985650692024650">Խորհուրդ ենք տալիս վերակայել <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ի ձեր գաղտնաբառը, եթե այն օգտագործել եք այլ կայքերում:</translation>
-<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
-        Այս սարքում չեն պահվի՝
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />էջերը, որոնք դիտում եք այս պատուհանում,
-          <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները։
-        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Օգտագործել Touch ID-ն՝ քարտերն ավելի արագ հաստատելու համար</translation>
 <translation id="8577348305244205642">Վիրտուալ քարտն անհասանելի է</translation>
 <translation id="858637041960032120">Ավելացնել հեռախոսահամար</translation>
@@ -2086,9 +2064,6 @@
 <translation id="8600271352425265729">Միայն այս անգամ</translation>
 <translation id="860043288473659153">Քարտապանի անունը</translation>
 <translation id="8606726445206553943">Օգտագործել ձեր MIDI սարքերը</translation>
-<translation id="8612761427948161954">Ողջույն, <ph name="USERNAME" />։
-        <ph name="BR" />
-        Դուք օգտագործում եք հյուրի ռեժիմը։</translation>
 <translation id="861775596732816396">Չափ 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Համընկնող գաղտնաբառեր չկան։ Ցուցադրել բոլոր պահված գաղտնաբառերը։</translation>

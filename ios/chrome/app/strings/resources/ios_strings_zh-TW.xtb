@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">你可以回到這裡重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">項目已更新</translation>
-<translation id="1027850213405719822">這項操作會關閉同步功能。</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1047726139967079566">把此頁加入書籤...</translation>
 <translation id="1049743911850919806">無痕模式</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕分頁。</translation>
-<translation id="3134493362339304186">如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。你不會因此登出 Google 帳戶。如要清除其他類型的歷史記錄，請前往<ph name="BEGIN_LINK" />我的 Google 活動<ph name="END_LINK" />。</translation>
 <translation id="3153862085237805241">儲存卡片</translation>
 <translation id="3157387275655328056">加入閱讀清單</translation>
 <translation id="3157684681743766797">全部標示…</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">分享網頁...</translation>
 <translation id="3290875554372353449">選擇帳戶</translation>
 <translation id="3311748811247479259">關閉</translation>
-<translation id="3317580614754548493">你不會因此登出 Google 帳戶。如要清除<ph name="BEGIN_LINK" />搜尋<ph name="END_LINK" />記錄或其他類型的歷史記錄，請前往<ph name="BEGIN_LINK" />我的 Google 帳戶<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">地址 2</translation>
 <translation id="3328801116991980348">網站資訊</translation>
 <translation id="3329904751041170572">無法連上伺服器。</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">新分頁</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
 <translation id="3581564640715911333">詢問是否要將網頁內容翻譯成其他語言</translation>
-<translation id="3588492282865875287">要登出嗎？</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
 <translation id="359441731697487922">將 Chrome 設為預設的瀏覽器應用程式，即可自動在 Chrome 中開啟連結。
       
@@ -560,7 +556,6 @@
 建議你為每個網站設定專屬的密碼。</translation>
 <translation id="651505212789431520">確定要取消同步處理嗎？你隨時可以在「設定」中開啟同步功能。</translation>
 <translation id="6524918542306337007">無法使用無痕模式</translation>
-<translation id="6560725150890787329">你的搜尋引擎是 <ph name="DSE_NAME" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。你不會因此登出 Google 帳戶。如要清除其他類型的歷史記錄，請前往<ph name="BEGIN_LINK" />我的 Google 活動<ph name="END_LINK" />。</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6585618849026997638">你可以將重要網頁加入書籤，以便再次造訪</translation>
 <translation id="6603393121510733479">貴機構已關閉私密瀏覽功能。

@@ -84,14 +84,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">നിങ്ങളുടെ സ്ഥാപനത്തിന് നിയന്ത്രണമില്ലാത്ത സൈറ്റിലാണ് പാസ്‌വേഡ് നൽകിയിരിക്കുന്നത്. നിങ്ങളുടെ അക്കൗണ്ട് പരിരക്ഷിക്കാൻ, മറ്റ് ആപ്പുകളിലും സൈറ്റുകളിലും നിങ്ങളുടെ പാസ്‌വേഡ് പുനരുപയോഗിക്കരുത്.</translation>
 <translation id="1263231323834454256">വായനാ ലിസ്റ്റ്</translation>
-<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
-        ഈ ഉപകരണത്തിൽ സംരക്ഷിക്കാത്ത ആക്റ്റിവിറ്റി:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ഈ വിൻഡോയിൽ നിങ്ങൾ കാണുന്ന പേജുകൾ
-          <ph name="LIST_ITEM" />കുക്കികളും സൈറ്റ് ഡാറ്റയും
-          <ph name="LIST_ITEM" />അക്കൗണ്ട് വിവരങ്ങൾ (<ph name="LINK_BEGIN" />സൈൻ ഔട്ട് ചെയ്യുക<ph name="LINK_END" />)
-        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">പിക്കപ്പ് രീതി</translation>
 <translation id="1281476433249504884">സ്റ്റാക്കർ 1</translation>
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
@@ -603,7 +595,6 @@
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
 <translation id="3209034400446768650">പേജ് പണം ഈടാക്കിയേക്കാം</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> എന്നതിലുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി നിരീക്ഷണത്തിലാണ്</translation>
-<translation id="3212623355668894776">ഈ ഉപകരണത്തിൽ നിന്ന് നിങ്ങളുടെ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി ഇല്ലാതാക്കാൻ എല്ലാ അതിഥി വിൻഡോകളും അടയ്ക്കുക.</translation>
 <translation id="3215092763954878852">WebAuthn ഉപയോഗിക്കാനായില്ല</translation>
 <translation id="3218181027817787318">റിലേറ്റീവ്</translation>
 <translation id="3223287115535306850">ആപ്പ് ലോഞ്ച് ചെയ്യൽ ത്രോബർ</translation>
@@ -916,6 +907,7 @@
 <translation id="4270541775497538019">സ്റ്റാക്കർ 6</translation>
 <translation id="4275830172053184480">നിങ്ങളുടെ ഉപകരണം പുനരാരംഭിക്കുക</translation>
 <translation id="4277028893293644418">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="4278390842282768270">അനുവദനീയം</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}other{ഈ കാർഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}}</translation>
 <translation id="4287885627794386150">ട്രയലിന് യോഗ്യതയുണ്ട്, എന്നാൽ സജീവമല്ല</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" />-ാം പേജിനുള്ള ലഘുചിത്രം</translation>
@@ -1010,7 +1002,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">വെർച്വൽ റിയാലിറ്റി</translation>
 <translation id="4673460618347856347">ദിനോസർ ഗെയിം കളിക്കുക</translation>
-<translation id="4675657451653251260">അതിഥി മോഡിലായിരിക്കുമ്പോൾ നിങ്ങൾക്ക് Chrome പ്രൊഫൈലുകളുടെയൊന്നും വിവരങ്ങൾ കാണാനാകില്ല. പാസ്‌വേഡുകളും പേയ്മെന്റ് രീതികളും പോലുള്ള Google അക്കൗണ്ട് വിവരങ്ങൾ ആക്‌സസ് ചെയ്യാൻ നിങ്ങൾക്ക് <ph name="LINK_BEGIN" />സൈൻ ഇൻ<ph name="LINK_END" /> ചെയ്യാം.</translation>
 <translation id="467662567472608290">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റിൽ പിശകുകൾ അടങ്ങിയിരിക്കുന്നു. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="4677585247300749148">പ്രവേശനക്ഷമതാ ഇവന്റുകളോട് പ്രതികരിക്കാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -1043,12 +1034,6 @@
 <translation id="4761869838909035636">Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക</translation>
 <translation id="4764776831041365478"><ph name="URL" /> ലെ വെബ്‌പേജ് താല്‍‌ക്കാലികമായി പ്രവര്‍‌ത്തനരഹിതമായിരിക്കാം, അല്ലെങ്കില്‍‌ ഒരു പുതിയ വെബ് വിലാസത്തിലേക്ക് ശാശ്വതമായി നീക്കംചെയ്യപ്പെട്ടിരിക്കാം.</translation>
 <translation id="4766713847338118463">താഴെ ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
-<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
-        ഈ ഉപകരണത്തിൽ സംരക്ഷിക്കുന്ന നിങ്ങളുടെ ആക്റ്റിവിറ്റി:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ഈ വിൻഡോയിൽ നിങ്ങൾ ഡൗൺലോഡ് ചെയ്യുന്ന ഫയലുകളെല്ലാം
-        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">ഒരു അജ്ഞാത പിശക് സംഭവിച്ചു.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{പോപ്പ്-അപ്പ് തടഞ്ഞു}other{# പോപ്പ്-അപ്പുകൾ തടഞ്ഞു}}</translation>
 <translation id="4780366598804516005">മെയിൽബോക്സ് 1</translation>
@@ -1232,7 +1217,6 @@
 <translation id="5421136146218899937">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
 <translation id="5428105026674456456">സ്പാനിഷ്</translation>
-<translation id="542872847390508405">നിങ്ങൾ ഒരു അതിഥിയായി ബ്രൗസുചെയ്യുന്നു</translation>
 <translation id="5430298929874300616">ബുക്ക്‌മാർക്ക് നീക്കംചെയ്യുക</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" എന്നതിൽ സ്‌കീമ മൂല്ല്യനിർണ്ണയ പിശക്: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">വിപരീത ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>
@@ -1942,6 +1926,7 @@
 <translation id="8103161714697287722">പേയ്‌മെന്റ് രീതി</translation>
 <translation id="8105368624971345109">ഓഫാക്കുക</translation>
 <translation id="810875025413331850">സമീപത്ത് ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</translation>
+<translation id="8116925261070264013">മ്യൂട്ടുചെയ്‌തു</translation>
 <translation id="8118489163946903409">പേയ്‌മെന്റ് രീതി</translation>
 <translation id="8127301229239896662">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ അല്ലെങ്കിൽ നെറ്റ്‍വര്‍ക്കിൽ "<ph name="SOFTWARE_NAME" />" ശരിയായി ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടില്ല. ഈ പ്രശ്‌നം പരിഹരിക്കാൻ നിങ്ങളുടെ ഐടി അഡ്‌മിനോട് ആവശ്യപ്പെടുക.</translation>
 <translation id="8128526133099929547">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. നിങ്ങൾ ഈ പാസ്‌വേഡ് ഉപയോഗിക്കുന്ന <ph name="WEBSITE_1" /> എന്നതിലേക്കും മറ്റ് സൈറ്റുകളിലേക്കും പോയി, ഇപ്പോൾ തന്നെ അത് മാറ്റാൻ Chrome ശുപാർശ ചെയ്യുന്നു.</translation>
@@ -2058,22 +2043,12 @@
 <translation id="8559762987265718583">നിങ്ങളുടെ ഉപകരണത്തിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്കുള്ള സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാവില്ല.</translation>
 <translation id="8564182942834072828">വെവ്വേറെ ഡോക്യുമെന്റുകൾ/ക്രമത്തിലല്ലാത്ത പകർപ്പുകൾ</translation>
 <translation id="8564985650692024650">മറ്റ് സൈറ്റുകളിൽ നിങ്ങൾ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് റീസെറ്റ് ചെയ്യാൻ Chromium ശുപാർ‌ശ ചെയ്യുന്നു.</translation>
-<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
-        ഈ ഉപകരണത്തിൽ സംരക്ഷിക്കാത്ത ആക്റ്റിവിറ്റി:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ഈ വിൻഡോയിൽ നിങ്ങൾ കാണുന്ന പേജുകൾ
-          <ph name="LIST_ITEM" />കുക്കികളും സൈറ്റ് ഡാറ്റയും
-        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">കാർഡുകൾ വേഗത്തിൽ സ്ഥിരീകരിക്കാൻ ടച്ച് ഐഡി ഉപയോഗിക്കുക</translation>
 <translation id="858637041960032120">ഫോണ്‍ നമ്പര്‍ ചേര്‍ക്കുക</translation>
 <translation id="8589998999637048520">ഏറ്റവും മികച്ച നിലവാരം</translation>
 <translation id="8600271352425265729">ഇപ്പോഴത്തേക്ക് മാത്രം</translation>
 <translation id="860043288473659153">കാർഡിന്റെ ഉടമയുടെ പേര്</translation>
 <translation id="8606726445206553943">നിങ്ങളുടെ MIDI ഉപകരണങ്ങൾ ഉപയോഗിക്കുക</translation>
-<translation id="8612761427948161954">ഹായ് <ph name="USERNAME" />,
-        <ph name="BR" />
-        നിങ്ങൾ ഒരു അതിഥിയായി ബ്രൗസ് ചെയ്യുന്നു</translation>
 <translation id="861775596732816396">വലുപ്പം 4</translation>
 <translation id="8622948367223941507">നിയമപരം-അധികം</translation>
 <translation id="8623885649813806493">പൊരുത്തപ്പെടുന്ന പാസ്‌വേഡുകളൊന്നുമില്ല. സംരക്ഷിച്ച എല്ലാ പാസ്‌വേഡുകളും കാണിക്കുക.</translation>

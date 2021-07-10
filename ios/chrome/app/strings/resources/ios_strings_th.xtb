@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">ปปปป</translation>
 <translation id="1013952917065545813">คุณกลับมาที่นี่เพื่อเปิดแท็บที่เพิ่งปิดไปอีกครั้งได้</translation>
 <translation id="1016495303386450659">อัปเดตรายการแล้ว</translation>
-<translation id="1027850213405719822">การดำเนินการนี้จะปิดการซิงค์</translation>
 <translation id="1044891598689252897">เว็บไซต์จะทำงานตามปกติ</translation>
 <translation id="1047726139967079566">บุ๊กมาร์กหน้านี้...</translation>
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">ทำเครื่องหมาย…</translation>
 <translation id="3131206671572504478">บล็อกทั้งหมด</translation>
 <translation id="313283613037595347">สร้างแท็บใหม่ที่ไม่ระบุตัวตน</translation>
-<translation id="3134493362339304186">ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้ คุณจะไม่ออกจากระบบบัญชี Google หากต้องการล้างประวัติการเข้าชมรูปแบบอื่นๆ ให้ไปที่<ph name="BEGIN_LINK" />กิจกรรมของฉันใน Google<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">บันทึกบัตร</translation>
 <translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="3157684681743766797">ทำเครื่องหมายทั้งหมด…</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">แชร์หน้าเว็บ...</translation>
 <translation id="3290875554372353449">เลือกบัญชี</translation>
 <translation id="3311748811247479259">ปิด</translation>
-<translation id="3317580614754548493">คุณจะไม่ออกจากระบบบัญชี Google หากต้องการล้าง<ph name="BEGIN_LINK" />การค้นหา<ph name="END_LINK" />หรือประวัติการเข้าชมรูปแบบอื่นๆ ให้ไปที่<ph name="BEGIN_LINK" />บัญชี Google ของฉัน<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">ที่อยู่ 2</translation>
 <translation id="3328801116991980348">ข้อมูลไซต์</translation>
 <translation id="3329904751041170572">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">แท็บใหม่</translation>
 <translation id="3551320343578183772">ปิดแท็บ</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
-<translation id="3588492282865875287">ออกจากระบบไหม</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
 <translation id="359441731697487922">คุณเปิดลิงก์ใน Chrome โดยอัตโนมัติได้ด้วยการตั้งเป็นแอปเบราว์เซอร์เริ่มต้น
       
@@ -560,7 +556,6 @@
 ขอแนะนำให้ใช้รหัสผ่านที่ไม่ซ้ำกันสำหรับทุกเว็บไซต์</translation>
 <translation id="651505212789431520">ยกเลิกการซิงค์ไหม คุณเปิดการซิงค์ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="6524918542306337007">โหมดไม่ระบุตัวตนไม่พร้อมใช้งาน</translation>
-<translation id="6560725150890787329">เครื่องมือค้นหาของคุณคือ <ph name="DSE_NAME" /> ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้ คุณจะไม่ออกจากระบบบัญชี Google หากต้องการล้างประวัติการเข้าชมรูปแบบอื่นๆ ให้ไปที่<ph name="BEGIN_LINK" />กิจกรรมของฉันใน Google<ph name="END_LINK" /></translation>
 <translation id="6561262006871132942">ซูมเข้า</translation>
 <translation id="6585618849026997638">กลับไปที่หน้าที่สำคัญกับคุณได้โดยการเพิ่มบุ๊กมาร์ก</translation>
 <translation id="6603393121510733479">องค์กรปิดการเรียกดูแบบส่วนตัวไว้

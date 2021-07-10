@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">ÁÁÁÁ</translation>
 <translation id="1013952917065545813">Þú getur farið aftur hingað til að opna flipa sem þú lokaðir nýlega</translation>
 <translation id="1016495303386450659">Atriði uppfært</translation>
-<translation id="1027850213405719822">Þetta slekkur á samstillingu.</translation>
 <translation id="1044891598689252897">Vefsvæði virka sem skyldi</translation>
 <translation id="1047726139967079566">Bókamerkja þessa síðu...</translation>
 <translation id="1049743911850919806">Fara huldu höfðu</translation>
@@ -208,7 +207,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="3112556859945124369">Merkja…</translation>
 <translation id="3131206671572504478">Útiloka öll</translation>
 <translation id="313283613037595347">Búa til nýjan huliðsflipa.</translation>
-<translation id="3134493362339304186">Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það á við. Þú verður ekki skráð(ur) út af Google reikningnum þínum. Farðu í <ph name="BEGIN_LINK" />Google virkni mín<ph name="END_LINK" /> til að hreinsa aðra ferla.</translation>
 <translation id="3153862085237805241">Vista kort</translation>
 <translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157684681743766797">Merkja allt…</translation>
@@ -231,7 +229,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="3285962946108803577">Deila síðu...</translation>
 <translation id="3290875554372353449">Veldu reikning</translation>
 <translation id="3311748811247479259">Slökkt</translation>
-<translation id="3317580614754548493">Þú verður ekki skráð(ur) út af Google reikningnum þínum. Til að hreinsa <ph name="BEGIN_LINK" />leit<ph name="END_LINK" /> eða aðra ferla skaltu fara í <ph name="BEGIN_LINK" />Google reikningurinn minn<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Heimilisfang 2</translation>
 <translation id="3328801116991980348">Upplýsingar um vefsvæði</translation>
 <translation id="3329904751041170572">Ekki var hægt að tengjast þjóninum.</translation>
@@ -263,7 +260,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="3533436815740441613">Nýr flipi</translation>
 <translation id="3551320343578183772">Loka flipa</translation>
 <translation id="3581564640715911333">Bjóðast til að þýða síður á önnur tungumál</translation>
-<translation id="3588492282865875287">Skrá út?</translation>
 <translation id="3588820906588687999">Opna mynd í nýjum flipa</translation>
 <translation id="359441731697487922">Þú getur opnað tengla sjálfkrafa með Chrome ef þú gerir það að sjálfgefnu vafraforriti.
       
@@ -560,7 +556,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="651505212789431520">Hætta við samstillingu? Hægt er að kveikja á samstillingu hvenær sem er í stillingunum.</translation>
 <translation id="6524918542306337007">Huliðsstilling er ekki tiltæk</translation>
-<translation id="6560725150890787329">Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við. Þú verður ekki skráð(ur) út af Google reikningnum þínum. Farðu í <ph name="BEGIN_LINK" />Google virkni mín<ph name="END_LINK" /> til að hreinsa aðra ferla.</translation>
 <translation id="6561262006871132942">Auka aðdrátt</translation>
 <translation id="6585618849026997638">Þú getur komist aftur á mikilvæga síðu á einfaldan hátt með því að setja inn bókamerki</translation>
 <translation id="6603393121510733479">Fyrirtækið þitt slökkti á óskráðri vefnotkun.

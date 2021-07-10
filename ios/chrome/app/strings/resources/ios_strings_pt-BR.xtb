@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Você pode voltar aqui para abrir guias fechadas recentemente</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
-<translation id="1027850213405719822">Essa ação desativará a sincronização.</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
 <translation id="1047726139967079566">Adicionar esta página aos favoritos...</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
@@ -208,7 +207,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="3112556859945124369">Marcar...</translation>
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="313283613037595347">Criar nova guia anônima.</translation>
-<translation id="3134493362339304186">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável. Sua Conta do Google não será desconectada. Para limpar outros tipos de histórico, acesse a página <ph name="BEGIN_LINK" />Minha atividade no Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Salvar cartão</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo...</translation>
@@ -231,7 +229,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="3285962946108803577">Compartilhar página…</translation>
 <translation id="3290875554372353449">Escolher uma conta</translation>
 <translation id="3311748811247479259">Desativada</translation>
-<translation id="3317580614754548493">Sua Conta do Google não será desconectada. Para limpar a <ph name="BEGIN_LINK" />pesquisa<ph name="END_LINK" /> ou outras formas de histórico, acesse a página <ph name="BEGIN_LINK" />Minha Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">Endereço 2</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3329904751041170572">Não foi possível se conectar ao servidor.</translation>
@@ -263,7 +260,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="3533436815740441613">Nova guia</translation>
 <translation id="3551320343578183772">Fechar guia</translation>
 <translation id="3581564640715911333">Oferecer para traduzir páginas em outros idiomas</translation>
-<translation id="3588492282865875287">Sair?</translation>
 <translation id="3588820906588687999">Abrir imagem em "Nova guia"</translation>
 <translation id="359441731697487922">Defina o Chrome como seu app padrão de navegador para abrir links automaticamente nele.
       
@@ -560,7 +556,6 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="651505212789431520">Cancelar sincronização? É possível ativar esse recurso a qualquer momento nas configurações.</translation>
 <translation id="6524918542306337007">O modo de navegação anônima está indisponível</translation>
-<translation id="6560725150890787329">Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável. Sua Conta do Google não será desconectada. Para limpar outros tipos de histórico, acesse a página <ph name="BEGIN_LINK" />Minha atividade no Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Aumentar zoom</translation>
 <translation id="6585618849026997638">Você pode adicionar uma página importante aos favoritos para acessá-la com facilidade</translation>
 <translation id="6603393121510733479">Sua organização desativou a navegação privada.

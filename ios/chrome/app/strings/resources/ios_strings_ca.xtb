@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Pots tornar aquí per obrir de nou les pestanyes que has tancat fa poc</translation>
 <translation id="1016495303386450659">S'ha actualitzat l'element.</translation>
-<translation id="1027850213405719822">Aquesta acció desactivarà la sincronització.</translation>
 <translation id="1044891598689252897">Els llocs web funcionaran amb normalitat</translation>
 <translation id="1047726139967079566">Afegeix aquesta pàgina a les adreces d'interès...</translation>
 <translation id="1049743911850919806">Incògnit</translation>
@@ -208,7 +207,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="3112556859945124369">Marca com a…</translation>
 <translation id="3131206671572504478">Bloqueja-ho tot</translation>
 <translation id="313283613037595347">Crea una pestanya d'incògnit.</translation>
-<translation id="3134493362339304186">Consulta les instruccions del teu motor de cerca per suprimir l'historial de cerques, si escau. No se't tancarà la sessió del Compte de Google. Per suprimir altres formes de l'historial, visita <ph name="BEGIN_LINK" />La meva activitat a Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Desa la targeta</translation>
 <translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
 <translation id="3157684681743766797">Marca-ho tot com a…</translation>
@@ -231,7 +229,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="3285962946108803577">Comparteix la pàgina...</translation>
 <translation id="3290875554372353449">Tria un compte</translation>
 <translation id="3311748811247479259">Desactivat</translation>
-<translation id="3317580614754548493">No se't tancarà la sessió del Compte de Google. Per esborrar la <ph name="BEGIN_LINK" />cerca<ph name="END_LINK" /> o altres formes de l'historial, visita <ph name="BEGIN_LINK" />El meu Compte de Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adreça 2</translation>
 <translation id="3328801116991980348">Informació del lloc web</translation>
 <translation id="3329904751041170572">No s'ha pogut connectar amb el servidor.</translation>
@@ -263,7 +260,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="3533436815740441613">Pestanya nova</translation>
 <translation id="3551320343578183772">Tanca la pestanya</translation>
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
-<translation id="3588492282865875287">Vols tancar la sessió?</translation>
 <translation id="3588820906588687999">Obre la imatge en una pestanya nova</translation>
 <translation id="359441731697487922">Pots obrir enllaços a Chrome automàticament establint-lo com a aplicació de navegador predeterminada.
       
@@ -560,7 +556,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="651505212789431520">Vols cancel·lar la sincronització? Pots activar la sincronització en qualsevol moment des de la configuració.</translation>
 <translation id="6524918542306337007">El mode d'incògnit no està disponible</translation>
-<translation id="6560725150890787329">El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau. No se't tancarà la sessió del Compte de Google. Per suprimir altres formes de l'historial, visita <ph name="BEGIN_LINK" />La meva activitat a Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Amplia</translation>
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
 <translation id="6603393121510733479">La teva organització ha desactivat la navegació privada.

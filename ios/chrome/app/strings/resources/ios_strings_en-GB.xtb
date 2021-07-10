@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">You can come back here to reopen tabs that you've recently closed</translation>
 <translation id="1016495303386450659">Item updated</translation>
-<translation id="1027850213405719822">This will turn off sync.</translation>
 <translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1047726139967079566">Bookmark This Page...</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -208,7 +207,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="3112556859945124369">Mark…</translation>
 <translation id="3131206671572504478">Block all</translation>
 <translation id="313283613037595347">Create new Incognito tab.</translation>
-<translation id="3134493362339304186">See your search engine’s instructions for deleting your search history, if applicable. You won't be signed out of your Google Account. To clear other forms of history visit <ph name="BEGIN_LINK" />My Google activity<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Save Card</translation>
 <translation id="3157387275655328056">Add to Reading List</translation>
 <translation id="3157684681743766797">Mark All…</translation>
@@ -231,7 +229,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="3285962946108803577">Share page…</translation>
 <translation id="3290875554372353449">Choose an Account</translation>
 <translation id="3311748811247479259">Off</translation>
-<translation id="3317580614754548493">You won't be signed out of your Google Account. To clear <ph name="BEGIN_LINK" />search<ph name="END_LINK" /> or other forms of history, visit <ph name="BEGIN_LINK" />My Google Account<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Address 2</translation>
 <translation id="3328801116991980348">Site information</translation>
 <translation id="3329904751041170572">Could not connect to the server.</translation>
@@ -263,7 +260,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="3533436815740441613">New Tab</translation>
 <translation id="3551320343578183772">Close Tab</translation>
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
-<translation id="3588492282865875287">Sign Out?</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
 <translation id="359441731697487922">You can open links in Chrome automatically by making it your default browser app.
       
@@ -560,7 +556,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 Try to use a unique password for every site.</translation>
 <translation id="651505212789431520">Cancel sync? You can turn on sync at any time in Settings.</translation>
 <translation id="6524918542306337007">Incognito mode is unavailable</translation>
-<translation id="6560725150890787329">Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable. You won't be signed out of your Google Account. To clear other forms of history visit <ph name="BEGIN_LINK" />My Google activity<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zoom in</translation>
 <translation id="6585618849026997638">You can get back to a page that's important to you by adding a bookmark</translation>
 <translation id="6603393121510733479">Your organisation turned off private browsing.

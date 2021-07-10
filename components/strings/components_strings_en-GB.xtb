@@ -84,14 +84,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">You entered your password on a site that’s not managed by your organisation. To protect your account, don’t reuse your password on other apps and sites.</translation>
 <translation id="1263231323834454256">Reading list</translation>
-<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
-        Activity that won't stay on this device:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Pages that you view in this window
-          <ph name="LIST_ITEM" />Cookies and site data
-          <ph name="LIST_ITEM" />Account information (<ph name="LINK_BEGIN" />sign out<ph name="LINK_END" />)
-        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Pickup Method</translation>
 <translation id="1281476433249504884">Stacker 1</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
@@ -607,7 +599,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3209034400446768650">Page may charge money</translation>
 <translation id="3212581601480735796">Your activity on <ph name="HOSTNAME" /> is being monitored</translation>
-<translation id="3212623355668894776">Close all guest windows so that your browsing activity is deleted from this device.</translation>
 <translation id="3215092763954878852">Couldn't use WebAuthn</translation>
 <translation id="3218181027817787318">Relative</translation>
 <translation id="3223287115535306850">App launching throbber</translation>
@@ -923,6 +914,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4270541775497538019">Stacker 6</translation>
 <translation id="4275830172053184480">Restart your device</translation>
 <translation id="4277028893293644418">Reset password</translation>
+<translation id="4278390842282768270">Allowed</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{This card has been saved in your Google Account}other{These cards have been saved in your Google Account}}</translation>
 <translation id="4287885627794386150">Eligible for trial but not active</translation>
 <translation id="4297502707443874121">Thumbnail for page <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1017,7 +1009,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4673460618347856347">Dino game, play</translation>
-<translation id="4675657451653251260">In guest mode, you won't see any Chrome profile information. You can <ph name="LINK_BEGIN" />sign in<ph name="LINK_END" /> to access your Google Account info like passwords and payment methods.</translation>
 <translation id="467662567472608290">This server could not prove that it is <ph name="DOMAIN" />; its security certificate contains errors. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> wants to respond to accessibility events</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -1050,12 +1041,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4761869838909035636">Run Chrome safety check</translation>
 <translation id="4764776831041365478">The web page at <ph name="URL" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
 <translation id="4766713847338118463">Dual staple bottom</translation>
-<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
-        Your activity that stays on this device:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Any files that you download in this window
-        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">An unknown error has occurred.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up blocked}other{# pop-ups blocked}}</translation>
 <translation id="4780366598804516005">Mailbox 1</translation>
@@ -1241,7 +1226,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5421136146218899937">Clear browsing data...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
 <translation id="5428105026674456456">Spanish</translation>
-<translation id="542872847390508405">You’re browsing as a Guest</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
 <translation id="5439770059721715174">Schema validation error at "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
@@ -1955,6 +1939,7 @@ Additional details:
 <translation id="8103161714697287722">Payment Method</translation>
 <translation id="8105368624971345109">Turn Off</translation>
 <translation id="810875025413331850">No nearby devices found.</translation>
+<translation id="8116925261070264013">Muted</translation>
 <translation id="8118489163946903409">Payment method</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' wasn’t installed properly on your computer or network. Ask your IT administrator to resolve this issue.</translation>
 <translation id="8128526133099929547">You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1" /> and other sites where you use this password, and changing it now.</translation>
@@ -2071,13 +2056,6 @@ Additional details:
 <translation id="8559762987265718583">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your device's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>
 <translation id="8564182942834072828">Separate documents/Uncollated copies</translation>
 <translation id="8564985650692024650">Chromium recommends resetting your <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> password if you reused it on other sites.</translation>
-<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
-        Activity that won't stay on this device:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Pages that you view in this window
-          <ph name="LIST_ITEM" />Cookies and site data
-        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Use Touch ID to confirm cards faster</translation>
 <translation id="8577348305244205642">Virtual card not available</translation>
 <translation id="858637041960032120">Add phone no.</translation>
@@ -2085,9 +2063,6 @@ Additional details:
 <translation id="8600271352425265729">Only this time</translation>
 <translation id="860043288473659153">Cardholder name</translation>
 <translation id="8606726445206553943">Use your MIDI devices</translation>
-<translation id="8612761427948161954">Hi <ph name="USERNAME" />,
-        <ph name="BR" />
-        You’re browsing as a guest</translation>
 <translation id="861775596732816396">Size 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No matching passwords. Show all saved passwords.</translation>

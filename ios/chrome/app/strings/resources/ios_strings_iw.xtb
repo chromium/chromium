@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">אפשר לחזור לפה כדי לפתוח כרטיסיות שסגרת לאחרונה</translation>
 <translation id="1016495303386450659">הפריט עודכן</translation>
-<translation id="1027850213405719822">הפעולה הזו תשבית את הסנכרון.</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1047726139967079566">הוספת הדף לסימניות...</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">סימון…</translation>
 <translation id="3131206671572504478">‏חסימת כל קובצי ה-cookie</translation>
 <translation id="313283613037595347">יצירת כרטיסיית מצב אנונימי חדשה.</translation>
-<translation id="3134493362339304186">‏ניתן לעיין בהוראות של מנוע החיפוש שמשמש אותך לגבי מחיקת היסטוריית החיפושים, אם רלוונטי. לא תתבצע יציאה מחשבון Google שלך. בדף <ph name="BEGIN_LINK" />הפעילות שלי ב-Google<ph name="END_LINK" /> ניתן למחוק היסטוריה מסוגים אחרים.</translation>
 <translation id="3153862085237805241">שמירת כרטיס</translation>
 <translation id="3157387275655328056">הוסף לרשימת הקריאה</translation>
 <translation id="3157684681743766797">סימון הכול…</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">שיתוף הדף…</translation>
 <translation id="3290875554372353449">בחירת חשבון</translation>
 <translation id="3311748811247479259">כבוי</translation>
-<translation id="3317580614754548493">‏לא תתבצע יציאה מחשבון Google שלך. כדי לנקות את <ph name="BEGIN_LINK" />החיפוש<ph name="END_LINK" /> או היסטוריה מסוגים אחרים, יש לעבור אל <ph name="BEGIN_LINK" />חשבון Google שלי<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="3329904751041170572">לא ניתן להתחבר לשרת.</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
 <translation id="3551320343578183772">סגירת כרטיסייה</translation>
 <translation id="3581564640715911333">הצעה לתרגם דפים בשפות אחרות</translation>
-<translation id="3588492282865875287">לצאת?</translation>
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
 <translation id="359441731697487922">‏אם Chrome יוגדר כאפליקציית הדפדפן בברירת מחדל, קישורים ייפתחו בו באופן אוטומטי.
       
@@ -560,7 +556,6 @@
 כדאי לנסות להשתמש בסיסמה ייחודית בכל אתר.</translation>
 <translation id="651505212789431520">לבטל את הסנכרון? אפשר להפעיל את הסנכרון בכל זמן דרך 'הגדרות'.</translation>
 <translation id="6524918542306337007">מצב אנונימי אינו זמין</translation>
-<translation id="6560725150890787329">‏מנוע החיפוש שלך הוא <ph name="DSE_NAME" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי. לא תתבצע יציאה מחשבון Google שלך. בדף <ph name="BEGIN_LINK" />הפעילות שלי ב-Google<ph name="END_LINK" /> ניתן למחוק היסטוריה מסוגים אחרים.</translation>
 <translation id="6561262006871132942">הגדלת התצוגה</translation>
 <translation id="6585618849026997638">כדי לחזור אל דף שחשוב לך אפשר להוסיף אותו לסימניות</translation>
 <translation id="6603393121510733479">הארגון שלך כיבה את אפשרות הגלישה הפרטית.

@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">ዓዓዓዓ</translation>
 <translation id="1013952917065545813">በቅርብ ጊዜ የዘጓቸውን ትሮች መልሰው ለመክፈት ወደዚህ ተመልሰው መምጣት ይችላሉ</translation>
 <translation id="1016495303386450659">ንጥል ተዘምኗል</translation>
-<translation id="1027850213405719822">ይህ አስምርን ያጠፋል።</translation>
 <translation id="1044891598689252897">ጣቢያዎች እንደተለመደው ሆነው ይሠራሉ</translation>
 <translation id="1047726139967079566">ለእዚህ ገጽ ዕልባት አዘጋጅ…</translation>
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">ምልክት አድርግበት…</translation>
 <translation id="3131206671572504478">ሁሉንም አግድ</translation>
 <translation id="313283613037595347">አዲስ ማንነት የማያሳውቅ ትር ፍጠር።</translation>
-<translation id="3134493362339304186">መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ የፍለጋ ፕሮግራምዎን መመሪያዎች ይመልከቱ። ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። ሌሎች የታሪክ ቅርጾችን ለማጽዳት <ph name="BEGIN_LINK" />የእኔ የGoogle እንቅስቃሴ<ph name="END_LINK" />ን ይጎብኙ።</translation>
 <translation id="3153862085237805241">ካርድ አስቀምጥ</translation>
 <translation id="3157387275655328056">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="3157684681743766797">ሁሉንም ምልክት አድርግባቸው…</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">ገጽ አጋራ...</translation>
 <translation id="3290875554372353449">አንድ መለያ ይምረጡ</translation>
 <translation id="3311748811247479259">ጠፍቷል</translation>
-<translation id="3317580614754548493">ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። <ph name="BEGIN_LINK" />ፍለጋ<ph name="END_LINK" />ን ወይም ሌሎች የታሪክ ቅርጾችን ለማጽዳት <ph name="BEGIN_LINK" />የእኔ የGoogle መለያ<ph name="END_LINK" />ን ይጎብኙ</translation>
 <translation id="3324193307694657476">አድራሻ 2</translation>
 <translation id="3328801116991980348">የጣቢያ መረጃ</translation>
 <translation id="3329904751041170572">ከአገልጋዩ ጋር መገናኘት አልቻለም።</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">አዲስ ትር</translation>
 <translation id="3551320343578183772">ትር ዝጋ</translation>
 <translation id="3581564640715911333">በሌሎች ቋንቋዎች ለመተርጎም ሐሳብ አቅርብ</translation>
-<translation id="3588492282865875287">ዘግተው ይወጡ?</translation>
 <translation id="3588820906588687999">ምስሉን በአዲስ ትር ውስጥ ክፈት</translation>
 <translation id="359441731697487922">ነባሪ የአሳሽዎ መተግበሪያ በማድረግ አገናኞችን በChrome ውስጥ በራስ-ሰር መክፈት ይችላሉ።
       
@@ -560,7 +556,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 ለእያንዳንዱ ጣቢያ የተለየ የይለፍ ቃል ለመጠቀም ይሞክሩ።</translation>
 <translation id="651505212789431520">ስምረት ይሰረዝ? ስምረትን በማንኛውም ጊዜ በቅንብሮች ውስጥ ማብራት ይችላሉ።</translation>
 <translation id="6524918542306337007">ማንነት የማያሳውቅ ሁneታ አይገኝም</translation>
-<translation id="6560725150890787329">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE_NAME" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ። ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። ሌሎች የታሪክ ቅርጾችን ለማጽዳት <ph name="BEGIN_LINK" />የእኔ የGoogle እንቅስቃሴ<ph name="END_LINK" />ን ይጎብኙ።</translation>
 <translation id="6561262006871132942">አጉላ</translation>
 <translation id="6585618849026997638">ዕልባት በማከል ለእርስዎ አስፈላጊ ወደ ሆነ ገጽ መመለስ ይችላሉ</translation>
 <translation id="6603393121510733479">የእርስዎ ድርጅት የግል አሰሳዎችን አጥፍቷል።

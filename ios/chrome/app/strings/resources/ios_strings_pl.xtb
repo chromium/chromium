@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">RRRR</translation>
 <translation id="1013952917065545813">Możesz wrócić tu później, by ponownie otworzyć ostatnio zamknięte karty</translation>
 <translation id="1016495303386450659">Zaktualizowano element</translation>
-<translation id="1027850213405719822">Spowoduje to wyłączenie synchronizacji.</translation>
 <translation id="1044891598689252897">Strony będą działać normalnie</translation>
 <translation id="1047726139967079566">Dodaj stronę do zakładek...</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -208,7 +207,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="3112556859945124369">Oznacz…</translation>
 <translation id="3131206671572504478">Blokuj wszystkie</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
-<translation id="3134493362339304186">Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wyszukiwarki. Usunięcie historii nie spowoduje wylogowania Cię z konta Google. Aby wyczyścić inne rodzaje historii, otwórz <ph name="BEGIN_LINK" />Moją aktywność w Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Zapisz kartę</translation>
 <translation id="3157387275655328056">Dodaj do listy „Do przeczytania”</translation>
 <translation id="3157684681743766797">Oznacz wszystko…</translation>
@@ -231,7 +229,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="3285962946108803577">Udostępnij stronę...</translation>
 <translation id="3290875554372353449">Wybierz konto</translation>
 <translation id="3311748811247479259">Wyłączono</translation>
-<translation id="3317580614754548493">Usunięcie historii nie spowoduje wylogowania Cię z konta Google. Aby wyczyścić historię <ph name="BEGIN_LINK" />wyszukiwania<ph name="END_LINK" /> lub inne rodzaje historii, otwórz <ph name="BEGIN_LINK" />Moje konto Google<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
 <translation id="3329904751041170572">Nie można połączyć się z serwerem.</translation>
@@ -263,7 +260,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="3533436815740441613">Nowa karta</translation>
 <translation id="3551320343578183772">Zamknij kartę</translation>
 <translation id="3581564640715911333">Proponuj tłumaczenie stron w innych językach</translation>
-<translation id="3588492282865875287">Chcesz się wylogować?</translation>
 <translation id="3588820906588687999">Otwórz grafikę w nowej karcie</translation>
 <translation id="359441731697487922">Ustaw Chrome jako przeglądarkę domyślną, by linki otwierały się w niej automatycznie. Wykonaj te czynności:</translation>
 <translation id="3603009562372709545">Kopiuj URL linku</translation>
@@ -558,7 +554,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="651505212789431520">Anulować synchronizację? W każdej chwili możesz włączyć synchronizację w Ustawieniach.</translation>
 <translation id="6524918542306337007">Tryb incognito jest niedostępny</translation>
-<translation id="6560725150890787329">Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania. Usunięcie historii nie spowoduje wylogowania Cię z konta Google. Aby wyczyścić inne rodzaje historii, otwórz <ph name="BEGIN_LINK" />Moją aktywność w Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Powiększ</translation>
 <translation id="6585618849026997638">Utwórz zakładkę, jeśli chcesz wrócić do interesującej Cię strony</translation>
 <translation id="6603393121510733479">Twoja organizacja wyłączyła przeglądanie prywatne.

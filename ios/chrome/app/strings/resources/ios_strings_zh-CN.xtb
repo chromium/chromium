@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">您只需回到这里，便可重新打开最近关闭的标签页</translation>
 <translation id="1016495303386450659">书签已更新</translation>
-<translation id="1027850213405719822">这会关闭同步功能。</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="1047726139967079566">为此页添加书签...</translation>
 <translation id="1049743911850919806">无痕</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3131206671572504478">阻止所有 Cookie</translation>
 <translation id="313283613037595347">创建新的无痕式标签页。</translation>
-<translation id="3134493362339304186">查看您所用搜索引擎的说明，了解如何删除您的搜索记录（若适用）。您不会因此而退出自己的 Google 帐号。若要清除其他形式的历史记录，请访问<ph name="BEGIN_LINK" />我的 Google 活动记录<ph name="END_LINK" />。</translation>
 <translation id="3153862085237805241">保存卡片</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157684681743766797">全部标为…</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">分享页面…</translation>
 <translation id="3290875554372353449">选择帐号</translation>
 <translation id="3311748811247479259">已关闭</translation>
-<translation id="3317580614754548493">您不会因此而退出自己的 Google 帐号。若要清除<ph name="BEGIN_LINK" />搜索<ph name="END_LINK" />记录或其他形式的历史记录，请前往<ph name="BEGIN_LINK" />我的 Google 帐号<ph name="END_LINK" />页面</translation>
 <translation id="3324193307694657476">地址第2行</translation>
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="3329904751041170572">无法连接到服务器。</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">打开新的标签页</translation>
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
-<translation id="3588492282865875287">退出帐号？</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
 <translation id="359441731697487922">只需将 Chrome 设为默认浏览器应用，即可自动在 Chrome 中打开链接。
       
@@ -560,7 +556,6 @@
 请尽量为每个网站使用独一无二的密码。</translation>
 <translation id="651505212789431520">取消同步？您随时可在“设置”中开启同步功能。</translation>
 <translation id="6524918542306337007">无痕模式不可用</translation>
-<translation id="6560725150890787329">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。您不会因此而退出自己的 Google 帐号。若要清除其他形式的历史记录，请访问<ph name="BEGIN_LINK" />我的 Google 活动记录<ph name="END_LINK" />。</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6585618849026997638">您可以为重要网页添加书签以便返回查看</translation>
 <translation id="6603393121510733479">贵单位关闭了无痕浏览。

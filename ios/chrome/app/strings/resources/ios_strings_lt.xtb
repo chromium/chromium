@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">MMMM</translation>
 <translation id="1013952917065545813">Galite grįžę čia atidaryti neseniai uždarytus skirtukus iš naujo</translation>
 <translation id="1016495303386450659">Elementas atnaujintas</translation>
-<translation id="1027850213405719822">Bus išjungtas sinchronizavimas.</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="1047726139967079566">Įtraukti šį puslapį į žymes...</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -208,7 +207,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="3112556859945124369">Pažymėti…</translation>
 <translation id="3131206671572504478">Blokuoti viską</translation>
 <translation id="313283613037595347">Kurti naują inkognito skirtuką</translation>
-<translation id="3134493362339304186">Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma). Nebūsite atjungti nuo „Google“ paskyros. Jei norite išvalyti kitos veiklos istoriją, apsilankykite skiltyje <ph name="BEGIN_LINK" />„Mano „Google“ veikla“<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Kortelės išsaugojimas</translation>
 <translation id="3157387275655328056">Pridėti prie skaitomų sąrašo</translation>
 <translation id="3157684681743766797">Pažymėti visus...</translation>
@@ -231,7 +229,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="3285962946108803577">Bendrinti puslapį...</translation>
 <translation id="3290875554372353449">Pasirinkite paskyrą</translation>
 <translation id="3311748811247479259">Išjungta</translation>
-<translation id="3317580614754548493">Nebūsite atjungti nuo „Google“ paskyros. Norėdami išvalyti <ph name="BEGIN_LINK" />paieškos<ph name="END_LINK" /> ar kitos veiklos istoriją, apsilankykite puslapyje <ph name="BEGIN_LINK" />„Mano „Google“ paskyra“<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">2 adreso eil.</translation>
 <translation id="3328801116991980348">Svetainės informacija</translation>
 <translation id="3329904751041170572">Nepavyko prisijungti prie serverio.</translation>
@@ -263,7 +260,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="3533436815740441613">Naujas skirtukas</translation>
 <translation id="3551320343578183772">Uždaryti skirtuką</translation>
 <translation id="3581564640715911333">Siūlyti versti puslapius į kitas kalbas</translation>
-<translation id="3588492282865875287">Atsijungti?</translation>
 <translation id="3588820906588687999">Atidaryti vaizdą naujo skirtuko lape</translation>
 <translation id="359441731697487922">Galite automatiškai atidaryti nuorodas naršyklėje „Chrome“, nustatę ją kaip numatytąją naršyklės programą.
       
@@ -560,7 +556,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translation>
 <translation id="651505212789431520">Atšaukti sinchronizavimą? Galite bet kada įjungti sinchronizavimą skiltyje „Nustatymai“.</translation>
 <translation id="6524918542306337007">Inkognito režimas nepasiekiamas</translation>
-<translation id="6560725150890787329">Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma). Nebūsite atjungti nuo „Google“ paskyros. Jei norite išvalyti kitos veiklos istoriją, apsilankykite skiltyje <ph name="BEGIN_LINK" />„Mano „Google“ veikla“<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Artinti</translation>
 <translation id="6585618849026997638">Galite grįžti į jums svarbų puslapį pridėję žymę</translation>
 <translation id="6603393121510733479">Organizacija išjungė privatų naršymą.

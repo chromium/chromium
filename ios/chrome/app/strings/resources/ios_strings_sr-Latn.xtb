@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">GGGG</translation>
 <translation id="1013952917065545813">Možete da se vratite ovde da biste ponovo otvorili kartice koje ste nedavno zatvorili</translation>
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
-<translation id="1027850213405719822">Ovim će se isključiti sinhronizacija.</translation>
 <translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
 <translation id="1047726139967079566">Obeleži ovu stranicu...</translation>
 <translation id="1049743911850919806">Bez arhiviranja</translation>
@@ -208,7 +207,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="3112556859945124369">Označi…</translation>
 <translation id="3131206671572504478">Sve je blokirano</translation>
 <translation id="313283613037595347">Napravi novu karticu bez arhiviranja.</translation>
-<translation id="3134493362339304186">Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo. Nećemo vas odjaviti sa Google naloga. Da biste obrisali druge oblike istorije, posetite <ph name="BEGIN_LINK" />Moje aktivnosti na Google-u<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Sačuvaj karticu</translation>
 <translation id="3157387275655328056">Dodaj na listu za čitanje</translation>
 <translation id="3157684681743766797">Označi sve…</translation>
@@ -231,7 +229,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="3285962946108803577">Deli stranicu…</translation>
 <translation id="3290875554372353449">Izaberite nalog</translation>
 <translation id="3311748811247479259">Isključeno</translation>
-<translation id="3317580614754548493">Nećemo vas odjaviti sa Google naloga. Da biste obrisali <ph name="BEGIN_LINK" />pretragu<ph name="END_LINK" /> ili druge oblike istorije, posetite <ph name="BEGIN_LINK" />Moj Google nalog<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">2. red za adresu</translation>
 <translation id="3328801116991980348">Informacije o sajtu</translation>
 <translation id="3329904751041170572">Povezivanje sa serverom nije moguće.</translation>
@@ -263,7 +260,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="3533436815740441613">Nova kartica</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
 <translation id="3581564640715911333">Ponudi prevod stranica na drugim jezicima</translation>
-<translation id="3588492282865875287">Želite da se odjavite?</translation>
 <translation id="3588820906588687999">Otvori sliku na novoj kartici</translation>
 <translation id="359441731697487922">Možete da automatski otvarate linkove u Chrome-u tako što ćete ga podesiti kao podrazumevanu aplikaciju za pregledanje.
       
@@ -560,7 +556,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="651505212789431520">Želite li da otkažete sinhronizaciju? Možete da uključite sinhronizaciju u Podešavanjima u bilo kom trenutku.</translation>
 <translation id="6524918542306337007">Režim bez arhiviranja nije dostupan</translation>
-<translation id="6560725150890787329">Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživača za brisanje istorije pretrage ako je to primenjivo. Nećemo vas odjaviti sa Google naloga. Da biste obrisali druge oblike istorije, posetite <ph name="BEGIN_LINK" />Moje aktivnosti na Google-u<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Uvećajte</translation>
 <translation id="6585618849026997638">Ako dodate obeleživač, možete da se vratite na stranicu koja vam je važna</translation>
 <translation id="6603393121510733479">Organizacija je isključila privatno pregledanje.

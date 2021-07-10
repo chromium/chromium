@@ -674,7 +674,7 @@
 <translation id="1706625117072057435">झूम स्तर</translation>
 <translation id="1708338024780164500">(निष्क्रिय)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (आयडी: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">प्रायोगिक ब्राउझर! डेटा गमावला जाऊ शकतो किंवा गोपनीयता अथवा सुरक्षा धोक्यात येऊ शकते. कृपया समस्यांची तक्रार करण्यासाठी येथे जा: मदत &gt; "समस्येची तक्रार करा...".</translation>
+<translation id="1708860176443612387">प्रायोगिक ब्राउझर! डेटा गमावला जाऊ शकतो किंवा गोपनीयता अथवा सुरक्षा धोक्यात येऊ शकते. कृपया समस्या नोंदवण्यासाठी येथे जा: मदत &gt; "समस्या नोंदवा...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (मूळ)</translation>
 <translation id="1709217939274742847">ऑथेंटिकेशनसाठी वापरण्याकरिता तिकीट निवडा <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">शेअर करू शकत नाही</translation>
@@ -5446,6 +5446,7 @@
 <translation id="697508444536771064">Linux बंद करा</translation>
 <translation id="6978121630131642226">शोध इंजिने</translation>
 <translation id="6979044105893951891">लाँच करा आणि व्यवस्थापित केलेल्या अतिथी सत्रांमधून बाहेर पडा</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">निःशब्द करा (डीफॉल्ट)</translation>
 <translation id="6979737339423435258">पूर्णवेळ</translation>
 <translation id="6981553172137913845">खाजगीरीत्या ब्राउझ करण्यासाठी, गुप्त विंडो उघडण्याकरिता डॉट आयकन मेनूवर क्लिक करा</translation>

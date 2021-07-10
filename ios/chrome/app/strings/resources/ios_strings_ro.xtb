@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Poți să revii aici mai târziu ca să redeschizi file pe care le-ai închis recent.</translation>
 <translation id="1016495303386450659">Element actualizat</translation>
-<translation id="1027850213405719822">Astfel, se va dezactiva sincronizarea.</translation>
 <translation id="1044891598689252897">Site-urile vor funcționa normal</translation>
 <translation id="1047726139967079566">Marcați această pagină...</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -208,7 +207,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3112556859945124369">Marchează…</translation>
 <translation id="3131206671572504478">Blochează-le pe toate</translation>
 <translation id="313283613037595347">Creează o nouă filă incognito.</translation>
-<translation id="3134493362339304186">Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul. Nu te vei deconecta de la Contul Google. Pentru a șterge alte tipuri de istoric, accesează <ph name="BEGIN_LINK" />Activitatea mea de pe Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Salvează cardul</translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157684681743766797">Marchează-le pe toate…</translation>
@@ -231,7 +229,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3285962946108803577">Trimite pagina…</translation>
 <translation id="3290875554372353449">Alege un cont</translation>
 <translation id="3311748811247479259">Dezactivat</translation>
-<translation id="3317580614754548493">Nu te vei deconecta de la Contul Google. Pentru a șterge istoricul <ph name="BEGIN_LINK" />căutărilor<ph name="END_LINK" /> sau alte tipuri de istoric, accesează <ph name="BEGIN_LINK" />Contul meu Google<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">Adresă 2</translation>
 <translation id="3328801116991980348">Informații despre site</translation>
 <translation id="3329904751041170572">Nu s-a putut realiza conexiunea la server.</translation>
@@ -263,7 +260,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3533436815740441613">Filă nouă</translation>
 <translation id="3551320343578183772">Închide fila</translation>
 <translation id="3581564640715911333">Oferă traducerea paginilor în alte limbi</translation>
-<translation id="3588492282865875287">Te deconectezi?</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
 <translation id="359441731697487922">Poți deschide automat linkuri în Chrome setând-o ca aplicație browser prestabilită.
       
@@ -560,7 +556,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="651505212789431520">Anulezi sincronizarea? Poți să activezi sincronizarea oricând în Setări.</translation>
 <translation id="6524918542306337007">Modul incognito nu este disponibil</translation>
-<translation id="6560725150890787329">Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul. Nu te vei deconecta de la Contul Google. Pentru a șterge alte tipuri de istoric, accesează <ph name="BEGIN_LINK" />Activitatea mea de pe Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Mărește</translation>
 <translation id="6585618849026997638">Poți să revii la o pagină importantă adăugând un marcaj</translation>
 <translation id="6603393121510733479">Organizația ta a dezactivat navigarea privată.

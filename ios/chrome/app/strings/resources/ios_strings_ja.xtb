@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">ここでは、最近閉じたタブをもう一度開くことができます</translation>
 <translation id="1016495303386450659">更新済みのアイテム</translation>
-<translation id="1027850213405719822">ログアウトすると、同期がオフになります。</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="1047726139967079566">ブックマークに追加...</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
@@ -208,7 +207,6 @@
 <translation id="3112556859945124369">マーク...</translation>
 <translation id="3131206671572504478">すべてブロック</translation>
 <translation id="313283613037595347">新しいシークレット タブを作成します。</translation>
-<translation id="3134493362339304186">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。Google アカウントへのログイン状態は維持されます。他の履歴を削除するには、<ph name="BEGIN_LINK" />Google マイ アクティビティ<ph name="END_LINK" />にアクセスしてください。</translation>
 <translation id="3153862085237805241">カードを保存</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157684681743766797">すべてマーク...</translation>
@@ -231,7 +229,6 @@
 <translation id="3285962946108803577">ページを共有...</translation>
 <translation id="3290875554372353449">アカウントの選択</translation>
 <translation id="3311748811247479259">オフ</translation>
-<translation id="3317580614754548493">Google アカウントへのログイン状態は維持されます。<ph name="BEGIN_LINK" />検索<ph name="END_LINK" />や他の履歴を削除するには、<ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />にアクセスしてください</translation>
 <translation id="3324193307694657476">住所2行目</translation>
 <translation id="3328801116991980348">サイト情報</translation>
 <translation id="3329904751041170572">サーバーに接続できませんでした。</translation>
@@ -263,7 +260,6 @@
 <translation id="3533436815740441613">新しいタブ</translation>
 <translation id="3551320343578183772">タブを閉じる</translation>
 <translation id="3581564640715911333">他の言語のページで翻訳するかどうかを尋ねる</translation>
-<translation id="3588492282865875287">ログアウトしますか？</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
 <translation id="359441731697487922">Chrome をデフォルトのブラウザアプリに設定すると、自動的に Chrome でリンクを開くことができます。
       
@@ -560,7 +556,6 @@
 各サイトで個別のパスワードを使用することをご検討ください。</translation>
 <translation id="651505212789431520">同期をキャンセルしますか？同期は設定でいつでもオンにできます。</translation>
 <translation id="6524918542306337007">シークレット モードは使用できません</translation>
-<translation id="6560725150890787329">検索エンジンは <ph name="DSE_NAME" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。Google アカウントへのログイン状態は維持されます。他の履歴を削除するには、<ph name="BEGIN_LINK" />Google マイ アクティビティ<ph name="END_LINK" />にアクセスしてください。</translation>
 <translation id="6561262006871132942">拡大</translation>
 <translation id="6585618849026997638">重要なページは、ブックマークを追加しておくとすぐにアクセスできます</translation>
 <translation id="6603393121510733479">シークレット ブラウジングは組織によって無効にされています。

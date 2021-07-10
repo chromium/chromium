@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Vous pouvez revenir ici plus tard pour rouvrir les onglets que vous avez récemment fermés</translation>
 <translation id="1016495303386450659">Élément mis à jour</translation>
-<translation id="1027850213405719822">La synchronisation sera désactivée.</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1047726139967079566">Ajouter cette page aux favoris</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
@@ -208,7 +207,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="3112556859945124369">Marquer…</translation>
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="313283613037595347">Créer un onglet de navigation privée</translation>
-<translation id="3134493362339304186">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, le cas échéant. Vous ne serez pas déconnecté de votre compte Google. Pour effacer d'autres historiques, consultez <ph name="BEGIN_LINK" />Mon activité Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
@@ -231,7 +229,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="3285962946108803577">Partager la page…</translation>
 <translation id="3290875554372353449">Sélectionner un compte</translation>
 <translation id="3311748811247479259">Désactivé</translation>
-<translation id="3317580614754548493">Vous ne serez pas déconnecté de votre compte Google. Pour effacer l'<ph name="BEGIN_LINK" />historique des recherches<ph name="END_LINK" /> ou d'autres historiques, accédez à la page <ph name="BEGIN_LINK" />Mon compte Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informations sur le site</translation>
 <translation id="3329904751041170572">Impossible de se connecter au serveur.</translation>
@@ -263,7 +260,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3581564640715911333">Proposer de traduire les pages dans d'autres langues</translation>
-<translation id="3588492282865875287">Se déconnecter ?</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
 <translation id="359441731697487922">Vous pouvez définir Chrome comme votre navigateur par défaut pour y ouvrir des liens automatiquement.
       
@@ -560,7 +556,6 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</translation>
 <translation id="651505212789431520">Annuler la synchronisation ? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>
 <translation id="6524918542306337007">Mode navigation privée indisponible</translation>
-<translation id="6560725150890787329">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant. Vous ne serez pas déconnecté de votre compte Google. Pour effacer d'autres historiques, consultez <ph name="BEGIN_LINK" />Mon activité Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="6603393121510733479">Votre organisation a désactivé la navigation privée.

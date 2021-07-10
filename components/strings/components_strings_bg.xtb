@@ -84,14 +84,6 @@
 &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Въведохте паролата си на сайт, който не се управлява от организацията ви. За да защитите профила си, не използвайте паролата си повторно в други приложения и сайтове.</translation>
 <translation id="1263231323834454256">Списък за четене</translation>
-<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
-        Активност, която няма да бъде запазена на устройството:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />страниците, които преглеждате в този прозорец;
-          <ph name="LIST_ITEM" />„бисквитките“ и данните за сайтовете;
-          <ph name="LIST_ITEM" />информацията за профила (<ph name="LINK_BEGIN" />изход<ph name="LINK_END" />).
-        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Начин на вземане</translation>
 <translation id="1281476433249504884">Стакер 1</translation>
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
@@ -606,7 +598,6 @@
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3209034400446768650">Страницата може да ви таксува</translation>
 <translation id="3212581601480735796">Активността ви в <ph name="HOSTNAME" /> се следи</translation>
-<translation id="3212623355668894776">Затворете всички прозорци в режим на гост, така че активността ви при сърфиране да бъде изтрита от това устройство.</translation>
 <translation id="3215092763954878852">WebAuthn не можа да се използва</translation>
 <translation id="3218181027817787318">Относително</translation>
 <translation id="3223287115535306850">Индикатор за стартиращо се приложение</translation>
@@ -922,6 +913,7 @@
 <translation id="4270541775497538019">Стакер 6</translation>
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4277028893293644418">Повторно задаване на паролата</translation>
+<translation id="4278390842282768270">Разрешено</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Тази карта е запазена в профила ви в Google}other{Тези карти са запазени в профила ви в Google}}</translation>
 <translation id="4287885627794386150">Отговаря на условията за изпробване, но не е активно</translation>
 <translation id="4297502707443874121">Миниизображение на страницата <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1016,7 +1008,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Виртуална реалност</translation>
 <translation id="4673460618347856347">Играта с динозавъра, стартиране</translation>
-<translation id="4675657451653251260">В режим на гост няма да виждате информация за потребителските профили в Chrome. Можете <ph name="LINK_BEGIN" />да влезете в профила си<ph name="LINK_END" /> в Google, за да осъществите достъп до данните в него, като например пароли и начини на плащане.</translation>
 <translation id="467662567472608290">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; сертификатът му за сигурност съдържа грешки. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> иска да реагира на събития за достъпност</translation>
 <translation id="467809019005607715">Google Презентации</translation>
@@ -1049,12 +1040,6 @@
 <translation id="4761869838909035636">Стартиране на проверка на безопасността в Chrome</translation>
 <translation id="4764776831041365478">До уеб страницата на адрес <ph name="URL" /> може временно да няма достъп или да е преместена за постоянно на нов уеб адрес.</translation>
 <translation id="4766713847338118463">Двуточково телбодиране в долната част</translation>
-<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
-        Активност, която ще бъде запазена на устройството:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />файловете, които изтеглите в този прозорец.
-        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Възникна неизвестна грешка.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Блокиран е изскачащ прозорец}other{Блокирани са # изскач. прозореца}}</translation>
 <translation id="4780366598804516005">Пощенска кутия 1</translation>
@@ -1240,7 +1225,6 @@
 <translation id="5421136146218899937">Изчистване на данните за сърфирането...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> иска да ви изпраща известия</translation>
 <translation id="5428105026674456456">испански</translation>
-<translation id="542872847390508405">Сърфирате като гост</translation>
 <translation id="5430298929874300616">Премахване на отметката</translation>
 <translation id="5439770059721715174">При потвърждаване на схемата възникна грешка в/ъв „<ph name="ERROR_PATH" />“: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
@@ -1954,6 +1938,7 @@
 <translation id="8103161714697287722">Начин на плащане</translation>
 <translation id="8105368624971345109">Изключване</translation>
 <translation id="810875025413331850">Няма намерени устройства в близост.</translation>
+<translation id="8116925261070264013">Заглушени</translation>
 <translation id="8118489163946903409">Начин на плащане</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> не се инсталира правилно на компютъра ви или в мрежата. Помолете системния си администратор да реши този проблем.</translation>
 <translation id="8128526133099929547">Току-що въведохте паролата си в измамнически сайт. Chrome препоръчва да посетите <ph name="WEBSITE_1" /> и другите сайтове, за които я използвате, и да я промените в тях сега.</translation>
@@ -2070,13 +2055,6 @@
 <translation id="8559762987265718583">Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на устройството ви (<ph name="DATE_AND_TIME" />) са неправилни.</translation>
 <translation id="8564182942834072828">Отделни документи/неподредени копия</translation>
 <translation id="8564985650692024650">Chromium препоръчва да зададете повторно паролата си за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, ако сте я използвали и на други сайтове.</translation>
-<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
-        Активност, която няма да бъде запазена на устройството:
-        <ph name="END_BOLD" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />страниците, които преглеждате в този прозорец;
-          <ph name="LIST_ITEM" />„бисквитките“ и данните за сайтовете.
-        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Използвайте Touch ID, за да потвърждавате картите по-бързо</translation>
 <translation id="8577348305244205642">Няма достъп до виртуалната карта</translation>
 <translation id="858637041960032120">+ тел. номер</translation>
@@ -2084,9 +2062,6 @@
 <translation id="8600271352425265729">Само този път</translation>
 <translation id="860043288473659153">Име на титуляря на картата</translation>
 <translation id="8606726445206553943">Да използва MIDI устройствата ви.</translation>
-<translation id="8612761427948161954">Здравейте, <ph name="USERNAME" />,
-        <ph name="BR" />
-        Сърфирате като гост</translation>
 <translation id="861775596732816396">Размер 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Няма съответстващи пароли. Показване на всички запазени пароли.</translation>

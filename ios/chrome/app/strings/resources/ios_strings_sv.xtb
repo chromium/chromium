@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
 <translation id="1013952917065545813">Du kan återkomma hit och öppna nyligen stängda flikar</translation>
 <translation id="1016495303386450659">Bokmärket har uppdaterats</translation>
-<translation id="1027850213405719822">Detta inaktiverar synkronisering.</translation>
 <translation id="1044891598689252897">Webbplatser fungerar som de ska</translation>
 <translation id="1047726139967079566">Skapa bokmärke för den här sidan...</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -208,7 +207,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="3112556859945124369">Markera …</translation>
 <translation id="3131206671572504478">Blockera alla</translation>
 <translation id="313283613037595347">Skapa en ny inkognitoflik.</translation>
-<translation id="3134493362339304186">Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt. Du loggas inte ut från Google-kontot. Du kan rensa annan historik på <ph name="BEGIN_LINK" />Min aktivitet på Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Spara kortet</translation>
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="3157684681743766797">Markera alla …</translation>
@@ -231,7 +229,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="3285962946108803577">Dela sidan …</translation>
 <translation id="3290875554372353449">Välj ett konto</translation>
 <translation id="3311748811247479259">Av</translation>
-<translation id="3317580614754548493">Du loggas inte ut från Google-kontot. Du kan rensa <ph name="BEGIN_LINK" />sökhistoriken<ph name="END_LINK" /> och annan historik på <ph name="BEGIN_LINK" />Mitt Google-konto<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adressrad 2</translation>
 <translation id="3328801116991980348">Platsinformation</translation>
 <translation id="3329904751041170572">Det gick inte att ansluta till servern.</translation>
@@ -263,7 +260,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="3533436815740441613">Ny flik</translation>
 <translation id="3551320343578183772">Stäng flik</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
-<translation id="3588492282865875287">Vill du logga ut?</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
 <translation id="359441731697487922">Du kan öppna länkar i Chrome automatiskt genom att ställa in den som standardwebbläsarapp.
       
@@ -560,7 +556,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 Sträva efter att använda ett unikt lösenord för varje webbplats.</translation>
 <translation id="651505212789431520">Vill du avbryta synkroniseringen? Du kan när som helst aktivera synkronisering i inställningarna.</translation>
 <translation id="6524918542306337007">Inkognitoläget är inte tillgängligt</translation>
-<translation id="6560725150890787329">Din sökmotor är <ph name="DSE_NAME" />. Läs anvisningarna för att radera sökhistoriken om tillämpligt. Du loggas inte ut från Google-kontot. Du kan rensa annan historik på <ph name="BEGIN_LINK" />Min aktivitet på Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zooma in</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
 <translation id="6603393121510733479">Organisationen har inaktiverat möjligheten att surfa privat.

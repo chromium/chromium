@@ -181,7 +181,6 @@
 <translation id="2352467521400612932">სტილუსის პარამეტრები</translation>
 <translation id="2354174487190027830"><ph name="NAME" />-ის გააქტიურება</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
-<translation id="2365393535144473978">მობილური ინტერნეტის ჩართვის შემთხვევაში, ჩაირთვება Bluetooth.</translation>
 <translation id="2369165858548251131">„გამარჯობა“ ჩინურად</translation>
 <translation id="2390318262976603432">ლოკალის პარამეტრები</translation>
 <translation id="2391579633712104609">180°</translation>
@@ -722,7 +721,6 @@
 <translation id="6696025732084565524">თქვენი განცალკევებადი კლავიატურა საჭიროებს კრიტიკულ განახლებას</translation>
 <translation id="6700713906295497288">IME მენიუს ღილაკი</translation>
 <translation id="6713285437468012787">ბლუთუსის მოწყობილობა „<ph name="DEVICE_NAME" />“ უკვე დაწყვილებულია და ახლა ხელმისაწვდომია ყველა მომხმარებლისთვის. პარამეტრების გამოყენებით თქვენ შეგიძლიათ ამოშალოთ ეს დაწყვილება.</translation>
-<translation id="6715542151869432661">მობილური მოწყობილობები ვერ მოიძებნა.</translation>
 <translation id="6723839937902243910">ენერგია</translation>
 <translation id="6727969043791803658">დაკავშირებულია, ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>

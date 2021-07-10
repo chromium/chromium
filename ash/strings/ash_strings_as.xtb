@@ -181,7 +181,6 @@
 <translation id="2352467521400612932">ষ্টাইলাছৰ ছেটিংসমূহ</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> সক্ৰিয় কৰি থকা হৈছে</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
-<translation id="2365393535144473978">ম’বাইল ডেটা সক্ষম কৰিলে ব্লুটুথ সক্ষম হ’ব।</translation>
 <translation id="2369165858548251131">চীনা ভাষাত "নমস্কাৰ"</translation>
 <translation id="2390318262976603432">স্থানীয় ভাষাৰ ছেটিংসমূহ</translation>
 <translation id="2391579633712104609">১৮০°</translation>
@@ -208,6 +207,7 @@
 <translation id="2582112259361606227">আপডে’ট কৰিবলৈ ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="2595239820337756193">৫ হাজাৰ মাইল</translation>
 <translation id="2596078834055697711">ৱিণ্ড’ৰ স্ক্রীণশ্বট লওক</translation>
+<translation id="2607678425161541573">অনলাইন ছাইন ইনৰ আৱশ্যক</translation>
 <translation id="2617342710774726426">ছিম কাৰ্ড লক কৰা হৈছে</translation>
 <translation id="2621713457727696555">সুৰক্ষিত</translation>
 <translation id="2653019840645008922">ৱিণ্ড' কেপচাৰ</translation>
@@ -720,7 +720,6 @@
 <translation id="6696025732084565524">আপোনাৰ পৃথক কৰিব পৰা কীব’ৰ্ডত এটা গুৰুত্বপূর্ণ আপডে’ট কৰাৰ প্ৰয়োজন</translation>
 <translation id="6700713906295497288">IME মেনু বুটাম</translation>
 <translation id="6713285437468012787">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />" যোৰা লগোৱা হৈছে আৰু বর্তমান ই সকলো ব্যৱহাৰকাৰীৰ বাবে উপলব্ধ। আপুনি ছেটিংসমূহ ব্যৱহাৰ কৰি এই যোৰা লগোৱা কার্য আঁতৰাব পাৰে।</translation>
-<translation id="6715542151869432661">কোনো ম’বাইল ডিভাইচ বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="6723839937902243910">পাৱাৰ</translation>
 <translation id="6727969043791803658">সংযোগ কৰা আছে, <ph name="BATTERY_PERCENTAGE" />% বেটাৰী</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /> টা</translation>

@@ -4,7 +4,6 @@
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
 <translation id="1013952917065545813">Du kan vende tilbage hertil for at åbne dine senest lukkede faner igen</translation>
 <translation id="1016495303386450659">Elementet blev opdateret</translation>
-<translation id="1027850213405719822">Dette deaktiverer synkroniseringen.</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
 <translation id="1047726139967079566">Tilføj denne side som bogmærke...</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -208,7 +207,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="3112556859945124369">Markér…</translation>
 <translation id="3131206671572504478">Bloker alle</translation>
 <translation id="313283613037595347">Opret ny inkognitofane.</translation>
-<translation id="3134493362339304186">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant. Du bliver ikke logget ud af din Google-konto. Du kan rydde andre typer historik ved at gå til <ph name="BEGIN_LINK" />Min Google-aktivitet<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Gem kortet</translation>
 <translation id="3157387275655328056">Føj til læseliste</translation>
 <translation id="3157684681743766797">Markér alle…</translation>
@@ -231,7 +229,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="3285962946108803577">Del side…</translation>
 <translation id="3290875554372353449">Vælg en konto</translation>
 <translation id="3311748811247479259">Fra</translation>
-<translation id="3317580614754548493">Du bliver ikke logget ud af din Google-konto. Du kan rydde dine <ph name="BEGIN_LINK" />søgninger<ph name="END_LINK" /> eller andre former for historik ved at gå til <ph name="BEGIN_LINK" />Min Google-konto<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
 <translation id="3329904751041170572">Der kunne ikke oprettes forbindelse til serveren.</translation>
@@ -263,7 +260,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="3533436815740441613">Ny fane</translation>
 <translation id="3551320343578183772">Luk fanen</translation>
 <translation id="3581564640715911333">Tilbyd at oversætte sider på andre sprog</translation>
-<translation id="3588492282865875287">Vil du logge ud?</translation>
 <translation id="3588820906588687999">Åbn billede på ny fane</translation>
 <translation id="359441731697487922">Du kan åbne links i Chrome automatisk ved at angive den som din standardbrowserapp.
       
@@ -560,7 +556,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="651505212789431520">Vil du annullere synkroniseringen? Du kan til enhver tid aktivere synkronisering i indstillingerne.</translation>
 <translation id="6524918542306337007">Inkognitotilstand er ikke tilgængelig</translation>
-<translation id="6560725150890787329">Dine standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant. Du bliver ikke logget ud af din Google-konto. Du kan rydde andre typer historik ved at gå til <ph name="BEGIN_LINK" />Min Google-aktivitet<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zoom ind</translation>
 <translation id="6585618849026997638">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke</translation>
 <translation id="6603393121510733479">Din organisation har deaktiveret privat browsing.
