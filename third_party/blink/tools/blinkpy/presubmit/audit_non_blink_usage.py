@@ -509,6 +509,12 @@ _CONFIG = [
             # UI Cursor
             'ui::Cursor',
 
+            # UI Pointer and Hover
+            'ui::PointerType',
+            'ui::POINTER_TYPE_.*',
+            'ui::HoverType',
+            'ui::HOVER_TYPE_.*',
+
             # UI Keyconverter
             'ui::DomCode',
             'ui::DomKey',

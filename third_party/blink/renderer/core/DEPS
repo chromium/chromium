@@ -113,6 +113,7 @@ include_rules = [
     "+ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h",
     "+ui/base/ime/mojom/virtual_keyboard_types.mojom-blink-forward.h",
     "+ui/base/mojom/attributed_string.mojom-blink.h",
+    "+ui/base/pointer/pointer_device.h",
     "+ui/base/resource/scale_factor.h",
     "+ui/base/ui_base_features.h",
     "+ui/display/mojom/display.mojom-blink.h",

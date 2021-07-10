@@ -4,45 +4,13 @@
 
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 
-#include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/common/css/navigation_controls.h"
-#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
-#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink.h"
-#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 
 namespace blink {
 
-MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData()
-    : viewport_width(0),
-      viewport_height(0),
-      device_width(0),
-      device_height(0),
-      device_pixel_ratio(1.0),
-      color_bits_per_component(24),
-      monochrome_bits_per_component(0),
-      primary_pointer_type(mojom::blink::PointerType::kPointerNone),
-      available_pointer_types(ui::POINTER_TYPE_NONE),
-      primary_hover_type(mojom::blink::HoverType::kHoverNone),
-      available_hover_types(ui::HOVER_TYPE_NONE),
-      default_font_size(16),
-      three_d_enabled(false),
-      immersive_mode(false),
-      strict_mode(true),
-      display_mode(blink::mojom::DisplayMode::kBrowser),
-      color_gamut(ColorSpaceGamut::kUnknown),
-      preferred_color_scheme(mojom::blink::PreferredColorScheme::kLight),
-      preferred_contrast(mojom::blink::PreferredContrast::kNoPreference),
-      prefers_reduced_motion(false),
-      forced_colors(ForcedColors::kNone),
-      navigation_controls(NavigationControls::kNone),
-      screen_spanning(ScreenSpanning::kNone),
-      device_posture(DevicePosture::kNoFold) {}
+MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData() = default;
 
 MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     Document& document)
