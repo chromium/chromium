@@ -2485,27 +2485,40 @@ bool Document::NeedsLayoutTreeUpdateForNode(const Node& node,
 bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     const Node& node,
     bool ignore_adjacent_style) const {
-  if (node.IsShadowRoot())
+  recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked Start %d",
+                       recordreplay::PointerId(node));
+
+  if (node.IsShadowRoot()) {
+    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #1");
     return false;
+  }
   if (GetDisplayLockDocumentState().LockedDisplayLockCount() == 0 &&
-      !NeedsLayoutTreeUpdate())
+      !NeedsLayoutTreeUpdate()) {
+    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #2");
     return false;
-  if (!node.isConnected())
+  }
+  if (!node.isConnected()) {
+    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #3");
     return false;
+  }
 
   if (NeedsFullLayoutTreeUpdate() || node.NeedsStyleRecalc() ||
-      node.NeedsStyleInvalidation())
+      node.NeedsStyleInvalidation()) {
+    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #4");
     return true;
+  }
   for (const ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node);
        ancestor; ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
     if (ShadowRoot* root = ancestor->GetShadowRoot()) {
       if (root->NeedsStyleRecalc() || root->NeedsStyleInvalidation() ||
           root->NeedsAdjacentStyleRecalc()) {
+        recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #5");
         return true;
       }
     }
     if (ancestor->NeedsStyleRecalc() || ancestor->NeedsStyleInvalidation() ||
         (ancestor->NeedsAdjacentStyleRecalc() && !ignore_adjacent_style)) {
+      recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #6");
       return true;
     }
     auto* element = DynamicTo<Element>(ancestor);
@@ -2515,11 +2528,13 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
       // Even if the ancestor is style-clean, we might've previously
       // blocked a style traversal going to the ancestor or its descendants.
       if (context->StyleTraversalWasBlocked()) {
+        recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #7");
         DCHECK(context->IsLocked());
         return true;
       }
     }
   }
+  recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #8");
   return false;
 }
 
