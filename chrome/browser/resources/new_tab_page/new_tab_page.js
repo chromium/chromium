@@ -19,6 +19,7 @@ export {chromeCartDescriptor} from './modules/cart/module.js';
 export {chromeCartDescriptor as chromeCartV2Descriptor} from './modules/cart_v2/module.js';
 export {DriveProxy} from './modules/drive/drive_module_proxy.js';
 export {driveDescriptor} from './modules/drive/module.js';
+export {driveDescriptor as driveV2Descriptor} from './modules/drive_v2/module.js';
 // <if expr="not is_official_build">
 export {FooProxy} from './modules/dummy/foo_proxy.js';
 export {dummyDescriptor} from './modules/dummy/module.js';

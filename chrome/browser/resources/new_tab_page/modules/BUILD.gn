@@ -40,6 +40,7 @@ js_library("module_descriptors") {
     "cart:module",
     "cart_v2:module",
     "drive:module",
+    "drive_v2:module",
     "task_module:module",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -98,6 +99,7 @@ group("web_components") {
     "cart:web_components",
     "cart_v2:web_components",
     "drive:web_components",
+    "drive_v2:web_components",
     "dummy:web_components",
     "task_module:web_components",
   ]
@@ -157,6 +159,7 @@ preprocess_if_expr("preprocess_gen") {
     "cart/module.js",
     "cart_v2/module.js",
     "drive/module.js",
+    "drive_v2/module.js",
   ]
   if (!is_official_build) {
     in_files += [ "dummy/module.js" ]

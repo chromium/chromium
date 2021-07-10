@@ -273,6 +273,18 @@ TEST_F('NewTabPageModulesDriveModuleTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var NewTabPageModulesDriveV2ModuleTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/drive_v2/module_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesDriveV2ModuleTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var NewTabPageModulesTaskModuleTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

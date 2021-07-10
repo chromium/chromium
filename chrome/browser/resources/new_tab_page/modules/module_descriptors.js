@@ -11,6 +11,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {chromeCartDescriptor} from './cart/module.js';
 import {chromeCartDescriptor as chromeCartV2Descriptor} from './cart_v2/module.js';
 import {driveDescriptor} from './drive/module.js';
+import {driveDescriptor as driveV2Descriptor} from './drive_v2/module.js';
 // <if expr="not is_official_build">
 import {dummyDescriptor, dummyDescriptor2} from './dummy/module.js';
 // </if>
@@ -37,7 +38,11 @@ if (loadTimeData.getBoolean('chromeCartModuleEnabled')) {
 }
 
 if (loadTimeData.getBoolean('driveModuleEnabled')) {
-  descriptors.push(driveDescriptor);
+  if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
+    descriptors.push(driveV2Descriptor);
+  } else {
+    descriptors.push(driveDescriptor);
+  }
 }
 
 // <if expr="not is_official_build">
