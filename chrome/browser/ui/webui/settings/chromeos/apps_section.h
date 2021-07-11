@@ -49,6 +49,7 @@ class AppsSection : public OsSettingsSection, public ArcAppListPrefs::Observer {
 
   void AddAndroidAppStrings(content::WebUIDataSource* html_source);
   void AddPluginVmLoadTimeData(content::WebUIDataSource* html_source);
+  void AddOnStartupTimeData(content::WebUIDataSource* html_source);
 
   void UpdateAndroidSearchTags();
 

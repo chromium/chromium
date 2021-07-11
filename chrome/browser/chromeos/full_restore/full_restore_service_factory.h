@@ -19,6 +19,8 @@ namespace full_restore {
 // Singleton factory that builds and owns FullRestoreService.
 class FullRestoreServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  static bool IsFullRestoreAvailableForProfile(const Profile* profile);
+
   static FullRestoreServiceFactory* GetInstance();
 
   static FullRestoreService* GetForProfile(Profile* profile);

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/guest_os_handler.h"
@@ -199,21 +200,9 @@ bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
          pref_service.GetBoolean(plugin_vm::prefs::kPluginVmImageExists);
 }
 
-bool ShouldShowStartup() {
-  return full_restore::features::IsFullRestoreEnabled();
-}
-
-void AddOnStartupTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"onStartupTitle", IDS_OS_SETTINGS_ON_STARTUP_TITLE},
-      {"onStartupAlways", IDS_OS_SETTINGS_ON_STARTUP_ALWAYS},
-      {"onStartupAskEveryTime", IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME},
-      {"onStartupDoNotRestore", IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE},
-  };
-
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddBoolean("showStartup", ShouldShowStartup());
+bool ShouldShowStartup(const Profile* profile) {
+  return full_restore::FullRestoreServiceFactory::
+      IsFullRestoreAvailableForProfile(profile);
 }
 
 }  // namespace
@@ -243,7 +232,7 @@ AppsSection::AppsSection(Profile* profile,
     UpdateAndroidSearchTags();
   }
 
-  if (ShouldShowStartup())
+  if (ShouldShowStartup(profile))
     updater.AddSearchTags(GetOnStartupSearchConcepts());
 }
 
@@ -424,6 +413,19 @@ void AppsSection::AddPluginVmLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_LOCATE,
           base::UTF8ToUTF16(plugin_vm::kChromeOSBaseDirectoryDisplayText)));
+}
+
+void AppsSection::AddOnStartupTimeData(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"onStartupTitle", IDS_OS_SETTINGS_ON_STARTUP_TITLE},
+      {"onStartupAlways", IDS_OS_SETTINGS_ON_STARTUP_ALWAYS},
+      {"onStartupAskEveryTime", IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME},
+      {"onStartupDoNotRestore", IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE},
+  };
+
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddBoolean("showStartup", ShouldShowStartup(profile()));
 }
 
 void AppsSection::UpdateAndroidSearchTags() {

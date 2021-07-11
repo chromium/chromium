@@ -17,6 +17,26 @@ namespace chromeos {
 namespace full_restore {
 
 // static
+bool FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(
+    const Profile* profile) {
+  if (!::full_restore::features::IsFullRestoreEnabled())
+    return false;
+
+  if (chrome::IsRunningInForcedAppMode())
+    return false;
+
+  // No service for non-regular user profile, or ephemeral user profile, system
+  // profile.
+  if (!profile || profile->IsSystemProfile() ||
+      !ProfileHelper::IsRegularProfile(profile) ||
+      ProfileHelper::IsEphemeralUserProfile(profile)) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
 FullRestoreServiceFactory* FullRestoreServiceFactory::GetInstance() {
   static base::NoDestructor<FullRestoreServiceFactory> instance;
   return instance.get();
@@ -40,20 +60,8 @@ FullRestoreServiceFactory::~FullRestoreServiceFactory() = default;
 
 KeyedService* FullRestoreServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!::full_restore::features::IsFullRestoreEnabled())
+  if (!IsFullRestoreAvailableForProfile(Profile::FromBrowserContext(context)))
     return nullptr;
-
-  if (chrome::IsRunningInForcedAppMode())
-    return nullptr;
-
-  // No service for non-regular user profile, or ephemeral user profile, system
-  // profile.
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile || profile->IsSystemProfile() ||
-      !ProfileHelper::IsRegularProfile(profile) ||
-      ProfileHelper::IsEphemeralUserProfile(profile)) {
-    return nullptr;
-  }
 
   return new FullRestoreService(Profile::FromBrowserContext(context));
 }
