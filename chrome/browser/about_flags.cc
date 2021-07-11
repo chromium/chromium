@@ -4217,6 +4217,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kDriveFsBidirectionalNativeMessaging)},
+    {"files-archivemount", flag_descriptions::kFilesArchivemountName,
+     flag_descriptions::kFilesArchivemountDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kFilesArchivemount)},
     {"files-filters-in-recents", flag_descriptions::kFiltersInRecentsName,
      flag_descriptions::kFiltersInRecentsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kFiltersInRecents)},

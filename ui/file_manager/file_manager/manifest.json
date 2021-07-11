@@ -59,7 +59,16 @@
   "file_handlers": {
     "mount-archive": {
       "extensions": [
-        "rar"
+        "7z",
+        "bz2",
+        "crx",
+        "gz",
+        "iso",
+        "rar",
+        "tar",
+        "tbz",
+        "tbz2",
+        "tgz"
       ]
     },
     "open-zip": {

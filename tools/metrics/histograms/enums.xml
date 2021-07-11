@@ -46840,6 +46840,7 @@ from previous Chrome versions.
   <int value="-1536242739" label="security-chip"/>
   <int value="-1535758690" label="AutoplayIgnoreWebAudio:disabled"/>
   <int value="-1535694535" label="PageInfoPerformanceHints:enabled"/>
+  <int value="-1534970225" label="FilesArchivemount:disabled"/>
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>
   <int value="-1532645183" label="ReleaseNotesNotification:enabled"/>
@@ -47858,6 +47859,7 @@ from previous Chrome versions.
   <int value="-726844226"
       label="AutofillSuggestVirtualCardsOnIncompleteForm:enabled"/>
   <int value="-726567328" label="disable-virtual-keyboard"/>
+  <int value="-726485467" label="FilesArchivemount:enabled"/>
   <int value="-725374685" label="ExtensionWorkflowJustification:disabled"/>
   <int value="-725264428" label="CompositingBasedThrottling:enabled"/>
   <int value="-723224470" label="enable-password-force-saving:enabled"/>

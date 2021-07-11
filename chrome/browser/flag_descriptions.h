@@ -2668,6 +2668,9 @@ extern const char kMagnifierPanningImprovementsDescription[];
 extern const char kMagnifierContinuousMouseFollowingModeSettingName[];
 extern const char kMagnifierContinuousMouseFollowingModeSettingDescription[];
 
+extern const char kFilesArchivemountName[];
+extern const char kFilesArchivemountDescription[];
+
 extern const char kFilesSinglePartitionFormatName[];
 extern const char kFilesSinglePartitionFormatDescription[];
 

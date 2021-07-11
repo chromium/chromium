@@ -4647,6 +4647,10 @@ const char kMagnifierContinuousMouseFollowingModeSettingDescription[] =
     "Enable feature which adds ability to choose new continuous mouse "
     "following mode in Magnifier settings.";
 
+const char kFilesArchivemountName[] = "Archivemount in Files App";
+const char kFilesArchivemountDescription[] =
+    "Enable mounting various archive formats in File Manager.";
+
 const char kFilesSinglePartitionFormatName[] =
     "Enable Partitioning of Removable Disks.";
 const char kFilesSinglePartitionFormatDescription[] =

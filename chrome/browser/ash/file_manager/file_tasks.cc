@@ -264,8 +264,28 @@ void PostProcessFoundTasks(
   if (ContainsGoogleDocument(entries))
     KeepOnlyFileManagerInternalTasks(result_list.get());
 
-  // Remove file manager internal view-pdf and view-swf actions if needed.
   std::set<std::string> disabled_actions;
+
+  // kFilesArchivemount is whether we allow "mount-archive" for every filename
+  // extension listed in ui/file_manager/file_manager/manifest.json (when the
+  // feature flag is true) or only for ".rar" (when the feature flag is false).
+  // False corresponds to the status quo as of milestone M92. This feature flag
+  // will be introduced in M93 (https://crrev.com/c/3017636), false by default.
+  // "True by default" is scheduled for M94.
+  //
+  // TODO(nigeltao): some time after M94, remove the kFilesArchivemount feature
+  // flag (scheduled to expire in M100) by hard-coding it to true, so that this
+  // if-block is never taken and can be deleted.
+  if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount)) {
+    for (const auto& entry : entries) {
+      if (!entry.path.MatchesExtension(".rar")) {
+        disabled_actions.emplace("mount-archive");
+        break;
+      }
+    }
+  }
+
+  // Remove file manager internal view-pdf and view-swf actions if needed.
   if (!util::ShouldBeOpenedWithPlugin(profile, FILE_PATH_LITERAL(".pdf"), ""))
     disabled_actions.emplace("view-pdf");
   if (!util::ShouldBeOpenedWithPlugin(profile, FILE_PATH_LITERAL(".swf"), ""))

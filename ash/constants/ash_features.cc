@@ -470,6 +470,11 @@ const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
 // Enables the Fast Pair feature.
 const base::Feature kFastPair{"FastPair", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables mounting various archive formats in Files App.
+// https://crbug.com/1216245
+const base::Feature kFilesArchivemount{"FilesArchivemount",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the System Web App (SWA) version of file manager.
 const base::Feature kFilesSWA{"FilesSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 
