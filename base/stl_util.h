@@ -15,11 +15,8 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-// TODO(crbug.com/1210983): Remove base/cxx17_backports.h above.
 
 namespace base {
 
