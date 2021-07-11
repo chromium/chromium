@@ -74,38 +74,18 @@ class WindowsAccessibilityEnabler
     BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
-  void OnBasicUIAutomationUsed() override {
-    AddAXModeForUIA(ui::AXMode::kNativeAPIs);
-  }
-
-  void OnAdvancedUIAutomationUsed() override {
-    AddAXModeForUIA(ui::AXMode::kWebContents);
-  }
-
-  void OnProbableUIAutomationScreenReaderDetected() override {
-    // Same as kAXModeComplete but without kHTML as it is not needed for UIA.
-    AddAXModeForUIA(ui::kAXModeCompleteNoHTML);
-  }
-
-  void OnTextPatternRequested() override {
-    AddAXModeForUIA(ui::AXMode::kInlineTextBoxes);
-  }
-
-  void AddAXModeForUIA(ui::AXMode mode) {
+  void OnUIAutomationUsed() override {
     DCHECK(::switches::IsExperimentalAccessibilityPlatformUIAEnabled());
 
     // Firing a UIA event can cause UIA to call back into our APIs, don't
     // consider this to be usage.
     if (firing_uia_events_)
       return;
-
     // UI Automation insulates providers from knowing about the client(s) asking
-    // for information. When IsSelectiveUIAEnablement is Enabled, we turn on
-    // various parts of accessibility depending on what APIs have been called.
-    if (!features::IsSelectiveUIAEnablementEnabled())
-      mode = ui::kAXModeComplete;
+    // for information. When UI Automation is requested, assume the presence of
+    // a full-fledged accessibility technology and enable full support.
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        mode);
+        ui::kAXModeComplete);
     BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 

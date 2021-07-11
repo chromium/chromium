@@ -4185,7 +4185,6 @@ IFACEMETHODIMP AXPlatformNodeWin::GetPatternProvider(PATTERNID pattern_id,
                                                      IUnknown** result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_PATTERN_PROVIDER);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_GET_PATTERN_PROVIDER);
-  NotifyAPIObserverForPatternRequest(pattern_id);
   return GetPatternProviderImpl(pattern_id, result);
 }
 
@@ -4218,9 +4217,6 @@ IFACEMETHODIMP AXPlatformNodeWin::GetPropertyValue(PROPERTYID property_id,
     // Collapse all unknown property IDs into a single bucket.
     base::UmaHistogramSparse("Accessibility.WinAPIs.GetPropertyValue", 0);
   }
-
-  NotifyAPIObserverForPropertyRequest(property_id);
-
   return GetPropertyValueImpl(property_id, result);
 }
 
@@ -8232,92 +8228,6 @@ AXPlatformNodeWin* AXPlatformNodeWin::GetFirstTextOnlyDescendant() {
 void AXPlatformNodeWin::SanitizeTextAttributeValue(const std::string& input,
                                                    std::string* output) const {
   SanitizeStringAttributeForIA2(input, output);
-}
-
-void AXPlatformNodeWin::NotifyAPIObserverForPatternRequest(
-    PATTERNID pattern_id) const {
-  bool probable_advanced_client_detected = false;
-  bool text_pattern_support_needed = false;
-  switch (pattern_id) {
-    case UIA_TextPatternId:
-    case UIA_TextChildPatternId:
-      // These properties require information gated behind the kInlineTextBoxes
-      // AXMode. See kInlineTextBoxes for details.
-      text_pattern_support_needed = true;
-      break;
-    // These properties require more advanced accessibility features to be
-    // enabled See kScreenReader for details.
-    case UIA_RangeValuePatternId:
-    case UIA_TableItemPatternId:
-      probable_advanced_client_detected = true;
-      break;
-  }
-
-  for (WinAccessibilityAPIUsageObserver& observer :
-       GetWinAccessibilityAPIUsageObserverList()) {
-    if (probable_advanced_client_detected)
-      observer.OnAdvancedUIAutomationUsed();
-    if (text_pattern_support_needed)
-      observer.OnTextPatternRequested();
-  }
-}
-void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
-    PROPERTYID property_id) const {
-  bool probable_advanced_client_detected = false;
-  bool probable_screen_reader_detected = false;
-  switch (property_id) {
-    // These properties are used by non-screenreader UIA clients. They should
-    // not cause additional enablement.
-    case UIA_ControlTypePropertyId:
-    case UIA_HasKeyboardFocusPropertyId:
-    case UIA_IsControlElementPropertyId:
-    case UIA_FrameworkIdPropertyId:
-    case UIA_IsEnabledPropertyId:
-      break;
-    //  These properties are not currently implemented and should not cause
-    //  enablement.
-    case UIA_AnnotationTypesPropertyId:
-    case UIA_CenterPointPropertyId:
-    case UIA_FillColorPropertyId:
-    case UIA_FillTypePropertyId:
-    case UIA_HeadingLevelPropertyId:
-    case UIA_ItemTypePropertyId:
-    case UIA_OutlineColorPropertyId:
-    case UIA_OutlineThicknessPropertyId:
-    case UIA_RotationPropertyId:
-    case UIA_SizePropertyId:
-    case UIA_VisualEffectsPropertyId:
-      break;
-    // These properties are provided by UIA Core; we should not implement, and
-    // they should not cause enablement.
-    case UIA_BoundingRectanglePropertyId:
-    case UIA_NativeWindowHandlePropertyId:
-    case UIA_ProcessIdPropertyId:
-    case UIA_ProviderDescriptionPropertyId:
-    case UIA_RuntimeIdPropertyId:
-      break;
-    // These properties are indicative of a screenreader, we should enable full
-    // accessibility support.
-    case UIA_AriaRolePropertyId:
-    case UIA_LabeledByPropertyId:
-    case UIA_LiveSettingPropertyId:
-    case UIA_LevelPropertyId:
-    case UIA_DescribedByPropertyId:
-      probable_screen_reader_detected = true;
-      probable_advanced_client_detected = true;
-      break;
-    default:
-      // All other properties should cause us to enable.
-      probable_advanced_client_detected = true;
-  }
-
-  for (WinAccessibilityAPIUsageObserver& observer :
-       GetWinAccessibilityAPIUsageObserverList()) {
-    if (probable_advanced_client_detected)
-      observer.OnAdvancedUIAutomationUsed();
-    if (probable_screen_reader_detected)
-      observer.OnProbableUIAutomationScreenReaderDetected();
-  }
 }
 
 // static

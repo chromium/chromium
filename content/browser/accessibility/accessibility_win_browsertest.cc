@@ -5169,19 +5169,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
   destroyed_watcher.Wait();
 }
 
-class AccessibilityWinUIASelectivelyEnabledBrowserTest
-    : public AccessibilityWinUIABrowserTest {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSelectiveUIAEnablement);
-
-    AccessibilityWinUIABrowserTest::SetUp();
-  }
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
                        RequestingTopLevelElementEnablesWebAccessibility) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
 
@@ -5202,43 +5190,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
   uia->ElementFromHandle(hwnd, &root);
   ASSERT_NE(nullptr, root.Get());
 
-  // Native API support should now be enabled.
-  ui::AXMode expected_mode = ui::AXMode::kNativeAPIs;
-  EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
-                               ->GetAccessibilityMode());
-
-  // Now get the fragment root's first (only) child.
-  Microsoft::WRL::ComPtr<IUIAutomationTreeWalker> tree_walker;
-  uia->get_RawViewWalker(&tree_walker);
-  Microsoft::WRL::ComPtr<IUIAutomationElement> first_child;
-  tree_walker->GetFirstChildElement(root.Get(), &first_child);
-  ASSERT_NE(nullptr, first_child.Get());
-
-  base::win::ScopedBstr name;
-  ASSERT_HRESULT_SUCCEEDED(first_child->get_CurrentName(name.Receive()));
-
   // Web content accessibility support should now be enabled.
-  expected_mode |= ui::AXMode::kWebContents;
-  EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
-                               ->GetAccessibilityMode());
-
-  Microsoft::WRL::ComPtr<IUnknown> text_pattern_unknown;
-  ASSERT_HRESULT_SUCCEEDED(
-      first_child->GetCurrentPattern(UIA_TextPatternId, &text_pattern_unknown));
-  EXPECT_EQ(nullptr, text_pattern_unknown.Get());
-
-  // Now check that inline text box support is enabled as well.
-  expected_mode |= ui::AXMode::kInlineTextBoxes;
-  EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
-                               ->GetAccessibilityMode());
-
-  Microsoft::WRL::ComPtr<IUIAutomationElement> labelled_by;
-  ASSERT_HRESULT_SUCCEEDED(first_child->get_CurrentLabeledBy(&labelled_by));
-
-  // Now check that we have complete accessibility support enabled.
-  expected_mode |= ui::AXMode::kScreenReader;
-  EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
-                               ->GetAccessibilityMode());
+  EXPECT_EQ(ui::kAXModeComplete,
+            content::BrowserAccessibilityStateImpl::GetInstance()
+                ->GetAccessibilityMode());
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
