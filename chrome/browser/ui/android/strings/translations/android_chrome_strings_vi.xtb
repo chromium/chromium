@@ -488,6 +488,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4183868528246477015">Tìm bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
+<translation id="4196597275619698563">Tạo thẻ</translation>
 <translation id="4198423547019359126">Không có vị trí tải xuống</translation>
 <translation id="4209895695669353772">Để nhận nội dung do Google đề xuất riêng cho bạn, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="4225895483398857530">Lối tắt trên thanh công cụ</translation>
@@ -1047,6 +1048,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7704317875155739195">Tự động hoàn thành cụm từ tìm kiếm và URL</translation>
 <translation id="7707922173985738739">Sử dụng dữ liệu di động</translation>
 <translation id="7725024127233776428">Các trang mà bạn đánh dấu sẽ xuất hiện tại đây</translation>
+<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Các hình thức hoạt động khác<ph name="END_LINK1" /> có thể được lưu trong Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những nội dung này bất cứ lúc nào.</translation>
 <translation id="7757787379047923882">Văn bản được chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Chọn ngày và giờ</translation>
 <translation id="7762668264895820836">Thẻ SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1237,6 +1239,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8854223127042600341">Xem tệp khi không có mạng</translation>
 <translation id="8856607253650333758">Tải nội dung mô tả</translation>
 <translation id="8873817150012960745">Nhấn vào đây để bắt đầu</translation>
+<translation id="8881973373982641723">Xóa nhật ký, kể cả dữ liệu trong hộp tìm kiếm.</translation>
 <translation id="889338405075704026">Chuyển đến phần Cài đặt của Chrome</translation>
 <translation id="8898822736010347272">Gửi URL của một số trang bạn truy cập, thông tin về hệ thống (có giới hạn) và một số nội dung trang cho Google, nhằm phát hiện các mối đe dọa mới và bảo vệ mọi người khi dùng web.</translation>
 <translation id="8909135823018751308">Chia sẻ...</translation>
@@ -1290,6 +1293,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9209888181064652401">Không thể gọi điện</translation>
 <translation id="9212845824145208577">Không thể di chuyển xuống thấp hơn. Hãy thử bắt đầu ở phía dưới nữa của trang.</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
+<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Nhật ký tìm kiếm<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />các hình thức hoạt động khác<ph name="END_LINK2" /> có thể được lưu vào Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những nội dung này bất cứ lúc nào.</translation>
 <translation id="926205370408745186">Xóa hoạt động của bạn trên Chrome khỏi Digital Wellbeing</translation>
 <translation id="927968626442779827">Dùng Chế độ thu gọn trên Google Chrome</translation>
 <translation id="932327136139879170">Trang chủ</translation>

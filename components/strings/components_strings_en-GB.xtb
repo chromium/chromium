@@ -380,6 +380,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
 <translation id="2316887270356262533">Frees up less than 1 MB. Some sites may load more slowly on your next visit.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requires a username and password.</translation>
+<translation id="2328651992442742497">Allowed (default)</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Setting controlled by your administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
@@ -428,6 +429,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2498091847651709837">Scan new card</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2505268675989099013">Protect account</translation>
+<translation id="2512101340618156538">Not allowed (default)</translation>
 <translation id="2515629240566999685">Checking the signal in your area</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2523886232349826891">Saved on this device only</translation>
@@ -963,6 +965,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Use of a proxy is disabled but an explicit proxy configuration is specified.</translation>
+<translation id="4460315069258617173">Allowed until you close tabs for this site</translation>
 <translation id="4464826014807964867">Websites with info from your organisation</translation>
 <translation id="4476953670630786061">This form is not secure. Auto-fill has been turned off.</translation>
 <translation id="4477350412780666475">Next track</translation>
@@ -1004,6 +1007,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="464342062220857295">Search features</translation>
 <translation id="4644670975240021822">Reverse order face down</translation>
 <translation id="4646534391647090355">Take me there now</translation>
+<translation id="4652266463001779298">Not allowed</translation>
 <translation id="4658638640878098064">Staple top left</translation>
 <translation id="4660119392514473465">Now you can browse privately, and other people who use this device won’t see your activity. However, downloads, bookmarks and reading list items will be saved.</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1715,6 +1719,7 @@ Additional details:
 <translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Is affiliated:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
+<translation id="7349921148288539306">Allowed until you close this tab</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7353601530677266744">Command Line</translation>
 <translation id="7359588939039777303">Ads blocked.</translation>
@@ -1857,6 +1862,7 @@ Additional details:
 <translation id="7800304661137206267">The connection is encrypted using <ph name="CIPHER" />, with <ph name="MAC" /> for message authentication and <ph name="KX" /> as the key exchange mechanism.</translation>
 <translation id="7802523362929240268">Site is legitimate</translation>
 <translation id="780301667611848630">No, thanks</translation>
+<translation id="7805571567667010077">Managed by your organisation</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Remove form suggestion from Chrome?</translation>
@@ -1952,6 +1958,7 @@ Additional details:
 <translation id="8175796834047840627">Chrome is offering to save your cards in your Google Account because you are signed in. You can change this behaviour in settings.</translation>
 <translation id="8176440868214972690">The administrator of this device has sent some info to the following websites, like settings or policies.</translation>
 <translation id="8184538546369750125">Use global default (Allow)</translation>
+<translation id="8190193880870196235">Managed by an extension</translation>
 <translation id="8193086767630290324">Actions taken with data flagged as confidential</translation>
 <translation id="8194797478851900357">&amp;Undo Move</translation>
 <translation id="8201077131113104583">Invalid update URL for extension with ID "<ph name="EXTENSION_ID" />".</translation>
@@ -2051,6 +2058,7 @@ Additional details:
 <translation id="8541158209346794904">Bluetooth device</translation>
 <translation id="8542014550340843547">Triple staple bottom</translation>
 <translation id="8543181531796978784">You can <ph name="BEGIN_ERROR_LINK" />report a detection problem<ph name="END_ERROR_LINK" /> or, if you understand the risks to your security, <ph name="BEGIN_LINK" />visit this unsafe site<ph name="END_LINK" />.</translation>
+<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Reset permission}other{Reset permissions}}</translation>
 <translation id="8557066899867184262">The CVC is located behind your card.</translation>
 <translation id="8558485628462305855">To view augmented reality content, update ARCore</translation>
 <translation id="8559762987265718583">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your device's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>

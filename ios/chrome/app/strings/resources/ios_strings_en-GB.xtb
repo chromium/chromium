@@ -236,6 +236,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="3371831930909698441">Translate is available. Options available near bottom of the screen.</translation>
 <translation id="3393920035788932672">Pop-ups Allowed</translation>
 <translation id="3399930248910934354">Open Chrome settings</translation>
+<translation id="3404744938087714423">Signing out turns off sync.</translation>
 <translation id="3425644765244388016">Card nickname</translation>
 <translation id="3433057996795775706">Deleting this password will not delete your account on <ph name="WEBSITE" />. Change your password on <ph name="WEBSITE" /> to keep it safe from others.</translation>
 <translation id="3443810440409579745">Tab received.</translation>
@@ -268,6 +269,7 @@ Follow the steps below:</translation>
 <translation id="3607167657931203000">Auto-fill Data</translation>
 <translation id="3609785682760573515">Syncing...</translation>
 <translation id="3638472932233958418">Pre-load Web Pages</translation>
+<translation id="3648013730801605241"><ph name="BEGIN_LINK" />Search history<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="3661160521073045932">Configuration profile available</translation>
 <translation id="3670030362669914947">Number</translation>
 <translation id="3691593122358196899">Bookmarked to <ph name="FOLDER_TITLE" /></translation>
@@ -647,6 +649,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="734758817008927353">Options to save card</translation>
 <translation id="7348502496356775519">Bookmark</translation>
 <translation id="7353432112255316844">Verify that it's you</translation>
+<translation id="7376492662175718683">You won't be signed out of your Google Account. <ph name="BEGIN_LINK" />Other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.
+
+        
+Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable.</translation>
 <translation id="7383797227493018512">Reading List</translation>
 <translation id="7398893703713203428">Create link</translation>
 <translation id="739941347996872055">Previous tab</translation>
@@ -789,6 +795,10 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
+<translation id="8851300969441660830">You won't be signed out of your Google Account. <ph name="BEGIN_LINK" />Other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.
+
+
+See your search engine’s instructions for deleting your search history, if applicable.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
 <translation id="8870413625673593573">Recently Closed</translation>
 <translation id="8876882697946675716">Keep your devices in sync</translation>

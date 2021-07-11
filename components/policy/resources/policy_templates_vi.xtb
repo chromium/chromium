@@ -556,6 +556,27 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Nếu bạn không đặt chính sách này, thì thiết bị sẽ không cài đặt được <ph name="PLUGIN_VM_NAME" /> nếu ổ đĩa còn dưới 20 GB trống (giá trị mặc định).
       Nếu bạn đặt chính sách này, thì thiết bị sẽ không cài đặt được <ph name="PLUGIN_VM_NAME" /> nếu ổ đĩa có ít dung lượng trống hơn mức mà chính sách yêu cầu.</translation>
 <translation id="1690383938831887552">Ngăn Signed HTTP Exchanges tải</translation>
+<translation id="1700458869527146675">Khi bạn đặt chính sách này, các chế độ cài đặt proxy cho Chrome và các ứng dụng dùng App Runtime for Chrome (ARC) sẽ được định cấu hình. Chrome và các ứng dụng này sẽ bỏ qua mọi tùy chọn liên quan đến proxy được chỉ định thông qua dòng lệnh.
+
+       Nếu bạn không đặt chính sách này, người dùng có thể chọn các chế độ cài đặt proxy.
+
+       Bằng việc đặt chính sách <ph name="PROXY_SETTINGS_POLICY_NAME" />, bạn chấp nhận những trường dữ liệu sau đây:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> cho phép bạn chỉ định máy chủ proxy mà Chrome sẽ sử dụng và ngăn người dùng thay đổi các chế độ cài đặt proxy
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> là URL dẫn tới một tệp proxy .pac 
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> không cho phép ngăn xếp mạng chuyển về các kết nối trực tiếp có tập lệnh PAC không hợp lệ hoặc không có sẵn
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> là URL của máy chủ proxy
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> là danh sách các máy chủ mà Chrome sẽ bỏ qua proxy
+
+       Trường <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> không còn dùng nữa mà thay bằng trường <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Đối với <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, nếu bạn chọn giá trị:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, thì proxy sẽ không bao giờ được dùng và mọi trường khác sẽ bị bỏ qua.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, thì proxy của các hệ thống sẽ được dùng và mọi trường khác sẽ bị bỏ qua.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, thì mọi trường khác sẽ bị bỏ qua.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, thì các trường <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> và <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sẽ được dùng.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, thì các trường <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> và <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sẽ được dùng.
+
+      Lưu ý: Để xem thêm ví dụ cụ thể, hãy truy cập trang của The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1700811900332333712">Cho phép thiết bị yêu cầu chức năng Powerwash</translation>
 <translation id="1708496595873025510">Đặt giới hạn cho quá trình tìm nạp khởi đầu Biến thể</translation>
 <translation id="1713829924716792485">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì những người dùng đã kết nối với một máy chủ truy cập từ xa có thể truyền tệp giữa máy khách và máy chủ. Điều này không áp dụng cho các đường kết nối hỗ trợ từ xa không hỗ trợ truyền tệp.
@@ -579,6 +600,11 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Nếu bạn không đặt chính sách này, các tùy chọn kiểm soát màn hình của người dùng và tính năng tự động điều chỉnh độ sáng sẽ không bị ảnh hưởng.
 
       Lưu ý: Bạn phải chỉ định các giá trị của chính sách này theo phần trăm trong khoảng từ 0 đến 100.</translation>
+<translation id="1733939382419067578">Nếu đặt chính sách này, thì bạn có thể thiết lập danh sách mẫu URL chỉ định những trang web được phép hiển thị thông báo.
+
+      Khi bạn không đặt chính sách này, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, chế độ cài đặt cá nhân của người dùng sẽ được áp dụng.
+
+      Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="1736269219679256369">Cho phép tiến hành từ trang cảnh báo SSL</translation>
 <translation id="173993509627303617">Không cho phép các ứng dụng web bị buộc cài đặt truy vấn các thuộc tính của thiết bị.</translation>
 <translation id="174765717426930019">Cho phép tất cả cửa sổ bật lên ở trạng thái mở với mục tiêu <ph name="BLANK_PAGE_NAME" /> để tương tác với chính trang đã yêu cầu mở cửa sổ bật lên trừ phi trang mở không chọn hoạt động tương tác đó một cách rõ ràng </translation>
@@ -2464,6 +2490,11 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="4043796890723386527">Ngăn người dùng tạo và sử dụng các hồ sơ phụ cũng như dùng chế độ khách trong trình duyệt <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Bật tính năng Che kín cửa sổ</translation>
 <translation id="4056910949759281379">Vô hiệu hóa giao thức SPDY</translation>
+<translation id="4061107397839125009">Nếu đặt chính sách này, thì bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web không được phép hiển thị thông báo.
+
+      Khi bạn không đặt chính sách này, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, chế độ cài đặt cá nhân của người dùng sẽ được áp dụng.
+
+      Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="4061590579642538878">Báo cáo thông tin về báo cáo sự cố.</translation>
 <translation id="4075675819066819571">Đặt giá ở bên trái màn hình</translation>
 <translation id="408029843066770167">Cho phép gửi truy vấn tới dịch vụ thời gian của Google</translation>

@@ -4393,6 +4393,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5794700615121138172">Thư mục do Linux chia sẻ</translation>
 <translation id="5794786537412027208">Thoát khỏi tất cả các ứng dụng Chrome</translation>
 <translation id="5797070761912323120">Google có thể sử dụng lịch sử của bạn để điều chỉnh tính năng Tìm kiếm, quảng cáo và các dịch vụ khác của Google cho phù hợp với bạn</translation>
+<translation id="5797521893972859201">Xóa nhật ký, kể cả dữ liệu trong hộp tìm kiếm</translation>
 <translation id="5798079537501238810">Các trang web có thể cài đặt trình xử lý thanh toán</translation>
 <translation id="579907812742603813">nội dung được bảo vệ</translation>
 <translation id="579915268381781820">Khóa bảo mật của bạn đã bị rút ra.</translation>
@@ -4476,6 +4477,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5900302528761731119">Ảnh hồ sơ trên Google</translation>
 <translation id="590036993063074298">Thông tin chi tiết về chất lượng phản chiếu</translation>
 <translation id="5901069264981746702">Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">Chuyển sang thẻ phát nội dung ghi hình</translation>
 <translation id="5901494423252125310">Chưa đóng nắp máy in</translation>
 <translation id="5901630391730855834">Vàng</translation>
 <translation id="5904614460720589786">Không thiết lập được <ph name="APP_NAME" /> do sự cố cấu hình. Vui lòng liên hệ với quản trị viên. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
@@ -4748,6 +4750,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6196854373336333322">Tiện ích "<ph name="EXTENSION_NAME" />" đã chiếm quyền kiểm soát cài đặt proxy của bạn, điều đó có nghĩa là tiện ích này có thể thay đổi, làm gián đoạn hoặc nghe trộm bất kỳ điều gì bạn thực hiện trực tuyến. Nếu bạn không chắc chắn về lý do thay đổi này diễn ra, bạn có thể không cần tiện ích này.</translation>
 <translation id="6198102561359457428">Đăng xuất rồi đăng nhập lại...</translation>
 <translation id="6198252989419008588">Thay đổi mã PIN</translation>
+<translation id="6200047250927636406">Loại bỏ tệp</translation>
 <translation id="6202304368170870640">Bạn có thể sử dụng mã PIN để đăng nhập hoặc mở khóa thiết bị của mình.</translation>
 <translation id="6206311232642889873">Sao ché&amp;p Hình ảnh</translation>
 <translation id="6207200176136643843">Đặt lại về mức thu phóng mặc định</translation>
@@ -5315,6 +5318,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="6833479554815567477">Đã di chuyển thẻ khỏi nhóm <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Chuyển sang trình duyệt an toàn và thông minh</translation>
+<translation id="6834652994408928492">Chế độ tối sẽ tự động bật vào buổi tối</translation>
 <translation id="683540480453879381">Mở các tệp <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Vui lòng kết nối Internet để cập nhật <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="6838034009068684089">Hỏi khi có một trang web muốn mở và đặt các cửa sổ trên màn hình của bạn (khuyên dùng)</translation>
@@ -6028,6 +6032,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7622114377921274169">Đang sạc.</translation>
 <translation id="7622768823216805500">Các trang web thường cài đặt trình xử lý thanh toán cho các tính năng mua sắm như quy trình thanh toán dễ dàng hơn</translation>
 <translation id="7622903810087708234">Thông tin chi tiết về mật khẩu</translation>
+<translation id="7622966771025050155">Chuyển sang thẻ được ghi hình</translation>
 <translation id="7624337243375417909">caps lock tắt</translation>
 <translation id="7625568159987162309">Xem quyền và dữ liệu được lưu trữ trên các trang web</translation>
 <translation id="7628201176665550262">Tốc độ làm mới</translation>
@@ -6194,6 +6199,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7784067724422331729">Cài đặt bảo mật trên máy tính của bạn đã chặn tệp này.</translation>
 <translation id="7784796923038949829">Không thể đọc hoặc thay đổi dữ liệu của trang web</translation>
 <translation id="778480864305029524">Để sử dụng tính năng Chia sẻ Internet tức thì, hãy bật thông báo cho Dịch vụ Google Play.</translation>
+<translation id="7785471469930192436">Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm bạn đang dùng</translation>
 <translation id="7786889348652477777">Tải &amp;lại ứng dụng</translation>
 <translation id="7787308148023287649">Hiển thị trên màn hình khác</translation>
 <translation id="7788298548579301890">Một chương trình khác trên máy tính của bạn đã thêm một ứng dụng có thể thay đổi cách Chrome hoạt động.
@@ -6806,6 +6812,7 @@ Nhấn một công tắc đã gán để xóa</translation>
 <translation id="8438566539970814960">Cải thiện tính năng tìm kiếm và duyệt web</translation>
 <translation id="8439506636278576865">Đề xuất dịch trang bằng ngôn ngữ này</translation>
 <translation id="8440630305826533614">Ứng dụng Linux</translation>
+<translation id="8446225304314102060">Chuyển sang thẻ <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Tìm hiểu thêm</translation>
 <translation id="8447409163267621480">Bao gồm phím Ctrl hoặc phím Alt</translation>
 <translation id="8448729345478502352">Tăng hoặc giảm kích thước các mục trên màn hình</translation>
@@ -7467,6 +7474,7 @@ Bạn có thể gán thao tác này cho nhiều công tắc</translation>
 <translation id="9148058034647219655">Thoát</translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9148963623915467028">Trang web này có thể truy cập thông tin vị trí của bạn.</translation>
+<translation id="9149529198050266366">Chế độ tối sẽ tự động tắt vào buổi sáng</translation>
 <translation id="9149866541089851383">Chỉnh sửa...</translation>
 <translation id="9150045010208374699">Sử dụng máy ảnh của bạn</translation>
 <translation id="9150079578948279438">Không thể xóa hồ sơ. Vui lòng thử lại hoặc liên hệ với nhà mạng của bạn để được hỗ trợ kỹ thuật.</translation>
