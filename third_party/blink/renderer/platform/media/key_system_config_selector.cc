@@ -172,7 +172,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
       !codec_vector.empty()) {
     auto it = codec_vector.begin();
     while (it != codec_vector.end()) {
-      VideoCodecProfile profile;
+      media::VideoCodecProfile profile;
       uint8_t level_idc;
       if (ParseHEVCCodecId(*it, &profile, &level_idc))
         codec_vector.erase(it);
