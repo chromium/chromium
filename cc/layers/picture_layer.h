@@ -51,7 +51,7 @@ class CC_EXPORT PictureLayer : public Layer {
 
   ContentLayerClient* client() { return picture_layer_inputs_.client; }
 
-  RecordingSource* GetRecordingSourceForTesting() {
+  RecordingSource* GetRecordingSourceForTesting() const {
     return recording_source_.get();
   }
 

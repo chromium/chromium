@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/layers/recording_source.h"
 #include "cc/layers/surface_layer.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/effect_node.h"
@@ -2357,6 +2358,39 @@ TEST_P(CompositingSimTest, ForeignLayersInMovedSubsequence) {
             PaintArtifactCompositor::PreviousUpdateType::kRepaint);
 
   remote_frame->Detach();
+}
+
+// While not required for correctness, it is important for performance that
+// snapped backgrounds use solid color layers which avoid tiling.
+TEST_P(CompositingSimTest, SolidColorLayersWithSnapping) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #snapDown {
+          width: 60.1px;
+          height: 100px;
+          will-change: opacity;
+          background: blue;
+        }
+        #snapUp {
+          width: 60.9px;
+          height: 100px;
+          will-change: opacity;
+          background: blue;
+        }
+      </style>
+      <div id="snapDown"></div>
+      <div id="snapUp"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto* snap_down =
+      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("snapDown"));
+  EXPECT_TRUE(snap_down->GetRecordingSourceForTesting()->is_solid_color());
+  auto* snap_up =
+      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("snapUp"));
+  EXPECT_TRUE(snap_up->GetRecordingSourceForTesting()->is_solid_color());
 }
 
 }  // namespace blink

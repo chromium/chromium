@@ -8,8 +8,8 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='child1' class='child composited'",
-      "bounds": [2, 1],
-      "contentsOpaqueForText": true,
+      "bounds": [1, 1],
+      "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
     },
@@ -22,8 +22,8 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='child3' class='child'",
-      "bounds": [2, 1],
-      "contentsOpaqueForText": true,
+      "bounds": [1, 1],
+      "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 6
     },
@@ -36,8 +36,8 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='child5' class='child composited'",
-      "bounds": [2, 1],
-      "contentsOpaqueForText": true,
+      "bounds": [1, 1],
+      "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 11
     },

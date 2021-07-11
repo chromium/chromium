@@ -195,7 +195,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelChange) {
                                          IntRect(0, 0, 50, 100),
                                          PaintInvalidationReason::kGeometry},
                   RasterInvalidationInfo{object, object->DebugName(),
-                                         IntRect(0, 0, 101, 71),
+                                         IntRect(0, 0, 101, 70),
                                          PaintInvalidationReason::kGeometry}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -208,7 +208,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelChange) {
                                          IntRect(0, 0, 50, 100),
                                          PaintInvalidationReason::kGeometry},
                   RasterInvalidationInfo{object, object->DebugName(),
-                                         IntRect(0, 0, 101, 71),
+                                         IntRect(0, 0, 101, 70),
                                          PaintInvalidationReason::kGeometry}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
@@ -230,7 +230,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelVisualRectChangeWithTransform) {
                                          IntRect(0, 0, 100, 200),
                                          PaintInvalidationReason::kGeometry},
                   RasterInvalidationInfo{object, object->DebugName(),
-                                         IntRect(0, 0, 202, 142),
+                                         IntRect(0, 0, 202, 140),
                                          PaintInvalidationReason::kGeometry}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -243,7 +243,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelVisualRectChangeWithTransform) {
                                          IntRect(0, 0, 100, 200),
                                          PaintInvalidationReason::kGeometry},
                   RasterInvalidationInfo{object, object->DebugName(),
-                                         IntRect(0, 0, 202, 142),
+                                         IntRect(0, 0, 202, 140),
                                          PaintInvalidationReason::kGeometry}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
@@ -269,7 +269,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelWithinPixelsChange) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  object, object->DebugName(), IntRect(0, 0, 50, 100),
+                  object, object->DebugName(), IntRect(0, 1, 50, 99),
                   PaintInvalidationReason::kGeometry}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }

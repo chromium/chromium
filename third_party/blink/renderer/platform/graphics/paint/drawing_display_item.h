@@ -57,6 +57,16 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
 
   bool CalculateKnownToBeOpaque(const PaintRecord*) const;
 
+  // Improve the visual rect using the paint record. This can improve solid
+  // color analysis in cases when the painted content was snapped but the
+  // visual rect was not. Check |ShouldTightenVisualRect| before calling.
+  static IntRect TightenVisualRect(const IntRect& visual_rect,
+                                   sk_sp<const PaintRecord>& record);
+  static bool ShouldTightenVisualRect(sk_sp<const PaintRecord>& record) {
+    // We only have an optimization to tighten the visual rect for a single op.
+    return record && record->size() == 1;
+  }
+
   sk_sp<const PaintRecord> record_;
 };
 
@@ -68,7 +78,9 @@ inline DrawingDisplayItem::DrawingDisplayItem(const DisplayItemClient& client,
                                               sk_sp<const PaintRecord> record)
     : DisplayItem(client,
                   type,
-                  visual_rect,
+                  UNLIKELY(ShouldTightenVisualRect(record))
+                      ? TightenVisualRect(visual_rect, record)
+                      : visual_rect,
                   /* draws_content*/ record && record->size()),
       record_(DrawsContent() ? std::move(record) : nullptr) {
   DCHECK(IsDrawing());

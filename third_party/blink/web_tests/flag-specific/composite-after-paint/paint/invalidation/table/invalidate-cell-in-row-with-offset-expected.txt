@@ -8,8 +8,9 @@
     },
     {
       "name": "LayoutNGTableRow TR",
-      "bounds": [214, 102],
-      "contentsOpaqueForText": true,
+      "bounds": [102, 102],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
       "transform": 1
     },
     {

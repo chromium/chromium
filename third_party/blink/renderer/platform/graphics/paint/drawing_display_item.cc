@@ -207,4 +207,48 @@ bool DrawingDisplayItem::CalculateKnownToBeOpaque(
   return false;
 }
 
+IntRect DrawingDisplayItem::TightenVisualRect(
+    const IntRect& visual_rect,
+    sk_sp<const PaintRecord>& record) {
+  DCHECK(ShouldTightenVisualRect(record));
+
+  const auto* op = record->GetFirstOp();
+  if (!op->IsPaintOpWithFlags())
+    return visual_rect;
+
+  const auto& flags = static_cast<const cc::PaintOpWithFlags*>(op)->flags;
+  // The following can cause the painted output to be outside the paint op rect.
+  if (flags.getStyle() != cc::PaintFlags::kFill_Style || flags.getLooper() ||
+      flags.getMaskFilter() || flags.getImageFilter() || flags.getShader()) {
+    return visual_rect;
+  }
+
+  // TODO(pdr): Consider using |PaintOp::GetBounds| which is a more complete
+  // implementation of the logic below.
+
+  IntRect item_rect;
+  switch (op->GetType()) {
+    case cc::PaintOpType::DrawRect:
+      item_rect =
+          EnclosingIntRect(static_cast<const cc::DrawRectOp*>(op)->rect);
+      break;
+    case cc::PaintOpType::DrawIRect:
+      item_rect = IntRect(static_cast<const cc::DrawIRectOp*>(op)->rect);
+      break;
+    case cc::PaintOpType::DrawRRect:
+      item_rect = EnclosingIntRect(
+          static_cast<const cc::DrawRRectOp*>(op)->rrect.rect());
+      break;
+    // TODO(pdr): Support image PaintOpTypes such as DrawImage{Rect}.
+    // TODO(pdr): Consider checking PaintOpType::DrawTextBlob too.
+    default:
+      return visual_rect;
+  }
+
+  // TODO(pdr): Enable this DCHECK which enforces that the original visual rect
+  // was correct and fully contains the recording.
+  // DCHECK(visual_rect.Contains(item_rect));
+  return item_rect;
+}
+
 }  // namespace blink
