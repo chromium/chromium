@@ -4456,8 +4456,6 @@ static_library("ui") {
       "views/web_apps/web_app_confirmation_view.h",
       "views/web_apps/web_app_hover_button.cc",
       "views/web_apps/web_app_hover_button.h",
-      "views/web_apps/web_app_identity_update_confirmation_view.cc",
-      "views/web_apps/web_app_identity_update_confirmation_view.h",
       "views/web_apps/web_app_info_image_source.cc",
       "views/web_apps/web_app_info_image_source.h",
       "views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.cc",

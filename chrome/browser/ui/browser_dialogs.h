@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
-#include "chrome/browser/web_applications/components/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/content_browser_client.h"
@@ -133,29 +132,6 @@ using AppInstallationAcceptanceCallback =
 void ShowWebAppInstallDialog(content::WebContents* web_contents,
                              std::unique_ptr<WebApplicationInfo> web_app_info,
                              AppInstallationAcceptanceCallback callback);
-
-// When an app changes its icon or name, that is considered an app identity
-// change which (for some types of apps) needs confirmation from the user.
-// This function shows that confirmation dialog. |app_id| is the unique id of
-// the app that is updating and |title_change| and |icon_change| specify which
-// piece of information is changing. Can be one or the other, or both (but
-// both cannot be |false|). |old_title| and |new_title|, as well as |old_icon|
-// and |new_icon| show the 'before' and 'after' values. A response is sent
-// back via the |callback|.
-void ShowWebAppIdentityUpdateDialog(
-    const std::string& app_id,
-    bool title_change,
-    bool icon_change,
-    const std::u16string& old_title,
-    const std::u16string& new_title,
-    const SkBitmap& old_icon,
-    const SkBitmap& new_icon,
-    content::WebContents* web_contents,
-    web_app::AppIdentityDialogCallback callback);
-
-// Sets whether |ShowWebAppIdentityUpdateDialog| should accept immediately
-// without any user interaction.
-void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept);
 
 #if !defined(OS_ANDROID)
 // Callback used to indicate whether a user has accepted the launch of a
@@ -376,7 +352,6 @@ enum class DialogIdentifier {
   EXTENSION_INSTALL_FRICTION = 108,
   FILE_HANDLING_PERMISSION_REQUEST = 109,
   SIGNIN_ENTERPRISE_INTERCEPTION = 110,
-  APP_IDENTITY_UPDATE_CONFIRMATION = 111,
   // Add values above this line with a corresponding label in
   // tools/metrics/histograms/enums.xml
   MAX_VALUE

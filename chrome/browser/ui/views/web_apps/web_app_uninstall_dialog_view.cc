@@ -61,7 +61,6 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     Profile* profile,
     WebAppUninstallDialogViews* dialog_view,
     web_app::AppId app_id,
-    bool show_data_clearing_confirmation,
     webapps::WebappUninstallSource uninstall_source,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps)
     : dialog_(dialog_view), app_id_(app_id), profile_(profile) {
@@ -71,7 +70,6 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   app_start_url_ = provider->registrar().GetAppStartUrl(app_id_);
   DCHECK(!app_start_url_.is_empty());
   DCHECK(app_start_url_.is_valid());
-  show_data_clearing_confirmation_ = show_data_clearing_confirmation;
 
   gfx::Size image_size{kIconSizeInDip, kIconSizeInDip};
 
@@ -111,16 +109,14 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
       views::DialogContentType::kText, views::DialogContentType::kText);
   set_margins(insets + gfx::Insets(0, insets.left() + kIconSizeInDip, 0, 0));
 
-  if (show_data_clearing_confirmation_) {
-    std::u16string checkbox_label = l10n_util::GetStringFUTF16(
-        IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
-        url_formatter::FormatUrlForSecurityDisplay(
-            app_start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  std::u16string checkbox_label = l10n_util::GetStringFUTF16(
+      IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
+      url_formatter::FormatUrlForSecurityDisplay(
+          app_start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
-    auto checkbox = std::make_unique<views::Checkbox>(checkbox_label);
-    checkbox->SetMultiLine(true);
-    checkbox_ = AddChildView(std::move(checkbox));
-  }
+  auto checkbox = std::make_unique<views::Checkbox>(checkbox_label);
+  checkbox->SetMultiLine(true);
+  checkbox_ = AddChildView(std::move(checkbox));
 
   uninstall_source_ = uninstall_source;
 
@@ -136,16 +132,14 @@ void WebAppUninstallDialogDelegateView::OnDialogAccepted() {
   if (!dialog_)
     return;
 
-  bool clear_web_app_site_data =
-      !show_data_clearing_confirmation_ || checkbox_->GetChecked();
   HistogramCloseAction action =
-      clear_web_app_site_data
+      checkbox_->GetChecked()
           ? HistogramCloseAction::kUninstallAndCheckboxChecked
           : HistogramCloseAction::kUninstall;
   UMA_HISTOGRAM_ENUMERATION("Webapp.UninstallDialogAction", action);
 
   Uninstall();
-  if (clear_web_app_site_data)
+  if (checkbox_->GetChecked())
     ClearWebAppSiteData();
 }
 
@@ -269,8 +263,7 @@ void WebAppUninstallDialogViews::OnIconsRead(
   }
 
   view_ = new WebAppUninstallDialogDelegateView(
-      profile_, this, app_id_, show_data_clearing_confirmation_,
-      uninstall_source, std::move(icon_bitmaps));
+      profile_, this, app_id_, uninstall_source, std::move(icon_bitmaps));
 
   constrained_window::CreateBrowserModalDialogViews(view_, parent_)->Show();
 

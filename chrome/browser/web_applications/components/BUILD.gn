@@ -37,7 +37,6 @@ source_set("components") {
     "url_handler_manager.h",
     "web_app_audio_focus_id_map.cc",
     "web_app_audio_focus_id_map.h",
-    "web_app_callback_app_identity.h",
     "web_app_chromeos_data.cc",
     "web_app_chromeos_data.h",
     "web_app_constants.cc",

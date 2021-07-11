@@ -44,7 +44,6 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
       Profile* profile,
       WebAppUninstallDialogViews* dialog_view,
       web_app::AppId app_id,
-      bool show_data_clearing_confirmation,
       webapps::WebappUninstallSource uninstall_source,
       std::map<SquareSizePx, SkBitmap> icon_bitmaps);
   WebAppUninstallDialogDelegateView(const WebAppUninstallDialogDelegateView&) =
@@ -73,12 +72,8 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
 
   // The web app we are showing the dialog for.
   const web_app::AppId app_id_;
-
   // The dialog needs start_url copy even if app gets uninstalled.
   GURL app_start_url_;
-
-  // Whether to show the 'Also clear data for this site' checkbox.
-  bool show_data_clearing_confirmation_ = true;
 
   Profile* const profile_;
 
@@ -98,13 +93,6 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
   WebAppUninstallDialogViews& operator=(const WebAppUninstallDialogViews&) =
       delete;
   ~WebAppUninstallDialogViews() override;
-
-  // Whether to show the 'Also clear data for this site' checkbox. Defaults to
-  // |true|, but when set to |false| implies deletion of data for the site will
-  // occur.
-  void show_data_clearing_confirmation(bool value) {
-    show_data_clearing_confirmation_ = value;
-  }
 
   // web_app::WebAppUninstallDialog:
   void ConfirmUninstall(const web_app::AppId& app_id,
@@ -150,9 +138,6 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
   // The web app we are showing the dialog for.
   web_app::AppId app_id_;
   Profile* const profile_;
-
-  // Whether to show the 'Also clear data for this site' checkbox.
-  bool show_data_clearing_confirmation_ = true;
 
   THREAD_CHECKER(thread_checker_);
 
