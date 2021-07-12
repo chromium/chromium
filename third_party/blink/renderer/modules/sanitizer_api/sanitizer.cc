@@ -373,13 +373,13 @@ Node* Sanitizer::KeepElement(Node* node,
   return node;
 }
 
-SanitizerConfig* Sanitizer::config() const {
+SanitizerConfig* Sanitizer::getConfiguration() const {
   return SanitizerConfigCopy(config_dictionary_
                                  ? config_dictionary_.Get()
                                  : SanitizerConfigImpl::defaultConfig());
 }
 
-SanitizerConfig* Sanitizer::defaultConfig() {
+SanitizerConfig* Sanitizer::getDefaultConfiguration() {
   return SanitizerConfigCopy(SanitizerConfigImpl::defaultConfig());
 }
 

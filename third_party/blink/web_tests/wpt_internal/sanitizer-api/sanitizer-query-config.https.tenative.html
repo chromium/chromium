@@ -21,23 +21,23 @@
 
   test(t => {
     // Quick sanity test: Test a few default values.
-    assert_in_array("div", Sanitizer.defaultConfig().allowElements);
-    assert_false(Sanitizer.defaultConfig().allowElements.includes("script"));
-    assert_false(Sanitizer.defaultConfig().allowElements.includes("noscript"));
+    assert_in_array("div", Sanitizer.getDefaultConfiguration().allowElements);
+    assert_false(Sanitizer.getDefaultConfiguration().allowElements.includes("script"));
+    assert_false(Sanitizer.getDefaultConfiguration().allowElements.includes("noscript"));
 
-    assert_true("span" in Sanitizer.defaultConfig().allowAttributes);
-    assert_false("onclick" in Sanitizer.defaultConfig().allowAttributes);
+    assert_true("span" in Sanitizer.getDefaultConfiguration().allowAttributes);
+    assert_false("onclick" in Sanitizer.getDefaultConfiguration().allowAttributes);
 
-    assert_false("dropElements" in Sanitizer.defaultConfig());
-    assert_false("blockElements" in Sanitizer.defaultConfig());
-    assert_false("dropAttributes" in Sanitizer.defaultConfig());
-    assert_false(Sanitizer.defaultConfig().allowCustomElements);
-  }, "SanitizerAPI defaultConfig()");
+    assert_false("dropElements" in Sanitizer.getDefaultConfiguration());
+    assert_false("blockElements" in Sanitizer.getDefaultConfiguration());
+    assert_false("dropAttributes" in Sanitizer.getDefaultConfiguration());
+    assert_false(Sanitizer.getDefaultConfiguration().allowCustomElements);
+  }, "SanitizerAPI getDefaultConfiguration()");
 
   test(t => {
-    assert_deep_equals(Sanitizer.defaultConfig(),
-                       new Sanitizer().config());
-  }, "SanitizerAPI config() on default created Sanitizer");
+    assert_deep_equals(Sanitizer.getDefaultConfiguration(),
+                       new Sanitizer().getConfiguration());
+  }, "SanitizerAPI getConfiguration() on default created Sanitizer");
 
   test(t => {
     const configs = [{
@@ -52,8 +52,8 @@
       allowCustomElements: false,
     }];
     for (const config of configs)
-      assert_deep_equals(config, new Sanitizer(config).config());
-  }, "SanitizerAPI config() reflects creation config.");
+      assert_deep_equals(config, new Sanitizer(config).getConfiguration());
+  }, "SanitizerAPI getConfiguration() reflects creation config.");
 </script>
 </body>
 </html>

@@ -17,7 +17,7 @@ typedef (DOMString or DocumentFragment or Document) SanitizerInput;
   [MeasureAs=SanitizerAPIToString, CallWith=ScriptState, RaisesException] DOMString sanitizeToString(SanitizerInput input);
   [MeasureAs=SanitizerAPISanitizeFor, CallWith=ScriptState, RaisesException] Element? sanitizeFor(DOMString element, DOMString markup);
 
-  [MeasureAs=SanitizerAPIGetConfig] SanitizerConfig config();
-  [MeasureAs=SanitizerAPIGetDefaultConfig] static SanitizerConfig defaultConfig();
+  [MeasureAs=SanitizerAPIGetConfig] SanitizerConfig getConfiguration();
+  [MeasureAs=SanitizerAPIGetDefaultConfig] static SanitizerConfig getDefaultConfiguration();
 };
 
