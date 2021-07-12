@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Default CSS properties on merror assert_equals: expected "1px" but got "0px"
-FAIL Bounding box is the same as mrow + 1px border assert_equals: expected 202 but got 200
-Harness: the test ran to completion.
-
