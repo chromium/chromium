@@ -22,12 +22,12 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
 import org.chromium.chrome.browser.autofill_assistant.drawable.AssistantDrawableIcon;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.url.GURL;
 
 /** Represents a view background. */
@@ -115,8 +115,9 @@ public abstract class AssistantDrawable {
     }
 
     private static class AssistantBitmapDrawable extends AssistantDrawable {
-        private final ImageFetcher mImageFetcher = ImageFetcherFactory.createImageFetcher(
-                ImageFetcherConfig.DISK_CACHE_ONLY, AutofillAssistantUiController.getProfile());
+        private final ImageFetcher mImageFetcher =
+                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY,
+                        AutofillAssistantUiController.getProfile().getProfileKey());
         private final String mUrl;
         private final int mWidthInPixels;
         private final int mHeightInPixels;

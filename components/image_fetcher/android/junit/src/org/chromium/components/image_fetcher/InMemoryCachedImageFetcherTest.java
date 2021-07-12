@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.image_fetcher;
+package org.chromium.components.image_fetcher;
 
 import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;

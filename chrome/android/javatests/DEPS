@@ -4,7 +4,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   "+chrome/browser/android/browserservices/verification",
   "+chrome/browser/android/lifecycle",
-  "+chrome/browser/image_fetcher",
+  "+components/image_fetcher",
   "+chrome/browser/paint_preview/android",
   "+chrome/browser/password_check/android",
   "+chrome/browser/profiles/android/java",

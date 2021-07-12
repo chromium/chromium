@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.ntp;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -60,8 +60,8 @@ public class LogoDelegateImpl implements LogoView.Delegate {
         mNavigationDelegate = navigationDelegate;
         mLogoView = logoView;
         mLogoBridge = new LogoBridge(profile);
-        mImageFetcher =
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY, profile);
+        mImageFetcher = ImageFetcherFactory.createImageFetcher(
+                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
     }
 
     public void destroy() {

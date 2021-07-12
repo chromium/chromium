@@ -13,9 +13,6 @@ import android.view.ViewGroup.LayoutParams;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.ntp.search.SearchBoxChipDelegate;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -25,6 +22,9 @@ import org.chromium.components.browser_ui.widget.image_tiles.ImageTile;
 import org.chromium.components.browser_ui.widget.image_tiles.ImageTileCoordinator;
 import org.chromium.components.browser_ui.widget.image_tiles.ImageTileCoordinatorFactory;
 import org.chromium.components.browser_ui.widget.image_tiles.TileConfig;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.components.query_tiles.QueryTileConstants;
 import org.chromium.components.query_tiles.TileProvider;
@@ -93,7 +93,7 @@ public class QueryTileSection {
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         mImageFetcher =
                 ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                        profile, GlobalDiscardableReferencePool.getReferencePool());
+                        profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool());
         mSearchBoxCoordinator.addVoiceSearchButtonClickListener(v -> reloadTiles());
         mSearchBoxCoordinator.addLensButtonClickListener(v -> reloadTiles());
         reloadTiles();

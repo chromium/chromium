@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.image_fetcher;
+package org.chromium.components.image_fetcher;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -26,7 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
@@ -46,7 +46,7 @@ public class ImageFetcherBridgeTest {
     @Mock
     ImageFetcherBridge.Natives mNatives;
     @Mock
-    Profile mProfile;
+    SimpleFactoryKeyHandle mSimpleFactoryKeyHandle;
     @Mock
     Callback<Bitmap> mBitmapCallback;
     @Mock
@@ -59,7 +59,7 @@ public class ImageFetcherBridgeTest {
         MockitoAnnotations.initMocks(this);
 
         ImageFetcherBridgeJni.TEST_HOOKS.setInstanceForTesting(mNatives);
-        mBridge = new ImageFetcherBridge(mProfile);
+        mBridge = new ImageFetcherBridge(mSimpleFactoryKeyHandle);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ImageFetcherBridgeTest {
             return null;
         })
                 .when(mNatives)
-                .fetchImage(eq(mProfile), anyInt(), anyString(), anyString(), eq(0),
+                .fetchImage(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(), eq(0),
                         callbackCaptor.capture());
 
         mBridge.fetchImage(
@@ -88,7 +88,7 @@ public class ImageFetcherBridgeTest {
             return null;
         })
                 .when(mNatives)
-                .fetchImage(eq(mProfile), anyInt(), anyString(), anyString(),
+                .fetchImage(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(),
                         eq(EXPIRATION_INTERVAL_MINS), callbackCaptor.capture());
 
         mBridge.fetchImage(-1,
@@ -107,7 +107,7 @@ public class ImageFetcherBridgeTest {
             return null;
         })
                 .when(mNatives)
-                .fetchImage(eq(mProfile), anyInt(), anyString(), anyString(), eq(0),
+                .fetchImage(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(), eq(0),
                         callbackCaptor.capture());
 
         mBridge.fetchImage(-1, ImageFetcher.Params.create("", "", 100, 100), mBitmapCallback);
@@ -129,8 +129,8 @@ public class ImageFetcherBridgeTest {
             return null;
         })
                 .when(mNatives)
-                .fetchImageData(eq(mProfile), anyInt(), anyString(), anyString(), eq(0),
-                        callbackCaptor.capture());
+                .fetchImageData(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(),
+                        eq(0), callbackCaptor.capture());
 
         mBridge.fetchGif(-1, ImageFetcher.Params.create("", ""), mGifCallback);
         ArgumentCaptor<BaseGifImage> gifCaptor = ArgumentCaptor.forClass(BaseGifImage.class);
@@ -147,8 +147,8 @@ public class ImageFetcherBridgeTest {
             return null;
         })
                 .when(mNatives)
-                .fetchImageData(eq(mProfile), anyInt(), anyString(), anyString(), eq(0),
-                        callbackCaptor.capture());
+                .fetchImageData(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(),
+                        eq(0), callbackCaptor.capture());
 
         mBridge.fetchGif(-1, ImageFetcher.Params.create("", ""), mGifCallback);
         verify(mGifCallback).onResult(null);
@@ -157,7 +157,7 @@ public class ImageFetcherBridgeTest {
     @Test
     public void testGetFilePath() {
         mBridge.getFilePath("testing is cool");
-        verify(mNatives).getFilePath(mProfile, "testing is cool");
+        verify(mNatives).getFilePath(mSimpleFactoryKeyHandle, "testing is cool");
     }
 
     @Test
@@ -182,6 +182,7 @@ public class ImageFetcherBridgeTest {
     public void testSetupForTesting() {
         // Since ImageFetcherBridge creates different instance on each call of getForProfile
         // function, two instances below should not be equal.
-        Assert.assertNotEquals(mBridge, ImageFetcherBridge.getForProfile(mProfile));
+        Assert.assertNotEquals(
+                mBridge, ImageFetcherBridge.getForSimpleFactoryKeyHandle(mSimpleFactoryKeyHandle));
     }
 }

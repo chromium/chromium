@@ -25,8 +25,7 @@ class ImageDecoder;
 // Enumerate the possible image fetcher combinations to allow the service to
 // configure the correct one. New values should be added at the end and things
 // should not be renumbered.
-// GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.image_fetcher)
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.image_fetcher
 enum class ImageFetcherConfig {
   kNetworkOnly = 0,
   kDiskCacheOnly = 1,

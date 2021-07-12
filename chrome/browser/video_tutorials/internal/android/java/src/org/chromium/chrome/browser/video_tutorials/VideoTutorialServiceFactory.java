@@ -12,7 +12,6 @@ import android.view.ViewStub;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.video_tutorials.iph.TryNowTrackerImpl;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoIPHCoordinator;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.video_tutorials.list.TutorialListCoordinatorI
 import org.chromium.chrome.browser.video_tutorials.player.VideoPlayerCoordinator;
 import org.chromium.chrome.browser.video_tutorials.player.VideoPlayerCoordinatorImpl;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.IntentRequestTracker;
 

@@ -3,7 +3,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   "!clank/java/src/org/chromium/chrome/browser/AppHooksImpl.java",
   "+chrome/browser/android/lifecycle",
-  "+chrome/browser/image_fetcher",
+  "+components/image_fetcher",
   "+chrome/browser/ui/android/appmenu/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ssl/ChromeSecurityStateModelDelegate.java",
   "+chrome/browser/performance_hints/android/java",

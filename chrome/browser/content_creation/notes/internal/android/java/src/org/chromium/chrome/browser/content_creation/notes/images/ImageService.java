@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.content_creation.notes.images;
 
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.components.content_creation.notes.models.Background;
 import org.chromium.components.content_creation.notes.models.ImageBackground;
+import org.chromium.components.image_fetcher.ImageFetcher;
 
 import java.util.HashSet;
 import java.util.List;

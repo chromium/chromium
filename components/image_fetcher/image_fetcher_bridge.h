@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_IMAGE_FETCHER_IMAGE_FETCHER_BRIDGE_H_
-#define CHROME_BROWSER_ANDROID_IMAGE_FETCHER_IMAGE_FETCHER_BRIDGE_H_
+#ifndef COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_BRIDGE_H_
+#define COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_BRIDGE_H_
 
 #include <memory>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -16,22 +17,23 @@
 
 namespace image_fetcher {
 
-class ImageFetcherService;
-
 // Native counterpart of ImageFetcherBridge.java.
 class ImageFetcherBridge {
  public:
-  ImageFetcherBridge();
-  ~ImageFetcherBridge();
+  // Not copyable or movable
+  ImageFetcherBridge(const ImageFetcherBridge&) = delete;
+  ImageFetcherBridge& operator=(const ImageFetcherBridge&) = delete;
+  ImageFetcherBridge(ImageFetcherBridge&&) = delete;
+  ImageFetcherBridge& operator=(ImageFetcherBridge&&) = delete;
 
   static base::android::ScopedJavaLocalRef<jstring> GetFilePath(
       JNIEnv* j_env,
-      const base::android::JavaParamRef<jobject>& j_profile,
+      const base::android::JavaParamRef<jobject>& j_simple_factory_key,
       const base::android::JavaParamRef<jstring>& j_url);
 
   static void FetchImageData(
       JNIEnv* j_env,
-      const base::android::JavaParamRef<jobject>& j_profile,
+      const base::android::JavaParamRef<jobject>& j_simple_factory_key,
       const jint j_image_fetcher_config,
       const base::android::JavaParamRef<jstring>& j_url,
       const base::android::JavaParamRef<jstring>& j_client_name,
@@ -40,7 +42,7 @@ class ImageFetcherBridge {
 
   static void FetchImage(
       JNIEnv* j_env,
-      const base::android::JavaParamRef<jobject>& j_profile,
+      const base::android::JavaParamRef<jobject>& j_simple_factory_key,
       const jint j_image_fetcher_config,
       const base::android::JavaParamRef<jstring>& j_url,
       const base::android::JavaParamRef<jstring>& j_client_name,
@@ -63,6 +65,9 @@ class ImageFetcherBridge {
       const jlong start_time_millis);
 
  private:
+  ImageFetcherBridge();
+  ~ImageFetcherBridge();
+
   static void OnImageDataFetched(
       base::android::ScopedJavaGlobalRef<jobject> callback,
       const std::string& image_data,
@@ -72,14 +77,6 @@ class ImageFetcherBridge {
       base::android::ScopedJavaGlobalRef<jobject> callback,
       const gfx::Image& image,
       const RequestMetadata& request_metadata);
-
-  static ImageFetcherService* GetImageFetcherServiceForProfile(
-      const base::android::JavaParamRef<jobject>& j_profile);
-
-  static base::FilePath GetFilePathForProfile(
-      const base::android::JavaParamRef<jobject>& j_profile);
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherBridge);
 };
 
 }  // namespace image_fetcher

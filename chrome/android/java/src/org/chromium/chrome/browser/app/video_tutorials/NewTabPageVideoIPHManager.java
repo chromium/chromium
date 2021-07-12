@@ -13,9 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -27,6 +24,9 @@ import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics;
 import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.UserAction;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,7 +124,7 @@ public class NewTabPageVideoIPHManager {
     @VisibleForTesting
     protected ImageFetcher createImageFetcher(Profile profile) {
         return ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                profile, GlobalDiscardableReferencePool.getReferencePool());
+                profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool());
     }
 
     @VisibleForTesting

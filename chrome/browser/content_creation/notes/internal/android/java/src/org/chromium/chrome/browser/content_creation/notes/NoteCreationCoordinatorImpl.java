@@ -18,9 +18,6 @@ import org.chromium.chrome.browser.content_creation.notes.fonts.GoogleFontServic
 import org.chromium.chrome.browser.content_creation.notes.images.ImageService;
 import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarCoordinator;
 import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarDelegate;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -28,6 +25,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.content_creation.notes.NoteService;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -70,8 +70,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         mListModel = new ModelList();
 
         Profile profile = Profile.fromWebContents(tab.getWebContents());
-        ImageFetcher imageFetcher =
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY, profile);
+        ImageFetcher imageFetcher = ImageFetcherFactory.createImageFetcher(
+                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
         mMediator = new NoteCreationMediator(mListModel, new GoogleFontService(mActivity),
                 noteService, new ImageService(imageFetcher));
 

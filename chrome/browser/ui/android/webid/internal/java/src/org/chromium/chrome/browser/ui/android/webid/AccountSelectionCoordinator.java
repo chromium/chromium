@@ -14,15 +14,15 @@ import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -60,9 +60,9 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         // API is being used in an incognito tabs. We should instead use the profile associated
         // with the RP's web contents. https://crbug.com/1199088
         Profile profile = Profile.getLastUsedRegularProfile();
-        ImageFetcher imageFetcher =
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY, profile,
-                        GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
+        ImageFetcher imageFetcher = ImageFetcherFactory.createImageFetcher(
+                ImageFetcherConfig.IN_MEMORY_ONLY, profile.getProfileKey(),
+                GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
 
         @Px
         int avatar_size =

@@ -491,7 +491,7 @@
         errorLine1="                            ImageFetcher.resizeImage(bitmap, params.width, params.height));"
         errorLine2="                                         ~~~~~~~~~~~">
         <location
-            file="../../chrome/browser/image_fetcher/android/java/src/org/chromium/chrome/browser/image_fetcher/ImageFetcherBridge.java"
+            file="../../components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/ImageFetcherBridge.java"
             line="92"
             column="42"/>
     </issue>

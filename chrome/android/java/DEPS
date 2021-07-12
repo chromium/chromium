@@ -16,7 +16,7 @@ include_rules = [
   "+chrome/browser/ui/android/default_browser_promo",
   "+chrome/browser/ui/messages/android/java",
   "+chrome/browser/download/android/java",
-  "+chrome/browser/image_fetcher/android/java",
+  "+components/image_fetcher/android/java",
   "+chrome/browser/paint_preview/android/java",
   "+chrome/browser/password_check/android",
   "+chrome/browser/performance_hints/android/java",

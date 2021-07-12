@@ -9,8 +9,8 @@ import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 

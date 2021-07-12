@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.image_fetcher;
+package org.chromium.components.image_fetcher;
 
 import org.chromium.base.DiscardableReferencePool;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 /**
  * Factory to provide the image fetcher best suited for the given config.
@@ -14,8 +14,10 @@ public class ImageFetcherFactory {
     /**
      * Alias for createImageFetcher below.
      */
-    public static ImageFetcher createImageFetcher(@ImageFetcherConfig int config, Profile profile) {
-        ImageFetcherBridge bridge = ImageFetcherBridge.getForProfile(profile);
+    public static ImageFetcher createImageFetcher(
+            @ImageFetcherConfig int config, SimpleFactoryKeyHandle simpleFactoryKeyHandle) {
+        ImageFetcherBridge bridge =
+                ImageFetcherBridge.getForSimpleFactoryKeyHandle(simpleFactoryKeyHandle);
         return createImageFetcher(
                 config, bridge, null, InMemoryCachedImageFetcher.DEFAULT_CACHE_SIZE);
     }
@@ -23,9 +25,11 @@ public class ImageFetcherFactory {
     /**
      * Alias for createImageFetcher below.
      */
-    public static ImageFetcher createImageFetcher(@ImageFetcherConfig int config, Profile profile,
+    public static ImageFetcher createImageFetcher(@ImageFetcherConfig int config,
+            SimpleFactoryKeyHandle simpleFactoryKeyHandle,
             DiscardableReferencePool discardableReferencePool) {
-        ImageFetcherBridge bridge = ImageFetcherBridge.getForProfile(profile);
+        ImageFetcherBridge bridge =
+                ImageFetcherBridge.getForSimpleFactoryKeyHandle(simpleFactoryKeyHandle);
         return createImageFetcher(config, bridge, discardableReferencePool,
                 InMemoryCachedImageFetcher.DEFAULT_CACHE_SIZE);
     }
@@ -33,9 +37,11 @@ public class ImageFetcherFactory {
     /**
      * Alias for createImageFetcher below.
      */
-    public static ImageFetcher createImageFetcher(@ImageFetcherConfig int config, Profile profile,
+    public static ImageFetcher createImageFetcher(@ImageFetcherConfig int config,
+            SimpleFactoryKeyHandle simpleFactoryKeyHandle,
             DiscardableReferencePool discardableReferencePool, int inMemoryCacheSize) {
-        ImageFetcherBridge bridge = ImageFetcherBridge.getForProfile(profile);
+        ImageFetcherBridge bridge =
+                ImageFetcherBridge.getForSimpleFactoryKeyHandle(simpleFactoryKeyHandle);
         return createImageFetcher(config, bridge, discardableReferencePool, inMemoryCacheSize);
     }
 

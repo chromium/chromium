@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.image_fetcher;
+package org.chromium.components.image_fetcher;
 
 import android.graphics.Bitmap;
 
@@ -12,37 +12,40 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 /**
- * Provides access to native implementations of ImageFetcher for the given profile.
+ * Provides access to native implementations of ImageFetcher for the given browser context.
  */
 @JNINamespace("image_fetcher")
 public class ImageFetcherBridge {
-    private Profile mProfile;
+    private final SimpleFactoryKeyHandle mSimpleFactoryKeyHandle;
 
     /**
-     * Get the ImageFetcherBridge for the given profile.
+     * Get the ImageFetcherBridge for the given browser context.
      *
-     * @param profile   The profile for which the ImageFetcherBridge is returned.
-     * @return          The ImageFetcherBridge for the given profile.
+     * @param simpleFactoryKeyHandle   The SimpleFactoryKeyHandle for which the ImageFetcherBridge
+     *         is returned.
+     * @return The ImageFetcherBridge for the given browser context.
      */
-    public static ImageFetcherBridge getForProfile(Profile profile) {
+    public static ImageFetcherBridge getForSimpleFactoryKeyHandle(
+            SimpleFactoryKeyHandle simpleFactoryKeyHandle) {
         ThreadUtils.assertOnUiThread();
 
-        return new ImageFetcherBridge(profile);
+        return new ImageFetcherBridge(simpleFactoryKeyHandle);
     }
 
     /**
-     * Creates a ImageFetcherBridge for the given profile.
+     * Creates a ImageFetcherBridge for the given browser context.
      *
-     * @param profile The profile to reach regarding image_fetcher_service on native side.
+     * @param SimpleFactoryKeyHandle The SimpleFactoryKeyHandle for which the ImageFetcherBridge is
+     *         returned.
      */
     @VisibleForTesting
-    ImageFetcherBridge(Profile profile) {
-        mProfile = profile;
+    ImageFetcherBridge(SimpleFactoryKeyHandle simpleFactoryKeyHandle) {
+        mSimpleFactoryKeyHandle = simpleFactoryKeyHandle;
     }
 
     /**
@@ -52,7 +55,7 @@ public class ImageFetcherBridge {
      * @return The full path to the resource on disk.
      */
     public String getFilePath(String url) {
-        return ImageFetcherBridgeJni.get().getFilePath(mProfile, url);
+        return ImageFetcherBridgeJni.get().getFilePath(mSimpleFactoryKeyHandle, url);
     }
 
     /**
@@ -65,8 +68,8 @@ public class ImageFetcherBridge {
      */
     public void fetchGif(@ImageFetcherConfig int config, final ImageFetcher.Params params,
             Callback<BaseGifImage> callback) {
-        ImageFetcherBridgeJni.get().fetchImageData(mProfile, config, params.url, params.clientName,
-                params.expirationIntervalMinutes, (byte[] data) -> {
+        ImageFetcherBridgeJni.get().fetchImageData(mSimpleFactoryKeyHandle, config, params.url,
+                params.clientName, params.expirationIntervalMinutes, (byte[] data) -> {
                     if (data == null || data.length == 0) {
                         callback.onResult(null);
                         return;
@@ -86,8 +89,8 @@ public class ImageFetcherBridge {
      */
     public void fetchImage(@ImageFetcherConfig int config, final ImageFetcher.Params params,
             Callback<Bitmap> callback) {
-        ImageFetcherBridgeJni.get().fetchImage(mProfile, config, params.url, params.clientName,
-                params.expirationIntervalMinutes, (bitmap) -> {
+        ImageFetcherBridgeJni.get().fetchImage(mSimpleFactoryKeyHandle, config, params.url,
+                params.clientName, params.expirationIntervalMinutes, (bitmap) -> {
                     callback.onResult(
                             ImageFetcher.resizeImage(bitmap, params.width, params.height));
                 });
@@ -128,11 +131,13 @@ public class ImageFetcherBridge {
     @NativeMethods
     interface Natives {
         // Native methods
-        String getFilePath(Profile profile, String url);
-        void fetchImageData(Profile profile, @ImageFetcherConfig int config, String url,
-                String clientName, int expirationIntervalMinutes, Callback<byte[]> callback);
-        void fetchImage(Profile profile, @ImageFetcherConfig int config, String url,
-                String clientName, int expirationIntervalMinutes, Callback<Bitmap> callback);
+        String getFilePath(SimpleFactoryKeyHandle simpleFactoryKeyHandle, String url);
+        void fetchImageData(SimpleFactoryKeyHandle simpleFactoryKeyHandle,
+                @ImageFetcherConfig int config, String url, String clientName,
+                int expirationIntervalMinutes, Callback<byte[]> callback);
+        void fetchImage(SimpleFactoryKeyHandle simpleFactoryKeyHandle,
+                @ImageFetcherConfig int config, String url, String clientName,
+                int expirationIntervalMinutes, Callback<Bitmap> callback);
         void reportEvent(String clientName, int eventId);
         void reportCacheHitTime(String clientName, long startTimeMillis);
         void reportTotalFetchTimeFromNative(String clientName, long startTimeMillis);

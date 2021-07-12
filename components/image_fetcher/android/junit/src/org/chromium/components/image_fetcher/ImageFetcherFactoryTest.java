@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.image_fetcher;
+package org.chromium.components.image_fetcher;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -19,7 +19,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 /**
  * Test for ImageFetcherFactory.
@@ -32,7 +32,7 @@ public class ImageFetcherFactoryTest {
     @Mock
     DiscardableReferencePool mReferencePool;
     @Mock
-    Profile mProfile;
+    SimpleFactoryKeyHandle mSimpleFactoryKeyHandle;
 
     @Before
     public void setUp() {
@@ -70,17 +70,19 @@ public class ImageFetcherFactoryTest {
     public void testCreateImageFetcher() {
         int config = ImageFetcherConfig.NETWORK_ONLY;
 
-        ImageFetcher imageFetcher = ImageFetcherFactory.createImageFetcher(config, mProfile);
+        ImageFetcher imageFetcher =
+                ImageFetcherFactory.createImageFetcher(config, mSimpleFactoryKeyHandle);
         assertNotNull(imageFetcher);
         assertNotEquals(mImageFetcherBridge, imageFetcher.getImageFetcherBridge());
 
-        ImageFetcher imageFetcherWithRefPool =
-                ImageFetcherFactory.createImageFetcher(config, mProfile, mReferencePool);
+        ImageFetcher imageFetcherWithRefPool = ImageFetcherFactory.createImageFetcher(
+                config, mSimpleFactoryKeyHandle, mReferencePool);
         assertNotNull(imageFetcherWithRefPool);
         assertNotEquals(mImageFetcherBridge, imageFetcherWithRefPool.getImageFetcherBridge());
 
-        ImageFetcher imageFetcherWithRefPoolAndCacheSize = ImageFetcherFactory.createImageFetcher(
-                config, mProfile, mReferencePool, InMemoryCachedImageFetcher.DEFAULT_CACHE_SIZE);
+        ImageFetcher imageFetcherWithRefPoolAndCacheSize =
+                ImageFetcherFactory.createImageFetcher(config, mSimpleFactoryKeyHandle,
+                        mReferencePool, InMemoryCachedImageFetcher.DEFAULT_CACHE_SIZE);
         assertNotNull(imageFetcherWithRefPoolAndCacheSize);
         assertNotEquals(
                 mImageFetcherBridge, imageFetcherWithRefPoolAndCacheSize.getImageFetcherBridge());
