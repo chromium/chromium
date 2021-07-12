@@ -49,13 +49,15 @@ class VIZ_SERVICE_EXPORT VizDebugger {
                  int file_line,
                  const char* func_name);
     inline bool IsActive() const { return active; }
-    const char* anno;
-    const char* file;
-    const char* func;
-    const int line;
+    inline bool IsEnabled() const { return enabled; }
+    const char* anno = nullptr;
+    const char* file = nullptr;
+    const char* func = nullptr;
+    const int line = 0;
 
-    int reg_index;
-    bool active;
+    int reg_index = 0;
+    bool active = false;
+    bool enabled = false;
   };
 
   struct DrawOption {
@@ -173,13 +175,15 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     FilterBlock(const std::string file_str,
                 const std::string func_str,
                 const std::string anno_str,
-                bool is_active);
+                bool is_active,
+                bool is_enabled);
     ~FilterBlock();
     FilterBlock(const FilterBlock& other);
     std::string file;
     std::string func;
     std::string anno;
-    bool active;
+    bool active = false;
+    bool enabled = false;
   };
 
   // Synchronize access to the variables in the block below as it is mutated by
@@ -262,6 +266,20 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
 #define DBG_DRAW_RECT(anno, rect) DBG_DRAW_RECT_OPT(anno, DBG_OPT_BLACK, rect)
 
+#define DBG_FLAG_FBOOL(anno, fun_name)                                    \
+  namespace {                                                             \
+  bool fun_name() {                                                       \
+    if (viz::VizDebugger::IsEnabled()) {                                  \
+      static viz::VizDebugger::StaticSource dcs(anno, __FILE__, __LINE__, \
+                                                __func__);                \
+      if (dcs.IsEnabled()) {                                              \
+        return true;                                                      \
+      }                                                                   \
+    }                                                                     \
+    return false;                                                         \
+  }                                                                       \
+  }  // namespace
+
 #else  //  !BUILDFLAG(USE_VIZ_DEBUGGER)
 
 #define VIZ_DEBUGGER_IS_ON() false
@@ -324,6 +342,11 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   ANALYZER_ALLOW_UNUSED(option) ANALYZER_ALLOW_UNUSED(rect)
 
 #define DBG_DRAW_RECT(anno, rect) DBG_DRAW_RECT_OPT(anno, DBG_OPT_BLACK, rect)
+
+#define DBG_FLAG_FBOOL(anno, fun_name)       \
+  namespace {                                \
+  constexp bool fun_name() { return false; } \
+  }
 
 #endif  // BUILDFLAG(USE_VIZ_DEBUGGER)
 

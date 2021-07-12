@@ -32,11 +32,13 @@ VizDebugger* VizDebugger::GetInstance() {
 VizDebugger::FilterBlock::FilterBlock(const std::string file_str,
                                       const std::string func_str,
                                       const std::string anno_str,
-                                      bool is_active)
+                                      bool is_active,
+                                      bool is_enabled)
     : file(std::move(file_str)),
       func(std::move(func_str)),
       anno(std::move(anno_str)),
-      active(is_active) {}
+      active(is_active),
+      enabled(is_enabled) {}
 
 VizDebugger::FilterBlock::~FilterBlock() = default;
 
@@ -181,7 +183,7 @@ void VizDebugger::CompleteFrame(uint64_t counter,
 void VizDebugger::ApplyFilters(VizDebugger::StaticSource* src) {
   // In the case of no filters we disable this source.
   src->active = false;
-
+  src->enabled = false;
   // TODO(petermcneeley): We should probably make this string filtering more
   // optimal. However, for the most part it the cost is only paid on the
   // application of new filters.
@@ -198,6 +200,7 @@ void VizDebugger::ApplyFilters(VizDebugger::StaticSource* src) {
         simple_match(src->func, filter_block.func) &&
         simple_match(src->anno, filter_block.anno)) {
       src->active = filter_block.active;
+      src->enabled = filter_block.enabled;
     }
   }
 }
@@ -289,6 +292,7 @@ void VizDebugger::FilterDebugStream(base::Value json) {
     const base::Value* func = filter.FindPath("selector.func");
     const base::Value* anno = filter.FindPath("selector.anno");
     const base::Value* active = filter.FindPath("active");
+    const base::Value* enabled = filter.FindPath("enabled");
 
     if (!active) {
       LOG(ERROR) << "Missing filter props in json: " << json;
@@ -305,8 +309,9 @@ void VizDebugger::FilterDebugStream(base::Value json) {
       return (filter_str ? filter_str->GetString() : std::string());
     };
 
-    new_filters_.emplace_back(check_str(file), check_str(func), check_str(anno),
-                              active->GetBool());
+    new_filters_.emplace_back(
+        check_str(file), check_str(func), check_str(anno), active->GetBool(),
+        (enabled && enabled->is_bool()) ? enabled->GetBool() : true);
   }
 
   apply_new_filters_next_frame_ = true;
