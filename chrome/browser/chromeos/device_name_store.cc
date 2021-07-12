@@ -17,31 +17,7 @@
 namespace chromeos {
 
 namespace {
-
-const size_t kMaxDeviceNameLength = 15;
-
-// Returns a randomly generated device name of the form 'ChromeOS_123456'.
-std::string GenerateDeviceName() {
-  static constexpr const char* kDeviceNamePrefix = "ChromeOS_";
-  constexpr size_t kPrefixLength =
-      base::CharTraits<char>::length(kDeviceNamePrefix);
-  constexpr size_t kNumDigits = kMaxDeviceNameLength - kPrefixLength;
-
-  // The algorithm below uses the range of integers between 10^n and double
-  // that value to create a string of n digits representing the 10^n values in
-  // that range while preserving leading zeroes.
-  //
-  // Example: 3 digits
-  // Expected output: 000...999
-  // Rand[1000, 1999] -> 1000 -> 1{000} -> "000"
-  // Rand[1000, 1999] -> 1782 -> 1{782} -> "782"
-  int min = std::pow(10, kNumDigits);
-  int max = 2 * min - 1;
-  int rand_num = base::RandInt(min, max);
-  std::string rand_num_str = base::NumberToString(rand_num).substr(1);
-  return kDeviceNamePrefix + rand_num_str;
-}
-
+const char kDefaultDeviceName[] = "ChromeOS";
 }  // namespace
 
 // static
@@ -61,10 +37,9 @@ void DeviceNameStore::Initialize(PrefService* prefs) {
   DCHECK(prefs);
   prefs_ = prefs;
 
-  std::string device_name = prefs_->GetString(prefs::kDeviceName);
+  const std::string device_name = prefs_->GetString(prefs::kDeviceName);
   if (device_name.empty()) {
-    device_name = GenerateDeviceName();
-    prefs_->SetString(prefs::kDeviceName, device_name);
+    prefs_->SetString(prefs::kDeviceName, kDefaultDeviceName);
   }
 }
 

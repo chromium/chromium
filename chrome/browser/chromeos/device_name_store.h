@@ -20,8 +20,8 @@ namespace chromeos {
 // name to local networks (e.g., the DHCP hostname). Clients also have the
 // ability to set the device name (e.g., OS Settings).
 //
-// An initial device name is created on first boot and is of the form
-// 'ChromeOS-123456'.
+// An initial device name is created on first boot and is set to the default
+// name 'ChromeOS'.
 //
 // DeviceNameStore is responsible for updating the system state to reflect
 // changes to the device name, e.g., setting the hostname via Shill.

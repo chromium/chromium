@@ -51,19 +51,12 @@ TEST_F(DeviceNameStoreTest, Initialize) {
   EXPECT_EQ(device_name, persisted_device_name);
 }
 
-// Tests that the format of the generated device name matches the form
-// ChromeOS_123456.
-TEST_F(DeviceNameStoreTest, GenerateDeviceName) {
-  // The device name is already generated at this point because of the call to
+// Tests that the device name is set to 'ChromeOS' by default.
+TEST_F(DeviceNameStoreTest, DefaultDeviceName) {
+  // The device name is already set at this point because of the call to
   // Initialize during test setup.
   std::string device_name = device_name_store()->GetDeviceName();
-  EXPECT_TRUE(base::StartsWith(device_name, "ChromeOS_"));
-
-  // Check that the string after the prefix is composed of digits.
-  std::string digits = device_name.substr(strlen("ChromeOS_"));
-  for (size_t i = 0; i < digits.length(); ++i) {
-    EXPECT_TRUE(base::IsAsciiDigit(digits[i]));
-  }
+  EXPECT_EQ(device_name, "ChromeOS");
 }
 
 }  // namespace chromeos
