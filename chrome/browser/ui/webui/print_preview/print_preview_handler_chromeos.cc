@@ -35,7 +35,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace printing {
@@ -109,8 +109,7 @@ PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_printer_ = std::make_unique<crosapi::LocalPrinterAsh>();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl* service =
-      chromeos::LacrosChromeServiceImpl::Get();
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
     LOG(ERROR) << "Local printer not available";
     return;
@@ -162,8 +161,8 @@ void PrintPreviewHandlerChromeOS::OnJavascriptAllowed() {
     LOG(ERROR) << "Local printer not available";
     return;
   }
-  local_printer_->AddObserver(receiver_.BindNewPipeAndPassRemoteWithVersion(),
-                              base::DoNothing());
+  local_printer_->AddPrintServerObserver(
+      receiver_.BindNewPipeAndPassRemoteWithVersion(), base::DoNothing());
 }
 
 void PrintPreviewHandlerChromeOS::OnJavascriptDisallowed() {

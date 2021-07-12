@@ -59,6 +59,8 @@ namespace printing {
 
 namespace {
 
+constexpr char kPrinterUri[] = "http://localhost";
+
 // Used as a callback to `GetPrinters()` in tests.
 // Records list returned by `GetPrinters()`.
 void RecordPrinterList(
@@ -81,7 +83,7 @@ Printer CreateTestPrinter(const std::string& id,
                           const std::string& name,
                           const std::string& description) {
   Printer printer;
-  printer.SetUri("http://localhost");
+  printer.SetUri(kPrinterUri);
   printer.set_id(id);
   printer.set_display_name(name);
   printer.set_description(description);
@@ -868,9 +870,9 @@ TEST(LocalPrinterAsh, PrinterToMojom) {
   crosapi::mojom::LocalDestinationInfoPtr mojom =
       crosapi::LocalPrinterAsh::PrinterToMojom(printer);
   ASSERT_TRUE(mojom);
-  EXPECT_EQ("id", mojom->device_name);
-  EXPECT_EQ("name", mojom->printer_name);
-  EXPECT_EQ("description", mojom->printer_description);
+  EXPECT_EQ("id", mojom->id);
+  EXPECT_EQ("name", mojom->name);
+  EXPECT_EQ("description", mojom->description);
   EXPECT_FALSE(mojom->configured_via_policy);
 }
 
@@ -880,7 +882,7 @@ TEST(LocalPrinterAsh, PrinterToMojom_ConfiguredViaPolicy) {
   crosapi::mojom::LocalDestinationInfoPtr mojom =
       crosapi::LocalPrinterAsh::PrinterToMojom(printer);
   ASSERT_TRUE(mojom);
-  EXPECT_EQ("id", mojom->device_name);
+  EXPECT_EQ("id", mojom->id);
   EXPECT_TRUE(mojom->configured_via_policy);
 }
 

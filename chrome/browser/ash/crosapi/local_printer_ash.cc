@@ -301,9 +301,9 @@ void LocalPrinterAsh::ChoosePrintServers(
   std::move(callback).Run();
 }
 
-void LocalPrinterAsh::AddObserver(
+void LocalPrinterAsh::AddPrintServerObserver(
     mojo::PendingRemote<mojom::PrintServerObserver> remote,
-    AddObserverCallback callback) {
+    AddPrintServerObserverCallback callback) {
   Profile* profile = GetActiveUserProfile();
   DCHECK(profile);
   chromeos::PrintServersManager* print_servers_manager =

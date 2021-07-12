@@ -16,11 +16,11 @@ import "url/mojom/url.mojom";
 [Stable]
 struct LocalDestinationInfo {
   // Printer id.
-  string device_name@0;
+  string id@0;
   // Printer display name.
-  string printer_name@1;
+  string name@1;
   // Printer description.
-  string printer_description@2;
+  string description@2;
   // Whether or not the printer is configured through a policy.
   // Corresponds to the cupsEnterprisePrinter field of the js
   // LocalDestinationInfo object.
@@ -270,8 +270,8 @@ interface LocalPrinter {
   // is disabled or the fetching mode is not kSingleServerOnly.
   ChoosePrintServers@7(array<string> print_server_ids) => ();
 
-  // Add a print server observer.
-  AddObserver@8(pending_remote<PrintServerObserver> observer) => ();
+  // Adds a print server observer.
+  AddPrintServerObserver@8(pending_remote<PrintServerObserver> observer) => ();
 
   // Gets print policies.
   GetPolicies@9() => (Policies policies);

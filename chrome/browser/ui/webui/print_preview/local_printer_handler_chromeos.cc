@@ -32,7 +32,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace printing {
@@ -61,8 +61,7 @@ LocalPrinterHandlerChromeos::Create(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   handler->local_printer_ = std::make_unique<crosapi::LocalPrinterAsh>();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl* service =
-      chromeos::LacrosChromeServiceImpl::Get();
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
     PRINTER_LOG(ERROR) << "Local printer not available (Create)";
     return handler;
@@ -90,9 +89,9 @@ LocalPrinterHandlerChromeos::~LocalPrinterHandlerChromeos() = default;
 base::Value LocalPrinterHandlerChromeos::PrinterToValue(
     const crosapi::mojom::LocalDestinationInfo& printer) {
   base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey(kSettingDeviceName, printer.device_name);
-  value.SetStringKey(kSettingPrinterName, printer.printer_name);
-  value.SetStringKey(kSettingPrinterDescription, printer.printer_description);
+  value.SetStringKey(kSettingDeviceName, printer.id);
+  value.SetStringKey(kSettingPrinterName, printer.name);
+  value.SetStringKey(kSettingPrinterDescription, printer.description);
   value.SetBoolKey(kCUPSEnterprisePrinter, printer.configured_via_policy);
   return value;
 }
@@ -104,10 +103,10 @@ base::Value LocalPrinterHandlerChromeos::CapabilityToValue(
     return base::Value();
 
   base::Value dict = AssemblePrinterSettings(
-      caps->basic_info->device_name,
+      caps->basic_info->id,
       PrinterBasicInfo(
-          caps->basic_info->device_name, caps->basic_info->printer_name,
-          caps->basic_info->printer_description, 0, false,
+          caps->basic_info->id, caps->basic_info->name,
+          caps->basic_info->description, 0, false,
           PrinterBasicInfoOptions{
               {kCUPSEnterprisePrinter, caps->basic_info->configured_via_policy
                                            ? kValueTrue

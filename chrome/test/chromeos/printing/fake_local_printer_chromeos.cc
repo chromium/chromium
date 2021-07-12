@@ -46,9 +46,9 @@ void FakeLocalPrinter::ChoosePrintServers(
   FAIL();
 }
 
-void FakeLocalPrinter::AddObserver(
+void FakeLocalPrinter::AddPrintServerObserver(
     mojo::PendingRemote<crosapi::mojom::PrintServerObserver> remote,
-    AddObserverCallback callback) {
+    AddPrintServerObserverCallback callback) {
   FAIL();
 }
 

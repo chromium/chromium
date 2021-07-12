@@ -46,9 +46,9 @@ class TestLocalPrinter : public FakeLocalPrinter {
     EXPECT_FALSE(print_server_ids_);
     print_server_ids_ = print_server_ids;
   }
-  void AddObserver(
+  void AddPrintServerObserver(
       mojo::PendingRemote<crosapi::mojom::PrintServerObserver> remote,
-      AddObserverCallback callback) override {
+      AddPrintServerObserverCallback callback) override {
     EXPECT_FALSE(remote_);
     EXPECT_TRUE(remote);
     remote_ =

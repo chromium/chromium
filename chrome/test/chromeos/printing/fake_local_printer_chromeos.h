@@ -29,9 +29,9 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
   void GetPrintServersConfig(GetPrintServersConfigCallback callback) override;
   void ChoosePrintServers(const std::vector<std::string>& print_server_ids,
                           ChoosePrintServersCallback callback) override;
-  void AddObserver(
+  void AddPrintServerObserver(
       mojo::PendingRemote<crosapi::mojom::PrintServerObserver> remote,
-      AddObserverCallback callback) override;
+      AddPrintServerObserverCallback callback) override;
   void GetPolicies(GetPoliciesCallback callback) override;
   void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override;
   void GetPrinterTypeDenyList(GetPrinterTypeDenyListCallback callback) override;

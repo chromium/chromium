@@ -66,8 +66,9 @@ class LocalPrinterAsh : public mojom::LocalPrinter {
   void GetPrintServersConfig(GetPrintServersConfigCallback callback) override;
   void ChoosePrintServers(const std::vector<std::string>& print_server_ids,
                           ChoosePrintServersCallback callback) override;
-  void AddObserver(mojo::PendingRemote<mojom::PrintServerObserver> remote,
-                   AddObserverCallback callback) override;
+  void AddPrintServerObserver(
+      mojo::PendingRemote<mojom::PrintServerObserver> remote,
+      AddPrintServerObserverCallback callback) override;
   void GetPolicies(GetPoliciesCallback callback) override;
   void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override;
   void GetPrinterTypeDenyList(GetPrinterTypeDenyListCallback callback) override;
