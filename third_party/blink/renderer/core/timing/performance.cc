@@ -768,12 +768,12 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                                    const AtomicString& mark_name,
                                    PerformanceMarkOptions* mark_options,
                                    ExceptionState& exception_state) {
-  DEFINE_STATIC_LOCAL(const AtomicString, mark_fully_loaded,
-                      ("mark_fully_loaded"));
-  DEFINE_STATIC_LOCAL(const AtomicString, mark_fully_visible,
-                      ("mark_fully_visible"));
-  DEFINE_STATIC_LOCAL(const AtomicString, mark_interactive,
-                      ("mark_interactive"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_fully_loaded,
+                                  ("mark_fully_loaded"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_fully_visible,
+                                  ("mark_fully_visible"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_interactive,
+                                  ("mark_interactive"));
   if (mark_options &&
       (mark_options->hasStartTime() || mark_options->hasDetail())) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kUserTimingL3);
