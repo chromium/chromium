@@ -8,11 +8,24 @@
 
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "third_party/zlib/google/zip_internal.h"
 
 namespace zip {
 namespace internal {
+
+class Redact {
+ public:
+  explicit Redact(const base::FilePath& path) : path_(path) {}
+
+  friend std::ostream& operator<<(std::ostream& out, const Redact&& r) {
+    return LOG_IS_ON(INFO) ? out << "'" << r.path_ << "'" : out << "(redacted)";
+  }
+
+ private:
+  const base::FilePath& path_;
+};
 
 bool ZipWriter::ShouldContinue() {
   if (!progress_callback_)
@@ -38,7 +51,7 @@ bool ZipWriter::AddFileContent(const base::FilePath& path, base::File file) {
         file.ReadAtCurrentPos(buf, zip::internal::kZipBufSize);
 
     if (num_bytes < 0) {
-      DPLOG(ERROR) << "Cannot read file '" << path << "'";
+      PLOG(ERROR) << "Cannot read file " << Redact(path);
       return false;
     }
 
@@ -46,7 +59,8 @@ bool ZipWriter::AddFileContent(const base::FilePath& path, base::File file) {
       return true;
 
     if (zipWriteInFileInZip(zip_file_, buf, num_bytes) != ZIP_OK) {
-      DLOG(ERROR) << "Cannot write data from file '" << path << "' to ZIP";
+      PLOG(ERROR) << "Cannot write data from file " << Redact(path)
+                  << " to ZIP";
       return false;
     }
 
@@ -94,7 +108,7 @@ bool ZipWriter::AddDirectoryEntry(const base::FilePath& path) {
     return false;
 
   if (!info.is_directory) {
-    LOG(ERROR) << "Not a directory: '" << path << "'";
+    LOG(ERROR) << "Not a directory: " << Redact(path);
     return false;
   }
 
@@ -141,7 +155,7 @@ std::unique_ptr<ZipWriter> ZipWriter::Create(
                                               APPEND_STATUS_CREATE);
 
   if (!zip_file) {
-    DLOG(ERROR) << "Cannot create ZIP file '" << zip_file_path << "'";
+    PLOG(ERROR) << "Cannot create ZIP file " << Redact(zip_file_path);
     return nullptr;
   }
 
@@ -239,7 +253,7 @@ bool ZipWriter::AddFileEntries(Paths paths) {
       base::File& file = files[i];
 
       if (!file.IsValid()) {
-        LOG(ERROR) << "Cannot open '" << relative_path << "'";
+        LOG(ERROR) << "Cannot open " << Redact(relative_path);
         return false;
       }
 
