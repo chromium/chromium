@@ -1897,6 +1897,13 @@
       },
     },
   },
+  'mac_signing_tests': {
+    'remove_from': [
+      # TODO(crbug.com/1220743): Re-enable.
+      'Mac10.11 Tests',
+      'Mac10.12 Tests',
+    ]
+  },
   'maps_pixel_passthrough_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {
