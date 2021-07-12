@@ -203,6 +203,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   chromeos::ResourcedClient::PressureLevel pressure_level_ =
       chromeos::ResourcedClient::PressureLevel::MODERATE;
 
+  bool should_apply_cpu_restirction_ = false;
+
   mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
 
   // Cpu usage rate count window. It save the cpu usage in a time interval.

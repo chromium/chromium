@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/cpu.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -51,8 +52,17 @@ constexpr base::TimeDelta kAppLaunchCheckingDelay =
 constexpr base::TimeDelta kAppLaunchDelay = base::TimeDelta::FromSeconds(3);
 
 constexpr int kCpuUsageRefreshIntervalInSeconds = 1;
+
+// Count CPU usage by average on last 6 seconds.
 constexpr int kCpuUsageCountWindowLength =
     6 * kCpuUsageRefreshIntervalInSeconds;
+
+// Restrict ARC app launch if CPU usage over threshold.
+constexpr int kCpuUsageThreshold = 90;
+
+// Apply CPU usage restrict if and only if the CPU cores not over
+// |kCpuRestrictCoresCondition|.
+constexpr int kCpuRestrictCoresCondition = 2;
 
 }  // namespace
 
@@ -68,6 +78,13 @@ ArcAppLaunchHandler::ArcAppLaunchHandler() {
         wm::GetActivationClient(ash::Shell::Get()->GetPrimaryRootWindow());
     if (activation_client)
       activation_client->AddObserver(this);
+  }
+
+  // Get CPU cores.
+  base::CPU::TimeInState state;
+  if (base::CPU::GetTimeInState(state) &&
+      state.size() <= kCpuRestrictCoresCondition) {
+    should_apply_cpu_restirction_ = true;
   }
 }
 
@@ -338,6 +355,11 @@ bool ArcAppLaunchHandler::HasRestoreData() {
 }
 
 bool ArcAppLaunchHandler::CanLaunchApp() {
+  if (should_apply_cpu_restirction_) {
+    if (GetCpuUsageRate() >= kCpuUsageThreshold)
+      return false;
+  }
+
   switch (pressure_level_) {
     case chromeos::ResourcedClient::PressureLevel::NONE:
       return true;
@@ -547,6 +569,8 @@ void ArcAppLaunchHandler::StopRestore() {
   if (stop_restore_timer_ && stop_restore_timer_->IsRunning())
     stop_restore_timer_->Stop();
   stop_restore_timer_.reset();
+
+  StopCpuUsageCount();
 }
 
 int ArcAppLaunchHandler::GetCpuUsageRate() {
