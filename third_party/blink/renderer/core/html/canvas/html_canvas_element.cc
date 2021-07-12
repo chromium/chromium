@@ -1249,6 +1249,9 @@ void HTMLCanvasElement::PageVisibilityChanged() {
   context_->SetIsInHiddenPage(hidden);
   if (hidden && (IsWebGL() || IsWebGPU()))
     DiscardResourceProvider();
+
+  if (!hidden)
+    context_->SendContextLostEventIfNeeded();
 }
 
 void HTMLCanvasElement::ContextDestroyed() {
@@ -1260,7 +1263,7 @@ bool HTMLCanvasElement::StyleChangeNeedsDidDraw(
     const ComputedStyle* old_style,
     const ComputedStyle& new_style) {
   // It will only need to redraw for a style change, if the new imageRendering
-  // is different than the previous one, and only if one of the two ir
+  // is different than the previous one, and only if one of the two are
   // pixelated.
   return old_style &&
          old_style->ImageRendering() != new_style.ImageRendering() &&
@@ -1419,6 +1422,10 @@ void HTMLCanvasElement::SetOffscreenCanvasResource(
 
 bool HTMLCanvasElement::IsOpaque() const {
   return context_ && !context_->CreationAttributes().alpha;
+}
+
+bool HTMLCanvasElement::IsVisible() const {
+  return GetPage() && GetPage()->IsPageVisible();
 }
 
 bool HTMLCanvasElement::IsSupportedInteractiveCanvasFallback(

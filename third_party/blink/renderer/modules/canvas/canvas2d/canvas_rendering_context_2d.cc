@@ -192,6 +192,14 @@ bool CanvasRenderingContext2D::isContextLost() const {
   return context_lost_mode_ != kNotLostContext;
 }
 
+void CanvasRenderingContext2D::SendContextLostEventIfNeeded() {
+  if (!needs_context_lost_event_)
+    return;
+
+  needs_context_lost_event_ = false;
+  dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+}
+
 void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ != kNotLostContext)
     return;
@@ -199,7 +207,13 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ == kSyntheticLostContext && Host()) {
     Host()->DiscardResourceProvider();
   }
-  dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+
+  if (canvas() && canvas()->IsVisible()) {
+    dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(),
+                                                    FROM_HERE);
+  } else {
+    needs_context_lost_event_ = true;
+  }
 }
 
 void CanvasRenderingContext2D::DidSetSurfaceSize() {

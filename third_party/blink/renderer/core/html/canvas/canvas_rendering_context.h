@@ -204,6 +204,7 @@ class CORE_EXPORT CanvasRenderingContext
     kSyntheticLostContext,
   };
   virtual void LoseContext(LostContextMode) {}
+  virtual void SendContextLostEventIfNeeded() {}
 
   // This method gets called at the end of script tasks that modified
   // the contents of the canvas (called didDraw). It marks the completion

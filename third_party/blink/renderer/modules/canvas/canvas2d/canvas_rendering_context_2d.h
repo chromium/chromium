@@ -239,6 +239,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_sensitive_ops();
   }
 
+  void SendContextLostEventIfNeeded() override;
+
  protected:
   // This reports CanvasColorParams to the CanvasRenderingContext interface.
   CanvasColorParams CanvasRenderingContextColorParams() const override {
@@ -308,6 +310,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   std::mt19937 random_generator_;
   std::bernoulli_distribution bernoulli_distribution_;
   CanvasColorParams color_params_;
+
+  // For privacy reasons we need to delay contextLost events until the page is
+  // visible. In order to do this we will hold on to a bool here
+  bool needs_context_lost_event_ = false;
 };
 
 }  // namespace blink
