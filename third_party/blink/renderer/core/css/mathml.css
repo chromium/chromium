@@ -124,10 +124,14 @@ munderover[accentunder="true" i] > :nth-child(2),
 munderover[accent="true" i] > :nth-child(3) {
   font-size: inherit;
 }
-
-munder > :nth-child(2),
-munderover > :nth-child(2),
+msub > :nth-child(2),
+msubsup > :nth-child(2),
+mmultiscripts > :nth-child(even),
+mmultiscripts > mprescripts ~ :nth-child(odd),
 mover[accent="true" i] > :first-child,
 munderover[accent="true" i] > :first-child {
   math-shift: compact;
+}
+mmultiscripts > mprescripts ~ :nth-child(even) {
+  math-shift: inherit;
 }
