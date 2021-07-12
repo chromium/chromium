@@ -41,7 +41,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
@@ -152,7 +151,6 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1227610")
     public void meetsShowingRequirements_showsIntro() {
         setWebFeedIntroLastShownTimeMsPref(0);
         setWebFeedIntroWebFeedIdShownTimeMsPref(0);
@@ -201,7 +199,6 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1227610")
     public void tooShortDelay_doesNotShowIntro() {
         setWebFeedIntroLastShownTimeMsPref(0);
         setWebFeedIntroWebFeedIdShownTimeMsPref(0);
@@ -267,7 +264,6 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1227610")
     public void featureEngagementTrackerSaysDoNotShow_doesNotShowIntro() {
         setWebFeedIntroLastShownTimeMsPref(0);
         setWebFeedIntroWebFeedIdShownTimeMsPref(0);
