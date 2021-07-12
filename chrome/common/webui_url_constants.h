@@ -210,6 +210,7 @@ extern const char kChromeUIUntrustedVideoTutorialsHost[];
 extern const char kChromeUIUntrustedVideoPlayerUrl[];
 extern const char kChromeUIWebApksHost[];
 #else
+extern const char kChromeUIAppServiceInternalsHost[];
 extern const char kChromeUINearbyInternalsHost[];
 extern const char kChromeUIReadLaterHost[];
 extern const char kChromeUIReadLaterURL[];

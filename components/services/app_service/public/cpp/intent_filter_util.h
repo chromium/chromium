@@ -97,4 +97,11 @@ bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter);
 
 }  // namespace apps_util
 
+namespace apps {
+
+// Pretty-prints |intent_filter| for debugging purposes.
+std::ostream& operator<<(std::ostream& out,
+                         const apps::mojom::IntentFilterPtr& intent_filter);
+}  // namespace apps
+
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_FILTER_UTIL_H_

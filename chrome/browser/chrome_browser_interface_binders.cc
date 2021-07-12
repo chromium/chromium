@@ -120,6 +120,8 @@
 #else
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
 #endif
+#include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
+#include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
@@ -724,6 +726,10 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ::mojom::user_education_internals::UserEducationInternalsPageHandler,
       InternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      ::mojom::app_service_internals::AppServiceInternalsPageHandler,
+      AppServiceInternalsUI>(map);
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -109,6 +109,10 @@
   "chrome/browser/resources/feedback_webui/feedback_resources.grd": {
     "includes": [1250],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/app_service_internals/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [1251],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/bookmarks/bookmarks_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1260],

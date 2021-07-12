@@ -24,6 +24,7 @@ group("resources") {
       ":component_extension_resources",
       ":dev_ui_paks",
       ":webid_resources",
+      "app_service_internals:resources",
       "bookmarks:resources",
       "commander:resources",
       "download_shelf:resources",

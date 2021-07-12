@@ -259,3 +259,40 @@ bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter) {
 }
 
 }  // namespace apps_util
+
+namespace apps {
+
+// Example output:
+//
+// activity_name: FooActivity
+// activity_label: Foo
+// conditions:
+// - kAction: view
+// - kPattern: /a /b*
+std::ostream& operator<<(std::ostream& out,
+                         const apps::mojom::IntentFilterPtr& intent_filter) {
+  if (intent_filter->activity_name.has_value()) {
+    out << "activity_name: " << intent_filter->activity_name.value()
+        << std::endl;
+  }
+  if (intent_filter->activity_label.has_value()) {
+    out << "activity_label: " << intent_filter->activity_label.value()
+        << std::endl;
+  }
+  out << "conditions:" << std::endl;
+  for (const auto& condition : intent_filter->conditions) {
+    out << "- " << condition->condition_type << ": ";
+    for (const auto& value : condition->condition_values) {
+      out << value->value;
+      if (value->match_type == apps::mojom::PatternMatchType::kPrefix) {
+        out << "*";
+      }
+      out << " ";
+    }
+    out << std::endl;
+  }
+
+  return out;
+}
+
+}  // namespace apps

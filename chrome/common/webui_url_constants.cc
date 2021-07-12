@@ -217,6 +217,7 @@ const char kChromeUIUntrustedVideoPlayerUrl[] =
     "chrome-untrusted://video-tutorials/";
 const char kChromeUIWebApksHost[] = "webapks";
 #else
+const char kChromeUIAppServiceInternalsHost[] = "app-service-internals";
 const char kChromeUINearbyInternalsHost[] = "nearby-internals";
 const char kChromeUIReadLaterHost[] = "read-later.top-chrome";
 const char kChromeUIReadLaterURL[] = "chrome://read-later.top-chrome/";

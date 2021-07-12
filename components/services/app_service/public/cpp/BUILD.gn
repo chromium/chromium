@@ -53,6 +53,8 @@ component("app_update") {
     "//components/account_id:account_id",
     "//components/services/app_service/public/mojom",
   ]
+
+  deps = [ ":intents" ]
 }
 
 source_set("app_url_handling") {

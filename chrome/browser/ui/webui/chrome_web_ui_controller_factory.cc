@@ -121,6 +121,7 @@
 #else  // defined(OS_ANDROID)
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/commander/commander_ui.h"
 #include "chrome/browser/ui/webui/devtools_ui.h"
@@ -663,6 +664,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
        url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)) {
     return &NewWebUI<PageNotAvailableForGuestUI>;
   }
+  if (url.host_piece() == chrome::kChromeUIAppServiceInternalsHost)
+    return &NewWebUI<AppServiceInternalsUI>;
   // Bookmarks are part of NTP on Android.
   if (url.host_piece() == chrome::kChromeUIBookmarksHost)
     return &NewWebUI<BookmarksUI>;

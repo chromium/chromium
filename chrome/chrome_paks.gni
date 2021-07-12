@@ -130,6 +130,7 @@ template("chrome_extra_paks") {
     if (!is_android) {
       # New paks should be added here by default.
       sources += [
+        "$root_gen_dir/chrome/app_service_internals_resources.pak",
         "$root_gen_dir/chrome/bookmarks_resources.pak",
         "$root_gen_dir/chrome/commander_resources.pak",
         "$root_gen_dir/chrome/component_extension_resources.pak",
@@ -157,6 +158,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources:component_extension_resources",
         "//chrome/browser/resources:dev_ui_paks",
         "//chrome/browser/resources:webid_resources",
+        "//chrome/browser/resources/app_service_internals:resources",
         "//chrome/browser/resources/bookmarks:resources",
         "//chrome/browser/resources/commander:resources",
         "//chrome/browser/resources/download_shelf:resources",
@@ -208,8 +210,8 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/nearby_internals_resources.pak",
         "$root_gen_dir/chrome/nearby_share_dialog_resources.pak",
         "$root_gen_dir/chrome/network_ui_resources.pak",
-        "$root_gen_dir/chrome/oobe_resources.pak",
         "$root_gen_dir/chrome/oobe_modulized_resources.pak",
+        "$root_gen_dir/chrome/oobe_resources.pak",
         "$root_gen_dir/chrome/os_settings_resources.pak",
         "$root_gen_dir/chromeos/chromeos_camera_app_resources.pak",
         "$root_gen_dir/chromeos/chromeos_eche_app_resources.pak",
@@ -241,8 +243,8 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/chromeos:multidevice_setup_resources",
         "//chrome/browser/resources/chromeos/emoji_picker:resources",
         "//chrome/browser/resources/chromeos/launcher_internals:resources",
-        "//chrome/browser/resources/chromeos/login:resources",
         "//chrome/browser/resources/chromeos/login:modulized_resources",
+        "//chrome/browser/resources/chromeos/login:resources",
         "//chrome/browser/resources/chromeos/multidevice_internals:resources",
         "//chrome/browser/resources/chromeos/network_ui:resources",
         "//chrome/browser/resources/chromeos/projector:resources",

@@ -1951,6 +1951,7 @@ static_library("browser") {
     "//chrome/browser/touch_to_fill",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/app_management:mojo_bindings",
+    "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//chrome/browser/ui/webui/download_shelf:mojo_bindings",

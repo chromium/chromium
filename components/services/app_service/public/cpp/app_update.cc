@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 
 namespace {
 
@@ -562,6 +563,54 @@ bool AppUpdate::WindowModeChanged() const {
 
 const ::AccountId& AppUpdate::AccountId() const {
   return account_id_;
+}
+
+std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
+  out << "AppType: " << app.AppType() << std::endl;
+  out << "AppId: " << app.AppId() << std::endl;
+  out << "Readiness: " << app.Readiness() << std::endl;
+  out << "Name: " << app.Name() << std::endl;
+  out << "ShortName: " << app.ShortName() << std::endl;
+  out << "PublisherId: " << app.PublisherId() << std::endl;
+  out << "Description: " << app.Description() << std::endl;
+  out << "Version: " << app.Version() << std::endl;
+
+  out << "AdditionalSearchTerms: ";
+  for (const std::string& term : app.AdditionalSearchTerms()) {
+    out << term << ", ";
+  }
+  out << std::endl;
+
+  out << "LastLaunchTime: " << app.LastLaunchTime() << std::endl;
+  out << "InstallTime: " << app.InstallTime() << std::endl;
+
+  out << "Permissions:" << std::endl;
+  for (const auto& permission : app.Permissions()) {
+    out << "  ID: " << permission->permission_id;
+    out << " value: " << permission->value;
+    out << " is_managed: " << permission->is_managed << std::endl;
+  }
+
+  out << "InstallSource: " << app.InstallSource() << std::endl;
+  out << "InstalledInternally: " << app.InstalledInternally() << std::endl;
+  out << "IsPlatformApp: " << app.IsPlatformApp() << std::endl;
+  out << "Recommendable: " << app.Recommendable() << std::endl;
+  out << "Searchable: " << app.Searchable() << std::endl;
+  out << "ShowInLauncher: " << app.ShowInLauncher() << std::endl;
+  out << "ShowInShelf: " << app.ShowInShelf() << std::endl;
+  out << "ShowInSearch: " << app.ShowInSearch() << std::endl;
+  out << "ShowInManagement: " << app.ShowInManagement() << std::endl;
+  out << "HasBadge: " << app.HasBadge() << std::endl;
+  out << "Paused: " << app.Paused() << std::endl;
+  out << "IntentFilters: " << std::endl;
+  for (const auto& filter : app.IntentFilters()) {
+    out << filter << std::endl;
+  }
+
+  out << "ResizeLocked: " << app.ResizeLocked() << std::endl;
+  out << "WindowMode: " << app.WindowMode() << std::endl;
+
+  return out;
 }
 
 }  // namespace apps
