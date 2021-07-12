@@ -98,10 +98,8 @@ void DarkModeFilterHelper::ApplyToImageIfNeeded(GraphicsContext* context,
   if (!context->IsDarkModeEnabled())
     return;
 
-  // Gradient generated images should not be classified by SkPixmap and apply
-  // filter to all image inversion policies.
+  // Gradient generated images should not be classified by SkPixmap
   if (image->IsGradientGeneratedImage()) {
-    flags->setColorFilter(context->GetDarkModeFilter()->GetImageFilter());
     return;
   }
 
