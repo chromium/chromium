@@ -103,6 +103,15 @@ source_set("terms_util") {
   ]
 }
 
+source_set("url_with_title") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "url_with_title.h",
+    "url_with_title.mm",
+  ]
+  deps = [ "//url" ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

@@ -975,12 +975,12 @@
 }
 
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
+  ReadingListAddCommand* command =
+      [[ReadingListAddCommand alloc] initWithURL:URL title:title];
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
   // protocol clean up.
   id<BrowserCommands> readingListAdder = static_cast<id<BrowserCommands>>(
       self.regularBrowser->GetCommandDispatcher());
-  ReadingListAddCommand* command =
-      [[ReadingListAddCommand alloc] initWithURL:URL title:title];
   [readingListAdder addToReadingList:command];
 }
 

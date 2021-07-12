@@ -30,12 +30,14 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/ui/activity_services/data/url_with_title.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -123,6 +125,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 // The UI consumer to which updates are made.
 @property(nonatomic, weak) id<GridConsumer> consumer;
+// Handler for reading list command.
+@property(nonatomic, weak) id<BrowserCommands> readingListHandler;
 // The saved session window just before close all tabs is called.
 @property(nonatomic, strong) SessionWindowIOS* closedSessionWindow;
 // The number of tabs in |closedSessionWindow| that are synced by
@@ -171,9 +175,18 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   [self.snapshotCache removeObserver:self];
   _scopedWebStateListObservation->RemoveAllObservations();
   _scopedWebStateObservation->RemoveAllObservations();
+  _readingListHandler = nullptr;
+
   _browser = browser;
+
   _webStateList = browser ? browser->GetWebStateList() : nullptr;
   _browserState = browser ? browser->GetBrowserState() : nullptr;
+  if (_browser) {
+    // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
+    // protocol clean up.
+    _readingListHandler =
+        static_cast<id<BrowserCommands>>(_browser->GetCommandDispatcher());
+  }
   [self.snapshotCache addObserver:self];
 
   if (_webStateList) {
@@ -701,7 +714,21 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 }
 
 - (void)addItemsToReadingList:(NSArray<NSString*>*)items {
-  // TODO(crbug.com/1196907): Implement add items to reading list.
+  if (!_readingListHandler) {
+    return;
+  }
+
+  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
+  for (NSString* itemIdentifier in items) {
+    GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
+    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
+                                                    title:item.title];
+    [URLs addObject:URL];
+  }
+
+  ReadingListAddCommand* command =
+      [[ReadingListAddCommand alloc] initWithURLs:URLs];
+  [_readingListHandler addToReadingList:command];
 }
 
 - (void)addItemsToBookmarks:(NSArray<NSString*>*)items {

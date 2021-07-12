@@ -153,6 +153,7 @@
 #import "ios/chrome/browser/ui/util/page_animation_util.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #include "ios/chrome/browser/upgrade/upgrade_center.h"
@@ -713,8 +714,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // Reading List
 // ------------
-// Adds the given url to the reading list.
-- (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title;
+// Adds the given urls to the reading list.
+- (void)addURLsToReadingList:(NSArray<URLWithTitle*>*)URLs;
 
 // The thumb strip's pan gesture handler that will be added to the toolbar and
 // tab strip.
@@ -2866,9 +2867,19 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Private Methods: Reading List
 
-- (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
-  ReadingListModel* readingModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
+- (void)addURLsToReadingList:(NSArray<URLWithTitle*>*)URLs {
+  for (URLWithTitle* urlWithTitle in URLs) {
+    [self addURLToReadingList:urlWithTitle.URL withTitle:urlWithTitle.title];
+  }
+
+  [self.dispatcher triggerToolsMenuButtonAnimation];
+
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  [self showSnackbar:l10n_util::GetNSString(
+                         IDS_IOS_READING_LIST_SNACKBAR_MESSAGE)];
+}
+
+- (void)addURLToReadingList:(const GURL&)URL withTitle:(NSString*)title {
   if (self.currentWebState &&
       self.currentWebState->GetVisibleURL().spec() == URL.spec()) {
     // Log UKM if the current page is being added to Reading List.
@@ -2880,16 +2891,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           .Record(ukm::UkmRecorder::Get());
     }
   }
+
   base::RecordAction(UserMetricsAction("MobileReadingListAdd"));
 
+  ReadingListModel* readingModel =
+      ReadingListModelFactory::GetForBrowserState(self.browserState);
   readingModel->AddEntry(URL, base::SysNSStringToUTF8(title),
                          reading_list::ADDED_VIA_CURRENT_APP);
-
-  [self.dispatcher triggerToolsMenuButtonAnimation];
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  [self showSnackbar:l10n_util::GetNSString(
-                         IDS_IOS_READING_LIST_SNACKBAR_MESSAGE)];
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **
@@ -3591,7 +3599,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           base::RecordAction(
               base::UserMetricsAction("MobileWebContextMenuReadLater"));
           Record(ACTION_READ_LATER, isImage, isLink);
-          [weakSelf addToReadingListURL:link title:innerText];
+          [weakSelf addURLsToReadingList:@[ [[URLWithTitle alloc]
+                                             initWithURL:link
+                                                   title:innerText] ]];
         };
         [_contextMenuCoordinator addItemWithTitle:title
                                            action:action
@@ -4578,7 +4588,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)addToReadingList:(ReadingListAddCommand*)command {
-  [self addToReadingListURL:[command URL] title:[command title]];
+  [self addURLsToReadingList:command.URLs];
 }
 
 - (void)preloadVoiceSearch {
