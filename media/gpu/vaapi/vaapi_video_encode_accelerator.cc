@@ -561,8 +561,8 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
 
 scoped_refptr<VASurface>
 VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
-    const scoped_refptr<VideoFrame>& frame,
-    const scoped_refptr<VASurface>& input_surface,
+    const VASurface& input_surface,
+    const gfx::Rect& input_visible_rect,
     const gfx::Size& encode_size,
     size_t num_va_surfaces) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
@@ -609,13 +609,13 @@ VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
                     base::BindOnce(vpp_va_surface_release_cb_[encode_size]));
   available_vpp_va_surface_ids_[encode_size].pop_back();
   if (!vpp_vaapi_wrapper_[encode_size]->BlitSurface(
-          *input_surface, *blit_surface, frame->visible_rect(),
+          input_surface, *blit_surface, input_visible_rect,
           gfx::Rect(encode_size))) {
     NOTIFY_ERROR(kPlatformFailureError,
                  "Failed BlitSurface on frame size: "
-                     << frame->coded_size().ToString()
-                     << " (visible rect: " << frame->visible_rect().ToString()
-                     << ") -> frame size: " << encode_size.ToString());
+                     << input_surface.size().ToString()
+                     << " (visible rect: " << input_visible_rect.ToString()
+                     << ") -> encode size: " << encode_size.ToString());
     return nullptr;
   }
   return blit_surface;
@@ -710,9 +710,9 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(scoped_refptr<VideoFrame> frame,
     DCHECK(native_input_mode_);
     // Simulcast mode, allocate the same number of surfaces as reconstructed
     // surfaces when create vpp.
-    input_surface = BlitSurfaceWithCreateVppIfNeeded(frame, input_surface,
-                                                     aligned_va_surface_size_,
-                                                     num_frames_in_flight_ + 1);
+    input_surface = BlitSurfaceWithCreateVppIfNeeded(
+        *input_surface, frame->visible_rect(), aligned_va_surface_size_,
+        num_frames_in_flight_ + 1);
     DCHECK(input_surface);
   }
 
@@ -722,7 +722,8 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(scoped_refptr<VideoFrame> frame,
     // K-SVC mode, allocate surfaces as input and reconstructed surfaces for
     // lower layer when create vpp.
     input_surface = BlitSurfaceWithCreateVppIfNeeded(
-        frame, input_surface, encode_size, (num_frames_in_flight_ + 1) * 2);
+        *input_surface, visible_rect_, encode_size,
+        (num_frames_in_flight_ + 1) * 2);
     DCHECK(input_surface);
 
     reconstructed_surface =

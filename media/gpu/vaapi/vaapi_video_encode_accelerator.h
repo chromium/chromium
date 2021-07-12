@@ -98,12 +98,12 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   void DestroyTask();
   void FlushTask(FlushCallback flush_callback);
 
-  // Blits input surface to dest size surface and return processed surface, if
-  // |vpp_vaapi_wrapper| is empty, this will create it and corresponding
-  // surfaces.
+  // Blits |input_surface| to an internally-allocated |input_visible_rect|
+  // surface, returning it. If |vpp_vaapi_wrapper_| is empty, this will create
+  // it and corresponding surfaces. Returns nullptr on failure.
   scoped_refptr<VASurface> BlitSurfaceWithCreateVppIfNeeded(
-      const scoped_refptr<VideoFrame>& frame,
-      const scoped_refptr<VASurface>& input_surface,
+      const VASurface& input_surface,
+      const gfx::Rect& input_visible_rect,
       const gfx::Size& encode_size,
       size_t num_va_surfaces);
 
