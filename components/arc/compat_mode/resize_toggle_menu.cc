@@ -53,16 +53,10 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
                                                  const gfx::VectorIcon& icon,
                                                  int title_string_id)
     : views::Button(std::move(callback)), icon_(icon) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetInteriorMargin(gfx::Insets(16, 0, 14, 0))
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kPreferred,
-                                   /*adjust_height_for_width=*/true));
+  // Don't use FlexLayout here because it breaks the focus ring's bounds.
+  // TODO(b/193195191): Investigate why we can't use FlexLayout.
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(16, 0, 14, 0)));
 
   AddChildView(views::Builder<views::ImageView>()
                    .CopyAddressTo(&icon_view_)
