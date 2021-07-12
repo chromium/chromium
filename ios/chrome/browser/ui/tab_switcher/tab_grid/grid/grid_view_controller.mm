@@ -417,8 +417,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
-                                         point:(CGPoint)point
-    API_AVAILABLE(ios(13.0)) {
+                                         point:(CGPoint)point {
   // Context menu shouldn't appear in the selection mode.
   if (!IsTabGridContextMenuEnabled() || _mode == TabGridModeSelection) {
     return nil;

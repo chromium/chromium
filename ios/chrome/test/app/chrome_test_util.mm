@@ -66,7 +66,7 @@
 // testing. UIOpenURLContext has no init available, so this can only be
 // allocated. It uses obscuring properties for URL and options.
 // TODO(crbug.com/1115018) Explore improving this which can become brittle.
-API_AVAILABLE(ios(13.0)) @interface FakeUIOpenURLContext : UIOpenURLContext
+@interface FakeUIOpenURLContext : UIOpenURLContext
 @property(nonatomic, copy) NSURL* URL;
 @property(nonatomic, strong) UISceneOpenURLOptions* options;
 @end

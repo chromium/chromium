@@ -14,8 +14,7 @@
 // represented on the UI by |view|.
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (HistoryEntryItem*)item
-                                                      withView:(UIView*)view
-    API_AVAILABLE(ios(13.0));
+                                                      withView:(UIView*)view;
 
 @end
 

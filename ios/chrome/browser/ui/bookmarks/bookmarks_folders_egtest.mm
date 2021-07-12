@@ -266,9 +266,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testSwipeDownToDismissFromEditFolder {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
   if (!IsCollectionsCardPresentationStyleEnabled()) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
   }
@@ -383,19 +380,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                           @"Mobile Bookmarks")]
       performAction:grey_longPress()];
 
-  // Verify it doesn't show the context menu. (long press is disabled on
-  // permanent node.)
-  if ([ChromeEarlGrey isNativeContextMenusEnabled]) {
-    // We cannot locate new context menus any way, therefore we'll use the
-    // 'Edit' action presence as proxy.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            BookmarksContextMenuEditButton()]
-        assertWithMatcher:grey_nil()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kBookmarkHomeContextMenuIdentifier)]
-        assertWithMatcher:grey_nil()];
-  }
+  // We cannot locate new context menus any way, therefore we'll use the
+  // 'Edit' action presence as proxy.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Verify Edit functionality for single folder selection.
@@ -412,10 +401,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_longPress()];
 
   id<GREYMatcher> editFolderMatcher =
-      [ChromeEarlGrey isNativeContextMenusEnabled]
-          ? chrome_test_util::BookmarksContextMenuEditButton()
-          : ButtonWithAccessibilityLabelId(
-                IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
+      chrome_test_util::BookmarksContextMenuEditButton();
   [[EarlGrey selectElementWithMatcher:editFolderMatcher]
       performAction:grey_tap()];
 

@@ -220,9 +220,8 @@ id<GREYMatcher> OpenLinkInNewTabButton() {
   return [ChromeMatchersAppInterface openLinkInNewTabButton];
 }
 
-id<GREYMatcher> OpenLinkInIncognitoButton(BOOL use_new_string) {
-  return [ChromeMatchersAppInterface
-      openLinkInIncognitoButtonWithUseNewString:use_new_string];
+id<GREYMatcher> OpenLinkInIncognitoButton() {
+  return [ChromeMatchersAppInterface openLinkInIncognitoButton];
 }
 
 id<GREYMatcher> OpenLinkInNewWindowButton() {
@@ -482,13 +481,12 @@ id<GREYMatcher> CopyActivityButton() {
   return [ChromeMatchersAppInterface copyActivityButton];
 }
 
-id<GREYMatcher> CopyLinkButton(BOOL use_new_string) {
-  return [ChromeMatchersAppInterface
-      copyLinkButtonWithUseNewString:use_new_string];
+id<GREYMatcher> CopyLinkButton() {
+  return [ChromeMatchersAppInterface copyLinkButton];
 }
 
-id<GREYMatcher> EditButton(BOOL use_new_string) {
-  return [ChromeMatchersAppInterface editButtonWithUseNewString:use_new_string];
+id<GREYMatcher> EditButton() {
+  return [ChromeMatchersAppInterface editButton];
 }
 
 id<GREYMatcher> MoveButton() {

@@ -12,7 +12,6 @@ extern NSString* const kChromeMetricKitPayloadsDirectory;
 
 // A subscriber that save MetricKit reports to the application document
 // directory.
-API_AVAILABLE(ios(13.0))
 @interface MetricKitSubscriber : NSObject <MXMetricManagerSubscriber>
 + (instancetype)sharedInstance;
 

@@ -530,7 +530,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // TODO:(crbug.com/1147654): re-enable after figuring out why it is failing.
 - (void)DISABLE_testPostFormEntryWithKeyboard {
   // Test fails on iPad Air 2 13.4 crbug.com/1102608.
-  if ([ChromeEarlGrey isIPadIdiom] && base::ios::IsRunningOnOrLater(13, 0, 0)) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails in iOS 13 on iPads.");
   }
 

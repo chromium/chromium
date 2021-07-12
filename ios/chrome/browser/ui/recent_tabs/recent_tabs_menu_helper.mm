@@ -51,8 +51,7 @@
 
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (TableViewURLItem*)item
-                                                      fromView:(UIView*)view
-    API_AVAILABLE(ios(13.0)) {
+                                                      fromView:(UIView*)view {
   __weak __typeof(self) weakSelf = self;
 
   UIContextMenuActionProvider actionProvider = ^(
@@ -112,7 +111,7 @@
 
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForHeaderWithSectionIdentifier:
-        (NSInteger)sectionIdentifier API_AVAILABLE(ios(13.0)) {
+        (NSInteger)sectionIdentifier {
   __weak __typeof(self) weakSelf = self;
 
   UIContextMenuActionProvider actionProvider =

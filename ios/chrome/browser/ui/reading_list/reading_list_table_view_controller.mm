@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/menu_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -226,23 +225,11 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   self.tableView.estimatedSectionHeaderHeight = 56;
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.allowsMultipleSelection = YES;
-  // Add a tableFooterView in order to disable separators at the bottom of the
-  // tableView.
-
-  // Add gesture recognizer for the context menu.
-  if (!IsNativeContextMenuEnabled()) {
-    UILongPressGestureRecognizer* longPressRecognizer =
-        [[UILongPressGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(handleLongPress:)];
-    [self.tableView addGestureRecognizer:longPressRecognizer];
-  }
-
-    self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
-    self.dragDropHandler.origin = WindowActivityReadingListOrigin;
-    self.dragDropHandler.dragDataSource = self;
-    self.tableView.dragDelegate = self.dragDropHandler;
-    self.tableView.dragInteractionEnabled = true;
+  self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
+  self.dragDropHandler.origin = WindowActivityReadingListOrigin;
+  self.dragDropHandler.dragDataSource = self;
+  self.tableView.dragDelegate = self.dragDropHandler;
+  self.tableView.dragInteractionEnabled = true;
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -356,14 +343,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
-                                        point:(CGPoint)point
-    API_AVAILABLE(ios(13.0)) {
-  if (!IsNativeContextMenuEnabled()) {
-    // Returning nil will allow the gesture to be captured and show the old
-    // context menus.
-    return nil;
-  }
-
+                                        point:(CGPoint)point {
   if (self.isEditing) {
     // Don't show the context menu when currently in editing mode.
     return nil;

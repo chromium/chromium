@@ -785,9 +785,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testSwipeDownToDismiss {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
   if (!IsCollectionsCardPresentationStyleEnabled()) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
   }

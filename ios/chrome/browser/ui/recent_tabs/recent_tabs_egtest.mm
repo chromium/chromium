@@ -238,9 +238,6 @@ GURL TestPageURL() {
   if (base::ios::IsRunningOnIOS14OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
   }
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
   if (!IsCollectionsCardPresentationStyleEnabled()) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
   }
@@ -312,29 +309,19 @@ GURL TestPageURL() {
 
 // Tests the Copy Link action on a recent tab's context menu.
 - (void)testContextMenuCopyLink {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self loadTestURL];
   OpenRecentTabsPanel();
   [self longPressTestURLTab];
 
   GURL testURL = TestPageURL();
   [ChromeEarlGrey
-      verifyCopyLinkActionWithText:[NSString stringWithUTF8String:testURL.spec()
-                                                                      .c_str()]
-                      useNewString:YES];
+      verifyCopyLinkActionWithText:[NSString
+                                       stringWithUTF8String:testURL.spec()
+                                                                .c_str()]];
 }
 
 // Tests the Open in New Tab action on a recent tab's context menu.
 - (void)testContextMenuOpenInNewTab {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self loadTestURL];
   OpenRecentTabsPanel();
   [self longPressTestURLTab];
@@ -350,11 +337,6 @@ GURL TestPageURL() {
 - (void)testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
   }
 
   [self loadTestURL];
@@ -375,11 +357,6 @@ GURL TestPageURL() {
 
 // Tests the Share action on a recent tab's context menu.
 - (void)testContextMenuShare {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self loadTestURL];
   OpenRecentTabsPanel();
   [self longPressTestURLTab];

@@ -83,8 +83,7 @@
 // Delegate for handling actions relating to content suggestions.
 @property(nonatomic, weak) id<ContentSuggestionsActionHandler> handler;
 // Provider of menu configurations for the contentSuggestions component.
-@property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider
-    API_AVAILABLE(ios(13.0));
+@property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 // Discover Feed metrics recorder.
 @property(nonatomic, strong)
     DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;

@@ -630,9 +630,6 @@ UIWindow* GetAnyKeyWindow();
 // Returns whether the mobile version of the websites are requested by default.
 - (BOOL)isMobileModeByDefault WARN_UNUSED_RESULT;
 
-// Returns whether the native context menus feature is enabled or not.
-- (BOOL)isNativeContextMenusEnabled;
-
 // Returns whether the app is configured to, and running in an environment which
 // can, open multiple windows.
 - (BOOL)areMultipleWindowsSupported;
@@ -694,10 +691,8 @@ UIWindow* GetAnyKeyWindow();
 #pragma mark - Context Menus Utilities (EG2)
 
 // Taps on the Copy Link context menu action and verifies that the |text| has
-// been copied to the pasteboard. |useNewString| determines which action string
-// to use.
-- (void)verifyCopyLinkActionWithText:(NSString*)text
-                        useNewString:(BOOL)useNewString;
+// been copied to the pasteboard.
+- (void)verifyCopyLinkActionWithText:(NSString*)text;
 
 // Taps on the Open in New Tab context menu action and waits for the |URL| to be
 // present in the omnibox.
@@ -708,10 +703,8 @@ UIWindow* GetAnyKeyWindow();
 - (void)verifyOpenInNewWindowActionWithContent:(const std::string&)content;
 
 // Taps on the Open in Incognito context menu action and waits for the |URL| to
-// be present in the omnibox. |useNewString| determines which action string
-// to use.
-- (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL
-                              useNewString:(BOOL)useNewString;
+// be present in the omnibox.
+- (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL;
 
 // Taps on the Share context menu action and validates that the ActivityView
 // was brought up with the correct title in its header. The title starts as the

@@ -341,9 +341,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests clear browsing history.
 - (void)testClearBrowsingHistorySwipeDownDismiss {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
   if (!IsCollectionsCardPresentationStyleEnabled()) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
   }
@@ -421,10 +418,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Select "Open in New Incognito Tab" and confirm that new tab is opened in
   // incognito with the selected URL.
-  [ChromeEarlGrey
-      verifyOpenInIncognitoActionWithURL:_URL1.GetContent()
-                            useNewString:[ChromeEarlGrey
-                                             isNativeContextMenusEnabled]];
+  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:_URL1.GetContent()];
 }
 
 // Tests display and selection of 'Copy URL' in a context menu on a history
@@ -440,20 +434,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Tap "Copy URL" and wait for the URL to be copied to the pasteboard.
   [ChromeEarlGrey
-      verifyCopyLinkActionWithText:[NSString stringWithUTF8String:_URL1.spec()
-                                                                      .c_str()]
-                      useNewString:[ChromeEarlGrey
-                                       isNativeContextMenusEnabled]];
+      verifyCopyLinkActionWithText:[NSString
+                                       stringWithUTF8String:_URL1.spec()
+                                                                .c_str()]];
 }
 
 // Tests display and selection of "Share" in the context menu for a history
 // entry.
 - (void)testContextMenuShare {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -469,11 +457,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests the Delete context menu action for a History entry.
 - (void)testContextMenuDelete {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -504,9 +487,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that the VC can be dismissed by swiping down.
 - (void)testSwipeDownDismiss {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
   if (!IsCollectionsCardPresentationStyleEnabled()) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
   }
@@ -533,14 +513,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testSwipeDownDismissWhileSearching {
 // TODO(crbug.com/1078165): Test fails on iOS 13+ iPad devices.
 #if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom] && base::ios::IsRunningOnIOS13OrLater()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"This test fails on iOS 13+ iPad device.");
   }
 #endif
 
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
   if (!IsCollectionsCardPresentationStyleEnabled()) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
   }

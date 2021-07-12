@@ -100,8 +100,7 @@
 // biometric authentication.
 @property(nonatomic, assign) BOOL contentNeedsAuthentication;
 // Provider of context menu configurations for the tabs in the grid.
-@property(nonatomic, weak) id<GridContextMenuProvider> menuProvider
-    API_AVAILABLE(ios(13.0));
+@property(nonatomic, weak) id<GridContextMenuProvider> menuProvider;
 
 // The item IDs of selected items for editing.
 @property(nonatomic, readonly) NSArray<NSString*>* selectedItemIDsForEditing;

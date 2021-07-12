@@ -298,13 +298,6 @@ id<GREYMatcher> SearchCopiedTextButton() {
 }
 
 - (void)testFocusingOmniboxDismissesEditMenu {
-// TODO(crbug.com/1129095): Re-enable test for iOS 12 device.
-#if !TARGET_IPHONE_SIMULATOR
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
-  }
-#endif
-
   [self openPage1];
 
   // Long pressing should open edit menu.

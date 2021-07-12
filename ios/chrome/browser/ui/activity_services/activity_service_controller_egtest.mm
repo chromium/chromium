@@ -54,26 +54,7 @@ void AssertActivityServiceNotVisible() {
 
 @implementation ActivityServiceControllerTestCase
 
-- (void)testActivityServiceControllerIsDisabled {
-  // TODO(crbug.com/996541) Starting in Xcode 11 beta 6, the share button does
-  // not appear (even with a delay) flakily.
-  if (@available(iOS 13, *))
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS13.");
-
-  // Open an un-shareable page.
-  GURL kURL("chrome://version");
-  [ChromeEarlGrey loadURL:kURL];
-  // Verify that the share button is disabled.
-  id<GREYMatcher> share_button = chrome_test_util::TabShareButton();
-  [[EarlGrey selectElementWithMatcher:share_button]
-      assertWithMatcher:grey_accessibilityTrait(
-                            UIAccessibilityTraitNotEnabled)];
-}
-
 - (void)testOpenActivityServiceControllerAndCopy {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS12.");
-  }
   // Set up mock http server.
   std::map<GURL, std::string> responses;
   GURL url = web::test::HttpServer::MakeUrl("http://potato");

@@ -48,7 +48,7 @@
 }
 
 - (UIContextMenuConfiguration*)contextMenuConfigurationForGridCell:
-    (GridCell*)gridCell API_AVAILABLE(ios(13.0)) {
+    (GridCell*)gridCell {
   __weak __typeof(self) weakSelf = self;
 
   UIContextMenuActionProvider actionProvider =

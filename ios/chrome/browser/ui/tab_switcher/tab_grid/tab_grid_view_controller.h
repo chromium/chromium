@@ -128,9 +128,9 @@ enum class TabGridPageConfiguration {
 
 // Provides the context menu for the tabs on the grid.
 @property(nonatomic, weak) id<GridContextMenuProvider>
-    regularTabsContextMenuProvider API_AVAILABLE(ios(13.0));
+    regularTabsContextMenuProvider;
 @property(nonatomic, weak) id<GridContextMenuProvider>
-    incognitoTabsContextMenuProvider API_AVAILABLE(ios(13.0));
+    incognitoTabsContextMenuProvider;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.

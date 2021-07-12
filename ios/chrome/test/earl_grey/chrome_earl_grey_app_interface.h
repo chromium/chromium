@@ -513,9 +513,6 @@
 // Returns whether the mobile version of the websites are requested by default.
 + (BOOL)isMobileModeByDefault WARN_UNUSED_RESULT;
 
-// Returns whether the native context menus feature is enabled or not.
-+ (BOOL)isNativeContextMenusEnabled;
-
 // Returns whether the app is configured to, and running in an environment which
 // can, open multiple windows.
 + (BOOL)areMultipleWindowsSupported;

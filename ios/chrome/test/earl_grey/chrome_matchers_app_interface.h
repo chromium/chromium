@@ -158,8 +158,8 @@
 + (id<GREYMatcher>)openLinkInNewTabButton;
 
 // Matcher for the Open in Incognito option in the context menu when long
-// pressing a link. |useNewString| determines which string to use.
-+ (id<GREYMatcher>)openLinkInIncognitoButtonWithUseNewString:(BOOL)useNewString;
+// pressing a link.
++ (id<GREYMatcher>)openLinkInIncognitoButton;
 
 // Matcher for the Open in New Window option in the context menu when long
 // pressing a link.
@@ -373,12 +373,11 @@
 + (id<GREYMatcher>)copyActivityButton;
 
 // Matcher for the Copy Link option in the updated context menus when long
-// pressing on a link. |useNewString| determines which string to use.
-+ (id<GREYMatcher>)copyLinkButtonWithUseNewString:(BOOL)useNewString;
+// pressing on a link.
++ (id<GREYMatcher>)copyLinkButton;
 
-// Matcher for the Edit option on the updated context menus. |useNewString|
-// determines which string to use.
-+ (id<GREYMatcher>)editButtonWithUseNewString:(BOOL)useNewString;
+// Matcher for the Edit option on the context menus.
++ (id<GREYMatcher>)editButton;
 
 // Matcher for the Move option on the updated context menus.
 + (id<GREYMatcher>)moveButton;

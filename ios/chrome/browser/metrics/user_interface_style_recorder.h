@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 // Reports metrics for the user interface style on iOS 13+.
-API_AVAILABLE(ios(13.0))
 @interface UserInterfaceStyleRecorder : NSObject
 
 - (instancetype)initWithUserInterfaceStyle:(UIUserInterfaceStyle)style

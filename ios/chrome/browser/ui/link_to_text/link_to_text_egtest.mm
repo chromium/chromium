@@ -204,12 +204,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
 // Tests that a link can be generated for a simple text selection.
 - (void)testGenerateLinkForSimpleText {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    // Skip test on iOS 12 as the Activity View on that version is not
-    // accessible by Earl Grey.
-    EARL_GREY_TEST_SKIPPED(@"Test skipped on iOS 12.");
-  }
-
   // TODO(crbug.com/1149603): Re-enable this test on iPad once presenting
   // popovers work.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -280,11 +274,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 }
 
 - (void)testBadSelectionDisablesGenerateLink {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    // The TextInput implementation is incomplete on iOS 13, so this condition
-    // isn't enforced on older versions.
-    EARL_GREY_TEST_SKIPPED(@"Test skipped on iOS 13.");
-  }
   if (@available(iOS 14, *)) {
     [ChromeEarlGrey loadURL:self.testServer->GetURL(kNoTextTestURL)];
     [ChromeEarlGrey waitForWebStateContainingText:kNoTextTestPageTextSample];

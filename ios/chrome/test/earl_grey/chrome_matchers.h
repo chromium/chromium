@@ -165,8 +165,8 @@ id<GREYMatcher> SyncSwitchCell(NSString* accessibility_label,
 id<GREYMatcher> OpenLinkInNewTabButton();
 
 // Matcher for the Open in Incognito option in the context menu when long
-// pressing a link. |use_new_string| determines which string to use.
-id<GREYMatcher> OpenLinkInIncognitoButton(BOOL use_new_string);
+// pressing a link.
+id<GREYMatcher> OpenLinkInIncognitoButton();
 
 // Matcher for the Open in New Window option in the context menu when long
 // pressing a link.
@@ -380,12 +380,11 @@ id<GREYMatcher> SystemSelectionCalloutOverflowButton();
 id<GREYMatcher> CopyActivityButton();
 
 // Matcher for the Copy Link option in the updated context menus when long
-// pressing on a link. |use_new_string| determines which string to use.
-id<GREYMatcher> CopyLinkButton(BOOL use_new_string);
+// pressing on a link.
+id<GREYMatcher> CopyLinkButton();
 
-// Matcher for the Edit option on the updated context menus. |use_new_string|
-// determines which string to use.
-id<GREYMatcher> EditButton(BOOL use_new_string);
+// Matcher for the Edit option on the context menus.
+id<GREYMatcher> EditButton();
 
 // Matcher for the Move option on the updated context menus.
 id<GREYMatcher> MoveButton();

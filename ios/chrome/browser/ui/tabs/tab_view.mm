@@ -346,10 +346,6 @@ UIImage* DefaultFaviconImage() {
 // Updates this tab's style based on the value of |selected| and the current
 // incognito style.
 - (void)updateStyleForSelected:(BOOL)selected {
-  // On iOS 13 there is no need to pick custom incognito assets because
-  // |overrideUserInterfaceStyle| is set to dark mode when in incognito.
-  using base::ios::IsRunningOnIOS13OrLater;
-
   // Style the background image first.
   NSString* state = (selected ? @"foreground" : @"background");
   NSString* imageName = [NSString stringWithFormat:@"tabstrip_%@_tab", state];

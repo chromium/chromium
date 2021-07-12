@@ -1212,18 +1212,8 @@ void CopyPasswordDetailWithID(int detail_id) {
   // Wait until the alerts are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // On iOS 13+ phone when building with the iOS 12 SDK, the share sheet is
-  // presented fullscreen, so the export button is removed from the view
-  // hierarchy.  Check that either the button is not present, or that it remains
-  // visible but is disabled.
   id<GREYMatcher> exportButtonStatusMatcher =
       grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
-#if !defined(__IPHONE_13_0) || (__IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_13_0)
-  if (base::ios::IsRunningOnIOS13OrLater()) {
-    exportButtonStatusMatcher =
-        grey_anyOf(grey_nil(), exportButtonStatusMatcher, nil);
-  }
-#endif
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -1239,8 +1229,7 @@ void CopyPasswordDetailWithID(int detail_id) {
   } else {
     // Tap on the "Cancel" or "X" button accompanying the activity view to
     // dismiss it.
-    NSString* dismissLabel =
-        base::ios::IsRunningOnIOS13OrLater() ? @"Close" : @"Cancel";
+    NSString* dismissLabel = @"Close";
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(
                                      ButtonWithAccessibilityLabel(dismissLabel),

@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/menu_util.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -1033,10 +1032,6 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
           chrome_test_util::GetCurrentWebState()->GetView(), GURL());
 
   return webClientUserAgent == web::UserAgentType::MOBILE;
-}
-
-+ (BOOL)isNativeContextMenusEnabled {
-  return IsNativeContextMenuEnabled();
 }
 
 + (BOOL)areMultipleWindowsSupported {

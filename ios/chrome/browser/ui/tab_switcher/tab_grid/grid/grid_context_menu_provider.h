@@ -14,7 +14,7 @@
 
 // Returns a context menu configuration instance for the given |gridCell|.
 - (UIContextMenuConfiguration*)contextMenuConfigurationForGridCell:
-    (GridCell*)gridCell API_AVAILABLE(ios(13.0));
+    (GridCell*)gridCell;
 
 @end
 

@@ -434,10 +434,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)];
 }
 
-+ (id<GREYMatcher>)openLinkInIncognitoButtonWithUseNewString:
-    (BOOL)useNewString {
-  int stringId = useNewString ? IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE
-                              : IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB;
++ (id<GREYMatcher>)openLinkInIncognitoButton {
+  int stringId = IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE;
   return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(stringId)];
 }
 
@@ -774,15 +772,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_ancestor(grey_kindOfClassName(@"UIActivityActionGroupCell")), nil);
 }
 
-+ (id<GREYMatcher>)copyLinkButtonWithUseNewString:(BOOL)useNewString {
-  int stringId = useNewString ? IDS_IOS_COPY_LINK_ACTION_TITLE
-                              : IDS_IOS_CONTENT_CONTEXT_COPY;
++ (id<GREYMatcher>)copyLinkButton {
+  int stringId = IDS_IOS_COPY_LINK_ACTION_TITLE;
   return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:stringId];
 }
 
-+ (id<GREYMatcher>)editButtonWithUseNewString:(BOOL)useNewString {
-  int stringId = useNewString ? IDS_IOS_EDIT_ACTION_TITLE
-                              : IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT;
++ (id<GREYMatcher>)editButton {
+  int stringId = IDS_IOS_EDIT_ACTION_TITLE;
   return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:stringId];
 }
 

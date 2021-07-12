@@ -78,10 +78,7 @@ using chrome_test_util::MoveButton;
       performAction:grey_longPress()];
 
   id<GREYMatcher> editFolderMatcher =
-      [ChromeEarlGrey isNativeContextMenusEnabled]
-          ? chrome_test_util::BookmarksContextMenuEditButton()
-          : ButtonWithAccessibilityLabelId(
-                IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
+      chrome_test_util::BookmarksContextMenuEditButton();
   [[EarlGrey selectElementWithMatcher:editFolderMatcher]
       performAction:grey_tap()];
 

@@ -69,7 +69,6 @@
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/menu_util.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -524,16 +523,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // line will also create a default footer of height 30.
   self.tableView.sectionFooterHeight = 1;
   self.sharedState.tableView.allowsMultipleSelectionDuringEditing = YES;
-
-  if (!IsNativeContextMenuEnabled()) {
-    UILongPressGestureRecognizer* longPressRecognizer =
-        [[UILongPressGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(handleLongPress:)];
-    longPressRecognizer.numberOfTouchesRequired = 1;
-    longPressRecognizer.delegate = self;
-    [self.sharedState.tableView addGestureRecognizer:longPressRecognizer];
-  }
 
   // Create the mediator and hook up the table view.
   self.mediator =
@@ -2313,14 +2302,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
-                                        point:(CGPoint)point
-    API_AVAILABLE(ios(13.0)) {
-  if (!IsNativeContextMenuEnabled()) {
-    // Returning nil will allow the gesture to be captured and show the old
-    // context menus.
-    return nil;
-  }
-
+                                        point:(CGPoint)point {
   if (self.sharedState.currentlyInEditMode) {
     // Don't show the context menu when currently in editing mode.
     return nil;

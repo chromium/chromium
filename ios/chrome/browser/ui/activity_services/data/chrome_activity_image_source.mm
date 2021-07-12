@@ -60,7 +60,7 @@
 }
 
 - (LPLinkMetadata*)activityViewControllerLinkMetadata:
-    (UIActivityViewController*)activityViewController API_AVAILABLE(ios(13.0)) {
+    (UIActivityViewController*)activityViewController {
   NSItemProvider* imageProvider =
       [[NSItemProvider alloc] initWithObject:self.image];
 

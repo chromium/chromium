@@ -578,10 +578,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Long press the entry, and open it offline.
   LongPressEntry(kDistillableTitle);
 
-  int offlineStringId = IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE;
-  if ([ChromeEarlGrey isNativeContextMenusEnabled]) {
-    offlineStringId = IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON;
-  }
+  int offlineStringId = IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON;
 
   TapContextMenuButtonWithA11yLabelID(offlineStringId);
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -637,10 +634,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Long press the entry, and open it offline.
   LongPressEntry(kDistillableTitle);
 
-  int offlineStringId = IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE;
-  if ([ChromeEarlGrey isNativeContextMenusEnabled]) {
-    offlineStringId = IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON;
-  }
+  int offlineStringId = IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON;
 
   TapContextMenuButtonWithA11yLabelID(offlineStringId);
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -687,10 +681,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Long press the entry, and open it offline.
   LongPressEntry(kDistillableTitle);
 
-  int offlineStringId = IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE;
-  if ([ChromeEarlGrey isNativeContextMenusEnabled]) {
-    offlineStringId = IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON;
-  }
+  int offlineStringId = IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON;
 
   TapContextMenuButtonWithA11yLabelID(offlineStringId);
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -1161,9 +1152,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   if (base::ios::IsRunningOnIOS14OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
   }
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
   if (![ChromeEarlGreyAppInterface isCollectionsCardPresentationStyleEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
   }
@@ -1194,10 +1182,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   LongPressEntry(kReadTitle);
 
   // Tap "Copy URL" and wait for the URL to be copied to the pasteboard.
-  [ChromeEarlGrey
-      verifyCopyLinkActionWithText:kReadURL
-                      useNewString:[ChromeEarlGrey
-                                       isNativeContextMenusEnabled]];
+  [ChromeEarlGrey verifyCopyLinkActionWithText:kReadURL];
 }
 
 // Tests the Open in New Tab context menu action for a reading list entry.
@@ -1222,18 +1207,11 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Select "Open in Incognito" and confirm that new tab is opened with selected
   // URL.
   [ChromeEarlGrey
-      verifyOpenInIncognitoActionWithURL:distillablePageURL.GetContent()
-                            useNewString:[ChromeEarlGrey
-                                             isNativeContextMenusEnabled]];
+      verifyOpenInIncognitoActionWithURL:distillablePageURL.GetContent()];
 }
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
 - (void)testContextMenuMarkAsReadAndBack {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
@@ -1269,11 +1247,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests the Share context menu action for a reading list entry.
 - (void)testContextMenuShare {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
@@ -1284,11 +1257,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests the Delete context menu action for a reading list entry.
 - (void)testContextMenuDelete {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);

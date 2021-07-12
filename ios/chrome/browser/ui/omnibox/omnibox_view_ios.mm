@@ -94,9 +94,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
 
   paste_delegate_ = [[OmniboxTextFieldPasteDelegate alloc] init];
   [field_ setPasteDelegate:paste_delegate_];
-
-  use_strikethrough_workaround_ = base::ios::IsRunningOnOrLater(10, 3, 0) &&
-                                  !base::ios::IsRunningOnOrLater(11, 2, 0);
 }
 
 OmniboxViewIOS::~OmniboxViewIOS() = default;

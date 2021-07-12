@@ -230,10 +230,6 @@ class OmniboxViewIOS : public OmniboxView,
   // popup, and then remove this hack.  b/5877366.
   BOOL ignore_popup_updates_;
 
-  // iOS 10.3 fails to apply the strikethrough style unless an extra style is
-  // also applied. See https://crbug.com/699702 for discussion.
-  BOOL use_strikethrough_workaround_;
-
   // Temporary pointer to the attributed display string, stored as color and
   // other emphasis attributes are applied by the superclass.
   NSMutableAttributedString* attributing_display_string_;

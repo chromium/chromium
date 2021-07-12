@@ -301,10 +301,6 @@
   testAppLaunchManagerBackgroundAndForegroundApp
 #endif
 - (void)FLAKY_testAppLaunchManagerBackgroundAndForegroundApp {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 12 and lower.");
-  }
-
   [ChromeEarlGrey openNewTab];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [ChromeEarlGrey waitForMainTabCount:2];

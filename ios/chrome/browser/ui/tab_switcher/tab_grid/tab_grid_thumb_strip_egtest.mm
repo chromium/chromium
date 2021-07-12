@@ -74,13 +74,9 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Enabling this feature causes all tests to fail as part of setup.
-  // See crbug.com/1143299.
-  if (base::ios::IsRunningOnIOS13OrLater()) {
-    config.features_enabled.push_back(kExpandedTabStrip);
-    config.features_disabled.push_back(
-        fullscreen::features::kSmoothScrollingDefault);
-  }
+  config.features_enabled.push_back(kExpandedTabStrip);
+  config.features_disabled.push_back(
+      fullscreen::features::kSmoothScrollingDefault);
   return config;
 }
 
@@ -103,11 +99,6 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
   // The feature only works on iPad.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
-  }
-
-  // See crbug.com/1143299.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
   }
 
   [self setUpTestServer];
@@ -194,11 +185,6 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
     EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
   }
 
-  // See crbug.com/1143299.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
-  }
-
   [self setUpTestServer];
 
   const GURL URL = self.testServer->GetURL("/querytitle?Tab1");
@@ -256,11 +242,6 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
   // The feature only works on iPad.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
-  }
-
-  // See crbug.com/1143299.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
   }
 
   [self setUpTestServer];
@@ -335,11 +316,6 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
     EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
   }
 
-  // See crbug.com/1143299.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
-  }
-
   [self setUpTestServer];
 
   const GURL URL = self.testServer->GetURL("/querytitle?Tab1");
@@ -384,11 +360,6 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
   // The feature only works on iPad.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
-  }
-
-  // See crbug.com/1143299.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
   }
 
   [self setUpTestServer];

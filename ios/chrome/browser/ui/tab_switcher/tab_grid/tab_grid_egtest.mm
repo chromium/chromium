@@ -245,27 +245,17 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
 // Tests the Copy Link action on a recent tab's context menu.
 - (void)testRecentTabsContextMenuCopyLink {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
   [ChromeEarlGrey
-      verifyCopyLinkActionWithText:[NSString stringWithUTF8String:_URL1.spec()
-                                                                      .c_str()]
-                      useNewString:YES];
+      verifyCopyLinkActionWithText:[NSString
+                                       stringWithUTF8String:_URL1.spec()
+                                                                .c_str()]];
 }
 
 // Tests the Open in New Tab action on a recent tab's context menu.
 - (void)testRecentTabsContextMenuOpenInNewTab {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
@@ -282,11 +272,6 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
 
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
@@ -295,11 +280,6 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
 // Tests the Share action on a recent tab's context menu.
 - (void)testRecentTabsContextMenuShare {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
@@ -312,11 +292,6 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
 // Tests the Share action on a tab grid item's context menu.
 - (void)testTabGridItemContextMenuShare {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Tab Grid context menu only supported on iOS 13 and later.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -332,11 +307,6 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
 // Tests the Add to Reading list action on a tab grid item's context menu.
 - (void)testTabGridItemContextMenuAddToReadingList {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Tab Grid context menu only supported on iOS 13 and later.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -351,11 +321,6 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
 // Tests the Add to Bookmarks action on a tab grid item's context menu.
 - (void)testTabGridItemContextMenuAddToBookmarks {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Tab Grid context menu only supported on iOS 13 and later.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -412,11 +377,6 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
 // Tests the Share action on a tab grid item's context menu.
 - (void)testTabGridItemContextCloseTab {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Tab Grid context menu only supported on iOS 13 and later.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 

@@ -323,11 +323,6 @@ void SearchBookmarksForText(NSString* search_text) {
 // Tests that swipe is disabled in managed bookmarks top-level folder and
 // sub-folder.
 - (void)testSwipeDisabled {
-  // TODO(crbug.com/1070676): Earl grey swipe fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12.");
-  }
-
   [BookmarkEarlGreyUI openBookmarks];
   [self openCustomManagedBookmarksFolder];
 
@@ -353,11 +348,6 @@ void SearchBookmarksForText(NSString* search_text) {
 
 // Tests that swiping is disabled on managed bookmark items on search results.
 - (void)testSwipeDisabledOnSearchResults {
-  // TODO(crbug.com/1070676): Earl grey swipe fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12.");
-  }
-
   [BookmarkEarlGreyUI openBookmarks];
   SearchBookmarksForText(@"URL\n");
 

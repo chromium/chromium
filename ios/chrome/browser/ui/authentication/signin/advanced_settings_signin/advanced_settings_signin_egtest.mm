@@ -221,9 +221,6 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 // Verifies that advanced sign-in shows an alert dialog when being swiped to
 // dismiss.
 - (void)testSwipeDownToCancelAdvancedSignin {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 

@@ -1184,10 +1184,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   return [ChromeEarlGreyAppInterface isMobileModeByDefault];
 }
 
-- (BOOL)isNativeContextMenusEnabled {
-  return [ChromeEarlGreyAppInterface isNativeContextMenusEnabled];
-}
-
 - (BOOL)areMultipleWindowsSupported {
   return [ChromeEarlGreyAppInterface areMultipleWindowsSupported];
 }
@@ -1309,10 +1305,9 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 #pragma mark - Context Menus Utilities (EG2)
 
-- (void)verifyCopyLinkActionWithText:(NSString*)text
-                        useNewString:(BOOL)useNewString {
+- (void)verifyCopyLinkActionWithText:(NSString*)text {
   [ChromeEarlGreyAppInterface clearPasteboardURLs];
-  [[EarlGrey selectElementWithMatcher:CopyLinkButton(useNewString)]
+  [[EarlGrey selectElementWithMatcher:CopyLinkButton()]
       performAction:grey_tap()];
   [self verifyStringCopied:text];
 }
@@ -1340,14 +1335,13 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   [ChromeEarlGrey waitForWebStateContainingText:content inWindowWithNumber:1];
 }
 
-- (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL
-                              useNewString:(BOOL)useNewString {
+- (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL {
   // Check tab count prior to execution.
   NSUInteger oldRegularTabCount = [ChromeEarlGreyAppInterface mainTabCount];
   NSUInteger oldIncognitoTabCount =
       [ChromeEarlGreyAppInterface incognitoTabCount];
 
-  [[EarlGrey selectElementWithMatcher:OpenLinkInIncognitoButton(useNewString)]
+  [[EarlGrey selectElementWithMatcher:OpenLinkInIncognitoButton()]
       performAction:grey_tap()];
 
   [self waitForIncognitoTabCount:oldIncognitoTabCount + 1];

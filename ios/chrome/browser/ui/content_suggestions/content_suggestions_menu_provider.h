@@ -15,8 +15,7 @@
 // represented on the UI by |view|.
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (ContentSuggestionsMostVisitedItem*)item
-                                                      fromView:(UIView*)view
-    API_AVAILABLE(ios(13.0));
+                                                      fromView:(UIView*)view;
 
 @end
 

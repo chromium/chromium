@@ -17,7 +17,6 @@ class GURL;
 
 // Factory providing methods to create UIActions with consistent titles, images
 // and metrics structure.
-API_AVAILABLE(ios(13.0))
 @interface ActionFactory : NSObject
 
 // Initializes a factory instance for the current |browser| to create action

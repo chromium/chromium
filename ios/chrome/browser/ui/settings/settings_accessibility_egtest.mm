@@ -119,10 +119,6 @@ id<GREYMatcher> BandwidthSettingsButton() {
 // Verifies that the Settings screen can be swiped down to dismiss, and clean up
 // is performed allowing a new presentation.
 - (void)testSettingsSwipeDownDismiss {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
-
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Check that Settings is presented.

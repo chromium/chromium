@@ -103,9 +103,6 @@ using chrome_test_util::WindowWithNumber;
 
 // Verifies that the CBD screen can be swiped down to dismiss.
 - (void)testClearBrowsingDataSwipeDown {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
   [self openClearBrowsingDataDialog];
 
   // Check that CBD is presented.
@@ -255,10 +252,6 @@ using chrome_test_util::WindowWithNumber;
 
 // Tests that tapping the "Learn more" link opens the help center.
 - (void)testTapLearnMore {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12.");
-  }
-
   [self openClearBrowsingDataDialog];
 
   [[EarlGrey
@@ -281,10 +274,6 @@ using chrome_test_util::WindowWithNumber;
 // Tests that opening the Clear Browsing interface from the History and tapping
 // the "Learn more" link opens the help center.
 - (void)testTapLearnMoreFromHistory {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12.");
-  }
-
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::

@@ -220,7 +220,7 @@
   // On iOS 13, beta 3, the popover is not dismissed when the keyboard hides.
   // This explicitly dismiss any popover.
   // TODO(crbug.com/1116037): Verify if this workaround is still needed.
-  if (base::ios::IsRunningOnIOS13OrLater() && IsIPadIdiom()) {
+  if (IsIPadIdiom()) {
     [self reset];
   }
 }

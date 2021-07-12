@@ -16,7 +16,7 @@
 #error "This file requires ARC support."
 #endif
 
-id MockMXMetadata() API_AVAILABLE(ios(13.0)) {
+id MockMXMetadata() {
   // TODO(crbug.com/1140474): See related bug for why |bundleVersion| comes from
   // mainBundle instead of from version_info::GetVersionNumber(). Remove once
   // iOS 14.2 reaches mass adoption.
@@ -36,7 +36,7 @@ id MockNSMeasurement(double value) {
   return mock_measurement;
 }
 
-id MockMXMemoryMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
+id MockMXMemoryMetric(NSDictionary* dictionary) {
   id memory_metric = OCMClassMock([MXMemoryMetric class]);
   NSNumber* suspended_memory =
       [dictionary objectForKey:@"averageSuspendedMemory"];
@@ -61,7 +61,7 @@ id MockMXMemoryMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
   return memory_metric;
 }
 
-id MockMXAppRunTimeMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
+id MockMXAppRunTimeMetric(NSDictionary* dictionary) {
   id app_run_time = OCMClassMock([MXAppRunTimeMetric class]);
   NSNumber* cumulative_foreground =
       [dictionary objectForKey:@"cumulativeForegroundTime"];
@@ -85,8 +85,7 @@ id MockMXAppRunTimeMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
   return app_run_time;
 }
 
-id MockMXHistogram(NSDictionary* dictionary, int delta)
-    API_AVAILABLE(ios(13.0)) {
+id MockMXHistogram(NSDictionary* dictionary, int delta) {
   id histogram = OCMClassMock([MXHistogram class]);
   OCMStub([histogram totalBucketCount]).andReturn(dictionary.count);
   NSMutableArray* buckets = [[NSMutableArray alloc] init];
@@ -104,7 +103,7 @@ id MockMXHistogram(NSDictionary* dictionary, int delta)
   return histogram;
 }
 
-id MockMXAppLaunchMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
+id MockMXAppLaunchMetric(NSDictionary* dictionary) {
   id app_launch = OCMClassMock([MXAppLaunchMetric class]);
   NSDictionary* first_draw =
       [dictionary objectForKey:@"histogrammedTimeToFirstDrawKey"];
@@ -125,8 +124,7 @@ id MockMXAppLaunchMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
   return app_launch;
 }
 
-id MockMXAppResponsivenessMetric(NSDictionary* dictionary)
-    API_AVAILABLE(ios(13.0)) {
+id MockMXAppResponsivenessMetric(NSDictionary* dictionary) {
   id responsiveness = OCMClassMock([MXAppResponsivenessMetric class]);
   NSDictionary* hang_time =
       [dictionary objectForKey:@"histogrammedAppHangTime"];
@@ -202,7 +200,7 @@ id MockMXAppExitMetric(NSDictionary* dictionary) API_AVAILABLE(ios(14.0)) {
 }
 #endif
 
-id MockMetricPayload(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
+id MockMetricPayload(NSDictionary* dictionary) {
   id mock_report = OCMClassMock([MXMetricPayload class]);
   NSDictionary* application_time_metrics_dict =
       [dictionary objectForKey:@"applicationTimeMetrics"];

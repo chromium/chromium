@@ -30,8 +30,7 @@ class Browser;
 // The browser.
 @property(nonatomic, assign) Browser* browser;
 // Provider of menu configurations for the readingList component.
-@property(nonatomic, weak) id<ReadingListMenuProvider> menuProvider
-    API_AVAILABLE(ios(13.0));
+@property(nonatomic, weak) id<ReadingListMenuProvider> menuProvider;
 
 // Initializers.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

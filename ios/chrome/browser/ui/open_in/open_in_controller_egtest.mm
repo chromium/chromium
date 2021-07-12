@@ -72,11 +72,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   if ([ChromeEarlGrey isIPadIdiom])
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
 
-  // UIActivityViewController doesn't display the filename on iOS 12.
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
-
   // Open the activity menu.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
@@ -112,11 +107,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom])
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
-
-  // UIActivityViewController doesn't display the filename on iOS 12.
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
 
   // Open the activity menu.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPNGPath)];

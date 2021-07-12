@@ -1224,7 +1224,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 
   // Starting with iOS13, alerts of style UIAlertControllerStyleActionSheet
   // need a sourceView or sourceRect, or this crashes.
-  if (base::ios::IsRunningOnIOS13OrLater() && IsIPadIdiom()) {
+  if (IsIPadIdiom()) {
     exportConfirmation.popoverPresentationController.sourceView =
         self.tableView;
   }

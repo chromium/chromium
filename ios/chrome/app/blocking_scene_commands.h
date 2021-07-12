@@ -11,8 +11,7 @@
 @protocol BlockingSceneCommands
 
 // Activates the scene that currently shows blocking UI.
-- (void)activateBlockingScene:(UIScene*)requestingScene
-    API_AVAILABLE(ios(13.0));
+- (void)activateBlockingScene:(UIScene*)requestingScene;
 
 @end
 

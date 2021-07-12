@@ -16,14 +16,13 @@
 // associated |view|.
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (TableViewURLItem*)item
-                                                      fromView:(UIView*)view
-    API_AVAILABLE(ios(13.0));
+                                                      fromView:(UIView*)view;
 
 // Creates a context menu configuration instance for the header of the given
 // |sectionIdentifier|.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForHeaderWithSectionIdentifier:
-        (NSInteger)sectionIdentifier API_AVAILABLE(ios(13.0));
+        (NSInteger)sectionIdentifier;
 
 @end
 

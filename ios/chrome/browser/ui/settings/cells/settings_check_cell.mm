@@ -92,14 +92,8 @@
     _trailingImageView.hidden = YES;
     [contentView addSubview:_trailingImageView];
     // |activityIndictor| attributes.
-    if (base::ios::IsRunningOnIOS13OrLater()) {
-      // Creates default activity indicator. Color depends on appearance.
-      _activityIndicator = [[UIActivityIndicatorView alloc] init];
-    } else {
-      // For iOS 12 and lower the color should be always gray otherwise
-      // indicator is not visible.
-      _activityIndicator = GetMediumUIActivityIndicatorView();
-    }
+    // Creates default activity indicator. Color depends on appearance.
+    _activityIndicator = [[UIActivityIndicatorView alloc] init];
     _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
     _activityIndicator.hidden = YES;
     [contentView addSubview:_activityIndicator];

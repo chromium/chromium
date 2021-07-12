@@ -19,9 +19,8 @@ namespace {
 
 using UIKitUIUtilTest = PlatformTest;
 
-// Verify the assumption about UIViewController that on iPad and iOS 13 all
-// orientations are supported, and all orientations but Portrait Upside-Down on
-// iOS 12 iPhone and iPod Touch.
+// Verify the assumption about UIViewController that on iPad and iOS 13+ all
+// orientations are supported.
 TEST_F(UIKitUIUtilTest, UIViewControllerSupportedOrientationsTest) {
   UIViewController* viewController =
       [[UIViewController alloc] initWithNibName:nil bundle:nil];
@@ -31,15 +30,6 @@ TEST_F(UIKitUIUtilTest, UIViewControllerSupportedOrientationsTest) {
               [viewController supportedInterfaceOrientations]);
     return;
   }
-
-  // Running on iPhone iOS 12 or earlier.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EXPECT_EQ(UIInterfaceOrientationMaskAllButUpsideDown,
-              [viewController supportedInterfaceOrientations]);
-    return;
-  }
-
-  // Running on iOS 13 iPhone.
 
   // Starting with iOS 13, the default [UIViewController
   // supportedInterfaceOrientations] returns UIInterfaceOrientationMaskAll.

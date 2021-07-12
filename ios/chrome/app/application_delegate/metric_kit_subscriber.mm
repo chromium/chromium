@@ -61,8 +61,8 @@ void ReportExitReason(base::HistogramBase* histogram,
 }
 #endif
 
-void ReportLongDuration(const char* histogram_name, NSMeasurement* measurement)
-    API_AVAILABLE(ios(13.0)) {
+void ReportLongDuration(const char* histogram_name,
+                        NSMeasurement* measurement) {
   if (!measurement) {
     return;
   }
@@ -75,8 +75,7 @@ void ReportLongDuration(const char* histogram_name, NSMeasurement* measurement)
       base::TimeDelta::FromSeconds(86400 /* secs per day */), 50);
 }
 
-void ReportMemory(const char* histogram_name, NSMeasurement* measurement)
-    API_AVAILABLE(ios(13.0)) {
+void ReportMemory(const char* histogram_name, NSMeasurement* measurement) {
   if (!measurement) {
     return;
   }
@@ -87,8 +86,7 @@ void ReportMemory(const char* histogram_name, NSMeasurement* measurement)
   base::UmaHistogramMemoryLargeMB(histogram_name, value);
 }
 
-void WriteMetricPayloads(NSArray<MXMetricPayload*>* payloads)
-    API_AVAILABLE(ios(13.0)) {
+void WriteMetricPayloads(NSArray<MXMetricPayload*>* payloads) {
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                        NSUserDomainMask, YES);
   NSString* documents_directory = [paths objectAtIndex:0];
@@ -229,8 +227,7 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
   }
 }
 
-- (void)didReceiveMetricPayloads:(NSArray<MXMetricPayload*>*)payloads
-    API_AVAILABLE(ios(13.0)) {
+- (void)didReceiveMetricPayloads:(NSArray<MXMetricPayload*>*)payloads {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
   if ([standard_defaults boolForKey:kEnableMetricKit]) {
     base::ThreadPool::PostTask(
@@ -246,8 +243,7 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
 }
 
 - (void)logStartupDurationMXHistogram:(MXHistogram*)histogram
-                       toUMAHistogram:(const char*)histogramUMAName
-    API_AVAILABLE(ios(13.0)) {
+                       toUMAHistogram:(const char*)histogramUMAName {
   if (!histogram || !histogram.totalBucketCount) {
     return;
   }
@@ -335,7 +331,7 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
 }
 #endif
 
-- (void)processPayload:(MXMetricPayload*)payload API_AVAILABLE(ios(13.0)) {
+- (void)processPayload:(MXMetricPayload*)payload {
   // TODO(crbug.com/1140474): See related bug for why |bundleVersion| comes from
   // mainBundle instead of from version_info::GetVersionNumber(). Remove once
   // iOS 14.2 reaches mass adoption.

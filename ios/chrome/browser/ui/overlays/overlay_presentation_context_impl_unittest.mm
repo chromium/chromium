@@ -289,13 +289,6 @@ TEST_F(OverlayPresentationContextImplTest, CanShowRequest) {
 
 // Tests the presentation flow for contained overlay UI.
 TEST_F(OverlayPresentationContextImplTest, ContainedOverlayUI) {
-#if !TARGET_OS_SIMULATOR
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    // TODO(crbug.com/1099287): Test is failing on iOS 12.4 device.
-    return;
-  }
-#endif  // TARGET_OS_SIMULATOR
-
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<TestContainedOverlay>();
   context_.PrepareToShowOverlayUI(request.get());

@@ -57,7 +57,6 @@
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/menu_util.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -120,7 +119,6 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 
 }  // namespace
 
-API_AVAILABLE(ios(13.0))
 @interface ListModelCollapsedSceneSessionMediator : ListModelCollapsedMediator
 // Creates a collapsed section mediator that stores data in the session's
 // userInfo instead of NSUserDefaults, which allows different states per window.
@@ -891,16 +889,9 @@ API_AVAILABLE(ios(13.0))
   }
 
   // Gesture recognizer for long press context menu.
-  if (!IsNativeContextMenuEnabled()) {
-    UILongPressGestureRecognizer* longPress =
-        [[UILongPressGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(handleLongPress:)];
-    [header addGestureRecognizer:longPress];
-  } else if (@available(iOS 13, *)) {
-    [header addInteraction:[[UIContextMenuInteraction alloc]
-                               initWithDelegate:self]];
-  }
+  [header
+      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
+
   // Gesture recognizer for header collapsing/expanding.
   UITapGestureRecognizer* tapGesture =
       [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -911,14 +902,7 @@ API_AVAILABLE(ios(13.0))
 
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
-                                        point:(CGPoint)point
-    API_AVAILABLE(ios(13.0)) {
-  if (!IsNativeContextMenuEnabled()) {
-    // Returning nil will allow the gesture to be captured and show the old
-    // context menus.
-    return nil;
-  }
-
+                                        point:(CGPoint)point {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   if (itemType != ItemTypeRecentlyClosed && itemType != ItemTypeSessionTabData)
     return nil;
@@ -936,8 +920,7 @@ API_AVAILABLE(ios(13.0))
 
 - (UIContextMenuConfiguration*)contextMenuInteraction:
                                    (UIContextMenuInteraction*)interaction
-                       configurationForMenuAtLocation:(CGPoint)location
-    API_AVAILABLE(ios(13.0)) {
+                       configurationForMenuAtLocation:(CGPoint)location {
   UIView* header = [interaction view];
   NSInteger tappedHeaderSectionIdentifier = header.tag;
 

@@ -93,12 +93,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a fully specified url can be shared.
 - (void)testShareUrl {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    // Test is unsupported on iOS 12 because presenting the share sheet in this
-    // EarlGrey test crashes the app.
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iOS 12.");
-  }
-
   const GURL pageURL = self.testServer->GetURL(kWebShareValidLinkUrl);
   [ChromeEarlGrey loadURL:pageURL];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -112,12 +106,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a relative  url can be shared.
 - (void)testShareRelativeUrl {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    // Test is unsupported on iOS 12 because presenting the share sheet in this
-    // EarlGrey test crashes the app.
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iOS 12.");
-  }
-
   const GURL pageURL = self.testServer->GetURL(kWebShareRelativeLinkUrl);
   [ChromeEarlGrey loadURL:pageURL];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -131,12 +119,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a relative url can be shared when the filename starts with "file".
 - (void)testShareRelativeFilenameUrl {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    // Test is unsupported on iOS 12 because presenting the share sheet in this
-    // EarlGrey test crashes the app.
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iOS 12.");
-  }
-
   const GURL pageURL =
       self.testServer->GetURL(kWebShareRelativeFilenameFileUrl);
   [ChromeEarlGrey loadURL:pageURL];
@@ -151,12 +133,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a "file://" url can not be shared.
 - (void)testShareFileUrl {
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    // Test is unsupported on iOS 12 because presenting the share sheet in this
-    // EarlGrey test crashes the app.
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iOS 12.");
-  }
-
   const GURL pageURL = self.testServer->GetURL(kWebShareFileUrl);
   [ChromeEarlGrey loadURL:pageURL];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]

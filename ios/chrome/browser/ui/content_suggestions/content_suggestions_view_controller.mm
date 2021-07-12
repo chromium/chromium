@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/menu_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -527,14 +526,7 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
 
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
-                                         point:(CGPoint)point
-    API_AVAILABLE(ios(13.0)) {
-  if (!IsNativeContextMenuEnabled()) {
-    // Returning nil will allow the gesture to be captured and show the old
-    // context menus.
-    return nil;
-  }
-
+                                         point:(CGPoint)point {
   CollectionViewItem* item =
       [self.collectionViewModel itemAtIndexPath:indexPath];
 
@@ -973,12 +965,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
                           readLaterAction:NO];
       break;
     case ContentSuggestionTypeMostVisited:
-      if (!IsNativeContextMenuEnabled()) {
-        [self.suggestionCommandHandler
-            displayContextMenuForMostVisitedItem:touchedItem
-                                         atPoint:touchLocation
-                                     atIndexPath:touchedItemIndexPath];
-      }
       break;
     default:
       break;

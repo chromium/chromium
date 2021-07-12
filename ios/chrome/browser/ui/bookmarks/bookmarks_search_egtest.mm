@@ -388,10 +388,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_longPress()];
 
   id<GREYMatcher> editFolderAction =
-      [ChromeEarlGrey isNativeContextMenusEnabled]
-          ? chrome_test_util::BookmarksContextMenuEditButton()
-          : ButtonWithAccessibilityLabelId(
-                IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
+      chrome_test_util::BookmarksContextMenuEditButton();
   [[EarlGrey selectElementWithMatcher:editFolderAction]
       performAction:grey_tap()];
 

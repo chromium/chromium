@@ -194,8 +194,7 @@
 
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (HistoryEntryItem*)item
-                                                      withView:(UIView*)view
-    API_AVAILABLE(ios(13.0)) {
+                                                      withView:(UIView*)view {
   __weak id<HistoryEntryItemDelegate> historyItemDelegate =
       self.historyTableViewController;
   __weak __typeof(self) weakSelf = self;

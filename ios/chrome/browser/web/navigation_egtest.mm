@@ -564,13 +564,6 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // Tests that navigating forward from a WebUI URL works when resuming from
 // session restore. This is a regression test for https://crbug.com/814790.
 - (void)testRestoreHistoryToWebUIAndNavigateForward {
-#if TARGET_IPHONE_SIMULATOR
-  if (!base::ios::IsRunningOnIOS13OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
-    // This test is failing on one bot for that very specific configuration. See
-    // https://crbug.com/1059496 for more info.
-    EARL_GREY_TEST_DISABLED(@"Failing on iPhone 12 simulator.");
-  }
-#endif
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationURL = self.testServer->GetURL(kSimpleFileBasedTestURL);
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
@@ -597,13 +590,6 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 13.4 but enabled in iOS 14");
   }
 
-#if TARGET_IPHONE_SIMULATOR
-  if (!base::ios::IsRunningOnIOS13OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
-    // This test is failing on one bot for that very specific configuration. See
-    // https://crbug.com/1059496 for more info.
-    EARL_GREY_TEST_DISABLED(@"Failing on iPhone 12 simulator.");
-  }
-#endif
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationURL = self.testServer->GetURL(kSimpleFileBasedTestURL);
   [ChromeEarlGrey loadURL:destinationURL];
@@ -623,13 +609,6 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // Tests that restoring a placeholder URL is correctly restored.  This is a
 // regression test from http://crbug.com/1011758.
 - (void)testRestoreHistoryToPlaceholderURL {
-#if TARGET_IPHONE_SIMULATOR
-  if (!base::ios::IsRunningOnIOS13OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
-    // This test is failing on one bot for that very specific configuration. See
-    // https://crbug.com/1059496 for more info.
-    EARL_GREY_TEST_DISABLED(@"Failing on iPhone 12 simulator.");
-  }
-#endif
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationURL("chrome://crash");
   [ChromeEarlGrey loadURL:destinationURL];

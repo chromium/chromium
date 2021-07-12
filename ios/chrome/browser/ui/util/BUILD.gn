@@ -32,8 +32,6 @@ source_set("util") {
     "layout_guide_names.mm",
     "manual_text_framer.h",
     "manual_text_framer.mm",
-    "menu_util.h",
-    "menu_util.mm",
     "named_guide.h",
     "named_guide.mm",
     "named_guide_util.h",

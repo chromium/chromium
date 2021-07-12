@@ -460,8 +460,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (id<ReadingListListItem>)item
-                                                      withView:(UIView*)view
-    API_AVAILABLE(ios(13.0)) {
+                                                      withView:(UIView*)view {
   __weak id<ReadingListListItemAccessibilityDelegate> accessibilityDelegate =
       self.tableViewController;
   __weak __typeof(self) weakSelf = self;
