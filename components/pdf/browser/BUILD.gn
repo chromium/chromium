@@ -28,20 +28,31 @@ static_library("browser") {
 
 if (enable_pdf) {
   static_library("interceptors") {
+    friend = [ ":unit_tests" ]
+
+    public = [
+      "pdf_navigation_throttle.h",
+      "pdf_stream_delegate.h",
+      "pdf_url_loader_request_interceptor.h",
+    ]
+
     sources = [
       "pdf_navigation_throttle.cc",
-      "pdf_navigation_throttle.h",
       "pdf_stream_delegate.cc",
-      "pdf_stream_delegate.h",
       "pdf_url_loader_request_interceptor.cc",
-      "pdf_url_loader_request_interceptor.h",
+      "plugin_response_writer.cc",
+      "plugin_response_writer.h",
     ]
 
     deps = [
       "//base",
       "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//mojo/public/cpp/system",
+      "//net",
       "//pdf:features",
       "//services/network/public/cpp:cpp_base",
+      "//services/network/public/mojom",
       "//ui/base",
       "//url",
     ]
@@ -53,8 +64,11 @@ if (enable_pdf) {
     sources = [
       "fake_pdf_stream_delegate.cc",
       "fake_pdf_stream_delegate.h",
+      "mock_url_loader_client.cc",
+      "mock_url_loader_client.h",
       "pdf_navigation_throttle_unittest.cc",
       "pdf_url_loader_request_interceptor_unittest.cc",
+      "plugin_response_writer_unittest.cc",
     ]
 
     deps = [
@@ -63,7 +77,12 @@ if (enable_pdf) {
       "//base/test:test_support",
       "//content/public/browser",
       "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//mojo/public/cpp/system",
+      "//net",
       "//pdf:features",
+      "//services/network/public/cpp:cpp_base",
+      "//services/network/public/mojom",
       "//testing/gmock",
       "//testing/gtest",
       "//url",
