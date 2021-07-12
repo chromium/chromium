@@ -5,6 +5,8 @@
 #ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_LOGGING_IMPL_H_
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_LOGGING_IMPL_H_
 
+#include <vector>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"

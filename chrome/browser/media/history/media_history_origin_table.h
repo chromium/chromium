@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_ORIGIN_TABLE_H_
 
 #include <string>
+#include <vector>
 
 #include "base/updateable_sequenced_task_runner.h"
 #include "chrome/browser/media/history/media_history_table_base.h"

@@ -5,6 +5,8 @@
 #ifndef GPU_IPC_GPU_TASK_SCHEDULER_HELPER_H_
 #define GPU_IPC_GPU_TASK_SCHEDULER_HELPER_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"

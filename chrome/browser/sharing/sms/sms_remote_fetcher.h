@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARING_SMS_SMS_REMOTE_FETCHER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

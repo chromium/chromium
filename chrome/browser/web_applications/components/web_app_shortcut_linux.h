@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_SHORTCUT_LINUX_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FIELD_INFO_TABLE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FIELD_INFO_TABLE_H_
 
+#include <vector>
+
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"

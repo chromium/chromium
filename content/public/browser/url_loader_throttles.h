@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_URL_LOADER_THROTTLES_H_
 #define CONTENT_PUBLIC_BROWSER_URL_LOADER_THROTTLES_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "content/common/content_export.h"
 

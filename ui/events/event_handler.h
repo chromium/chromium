@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_EVENT_HANDLER_H_
 #define UI_EVENTS_EVENT_HANDLER_H_
 
+#include <vector>
+
 #include "base/containers/stack.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/events_export.h"

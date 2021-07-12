@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_HID_CHOOSER_H_
 #define CONTENT_PUBLIC_BROWSER_HID_CHOOSER_H_
 
+#include <vector>
+
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "content/common/content_export.h"

@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/strings/string_piece.h"

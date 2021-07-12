@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CART_CART_DB_H_
 #define CHROME_BROWSER_CART_CART_DB_H_
 
+#include <vector>
+
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 
