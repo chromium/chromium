@@ -118,30 +118,27 @@ void PrefetchBrowserTestBase::NavigateToURLAndWaitTitle(
   // Execute the JavaScript code to trigger the followup navigation from the
   // current page.
   EXPECT_TRUE(
-      ExecJs(shell()->web_contents(),
-             base::StringPrintf("location.href = '%s';", url.spec().c_str())));
+      ExecJs(shell()->web_contents(), JsReplace("location.href = $1;", url)));
   EXPECT_EQ(title16, title_watcher.WaitAndGetTitle());
 }
 
 void PrefetchBrowserTestBase::WaitUntilLoaded(const GURL& url) {
   std::string script = R"(
-new Promise((resolve) => {
-  const url = $1;
-  if (performance.getEntriesByName(url).length > 0) {
-    resolve();
-    return;
-  }
-  new PerformanceObserver((list) => {
-    if (list.getEntriesByName(url).length > 0) {
-      resolve();
-    }
-  }).observe({ entryTypes: ['resource'] });
-}).then(() => {
-  window.domAutomationController.send(true);
-}))";
+    new Promise((resolve) => {
+      const url = $1;
+      if (performance.getEntriesByName(url).length > 0) {
+        resolve();
+        return;
+      }
+      new PerformanceObserver((list) => {
+        if (list.getEntriesByName(url).length > 0) {
+          resolve();
+        }
+      }).observe({ entryTypes: ['resource'] });
+    })
+  )";
 
-  ASSERT_EQ(true, EvalJs(shell()->web_contents(), JsReplace(script, url),
-                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), JsReplace(script, url)));
 }
 
 // static
