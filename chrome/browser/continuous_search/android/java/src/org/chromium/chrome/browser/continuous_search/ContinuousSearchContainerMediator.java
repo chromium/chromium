@@ -40,6 +40,8 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     private boolean mInitialized;
     private boolean mIsVisible;
     private boolean mWantVisible;
+    private boolean mListenForContentOffset;
+    private boolean mAndroidViewSuppressed;
     private int mJavaLayoutHeight;
     private int mObscuredToken = TokenHolder.INVALID_TOKEN;
 
@@ -54,6 +56,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         mDefaultTopContainerHeightSupplier = defaultTopContainerHeightSupplier;
         mInitializeLayout = initializeLayout;
         mHideToolbarShadow = hideToolbarShadow;
+        mBrowserControlsStateProvider.addObserver(this);
     }
 
     void onLayoutInitialized(PropertyModel model, Runnable requestLayout) {
@@ -140,7 +143,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
 
     private void updateVisibility(boolean isVisible, boolean forceNoAnimation) {
         mIsVisible = isVisible;
-        mBrowserControlsStateProvider.addObserver(this);
+        mListenForContentOffset = true;
         if (isVisible) {
             mHideToolbarShadow.onResult(true);
         }
@@ -176,6 +179,8 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     }
 
     private void updateState() {
+        if (!mListenForContentOffset) return;
+
         final int topControlsHeight = mBrowserControlsStateProvider.getTopControlsHeight();
         final int topControlsMinHeight = mBrowserControlsStateProvider.getTopControlsMinHeight();
 
@@ -202,7 +207,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         // If we're running the animations in native, the Android view should only be visible when
         // the container is fully shown. Otherwise, the Android view will be visible if it's within
         // screen boundaries. This change will happen immediately.
-        final int androidViewState = mVisibilityTokenHolder.hasTokens()
+        final int androidViewState = (mAndroidViewSuppressed || mVisibilityTokenHolder.hasTokens())
                 ? View.INVISIBLE
                 : !uiFullyVisible && isUiVisible && mCanAnimateNativeBrowserControls.get()
                         ? View.GONE
@@ -216,8 +221,26 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         if (doneHiding) {
             mHideToolbarShadow.onResult(false);
             runOnFinishedHide();
-            mBrowserControlsStateProvider.removeObserver(this);
+            mListenForContentOffset = false;
         }
+    }
+
+    /**
+     * Updates the Android visibility in response to {@link SceneOverlay} Android view suppression
+     * requests.
+     * @param visibility The Android View is visiblility.
+     */
+    @Override
+    public void onAndroidVisibilityChanged(int visibility) {
+        if (mModel == null) return;
+
+        mAndroidViewSuppressed = visibility != View.VISIBLE;
+        final int androidViewState =
+                (!mAndroidViewSuppressed && mIsVisible && !mVisibilityTokenHolder.hasTokens())
+                ? View.VISIBLE
+                : View.INVISIBLE;
+
+        mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY, androidViewState);
     }
 
     @VisibleForTesting

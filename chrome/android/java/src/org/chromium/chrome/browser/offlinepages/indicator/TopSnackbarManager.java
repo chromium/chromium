@@ -67,6 +67,12 @@ public class TopSnackbarManager implements OnClickListener, ApplicationStatus.Ac
     public void onBottomControlsHeightChanged(
             int bottomControlsHeight, int bottomControlsMinHeight) {}
 
+    @Override
+    public void onAndroidVisibilityChanged(int visibility) {
+        // TODO(crbug/1223069): Remove this workaround for default method desugaring in D8 causing
+        // AbstractMethodErrors in some cases once fixed upstream.
+    }
+
     /**
      * Shows a snackbar at the top of the given activity.
      */

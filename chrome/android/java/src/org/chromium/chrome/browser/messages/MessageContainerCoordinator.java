@@ -79,6 +79,12 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         updateMargins();
     }
 
+    @Override
+    public void onAndroidVisibilityChanged(int visibility) {
+        // TODO(crbug/1223069): Remove this workaround for default method desugaring in D8 causing
+        // AbstractMethodErrors in some cases once fixed upstream.
+    }
+
     /** @return Offset of the message container from the top of the screen. */
     private int getContainerTopOffset() {
         if (mControlsManager.getContentOffset() == 0) return 0;

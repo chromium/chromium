@@ -134,6 +134,9 @@ public class BrowserControlsManager
             // since drawing caches etc. won't be destroyed, and the layout may be less expensive.
             mControlContainer.getView().setVisibility(visibility);
             mControlContainer.getView().requestLayout();
+            for (BrowserControlsStateProvider.Observer observer : mControlsObservers) {
+                observer.onAndroidVisibilityChanged(visibility);
+            }
         }
     };
 

@@ -122,6 +122,12 @@ public class FullscreenManagerTestUtils {
                     browserControlsStateProvider.removeObserver(this);
                 }
             }
+
+            @Override
+            public void onAndroidVisibilityChanged(int visibility) {
+                // TODO(crbug/1223069): Remove this workaround for default method desugaring in D8
+                // causing AbstractMethodErrors in some cases once fixed upstream.
+            }
         });
 
         float dragX = 50f;
