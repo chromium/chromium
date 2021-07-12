@@ -151,6 +151,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
       chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
   void OnProbeServiceDisconnect();
 
+  void RecordArcGhostWindowLaunch(bool is_arc_ghost_window);
+
   FullRestoreAppLaunchHandler* handler_ = nullptr;
 
   // The app id list to be restored. When the ARC app is ready in

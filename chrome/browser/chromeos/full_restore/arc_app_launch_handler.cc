@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/cpu.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -63,6 +64,8 @@ constexpr int kCpuUsageThreshold = 90;
 // Apply CPU usage restrict if and only if the CPU cores not over
 // |kCpuRestrictCoresCondition|.
 constexpr int kCpuRestrictCoresCondition = 2;
+
+constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
 
 }  // namespace
 
@@ -316,12 +319,12 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
     if (window_handler_ && (data_it.second->bounds_in_root.has_value() ||
                             data_it.second->current_bounds.has_value())) {
-      handler_->RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
+      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
       arc_handler->window_handler()->LaunchArcGhostWindow(
           app_id, arc_session_id, data_it.second.get());
       launch_ghost_window = true;
     } else {
-      handler_->RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
+      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
     }
 #endif
 
@@ -625,6 +628,11 @@ void ArcAppLaunchHandler::OnCpuUsageUpdated(
 
 void ArcAppLaunchHandler::OnProbeServiceDisconnect() {
   probe_service_.reset();
+}
+
+void ArcAppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
+  base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogram,
+                            is_arc_ghost_window);
 }
 
 }  // namespace full_restore

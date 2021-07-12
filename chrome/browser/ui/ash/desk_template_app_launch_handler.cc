@@ -38,9 +38,3 @@ void DeskTemplateAppLaunchHandler::RecordRestoredAppLaunch(
   // TODO: Add UMA Histogram.
   NOTIMPLEMENTED();
 }
-
-void DeskTemplateAppLaunchHandler::RecordArcGhostWindowLaunch(
-    bool is_arc_ghost_window) {
-  // ARC is not currently supported for desk templates.
-  NOTREACHED();
-}

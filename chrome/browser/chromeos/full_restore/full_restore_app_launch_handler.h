@@ -75,7 +75,6 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // AppLaunchHandler:
   void LaunchBrowser() override;
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
-  void RecordArcGhostWindowLaunch(bool is_arc_ghost_window) override;
 
   bool should_restore_ = false;
 

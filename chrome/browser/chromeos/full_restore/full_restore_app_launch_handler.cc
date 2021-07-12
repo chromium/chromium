@@ -34,8 +34,6 @@ namespace {
 bool g_launch_browser_for_testing = false;
 
 constexpr char kRestoredAppLaunchHistogramPrefix[] = "Apps.RestoredAppLaunch";
-constexpr char kArcGhostWindowLaunchHistogramPrefix[] =
-    "Apps.ArcGhostWindowLaunch";
 
 }  // namespace
 
@@ -179,12 +177,6 @@ void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,
                                 app_type_name);
-}
-
-void FullRestoreAppLaunchHandler::RecordArcGhostWindowLaunch(
-    bool is_arc_ghost_window) {
-  base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogramPrefix,
-                            is_arc_ghost_window);
 }
 
 ScopedLaunchBrowserForTesting::ScopedLaunchBrowserForTesting() {
