@@ -334,7 +334,7 @@ bool EasyUnlockServiceSignin::IsAllowedInternal() const {
 }
 
 bool EasyUnlockServiceSignin::IsEnabled() const {
-  return pref_manager_->IsEasyUnlockEnabled();
+  return pref_manager_ && pref_manager_->IsEasyUnlockEnabled();
 }
 
 bool EasyUnlockServiceSignin::IsChromeOSLoginEnabled() const {
@@ -387,14 +387,21 @@ void EasyUnlockServiceSignin::OnFocusedUserChanged(
   if (account_id_ == account_id)
     return;
 
+  // Even if |pref_manager_| is not present, continue resetting state for
+  // |account_id| below. The function will return once IsAllowed() below
+  // returns false (because |pref_manager_| is not present).
+  if (pref_manager_) {
+    pref_manager_->SetActiveUser(account_id);
+  }
+
   account_id_ = account_id;
-  pref_manager_->SetActiveUser(account_id);
   user_pod_last_focused_timestamp_ = base::TimeTicks::Now();
   SetProximityAuthDevices(account_id_, multidevice::RemoteDeviceRefList(),
                           absl::nullopt /* local_device */);
   ResetScreenlockState();
 
-  pref_manager_->SetActiveUser(account_id);
+  // Changing the "Active User" above changes the return values of IsAllowed()
+  // and IsEnabled() below.
   if (!IsAllowed() || !IsEnabled())
     return;
 
