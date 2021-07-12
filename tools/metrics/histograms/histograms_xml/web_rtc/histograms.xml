@@ -3856,9 +3856,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Api" enum="WebRtcEventLoggingApiEnum"
-    expires_after="2021-11-07">
+    expires_after="2022-11-07">
   <owner>eladalon@chromium.org</owner>
-  <owner>saeedj@google.com</owner>
   <owner>manj@google.com</owner>
   <owner>dmitriyg@google.com</owner>
   <summary>
@@ -3868,9 +3867,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRtcEventLogging.NetError" units="units"
-    expires_after="2021-07-07">
+    expires_after="2022-11-07">
   <owner>eladalon@chromium.org</owner>
-  <owner>saeedj@google.com</owner>
   <owner>manj@google.com</owner>
   <owner>dmitriyg@google.com</owner>
   <summary>
@@ -3880,9 +3878,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Upload" enum="WebRtcEventLoggingUploadEnum"
-    expires_after="2021-11-14">
+    expires_after="2022-11-07">
   <owner>eladalon@chromium.org</owner>
-  <owner>saeedj@google.com</owner>
   <owner>manj@google.com</owner>
   <owner>dmitriyg@google.com</owner>
   <summary>
