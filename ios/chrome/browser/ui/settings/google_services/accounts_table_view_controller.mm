@@ -18,6 +18,8 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
@@ -239,12 +241,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browser->GetBrowserState());
 
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          _browser->GetBrowserState());
+
   NSString* authenticatedEmail = [authenticatedIdentity userEmail];
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
-    ios::ChromeIdentityService* identityService =
-        ios::GetChromeBrowserProvider().GetChromeIdentityService();
     ChromeIdentity* identity =
-        identityService->GetIdentityWithGaiaID(account.gaia);
+        accountManagerService->GetIdentityWithGaiaID(account.gaia);
     if (!identity) {
       // Ignore the case in which the identity is invalid at lookup time. This
       // may be due to inconsistencies between the identity service and
