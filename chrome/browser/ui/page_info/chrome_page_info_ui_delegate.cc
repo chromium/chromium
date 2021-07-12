@@ -117,7 +117,14 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
 
 std::u16string ChromePageInfoUiDelegate::GetPermissionDetail(
     ContentSettingsType type) {
-  return content_settings::GetPermissionDetailString(profile_, type, site_url_);
+  switch (type) {
+    // TODO(crbug.com/1228243): Reconcile with SiteDetailsPermissionElement.
+    case ContentSettingsType::ADS:
+      return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE);
+    default:
+      return content_settings::GetPermissionDetailString(profile_, type,
+                                                         site_url_);
+  }
 }
 
 bool ChromePageInfoUiDelegate::IsBlockAutoPlayEnabled() {

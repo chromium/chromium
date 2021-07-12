@@ -56,15 +56,9 @@ std::u16string GetPermissionDetailString(Profile* profile,
     case ContentSettingsType::FILE_HANDLING:
       return web_app::GetFileTypeAssociationsHandledByWebAppsForDisplay(profile,
                                                                         url);
-      break;
-    case ContentSettingsType::ADS:
-      return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE);
-      break;
     default:
-      break;
+      return {};
   }
-
-  return {};
 }
 #endif
 
