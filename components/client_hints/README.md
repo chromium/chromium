@@ -64,7 +64,7 @@ The preferences are written in `ParseAndPersistAcceptCHForNavigation`, which is 
 
 ### Client Hints Infrastructure
 
-The client hints set is passed into the document on commit from [NavigationRequest::CommitNavigation](/content/browser/renderer_host/navigation_request.cc) to the document and is used in [FrameFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/frame_fetch_context.cc), where all of the relevant client hint information filled into the headers to be sent.
+The client hints set is passed into the document on commit from [NavigationRequest::CommitNavigation](/content/browser/renderer_host/navigation_request.cc) to the document and is used in [FrameFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/frame_fetch_context.cc), where all of the relevant client hint information gets filled into the headers to be sent.
 
 ### Critical-CH response header
 
