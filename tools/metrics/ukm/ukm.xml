@@ -10469,6 +10469,19 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="OmniboxSecurityIndicator.FormSubmission">
+  <owner>meacer@chromium.org</owner>
+  <summary>
+    Recorded when a form is submitted on an HTTPS page. Used to understand any
+    regression introduced by updated omnibox security indicators.
+  </summary>
+  <metric name="Submitted">
+    <summary>
+      Placeholder metric, always true.
+    </summary>
+  </metric>
+</event>
+
 <event name="OptimizationGuide" singular="True">
   <owner>sophiechang@chromium.org</owner>
   <summary>

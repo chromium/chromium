@@ -45,6 +45,8 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
@@ -152,6 +154,18 @@ void SecurityStateTabHelper::DidStartNavigation(
           "Security.SecurityLevel.InsecureMainFrameFormSubmission",
           GetSecurityLevel(), security_state::SECURITY_LEVEL_COUNT);
     }
+
+    if (navigation_handle->GetURL().SchemeIs(url::kHttpsScheme)) {
+      ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+      CHECK(ukm_recorder);
+      ukm::SourceId source_id =
+          ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                                 ukm::SourceIdType::NAVIGATION_ID);
+      ukm::builders::OmniboxSecurityIndicator_FormSubmission(source_id)
+          .SetSubmitted(true)
+          .Record(ukm_recorder);
+    }
+
   } else if (navigation_handle->IsInMainFrame() &&
              !security_state::IsSchemeCryptographic(
                  GetVisibleSecurityState()->url)) {
