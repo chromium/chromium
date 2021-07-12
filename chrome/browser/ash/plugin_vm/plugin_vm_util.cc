@@ -28,7 +28,6 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "google_apis/drive/drive_api_error_codes.h"
 #include "net/base/url_util.h"
 
 namespace plugin_vm {

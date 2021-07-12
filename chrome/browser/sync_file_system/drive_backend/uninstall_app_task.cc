@@ -28,8 +28,7 @@ UninstallAppTask::UninstallAppTask(SyncEngineContext* sync_context,
       uninstall_flag_(uninstall_flag),
       app_root_tracker_id_(0) {}
 
-UninstallAppTask::~UninstallAppTask() {
-}
+UninstallAppTask::~UninstallAppTask() {}
 
 void UninstallAppTask::RunExclusive(SyncStatusCallback callback) {
   if (!IsContextReady()) {
@@ -46,16 +45,16 @@ void UninstallAppTask::RunExclusive(SyncStatusCallback callback) {
 
   int64_t sync_root_tracker_id = metadata_database()->GetSyncRootTrackerID();
   TrackerIDSet trackers;
-  if (!metadata_database()->FindTrackersByParentAndTitle(
-          sync_root_tracker_id, app_id_, &trackers) ||
+  if (!metadata_database()->FindTrackersByParentAndTitle(sync_root_tracker_id,
+                                                         app_id_, &trackers) ||
       !trackers.has_active()) {
     std::move(callback).Run(SYNC_STATUS_OK);
     return;
   }
 
   FileTracker app_root_tracker;
-  if (!metadata_database()->FindTrackerByTrackerID(
-          trackers.active_tracker(), &app_root_tracker)) {
+  if (!metadata_database()->FindTrackerByTrackerID(trackers.active_tracker(),
+                                                   &app_root_tracker)) {
     NOTREACHED();
     std::move(callback).Run(SYNC_STATUS_FAILED);
     return;
@@ -73,10 +72,9 @@ void UninstallAppTask::RunExclusive(SyncStatusCallback callback) {
 
 void UninstallAppTask::DidDeleteAppRoot(SyncStatusCallback callback,
                                         int64_t change_id,
-                                        google_apis::DriveApiErrorCode error) {
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
-  if (status != SYNC_STATUS_OK &&
-      error != google_apis::HTTP_NOT_FOUND) {
+                                        google_apis::ApiErrorCode error) {
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
+  if (status != SYNC_STATUS_OK && error != google_apis::HTTP_NOT_FOUND) {
     std::move(callback).Run(SYNC_STATUS_FAILED);
     return;
   }
@@ -87,7 +85,7 @@ void UninstallAppTask::DidDeleteAppRoot(SyncStatusCallback callback,
 
 bool UninstallAppTask::IsContextReady() {
   return sync_context_->GetMetadataDatabase() &&
-      sync_context_->GetDriveService();
+         sync_context_->GetDriveService();
 }
 
 MetadataDatabase* UninstallAppTask::metadata_database() {

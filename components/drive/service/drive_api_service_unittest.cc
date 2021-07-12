@@ -61,7 +61,7 @@ TEST(DriveAPIServiceTest, BatchRequestConfiguratorWithAuthFailure) {
   static_cast<TestAuthService*>(sender.auth_service())->SendHttpError();
 
   {
-    google_apis::DriveApiErrorCode error = google_apis::HTTP_SUCCESS;
+    google_apis::ApiErrorCode error = google_apis::HTTP_SUCCESS;
     std::unique_ptr<google_apis::FileResource> file_resource;
     configurator.MultipartUploadNewFile(
         "text/plain", 10, "", "title",
@@ -69,10 +69,10 @@ TEST(DriveAPIServiceTest, BatchRequestConfiguratorWithAuthFailure) {
         google_apis::test_util::CreateCopyResultCallback(&error,
                                                          &file_resource),
         google_apis::ProgressCallback());
-    EXPECT_EQ(google_apis::DRIVE_OTHER_ERROR, error);
+    EXPECT_EQ(google_apis::OTHER_ERROR, error);
   }
   {
-    google_apis::DriveApiErrorCode error = google_apis::HTTP_SUCCESS;
+    google_apis::ApiErrorCode error = google_apis::HTTP_SUCCESS;
     std::unique_ptr<google_apis::FileResource> file_resource;
     configurator.MultipartUploadExistingFile(
         "text/plain", 10, "resource_id",
@@ -80,7 +80,7 @@ TEST(DriveAPIServiceTest, BatchRequestConfiguratorWithAuthFailure) {
         google_apis::test_util::CreateCopyResultCallback(&error,
                                                          &file_resource),
         google_apis::ProgressCallback());
-    EXPECT_EQ(google_apis::DRIVE_OTHER_ERROR, error);
+    EXPECT_EQ(google_apis::OTHER_ERROR, error);
   }
 }
 

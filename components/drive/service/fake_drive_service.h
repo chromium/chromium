@@ -24,7 +24,7 @@ class AboutResource;
 class ChangeResource;
 class FileResource;
 class TeamDriveResource;
-}
+}  // namespace google_apis
 
 namespace drive {
 
@@ -53,7 +53,7 @@ class FakeDriveService : public DriveServiceInterface {
                     const std::string& name,
                     const std::string& start_page_token);
 
-  // Changes the offline state. All functions fail with DRIVE_NO_CONNECTION
+  // Changes the offline state. All functions fail with NO_CONNECTION
   // when offline. By default the offline state is false.
   void set_offline(bool offline) { offline_ = offline; }
 
@@ -100,9 +100,7 @@ class FakeDriveService : public DriveServiceInterface {
 
   // Returns the number of times the about resource is successfully loaded
   // by GetAboutResource().
-  int about_resource_load_count() const {
-    return about_resource_load_count_;
-  }
+  int about_resource_load_count() const { return about_resource_load_count_; }
 
   // Returns the number of times GetAllFileList are blocked due to
   // set_never_return_all_file_list().
@@ -318,18 +316,18 @@ class FakeDriveService : public DriveServiceInterface {
       const google_apis::TeamDriveCapabilities& capabilities);
 
   // Sets the user's permission for an entry specified by |resource_id|.
-  google_apis::DriveApiErrorCode SetUserPermission(
+  google_apis::ApiErrorCode SetUserPermission(
       const std::string& resource_id,
       google_apis::drive::PermissionRole user_permission);
 
-  google_apis::DriveApiErrorCode SetFileVisibility(
+  google_apis::ApiErrorCode SetFileVisibility(
       const std::string& resource_id,
       google_apis::drive::FileVisibility visibility);
-  google_apis::DriveApiErrorCode GetFileVisibility(
+  google_apis::ApiErrorCode GetFileVisibility(
       const std::string& resource_id,
       google_apis::drive::FileVisibility* visibility);
 
-  google_apis::DriveApiErrorCode SetFileAsSharedWithMe(
+  google_apis::ApiErrorCode SetFileAsSharedWithMe(
       const std::string& resource_id);
 
   void AddChangeObserver(ChangeObserver* observer);
@@ -361,13 +359,12 @@ class FakeDriveService : public DriveServiceInterface {
   // Adds a new entry based on the given parameters.
   // |resource_id| can be empty, in the case, the id is automatically generated.
   // Returns a pointer to the newly added entry, or NULL if failed.
-  const EntryInfo* AddNewEntry(
-      const std::string& resource_id,
-      const std::string& content_type,
-      const std::string& content_data,
-      const std::string& parent_resource_id,
-      const std::string& title,
-      bool shared_with_me);
+  const EntryInfo* AddNewEntry(const std::string& resource_id,
+                               const std::string& content_type,
+                               const std::string& content_data,
+                               const std::string& parent_resource_id,
+                               const std::string& title,
+                               bool shared_with_me);
 
   // Adds a new entry for a team drive.
   // Returns a pointer to the newly added entry, or NULL if failed.

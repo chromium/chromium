@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 
 #include "base/strings/string_number_conversions.h"
 
 namespace google_apis {
 
-std::string DriveApiErrorCodeToString(DriveApiErrorCode error) {
+std::string ApiErrorCodeToString(ApiErrorCode error) {
   switch (error) {
     case HTTP_SUCCESS:
       return "HTTP_SUCCESS";
@@ -64,23 +64,23 @@ std::string DriveApiErrorCodeToString(DriveApiErrorCode error) {
     case HTTP_SERVICE_UNAVAILABLE:
       return "HTTP_SERVICE_UNAVAILABLE";
 
-    case DRIVE_PARSE_ERROR:
-      return "DRIVE_PARSE_ERROR";
+    case NO_CONNECTION:
+      return "NO_CONNECTION";
+
+    case NOT_READY:
+      return "NOT_READY";
+
+    case OTHER_ERROR:
+      return "OTHER_ERROR";
+
+    case CANCELLED:
+      return "CANCELLED";
+
+    case PARSE_ERROR:
+      return "PARSE_ERROR";
 
     case DRIVE_FILE_ERROR:
       return "DRIVE_FILE_ERROR";
-
-    case DRIVE_CANCELLED:
-      return "DRIVE_CANCELLED";
-
-    case DRIVE_OTHER_ERROR:
-      return "DRIVE_OTHER_ERROR";
-
-    case DRIVE_NO_CONNECTION:
-      return "DRIVE_NO_CONNECTION";
-
-    case DRIVE_NOT_READY:
-      return "DRIVE_NOT_READY";
 
     case DRIVE_NO_SPACE:
       return "DRIVE_NO_SPACE";
@@ -92,8 +92,12 @@ std::string DriveApiErrorCodeToString(DriveApiErrorCode error) {
   return "UNKNOWN_ERROR_" + base::NumberToString(error);
 }
 
-bool IsSuccessfulDriveApiErrorCode(DriveApiErrorCode error) {
+bool IsSuccessfulDriveApiErrorCode(ApiErrorCode error) {
   return 200 <= error && error <= 299;
+}
+
+bool IsSuccessfulCalendarApiErrorCode(ApiErrorCode error) {
+  return error == 200;
 }
 
 }  // namespace google_apis

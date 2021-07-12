@@ -6020,6 +6020,7 @@ static_library("browser") {
       "//components/mirroring/mojom:service",
       "//components/mirroring/service:mirroring_service",
       "//extensions/components/javascript_dialog_extensions_client",
+      "//google_apis/common",
       "//google_apis/drive",
       "//services/device/public/mojom",
     ]

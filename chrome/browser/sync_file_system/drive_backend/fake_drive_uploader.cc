@@ -16,8 +16,8 @@
 
 using drive::FakeDriveService;
 using drive::UploadCompletionCallback;
+using google_apis::ApiErrorCode;
 using google_apis::CancelCallbackOnce;
-using google_apis::DriveApiErrorCode;
 using google_apis::FileResource;
 using google_apis::FileResourceCallback;
 using google_apis::ProgressCallback;
@@ -28,14 +28,14 @@ namespace drive_backend {
 namespace {
 
 void DidAddFileOrDirectoryForMakingConflict(
-    DriveApiErrorCode error,
+    ApiErrorCode error,
     std::unique_ptr<FileResource> entry) {
   ASSERT_EQ(google_apis::HTTP_CREATED, error);
   ASSERT_TRUE(entry);
 }
 
 void DidAddFileForUploadNew(UploadCompletionCallback callback,
-                            DriveApiErrorCode error,
+                            ApiErrorCode error,
                             std::unique_ptr<FileResource> entry) {
   ASSERT_EQ(google_apis::HTTP_CREATED, error);
   ASSERT_TRUE(entry);
@@ -45,7 +45,7 @@ void DidAddFileForUploadNew(UploadCompletionCallback callback,
 }
 
 void DidGetFileResourceForUploadExisting(UploadCompletionCallback callback,
-                                         DriveApiErrorCode error,
+                                         ApiErrorCode error,
                                          std::unique_ptr<FileResource> entry) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -55,7 +55,7 @@ void DidGetFileResourceForUploadExisting(UploadCompletionCallback callback,
 }  // namespace
 
 FakeDriveServiceWrapper::FakeDriveServiceWrapper()
-  : make_directory_conflict_(false) {}
+    : make_directory_conflict_(false) {}
 
 FakeDriveServiceWrapper::~FakeDriveServiceWrapper() {}
 
@@ -75,16 +75,13 @@ CancelCallbackOnce FakeDriveServiceWrapper::AddNewDirectory(
 
 FakeDriveUploader::FakeDriveUploader(
     FakeDriveServiceWrapper* fake_drive_service)
-    : fake_drive_service_(fake_drive_service),
-      make_file_conflict_(false) {}
+    : fake_drive_service_(fake_drive_service), make_file_conflict_(false) {}
 
 FakeDriveUploader::~FakeDriveUploader() {}
 
-void FakeDriveUploader::StartBatchProcessing() {
-}
+void FakeDriveUploader::StartBatchProcessing() {}
 
-void FakeDriveUploader::StopBatchProcessing() {
-}
+void FakeDriveUploader::StopBatchProcessing() {}
 
 CancelCallbackOnce FakeDriveUploader::UploadNewFile(
     const std::string& parent_resource_id,

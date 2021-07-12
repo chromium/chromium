@@ -54,8 +54,8 @@ void RunAndQuit(base::RunLoop* run_loop, base::OnceClosure closure) {
 
 bool WriteStringToFile(const base::FilePath& file_path,
                        const std::string& content) {
-  int result = base::WriteFile(
-      file_path, content.data(), static_cast<int>(content.size()));
+  int result = base::WriteFile(file_path, content.data(),
+                               static_cast<int>(content.size()));
   return content.size() == static_cast<size_t>(result);
 }
 
@@ -83,8 +83,8 @@ std::unique_ptr<base::Value> LoadJSONFile(const std::string& relative_path) {
   JSONFileValueDeserializer deserializer(path);
   std::unique_ptr<base::Value> value =
       deserializer.Deserialize(nullptr, &error);
-  LOG_IF(WARNING, !value.get()) << "Failed to parse " << path.value()
-                                << ": " << error;
+  LOG_IF(WARNING, !value.get())
+      << "Failed to parse " << path.value() << ": " << error;
   return value;
 }
 
@@ -160,8 +160,7 @@ TestGetContentCallback::TestGetContentCallback()
     : callback_(base::BindRepeating(&TestGetContentCallback::OnGetContent,
                                     base::Unretained(this))) {}
 
-TestGetContentCallback::~TestGetContentCallback() {
-}
+TestGetContentCallback::~TestGetContentCallback() = default;
 
 std::string TestGetContentCallback::GetConcatenatedData() const {
   std::string result;
@@ -171,7 +170,7 @@ std::string TestGetContentCallback::GetConcatenatedData() const {
   return result;
 }
 
-void TestGetContentCallback::OnGetContent(google_apis::DriveApiErrorCode error,
+void TestGetContentCallback::OnGetContent(google_apis::ApiErrorCode error,
                                           std::unique_ptr<std::string> data,
                                           bool first_chunk) {
   data_.push_back(std::move(data));

@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace drive {
 class DriveServiceInterface;
@@ -21,7 +21,7 @@ class DriveServiceInterface;
 namespace google_apis {
 class ChangeList;
 class ChangeResource;
-}
+}  // namespace google_apis
 
 namespace sync_file_system {
 namespace drive_backend {
@@ -39,7 +39,7 @@ class ListChangesTask : public SyncTask {
  private:
   void StartListing(std::unique_ptr<SyncTaskToken> token);
   void DidListChanges(std::unique_ptr<SyncTaskToken> token,
-                      google_apis::DriveApiErrorCode error,
+                      google_apis::ApiErrorCode error,
                       std::unique_ptr<google_apis::ChangeList> change_list);
   void CheckInChangeList(int64_t largest_change_id,
                          std::unique_ptr<SyncTaskToken> token);

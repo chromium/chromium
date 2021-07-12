@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/drive/service/drive_service_interface.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
@@ -25,7 +25,7 @@ class GURL;
 namespace base {
 class FilePath;
 class TaskRunner;
-}
+}  // namespace base
 
 namespace google_apis {
 struct UploadRangeResponse;
@@ -39,7 +39,7 @@ class DriveServiceInterface;
 // terminated before the completion due to some errors. It can be used to
 // resume it.
 using UploadCompletionCallback = base::OnceCallback<void(
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     const GURL& upload_location,
     std::unique_ptr<google_apis::FileResource> resource_entry)>;
 
@@ -199,7 +199,7 @@ class DriveUploader : public DriveUploaderInterface {
   // DriveService callback for InitiateUpload.
   void OnUploadLocationReceived(
       std::unique_ptr<UploadFileInfo> upload_file_info,
-      google_apis::DriveApiErrorCode code,
+      google_apis::ApiErrorCode code,
       const GURL& upload_location);
 
   // Starts to get the current upload status for the file uploading.
@@ -222,12 +222,12 @@ class DriveUploader : public DriveUploaderInterface {
 
   // Handles failed uploads.
   void UploadFailed(std::unique_ptr<UploadFileInfo> upload_file_info,
-                    google_apis::DriveApiErrorCode error);
+                    google_apis::ApiErrorCode error);
 
   // Handles completion/error of multipart uploading.
   void OnMultipartUploadComplete(
       std::unique_ptr<UploadFileInfo> upload_file_info,
-      google_apis::DriveApiErrorCode error,
+      google_apis::ApiErrorCode error,
       std::unique_ptr<google_apis::FileResource> entry);
 
   device::mojom::WakeLockProvider* GetWakeLockProvider();

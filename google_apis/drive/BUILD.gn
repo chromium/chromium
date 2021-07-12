@@ -13,8 +13,6 @@ source_set("drive") {
     "auth_service_observer.h",
     "base_requests.cc",
     "base_requests.h",
-    "drive_api_error_codes.cc",
-    "drive_api_error_codes.h",
     "drive_api_parser.cc",
     "drive_api_parser.h",
     "drive_api_requests.cc",
@@ -40,6 +38,7 @@ source_set("drive") {
     "//components/signin/public/identity_manager",
     "//crypto",
     "//google_apis:google_apis",
+    "//google_apis/common:common",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -60,6 +59,7 @@ source_set("test_support") {
     "//base",
     "//base/test:test_support",
     "//google_apis:test_support",
+    "//google_apis/common:common",
     "//net:test_support",
   ]
 }

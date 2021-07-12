@@ -29,7 +29,7 @@
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
 #include "content/public/test/browser_task_environment.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -40,8 +40,8 @@ namespace drive_backend {
 namespace {
 
 storage::FileSystemURL URL(const GURL& origin, const std::string& path) {
-  return CreateSyncableFileSystemURL(
-      origin, base::FilePath::FromUTF8Unsafe(path));
+  return CreateSyncableFileSystemURL(origin,
+                                     base::FilePath::FromUTF8Unsafe(path));
 }
 
 }  // namespace
@@ -112,7 +112,6 @@ class RemoteToLocalSyncerTest : public testing::Test {
     context_->SetMetadataDatabase(initializer->PassMetadataDatabase());
   }
 
-
   void RegisterApp(const std::string& app_id,
                    const std::string& app_root_folder_id) {
     SyncStatusCode status = context_->GetMetadataDatabase()->RegisterApp(
@@ -128,17 +127,17 @@ class RemoteToLocalSyncerTest : public testing::Test {
   std::string CreateSyncRoot() {
     std::string sync_root_folder_id;
     EXPECT_EQ(google_apis::HTTP_CREATED,
-              fake_drive_helper_->AddOrphanedFolder(
-                  kSyncRootFolderTitle, &sync_root_folder_id));
+              fake_drive_helper_->AddOrphanedFolder(kSyncRootFolderTitle,
+                                                    &sync_root_folder_id));
     return sync_root_folder_id;
   }
 
   std::string CreateRemoteFolder(const std::string& parent_folder_id,
                                  const std::string& title) {
     std::string folder_id;
-    EXPECT_EQ(google_apis::HTTP_CREATED,
-              fake_drive_helper_->AddFolder(
-                  parent_folder_id, title, &folder_id));
+    EXPECT_EQ(
+        google_apis::HTTP_CREATED,
+        fake_drive_helper_->AddFolder(parent_folder_id, title, &folder_id));
     return folder_id;
   }
 
@@ -147,8 +146,8 @@ class RemoteToLocalSyncerTest : public testing::Test {
                                const std::string& content) {
     std::string file_id;
     EXPECT_EQ(google_apis::HTTP_SUCCESS,
-              fake_drive_helper_->AddFile(
-                  parent_folder_id, title, content, &file_id));
+              fake_drive_helper_->AddFile(parent_folder_id, title, content,
+                                          &file_id));
     return file_id;
   }
 
@@ -165,16 +164,16 @@ class RemoteToLocalSyncerTest : public testing::Test {
 
   void CreateLocalFile(const storage::FileSystemURL& url) {
     remote_change_processor_->UpdateLocalFileMetadata(
-        url, FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
-                        SYNC_FILE_TYPE_FILE));
+        url,
+        FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE, SYNC_FILE_TYPE_FILE));
   }
 
   SyncStatusCode RunSyncer() {
     SyncStatusCode status = SYNC_STATUS_UNKNOWN;
     std::unique_ptr<RemoteToLocalSyncer> syncer(
         new RemoteToLocalSyncer(context_.get()));
-    syncer->RunPreflight(SyncTaskToken::CreateForTesting(
-        CreateResultReceiver(&status)));
+    syncer->RunPreflight(
+        SyncTaskToken::CreateForTesting(CreateResultReceiver(&status)));
     base::RunLoop().RunUntilIdle();
     return status;
   }
@@ -187,8 +186,7 @@ class RemoteToLocalSyncerTest : public testing::Test {
       if (count++ > kRetryLimit)
         return status;
       status = RunSyncer();
-    } while (status == SYNC_STATUS_OK ||
-             status == SYNC_STATUS_RETRY);
+    } while (status == SYNC_STATUS_OK || status == SYNC_STATUS_RETRY);
     return status;
   }
 
@@ -201,8 +199,7 @@ class RemoteToLocalSyncerTest : public testing::Test {
       if (count++ > kRetryLimit)
         return status;
       status = RunSyncer();
-    } while (status == SYNC_STATUS_OK ||
-             status == SYNC_STATUS_RETRY ||
+    } while (status == SYNC_STATUS_OK || status == SYNC_STATUS_RETRY ||
              metadata_database->PromoteDemotedTrackers());
     return status;
   }
@@ -300,11 +297,9 @@ TEST_F(RemoteToLocalSyncerTest, DeleteFile) {
   DeleteRemoteFile(folder);
   DeleteRemoteFile(file);
 
-  AppendExpectedChange(URL(kOrigin, "folder"),
-                       FileChange::FILE_CHANGE_DELETE,
+  AppendExpectedChange(URL(kOrigin, "folder"), FileChange::FILE_CHANGE_DELETE,
                        SYNC_FILE_TYPE_UNKNOWN);
-  AppendExpectedChange(URL(kOrigin, "file"),
-                       FileChange::FILE_CHANGE_DELETE,
+  AppendExpectedChange(URL(kOrigin, "file"), FileChange::FILE_CHANGE_DELETE,
                        SYNC_FILE_TYPE_UNKNOWN);
 
   EXPECT_EQ(SYNC_STATUS_OK, ListChanges());
@@ -344,8 +339,7 @@ TEST_F(RemoteToLocalSyncerTest, DeleteNestedFiles) {
 
   DeleteRemoteFile(folder1);
 
-  AppendExpectedChange(URL(kOrigin, "folder1"),
-                       FileChange::FILE_CHANGE_DELETE,
+  AppendExpectedChange(URL(kOrigin, "folder1"), FileChange::FILE_CHANGE_DELETE,
                        SYNC_FILE_TYPE_UNKNOWN);
   // Changes for descendant files ("folder2" and "file2") should be ignored.
 
@@ -478,8 +472,7 @@ TEST_F(RemoteToLocalSyncerTest, AppRootDeletion) {
 
   DeleteRemoteFile(app_root);
 
-  AppendExpectedChange(URL(kOrigin, "/"),
-                       FileChange::FILE_CHANGE_DELETE,
+  AppendExpectedChange(URL(kOrigin, "/"), FileChange::FILE_CHANGE_DELETE,
                        SYNC_FILE_TYPE_UNKNOWN);
 
   EXPECT_EQ(SYNC_STATUS_OK, ListChanges());

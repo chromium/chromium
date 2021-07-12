@@ -64,7 +64,7 @@ class AuthService : public AuthServiceInterface,
   // Called when authentication request from StartAuthentication() is
   // completed.
   void OnAuthCompleted(AuthStatusCallback callback,
-                       DriveApiErrorCode error,
+                       ApiErrorCode error,
                        const std::string& access_token);
 
   signin::IdentityManager* identity_manager_;

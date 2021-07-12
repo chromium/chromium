@@ -165,7 +165,7 @@ class FileManagerPrivateInternalGetDownloadUrlFunction
 
   // Callback with an |access_token|, called by
   // drive::DriveReadonlyTokenFetcher.
-  void OnTokenFetched(google_apis::DriveApiErrorCode code,
+  void OnTokenFetched(google_apis::ApiErrorCode code,
                       const std::string& access_token);
 
   ResponseAction RunAsyncForDriveFs(

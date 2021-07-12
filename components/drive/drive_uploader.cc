@@ -19,10 +19,10 @@
 #include "google_apis/drive/drive_api_parser.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
+using google_apis::ApiErrorCode;
 using google_apis::CancelCallbackOnce;
-using google_apis::DRIVE_CANCELLED;
+using google_apis::CANCELLED;
 using google_apis::DRIVE_NO_SPACE;
-using google_apis::DriveApiErrorCode;
 using google_apis::FileResource;
 using google_apis::HTTP_CONFLICT;
 using google_apis::HTTP_CREATED;
@@ -57,8 +57,8 @@ enum DriveUploadProtocol {
 };
 
 void RecordDriveUploadProtocol(DriveUploadProtocol protocol) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Drive.UploadProtocol", protocol, UPLOAD_METHOD_MAX_VALUE);
+  UMA_HISTOGRAM_ENUMERATION("Drive.UploadProtocol", protocol,
+                            UPLOAD_METHOD_MAX_VALUE);
 }
 }  // namespace
 
@@ -288,7 +288,7 @@ void DriveUploader::StartUploadFileAfterGetFileSize(
   DCHECK_GE(upload_file_info->content_length, 0);
 
   if (upload_file_info->cancelled) {
-    UploadFailed(std::move(upload_file_info), DRIVE_CANCELLED);
+    UploadFailed(std::move(upload_file_info), CANCELLED);
     return;
   }
   std::move(start_initiate_upload_callback).Run(std::move(upload_file_info));
@@ -368,12 +368,12 @@ void DriveUploader::CallUploadServiceAPIExistingFile(
 
 void DriveUploader::OnUploadLocationReceived(
     std::unique_ptr<UploadFileInfo> upload_file_info,
-    DriveApiErrorCode code,
+    ApiErrorCode code,
     const GURL& upload_location) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  DVLOG(1) << "Got upload location [" << upload_location.spec()
-           << "] for [" << upload_file_info->file_path.value() << "]";
+  DVLOG(1) << "Got upload location [" << upload_location.spec() << "] for ["
+           << upload_file_info->file_path.value() << "]";
 
   if (code != HTTP_SUCCESS) {
     if (code == HTTP_PRECONDITION)
@@ -409,7 +409,7 @@ void DriveUploader::UploadNextChunk(
             upload_file_info->content_length);
 
   if (upload_file_info->cancelled) {
-    UploadFailed(std::move(upload_file_info), DRIVE_CANCELLED);
+    UploadFailed(std::move(upload_file_info), CANCELLED);
     return;
   }
 
@@ -467,19 +467,18 @@ void DriveUploader::OnUploadRangeResponseReceived(
   // proceed to upload the next chunk.
   if (response.code != HTTP_RESUME_INCOMPLETE ||
       response.start_position_received != 0) {
-    DVLOG(1)
-        << "UploadNextChunk http code=" << response.code
-        << ", start_position_received=" << response.start_position_received
-        << ", end_position_received=" << response.end_position_received;
+    DVLOG(1) << "UploadNextChunk http code=" << response.code
+             << ", start_position_received=" << response.start_position_received
+             << ", end_position_received=" << response.end_position_received;
     UploadFailed(std::move(upload_file_info), response.code == HTTP_FORBIDDEN
                                                   ? DRIVE_NO_SPACE
                                                   : response.code);
     return;
   }
 
-  DVLOG(1) << "Received range " << response.start_position_received
-           << "-" << response.end_position_received
-           << " for [" << upload_file_info->file_path.value() << "]";
+  DVLOG(1) << "Received range " << response.start_position_received << "-"
+           << response.end_position_received << " for ["
+           << upload_file_info->file_path.value() << "]";
 
   upload_file_info->next_start_position = response.end_position_received;
   UploadNextChunk(std::move(upload_file_info));
@@ -496,7 +495,7 @@ void DriveUploader::OnUploadProgress(ProgressCallback callback,
 
 void DriveUploader::UploadFailed(
     std::unique_ptr<UploadFileInfo> upload_file_info,
-    DriveApiErrorCode error) {
+    ApiErrorCode error) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   DVLOG(1) << "Upload failed " << upload_file_info->DebugString();
@@ -514,7 +513,7 @@ void DriveUploader::UploadFailed(
 
 void DriveUploader::OnMultipartUploadComplete(
     std::unique_ptr<UploadFileInfo> upload_file_info,
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     std::unique_ptr<FileResource> entry) {
   DCHECK(thread_checker_.CalledOnValidThread());
 

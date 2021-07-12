@@ -33,6 +33,7 @@ static_library("drive") {
     "//base",
     "//components/invalidation/public",
     "//components/keyed_service/core",
+    "//google_apis/common",
     "//google_apis/drive",
     "//services/device/public/mojom",
     "//services/network/public/cpp:cpp",

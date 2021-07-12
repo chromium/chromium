@@ -31,12 +31,12 @@ namespace google_apis {
 // Callback used for requests that the server returns TeamDrive data
 // formatted into JSON value.
 using TeamDriveListCallback =
-    base::OnceCallback<void(DriveApiErrorCode error,
+    base::OnceCallback<void(ApiErrorCode error,
                             std::unique_ptr<TeamDriveList> entry)>;
 
 // Callback used for requests that the server returns FileList data
 // formatted into JSON value.
-typedef base::OnceCallback<void(DriveApiErrorCode error,
+typedef base::OnceCallback<void(ApiErrorCode error,
                                 std::unique_ptr<FileList> entry)>
     FileListCallback;
 
@@ -44,17 +44,17 @@ typedef base::OnceCallback<void(DriveApiErrorCode error,
 // Callback used for requests that the server returns ChangeList data
 // formatted into JSON value.
 using ChangeListCallback =
-    base::OnceCallback<void(DriveApiErrorCode error,
+    base::OnceCallback<void(ApiErrorCode error,
                             std::unique_ptr<ChangeList> entry)>;
 
 using ChangeListOnceCallback =
-    base::OnceCallback<void(DriveApiErrorCode error,
+    base::OnceCallback<void(ApiErrorCode error,
                             std::unique_ptr<ChangeList> entry)>;
 
 // Callback used for requests that the server returns StartToken data
 // formatted into JSON value.
 using StartPageTokenCallback =
-    base::OnceCallback<void(DriveApiErrorCode error,
+    base::OnceCallback<void(ApiErrorCode error,
                             std::unique_ptr<StartPageToken> entry)>;
 
 namespace drive {
@@ -95,7 +95,7 @@ typedef std::vector<Property> Properties;
 struct MultipartHttpResponse {
   MultipartHttpResponse();
   ~MultipartHttpResponse();
-  DriveApiErrorCode code;
+  ApiErrorCode code = HTTP_SUCCESS;
   std::string body;
 };
 
@@ -139,10 +139,10 @@ class DriveApiPartialFieldRequest : public UrlFetchRequestBase {
 
 // The base class of Drive API related requests that receive a JSON response
 // representing |DataType|.
-template<class DataType>
+template <class DataType>
 class DriveApiDataRequest : public DriveApiPartialFieldRequest {
  public:
-  using Callback = base::OnceCallback<void(DriveApiErrorCode error,
+  using Callback = base::OnceCallback<void(ApiErrorCode error,
                                            std::unique_ptr<DataType> data)>;
 
   // |callback| is called when the request finishes either by success or by
@@ -159,7 +159,7 @@ class DriveApiDataRequest : public DriveApiPartialFieldRequest {
       const network::mojom::URLResponseHead* response_head,
       base::FilePath response_file,
       std::string response_body) override {
-    DriveApiErrorCode error = GetErrorCode();
+    ApiErrorCode error = GetErrorCode();
     switch (error) {
       case HTTP_SUCCESS:
       case HTTP_CREATED:
@@ -177,7 +177,7 @@ class DriveApiDataRequest : public DriveApiPartialFieldRequest {
     }
   }
 
-  void RunCallbackOnPrematureFailure(DriveApiErrorCode error) override {
+  void RunCallbackOnPrematureFailure(ApiErrorCode error) override {
     std::move(callback_).Run(error, std::unique_ptr<DataType>());
   }
 
@@ -189,9 +189,9 @@ class DriveApiDataRequest : public DriveApiPartialFieldRequest {
   }
 
   // Receives the parsed result and invokes the callback.
-  void OnDataParsed(DriveApiErrorCode error, std::unique_ptr<DataType> value) {
+  void OnDataParsed(ApiErrorCode error, std::unique_ptr<DataType> value) {
     if (!value)
-      error = DRIVE_PARSE_ERROR;
+      error = PARSE_ERROR;
     std::move(callback_).Run(error, std::move(value));
     OnProcessURLFetchResultsComplete();
   }
@@ -260,9 +260,7 @@ class FilesInsertRequest : public DriveApiDataRequest<FileResource> {
   ~FilesInsertRequest() override;
 
   // Optional parameter
-  void set_visibility(FileVisibility visibility) {
-    visibility_ = visibility;
-  }
+  void set_visibility(FileVisibility visibility) { visibility_ = visibility; }
 
   // Optional request body.
   const base::Time& last_viewed_by_me_date() const {
@@ -273,9 +271,7 @@ class FilesInsertRequest : public DriveApiDataRequest<FileResource> {
   }
 
   const std::string& mime_type() const { return mime_type_; }
-  void set_mime_type(const std::string& mime_type) {
-    mime_type_ = mime_type;
-  }
+  void set_mime_type(const std::string& mime_type) { mime_type_ = mime_type; }
 
   const base::Time& modified_date() const { return modified_date_; }
   void set_modified_date(const base::Time& modified_date) {
@@ -414,9 +410,7 @@ class FilesCopyRequest : public DriveApiDataRequest<FileResource> {
   void set_file_id(const std::string& file_id) { file_id_ = file_id; }
 
   // Optional parameter
-  void set_visibility(FileVisibility visibility) {
-    visibility_ = visibility;
-  }
+  void set_visibility(FileVisibility visibility) { visibility_ = visibility; }
 
   // Optional request body.
   const std::vector<std::string>& parents() const { return parents_; }
@@ -768,9 +762,7 @@ class ChildrenInsertRequest : public EntryActionRequest {
 
   // Required parameter.
   const std::string& folder_id() const { return folder_id_; }
-  void set_folder_id(const std::string& folder_id) {
-    folder_id_ = folder_id;
-  }
+  void set_folder_id(const std::string& folder_id) { folder_id_ = folder_id; }
 
   // Required body.
   const std::string& id() const { return id_; }
@@ -806,14 +798,10 @@ class ChildrenDeleteRequest : public EntryActionRequest {
 
   // Required parameter.
   const std::string& child_id() const { return child_id_; }
-  void set_child_id(const std::string& child_id) {
-    child_id_ = child_id;
-  }
+  void set_child_id(const std::string& child_id) { child_id_ = child_id; }
 
   const std::string& folder_id() const { return folder_id_; }
-  void set_folder_id(const std::string& folder_id) {
-    folder_id_ = folder_id;
-  }
+  void set_folder_id(const std::string& folder_id) { folder_id_ = folder_id; }
 
  protected:
   // UrlFetchRequestBase overrides.
@@ -1160,7 +1148,7 @@ class SingleBatchableDelegateRequest : public UrlFetchRequestBase {
   void Prepare(PrepareCallback callback) override;
   bool GetContentData(std::string* upload_content_type,
                       std::string* upload_content) override;
-  void RunCallbackOnPrematureFailure(DriveApiErrorCode code) override;
+  void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
   void ProcessURLFetchResults(
       const network::mojom::URLResponseHead* response_head,
       base::FilePath response_file,
@@ -1228,7 +1216,7 @@ class BatchUploadRequest : public UrlFetchRequestBase {
       const network::mojom::URLResponseHead* response_head,
       base::FilePath response_file,
       std::string response_body) override;
-  void RunCallbackOnPrematureFailure(DriveApiErrorCode code) override;
+  void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
 
   // Called by UrlFetchRequestBase to report upload progress.
   void OnUploadProgress(int64_t current, int64_t total);
@@ -1241,7 +1229,7 @@ class BatchUploadRequest : public UrlFetchRequestBase {
       RequestID request_id);
 
   // Called after child requests' |Prepare| method.
-  void OnChildRequestPrepared(RequestID request_id, DriveApiErrorCode result);
+  void OnChildRequestPrepared(RequestID request_id, ApiErrorCode result);
 
   // Complete |Prepare| if possible.
   void MayCompletePrepare();

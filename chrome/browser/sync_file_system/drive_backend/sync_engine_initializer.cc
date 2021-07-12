@@ -120,11 +120,11 @@ void SyncEngineInitializer::GetAboutResource(
 
 void SyncEngineInitializer::DidGetAboutResource(
     std::unique_ptr<SyncTaskToken> token,
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::AboutResource> about_resource) {
   std::move(cancel_callback_).Reset();
 
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
     util::Log(logging::LOG_VERBOSE, FROM_HERE,
               "[Initialize] Failed to get AboutResource.");
@@ -158,11 +158,11 @@ void SyncEngineInitializer::FindSyncRoot(std::unique_ptr<SyncTaskToken> token) {
 
 void SyncEngineInitializer::DidFindSyncRoot(
     std::unique_ptr<SyncTaskToken> token,
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::FileList> file_list) {
   std::move(cancel_callback_).Reset();
 
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
     util::Log(logging::LOG_VERBOSE, FROM_HERE,
               "[Initialize] Failed to find sync root.");
@@ -236,12 +236,12 @@ void SyncEngineInitializer::CreateSyncRoot(
 
 void SyncEngineInitializer::DidCreateSyncRoot(
     std::unique_ptr<SyncTaskToken> token,
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::FileResource> entry) {
   DCHECK(!sync_root_folder_);
   std::move(cancel_callback_).Reset();
 
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
     util::Log(logging::LOG_VERBOSE, FROM_HERE,
               "[Initialize] Failed to create sync root.");
@@ -265,10 +265,10 @@ void SyncEngineInitializer::DetachSyncRoot(
 
 void SyncEngineInitializer::DidDetachSyncRoot(
     std::unique_ptr<SyncTaskToken> token,
-    google_apis::DriveApiErrorCode error) {
+    google_apis::ApiErrorCode error) {
   std::move(cancel_callback_).Reset();
 
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
     util::Log(logging::LOG_VERBOSE, FROM_HERE,
               "[Initialize] Failed to detach sync root.");
@@ -291,11 +291,11 @@ void SyncEngineInitializer::ListAppRootFolders(
 
 void SyncEngineInitializer::DidListAppRootFolders(
     std::unique_ptr<SyncTaskToken> token,
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::FileList> file_list) {
   std::move(cancel_callback_).Reset();
 
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
     util::Log(logging::LOG_VERBOSE, FROM_HERE,
               "[Initialize] Failed to get initial app-root folders.");

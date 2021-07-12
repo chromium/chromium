@@ -94,10 +94,9 @@ constexpr base::TimeDelta kMountCrostiniVerySlowOperationThreshold =
 // Obtains the current app window.
 AppWindow* GetCurrentAppWindow(ExtensionFunction* function) {
   content::WebContents* const contents = function->GetSenderWebContents();
-  return contents
-             ? AppWindowRegistry::Get(function->browser_context())
-                   ->GetAppWindowForWebContents(contents)
-             : nullptr;
+  return contents ? AppWindowRegistry::Get(function->browser_context())
+                        ->GetAppWindowForWebContents(contents)
+                  : nullptr;
 }
 
 std::vector<ProfileInfo> GetLoggedInProfileInfoList() {
@@ -477,7 +476,7 @@ FileManagerPrivateRequestWebStoreAccessTokenFunction::Run() {
 }
 
 void FileManagerPrivateRequestWebStoreAccessTokenFunction::OnAccessTokenFetched(
-    google_apis::DriveApiErrorCode code,
+    google_apis::ApiErrorCode code,
     const std::string& access_token) {
   drive::EventLogger* logger = file_manager::util::GetLogger(
       Profile::FromBrowserContext(browser_context()));
@@ -491,8 +490,8 @@ void FileManagerPrivateRequestWebStoreAccessTokenFunction::OnAccessTokenFetched(
   } else {
     if (logger) {
       logger->Log(logging::LOG_ERROR,
-                  "CWS OAuth token fetch failed. (DriveApiErrorCode: %s)",
-                  google_apis::DriveApiErrorCodeToString(code).c_str());
+                  "CWS OAuth token fetch failed. (ApiErrorCode: %s)",
+                  google_apis::ApiErrorCodeToString(code).c_str());
     }
     Respond(Error("Token fetch failed."));
   }
@@ -679,8 +678,8 @@ FileManagerPrivateConfigureVolumeFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  using file_manager::VolumeManager;
   using file_manager::Volume;
+  using file_manager::VolumeManager;
   VolumeManager* const volume_manager =
       VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
   base::WeakPtr<Volume> volume =

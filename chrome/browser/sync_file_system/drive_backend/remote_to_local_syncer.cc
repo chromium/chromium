@@ -44,8 +44,7 @@ bool BuildFileSystemURL(MetadataDatabase* metadata_database,
                         const FileTracker& tracker,
                         storage::FileSystemURL* url) {
   base::FilePath path;
-  if (!metadata_database->BuildPathForTracker(
-          tracker.tracker_id(), &path))
+  if (!metadata_database->BuildPathForTracker(tracker.tracker_id(), &path))
     return false;
 
   GURL origin =
@@ -106,8 +105,7 @@ RemoteToLocalSyncer::RemoteToLocalSyncer(SyncEngineContext* sync_context)
       prepared_(false),
       sync_root_deletion_(false) {}
 
-RemoteToLocalSyncer::~RemoteToLocalSyncer() {
-}
+RemoteToLocalSyncer::~RemoteToLocalSyncer() {}
 
 void RemoteToLocalSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
   token->InitializeTaskLog("Remote -> Local");
@@ -120,8 +118,8 @@ void RemoteToLocalSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
 
   dirty_tracker_ = base::WrapUnique(new FileTracker);
   if (metadata_database()->GetDirtyTracker(dirty_tracker_.get())) {
-    token->RecordLog(base::StringPrintf(
-        "Start: tracker_id=%" PRId64, dirty_tracker_->tracker_id()));
+    token->RecordLog(base::StringPrintf("Start: tracker_id=%" PRId64,
+                                        dirty_tracker_->tracker_id()));
     metadata_database()->DemoteTracker(dirty_tracker_->tracker_id());
     ResolveRemoteChange(std::move(token));
     return;
@@ -135,13 +133,13 @@ void RemoteToLocalSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
 void RemoteToLocalSyncer::ResolveRemoteChange(
     std::unique_ptr<SyncTaskToken> token) {
   DCHECK(dirty_tracker_);
-  remote_metadata_ = GetFileMetadata(
-      metadata_database(), dirty_tracker_->file_id());
+  remote_metadata_ =
+      GetFileMetadata(metadata_database(), dirty_tracker_->file_id());
 
   if (!remote_metadata_ || !remote_metadata_->has_details()) {
     if (remote_metadata_ && !remote_metadata_->has_details()) {
-      token->RecordLog(
-          "Missing details of a remote file: " + remote_metadata_->file_id());
+      token->RecordLog("Missing details of a remote file: " +
+                       remote_metadata_->file_id());
       NOTREACHED();
     }
     token->RecordLog("Missing remote metadata case.");
@@ -230,8 +228,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     token->RecordLog(base::StringPrintf(
         "Found type mismatch between remote and local file: %s"
         " type: (local) %d vs (remote) %d",
-        dirty_tracker_->file_id().c_str(),
-        synced_details.file_kind(),
+        dirty_tracker_->file_id().c_str(), synced_details.file_kind(),
         remote_details.file_kind()));
     NOTREACHED();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
@@ -263,8 +260,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
   FileTracker parent_tracker;
   if (!metadata_database()->FindTrackerByTrackerID(
           dirty_tracker_->parent_tracker_id(), &parent_tracker)) {
-    token->RecordLog("Missing parent tracker for a non sync-root tracker: "
-                     + dirty_tracker_->file_id());
+    token->RecordLog("Missing parent tracker for a non sync-root tracker: " +
+                     dirty_tracker_->file_id());
     NOTREACHED();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
@@ -353,8 +350,8 @@ void RemoteToLocalSyncer::ContinueAsBackgroundTask(
   // - Others, SyncEngineInitializer and RegisterAppTask doesn't affect to
 
   FileTracker latest_dirty_tracker;
-  if (!metadata_database()->FindTrackerByTrackerID(
-          dirty_tracker_->tracker_id(), &latest_dirty_tracker) ||
+  if (!metadata_database()->FindTrackerByTrackerID(dirty_tracker_->tracker_id(),
+                                                   &latest_dirty_tracker) ||
       dirty_tracker_->active() != latest_dirty_tracker.active() ||
       !latest_dirty_tracker.dirty()) {
     SyncCompleted(std::move(token), SYNC_STATUS_RETRY);
@@ -407,13 +404,12 @@ void RemoteToLocalSyncer::HandleMissingRemoteMetadata(
 
 void RemoteToLocalSyncer::DidGetRemoteMetadata(
     std::unique_ptr<SyncTaskToken> token,
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::FileResource> entry) {
   DCHECK(sync_context_->GetWorkerTaskRunner()->RunsTasksInCurrentSequence());
 
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
-  if (status != SYNC_STATUS_OK &&
-      error != google_apis::HTTP_NOT_FOUND) {
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
+  if (status != SYNC_STATUS_OK && error != google_apis::HTTP_NOT_FOUND) {
     SyncCompleted(std::move(token), status);
     return;
   }
@@ -482,8 +478,9 @@ void RemoteToLocalSyncer::DidPrepareForAddOrUpdateFile(
     // Our policy prioritize folders in this case.
     // Let local-to-remote sync phase process this change.
     remote_change_processor()->RecordFakeLocalChange(
-        url_, FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
-                         local_metadata_->file_type),
+        url_,
+        FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
+                   local_metadata_->file_type),
         SyncCompletedCallback(std::move(token)));
     return;
   }
@@ -657,9 +654,9 @@ void RemoteToLocalSyncer::ListFolderContent(
 void RemoteToLocalSyncer::DidListFolderContent(
     std::unique_ptr<SyncTaskToken> token,
     std::unique_ptr<FileIDList> children,
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::FileList> file_list) {
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
     SyncCompleted(std::move(token), status);
     return;
@@ -729,8 +726,8 @@ void RemoteToLocalSyncer::SyncCompleted(std::unique_ptr<SyncTaskToken> token,
     }
   }
 
-  status = metadata_database()->UpdateTracker(
-      dirty_tracker_->tracker_id(), updated_details);
+  status = metadata_database()->UpdateTracker(dirty_tracker_->tracker_id(),
+                                              updated_details);
   FinalizeSync(std::move(token), status);
 }
 
@@ -797,11 +794,11 @@ void RemoteToLocalSyncer::DownloadFile(std::unique_ptr<SyncTaskToken> token) {
 
 void RemoteToLocalSyncer::DidDownloadFile(std::unique_ptr<SyncTaskToken> token,
                                           storage::ScopedFile file,
-                                          google_apis::DriveApiErrorCode error,
+                                          google_apis::ApiErrorCode error,
                                           const base::FilePath&) {
   DCHECK(sync_context_->GetWorkerTaskRunner()->RunsTasksInCurrentSequence());
 
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
     SyncCompleted(std::move(token), status);
     return;

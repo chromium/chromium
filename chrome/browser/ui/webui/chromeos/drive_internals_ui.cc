@@ -55,7 +55,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/drive/auth_service.h"
-#include "google_apis/drive/drive_api_error_codes.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/time_util.h"
 #include "net/base/filename_util.h"
@@ -448,7 +447,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     }
 
     const char* kPathPreferences[] = {
-        prefs::kSelectFileLastDirectory, prefs::kSaveFileDefaultDirectory,
+        prefs::kSelectFileLastDirectory,
+        prefs::kSaveFileDefaultDirectory,
         prefs::kDownloadDefaultDirectory,
     };
     for (size_t i = 0; i < base::size(kPathPreferences); ++i) {

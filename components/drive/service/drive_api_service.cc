@@ -23,15 +23,13 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using google_apis::AboutResourceCallback;
+using google_apis::ApiErrorCode;
 using google_apis::AuthStatusCallback;
 using google_apis::CancelCallbackOnce;
 using google_apis::CancelCallbackRepeating;
 using google_apis::ChangeList;
 using google_apis::ChangeListCallback;
 using google_apis::DownloadActionCallback;
-using google_apis::DRIVE_OTHER_ERROR;
-using google_apis::DRIVE_PARSE_ERROR;
-using google_apis::DriveApiErrorCode;
 using google_apis::EntryActionCallback;
 using google_apis::FileList;
 using google_apis::FileListCallback;
@@ -43,6 +41,8 @@ using google_apis::GetContentCallback;
 using google_apis::HTTP_NOT_IMPLEMENTED;
 using google_apis::HTTP_SUCCESS;
 using google_apis::InitiateUploadCallback;
+using google_apis::OTHER_ERROR;
+using google_apis::PARSE_ERROR;
 using google_apis::ProgressCallback;
 using google_apis::RequestSender;
 using google_apis::StartPageTokenCallback;
@@ -131,7 +131,7 @@ const char kTeamDrivesListFields[] =
 
 // Ignores the |entry|, and runs the |callback|.
 void EntryActionCallbackAdapter(EntryActionCallback callback,
-                                DriveApiErrorCode error,
+                                ApiErrorCode error,
                                 std::unique_ptr<FileResource> entry) {
   std::move(callback).Run(error);
 }
@@ -183,7 +183,7 @@ BatchRequestConfigurator::MultipartUploadNewFile(
   if (batch_request_)
     batch_request_->AddRequest(delegate.release());
   else
-    delegate->NotifyError(DRIVE_OTHER_ERROR);
+    delegate->NotifyError(OTHER_ERROR);
   return cancel_callback_;
 }
 
@@ -211,7 +211,7 @@ BatchRequestConfigurator::MultipartUploadExistingFile(
   if (batch_request_)
     batch_request_->AddRequest(delegate.release());
   else
-    delegate->NotifyError(DRIVE_OTHER_ERROR);
+    delegate->NotifyError(OTHER_ERROR);
   return cancel_callback_;
 }
 

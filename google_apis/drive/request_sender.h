@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace base {
@@ -84,7 +84,7 @@ class RequestSender {
   // Called when the access token is fetched.
   void OnAccessTokenFetched(
       const base::WeakPtr<AuthenticatedRequestInterface>& request,
-      DriveApiErrorCode error,
+      ApiErrorCode error,
       const std::string& access_token);
 
   // Clears any authentication token and retries the request, which forces

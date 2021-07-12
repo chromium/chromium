@@ -17,7 +17,7 @@
 namespace drive {
 class DriveServiceInterface;
 class DriveUploaderInterface;
-}
+}  // namespace drive
 
 namespace sync_file_system {
 namespace drive_backend {
@@ -31,8 +31,7 @@ FolderCreator::FolderCreator(drive::DriveServiceInterface* drive_service,
       parent_folder_id_(parent_folder_id),
       title_(title) {}
 
-FolderCreator::~FolderCreator() {
-}
+FolderCreator::~FolderCreator() = default;
 
 void FolderCreator::Run(FileIDCallback callback) {
   drive::AddNewDirectoryOptions options;
@@ -45,9 +44,9 @@ void FolderCreator::Run(FileIDCallback callback) {
 
 void FolderCreator::DidCreateFolder(
     FileIDCallback callback,
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::FileResource> entry) {
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
     std::move(callback).Run(std::string(), status);
     return;
@@ -65,9 +64,9 @@ void FolderCreator::DidCreateFolder(
 void FolderCreator::DidListFolders(
     FileIDCallback callback,
     std::vector<std::unique_ptr<google_apis::FileResource>> candidates,
-    google_apis::DriveApiErrorCode error,
+    google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::FileList> file_list) {
-  SyncStatusCode status = DriveApiErrorCodeToSyncStatusCode(error);
+  SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
     std::move(callback).Run(std::string(), status);
     return;

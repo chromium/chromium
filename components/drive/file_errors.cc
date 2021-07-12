@@ -136,7 +136,7 @@ base::File::Error FileErrorToBaseFileError(FileError error) {
   return base::File::FILE_ERROR_FAILED;
 }
 
-FileError GDataToFileError(google_apis::DriveApiErrorCode status) {
+FileError GDataToFileError(google_apis::ApiErrorCode status) {
   switch (status) {
     case google_apis::HTTP_SUCCESS:
     case google_apis::HTTP_CREATED:
@@ -153,9 +153,9 @@ FileError GDataToFileError(google_apis::DriveApiErrorCode status) {
       return FILE_ERROR_SERVICE_UNAVAILABLE;
     case google_apis::HTTP_NOT_IMPLEMENTED:
       return FILE_ERROR_INVALID_OPERATION;
-    case google_apis::DRIVE_CANCELLED:
+    case google_apis::CANCELLED:
       return FILE_ERROR_ABORT;
-    case google_apis::DRIVE_NO_CONNECTION:
+    case google_apis::NO_CONNECTION:
       return FILE_ERROR_NO_CONNECTION;
     case google_apis::DRIVE_NO_SPACE:
       return FILE_ERROR_NO_SERVER_SPACE;

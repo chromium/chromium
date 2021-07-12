@@ -21,7 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -37,10 +37,7 @@ class FileResource;
 class RequestSender;
 
 // Content type for multipart body.
-enum MultipartType {
-  MULTIPART_RELATED,
-  MULTIPART_MIXED
-};
+enum MultipartType { MULTIPART_RELATED, MULTIPART_MIXED };
 
 // Pair of content type and data.
 struct ContentTypeAndData {
@@ -48,11 +45,11 @@ struct ContentTypeAndData {
   std::string data;
 };
 
-using PrepareCallback = base::OnceCallback<void(DriveApiErrorCode)>;
+using PrepareCallback = base::OnceCallback<void(ApiErrorCode)>;
 
 // Callback used for requests that the server returns FileResource data
 // formatted into JSON value.
-typedef base::OnceCallback<void(DriveApiErrorCode error,
+typedef base::OnceCallback<void(ApiErrorCode error,
                                 std::unique_ptr<FileResource> entry)>
     FileResourceCallback;
 
@@ -64,7 +61,7 @@ typedef base::RepeatingCallback<void(int64_t progress, int64_t total)>
     ProgressCallback;
 
 // Callback used to get the content from DownloadFileRequest.
-typedef base::RepeatingCallback<void(DriveApiErrorCode error,
+typedef base::RepeatingCallback<void(ApiErrorCode error,
                                      std::unique_ptr<std::string> content,
                                      bool first_chunk)>
     GetContentCallback;
@@ -107,7 +104,7 @@ class AuthenticatedRequestInterface {
                      ReAuthenticateCallback callback) = 0;
 
   // Invoked when the authentication failed with an error code |code|.
-  virtual void OnAuthFailed(DriveApiErrorCode code) = 0;
+  virtual void OnAuthFailed(ApiErrorCode code) = 0;
 
   // Gets a weak pointer to this request object. Since requests may be
   // deleted when it is canceled by user action, for posting asynchronous tasks
@@ -117,7 +114,7 @@ class AuthenticatedRequestInterface {
   virtual base::WeakPtr<AuthenticatedRequestInterface> GetWeakPtr() = 0;
 
   // Cancels the request. It will invoke the callback object passed in
-  // each request's constructor with error code DRIVE_CANCELLED.
+  // each request's constructor with error code CANCELLED.
   virtual void Cancel() = 0;
 };
 
@@ -193,14 +190,14 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
 
   // Invoked by this base class upon an authentication error or cancel by
   // a user request. Must be implemented by a derived class.
-  virtual void RunCallbackOnPrematureFailure(DriveApiErrorCode code) = 0;
+  virtual void RunCallbackOnPrematureFailure(ApiErrorCode code) = 0;
 
   // Invoked from derived classes when ProcessURLFetchResults() is completed.
   void OnProcessURLFetchResultsComplete();
 
-  // Returns an appropriate DriveApiErrorCode based on the HTTP response code
+  // Returns an appropriate ApiErrorCode based on the HTTP response code
   // and the status of the URLLoader.
-  DriveApiErrorCode GetErrorCode() const;
+  ApiErrorCode GetErrorCode() const;
 
   // Returns the net::Error representing the final status of the request.
   // Only valid after the request completes (successful or not).
@@ -258,7 +255,7 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
   void StartAfterPrepare(const std::string& access_token,
                          const std::string& custom_user_agent,
                          ReAuthenticateCallback callback,
-                         DriveApiErrorCode code);
+                         ApiErrorCode code);
 
   // Called when the SimpleURLLoader first receives a response.
   void OnResponseStarted(const GURL& final_url,
@@ -266,16 +263,16 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
 
   // Invokes callback with |code| and request to delete the request to
   // |sender_|.
-  void CompleteRequestWithError(DriveApiErrorCode code);
+  void CompleteRequestWithError(ApiErrorCode code);
 
   // AuthenticatedRequestInterface overrides.
-  void OnAuthFailed(DriveApiErrorCode code) override;
+  void OnAuthFailed(ApiErrorCode code) override;
 
   ReAuthenticateCallback re_authenticate_callback_;
   int re_authenticate_count_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   RequestSender* sender_;
-  absl::optional<DriveApiErrorCode> error_code_;
+  absl::optional<ApiErrorCode> error_code_;
   const ProgressCallback upload_progress_callback_;
   const ProgressCallback download_progress_callback_;
   std::unique_ptr<DownloadData> download_data_;
@@ -311,14 +308,14 @@ class BatchableDelegate {
   // API.  |callback| must be called on completion. The instance must not
   // do anything after calling |callback| since the instance may be deleted in
   // |callback|.
-  virtual void NotifyResult(DriveApiErrorCode code,
+  virtual void NotifyResult(ApiErrorCode code,
                             const std::string& response_body,
                             base::OnceClosure callback) = 0;
 
   // Notifies error. Unlike |NotifyResult|, it must report error
   // synchronously. The instance may be deleted just after calling
   // NotifyError.
-  virtual void NotifyError(DriveApiErrorCode code) = 0;
+  virtual void NotifyError(ApiErrorCode code) = 0;
 
   // Notifies progress.
   virtual void NotifyUploadProgress(int64_t current, int64_t total) = 0;
@@ -327,7 +324,7 @@ class BatchableDelegate {
 //============================ EntryActionRequest ============================
 
 // Callback type for requests that return only error status, like: Delete/Move.
-using EntryActionCallback = base::OnceCallback<void(DriveApiErrorCode error)>;
+using EntryActionCallback = base::OnceCallback<void(ApiErrorCode error)>;
 
 // This class performs a simple action over a given entry (document/file).
 // It is meant to be used for requests that return no JSON blobs.
@@ -344,7 +341,7 @@ class EntryActionRequest : public UrlFetchRequestBase {
       const network::mojom::URLResponseHead* response_head,
       base::FilePath response_file,
       std::string response_body) override;
-  void RunCallbackOnPrematureFailure(DriveApiErrorCode code) override;
+  void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
 
  private:
   EntryActionCallback callback_;
@@ -355,8 +352,7 @@ class EntryActionRequest : public UrlFetchRequestBase {
 //=========================== InitiateUploadRequestBase=======================
 
 // Callback type for DriveServiceInterface::InitiateUpload.
-typedef base::OnceCallback<void(DriveApiErrorCode error,
-                                const GURL& upload_url)>
+typedef base::OnceCallback<void(ApiErrorCode error, const GURL& upload_url)>
     InitiateUploadCallback;
 
 // This class provides base implementation for performing the request for
@@ -387,7 +383,7 @@ class InitiateUploadRequestBase : public UrlFetchRequestBase {
       const network::mojom::URLResponseHead* response_head,
       base::FilePath response_file,
       std::string response_body) override;
-  void RunCallbackOnPrematureFailure(DriveApiErrorCode code) override;
+  void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
   std::vector<std::string> GetExtraRequestHeaders() const override;
 
  private:
@@ -403,20 +399,20 @@ class InitiateUploadRequestBase : public UrlFetchRequestBase {
 // Struct for response to ResumeUpload and GetUploadStatus.
 struct UploadRangeResponse {
   UploadRangeResponse();
-  UploadRangeResponse(DriveApiErrorCode code,
+  UploadRangeResponse(ApiErrorCode code,
                       int64_t start_position_received,
                       int64_t end_position_received);
   ~UploadRangeResponse();
 
-  DriveApiErrorCode code;
+  ApiErrorCode code = HTTP_SUCCESS;
   // The values of "Range" header returned from the server. The values are
   // used to continue uploading more data. These are set to -1 if an upload
   // is complete.
   // |start_position_received| is inclusive and |end_position_received| is
   // exclusive to follow the common C++ manner, although the response from
   // the server has "Range" header in inclusive format at both sides.
-  int64_t start_position_received;
-  int64_t end_position_received;
+  int64_t start_position_received = 0;
+  int64_t end_position_received = 0;
 };
 
 // Base class for a URL fetch request expecting the response containing the
@@ -437,7 +433,7 @@ class UploadRangeRequestBase : public UrlFetchRequestBase {
       const network::mojom::URLResponseHead* response_head,
       base::FilePath response_file,
       std::string response_body) override;
-  void RunCallbackOnPrematureFailure(DriveApiErrorCode code) override;
+  void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
 
   // This method will be called when the request is done, regardless of
   // whether it is succeeded or failed.
@@ -460,7 +456,7 @@ class UploadRangeRequestBase : public UrlFetchRequestBase {
 
  private:
   // Called when ParseJson() is completed.
-  void OnDataParsed(DriveApiErrorCode code, std::unique_ptr<base::Value> value);
+  void OnDataParsed(ApiErrorCode code, std::unique_ptr<base::Value> value);
 
   const GURL upload_url_;
 
@@ -577,13 +573,13 @@ class MultipartUploadRequestBase : public BatchableDelegate {
   void Prepare(PrepareCallback callback) override;
   bool GetContentData(std::string* upload_content_type,
                       std::string* upload_content) override;
-  void NotifyResult(DriveApiErrorCode code,
+  void NotifyResult(ApiErrorCode code,
                     const std::string& body,
                     base::OnceClosure callback) override;
-  void NotifyError(DriveApiErrorCode code) override;
+  void NotifyError(ApiErrorCode code) override;
   void NotifyUploadProgress(int64_t current, int64_t total) override;
   // Parses the response value and invokes |callback_| with |FileResource|.
-  void OnDataParsed(DriveApiErrorCode code,
+  void OnDataParsed(ApiErrorCode code,
                     base::OnceClosure callback,
                     std::unique_ptr<base::Value> value);
 
@@ -621,7 +617,7 @@ class MultipartUploadRequestBase : public BatchableDelegate {
 //============================ DownloadFileRequest ===========================
 
 // Callback type for receiving the completion of DownloadFileRequest.
-typedef base::OnceCallback<void(DriveApiErrorCode error,
+typedef base::OnceCallback<void(ApiErrorCode error,
                                 const base::FilePath& temp_file)>
     DownloadActionCallback;
 
@@ -662,7 +658,7 @@ class DownloadFileRequestBase : public UrlFetchRequestBase {
       const network::mojom::URLResponseHead* response_head,
       base::FilePath response_file,
       std::string response_body) override;
-  void RunCallbackOnPrematureFailure(DriveApiErrorCode code) override;
+  void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
 
  private:
   DownloadActionCallback download_action_callback_;

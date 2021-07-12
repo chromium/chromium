@@ -16,12 +16,12 @@
 #include "chrome/browser/sync_file_system/file_change.h"
 #include "chrome/browser/sync_file_system/sync_action.h"
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace drive {
 class DriveServiceInterface;
 class DriveUploaderInterface;
-}
+}  // namespace drive
 
 namespace google_apis {
 class FileResource;
@@ -73,23 +73,23 @@ class LocalToRemoteSyncer : public SyncTask {
 
   void DeleteRemoteFile(std::unique_ptr<SyncTaskToken> token);
   void DidDeleteRemoteFile(std::unique_ptr<SyncTaskToken> token,
-                           google_apis::DriveApiErrorCode error);
+                           google_apis::ApiErrorCode error);
 
   void UploadExistingFile(std::unique_ptr<SyncTaskToken> token);
   void DidUploadExistingFile(std::unique_ptr<SyncTaskToken> token,
-                             google_apis::DriveApiErrorCode error,
+                             google_apis::ApiErrorCode error,
                              const GURL&,
                              std::unique_ptr<google_apis::FileResource>);
   void UpdateRemoteMetadata(const std::string& file_id,
                             std::unique_ptr<SyncTaskToken> token);
   void DidGetRemoteMetadata(const std::string& file_id,
                             std::unique_ptr<SyncTaskToken> token,
-                            google_apis::DriveApiErrorCode error,
+                            google_apis::ApiErrorCode error,
                             std::unique_ptr<google_apis::FileResource> entry);
 
   void UploadNewFile(std::unique_ptr<SyncTaskToken> token);
   void DidUploadNewFile(std::unique_ptr<SyncTaskToken> token,
-                        google_apis::DriveApiErrorCode error,
+                        google_apis::ApiErrorCode error,
                         const GURL& upload_location,
                         std::unique_ptr<google_apis::FileResource> entry);
 
@@ -99,7 +99,7 @@ class LocalToRemoteSyncer : public SyncTask {
                              SyncStatusCode status);
   void DidDetachResourceForCreationConflict(
       std::unique_ptr<SyncTaskToken> token,
-      google_apis::DriveApiErrorCode error);
+      google_apis::ApiErrorCode error);
 
   bool IsContextReady();
   drive::DriveServiceInterface* drive_service();

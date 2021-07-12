@@ -118,7 +118,7 @@ class TestRequest : public AuthenticatedRequestInterface {
     sender_->RequestFinished(this);
   }
 
-  void OnAuthFailed(DriveApiErrorCode code) override {
+  void OnAuthFailed(ApiErrorCode code) override {
     *finish_reason_ = AUTH_FAILURE;
     sender_->RequestFinished(this);
   }
@@ -139,7 +139,7 @@ class TestRequest : public AuthenticatedRequestInterface {
 }  // namespace
 
 TEST_F(RequestSenderTest, StartAndFinishRequest) {
-  bool start_called  = false;
+  bool start_called = false;
   FinishReason finish_reason = NONE;
   std::unique_ptr<TestRequest> request = std::make_unique<TestRequest>(
       &request_sender_, &start_called, &finish_reason);
@@ -164,7 +164,7 @@ TEST_F(RequestSenderTest, StartAndFinishRequest) {
 }
 
 TEST_F(RequestSenderTest, StartAndCancelRequest) {
-  bool start_called  = false;
+  bool start_called = false;
   FinishReason finish_reason = NONE;
   std::unique_ptr<TestRequest> request = std::make_unique<TestRequest>(
       &request_sender_, &start_called, &finish_reason);
@@ -184,7 +184,7 @@ TEST_F(RequestSenderTest, NoRefreshToken) {
   auth_service_->ClearRefreshToken();
   auth_service_->ClearAccessToken();
 
-  bool start_called  = false;
+  bool start_called = false;
   FinishReason finish_reason = NONE;
   std::unique_ptr<TestRequest> request = std::make_unique<TestRequest>(
       &request_sender_, &start_called, &finish_reason);
@@ -203,7 +203,7 @@ TEST_F(RequestSenderTest, NoRefreshToken) {
 TEST_F(RequestSenderTest, ValidRefreshTokenAndNoAccessToken) {
   auth_service_->ClearAccessToken();
 
-  bool start_called  = false;
+  bool start_called = false;
   FinishReason finish_reason = NONE;
   std::unique_ptr<TestRequest> request = std::make_unique<TestRequest>(
       &request_sender_, &start_called, &finish_reason);
@@ -225,7 +225,7 @@ TEST_F(RequestSenderTest, ValidRefreshTokenAndNoAccessToken) {
 }
 
 TEST_F(RequestSenderTest, AccessTokenRejectedSeveralTimes) {
-  bool start_called  = false;
+  bool start_called = false;
   FinishReason finish_reason = NONE;
   std::unique_ptr<TestRequest> request = std::make_unique<TestRequest>(
       &request_sender_, &start_called, &finish_reason);

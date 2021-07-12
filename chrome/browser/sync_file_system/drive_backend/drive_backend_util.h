@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "storage/browser/blob/scoped_file.h"
 
 namespace sync_file_system {
@@ -39,12 +39,12 @@ bool IsAppRoot(const FileTracker& tracker);
 
 std::string GetTrackerTitle(const FileTracker& tracker);
 
-SyncStatusCode DriveApiErrorCodeToSyncStatusCode(
-    google_apis::DriveApiErrorCode error);
+SyncStatusCode ApiErrorCodeToSyncStatusCode(google_apis::ApiErrorCode error);
 
 // Returns true if |str| starts with |prefix|, and removes |prefix| from |str|.
 // If |out| is not NULL, the result is stored in it.
-bool RemovePrefix(const std::string& str, const std::string& prefix,
+bool RemovePrefix(const std::string& str,
+                  const std::string& prefix,
                   std::string* out);
 
 std::unique_ptr<ServiceMetadata> InitializeServiceMetadata(LevelDBWrapper* db);

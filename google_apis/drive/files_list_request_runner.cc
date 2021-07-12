@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_api_requests.h"
 #include "google_apis/drive/request_sender.h"
 
@@ -20,8 +20,7 @@ FilesListRequestRunner::FilesListRequestRunner(
     const google_apis::DriveApiUrlGenerator& url_generator)
     : request_sender_(request_sender), url_generator_(url_generator) {}
 
-FilesListRequestRunner::~FilesListRequestRunner() {
-}
+FilesListRequestRunner::~FilesListRequestRunner() = default;
 
 CancelCallbackOnce FilesListRequestRunner::CreateAndStartWithSizeBackoff(
     int max_results,
@@ -64,7 +63,7 @@ void FilesListRequestRunner::OnCompleted(int max_results,
                                          const std::string& fields,
                                          FileListCallback callback,
                                          CancelCallbackOnce* cancel_callback,
-                                         DriveApiErrorCode error,
+                                         ApiErrorCode error,
                                          std::unique_ptr<FileList> entry) {
   if (!request_completed_callback_for_testing_.is_null())
     std::move(request_completed_callback_for_testing_).Run();

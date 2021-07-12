@@ -78,7 +78,7 @@ class CalendarApiRequestsTest : public testing::Test {
 // Tests the CalendarApiRequestsTest can generate the correct url and get the
 // correct response.
 TEST_F(CalendarApiRequestsTest, GetEventListRequest) {
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   std::unique_ptr<EventList> events;
   base::Time start;
   base::Time end;

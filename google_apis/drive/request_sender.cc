@@ -63,7 +63,7 @@ base::RepeatingClosure RequestSender::StartRequestWithAuthRetryInternal(
 
 void RequestSender::OnAccessTokenFetched(
     const base::WeakPtr<AuthenticatedRequestInterface>& request,
-    DriveApiErrorCode code,
+    ApiErrorCode code,
     const std::string& /* access_token */) {
   DCHECK(thread_checker_.CalledOnValidThread());
 

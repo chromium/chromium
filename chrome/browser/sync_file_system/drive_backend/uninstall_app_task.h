@@ -15,7 +15,7 @@
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace drive {
 class DriveServiceInterface;
@@ -40,7 +40,7 @@ class UninstallAppTask : public ExclusiveTask {
  private:
   void DidDeleteAppRoot(SyncStatusCallback callback,
                         int64_t change_id,
-                        google_apis::DriveApiErrorCode error);
+                        google_apis::ApiErrorCode error);
 
   bool IsContextReady();
   MetadataDatabase* metadata_database();

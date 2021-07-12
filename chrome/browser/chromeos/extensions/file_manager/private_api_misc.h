@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace chromeos {
@@ -27,7 +27,7 @@ class RecentFile;
 namespace crostini {
 enum class CrostiniResult;
 struct LinuxPackageInfo;
-}
+}  // namespace crostini
 
 namespace file_manager {
 namespace util {
@@ -153,7 +153,7 @@ class FileManagerPrivateRequestWebStoreAccessTokenFunction
  private:
   std::unique_ptr<google_apis::AuthServiceInterface> auth_service_;
 
-  void OnAccessTokenFetched(google_apis::DriveApiErrorCode code,
+  void OnAccessTokenFetched(google_apis::ApiErrorCode code,
                             const std::string& access_token);
 };
 

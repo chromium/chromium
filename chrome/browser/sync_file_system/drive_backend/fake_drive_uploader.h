@@ -12,7 +12,7 @@
 #include "chrome/browser/sync_file_system/drive_backend/fake_drive_service_helper.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/test_util.h"
 #include "net/base/escape.h"
 
@@ -73,9 +73,7 @@ class FakeDriveUploader : public drive::DriveUploaderInterface {
       drive::UploadCompletionCallback callback,
       google_apis::ProgressCallback progress_callback) override;
 
-  void set_make_file_conflict(bool enable) {
-    make_file_conflict_ = enable;
-  }
+  void set_make_file_conflict(bool enable) { make_file_conflict_ = enable; }
 
  private:
   FakeDriveServiceWrapper* fake_drive_service_;

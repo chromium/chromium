@@ -15,14 +15,14 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_common_callbacks.h"
 
 namespace google_apis {
 class AboutResource;
 class FileList;
 class FileResource;
-}
+}  // namespace google_apis
 
 namespace leveldb {
 class Env;
@@ -75,22 +75,22 @@ class SyncEngineInitializer : public SyncTask {
   void GetAboutResource(std::unique_ptr<SyncTaskToken> token);
   void DidGetAboutResource(
       std::unique_ptr<SyncTaskToken> token,
-      google_apis::DriveApiErrorCode error,
+      google_apis::ApiErrorCode error,
       std::unique_ptr<google_apis::AboutResource> about_resource);
   void FindSyncRoot(std::unique_ptr<SyncTaskToken> token);
   void DidFindSyncRoot(std::unique_ptr<SyncTaskToken> token,
-                       google_apis::DriveApiErrorCode error,
+                       google_apis::ApiErrorCode error,
                        std::unique_ptr<google_apis::FileList> file_list);
   void CreateSyncRoot(std::unique_ptr<SyncTaskToken> token);
   void DidCreateSyncRoot(std::unique_ptr<SyncTaskToken> token,
-                         google_apis::DriveApiErrorCode error,
+                         google_apis::ApiErrorCode error,
                          std::unique_ptr<google_apis::FileResource> entry);
   void DetachSyncRoot(std::unique_ptr<SyncTaskToken> token);
   void DidDetachSyncRoot(std::unique_ptr<SyncTaskToken> token,
-                         google_apis::DriveApiErrorCode error);
+                         google_apis::ApiErrorCode error);
   void ListAppRootFolders(std::unique_ptr<SyncTaskToken> token);
   void DidListAppRootFolders(std::unique_ptr<SyncTaskToken> token,
-                             google_apis::DriveApiErrorCode error,
+                             google_apis::ApiErrorCode error,
                              std::unique_ptr<google_apis::FileList> file_list);
   void PopulateDatabase(std::unique_ptr<SyncTaskToken> token);
 

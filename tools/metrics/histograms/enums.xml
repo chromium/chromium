@@ -22496,6 +22496,9 @@ Called by update_document_policy_enum.py.-->
 <enum name="DriveApiErrorCode">
 <!-- Generated from google_apis/drive/drive_api_error_codes.h -->
 
+  <obsolete>
+    Obsolete 02/2019 as it's no longer used in any metrics.
+  </obsolete>
   <int value="200" label="HTTP_SUCCESS"/>
   <int value="201" label="HTTP_CREATED"/>
   <int value="204" label="HTTP_NO_CONTENT"/>

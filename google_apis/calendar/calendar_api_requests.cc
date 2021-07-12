@@ -55,8 +55,7 @@ void CalendarApiEventsRequest::ProcessURLFetchResults(
     const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
-  // TODO(https://crbug.com/1222483): use common error code.
-  DriveApiErrorCode error = GetErrorCode();
+  ApiErrorCode error = GetErrorCode();
   switch (error) {
     case HTTP_SUCCESS:
       base::PostTaskAndReplyWithResult(
@@ -73,17 +72,16 @@ void CalendarApiEventsRequest::ProcessURLFetchResults(
   }
 }
 
-void CalendarApiEventsRequest::OnDataParsed(DriveApiErrorCode error,
+void CalendarApiEventsRequest::OnDataParsed(ApiErrorCode error,
                                             std::unique_ptr<EventList> events) {
-  // TODO(https://crbug.com/1222483): use common error code.
   if (!events)
-    error = DRIVE_PARSE_ERROR;
+    error = PARSE_ERROR;
   std::move(callback_).Run(error, std::move(events));
   OnProcessURLFetchResultsComplete();
 }
 
 void CalendarApiEventsRequest::RunCallbackOnPrematureFailure(
-    DriveApiErrorCode error) {
+    ApiErrorCode error) {
   std::move(callback_).Run(error, std::unique_ptr<EventList>());
 }
 

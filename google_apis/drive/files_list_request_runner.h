@@ -57,7 +57,7 @@ class FilesListRequestRunner {
                    const std::string& fields,
                    FileListCallback callback,
                    CancelCallbackOnce* cancel_callback,
-                   DriveApiErrorCode error,
+                   ApiErrorCode error,
                    std::unique_ptr<FileList> entry);
 
   RequestSender* request_sender_;                          // Not owned.

@@ -129,8 +129,8 @@ class FilesListRequestRunnerTest : public testing::Test {
 
   // Called when the request is completed and no more backoff retries will
   // happen.
-  void OnCompleted(DriveApiErrorCode error, std::unique_ptr<FileList> entry) {
-    response_error_ = std::make_unique<DriveApiErrorCode>(error);
+  void OnCompleted(ApiErrorCode error, std::unique_ptr<FileList> entry) {
+    response_error_ = std::make_unique<ApiErrorCode>(error);
     response_entry_ = std::move(entry);
     std::move(on_completed_callback_).Run();
   }
@@ -172,7 +172,7 @@ class FilesListRequestRunnerTest : public testing::Test {
 
   // A requests and a response stored for verification in test cases.
   std::unique_ptr<net::test_server::HttpRequest> http_request_;
-  std::unique_ptr<DriveApiErrorCode> response_error_;
+  std::unique_ptr<ApiErrorCode> response_error_;
   std::unique_ptr<FileList> response_entry_;
 };
 

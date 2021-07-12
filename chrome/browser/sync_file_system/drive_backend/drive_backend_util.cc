@@ -77,7 +77,7 @@ bool HasFileAsParent(const FileDetails& details, const std::string& file_id) {
 
 bool IsAppRoot(const FileTracker& tracker) {
   return tracker.tracker_kind() == TRACKER_KIND_APP_ROOT ||
-      tracker.tracker_kind() == TRACKER_KIND_DISABLED_APP_ROOT;
+         tracker.tracker_kind() == TRACKER_KIND_DISABLED_APP_ROOT;
 }
 
 std::string GetTrackerTitle(const FileTracker& tracker) {
@@ -86,8 +86,7 @@ std::string GetTrackerTitle(const FileTracker& tracker) {
   return std::string();
 }
 
-SyncStatusCode DriveApiErrorCodeToSyncStatusCode(
-    google_apis::DriveApiErrorCode error) {
+SyncStatusCode ApiErrorCodeToSyncStatusCode(google_apis::ApiErrorCode error) {
   // NOTE: Please update DriveFileSyncService::UpdateServiceState when you add
   // more error code mapping.
   switch (error) {
@@ -107,14 +106,14 @@ SyncStatusCode DriveApiErrorCodeToSyncStatusCode(
     case google_apis::HTTP_UNAUTHORIZED:
       return SYNC_STATUS_AUTHENTICATION_FAILED;
 
-    case google_apis::DRIVE_NO_CONNECTION:
+    case google_apis::NO_CONNECTION:
       return SYNC_STATUS_NETWORK_ERROR;
 
+    case google_apis::CANCELLED:
+    case google_apis::NOT_READY:
     case google_apis::HTTP_INTERNAL_SERVER_ERROR:
     case google_apis::HTTP_BAD_GATEWAY:
     case google_apis::HTTP_SERVICE_UNAVAILABLE:
-    case google_apis::DRIVE_CANCELLED:
-    case google_apis::DRIVE_NOT_READY:
       return SYNC_STATUS_SERVICE_TEMPORARILY_UNAVAILABLE;
 
     case google_apis::HTTP_NOT_FOUND:
@@ -127,24 +126,25 @@ SyncStatusCode DriveApiErrorCodeToSyncStatusCode(
     case google_apis::HTTP_FORBIDDEN:
       return SYNC_STATUS_ACCESS_FORBIDDEN;
 
+    case google_apis::DRIVE_NO_SPACE:
+      return SYNC_FILE_ERROR_NO_SPACE;
+
     case google_apis::HTTP_RESUME_INCOMPLETE:
     case google_apis::HTTP_BAD_REQUEST:
     case google_apis::HTTP_LENGTH_REQUIRED:
     case google_apis::HTTP_NOT_IMPLEMENTED:
-    case google_apis::DRIVE_PARSE_ERROR:
+    case google_apis::PARSE_ERROR:
     case google_apis::DRIVE_RESPONSE_TOO_LARGE:
-    case google_apis::DRIVE_OTHER_ERROR:
+    case google_apis::OTHER_ERROR:
       return SYNC_STATUS_FAILED;
-
-    case google_apis::DRIVE_NO_SPACE:
-      return SYNC_FILE_ERROR_NO_SPACE;
   }
 
   NOTREACHED();
   return SYNC_STATUS_FAILED;
 }
 
-bool RemovePrefix(const std::string& str, const std::string& prefix,
+bool RemovePrefix(const std::string& str,
+                  const std::string& prefix,
                   std::string* out) {
   if (!base::StartsWith(str, prefix, base::CompareCase::SENSITIVE)) {
     if (out)

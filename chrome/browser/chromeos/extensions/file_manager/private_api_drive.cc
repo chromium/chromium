@@ -872,7 +872,7 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotDownloadUrl(
 }
 
 void FileManagerPrivateInternalGetDownloadUrlFunction::OnTokenFetched(
-    google_apis::DriveApiErrorCode code,
+    google_apis::ApiErrorCode code,
     const std::string& access_token) {
   if (code != google_apis::HTTP_SUCCESS) {
     // Intentionally returns a blank.

@@ -7,8 +7,8 @@
 
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/calendar/calendar_api_url_generator.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/base_requests.h"
-#include "google_apis/drive/drive_api_error_codes.h"
 
 namespace google_apis {
 
@@ -16,9 +16,8 @@ namespace calendar {
 
 // Callback used for requests that the server returns Events data
 // formatted into JSON value.
-// TODO(https://crbug.com/1222483): use common error code.
 using CalendarEventListCallback =
-    base::OnceCallback<void(DriveApiErrorCode error,
+    base::OnceCallback<void(ApiErrorCode error,
                             std::unique_ptr<EventList> events)>;
 
 // This is base class of the Calendar API related requests.
@@ -68,16 +67,14 @@ class CalendarApiEventsRequest : public CalendarApiGetRequest {
       const base::FilePath response_file,
       std::string response_body) override;
 
-  // TODO(https://crbug.com/1222483): use common error code.
-  void RunCallbackOnPrematureFailure(DriveApiErrorCode code) override;
+  void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
 
  private:
   // Parses the |json| string to EventList.
   static std::unique_ptr<EventList> Parse(std::string json);
 
   // Receives the parsed result and invokes the callback.
-  // TODO(https://crbug.com/1222483): use common error code.
-  void OnDataParsed(DriveApiErrorCode error, std::unique_ptr<EventList> events);
+  void OnDataParsed(ApiErrorCode error, std::unique_ptr<EventList> events);
 
   CalendarEventListCallback callback_;
   const CalendarApiUrlGenerator url_generator_;

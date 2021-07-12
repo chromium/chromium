@@ -57,12 +57,10 @@ const char kUploadResponseRange[] = "range";
 const char kJsonMimeType[] = "application/json";
 
 // Mime type of multipart related.
-const char kMultipartRelatedMimeTypePrefix[] =
-    "multipart/related; boundary=";
+const char kMultipartRelatedMimeTypePrefix[] = "multipart/related; boundary=";
 
 // Mime type of multipart mixed.
-const char kMultipartMixedMimeTypePrefix[] =
-    "multipart/mixed; boundary=";
+const char kMultipartMixedMimeTypePrefix[] = "multipart/mixed; boundary=";
 
 // Header for each item in a multipart message.
 const char kMultipartItemHeaderFormat[] = "--%s\nContent-Type: %s\n\n";
@@ -118,12 +116,11 @@ bool GetMultipartContent(const std::string& predetermined_boundary,
   return true;
 }
 
-// Parses JSON body and returns corresponding DriveApiErrorCode if it is found.
+// Parses JSON body and returns corresponding ApiErrorCode if it is found.
 // The server may return detailed error status in JSON.
 // See https://developers.google.com/drive/handle-errors
-google_apis::DriveApiErrorCode MapJsonError(
-    google_apis::DriveApiErrorCode code,
-    const std::string& error_body) {
+google_apis::ApiErrorCode MapJsonError(google_apis::ApiErrorCode code,
+                                       const std::string& error_body) {
   if (IsSuccessfulDriveApiErrorCode(code))
     return code;
 
@@ -140,8 +137,7 @@ google_apis::DriveApiErrorCode MapJsonError(
   std::unique_ptr<const base::Value> value(google_apis::ParseJson(error_body));
   const base::DictionaryValue* dictionary = nullptr;
   const base::DictionaryValue* error = nullptr;
-  if (value &&
-      value->GetAsDictionary(&dictionary) &&
+  if (value && value->GetAsDictionary(&dictionary) &&
       dictionary->GetDictionaryWithoutPathExpansion(kErrorKey, &error)) {
     // Get error message.
     const std::string* message = error->FindStringKey(kErrorMessageKey);
@@ -183,7 +179,7 @@ std::unique_ptr<base::Value> ParseJson(const std::string& json) {
   if (!parsed_json.value) {
     std::string trimmed_json;
     if (json.size() < 80) {
-      trimmed_json  = json;
+      trimmed_json = json;
     } else {
       // Take the first 50 and the last 10 bytes.
       trimmed_json =
@@ -283,18 +279,18 @@ void UrlFetchRequestBase::StartAfterPrepare(
     const std::string& access_token,
     const std::string& custom_user_agent,
     ReAuthenticateCallback callback,
-    DriveApiErrorCode code) {
+    ApiErrorCode code) {
   DCHECK(CalledOnValidThread());
   DCHECK(!access_token.empty());
   DCHECK(callback);
   DCHECK(re_authenticate_callback_.is_null());
 
   const GURL url = GetURL();
-  DriveApiErrorCode error_code;
+  ApiErrorCode error_code;
   if (IsSuccessfulDriveApiErrorCode(code))
     error_code = code;
   else if (url.is_empty())
-    error_code = DRIVE_OTHER_ERROR;
+    error_code = OTHER_ERROR;
   else
     error_code = HTTP_SUCCESS;
 
@@ -435,7 +431,7 @@ void UrlFetchRequestBase::OnWriteComplete(
     bool write_success) {
   download_data_ = std::move(download_data);
   if (!write_success) {
-    error_code_ = DRIVE_OTHER_ERROR;
+    error_code_ = OTHER_ERROR;
     url_loader_.reset();  // Cancel the request
     // No SimpleURLLoader to call OnComplete() so call it directly.
     OnComplete(false);
@@ -485,11 +481,11 @@ void UrlFetchRequestBase::OnOutputFileClosed(bool success) {
   if (url_loader_) {
     response_info = url_loader_->ResponseInfo();
     if (response_info) {
-      error_code_ = static_cast<DriveApiErrorCode>(
-          response_info->headers->response_code());
+      error_code_ =
+          static_cast<ApiErrorCode>(response_info->headers->response_code());
     } else {
-      error_code_ = NetError() == net::ERR_NETWORK_CHANGED ? DRIVE_NO_CONNECTION
-                                                           : DRIVE_OTHER_ERROR;
+      error_code_ =
+          NetError() == net::ERR_NETWORK_CHANGED ? NO_CONNECTION : OTHER_ERROR;
     }
     if (!download_data_->response_body.empty()) {
       error_code_ =
@@ -543,15 +539,14 @@ bool UrlFetchRequestBase::GetContentFile(base::FilePath* local_file_path,
 
 void UrlFetchRequestBase::GetOutputFilePath(
     base::FilePath* local_file_path,
-    GetContentCallback* get_content_callback) {
-}
+    GetContentCallback* get_content_callback) {}
 
 void UrlFetchRequestBase::Cancel() {
   url_loader_.reset();
-  CompleteRequestWithError(DRIVE_CANCELLED);
+  CompleteRequestWithError(CANCELLED);
 }
 
-DriveApiErrorCode UrlFetchRequestBase::GetErrorCode() const {
+ApiErrorCode UrlFetchRequestBase::GetErrorCode() const {
   DCHECK(error_code_.has_value()) << "GetErrorCode only valid after "
                                      "resource load complete.";
   return error_code_.value();
@@ -575,17 +570,16 @@ void UrlFetchRequestBase::OnProcessURLFetchResultsComplete() {
   sender_->RequestFinished(this);
 }
 
-void UrlFetchRequestBase::CompleteRequestWithError(DriveApiErrorCode code) {
+void UrlFetchRequestBase::CompleteRequestWithError(ApiErrorCode code) {
   RunCallbackOnPrematureFailure(code);
   sender_->RequestFinished(this);
 }
 
-void UrlFetchRequestBase::OnAuthFailed(DriveApiErrorCode code) {
+void UrlFetchRequestBase::OnAuthFailed(ApiErrorCode code) {
   CompleteRequestWithError(code);
 }
 
-base::WeakPtr<AuthenticatedRequestInterface>
-UrlFetchRequestBase::GetWeakPtr() {
+base::WeakPtr<AuthenticatedRequestInterface> UrlFetchRequestBase::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -608,7 +602,7 @@ void EntryActionRequest::ProcessURLFetchResults(
   OnProcessURLFetchResultsComplete();
 }
 
-void EntryActionRequest::RunCallbackOnPrematureFailure(DriveApiErrorCode code) {
+void EntryActionRequest::RunCallbackOnPrematureFailure(ApiErrorCode code) {
   std::move(callback_).Run(code);
 }
 
@@ -646,12 +640,12 @@ void InitiateUploadRequestBase::ProcessURLFetchResults(
 }
 
 void InitiateUploadRequestBase::RunCallbackOnPrematureFailure(
-    DriveApiErrorCode code) {
+    ApiErrorCode code) {
   std::move(callback_).Run(code, GURL());
 }
 
-std::vector<std::string>
-InitiateUploadRequestBase::GetExtraRequestHeaders() const {
+std::vector<std::string> InitiateUploadRequestBase::GetExtraRequestHeaders()
+    const {
   std::vector<std::string> headers;
   headers.push_back(kUploadContentType + content_type_);
   headers.push_back(kUploadContentLength +
@@ -661,21 +655,16 @@ InitiateUploadRequestBase::GetExtraRequestHeaders() const {
 
 //============================ UploadRangeResponse =============================
 
-UploadRangeResponse::UploadRangeResponse()
-    : code(HTTP_SUCCESS),
-      start_position_received(0),
-      end_position_received(0) {
-}
+UploadRangeResponse::UploadRangeResponse() = default;
 
-UploadRangeResponse::UploadRangeResponse(DriveApiErrorCode code,
+UploadRangeResponse::UploadRangeResponse(ApiErrorCode code,
                                          int64_t start_position_received,
                                          int64_t end_position_received)
     : code(code),
       start_position_received(start_position_received),
       end_position_received(end_position_received) {}
 
-UploadRangeResponse::~UploadRangeResponse() {
-}
+UploadRangeResponse::~UploadRangeResponse() {}
 
 //========================== UploadRangeRequestBase ==========================
 
@@ -702,7 +691,7 @@ void UploadRangeRequestBase::ProcessURLFetchResults(
     const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
-  DriveApiErrorCode code = GetErrorCode();
+  ApiErrorCode code = GetErrorCode();
   if (code == HTTP_RESUME_INCOMPLETE) {
     // Retrieve value of the first "Range" header.
     // The Range header is appeared only if there is at least one received
@@ -716,7 +705,7 @@ void UploadRangeRequestBase::ProcessURLFetchResults(
     if (!range_received.empty()) {  // Parse the range header.
       std::vector<net::HttpByteRange> ranges;
       if (net::HttpUtil::ParseRangeHeader(range_received, &ranges) &&
-          !ranges.empty() ) {
+          !ranges.empty()) {
         // We only care about the first start-end pair in the range.
         //
         // Range header represents the range inclusively, while we are treating
@@ -750,7 +739,7 @@ void UploadRangeRequestBase::ProcessURLFetchResults(
   }
 }
 
-void UploadRangeRequestBase::OnDataParsed(DriveApiErrorCode code,
+void UploadRangeRequestBase::OnDataParsed(ApiErrorCode code,
                                           std::unique_ptr<base::Value> value) {
   DCHECK(CalledOnValidThread());
   DCHECK(code == HTTP_CREATED || code == HTTP_SUCCESS);
@@ -759,8 +748,7 @@ void UploadRangeRequestBase::OnDataParsed(DriveApiErrorCode code,
   OnProcessURLFetchResultsComplete();
 }
 
-void UploadRangeRequestBase::RunCallbackOnPrematureFailure(
-    DriveApiErrorCode code) {
+void UploadRangeRequestBase::RunCallbackOnPrematureFailure(ApiErrorCode code) {
   OnRangeRequestComplete(UploadRangeResponse(code, 0, 0),
                          std::unique_ptr<base::Value>());
 }
@@ -798,8 +786,8 @@ ResumeUploadRequestBase::ResumeUploadRequestBase(
 
 ResumeUploadRequestBase::~ResumeUploadRequestBase() {}
 
-std::vector<std::string>
-ResumeUploadRequestBase::GetExtraRequestHeaders() const {
+std::vector<std::string> ResumeUploadRequestBase::GetExtraRequestHeaders()
+    const {
   if (content_length_ == 0) {
     // For uploading an empty document, just PUT an empty content.
     DCHECK_EQ(start_position_, 0);
@@ -850,8 +838,8 @@ GetUploadStatusRequestBase::GetUploadStatusRequestBase(RequestSender* sender,
 
 GetUploadStatusRequestBase::~GetUploadStatusRequestBase() {}
 
-std::vector<std::string>
-GetUploadStatusRequestBase::GetExtraRequestHeaders() const {
+std::vector<std::string> GetUploadStatusRequestBase::GetExtraRequestHeaders()
+    const {
   // The header looks like
   // Content-Range: bytes */<content_length>
   // for example:
@@ -886,8 +874,7 @@ MultipartUploadRequestBase::MultipartUploadRequestBase(
   DCHECK(!callback_.is_null());
 }
 
-MultipartUploadRequestBase::~MultipartUploadRequestBase() {
-}
+MultipartUploadRequestBase::~MultipartUploadRequestBase() {}
 
 std::vector<std::string> MultipartUploadRequestBase::GetExtraRequestHeaders()
     const {
@@ -940,7 +927,7 @@ bool MultipartUploadRequestBase::GetContentData(
 }
 
 void MultipartUploadRequestBase::NotifyResult(
-    DriveApiErrorCode code,
+    ApiErrorCode code,
     const std::string& body,
     base::OnceClosure notify_complete_callback) {
   // The upload is successfully done. Parse the response which should be
@@ -957,7 +944,7 @@ void MultipartUploadRequestBase::NotifyResult(
   }
 }
 
-void MultipartUploadRequestBase::NotifyError(DriveApiErrorCode code) {
+void MultipartUploadRequestBase::NotifyError(ApiErrorCode code) {
   std::move(callback_).Run(code, std::unique_ptr<FileResource>());
 }
 
@@ -968,7 +955,7 @@ void MultipartUploadRequestBase::NotifyUploadProgress(int64_t current,
 }
 
 void MultipartUploadRequestBase::OnDataParsed(
-    DriveApiErrorCode code,
+    ApiErrorCode code,
     base::OnceClosure notify_complete_callback,
     std::unique_ptr<base::Value> value) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -976,7 +963,7 @@ void MultipartUploadRequestBase::OnDataParsed(
     std::move(callback_).Run(code,
                              google_apis::FileResource::CreateFrom(*value));
   else
-    NotifyError(DRIVE_PARSE_ERROR);
+    NotifyError(PARSE_ERROR);
   std::move(notify_complete_callback).Run();
 }
 
@@ -1022,8 +1009,7 @@ void DownloadFileRequestBase::ProcessURLFetchResults(
   OnProcessURLFetchResultsComplete();
 }
 
-void DownloadFileRequestBase::RunCallbackOnPrematureFailure(
-    DriveApiErrorCode code) {
+void DownloadFileRequestBase::RunCallbackOnPrematureFailure(ApiErrorCode code) {
   std::move(download_action_callback_).Run(code, base::FilePath());
 }
 

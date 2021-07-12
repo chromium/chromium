@@ -16,8 +16,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/base_requests.h"
-#include "google_apis/drive/drive_api_error_codes.h"
 #include "google_apis/drive/task_util.h"
 
 class GURL;
@@ -26,15 +26,15 @@ namespace base {
 class FilePath;
 class RunLoop;
 class Value;
-}
+}  // namespace base
 
 namespace net {
 namespace test_server {
 class BasicHttpResponse;
 class HttpResponse;
 struct HttpRequest;
-}
-}
+}  // namespace test_server
+}  // namespace net
 
 namespace google_apis {
 namespace test_util {
@@ -136,71 +136,72 @@ namespace internal {
 
 // Declare if the type is movable or not. Currently limited to scoped_ptr only.
 // We can add more types upon the usage.
-template<typename T> struct IsMovable : std::false_type {};
+template <typename T>
+struct IsMovable : std::false_type {};
 template <typename T, typename D>
 struct IsMovable<std::unique_ptr<T, D>> : std::true_type {};
 
 // InType is const T& if |UseConstRef| is true, otherwise |T|.
-template<bool UseConstRef, typename T> struct InTypeHelper {
+template <bool UseConstRef, typename T>
+struct InTypeHelper {
   typedef const T& InType;
 };
-template<typename T> struct InTypeHelper<false, T> {
+template <typename T>
+struct InTypeHelper<false, T> {
   typedef T InType;
 };
 
 // Simulates the std::move function in C++11. We use pointer here for argument,
 // instead of rvalue reference.
-template<bool IsMovable, typename T> struct MoveHelper {
+template <bool IsMovable, typename T>
+struct MoveHelper {
   static const T& Move(const T* in) { return *in; }
 };
-template<typename T> struct MoveHelper<true, T> {
+template <typename T>
+struct MoveHelper<true, T> {
   static T Move(T* in) { return std::move(*in); }
 };
 
 // Helper to handle Chrome's move semantics correctly.
-template<typename T>
+template <typename T>
 struct CopyResultCallbackHelper
-      // It is necessary to calculate the exact signature of callbacks we want
-      // to create here. In our case, as we use value-parameters for primitive
-      // types and movable types in the callback declaration.
-      // Thus the incoming type is as follows:
-      // 1) If the argument type |T| is class type but doesn't movable,
-      //    |InType| is const T&.
-      // 2) Otherwise, |T| as is.
-    : InTypeHelper<
-          std::is_class<T>::value && !IsMovable<T>::value,  // UseConstRef
-          T>,
-      MoveHelper<IsMovable<T>::value, T> {
-};
+    // It is necessary to calculate the exact signature of callbacks we want
+    // to create here. In our case, as we use value-parameters for primitive
+    // types and movable types in the callback declaration.
+    // Thus the incoming type is as follows:
+    // 1) If the argument type |T| is class type but doesn't movable,
+    //    |InType| is const T&.
+    // 2) Otherwise, |T| as is.
+    : InTypeHelper<std::is_class<T>::value &&
+                       !IsMovable<T>::value,  // UseConstRef
+                   T>,
+      MoveHelper<IsMovable<T>::value, T> {};
 
 // Copies the |in|'s value to |out|.
-template<typename T1>
-void CopyResultCallback(
-    T1* out,
-    typename CopyResultCallbackHelper<T1>::InType in) {
+template <typename T1>
+void CopyResultCallback(T1* out,
+                        typename CopyResultCallbackHelper<T1>::InType in) {
   *out = CopyResultCallbackHelper<T1>::Move(&in);
 }
 
 // Copies the |in1|'s value to |out1|, and |in2|'s to |out2|.
-template<typename T1, typename T2>
-void CopyResultCallback(
-    T1* out1,
-    T2* out2,
-    typename CopyResultCallbackHelper<T1>::InType in1,
-    typename CopyResultCallbackHelper<T2>::InType in2) {
+template <typename T1, typename T2>
+void CopyResultCallback(T1* out1,
+                        T2* out2,
+                        typename CopyResultCallbackHelper<T1>::InType in1,
+                        typename CopyResultCallbackHelper<T2>::InType in2) {
   *out1 = CopyResultCallbackHelper<T1>::Move(&in1);
   *out2 = CopyResultCallbackHelper<T2>::Move(&in2);
 }
 
 // Copies the |in1|'s value to |out1|, |in2|'s to |out2|, and |in3|'s to |out3|.
-template<typename T1, typename T2, typename T3>
-void CopyResultCallback(
-    T1* out1,
-    T2* out2,
-    T3* out3,
-    typename CopyResultCallbackHelper<T1>::InType in1,
-    typename CopyResultCallbackHelper<T2>::InType in2,
-    typename CopyResultCallbackHelper<T3>::InType in3) {
+template <typename T1, typename T2, typename T3>
+void CopyResultCallback(T1* out1,
+                        T2* out2,
+                        T3* out3,
+                        typename CopyResultCallbackHelper<T1>::InType in1,
+                        typename CopyResultCallbackHelper<T2>::InType in2,
+                        typename CopyResultCallbackHelper<T3>::InType in3) {
   *out1 = CopyResultCallbackHelper<T1>::Move(&in1);
   *out2 = CopyResultCallbackHelper<T2>::Move(&in2);
   *out3 = CopyResultCallbackHelper<T3>::Move(&in3);
@@ -208,7 +209,7 @@ void CopyResultCallback(
 
 // Holds the pointers for output. This is introduced for the workaround of
 // the arity limitation of Callback.
-template<typename T1, typename T2, typename T3, typename T4>
+template <typename T1, typename T2, typename T3, typename T4>
 struct OutputParams {
   OutputParams(T1* out1, T2* out2, T3* out3, T4* out4)
       : out1(out1), out2(out2), out3(out3), out4(out4) {}
@@ -220,13 +221,12 @@ struct OutputParams {
 
 // Copies the |in1|'s value to |output->out1|, |in2|'s to |output->out2|,
 // and so on.
-template<typename T1, typename T2, typename T3, typename T4>
-void CopyResultCallback(
-    const OutputParams<T1, T2, T3, T4>& output,
-    typename CopyResultCallbackHelper<T1>::InType in1,
-    typename CopyResultCallbackHelper<T2>::InType in2,
-    typename CopyResultCallbackHelper<T3>::InType in3,
-    typename CopyResultCallbackHelper<T4>::InType in4) {
+template <typename T1, typename T2, typename T3, typename T4>
+void CopyResultCallback(const OutputParams<T1, T2, T3, T4>& output,
+                        typename CopyResultCallbackHelper<T1>::InType in1,
+                        typename CopyResultCallbackHelper<T2>::InType in2,
+                        typename CopyResultCallbackHelper<T3>::InType in3,
+                        typename CopyResultCallbackHelper<T4>::InType in4) {
   *output.out1 = CopyResultCallbackHelper<T1>::Move(&in1);
   *output.out2 = CopyResultCallbackHelper<T2>::Move(&in2);
   *output.out3 = CopyResultCallbackHelper<T3>::Move(&in3);
@@ -293,7 +293,7 @@ class TestGetContentCallback {
   std::string GetConcatenatedData() const;
 
  private:
-  void OnGetContent(google_apis::DriveApiErrorCode error,
+  void OnGetContent(google_apis::ApiErrorCode error,
                     std::unique_ptr<std::string> data,
                     bool first_chunk);
 

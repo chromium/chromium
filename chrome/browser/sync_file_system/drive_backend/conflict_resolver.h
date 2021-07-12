@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace drive {
 class DriveServiceInterface;
@@ -51,19 +51,19 @@ class ConflictResolver : public SyncTask {
 
   void DetachFromNonPrimaryParents(std::unique_ptr<SyncTaskToken> token);
   void DidDetachFromParent(std::unique_ptr<SyncTaskToken> token,
-                           google_apis::DriveApiErrorCode error);
+                           google_apis::ApiErrorCode error);
 
   std::string PickPrimaryFile(const TrackerIDSet& trackers);
   void RemoveNonPrimaryFiles(std::unique_ptr<SyncTaskToken> token);
   void DidRemoveFile(std::unique_ptr<SyncTaskToken> token,
                      const std::string& file_id,
-                     google_apis::DriveApiErrorCode error);
+                     google_apis::ApiErrorCode error);
 
   void UpdateFileMetadata(const std::string& file_id,
                           std::unique_ptr<SyncTaskToken> token);
   void DidGetRemoteMetadata(const std::string& file_id,
                             std::unique_ptr<SyncTaskToken> token,
-                            google_apis::DriveApiErrorCode error,
+                            google_apis::ApiErrorCode error,
                             std::unique_ptr<google_apis::FileResource> entry);
 
   std::string target_file_id_;

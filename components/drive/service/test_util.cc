@@ -13,10 +13,10 @@
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/test_util.h"
 
-using google_apis::DRIVE_OTHER_ERROR;
-using google_apis::DriveApiErrorCode;
+using google_apis::ApiErrorCode;
 using google_apis::FileResource;
 using google_apis::HTTP_CREATED;
+using google_apis::OTHER_ERROR;
 
 namespace drive {
 namespace test_util {
@@ -34,7 +34,7 @@ bool SetUpTeamDriveTestEntries(FakeDriveService* drive_service,
 
 bool SetUpTestEntries(FakeDriveService* drive_service,
                       const std::string& parent_resource_id) {
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   std::unique_ptr<FileResource> entry;
 
   drive_service->AddNewFileWithResourceId(
@@ -92,11 +92,8 @@ bool SetUpTestEntries(FakeDriveService* drive_service,
     return false;
 
   drive_service->AddNewFileWithResourceId(
-      "subdirectory_file_1_id",
-      "audio/mpeg",
-      "This is some test content.",
-      "1_folder_resource_id",
-      "SubDirectory File 1.txt",
+      "subdirectory_file_1_id", "audio/mpeg", "This is some test content.",
+      "1_folder_resource_id", "SubDirectory File 1.txt",
       false,  // shared_with_me
       google_apis::test_util::CreateCopyResultCallback(&error, &entry));
   base::RunLoop().RunUntilIdle();
@@ -104,10 +101,8 @@ bool SetUpTestEntries(FakeDriveService* drive_service,
     return false;
 
   drive_service->AddNewFileWithResourceId(
-      "subdirectory_unowned_file_1_id",
-      "audio/mpeg",
-      "This is some test content.",
-      "1_folder_resource_id",
+      "subdirectory_unowned_file_1_id", "audio/mpeg",
+      "This is some test content.", "1_folder_resource_id",
       "Shared to The Account Owner.txt",
       true,  // shared_with_me
       google_apis::test_util::CreateCopyResultCallback(&error, &entry));
@@ -140,11 +135,8 @@ bool SetUpTestEntries(FakeDriveService* drive_service,
     return false;
 
   drive_service->AddNewFileWithResourceId(
-      "slash_subdir_file",
-      "audio/mpeg",
-      "This is some test content.",
-      "slash_dir_folder_resource_id",
-      "Slash SubDir File.txt",
+      "slash_subdir_file", "audio/mpeg", "This is some test content.",
+      "slash_dir_folder_resource_id", "Slash SubDir File.txt",
       false,  // shared_with_me
       google_apis::test_util::CreateCopyResultCallback(&error, &entry));
   base::RunLoop().RunUntilIdle();
@@ -160,11 +152,8 @@ bool SetUpTestEntries(FakeDriveService* drive_service,
     return false;
 
   drive_service->AddNewFileWithResourceId(
-      "1_orphanfile_resource_id",
-      "text/plain",
-      "This is some test content.",
-      std::string(),
-      "Orphan File 1.txt",
+      "1_orphanfile_resource_id", "text/plain", "This is some test content.",
+      std::string(), "Orphan File 1.txt",
       true,  // shared_with_me
       google_apis::test_util::CreateCopyResultCallback(&error, &entry));
   base::RunLoop().RunUntilIdle();
@@ -172,11 +161,8 @@ bool SetUpTestEntries(FakeDriveService* drive_service,
     return false;
 
   drive_service->AddNewFileWithResourceId(
-      "orphan_doc_1",
-      util::kGoogleDocumentMimeType,
-      std::string(),
-      std::string(),
-      "Orphan Document",
+      "orphan_doc_1", util::kGoogleDocumentMimeType, std::string(),
+      std::string(), "Orphan Document",
       true,  // shared_with_me
       google_apis::test_util::CreateCopyResultCallback(&error, &entry));
   base::RunLoop().RunUntilIdle();

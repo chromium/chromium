@@ -6657,6 +6657,7 @@ test("unit_tests") {
       "//extensions/renderer:unit_test_support",
       "//extensions/strings",
       "//google_apis",
+      "//google_apis/common",
       "//google_apis/drive",
       "//media/cast:test_support",
       "//services/device/public/cpp/hid:test_support",
