@@ -1809,7 +1809,7 @@ void WizardController::OnHIDScreenNecessityCheck(bool screen_needed) {
 
   // Check for tests configurations.
   if (wizard_context_->skip_to_update_for_tests ||
-      wizard_context_->skip_to_login_for_tests) {
+      wizard_context_->skip_to_login_for_tests || current_screen_) {
     return;
   }
 
