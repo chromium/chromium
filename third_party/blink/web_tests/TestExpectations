@@ -6074,7 +6074,6 @@ crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Failure Pass ]
 
 # Sheriff 2020-07-23
-crbug.com/1108728 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/opener-accessed_openee-coop-ro.https.html [ Failure ]
 crbug.com/1108786 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-gc-event.js [ Failure Pass ]
 crbug.com/1108786 [ Linux ] http/tests/devtools/tracing/timeline-js/timeline-gc-event.js [ Failure Pass ]
 
