@@ -60,9 +60,9 @@ class ShareTabInsteadButton : public TabSharingInfoBarDelegateButton {
 class SwitchToTabButton : public TabSharingInfoBarDelegateButton {
  public:
   SwitchToTabButton(const TabSharingInfoBarDelegate::FocusTarget& focus_target,
-                    bool focus_target_is_captured)
+                    bool focus_target_is_capturer)
       : focus_target_(focus_target),
-        focus_target_is_captured_(focus_target_is_captured) {}
+        focus_target_is_capturer_(focus_target_is_capturer) {}
   ~SwitchToTabButton() override = default;
 
   void Click(infobars::InfoBar* infobar) override {
@@ -102,13 +102,13 @@ class SwitchToTabButton : public TabSharingInfoBarDelegateButton {
  private:
   std::u16string GetDefaultLabel() const {
     return l10n_util::GetStringUTF16(
-        focus_target_is_captured_
-            ? IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURED_BUTTON
-            : IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURER_BUTTON);
+        focus_target_is_capturer_
+            ? IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURER_BUTTON
+            : IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURED_BUTTON);
   }
 
   const TabSharingInfoBarDelegate::FocusTarget focus_target_;
-  const bool focus_target_is_captured_;
+  const bool focus_target_is_capturer_;
 };
 
 }  // namespace
