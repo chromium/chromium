@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/base/clipboard/clipboard.h"
 
 @class NSPasteboard;
@@ -18,6 +17,10 @@
 namespace ui {
 
 class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
+ public:
+  ClipboardMac(const ClipboardMac&) = delete;
+  ClipboardMac& operator=(const ClipboardMac&) = delete;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageRetina_Bitmap);
   FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageNonRetina_Bitmap);
@@ -112,8 +115,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
                                        NSPasteboard* pasteboard) const;
   SkBitmap ReadImageInternal(ClipboardBuffer buffer,
                              NSPasteboard* pasteboard) const;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardMac);
 };
 
 }  // namespace ui

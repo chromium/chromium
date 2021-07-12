@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
@@ -68,6 +67,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   using ReadBookmarkCallback =
       base::OnceCallback<void(std::u16string title, GURL url)>;
   using ReadDataCallback = base::OnceCallback<void(std::string result)>;
+
+  Clipboard(const Clipboard&) = delete;
+  Clipboard& operator=(const Clipboard&) = delete;
 
   static bool IsSupportedClipboardBuffer(ClipboardBuffer buffer);
 
@@ -409,8 +411,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   // Mutex that controls access to |g_clipboard_map|.
   static base::Lock& ClipboardMapLock();
-
-  DISALLOW_COPY_AND_ASSIGN(Clipboard);
 };
 
 }  // namespace ui

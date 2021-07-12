@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -99,7 +98,8 @@ class ClipboardOzone::AsyncClipboardOzone {
     platform_clipboard_->SetClipboardDataChangedCallback(
         std::move(update_sequence_cb));
   }
-
+  AsyncClipboardOzone(const AsyncClipboardOzone&) = delete;
+  AsyncClipboardOzone& operator=(const AsyncClipboardOzone&) = delete;
   ~AsyncClipboardOzone() = default;
 
   bool IsSelectionBufferAvailable() const {
@@ -300,8 +300,6 @@ class ClipboardOzone::AsyncClipboardOzone {
   uint64_t selection_sequence_number_ = 0;
 
   base::WeakPtrFactory<AsyncClipboardOzone> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncClipboardOzone);
 };
 
 // ClipboardOzone implementation.

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -24,6 +23,8 @@ namespace ui {
 class TestClipboard : public Clipboard {
  public:
   TestClipboard();
+  TestClipboard(const TestClipboard&) = delete;
+  TestClipboard& operator=(const TestClipboard&) = delete;
   ~TestClipboard() override;
 
   // Creates and associates a TestClipboard with the current thread. When no
@@ -140,8 +141,6 @@ class TestClipboard : public Clipboard {
   ClipboardBuffer default_store_buffer_;
   mutable base::flat_map<ClipboardBuffer, DataStore> stores_;
   base::Time last_modified_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClipboard);
 };
 
 }  // namespace ui

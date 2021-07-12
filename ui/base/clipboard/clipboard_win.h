@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 
@@ -23,6 +22,10 @@ class MessageWindow;
 namespace ui {
 
 class ClipboardWin : public Clipboard {
+ public:
+  ClipboardWin(const ClipboardWin&) = delete;
+  ClipboardWin& operator=(const ClipboardWin&) = delete;
+
  private:
   friend class Clipboard;
 
@@ -115,8 +118,6 @@ class ClipboardWin : public Clipboard {
 
   // Mark this as mutable so const methods can still do lazy initialization.
   mutable std::unique_ptr<base::win::MessageWindow> clipboard_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardWin);
 };
 
 }  // namespace ui

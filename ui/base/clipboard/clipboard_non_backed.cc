@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -87,7 +86,8 @@ bool IsRegisteredInstance(const Clipboard* clipboard) {
 class ClipboardInternal {
  public:
   ClipboardInternal() = default;
-
+  ClipboardInternal(const ClipboardInternal&) = delete;
+  ClipboardInternal& operator=(const ClipboardInternal&) = delete;
   ~ClipboardInternal() = default;
 
   void Clear() {
@@ -276,8 +276,6 @@ class ClipboardInternal {
 
   // Sequence number uniquely identifying clipboard state.
   uint64_t sequence_number_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardInternal);
 };
 
 // Helper class to build a ClipboardData object and write it to clipboard.

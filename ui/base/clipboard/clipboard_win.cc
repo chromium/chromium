@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -55,7 +54,8 @@ class AnonymousImpersonator {
   AnonymousImpersonator() {
     must_revert_ = ::ImpersonateAnonymousToken(::GetCurrentThread());
   }
-
+  AnonymousImpersonator(const AnonymousImpersonator&) = delete;
+  AnonymousImpersonator& operator=(const AnonymousImpersonator&) = delete;
   ~AnonymousImpersonator() {
     if (must_revert_)
       ::RevertToSelf();
@@ -63,7 +63,6 @@ class AnonymousImpersonator {
 
  private:
   BOOL must_revert_;
-  DISALLOW_COPY_AND_ASSIGN(AnonymousImpersonator);
 };
 
 // A scoper to manage acquiring and automatically releasing the clipboard.
