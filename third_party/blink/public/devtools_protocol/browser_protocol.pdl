@@ -3050,6 +3050,8 @@ experimental domain DOMSnapshot
       optional array of integer parentIndex
       # `Node`'s nodeType.
       optional array of integer nodeType
+      # Type of the shadow root the `Node` is in. String values are equal to the `ShadowRootType` enum.
+      optional RareStringData shadowRootType
       # `Node`'s nodeName.
       optional array of StringIndex nodeName
       # `Node`'s nodeValue.

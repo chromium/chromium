@@ -168,6 +168,7 @@ Tests that DOMSnapshot properly descends into the shadow tree
                     value : [
                     ]
                 }
+                shadowRootType : <object>
                 textValue : {
                     index : [
                         [0] : 8

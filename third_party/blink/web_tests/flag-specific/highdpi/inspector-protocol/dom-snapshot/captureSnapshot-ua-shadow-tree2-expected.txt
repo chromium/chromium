@@ -274,6 +274,7 @@ Tests that DOMSnapshot skips UA shadow root when traversing the DOM tree
                     value : [
                     ]
                 }
+                shadowRootType : <object>
                 textValue : {
                     index : [
                     ]
