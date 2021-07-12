@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -17,7 +16,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -142,11 +140,6 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
             extension.id());
     return host ? host->main_frame_host() : nullptr;
   }
-
- private:
-  // TODO(crbug.com/1199491): Remove once the related manifest keys are
-  // available on Stable.
-  ScopedCurrentChannel scoped_channel_{version_info::Channel::UNKNOWN};
 };
 
 // Tests that extensions can opt into cross origin isolation.
