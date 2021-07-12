@@ -202,6 +202,12 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
     "OmniboxShortBookmarkSuggestionsByTotalInputLength",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If disabled, updating shortcuts truncates their text to the user input. If
+// enabled, they preserve up to 3 additional chars. See `GetShortcutText()` in
+// shortcuts_backend.cc for details.
+const base::Feature kPreserveLongerShortcutsText{
+    "OmniboxPreserveLongerShortcutsText", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
 // 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path

@@ -12,11 +12,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/shortcuts_constants.h"
 #include "components/omnibox/browser/shortcuts_database.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,8 +59,11 @@ class ShortcutsBackendTest : public testing::Test,
   bool DeleteShortcutsWithURL(const GURL& url);
   bool DeleteShortcutsWithIDs(
       const ShortcutsDatabase::ShortcutIDs& deleted_ids);
+  bool ShortcutExists(const std::u16string& terms);
 
   TemplateURLService* GetTemplateURLService();
+
+  ShortcutsBackend* backend() { return backend_.get(); }
 
  private:
   base::ScopedTempDir profile_dir_;
@@ -172,6 +177,10 @@ bool ShortcutsBackendTest::DeleteShortcutsWithURL(const GURL& url) {
 bool ShortcutsBackendTest::DeleteShortcutsWithIDs(
     const ShortcutsDatabase::ShortcutIDs& deleted_ids) {
   return backend_->DeleteShortcutsWithIDs(deleted_ids);
+}
+
+bool ShortcutsBackendTest::ShortcutExists(const std::u16string& terms) {
+  return shortcuts_map().find(terms) != shortcuts_map().end();
 }
 
 TemplateURLService* ShortcutsBackendTest::GetTemplateURLService() {
@@ -366,4 +375,92 @@ TEST_F(ShortcutsBackendTest, DeleteShortcuts) {
   EXPECT_TRUE(DeleteShortcutsWithIDs(deleted_ids));
 
   ASSERT_EQ(0U, shortcuts_map().size());
+}
+
+TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut) {
+  InitBackend();
+
+  AutocompleteMatch match;
+  match.destination_url = GURL("https://www.google.com");
+
+  // Should not have a shortcut initially.
+  EXPECT_EQ(shortcuts_map().size(), 0u);
+  EXPECT_FALSE(ShortcutExists(u"google"));
+
+  // Should have shortcut after shortcut is added to a match.
+  backend()->AddOrUpdateShortcut(u"google", match);
+  EXPECT_EQ(shortcuts_map().size(), 1u);
+  EXPECT_TRUE(ShortcutExists(u"google"));
+
+  // Should shorten shortcut when a shorter input is used for the match.
+  backend()->AddOrUpdateShortcut(u"goo", match);
+  EXPECT_EQ(shortcuts_map().size(), 1u);
+  EXPECT_TRUE(ShortcutExists(u"goo"));
+  EXPECT_FALSE(ShortcutExists(u"google"));
+
+  // Should add new shortcut when a longer input is used for the match.
+  backend()->AddOrUpdateShortcut(u"google", match);
+  EXPECT_EQ(shortcuts_map().size(), 2u);
+  EXPECT_TRUE(ShortcutExists(u"goo"));
+  EXPECT_TRUE(ShortcutExists(u"google"));
+
+  // Should shorten shortcut when a shorter input is used for the match. The
+  // shorter shortcut to the same match should remain.
+  backend()->AddOrUpdateShortcut(u"goog", match);
+  EXPECT_EQ(shortcuts_map().size(), 2u);
+  EXPECT_TRUE(ShortcutExists(u"goo"));
+  EXPECT_TRUE(ShortcutExists(u"goog"));
+  EXPECT_FALSE(ShortcutExists(u"google"));
+
+  // Should only touch the shortest shortcut. The longer shortcut to the same
+  // match should remain.
+  backend()->AddOrUpdateShortcut(u"goo", match);
+  EXPECT_EQ(shortcuts_map().size(), 2u);
+  EXPECT_TRUE(ShortcutExists(u"goo"));
+  EXPECT_TRUE(ShortcutExists(u"goog"));
+  EXPECT_FALSE(ShortcutExists(u"google"));
+
+  // Like above, should only touch the shortest shortcut. The longer shortcut
+  // to the same match should remain.
+  backend()->AddOrUpdateShortcut(u"go", match);
+  EXPECT_EQ(shortcuts_map().size(), 2u);
+  EXPECT_TRUE(ShortcutExists(u"go"));
+  EXPECT_FALSE(ShortcutExists(u"goo"));
+  EXPECT_TRUE(ShortcutExists(u"goog"));
+  EXPECT_FALSE(ShortcutExists(u"google"));
+}
+
+TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_LongTextFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kPreserveLongerShortcutsText);
+
+  InitBackend();
+
+  AutocompleteMatch match;
+  match.destination_url = GURL("https://www.google.com");
+
+  // Should not have a shortcut initially.
+  EXPECT_EQ(shortcuts_map().size(), 0u);
+  EXPECT_FALSE(ShortcutExists(u"google"));
+
+  // Should have shortcut after shortcut is added to a match.
+  backend()->AddOrUpdateShortcut(u"google", match);
+  EXPECT_EQ(shortcuts_map().size(), 1u);
+  EXPECT_TRUE(ShortcutExists(u"google"));
+
+  // Should not shorten shortcut when a shorter input is used shorter than the
+  // previous shortcut by no more than 3 chars.
+  backend()->AddOrUpdateShortcut(u"goo", match);
+  EXPECT_EQ(shortcuts_map().size(), 1u);
+  EXPECT_FALSE(ShortcutExists(u"goo"));
+  EXPECT_TRUE(ShortcutExists(u"google"));
+
+  // Should shorten shortcut when a shorter input is used shorter than the
+  // previous shortcut by more than 3 chars.
+  backend()->AddOrUpdateShortcut(u"go", match);
+  EXPECT_EQ(shortcuts_map().size(), 1u);
+  EXPECT_FALSE(ShortcutExists(u"go"));
+  EXPECT_TRUE(ShortcutExists(u"googl"));
+  EXPECT_FALSE(ShortcutExists(u"google"));
 }

@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
@@ -27,8 +27,8 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/shortcuts_database.h"
+#include "components/omnibox/common/omnibox_features.h"
 
 namespace {
 
@@ -36,9 +36,9 @@ namespace {
 // compacting repetitions if necessary.
 std::string StripMatchMarkers(const ACMatchClassifications& matches) {
   ACMatchClassifications unmatched;
-  for (auto i(matches.begin()); i != matches.end(); ++i) {
+  for (const auto& match : matches) {
     AutocompleteMatch::AddLastClassificationIfNecessary(
-        &unmatched, i->offset, i->style & ~ACMatchClassification::MATCH);
+        &unmatched, match.offset, match.style & ~ACMatchClassification::MATCH);
   }
   return AutocompleteMatch::ClassificationsToString(unmatched);
 }
@@ -125,20 +125,43 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
 #endif  // DCHECK_IS_ON()
   const std::u16string text_lowercase(base::i18n::ToLower(text));
   const base::Time now(base::Time::Now());
+
+  // Look for an existing shortcut to `match` prefixed by `text`. If there is
+  // one, it'll be updated. This avoids creating duplicating equivalent
+  // shortcuts (e.g. 'g', 'go', & 'goo') with distributed `number_of_hits`s and
+  // outdated `last_access_time`s. There could be multiple relevant shortcuts;
+  // e.g., the `text` 'wi' could match both shortcuts 'wiki' and 'wild' to
+  // 'wiki.org/wild_west'. We only update the 1st shortcut; this is slightly
+  // arbitrary but seems to be fine. Deduping these shortcuts would stop the
+  // input 'wil' from finding the 2nd shortcut.
   for (ShortcutMap::const_iterator it(
            shortcuts_map_.lower_bound(text_lowercase));
        it != shortcuts_map_.end() &&
-           base::StartsWith(it->first, text_lowercase,
-                            base::CompareCase::SENSITIVE);
+       base::StartsWith(it->first, text_lowercase,
+                        base::CompareCase::SENSITIVE);
        ++it) {
     if (match.destination_url == it->second.match_core.destination_url) {
+      // By default, when a user navigates to a shortcut after typing a prefix
+      // of the shortcut, the shortcut text is replaced with the shorter user
+      // input. If `kPreserveLongerShortcutsText` is enabled, the
+      // shortcut keeps 3 additional chars to avoid unstable shortcuts. E.g. if
+      // the user creates a shortcut with text 'google.com', then navigates
+      // typing 'go', the shortcut should be suggested even if they type 'goo'
+      // next time.
+      auto long_text =
+          base::FeatureList::IsEnabled(omnibox::kPreserveLongerShortcutsText)
+              ? it->second.text.substr(0, text.length() + 3)
+              : text;
       UpdateShortcut(ShortcutsDatabase::Shortcut(
-          it->second.id, text, MatchToMatchCore(match, template_url_service_,
-                                                search_terms_data_.get()),
+          it->second.id, long_text,
+          MatchToMatchCore(match, template_url_service_,
+                           search_terms_data_.get()),
           now, it->second.number_of_hits + 1));
       return;
     }
   }
+
+  // If no shortcuts to `match` prefixed by `text` were found, create one.
   AddShortcut(ShortcutsDatabase::Shortcut(
       base::GenerateGUID(), text,
       MatchToMatchCore(match, template_url_service_, search_terms_data_.get()),
@@ -284,8 +307,8 @@ bool ShortcutsBackend::DeleteShortcutsWithIDs(
     const ShortcutsDatabase::ShortcutIDs& shortcut_ids) {
   if (!initialized())
     return false;
-  for (size_t i = 0; i < shortcut_ids.size(); ++i) {
-    auto it(guid_map_.find(shortcut_ids[i]));
+  for (const auto& shortcut_id : shortcut_ids) {
+    auto it(guid_map_.find(shortcut_id));
     if (it != guid_map_.end()) {
       shortcuts_map_.erase(it->second);
       guid_map_.erase(it);
