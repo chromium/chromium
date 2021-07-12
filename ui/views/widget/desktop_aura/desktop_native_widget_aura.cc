@@ -750,12 +750,10 @@ void DesktopNativeWidgetAura::SetWindowIcons(const gfx::ImageSkia& window_icon,
 }
 
 const gfx::ImageSkia* DesktopNativeWidgetAura::GetWindowIcon() {
-  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
 const gfx::ImageSkia* DesktopNativeWidgetAura::GetWindowAppIcon() {
-  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
