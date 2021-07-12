@@ -97,9 +97,11 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
     mouse_lock_state_ = MOUSELOCK_UNLOCKED;
   }
 
-  exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-      base::BindOnce(&MouseLockController::OnBubbleHidden,
-                     weak_ptr_factory_.GetWeakPtr(), web_contents));
+  if (!ShouldSuppressBubbleReshowForStateChange()) {
+    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+        base::BindOnce(&MouseLockController::OnBubbleHidden,
+                       weak_ptr_factory_.GetWeakPtr(), web_contents));
+  }
 }
 
 void MouseLockController::ExitExclusiveAccessIfNecessary() {
@@ -144,8 +146,11 @@ void MouseLockController::LostMouseLock() {
   RecordExitingUMA();
   mouse_lock_state_ = MOUSELOCK_UNLOCKED;
   SetTabWithExclusiveAccess(nullptr);
-  exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-      ExclusiveAccessBubbleHideCallback());
+
+  if (!ShouldSuppressBubbleReshowForStateChange()) {
+    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+        ExclusiveAccessBubbleHideCallback());
+  }
 }
 
 void MouseLockController::UnlockMouse() {
@@ -174,4 +179,15 @@ void MouseLockController::OnBubbleHidden(
   // time and dismissed due to timeout.
   if (reason == ExclusiveAccessBubbleHideReason::kTimeout)
     web_contents_granted_silent_mouse_lock_permission_ = web_contents;
+}
+
+bool MouseLockController::ShouldSuppressBubbleReshowForStateChange() {
+  ExclusiveAccessBubbleType bubble_type =
+      exclusive_access_manager()->GetExclusiveAccessExitBubbleType();
+  return (mouse_lock_state_ == MOUSELOCK_LOCKED &&
+          bubble_type ==
+              EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_MOUSELOCK_EXIT_INSTRUCTION) ||
+         (mouse_lock_state_ == MOUSELOCK_UNLOCKED &&
+          bubble_type ==
+              EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION);
 }

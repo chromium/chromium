@@ -77,7 +77,6 @@ void ExclusiveAccessManager::UpdateExclusiveAccessExitBubbleContent(
     bool force_update) {
   GURL url = GetExclusiveAccessBubbleURL();
   ExclusiveAccessBubbleType bubble_type = GetExclusiveAccessExitBubbleType();
-
   exclusive_access_context_->UpdateExclusiveAccessExitBubbleContent(
       url, bubble_type, std::move(bubble_first_hide_callback), force_update);
 }

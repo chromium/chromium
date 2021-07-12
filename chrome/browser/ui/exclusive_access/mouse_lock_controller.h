@@ -66,6 +66,8 @@ class MouseLockController : public ExclusiveAccessControllerBase {
 
   void OnBubbleHidden(content::WebContents*, ExclusiveAccessBubbleHideReason);
 
+  bool ShouldSuppressBubbleReshowForStateChange();
+
   MouseLockState mouse_lock_state_;
 
   // Optionally a WebContents instance that is granted permission to silently
