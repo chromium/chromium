@@ -25,17 +25,8 @@ const char kKeychainMigrationStatus[] = "password_manager.keychain_migration";
 const char kWasAutoSignInFirstRunExperienceShown[] =
     "profile.was_auto_sign_in_first_run_experience_shown";
 
-const char kWasSignInPasswordPromoClicked[] =
-    "profile.was_sign_in_password_promo_clicked";
-
 const char kWereOldGoogleLoginsRemoved[] =
     "profile.were_old_google_logins_removed";
-
-const char kNumberSignInPasswordPromoShown[] =
-    "profile.number_sign_in_password_promo_shown";
-
-const char kSignInPasswordPromoRevive[] =
-    "profile.sign_in_password_promo_revive";
 
 const char kAccountStoragePerAccountSettings[] =
     "profile.password_account_storage_settings";

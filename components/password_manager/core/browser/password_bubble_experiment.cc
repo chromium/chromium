@@ -24,17 +24,6 @@
 
 namespace password_bubble_experiment {
 
-void RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(
-      password_manager::prefs::kWasSignInPasswordPromoClicked, false);
-
-  registry->RegisterIntegerPref(
-      password_manager::prefs::kNumberSignInPasswordPromoShown, 0);
-
-  registry->RegisterBooleanPref(
-      password_manager::prefs::kSignInPasswordPromoRevive, false);
-}
-
 int GetSmartBubbleDismissalThreshold() {
   return 3;
 }
@@ -57,48 +46,6 @@ void RecordAutoSignInPromptFirstRunExperienceWasShown(PrefService* prefs) {
 void TurnOffAutoSignin(PrefService* prefs) {
   prefs->SetBoolean(password_manager::prefs::kCredentialsEnableAutosignin,
                     false);
-}
-
-bool ShouldShowChromeSignInPasswordPromo(
-    PrefService* prefs,
-    const syncer::SyncService* sync_service) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // If the account-scoped storage for passwords is enabled, then the user
-  // doesn't need to enable the full Sync feature to get their account
-  // passwords, so suppress the promo in this case.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return false;
-  }
-
-  if (!prefs->GetBoolean(prefs::kSigninAllowed))
-    return false;
-
-  if (!sync_service ||
-      sync_service->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_PLATFORM_OVERRIDE) ||
-      sync_service->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-      sync_service->GetUserSettings()->IsFirstSetupComplete()) {
-    return false;
-  }
-  if (!prefs->GetBoolean(password_manager::prefs::kSignInPasswordPromoRevive)) {
-    // Reset the counters so that the promo is shown again.
-    prefs->SetBoolean(password_manager::prefs::kSignInPasswordPromoRevive,
-                      true);
-    prefs->ClearPref(password_manager::prefs::kWasSignInPasswordPromoClicked);
-    prefs->ClearPref(password_manager::prefs::kNumberSignInPasswordPromoShown);
-  }
-  // Don't show the promo more than 3 times.
-  constexpr int kThreshold = 3;
-  return !prefs->GetBoolean(
-             password_manager::prefs::kWasSignInPasswordPromoClicked) &&
-         prefs->GetInteger(
-             password_manager::prefs::kNumberSignInPasswordPromoShown) <
-             kThreshold;
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 }  // namespace password_bubble_experiment

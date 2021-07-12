@@ -43,19 +43,9 @@ extern const char kKeychainMigrationStatus[];
 // prompt was shown or not.
 extern const char kWasAutoSignInFirstRunExperienceShown[];
 
-// Boolean that indicated if user interacted with the Chrome Sign in promo.
-extern const char kWasSignInPasswordPromoClicked[];
-
 // Boolean that indicated whether one time removal of old google.com logins was
 // performed.
 extern const char kWereOldGoogleLoginsRemoved[];
-
-// Number of times the Chrome Sign in promo popped up.
-extern const char kNumberSignInPasswordPromoShown[];
-
-// True if the counters for the sign in promo were reset for M79.
-// Safe to remove for M82.
-extern const char kSignInPasswordPromoRevive[];
 
 // A dictionary of account-storage-related settings that exist per Gaia account
 // (e.g. whether that user has opted in). It maps from hash of Gaia ID to

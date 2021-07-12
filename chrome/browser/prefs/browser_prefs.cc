@@ -123,7 +123,6 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -621,6 +620,14 @@ const char kHintsFetcherTopHostBlocklistMinimumEngagementScore[] =
 const char kPasswordRecovery[] = "password_manager.password_recovery";
 #endif
 
+// Deprecated 07/2021.
+const char kWasSignInPasswordPromoClicked[] =
+    "profile.was_sign_in_password_promo_clicked";
+const char kNumberSignInPasswordPromoShown[] =
+    "profile.number_sign_in_password_promo_shown";
+const char kSignInPasswordPromoRevive[] =
+    "profile.sign_in_password_promo_revive";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -789,6 +796,10 @@ void RegisterProfilePrefsForMigration(
 #if defined(OS_MAC)
   registry->RegisterTimePref(kPasswordRecovery, base::Time());
 #endif
+
+  registry->RegisterBooleanPref(kWasSignInPasswordPromoClicked, false);
+  registry->RegisterIntegerPref(kNumberSignInPasswordPromoShown, 0);
+  registry->RegisterBooleanPref(kSignInPasswordPromoRevive, false);
 }
 
 }  // namespace
@@ -1056,7 +1067,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NotifierStateTracker::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   optimization_guide::prefs::RegisterProfilePrefs(registry);
-  password_bubble_experiment::RegisterPrefs(registry);
   password_manager::PasswordManager::RegisterProfilePrefs(registry);
   payments::RegisterProfilePrefs(registry);
   PermissionBubbleMediaAccessHandler::RegisterProfilePrefs(registry);
@@ -1562,6 +1572,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if defined(OS_MAC)
   profile_prefs->ClearPref(kPasswordRecovery);
 #endif
+
+  // Added 07/2021
+  profile_prefs->ClearPref(kWasSignInPasswordPromoClicked);
+  profile_prefs->ClearPref(kNumberSignInPasswordPromoShown);
+  profile_prefs->ClearPref(kSignInPasswordPromoRevive);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
