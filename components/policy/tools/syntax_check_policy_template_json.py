@@ -121,11 +121,12 @@ REMOVABLE_SCHEMA_VALUES_PER_TYPE = {
 
 # Defines keys per type that that can be changed in any way without affecting
 # policy compatibility (for example we can change, remove or add a 'description'
-# to a policy schema without causings incompatibilities).
+# to a policy schema without causing incompatibilities).
 MODIFIABLE_SCHEMA_KEYS_PER_TYPE = {
     'integer': ['description', 'sensitiveValue'],
     'string': ['description', 'sensitiveValue'],
-    'object': ['description', 'sensitiveValue']
+    'object': ['description', 'sensitiveValue'],
+    'boolean': ['description']
 }
 
 # Defines keys per type that themselves define a further dictionary of
@@ -136,7 +137,7 @@ KEYS_DEFINING_PROPERTY_DICT_SCHEMAS_PER_TYPE = {
 }
 
 # Defines keys per type that themselves define a schema. For example, 'array'
-# types define an 'items' key defines the scheme for each item in the array.
+# types define an 'items' key defines the schema for each item in the array.
 KEYS_DEFINING_SCHEMAS_PER_TYPE = {
     'object': ['additionalProperties'],
     'array': ['items']
@@ -1304,7 +1305,7 @@ class PolicyTemplateChecker(object):
           'be dict type.' % (current_schema_key, type(new_schema)))
 
     # Both schemas must either have a 'type' key or not. This covers the case
-    # where the scheme is merely a '$ref'
+    # where the schema is merely a '$ref'
     if ('type' in old_schema) != ('type' in new_schema):
       self._Error(
           'Mismatch in type definition for old schema and new schema for '
@@ -1313,7 +1314,7 @@ class PolicyTemplateChecker(object):
                           new_schema['type']))
       return
 
-    # For schemes that define a 'type', make sure they match.
+    # For schemas that define a 'type', make sure they match.
     schema_type = None
     if ('type' in old_schema):
       if (old_schema['type'] != new_schema['type']):
@@ -1333,7 +1334,7 @@ class PolicyTemplateChecker(object):
         continue
 
       # If the schema key is marked as modifiable (e.g. 'description'), then
-      # no validation is needed. Anything can be done to it include removal.
+      # no validation is needed. Anything can be done to it including removal.
       if IsKeyDefinedForTypeInDictionary(schema_type, old_key,
                                          MODIFIABLE_SCHEMA_KEYS_PER_TYPE):
         continue
@@ -1362,8 +1363,8 @@ class PolicyTemplateChecker(object):
               'dict' % (type(old_value).__name__,))
           continue
 
-        # Make all old properties exist and are compatible. Everything else that
-        # is new requires no validation.
+        # Make sure that all old properties exist and are compatible. Everything
+        # else that is new requires no validation.
         new_schema_value = new_schema[old_key]
         for sub_key in old_value.keys():
           self._CheckSchemasAreCompatible(
