@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
@@ -77,6 +78,7 @@ class MerchantViewerDataManagerTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList features_;
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -392,4 +394,111 @@ TEST_F(MerchantViewerDataManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "MerchantViewer.DataManager.DeleteMerchantViewerDataForOrigins", 2, 1);
+}
+
+TEST_F(MerchantViewerDataManagerTest,
+       DeleteMerchantViewerDataForOrigins_ForceClearAll) {
+  features_.InitAndEnableFeatureWithParameters(
+      commerce::kCommerceMerchantViewer,
+      {{"delete_all_merchants_on_clear_history", "true"}});
+
+  base::HistogramTester histogram_tester;
+
+  ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* db =
+      service_->GetDB();
+
+  merchant_signal_db::MerchantSignalContentProto protoA =
+      BuildProto(kMockMerchantA, base::Time::Now());
+
+  merchant_signal_db::MerchantSignalContentProto protoB =
+      BuildProto(kMockMerchantB, base::Time::Now());
+
+  base::RunLoop run_loop[4];
+
+  db->InsertContent(
+      kMockMerchantA, protoA,
+      base::BindOnce(&MerchantViewerDataManagerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+  db->InsertContent(
+      kMockMerchantB, protoB,
+      base::BindOnce(&MerchantViewerDataManagerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  run_loop[1].Run();
+  vector<string> expected_hostnames = {kMockMerchantA, kMockMerchantB};
+
+  db->LoadAllEntries(base::BindOnce(
+      &MerchantViewerDataManagerTest::LoadEntriesEvaluation,
+      base::Unretained(this), run_loop[2].QuitClosure(), expected_hostnames));
+  run_loop[2].Run();
+
+  base::flat_set<GURL> deleted_origins = {GURL(kMockMerchantUrlA)};
+
+  service_->DeleteMerchantViewerDataForOrigins(deleted_origins);
+  task_environment_.RunUntilIdle();
+  vector<string> expected_hostnames_after_deletion = {};
+
+  db->LoadAllEntries(
+      base::BindOnce(&MerchantViewerDataManagerTest::LoadEntriesEvaluation,
+                     base::Unretained(this), run_loop[3].QuitClosure(),
+                     expected_hostnames_after_deletion));
+  run_loop[3].Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "MerchantViewer.DataManager.ForceClearMerchantsForOrigins", true, 1);
+}
+
+TEST_F(MerchantViewerDataManagerTest,
+       DeleteMerchantViewerDataForTimeRange_ForceAll) {
+  features_.InitAndEnableFeatureWithParameters(
+      commerce::kCommerceMerchantViewer,
+      {{"delete_all_merchants_on_clear_history", "true"}});
+
+  base::HistogramTester histogram_tester;
+
+  ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* db =
+      service_->GetDB();
+
+  base::Time start_time = base::Time::Now();
+  base::Time end_time = start_time + base::TimeDelta::FromDays(3);
+
+  merchant_signal_db::MerchantSignalContentProto protoA =
+      BuildProto(kMockMerchantA, start_time - base::TimeDelta::FromDays(4));
+
+  merchant_signal_db::MerchantSignalContentProto protoB =
+      BuildProto(kMockMerchantB, start_time + base::TimeDelta::FromDays(1));
+
+  base::RunLoop run_loop[4];
+
+  db->InsertContent(
+      kMockMerchantA, protoA,
+      base::BindOnce(&MerchantViewerDataManagerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  db->InsertContent(
+      kMockMerchantB, protoB,
+      base::BindOnce(&MerchantViewerDataManagerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  run_loop[1].Run();
+  vector<string> hostnames_before_deletion = {kMockMerchantA, kMockMerchantB};
+
+  db->LoadAllEntries(
+      base::BindOnce(&MerchantViewerDataManagerTest::LoadEntriesEvaluation,
+                     base::Unretained(this), run_loop[2].QuitClosure(),
+                     hostnames_before_deletion));
+  run_loop[2].Run();
+
+  service_->DeleteMerchantViewerDataForTimeRange(start_time, end_time);
+  task_environment_.RunUntilIdle();
+  vector<string> hostnames_after_deletion = {};
+
+  db->LoadAllEntries(
+      base::BindOnce(&MerchantViewerDataManagerTest::LoadEntriesEvaluation,
+                     base::Unretained(this), run_loop[3].QuitClosure(),
+                     hostnames_after_deletion));
+  run_loop[3].Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "MerchantViewer.DataManager.ForceClearMerchantsForTimeRange", true, 1);
 }

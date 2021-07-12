@@ -51,6 +51,7 @@ class MerchantViewerDataManager : public KeyedService {
                                             bool success,
                                             MerchantSignals data);
 
+  void ClearAllMerchants();
   ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* proto_db_;
   base::WeakPtrFactory<MerchantViewerDataManager> weak_ptr_factory_{this};
 };

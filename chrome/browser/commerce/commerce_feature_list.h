@@ -11,6 +11,7 @@
 namespace commerce {
 extern const base::Feature kCommercePriceTracking;
 extern const base::Feature kCommerceMerchantViewer;
+extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 }  // namespace commerce
 
 #endif  // CHROME_BROWSER_COMMERCE_COMMERCE_FEATURE_LIST_H_

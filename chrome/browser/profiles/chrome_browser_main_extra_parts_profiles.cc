@@ -122,7 +122,9 @@
 #include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_signal_db_content.pb.h"
+#include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #include "chrome/browser/commerce/subscriptions/commerce_subscription_db_content.pb.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #else
@@ -278,6 +280,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if !defined(OS_ANDROID)
   CartServiceFactory::GetInstance();
+#endif
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(commerce::kCommerceMerchantViewer))
+    MerchantViewerDataManagerFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializerFactory::GetInstance();
