@@ -23,7 +23,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/page_transition_types.h"
 #include "ui/base/scoped_visibility_tracker.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -356,8 +355,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   base::TimeTicks navigation_start() const { return navigation_start_; }
 
-  ui::PageTransition page_transition() const { return page_transition_; }
-
   UserInitiatedInfo user_initiated_info() const { return user_initiated_info_; }
 
   PageLoadMetricsUpdateDispatcher* metrics_update_dispatcher() {
@@ -468,8 +465,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   mojom::PageLoadTimingPtr last_dispatched_merged_page_timing_;
   blink::MobileFriendliness latest_mobile_friendliness_;
-
-  ui::PageTransition page_transition_;
 
   absl::optional<content::GlobalRequestID> navigation_request_id_;
 
