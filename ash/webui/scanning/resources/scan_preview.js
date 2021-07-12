@@ -17,6 +17,12 @@ import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser
 const PROGRESS_TIMER_MS = 3000;
 
 /**
+ * The bottom margin of each scanned image in pixels.
+ * @type {number}
+ */
+const SCANNED_IMG_MARGIN_BOTTOM_PX = 12;
+
+/**
  * @fileoverview
  * 'scan-preview' shows a preview of a scanned document.
  */
@@ -90,6 +96,12 @@ Polymer({
 
     /** @type {boolean} */
     multiPageScanChecked: Boolean,
+
+    /** @private {number} */
+    currentPageInView_: {
+      type: Number,
+      value: 1,
+    },
   },
 
   observers: [
@@ -102,6 +114,12 @@ Polymer({
   created() {
     // ScanningBrowserProxy is initialized when scanning_app.js is created.
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
+  },
+
+  /** @override */
+  ready() {
+    this.style.setProperty(
+        '--scanned-image-margin-bottom', SCANNED_IMG_MARGIN_BOTTOM_PX + 'px');
   },
 
   /** @private */
@@ -187,5 +205,26 @@ Polymer({
     this.previewAriaLabel_ = this.i18n(
         'scanningImagesAriaLabel', this.pageNumber, this.progressPercent);
     this.progressTimer_ = null;
+  },
+
+  /**
+   * Increments the current page number when the previous page is scrolled up
+   * halfway outside the viewport. Assumes each scanned image is the same
+   * height.
+   * @private
+   */
+  onScannedImagesScroll_() {
+    const imageHeight = this.$$('.scanned-image').height;
+    const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight * .5);
+
+    // This is a special case for the first page since there is no margin or
+    // previous page above it.
+    if (scrollTop < 0) {
+      this.currentPageInView_ = 1;
+      return;
+    }
+
+    this.currentPageInView_ = 2 +
+        Math.floor(scrollTop / (imageHeight + SCANNED_IMG_MARGIN_BOTTOM_PX));
   },
 });
