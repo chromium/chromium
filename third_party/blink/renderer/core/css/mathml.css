@@ -35,6 +35,16 @@
 
 /* By default, we only display the MathML formulas without any formatting other than the one specified by the display attribute. */
 math {
+    direction: ltr;
+    writing-mode:  horizontal-tb;
+    text-indent: 0;
+    letter-spacing: normal;
+    line-height: normal;
+    word-spacing: normal;
+    /* TODO(1228189): Implement font-family: math */
+    font-size: inherited;
+    font-style: normal;
+    font-weight: normal;
     display: inline math;
     math-shift: normal;
     math-style: compact;
