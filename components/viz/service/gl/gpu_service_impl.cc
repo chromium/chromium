@@ -853,18 +853,15 @@ void GpuServiceImpl::RequestHDRStatusOnMainThread(
 
 void GpuServiceImpl::RegisterDisplayContext(
     gpu::DisplayContext* display_context) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
   display_contexts_.AddObserver(display_context);
 }
 
 void GpuServiceImpl::UnregisterDisplayContext(
     gpu::DisplayContext* display_context) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
   display_contexts_.RemoveObserver(display_context);
 }
 
 void GpuServiceImpl::LoseAllContexts() {
-  DCHECK(main_runner_->BelongsToCurrentThread());
   if (IsExiting())
     return;
   for (auto& display_context : display_contexts_)
@@ -873,12 +870,10 @@ void GpuServiceImpl::LoseAllContexts() {
 }
 
 void GpuServiceImpl::DidCreateContextSuccessfully() {
-  DCHECK(main_runner_->BelongsToCurrentThread());
   gpu_host_->DidCreateContextSuccessfully();
 }
 
 void GpuServiceImpl::DidCreateOffscreenContext(const GURL& active_url) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
   gpu_host_->DidCreateOffscreenContext(active_url);
 }
 
@@ -901,7 +896,6 @@ void GpuServiceImpl::DidDestroyOffscreenContext(const GURL& active_url) {
 void GpuServiceImpl::DidLoseContext(bool offscreen,
                                     gpu::error::ContextLostReason reason,
                                     const GURL& active_url) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
   gpu_host_->DidLoseContext(offscreen, reason, active_url);
 }
 
@@ -919,7 +913,6 @@ void GpuServiceImpl::DidUpdateHDRStatus(bool hdr_enabled) {
 void GpuServiceImpl::StoreShaderToDisk(int client_id,
                                        const std::string& key,
                                        const std::string& shader) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
   gpu_host_->StoreShaderToDisk(client_id, key, shader);
 }
 
