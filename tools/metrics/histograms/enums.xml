@@ -44023,16 +44023,25 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="KaleidoscopeCacheHit">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <int value="0" label="Cache Hit"/>
   <int value="1" label="Cache Miss"/>
 </enum>
 
 <enum name="KaleidoscopeDialogClosedBoolean">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <int value="0" label="The user did not open a watch action"/>
   <int value="1" label="The user did open a watch action"/>
 </enum>
 
 <enum name="KaleidoscopeFirstRunProgress">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <int value="0" label="Completed"/>
   <int value="1" label="Provider Selection"/>
   <int value="2" label="Media Feeds Consent"/>
@@ -44040,6 +44049,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="KaleidoscopeNavigation">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <int value="0" label="Normal navigation"/>
 </enum>
 

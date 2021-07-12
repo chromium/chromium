@@ -8793,6 +8793,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.Kaleidoscope.Navigation">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

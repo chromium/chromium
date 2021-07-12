@@ -2471,6 +2471,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Kaleidoscope.DialogClosed"
     enum="KaleidoscopeDialogClosedBoolean" expires_after="2021-08-19">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2481,6 +2484,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Kaleidoscope.FirstRunProgress"
     enum="KaleidoscopeFirstRunProgress" expires_after="2021-08-19">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <owner>steimel@chromium.org</owner>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -2493,6 +2499,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Kaleidoscope.Navigation" enum="KaleidoscopeNavigation"
     expires_after="2021-08-19">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2503,6 +2512,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Kaleidoscope.NewTabPage.CacheHitWhenForced"
     enum="KaleidoscopeCacheHit" expires_after="2021-08-19">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2514,6 +2526,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Kaleidoscope.NewTabPage.ServerFetchTime" units="ms"
     expires_after="2021-08-19">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2524,6 +2539,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Kaleidoscope.OpenedMediaRecommendation" enum="Boolean"
     expires_after="2021-08-19">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2534,6 +2552,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Kaleidoscope.TimeTakenToStartWatch" units="ms"
     expires_after="2021-08-19">
+  <obsolete>
+    Deprecated as of 2020/12.
+  </obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
