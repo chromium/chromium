@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 #include "extensions/renderer/bindings/api_binding_hooks_test_delegate.h"
@@ -685,7 +686,12 @@ TEST_F(APIBindingUnittest, TestProperties) {
       "    'type': 'string',"
       "    'platforms': ['linux']"
       "  },"
-      "  'nonLinuxOnly': {"
+      "  'lacrosOnly': {"
+      "    'value': 'lacros',"
+      "    'type': 'string',"
+      "    'platforms': ['lacros']"
+      "  },"
+      "  'notLinuxOrLacros': {"
       "    'value': 'nonlinux',"
       "    'type': 'string',"
       "    'platforms': ['win', 'mac', 'chromeos']"
@@ -703,16 +709,27 @@ TEST_F(APIBindingUnittest, TestProperties) {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_EQ("\"lacros\"",
+            GetStringPropertyFromObject(binding_object, context, "lacrosOnly"));
+  EXPECT_EQ("undefined",
+            GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
+  EXPECT_EQ("undefined", GetStringPropertyFromObject(binding_object, context,
+                                                     "notLinuxOrLacros"));
+#elif defined(OS_LINUX)
   EXPECT_EQ("\"linux\"",
             GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
   EXPECT_EQ("undefined", GetStringPropertyFromObject(binding_object, context,
-                                                     "nonLinuxOnly"));
+                                                     "notLinuxOrLacros"));
+  EXPECT_EQ("undefined",
+            GetStringPropertyFromObject(binding_object, context, "lacrosOnly"));
 #else
   EXPECT_EQ("undefined",
             GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
+  EXPECT_EQ("undefined",
+            GetStringPropertyFromObject(binding_object, context, "lacrosOnly"));
   EXPECT_EQ("\"nonlinux\"", GetStringPropertyFromObject(binding_object, context,
-                                                        "nonLinuxOnly"));
+                                                        "notLinuxOrLacros"));
 #endif
 }
 
