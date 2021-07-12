@@ -17,7 +17,10 @@ using network::mojom::blink::ChunkedDataPipeGetter;
 using testing::_;
 using testing::InSequence;
 using testing::Invoke;
+using testing::NiceMock;
 using testing::Return;
+using testing::StrictMock;
+
 namespace blink {
 
 typedef testing::StrictMock<testing::MockFunction<void(int)>> Checkpoint;
@@ -32,20 +35,21 @@ class MockBytesConsumer : public BytesConsumer {
   MOCK_METHOD1(SetClient, void(Client*));
   MOCK_METHOD0(ClearClient, void());
   MOCK_METHOD0(Cancel, void());
-  MOCK_CONST_METHOD0(GetPublicState, PublicState());
+  PublicState GetPublicState() const override { return state_; }
+  void SetPublicState(PublicState state) { state_ = state; }
   MOCK_CONST_METHOD0(GetError, Error());
   MOCK_CONST_METHOD0(DebugName, String());
+
+ private:
+  PublicState state_ = PublicState::kReadableOrWaiting;
 };
 
 class BytesUploaderTest : public ::testing::Test {
  public:
-  void InitializeBytesUploader(uint32_t capacity = 100u) {
-    mock_bytes_consumer_ = MakeGarbageCollected<MockBytesConsumer>();
-    EXPECT_CALL(*mock_bytes_consumer_, GetPublicState())
-        .WillRepeatedly(Return(BytesConsumer::PublicState::kReadableOrWaiting));
-
+  void InitializeBytesUploader(MockBytesConsumer* mock_bytes_consumer,
+                               uint32_t capacity = 100u) {
     bytes_uploader_ = MakeGarbageCollected<BytesUploader>(
-        mock_bytes_consumer_, remote_.BindNewPipeAndPassReceiver(),
+        mock_bytes_consumer, remote_.BindNewPipeAndPassReceiver(),
         Thread::Current()->GetTaskRunner());
 
     const MojoCreateDataPipeOptions data_pipe_options{
@@ -55,29 +59,27 @@ class BytesUploaderTest : public ::testing::Test {
               mojo::CreateDataPipe(&data_pipe_options, writable_, readable_));
   }
 
-  MockBytesConsumer& Mock() const { return *mock_bytes_consumer_; }
   mojo::ScopedDataPipeProducerHandle& Writable() { return writable_; }
   mojo::ScopedDataPipeConsumerHandle& Readable() { return readable_; }
   mojo::Remote<ChunkedDataPipeGetter>& Remote() { return remote_; }
 
- private:
+ protected:
   Persistent<BytesUploader> bytes_uploader_;
-  Persistent<MockBytesConsumer> mock_bytes_consumer_;
 
+ private:
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::ScopedDataPipeConsumerHandle readable_;
   mojo::Remote<ChunkedDataPipeGetter> remote_;
 };
 
 TEST_F(BytesUploaderTest, Create) {
-  MockBytesConsumer* mock_bytes_consumer =
-      MakeGarbageCollected<MockBytesConsumer>();
+  auto* mock_bytes_consumer =
+      MakeGarbageCollected<StrictMock<MockBytesConsumer>>();
+
   Checkpoint checkpoint;
   {
     InSequence s;
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*mock_bytes_consumer, GetPublicState())
-        .WillRepeatedly(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   }
 
   checkpoint.Call(1);
@@ -91,8 +93,8 @@ TEST_F(BytesUploaderTest, Create) {
 // TODO(yoichio): Needs BytesConsumer state tests.
 
 TEST_F(BytesUploaderTest, ReadEmpty) {
-  InitializeBytesUploader();
-
+  auto* mock_bytes_consumer =
+      MakeGarbageCollected<StrictMock<MockBytesConsumer>>();
   base::MockCallback<ChunkedDataPipeGetter::GetSizeCallback> get_size_callback;
   Checkpoint checkpoint;
   {
@@ -100,18 +102,17 @@ TEST_F(BytesUploaderTest, ReadEmpty) {
 
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(Mock(), SetClient(_));
-    EXPECT_CALL(Mock(), GetPublicState())
-        .WillRepeatedly(Return(BytesConsumer::PublicState::kReadableOrWaiting));
-    EXPECT_CALL(Mock(), BeginRead(_, _))
+    EXPECT_CALL(*mock_bytes_consumer, SetClient(_));
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
         .WillOnce(Return(BytesConsumer::Result::kDone));
-    EXPECT_CALL(Mock(), Cancel());
+    EXPECT_CALL(*mock_bytes_consumer, Cancel());
     EXPECT_CALL(get_size_callback, Run(net::OK, 0u));
 
     EXPECT_CALL(checkpoint, Call(3));
   }
 
   checkpoint.Call(1);
+  InitializeBytesUploader(mock_bytes_consumer);
   Remote()->GetSize(get_size_callback.Get());
   Remote()->StartReading(std::move(Writable()));
 
@@ -127,32 +128,31 @@ TEST_F(BytesUploaderTest, ReadEmpty) {
 }
 
 TEST_F(BytesUploaderTest, ReadSmall) {
-  InitializeBytesUploader();
-
+  auto* mock_bytes_consumer =
+      MakeGarbageCollected<StrictMock<MockBytesConsumer>>();
   base::MockCallback<ChunkedDataPipeGetter::GetSizeCallback> get_size_callback;
   Checkpoint checkpoint;
   {
     InSequence s;
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(Mock(), SetClient(_));
-    EXPECT_CALL(Mock(), GetPublicState())
-        .WillRepeatedly(Return(BytesConsumer::PublicState::kReadableOrWaiting));
-    EXPECT_CALL(Mock(), BeginRead(_, _))
+    EXPECT_CALL(*mock_bytes_consumer, SetClient(_));
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
         .WillOnce(Invoke([](const char** buffer, size_t* size) {
           *size = 6;
           *buffer = "foobar";
           return BytesConsumer::Result::kOk;
         }));
-    EXPECT_CALL(Mock(), EndRead(6u))
+    EXPECT_CALL(*mock_bytes_consumer, EndRead(6u))
         .WillOnce(Return(BytesConsumer::Result::kDone));
-    EXPECT_CALL(Mock(), Cancel());
+    EXPECT_CALL(*mock_bytes_consumer, Cancel());
     EXPECT_CALL(get_size_callback, Run(net::OK, 6u));
 
     EXPECT_CALL(checkpoint, Call(3));
   }
 
   checkpoint.Call(1);
+  InitializeBytesUploader(mock_bytes_consumer);
   Remote()->GetSize(get_size_callback.Get());
   Remote()->StartReading(std::move(Writable()));
 
@@ -169,8 +169,8 @@ TEST_F(BytesUploaderTest, ReadSmall) {
 }
 
 TEST_F(BytesUploaderTest, ReadOverPipeCapacity) {
-  InitializeBytesUploader(10u);
-
+  auto* mock_bytes_consumer =
+      MakeGarbageCollected<StrictMock<MockBytesConsumer>>();
   base::MockCallback<ChunkedDataPipeGetter::GetSizeCallback> get_size_callback;
   Checkpoint checkpoint;
   {
@@ -178,42 +178,41 @@ TEST_F(BytesUploaderTest, ReadOverPipeCapacity) {
 
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(Mock(), SetClient(_));
-    EXPECT_CALL(Mock(), GetPublicState())
-        .WillRepeatedly(Return(BytesConsumer::PublicState::kReadableOrWaiting));
-    EXPECT_CALL(Mock(), BeginRead(_, _))
+    EXPECT_CALL(*mock_bytes_consumer, SetClient(_));
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
         .WillOnce(Invoke([](const char** buffer, size_t* size) {
           *size = 12;
           *buffer = "foobarFOOBAR";
           return BytesConsumer::Result::kOk;
         }));
-    EXPECT_CALL(Mock(), EndRead(10u))
+    EXPECT_CALL(*mock_bytes_consumer, EndRead(10u))
         .WillOnce(Return(BytesConsumer::Result::kOk));
 
-    EXPECT_CALL(Mock(), BeginRead(_, _))
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
         .WillOnce(Invoke([](const char** buffer, size_t* size) {
           *size = 2;
           *buffer = "AR";
           return BytesConsumer::Result::kOk;
         }));
-    EXPECT_CALL(Mock(), EndRead(0u))
+    EXPECT_CALL(*mock_bytes_consumer, EndRead(0u))
         .WillOnce(Return(BytesConsumer::Result::kOk));
 
     EXPECT_CALL(checkpoint, Call(3));
     EXPECT_CALL(checkpoint, Call(4));
-    EXPECT_CALL(Mock(), BeginRead(_, _))
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
         .WillOnce(Invoke([](const char** buffer, size_t* size) {
           *size = 2;
           *buffer = "AR";
           return BytesConsumer::Result::kOk;
         }));
-    EXPECT_CALL(Mock(), EndRead(2u))
+    EXPECT_CALL(*mock_bytes_consumer, EndRead(2u))
         .WillOnce(Return(BytesConsumer::Result::kDone));
-    EXPECT_CALL(Mock(), Cancel());
+    EXPECT_CALL(*mock_bytes_consumer, Cancel());
     EXPECT_CALL(get_size_callback, Run(net::OK, 12u));
   }
 
   checkpoint.Call(1);
+  InitializeBytesUploader(mock_bytes_consumer, 10u);
   Remote()->GetSize(get_size_callback.Get());
   Remote()->StartReading(std::move(Writable()));
 
@@ -236,6 +235,17 @@ TEST_F(BytesUploaderTest, ReadOverPipeCapacity) {
                                                  MOJO_READ_DATA_FLAG_NONE));
   EXPECT_EQ(2u, num_bytes);
   EXPECT_STREQ("AR", buffer2);
+}
+
+TEST_F(BytesUploaderTest, StartReadingWithoutGetSize) {
+  auto* mock_bytes_consumer =
+      MakeGarbageCollected<NiceMock<MockBytesConsumer>>();
+  InitializeBytesUploader(mock_bytes_consumer);
+
+  Remote()->StartReading(std::move(Writable()));
+  test::RunPendingTasks();
+  // The operation is rejected, and the connection is shut down.
+  EXPECT_FALSE(Remote().is_connected());
 }
 
 }  // namespace blink
