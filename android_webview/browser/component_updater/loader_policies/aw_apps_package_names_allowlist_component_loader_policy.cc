@@ -77,6 +77,13 @@ void SetShouldRecordPackageName(absl::optional<base::Time> expiry_date) {
   auto* metrics_service_client = AwMetricsServiceClient::GetInstance();
   DCHECK(metrics_service_client);
   metrics_service_client->SetShouldRecordPackageName(expiry_date);
+
+  if (expiry_date.has_value()) {
+    VLOG(2) << "WebView apps package allowlist is loaded, expiry_date ="
+            << (expiry_date.value() - base::Time::UnixEpoch()).InMilliseconds();
+  } else {
+    VLOG(2) << "Failed to load WebView apps package allowlist";
+  }
 }
 
 }  // namespace
