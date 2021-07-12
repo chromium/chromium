@@ -221,40 +221,37 @@ void CanvasCaptureHandler::SendNewFrame(
     return;
   }
 
-  // TODO(https://crbug.com/1191932): This unconditionally drops the alpha
-  // channel. Before shipping this must be fixed.
-  if (base::FeatureList::IsEnabled(kOneCopyCanvasCapture)) {
-    if (!accelerated_frame_pool_) {
-      accelerated_frame_pool_ =
-          std::make_unique<WebGraphicsContext3DVideoFramePool>(
-              context_provider);
-    }
-    auto blit_done_lambda = [](base::WeakPtr<CanvasCaptureHandler> handler,
-                               base::TimeTicks timestamp,
-                               scoped_refptr<media::VideoFrame> video_frame) {
-      if (handler)
-        handler->OnYUVPixelsReadAsync(video_frame, timestamp, true);
-    };
-    auto blit_done_callback =
-        WTF::Bind(blit_done_lambda, weak_ptr_factory_.GetWeakPtr(),
-                  base::TimeTicks::Now());
-    // TODO(https://crbug.com/1224279): This assumes that all StaticBitmapImages
-    // are 8-bit sRGB. Expose the color space and pixel format that is backing
-    // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
-    // SkImage.
-    if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-            viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
-            gfx::Size(image->width(), image->height()),
-            gfx::ColorSpace::CreateSRGB(),
-            image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                     : kBottomLeft_GrSurfaceOrigin,
-            image->GetMailboxHolder(), std::move(blit_done_callback))) {
-      return;
-    }
-  }
-
   // Try async reading if image is texture backed.
   if (image->CurrentFrameKnownToBeOpaque() || can_discard_alpha_) {
+    if (base::FeatureList::IsEnabled(kOneCopyCanvasCapture)) {
+      if (!accelerated_frame_pool_) {
+        accelerated_frame_pool_ =
+            std::make_unique<WebGraphicsContext3DVideoFramePool>(
+                context_provider);
+      }
+      auto blit_done_lambda = [](base::WeakPtr<CanvasCaptureHandler> handler,
+                                 base::TimeTicks timestamp,
+                                 scoped_refptr<media::VideoFrame> video_frame) {
+        if (handler)
+          handler->OnYUVPixelsReadAsync(video_frame, timestamp, true);
+      };
+      auto blit_done_callback =
+          WTF::Bind(blit_done_lambda, weak_ptr_factory_.GetWeakPtr(),
+                    base::TimeTicks::Now());
+      // TODO(https://crbug.com/1224279): This assumes that all
+      // StaticBitmapImages are 8-bit sRGB. Expose the color space and pixel
+      // format that is backing `image->GetMailboxHolder()`, or, alternatively,
+      // expose an accelerated SkImage.
+      if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
+              viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
+              gfx::Size(image->width(), image->height()),
+              gfx::ColorSpace::CreateSRGB(),
+              image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
+                                       : kBottomLeft_GrSurfaceOrigin,
+              image->GetMailboxHolder(), std::move(blit_done_callback))) {
+        return;
+      }
+    }
     ReadYUVPixelsAsync(image, context_provider);
   } else {
     ReadARGBPixelsAsync(image, context_provider->ContextProvider());
