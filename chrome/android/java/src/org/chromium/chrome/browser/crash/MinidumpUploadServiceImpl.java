@@ -142,11 +142,10 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
         int applicationExitState =
                 sharedPrefs.readInt(ChromePreferenceKeys.LAST_SESSION_APPLICATION_STATE);
         String umaSuffix;
-        if (applicationExitState == ApplicationState.HAS_RUNNING_ACTIVITIES
-                || applicationExitState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
-            umaSuffix = "Foreground";
+        if (applicationExitState == ApplicationState.HAS_RUNNING_ACTIVITIES) {
+            umaSuffix = "Foreground2";
         } else {
-            umaSuffix = "Background";
+            umaSuffix = "Background2";
         }
         sharedPrefs.writeInt(ChromePreferenceKeys.LAST_SESSION_BROWSER_PID, Process.myPid());
         ApplicationStateListener appStateListener = createApplicationStateListener();

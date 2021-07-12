@@ -886,9 +886,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>ssid@chromium.org</owner>
   <suffix name="Browser" label="Recorded for Browser crashes."/>
   <suffix name="Browser.Background"
-      label="Recorded for background Browser crashes."/>
+      label="Recorded for background Browser crashes.">
+    <obsolete>
+      Deprecated in M93 in favor of Background2.
+    </obsolete>
+  </suffix>
+  <suffix name="Browser.Background2"
+      label="Recorded for background (application is not in running state)
+             Browser crashes."/>
   <suffix name="Browser.Foreground"
-      label="Recorded for foregound Browser crashes."/>
+      label="Recorded for foregound Browser crashes. Deprecated in M93 in
+             favor of Foreground2.">
+    <obsolete>
+      Deprecated in M93 in favor of Foreground2.
+    </obsolete>
+  </suffix>
+  <suffix name="Browser.Foreground2"
+      label="Recorded for foregound (application is in running state) Browser
+             crashes."/>
   <suffix name="GpuForegroundOom"
       label="Recorded for foreground GPU process OOM crashes."/>
   <suffix name="UtilityForegroundOom"
