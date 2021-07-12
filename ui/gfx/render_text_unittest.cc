@@ -3156,6 +3156,68 @@ TEST_F(RenderTextTest, MoveCursor_UpDown_Newline) {
                                         SELECTION_CARET, &expected_range);
 }
 
+TEST_F(RenderTextTest, MoveCursor_UpDown_EmptyLines) {
+  SetGlyphWidth(5);
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(u"one\n\ntwo three");
+  render_text->SetDisplayRect(Rect(45, 1000));
+  render_text->SetMultiline(true);
+  EXPECT_EQ(3U, render_text->GetNumLines());
+
+  std::vector<Range> expected_range;
+
+  // Test up/down cursor movement at the start of the line.
+  render_text->SelectRange(Range(0));
+  expected_range.push_back(Range(4));
+  expected_range.push_back(Range(5));
+  expected_range.push_back(Range(14));
+  RunMoveCursorTestAndClearExpectations(render_text, CHARACTER_BREAK,
+                                        CURSOR_DOWN, SELECTION_NONE,
+                                        &expected_range);
+
+  render_text->SelectRange(Range(5));
+  expected_range.push_back(Range(4));
+  expected_range.push_back(Range(0));
+  expected_range.push_back(Range(0));
+  RunMoveCursorTestAndClearExpectations(render_text, CHARACTER_BREAK, CURSOR_UP,
+                                        SELECTION_NONE, &expected_range);
+
+  // Test up/down movement at the end of the line.
+  render_text->SelectRange(Range(3));
+  expected_range.push_back(Range(4));
+  // TODO(crbug.com/1163587): This should actually be |8|, since |9| is the
+  // beginning of the next line. This assert is left in for now to allow testing
+  // the next expected position, which correctly ends up at |14|.
+  expected_range.push_back(Range(9));
+  expected_range.push_back(Range(14));
+  RunMoveCursorTestAndClearExpectations(render_text, CHARACTER_BREAK,
+                                        CURSOR_DOWN, SELECTION_NONE,
+                                        &expected_range);
+
+  render_text->SelectRange(Range(14));
+  expected_range.push_back(Range(4));
+  expected_range.push_back(Range(3));
+  expected_range.push_back(Range(0));
+  RunMoveCursorTestAndClearExpectations(render_text, CHARACTER_BREAK, CURSOR_UP,
+                                        SELECTION_NONE, &expected_range);
+
+  // Test up/down movement somewhere in the middle of the line.
+  render_text->SelectRange(Range(2));
+  expected_range.push_back(Range(4));
+  expected_range.push_back(Range(7));
+  expected_range.push_back(Range(14));
+  RunMoveCursorTestAndClearExpectations(render_text, CHARACTER_BREAK,
+                                        CURSOR_DOWN, SELECTION_NONE,
+                                        &expected_range);
+
+  render_text->SelectRange(Range(7));
+  expected_range.push_back(Range(4));
+  expected_range.push_back(Range(2));
+  expected_range.push_back(Range(0));
+  RunMoveCursorTestAndClearExpectations(render_text, CHARACTER_BREAK, CURSOR_UP,
+                                        SELECTION_NONE, &expected_range);
+}
+
 TEST_F(RenderTextTest, MoveCursor_UpDown_Cache) {
   SetGlyphWidth(5);
   RenderText* render_text = GetRenderText();

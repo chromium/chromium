@@ -1031,7 +1031,7 @@ SelectionModel RenderText::FindCursorPosition(const Point& view_point,
   // Newline segment should be ignored in finding segment index with x
   // coordinate because it's not drawn.
   Vector2d newline_offset;
-  if (line.segments.size() > 1 && IsNewlineSegment(line.segments.front()))
+  if (line.segments.size() >= 1 && IsNewlineSegment(line.segments.front()))
     newline_offset.set_x(line.segments.front().width());
 
   float point_offset_relative_segment = 0;
