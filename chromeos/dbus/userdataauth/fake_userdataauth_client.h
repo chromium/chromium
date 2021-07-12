@@ -94,6 +94,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void AuthenticateAuthSession(
       const ::user_data_auth::AuthenticateAuthSessionRequest& request,
       AuthenticateAuthSessionCallback callback) override;
+  void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
+                      AddCredentialsCallback callback) override;
 
   // Mount() related setter/getters.
 

@@ -266,6 +266,21 @@ void FakeUserDataAuthClient::AuthenticateAuthSession(
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
+void FakeUserDataAuthClient::AddCredentials(
+    const ::user_data_auth::AddCredentialsRequest& request,
+    AddCredentialsCallback callback) {
+  ::user_data_auth::AddCredentialsReply reply;
+
+  const std::string auth_session_id = request.auth_session_id();
+
+  const auto it = auth_sessions_.find(auth_session_id);
+  if (it == auth_sessions_.end()) {
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+  }
+  ReturnProtobufMethodCallback(reply, std::move(callback));
+}
+
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   if (service_is_available_ || service_reported_not_available_) {

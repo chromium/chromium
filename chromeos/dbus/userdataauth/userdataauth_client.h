@@ -68,6 +68,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       DBusMethodCallback<::user_data_auth::StartAuthSessionReply>;
   using AuthenticateAuthSessionCallback =
       DBusMethodCallback<::user_data_auth::AuthenticateAuthSessionReply>;
+  using AddCredentialsCallback =
+      DBusMethodCallback<::user_data_auth::AddCredentialsReply>;
 
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
@@ -186,6 +188,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void AuthenticateAuthSession(
       const ::user_data_auth::AuthenticateAuthSessionRequest& request,
       AuthenticateAuthSessionCallback callback) = 0;
+
+  // Attempts to add credentials to the vault identified/authorized by auth
+  // session.
+  virtual void AddCredentials(
+      const ::user_data_auth::AddCredentialsRequest& request,
+      AddCredentialsCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

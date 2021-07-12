@@ -235,6 +235,15 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
+                      AddCredentialsCallback callback) override {
+    // TODO (crbug.com/1179246): add similar constant in user_data_auth
+    // namespace.
+    CallProtoMethod(::cryptohome::kCryptohomeAddCredentials,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
  private:
   // Calls cryptohomed's |method_name| method in |interface_name| interface,
   // passing in |request| as input with |timeout_ms|. Once the (asynchronous)
