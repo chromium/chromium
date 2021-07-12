@@ -645,23 +645,6 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [2, 3, 1]);
   });
 
-  test('Escape key triggers close UI API', async () => {
-    await setupTest(sampleData());
-
-    const elements = [
-      tabSearchApp.shadowRoot.querySelector('#searchField'),
-      tabSearchApp.shadowRoot.querySelector('#tabsList'),
-      tabSearchApp.shadowRoot.querySelector('#tabsList')
-          .querySelector('tab-search-item'),
-    ];
-
-    for (const element of elements) {
-      keyDownOn(element, 0, [], 'Escape');
-    }
-
-    assertEquals(3, testProxy.getCallCount('closeUI'));
-  });
-
   test('Tab associated with TabGroup data', async () => {
     const token = sampleToken(1, 1);
     const tabs = [

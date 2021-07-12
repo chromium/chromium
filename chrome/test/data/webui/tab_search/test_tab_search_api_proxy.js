@@ -15,7 +15,6 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
       'openRecentlyClosedEntry',
       'switchToTab',
       'showUI',
-      'closeUI',
     ]);
 
     /** @type {!PageCallbackRouter} */
@@ -53,11 +52,6 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   /** @override */
   showUI() {
     this.methodCalled('showUI');
-  }
-
-  /** @override */
-  closeUI() {
-    this.methodCalled('closeUI');
   }
 
   /** @override */

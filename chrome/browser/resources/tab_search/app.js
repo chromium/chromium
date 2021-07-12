@@ -148,9 +148,6 @@ export class TabSearchAppElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-    this.addEventListener('keydown', (e) => {
-      this.onKeyDown_(/** @type {!KeyboardEvent} */ (e));
-    });
 
     // Update option values for fuzzy search from feature params.
     this.fuzzySearchOptions_ = Object.assign({}, this.fuzzySearchOptions_, {
@@ -480,18 +477,6 @@ export class TabSearchAppElement extends PolymerElement {
     const tabsList = /** @type {!InfiniteList} */ (this.$.tabsList);
     if (tabsList.selected === NO_SELECTION && this.selectableItemCount_() > 0) {
       tabsList.selected = 0;
-    }
-  }
-
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
-    if (e.key === 'Escape') {
-      e.stopPropagation();
-      e.preventDefault();
-      this.apiProxy_.closeUI();
     }
   }
 

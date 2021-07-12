@@ -50,9 +50,6 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
   void OpenRecentlyClosedEntry(int32_t session_id) override;
   void ShowUI() override;
-  // TODO(tluk): Remove this once all uses of the CloseUI() interface are
-  // removed from the Tab Search WebUI code.
-  void CloseUI() override {}
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

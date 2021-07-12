@@ -42,8 +42,6 @@ export class TabSearchApiProxy {
   getCallbackRouter() {}
 
   showUI() {}
-
-  closeUI() {}
 }
 
 /** @implements {TabSearchApiProxy} */
@@ -103,11 +101,6 @@ export class TabSearchApiProxyImpl {
   /** @override */
   showUI() {
     this.handler.showUI();
-  }
-
-  /** @override */
-  closeUI() {
-    this.handler.closeUI();
   }
 }
 
