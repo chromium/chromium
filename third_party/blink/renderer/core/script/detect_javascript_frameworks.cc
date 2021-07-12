@@ -39,11 +39,39 @@ bool IsFrameworkIDUsed(Document& document, const AtomicString& framework_id) {
   return false;
 }
 
+void CheckForGatsby(Document& document, v8::Local<v8::Context> context) {
+  if (IsFrameworkIDUsed(document, "___gatsby")) {
+    document.Loader()->DidObserveLoadingBehavior(
+        kLoadingBehaviorGatsbyFrameworkUsed);
+  }
+}
+
 void CheckForNextJS(Document& document, v8::Local<v8::Context> context) {
   if (IsFrameworkIDUsed(document, "__next") &&
       IsFrameworkVariableUsed(context, "__NEXT_DATA__")) {
     document.Loader()->DidObserveLoadingBehavior(
         LoadingBehaviorFlag::kLoadingBehaviorNextJSFrameworkUsed);
+  }
+}
+
+void CheckForNuxtJS(Document& document, v8::Local<v8::Context> context) {
+  if (IsFrameworkVariableUsed(context, "__NUXT__")) {
+    document.Loader()->DidObserveLoadingBehavior(
+        kLoadingBehaviorNuxtJSFrameworkUsed);
+  }
+}
+
+void CheckForSapper(Document& document, v8::Local<v8::Context> context) {
+  if (IsFrameworkVariableUsed(context, "__SAPPER__")) {
+    document.Loader()->DidObserveLoadingBehavior(
+        kLoadingBehaviorSapperFrameworkUsed);
+  }
+}
+
+void CheckForVuePress(Document& document, v8::Local<v8::Context> context) {
+  if (IsFrameworkVariableUsed(context, "__VUEPRESS__")) {
+    document.Loader()->DidObserveLoadingBehavior(
+        kLoadingBehaviorVuePressFrameworkUsed);
   }
 }
 
@@ -72,7 +100,11 @@ void DetectJavascriptFrameworksOnLoad(Document& document) {
   ScriptState::Scope scope(script_state);
   v8::Local<v8::Context> context = script_state->GetContext();
 
+  CheckForGatsby(document, context);
   CheckForNextJS(document, context);
+  CheckForNuxtJS(document, context);
+  CheckForSapper(document, context);
+  CheckForVuePress(document, context);
 }
 
 }  // namespace blink

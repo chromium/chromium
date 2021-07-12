@@ -7702,9 +7702,43 @@ be describing additional metrics about the same event.
 
 <event name="JavascriptFrameworkPageLoad" singular="True">
   <owner>houssein@chromium.org</owner>
+  <owner>npm@chromium.org</owner>
+  <summary>
+    Metrics stating whether the main frame of a page uses certain JavaScript
+    frameworks. This event is recorded when the page is going to be unloaded or
+    when the app enters the background on Android. The framework detection is
+    done when the document is loaded (similar to when load event is fired). If a
+    framework is used after this then it would not be detected. Note that a page
+    can use multiple frameworks at the same time, hence why this reports each
+    framework individually instead of a single enum.
+  </summary>
+  <metric name="GatsbyPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Gatsby JavaScript
+      framework.
+    </summary>
+  </metric>
   <metric name="NextJSPageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the Next.js JavaScript
+      framework.
+    </summary>
+  </metric>
+  <metric name="NuxtJSPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Nuxt.js JavaScript
+      framework.
+    </summary>
+  </metric>
+  <metric name="SapperPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Sapper JavaScript
+      framework.
+    </summary>
+  </metric>
+  <metric name="VuePressPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the VuePress JavaScript
       framework.
     </summary>
   </metric>

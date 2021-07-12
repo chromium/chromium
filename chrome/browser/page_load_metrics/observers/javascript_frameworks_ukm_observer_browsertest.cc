@@ -22,7 +22,20 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+namespace {
+
 using UkmEntry = ukm::builders::JavascriptFrameworkPageLoad;
+
+constexpr char kGatsbyJsPageLoad[] = "GatsbyPageLoad";
+constexpr char kNextJsPageLoad[] = "NextJSPageLoad";
+constexpr char kNuxtJsPageLoad[] = "NuxtJSPageLoad";
+constexpr char kSapperPageLoad[] = "SapperPageLoad";
+constexpr char kVuePressPageLoad[] = "VuePressPageLoad";
+const std::vector<const char*> all_frameworks = {
+    kGatsbyJsPageLoad, kNextJsPageLoad, kNuxtJsPageLoad, kSapperPageLoad,
+    kVuePressPageLoad};
+
+}  // namespace
 
 class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
  public:
@@ -79,6 +92,26 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
     return https_test_server_.get();
   }
 
+  void RunSingleFrameworkDetectionTest(const std::string& test_url,
+                                       const char* framework_name) {
+    page_load_metrics::PageLoadMetricsTestWaiter waiter(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    waiter.AddPageExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+    StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
+    GURL url = https_test_server()->GetURL(test_url);
+    ui_test_utils::NavigateToURL(browser(), url);
+    waiter.Wait();
+    CloseAllTabs();
+    for (const char* framework : all_frameworks) {
+      ExpectMetricCountForUrl(url, framework, 1);
+      if (std::strcmp(framework, framework_name) == 0)
+        ExpectMetricValueForUrl(url, framework, true);
+      else
+        ExpectMetricValueForUrl(url, framework, false);
+    }
+  }
+
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
@@ -86,7 +119,7 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
-                       NoNextjsFrameworkDetected) {
+                       NoFrameworkDetected) {
   page_load_metrics::PageLoadMetricsTestWaiter waiter(
       browser()->tab_strip_model()->GetActiveWebContents());
   waiter.AddPageExpectation(
@@ -96,21 +129,64 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
   ui_test_utils::NavigateToURL(browser(), url);
   waiter.Wait();
   CloseAllTabs();
-  ExpectMetricCountForUrl(url, "NextJSPageLoad", 1);
-  ExpectMetricValueForUrl(url, "NextJSPageLoad", false);
+  for (const char* framework : all_frameworks) {
+    ExpectMetricCountForUrl(url, framework, 1);
+    ExpectMetricValueForUrl(url, framework, false);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       GatsbyFrameworkDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/gatsby_page.html",
+                                  kGatsbyJsPageLoad);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
                        NextjsFrameworkDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/nextjs_page.html",
+                                  kNextJsPageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       NuxtjsFrameworkDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/nuxtjs_page.html",
+                                  kNuxtJsPageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       SapperFrameworkDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/sapper_page.html",
+                                  kSapperPageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       VuePressFrameworkDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/vuepress_page.html",
+                                  kVuePressPageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       MultipleFrameworksDetected) {
   page_load_metrics::PageLoadMetricsTestWaiter waiter(
       browser()->tab_strip_model()->GetActiveWebContents());
   waiter.AddPageExpectation(
       page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
-  GURL url = https_test_server()->GetURL("/page_load_metrics/nextjs_page.html");
+  GURL url = https_test_server()->GetURL(
+      "/page_load_metrics/multiple_frameworks.html");
   ui_test_utils::NavigateToURL(browser(), url);
   waiter.Wait();
   CloseAllTabs();
-  ExpectMetricCountForUrl(url, "NextJSPageLoad", 1);
-  ExpectMetricValueForUrl(url, "NextJSPageLoad", true);
+  struct {
+    const char* name;
+    const bool in_page;
+  } expected_frameworks[] = {{kGatsbyJsPageLoad, true},
+                             {kNextJsPageLoad, true},
+                             {kNuxtJsPageLoad, true},
+                             {kSapperPageLoad, false},
+                             {kVuePressPageLoad, false}};
+  for (const auto& framework : expected_frameworks) {
+    ExpectMetricCountForUrl(url, framework.name, 1);
+    ExpectMetricValueForUrl(url, framework.name, framework.in_page);
+  }
 }
