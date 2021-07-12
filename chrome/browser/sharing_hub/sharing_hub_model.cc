@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 
+#include "base/base64.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -22,9 +23,21 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace sharing_hub {
+
+namespace {
+
+gfx::Image DecodeIcon(std::string str) {
+  std::string icon_str;
+  base::Base64Decode(str, &icon_str);
+  return gfx::Image::CreateFrom1xPNGBytes(
+      reinterpret_cast<const unsigned char*>(icon_str.data()), icon_str.size());
+}
+}  // namespace
 
 SharingHubModel::SharingHubModel(content::BrowserContext* context)
     : context_(context) {
@@ -77,7 +90,7 @@ void SharingHubModel::ExecuteThirdPartyAction(Profile* profile, int id) {
 void SharingHubModel::PopulateFirstPartyActions() {
   first_party_action_list_.push_back(
       {IDC_COPY_URL, l10n_util::GetStringUTF16(IDS_SHARING_HUB_COPY_LINK_LABEL),
-       kCopyIcon, true});
+       kCopyIcon, true, gfx::ImageSkia()});
 
   if (DesktopScreenshotsFeatureEnabled()) {
     first_party_action_list_.push_back(
@@ -89,24 +102,24 @@ void SharingHubModel::PopulateFirstPartyActions() {
   first_party_action_list_.push_back(
       {IDC_SEND_TAB_TO_SELF,
        l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-       kSendTabToSelfIcon, true});
+       kSendTabToSelfIcon, true, gfx::ImageSkia()});
 
   first_party_action_list_.push_back(
       {IDC_QRCODE_GENERATOR,
        l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL),
-       kQrcodeGeneratorIcon, true});
+       kQrcodeGeneratorIcon, true, gfx::ImageSkia()});
 
   if (media_router::MediaRouterEnabled(context_)) {
     first_party_action_list_.push_back(
         {IDC_ROUTE_MEDIA,
          l10n_util::GetStringUTF16(IDS_SHARING_HUB_MEDIA_ROUTER_LABEL),
-         vector_icons::kMediaRouterIdleIcon, true});
+         vector_icons::kMediaRouterIdleIcon, true, gfx::ImageSkia()});
   }
 
   first_party_action_list_.push_back(
       {IDC_SAVE_PAGE,
        l10n_util::GetStringUTF16(IDS_SHARING_HUB_SAVE_PAGE_LABEL),
-       kSavePageIcon, true});
+       kSavePageIcon, true, gfx::ImageSkia()});
 }
 
 void SharingHubModel::PopulateThirdPartyActions() {
@@ -117,10 +130,33 @@ void SharingHubModel::PopulateThirdPartyActions() {
   if (third_party_targets_) {
     for (const sharing::mojom::ShareTarget& target :
          third_party_targets_->targets()) {
-      // get ICON from target.icon();
-      third_party_action_list_.push_back({id,
-                                          base::ASCIIToUTF16(target.nickname()),
-                                          kQrcodeGeneratorIcon, false});
+      if (!target.icon().empty()) {
+        gfx::Image icon = DecodeIcon(target.icon());
+        gfx::ImageSkia icon_skia = icon.AsImageSkia();
+        gfx::Image icon_2x = DecodeIcon(target.icon_2x());
+        if (!icon_2x.IsEmpty()) {
+          const SkBitmap* skBitmap_2x = icon_2x.ToSkBitmap();
+          gfx::ImageSkiaRep rep_2x(*skBitmap_2x, 2.0);
+          icon_skia.AddRepresentation(rep_2x);
+        }
+
+        gfx::Image icon_3x = DecodeIcon(target.icon_3x());
+        if (!icon_3x.IsEmpty()) {
+          const SkBitmap* skBitmap_3x = icon_3x.ToSkBitmap();
+          gfx::ImageSkiaRep rep_3x(*skBitmap_3x, 3.0);
+          icon_skia.AddRepresentation(rep_3x);
+        }
+
+        icon_skia.MakeThreadSafe();
+        third_party_action_list_.push_back(
+            {id, base::ASCIIToUTF16(target.nickname()),
+             vector_icons::kEmailIcon, false, std::move(icon_skia)});
+      } else {
+        third_party_action_list_.push_back(
+            {id, base::ASCIIToUTF16(target.nickname()),
+             vector_icons::kEmailIcon, false, gfx::ImageSkia()});
+      }
+
       third_party_action_urls_[id] = GURL(target.url());
       id++;
     }

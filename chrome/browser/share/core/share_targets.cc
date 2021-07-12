@@ -110,26 +110,33 @@ void ShareTargets::SwapTargetsLocked(
 
 void ShareTargets::AddObserver(ShareTargetsObserver* observer) {
   observers_.AddObserver(observer);
+  if (targets_) {
+    NotifyObserver(observer);
+  }
 }
 
 void ShareTargets::RemoveObserver(ShareTargetsObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void ShareTargets::NotifyObserver(ShareTargetsObserver* observer) {
+  // This retrieves just the country code from the locale.
+  std::string locale = g_browser_process->GetApplicationLocale().substr(3, 2);
+  auto it = targets_->map_target_locale_map().find(locale);
+
+  if (it == targets_->map_target_locale_map().end()) {
+    it = targets_->map_target_locale_map().find(GLOBAL);
+  }
+  std::unique_ptr<mojom::ShareTargets> to_return(new mojom::ShareTargets());
+  to_return->CopyFrom(it->second);
+  observer->OnShareTargetsUpdated(std::move(to_return));
+}
+
 void ShareTargets::NotifyShareTargetUpdated() {
   if (!targets_)
     return;
   for (ShareTargetsObserver& observer : observers_) {
-    // This retrieves just the country code from the locale.
-    std::string locale = g_browser_process->GetApplicationLocale().substr(3, 2);
-    auto it = targets_->map_target_locale_map().find(locale);
-
-    if (it == targets_->map_target_locale_map().end()) {
-      it = targets_->map_target_locale_map().find(GLOBAL);
-    }
-    std::unique_ptr<mojom::ShareTargets> to_return(new mojom::ShareTargets());
-    to_return->CopyFrom(it->second);
-    observer.OnShareTargetsUpdated(std::move(to_return));
+    NotifyObserver(&observer);
   }
 }
 

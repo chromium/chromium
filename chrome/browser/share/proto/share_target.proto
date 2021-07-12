@@ -14,14 +14,9 @@ message ShareTarget {
   string url =
       2;  // string share API, e.g.
           // 'http://reddit.com/submit?url=%(escaped_url)s&title=%(escaped_title)s'
-  string icon =
-      3;  // target icon as an svg e.g.
-          // "<g>
-          // <rect fill='#3B5898' width='48' height='48'/>
-          // <path fill='#FFFFFF'
-          // d='M39.4,29.4l0.9-7.2h-7.2v-4.6c0-2.1,0.6-3.5,3.6-3.5h3.8V7.5c-0.7-0.1-2.9-0.3-5.6-0.3
-          //   c-5.5,0-9.3,3.4-9.3,9.6v5.3h-6.3v7.2h6.3V48h7.5V29.4H39.4z'/>
-          // </g>"
+  string icon = 3;     // target icon as an base64 png at 1x resolution
+  string icon_2x = 4;  // target icon at 2x resolution.
+  string icon_3x = 5;  // target icon at 3x resolution.
 }
 
 message ShareTargets {

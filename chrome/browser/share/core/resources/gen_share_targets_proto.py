@@ -37,6 +37,8 @@ def ParseInputPb(input_pb):
         all_targets_pb.all_targets[s.nickname].nickname = s.nickname
         all_targets_pb.all_targets[s.nickname].url = s.url
         all_targets_pb.all_targets[s.nickname].icon = s.icon
+        all_targets_pb.all_targets[s.nickname].icon_2x = s.icon_2x
+        all_targets_pb.all_targets[s.nickname].icon_3x = s.icon_3x
 
     for s in temp_pb.locale_mapping:
         tmp_share_targets = share_target_pb2.ShareTargets()
@@ -45,6 +47,8 @@ def ParseInputPb(input_pb):
             added.nickname = all_targets_pb.all_targets[target].nickname
             added.url = all_targets_pb.all_targets[target].url
             added.icon = all_targets_pb.all_targets[target].icon
+            added.icon_2x = all_targets_pb.all_targets[target].icon_2x
+            added.icon_3x = all_targets_pb.all_targets[target].icon_3x
 
         for locale in s.locale_keys:
             for target in tmp_share_targets.targets:
@@ -52,6 +56,8 @@ def ParseInputPb(input_pb):
                 added.nickname = target.nickname
                 added.url = target.url
                 added.icon = target.icon
+                added.icon_2x = target.icon_2x
+                added.icon_3x = target.icon_3x
 
     return new_pb
 

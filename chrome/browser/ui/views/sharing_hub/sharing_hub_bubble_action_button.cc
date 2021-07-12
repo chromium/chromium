@@ -16,12 +16,23 @@ namespace sharing_hub {
 
 namespace {
 
-std::unique_ptr<views::ColorTrackingIconView> CreateIcon(
+static constexpr int kPrimaryIconSize = 20;
+constexpr auto kPrimaryIconBorder = gfx::Insets(6);
+
+std::unique_ptr<views::ColorTrackingIconView> CreateIconFromVector(
     const gfx::VectorIcon& vector_icon) {
-  static constexpr int kPrimaryIconSize = 20;
   auto icon = std::make_unique<views::ColorTrackingIconView>(vector_icon,
                                                              kPrimaryIconSize);
-  constexpr auto kPrimaryIconBorder = gfx::Insets(6);
+  icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
+  return icon;
+}
+
+std::unique_ptr<views::ImageView> CreateIconFromImageSkia(
+    const gfx::ImageSkia& png_icon) {
+  // The icon size has to be defined later if the image will be visible.
+  auto icon = std::make_unique<views::ImageView>();
+  icon->SetImageSize(gfx::Size(kPrimaryIconSize, kPrimaryIconSize));
+  icon->SetImage(png_icon);
   icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   return icon;
 }
@@ -35,7 +46,10 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
           base::BindRepeating(&SharingHubBubbleViewImpl::OnActionSelected,
                               base::Unretained(bubble),
                               base::Unretained(this)),
-          CreateIcon(action_info.icon),
+
+          action_info.third_party_icon.isNull()
+              ? CreateIconFromVector(action_info.icon)
+              : CreateIconFromImageSkia(action_info.third_party_icon),
           action_info.title) {
   action_command_id_ = action_info.command_id;
   action_is_first_party_ = action_info.is_first_party;

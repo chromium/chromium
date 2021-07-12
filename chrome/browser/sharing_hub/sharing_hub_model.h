@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
+#include "ui/gfx/image/image_skia.h"
 
 class GURL;
 class Profile;
@@ -28,6 +29,7 @@ class WebContents;
 
 namespace gfx {
 struct VectorIcon;
+class ImageSkia;
 }  // namespace gfx
 
 namespace sharing_hub {
@@ -37,6 +39,7 @@ struct SharingHubAction {
   std::u16string title;
   const gfx::VectorIcon& icon;
   bool is_first_party;
+  gfx::ImageSkia third_party_icon;
 };
 
 // The Sharing Hub model contains a list of first and third party actions.

@@ -75,8 +75,13 @@ void SharingHubSubMenuModel::Build(content::WebContents* web_contents) {
   }
   AddSeparator(ui::NORMAL_SEPARATOR);
   for (auto action : third_party_actions) {
-    AddItemWithIcon(action.command_id, action.title,
-                    ui::ImageModel::FromVectorIcon(action.icon));
+    if (action.third_party_icon.isNull()) {
+      AddItemWithIcon(action.command_id, action.title,
+                      ui::ImageModel::FromVectorIcon(action.icon));
+    } else {
+      AddItemWithIcon(action.command_id, action.title,
+                      ui::ImageModel::FromImageSkia(action.third_party_icon));
+    }
     third_party_action_ids_.push_back(action.command_id);
   }
 }
