@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
@@ -25,6 +26,8 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 
 namespace chromeos {
 namespace {
@@ -58,6 +61,16 @@ bool ShouldDoSamlRedirect(const std::string& email) {
 
   return user && user->using_saml();
 }
+
+chromeos::InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+
+  return chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+}
+
+const char kMainElement[] = "$(\'main-element\').";
 
 }  // namespace
 
@@ -186,7 +199,27 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.SetString("clientVersion", version_info::GetVersionNumber());
   params.SetBoolean("readOnlyEmail", true);
 
-  CallJavascriptFunction("$(\'main-element\').loadAuthenticator", params);
+  CallJavascript("loadAuthenticator", params);
+  if (features::IsNewLockScreenReauthLayoutEnabled()) {
+    UpdateOrientationAndWidth();
+  }
+}
+
+void LockScreenReauthHandler::UpdateOrientationAndWidth() {
+  gfx::Size display = display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  bool is_horizontal = display.width() >= display.height();
+  CallJavascript("setOrientation", base::Value(is_horizontal));
+
+  chromeos::InSessionPasswordSyncManager* password_sync_manager =
+      GetInSessionPasswordSyncManager();
+  int width = password_sync_manager->GetDialogWidth();
+  CallJavascript("setWidth", base::Value(width));
+}
+
+void LockScreenReauthHandler::CallJavascript(
+    const std::string& function,
+    const base::Value& params) {
+  CallJavascriptFunction(std::string(kMainElement) + function, params);
 }
 
 void LockScreenReauthHandler::HandleCompleteAuthentication(
@@ -205,7 +238,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
 
   if (gaia::CanonicalizeEmail(email) != gaia::CanonicalizeEmail(email_)) {
     // The authenticated user email doesn't match the current user's email.
-    CallJavascriptFunction("$(\'main-element\').resetAuthenticator");
+    CallJavascriptFunction(std::string(kMainElement) + "resetAuthenticator");
     return;
   }
 
@@ -244,11 +277,8 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
 
 void LockScreenReauthHandler::OnCookieWaitTimeout() {
   NOTREACHED() << "Cookie has timed out while attempting to login in.";
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
   chromeos::InSessionPasswordSyncManager* password_sync_manager =
-      chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+      GetInSessionPasswordSyncManager();
   password_sync_manager->DismissDialog();
 }
 
@@ -283,7 +313,7 @@ void LockScreenReauthHandler::HandleUpdateUserPassword(
 }
 
 void LockScreenReauthHandler::ShowPasswordChangedScreen() {
-  CallJavascriptFunction("$(\'main-element\').passwordChanged");
+  CallJavascriptFunction(std::string(kMainElement) + "passwordChanged");
 }
 
 void LockScreenReauthHandler::RegisterMessages() {

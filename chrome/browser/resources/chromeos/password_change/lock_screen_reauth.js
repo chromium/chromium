@@ -128,6 +128,29 @@ Polymer({
   },
 
   /**
+   * Set the orientation which will be used in styling webui.
+   * @param {!Object} is_horizontal whether the orientation is horizontal or
+   *  vertical.
+   */
+  setOrientation(is_horizontal) {
+    document.documentElement.setAttribute('new-layout', '');
+    if (is_horizontal) {
+      document.documentElement.setAttribute('orientation', 'horizontal');
+    } else {
+      document.documentElement.setAttribute('orientation', 'vertical');
+    }
+  },
+
+  /**
+   * Set the width which will be used in styling webui.
+   * @param {!Object} width the width of the dialog.
+   */
+  setWidth(width) {
+    document.documentElement.style.setProperty(
+      '--lock-screen-reauth-dialog-width', width + 'px');
+  },
+
+  /**
    * Invoked when the authDomain property is changed on the authenticator.
    * @private
    */

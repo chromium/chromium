@@ -279,4 +279,10 @@ void InSessionPasswordSyncManager::ResetDialog() {
   lock_screen_start_reauth_dialog_.reset();
 }
 
+int InSessionPasswordSyncManager::GetDialogWidth() {
+  if (!lock_screen_start_reauth_dialog_)
+    return 0;
+  return lock_screen_start_reauth_dialog_->GetDialogWidth();
+}
+
 }  // namespace chromeos

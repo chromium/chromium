@@ -28,9 +28,13 @@ class LockScreenStartReauthDialog : public BaseLockDialog,
   void Show();
   void Dismiss();
   bool IsRunning();
+  int GetDialogWidth();
 
   void CloseLockScreenNetworkDialog();
   void ShowLockScreenNetworkDialog();
+  static gfx::Size CalculateLockScreenReauthDialogSize(
+      const gfx::Size& display_size,
+      bool is_new_layout_enabled);
 
  private:
   void OnProfileCreated(Profile* profile, Profile::CreateStatus status);

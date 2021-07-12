@@ -63,6 +63,11 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   void CheckCredentials(const UserContext& user_context);
 
+  void UpdateOrientationAndWidth();
+
+  void CallJavascript(const std::string& function,
+                      const base::Value& params);
+
   AuthenticatorState authenticator_state_ = AuthenticatorState::NOT_LOADED;
 
   // For testing only. Forces SAML redirect regardless of email.

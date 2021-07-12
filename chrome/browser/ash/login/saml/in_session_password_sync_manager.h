@@ -112,6 +112,9 @@ class InSessionPasswordSyncManager
   // Reset lockscreen re-authentication dialog.
   void ResetDialog();
 
+  // Get lockscreen reauth dialog width
+  int GetDialogWidth();
+
   LockScreenStartReauthDialog* get_reauth_dialog_for_testing() {
     return lock_screen_start_reauth_dialog_.get();
   }
