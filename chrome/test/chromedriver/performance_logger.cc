@@ -228,14 +228,15 @@ Status PerformanceLogger::HandleTraceEvents(
   } else if (method == "Tracing.bufferUsage") {
     // 'value' will be between 0-1 and represents how full the DevTools trace
     // buffer is. If the buffer is full, warn the user.
-    double buffer_usage = 0;
-    if (!params.GetDouble("percentFull", &buffer_usage)) {
+    absl::optional<double> maybe_buffer_usage =
+        params.FindDoubleKey("percentFull");
+    if (!maybe_buffer_usage.has_value()) {
       // Tracing.bufferUsage event will occur once per second, and it really
       // only serves as a warning, so if we can't reliably tell whether the
       // buffer is full, just fail silently instead of spamming the logs.
       return Status(kOk);
     }
-    if (buffer_usage >= 0.99999) {
+    if (maybe_buffer_usage.value() >= 0.99999) {
       base::DictionaryValue params;
       std::string err("Chrome's trace buffer filled while collecting events, "
                       "so some trace events may have been lost");

@@ -288,14 +288,11 @@ Status GetVisibleCookies(Session* session,
     cookie_dict->GetString("path", &path);
     std::string samesite;
     GetOptionalString(cookie_dict, "sameSite", &samesite);
-    int64_t expiry = 0;
-    double temp_double;
-    if (cookie_dict->GetDouble("expires", &temp_double)) {
-      // Truncate & convert the value to an integer as required by W3C spec.
-      int64_t temp_int64 = static_cast<int64_t>(temp_double);
-      if (!(temp_int64 >= (1ll << 53) || temp_int64 <= -(1ll << 53)))
-        expiry = temp_int64;
-    }
+    int64_t expiry =
+        static_cast<int64_t>(cookie_dict->FindDoubleKey("expires").value_or(0));
+    // Truncate & convert the value to an integer as required by W3C spec.
+    if (expiry >= (1ll << 53) || expiry <= -(1ll << 53))
+      expiry = 0;
     bool http_only = false;
     cookie_dict->GetBoolean("httpOnly", &http_only);
     bool session = false;
@@ -625,6 +622,37 @@ Status ParsePageRanges(const base::DictionaryValue& params,
 
   *pageRanges = base::JoinString(ranges, ",");
   return Status(kOk);
+}
+
+// Returns:
+// 1. Optional with the default value, if there is no such a key in the
+//    dictionary.
+// 2. Empty optional, if the key is in the dictionary, but value has
+//    unexpected type.
+// 3. Optional with value from dictionary.
+template <typename T>
+absl::optional<T> ParseIfInDictionary(
+    const base::DictionaryValue* dict,
+    base::StringPiece key,
+    T default_value,
+    absl::optional<T> (base::Value::*getterIfType)() const) {
+  if (!dict->HasKey(key))
+    return absl::make_optional(default_value);
+  return (dict->FindKey(key)->*getterIfType)();
+}
+
+absl::optional<double> ParseDoubleIfInDictionary(
+    const base::DictionaryValue* dict,
+    base::StringPiece key,
+    double default_value) {
+  return ParseIfInDictionary(dict, key, default_value,
+                             &base::Value::GetIfDouble);
+}
+
+absl::optional<int> ParseIntIfInDictionary(const base::DictionaryValue* dict,
+                                           base::StringPiece key,
+                                           int default_value) {
+  return ParseIfInDictionary(dict, key, default_value, &base::Value::GetIfInt);
 }
 }  // namespace
 
@@ -1468,62 +1496,59 @@ Status ProcessInputActionSequence(
       }
 
       // Process Pointer Event's properties.
-      double width = 1;
-      if (action_item->FindKey("width") &&
-          (!action_item->GetDouble("width", &width) || width < 0)) {
+      absl::optional<double> maybe_double_value;
+      absl::optional<int> maybe_int_value;
+
+      maybe_double_value = ParseDoubleIfInDictionary(action_item, "width", 1);
+      if (!maybe_double_value.has_value() || maybe_double_value.value() < 0)
         return Status(kInvalidArgument,
                       "'width' must be a non-negative number");
-      }
-      action->SetDouble("width", width);
-      double height = 1;
-      if (action_item->FindKey("height") &&
-          (!action_item->GetDouble("height", &height) || height < 0)) {
+      action->SetDouble("width", maybe_double_value.value());
+
+      maybe_double_value = ParseDoubleIfInDictionary(action_item, "height", 1);
+      if (!maybe_double_value.has_value() || maybe_double_value.value() < 0)
         return Status(kInvalidArgument,
                       "'height' must be a non-negative number");
-      }
-      action->SetDouble("height", height);
-      double pressure = 0.5;
-      if (action_item->FindKey("pressure") &&
-          (!action_item->GetDouble("pressure", &pressure) || pressure < 0 ||
-           pressure > 1)) {
+      action->SetDouble("height", maybe_double_value.value());
+
+      maybe_double_value =
+          ParseDoubleIfInDictionary(action_item, "pressure", 0.5);
+      if (!maybe_double_value.has_value() || maybe_double_value.value() < 0 ||
+          maybe_double_value.value() > 1)
         return Status(
             kInvalidArgument,
             "'pressure' must be a non-negative number in the range of [0,1]");
-      }
-      action->SetDouble("pressure", pressure);
-      double tangentialPressure = 0;
-      if (action_item->FindKey("tangentialPressure") &&
-          (!action_item->GetDouble("tangentialPressure", &tangentialPressure) ||
-           tangentialPressure < -1 || tangentialPressure > 1)) {
+      action->SetDouble("pressure", maybe_double_value.value());
+
+      maybe_double_value =
+          ParseDoubleIfInDictionary(action_item, "tangentialPressure", 0);
+      if (!maybe_double_value.has_value() || maybe_double_value.value() < -1 ||
+          maybe_double_value.value() > 1)
         return Status(
             kInvalidArgument,
             "'tangentialPressure' must be a number in the range of [-1,1]");
-      }
-      action->SetDouble("tangentialPressure", tangentialPressure);
-      int tiltX = 0;
-      if (action_item->FindKey("tiltX") &&
-          (!action_item->GetInteger("tiltX", &tiltX) || tiltX < -90 ||
-           tiltX > 90)) {
+      action->SetDouble("tangentialPressure", maybe_double_value.value());
+
+      maybe_int_value = ParseIntIfInDictionary(action_item, "tiltX", 0);
+      if (!maybe_int_value.has_value() || maybe_int_value.value() < -90 ||
+          maybe_int_value.value() > 90)
         return Status(kInvalidArgument,
                       "'tiltX' must be an integer in the range of [-90,90]");
-      }
-      action->SetInteger("tiltX", tiltX);
-      int tiltY = 0;
-      if (action_item->FindKey("tiltY") &&
-          (!action_item->GetInteger("tiltY", &tiltY) || tiltY < -90 ||
-           tiltY > 90)) {
+      action->SetInteger("tiltX", maybe_int_value.value());
+
+      maybe_int_value = ParseIntIfInDictionary(action_item, "tiltY", 0);
+      if (!maybe_int_value.has_value() || maybe_int_value.value() < -90 ||
+          maybe_int_value.value() > 90)
         return Status(kInvalidArgument,
                       "'tiltY' must be an integer in the range of [-90,90]");
-      }
-      action->SetInteger("tiltY", tiltY);
-      int twist = 0;
-      if (action_item->FindKey("twist") &&
-          (!action_item->GetInteger("twist", &twist) || twist < 0 ||
-           twist > 359)) {
+      action->SetInteger("tiltY", maybe_int_value.value());
+
+      maybe_int_value = ParseIntIfInDictionary(action_item, "twist", 0);
+      if (!maybe_int_value.has_value() || maybe_int_value.value() < 0 ||
+          maybe_int_value.value() > 359)
         return Status(kInvalidArgument,
                       "'twist' must be an integer in the range of [0,359]");
-      }
-      action->SetInteger("twist", twist);
+      action->SetInteger("twist", maybe_int_value.value());
     }
     action_list->push_back(std::move(action));
   }
@@ -1684,12 +1709,11 @@ Status ExecutePerformActions(Session* session,
               }
             }
           } else if (type == "pointer" || type == "wheel") {
-            double x = 0, y = 0;
             OriginType origin = kViewPort;
             std::string element_id;
             if (action_type == "pointerMove" || action_type == "scroll") {
-              action->GetDouble("x", &x);
-              action->GetDouble("y", &y);
+              double x = action->FindDoubleKey("x").value_or(0);
+              double y = action->FindDoubleKey("y").value_or(0);
               const base::DictionaryValue* origin_dict;
               if (action->FindKey("origin")) {
                 if (action->GetDictionary("origin", &origin_dict)) {
@@ -1748,16 +1772,14 @@ Status ExecutePerformActions(Session* session,
               }
             }
 
-            double width = 1, height = 1;
-            action->GetDouble("width", &width);
-            action->GetDouble("height", &height);
-            double pressure = 0.5, tangential_pressure = 0;
-            action->GetDouble("pressure", &pressure);
-            action->GetDouble("tangentialPressure", &tangential_pressure);
-            int tilt_x = 0, tilt_y = 0, twist = 0;
-            action->GetInteger("tiltX", &tilt_x);
-            action->GetInteger("tiltY", &tilt_y);
-            action->GetInteger("twist", &twist);
+            double width = action->FindDoubleKey("width").value_or(1);
+            double height = action->FindDoubleKey("height").value_or(1);
+            double pressure = action->FindDoubleKey("pressure").value_or(0.5);
+            double tangential_pressure =
+                action->FindDoubleKey("tangentialPressure").value_or(0);
+            int tilt_x = action->FindIntKey("tiltX").value_or(0);
+            int tilt_y = action->FindIntKey("tiltY").value_or(0);
+            int twist = action->FindIntKey("twist").value_or(0);
 
             std::string pointer_type;
             action->GetString("pointerType", &pointer_type);
@@ -2456,18 +2478,26 @@ Status ExecuteSetLocation(Session* session,
                           Timeout* timeout) {
   const base::DictionaryValue* location = NULL;
   Geoposition geoposition;
-  if (!params.GetDictionary("location", &location) ||
-      !location->GetDouble("latitude", &geoposition.latitude) ||
-      !location->GetDouble("longitude", &geoposition.longitude))
+  if (!params.GetDictionary("location", &location))
     return Status(kInvalidArgument, "missing or invalid 'location'");
-  if (location->FindKey("accuracy") &&
-      !location->GetDouble("accuracy", &geoposition.accuracy)) {
+
+  absl::optional<double> maybe_latitude = location->FindDoubleKey("latitude");
+  if (!maybe_latitude.has_value())
+    return Status(kInvalidArgument, "missing or invalid 'location.latitude'");
+  geoposition.latitude = maybe_latitude.value();
+
+  absl::optional<double> maybe_longitude = location->FindDoubleKey("longitude");
+  if (!maybe_longitude.has_value())
+    return Status(kInvalidArgument, "missing or invalid 'location.longitude'");
+  geoposition.longitude = maybe_longitude.value();
+
+  // |accuracy| is not part of the WebDriver spec yet, so if it is not given
+  // default to 100 meters accuracy.
+  absl::optional<double> maybe_accuracy =
+      ParseDoubleIfInDictionary(location, "accuracy", 100);
+  if (!maybe_accuracy.has_value())
     return Status(kInvalidArgument, "invalid 'accuracy'");
-  } else {
-    // |accuracy| is not part of the WebDriver spec yet, so if it is not given
-    // default to 100 meters accuracy.
-    geoposition.accuracy = 100;
-  }
+  geoposition.accuracy = maybe_accuracy.value();
 
   Status status = web_view->OverrideGeolocation(geoposition);
   if (status.IsOk()) {
@@ -2493,26 +2523,35 @@ Status ExecuteSetNetworkConditions(Session* session,
       return status;
   } else if (params.GetDictionary("network_conditions", &conditions)) {
     // |latency| is required.
-    if (!conditions->GetDouble("latency", &network_conditions->latency))
+    absl::optional<double> maybe_latency = conditions->FindDoubleKey("latency");
+    if (!maybe_latency.has_value())
       return Status(kInvalidArgument,
                     "invalid 'network_conditions' is missing 'latency'");
+    network_conditions->latency = maybe_latency.value();
 
     // Either |throughput| or the pair |download_throughput| and
     // |upload_throughput| is required.
-    if (conditions->FindKey("throughput")) {
-      if (!conditions->GetDouble("throughput",
-                                 &network_conditions->download_throughput))
+    if (conditions->HasKey("throughput")) {
+      absl::optional<double> maybe_throughput =
+          conditions->FindDoubleKey("throughput");
+      if (!maybe_throughput.has_value())
         return Status(kInvalidArgument, "invalid 'throughput'");
-      conditions->GetDouble("throughput",
-                            &network_conditions->upload_throughput);
-    } else if (conditions->FindKey("download_throughput") &&
-               conditions->FindKey("upload_throughput")) {
-      if (!conditions->GetDouble("download_throughput",
-                                 &network_conditions->download_throughput) ||
-          !conditions->GetDouble("upload_throughput",
-                                 &network_conditions->upload_throughput))
+      network_conditions->upload_throughput = maybe_throughput.value();
+      network_conditions->download_throughput = maybe_throughput.value();
+    } else if (conditions->HasKey("download_throughput") &&
+               conditions->HasKey("upload_throughput")) {
+      absl::optional<double> maybe_download_throughput =
+          conditions->FindDoubleKey("download_throughput");
+      absl::optional<double> maybe_upload_throughput =
+          conditions->FindDoubleKey("upload_throughput");
+
+      if (!maybe_download_throughput.has_value() ||
+          !maybe_upload_throughput.has_value())
         return Status(kInvalidArgument,
                       "invalid 'download_throughput' or 'upload_throughput'");
+      network_conditions->download_throughput =
+          maybe_download_throughput.value();
+      network_conditions->upload_throughput = maybe_upload_throughput.value();
     } else {
       return Status(kInvalidArgument,
                     "invalid 'network_conditions' is missing 'throughput' or "

@@ -42,7 +42,6 @@ Status FindMobileDevice(std::string device_name,
   }
   int width = 0;
   int height = 0;
-  double device_scale_factor = 0.0;
   bool touch = true;
   bool mobile = true;
   if (!device->GetInteger("width",  &width)) {
@@ -53,7 +52,10 @@ Status FindMobileDevice(std::string device_name,
     return Status(kUnknownError,
                   "malformed device height: should be an integer");
   }
-  if (!device->GetDouble("deviceScaleFactor", &device_scale_factor)) {
+
+  absl::optional<double> maybe_device_scale_factor =
+      device->FindDoubleKey("deviceScaleFactor");
+  if (!maybe_device_scale_factor.has_value()) {
     return Status(kUnknownError,
                   "malformed device scale factor: should be a double");
   }
@@ -66,7 +68,7 @@ Status FindMobileDevice(std::string device_name,
                   "malformed mobile: should be a bool");
   }
   tmp_mobile_device->device_metrics = std::make_unique<DeviceMetrics>(
-      width, height, device_scale_factor, touch, mobile);
+      width, height, maybe_device_scale_factor.value(), touch, mobile);
 
   *mobile_device = std::move(tmp_mobile_device);
   return Status(kOk);

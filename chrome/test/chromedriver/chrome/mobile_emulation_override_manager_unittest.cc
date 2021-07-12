@@ -15,23 +15,21 @@ void AssertDeviceMetricsCommand(const Command& command,
                                 const DeviceMetrics& device_metrics) {
   ASSERT_EQ("Page.setDeviceMetricsOverride", command.method);
   int width, height;
-  double device_scale_factor, font_scale_factor;
   bool mobile, fit_window, text_autosizing;
   ASSERT_TRUE(command.params.GetInteger("width", &width));
   ASSERT_TRUE(command.params.GetInteger("height", &height));
-  ASSERT_TRUE(command.params.GetDouble("deviceScaleFactor",
-                                       &device_scale_factor));
   ASSERT_TRUE(command.params.GetBoolean("mobile", &mobile));
   ASSERT_TRUE(command.params.GetBoolean("fitWindow", &fit_window));
   ASSERT_TRUE(command.params.GetBoolean("textAutosizing", &text_autosizing));
-  ASSERT_TRUE(command.params.GetDouble("fontScaleFactor", &font_scale_factor));
   ASSERT_EQ(device_metrics.width, width);
   ASSERT_EQ(device_metrics.height, height);
-  ASSERT_EQ(device_metrics.device_scale_factor, device_scale_factor);
+  ASSERT_EQ(device_metrics.device_scale_factor,
+            command.params.FindDoubleKey("deviceScaleFactor").value());
   ASSERT_EQ(device_metrics.mobile, mobile);
   ASSERT_EQ(device_metrics.fit_window, fit_window);
   ASSERT_EQ(device_metrics.text_autosizing, text_autosizing);
-  ASSERT_EQ(device_metrics.font_scale_factor, font_scale_factor);
+  ASSERT_EQ(device_metrics.font_scale_factor,
+            command.params.FindDoubleKey("fontScaleFactor").value());
 }
 
 }  // namespace

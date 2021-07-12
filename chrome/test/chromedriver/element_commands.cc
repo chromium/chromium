@@ -914,24 +914,27 @@ Status ExecuteGetElementRect(Session* session,
     return Status(kUnknownError, "could not convert to DictionaryValue");
 
   // grab values
-  double x, y, width, height;
-  if (!location_dict->GetDouble("x", &x))
+  absl::optional<double> maybe_x = location_dict->FindDoubleKey("x");
+  if (!maybe_x.has_value())
     return Status(kUnknownError, "x coordinate is missing in element location");
 
-  if (!location_dict->GetDouble("y", &y))
+  absl::optional<double> maybe_y = location_dict->FindDoubleKey("y");
+  if (!maybe_y.has_value())
     return Status(kUnknownError, "y coordinate is missing in element location");
 
-  if (!size_dict->GetDouble("height", &height))
+  absl::optional<double> maybe_height = size_dict->FindDoubleKey("height");
+  if (!maybe_height.has_value())
     return Status(kUnknownError, "height is missing in element size");
 
-  if (!size_dict->GetDouble("width", &width))
+  absl::optional<double> maybe_width = size_dict->FindDoubleKey("width");
+  if (!maybe_width.has_value())
     return Status(kUnknownError, "width is missing in element size");
 
   base::DictionaryValue ret;
-  ret.SetDouble("x", x);
-  ret.SetDouble("y", y);
-  ret.SetDouble("width", width);
-  ret.SetDouble("height", height);
+  ret.SetDouble("x", maybe_x.value());
+  ret.SetDouble("y", maybe_y.value());
+  ret.SetDouble("width", maybe_width.value());
+  ret.SetDouble("height", maybe_height.value());
   value->reset(ret.DeepCopy());
   return Status(kOk);
 }

@@ -14,13 +14,13 @@ namespace {
 void AssertGeolocationCommand(const Command& command,
                               const Geoposition& geoposition) {
   ASSERT_EQ("Page.setGeolocationOverride", command.method);
-  double latitude, longitude, accuracy;
-  ASSERT_TRUE(command.params.GetDouble("latitude", &latitude));
-  ASSERT_TRUE(command.params.GetDouble("longitude", &longitude));
-  ASSERT_TRUE(command.params.GetDouble("accuracy", &accuracy));
-  ASSERT_EQ(geoposition.latitude, latitude);
-  ASSERT_EQ(geoposition.longitude, longitude);
-  ASSERT_EQ(geoposition.accuracy, accuracy);
+
+  ASSERT_EQ(geoposition.latitude,
+            command.params.FindDoubleKey("latitude").value());
+  ASSERT_EQ(geoposition.longitude,
+            command.params.FindDoubleKey("longitude").value());
+  ASSERT_EQ(geoposition.accuracy,
+            command.params.FindDoubleKey("accuracy").value());
 }
 
 }  // namespace

@@ -509,11 +509,12 @@ bool GetOptionalInt(const base::DictionaryValue* dict,
     return true;
   }
   // See if we have a double that contains an int value.
-  double d;
-  if (!dict->GetDouble(path, &d))
+  absl::optional<double> maybe_decimal = dict->FindDoublePath(path);
+  if (!maybe_decimal.has_value())
     return false;
-  int i = static_cast<int>(d);
-  if (i == d) {
+
+  int i = static_cast<int>(maybe_decimal.value());
+  if (i == maybe_decimal.value()) {
     *out_value = i;
     if (has_value != nullptr)
       *has_value = true;
@@ -572,13 +573,13 @@ bool GetOptionalSafeInt(const base::DictionaryValue* dict,
   }
 
   // Check if we have a double, which may or may not contain a safe int value.
-  double temp_double;
-  if (!dict->GetDouble(path, &temp_double))
+  absl::optional<double> maybe_decimal = dict->FindDoublePath(path);
+  if (!maybe_decimal.has_value())
     return false;
 
   // Verify that the value is an integer.
-  int64_t temp_int64 = static_cast<int64_t>(temp_double);
-  if (temp_int64 != temp_double)
+  int64_t temp_int64 = static_cast<int64_t>(maybe_decimal.value());
+  if (temp_int64 != maybe_decimal.value())
     return false;
 
   // Verify that the value is in the range for safe integer.
