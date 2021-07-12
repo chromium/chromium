@@ -34,7 +34,6 @@
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
-#include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/ppapi_migration/graphics.h"
@@ -263,9 +262,7 @@ bool PdfViewWebPlugin::InitializeCommon(
 
   PerProcessInitializer::GetInstance().Acquire();
 
-  // TODO(crbug.com/1111024): Respect JavaScript content settings.
-  InitializeEngine(std::make_unique<PDFiumEngine>(
-      this, PDFiumFormFiller::DefaultScriptOption()));
+  InitializeEngine(std::make_unique<PDFiumEngine>(this, params->script_option));
   LoadUrl(params->src_url, /*is_print_preview=*/false);
   set_url(params->original_url);
   post_message_sender_.set_container(Container());

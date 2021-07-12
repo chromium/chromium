@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
+#include "pdf/pdfium/pdfium_form_filler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 
@@ -35,6 +36,9 @@ absl::optional<ParsedParams> ParseWebPluginParams(
         return absl::nullopt;
       }
       result.background_color = background_color;
+    } else if (params.attribute_names[i] == "javascript") {
+      if (params.attribute_values[i] != "allow")
+        result.script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
     }
   }
 

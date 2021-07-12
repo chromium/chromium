@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "pdf/pdfium/pdfium_form_filler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -32,6 +33,10 @@ struct ParsedParams {
 
   // Whether the plugin should occupy the entire frame.
   bool full_frame = false;
+
+  // Whether to execute JavaScript and maybe XFA.
+  PDFiumFormFiller::ScriptOption script_option =
+      PDFiumFormFiller::DefaultScriptOption();
 };
 
 // Creates an `ParsedParams` by parsing a `blink::WebPluginParams`. If
