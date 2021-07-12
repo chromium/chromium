@@ -56,15 +56,10 @@ class MemlogBrowserTest : public PlatformBrowserTest,
   }
 };
 
-// Flaky on Android and Mac: crbug.com/1223739.
-#if defined(OS_ANDROID) || defined(OS_MAC)
-#define MAYBE_EndToEnd DISABLED_EndToEnd
-#else
-#define MAYBE_EndToEnd EndToEnd
-#endif
+// TODO(crbug.com/1223739) Disabled due to flakiness.
 // Ensure invocations via TracingController can generate a valid JSON file with
 // expected data.
-IN_PROC_BROWSER_TEST_P(MemlogBrowserTest, MAYBE_EndToEnd) {
+IN_PROC_BROWSER_TEST_P(MemlogBrowserTest, DISABLED_EndToEnd) {
   LOG(INFO) << "Memlog mode: " << static_cast<int>(GetParam().mode);
   LOG(INFO) << "Memlog stack mode: " << static_cast<int>(GetParam().stack_mode);
   LOG(INFO) << "Started via command line flag: "
