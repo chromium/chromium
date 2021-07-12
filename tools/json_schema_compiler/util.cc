@@ -56,7 +56,13 @@ bool PopulateItem(const base::Value& from, bool* out, std::u16string* error) {
 }
 
 bool PopulateItem(const base::Value& from, double* out) {
-  return from.GetAsDouble(out);
+  absl::optional<double> maybe_double = from.GetIfDouble();
+  if (maybe_double.has_value()) {
+    if (out)
+      *out = maybe_double.value();
+    return true;
+  }
+  return false;
 }
 
 bool PopulateItem(const base::Value& from, double* out, std::u16string* error) {
