@@ -16,17 +16,23 @@ SegmentationModelExecutor::SegmentationModelExecutor() = default;
 
 SegmentationModelExecutor::~SegmentationModelExecutor() = default;
 
-void SegmentationModelExecutor::Preprocess(
+absl::Status SegmentationModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const std::vector<float>& input) {
   // The model must have a single float input tensor, and the length of the
   // input data must match the length of the tensor.
-  DCHECK_EQ(1u, input_tensors.size());
-  DCHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
-  DCHECK_EQ(input_tensors[0]->bytes / sizeof(input_tensors[0]->type),
-            input.size());
+  if (input_tensors.size() != 1u)
+    return absl::InvalidArgumentError("input tensor size not 1");
+  if (kTfLiteFloat32 != input_tensors[0]->type)
+    return absl::InvalidArgumentError("input tensor type is not float");
+  if (input_tensors[0]->bytes / sizeof(input_tensors[0]->type) !=
+      input.size()) {
+    return absl::InvalidArgumentError(
+        "length of input data does not match length of tensor");
+  }
 
   tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
+  return absl::OkStatus();
 }
 
 float SegmentationModelExecutor::Postprocess(

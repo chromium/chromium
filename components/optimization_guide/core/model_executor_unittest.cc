@@ -24,9 +24,10 @@ class TestModelExecutor
   ~TestModelExecutor() override = default;
 
  protected:
-  void Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  const std::vector<float>& input) override {
+  absl::Status Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
+                          const std::vector<float>& input) override {
     tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
+    return absl::OkStatus();
   }
 
   std::vector<float> Postprocess(

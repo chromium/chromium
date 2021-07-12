@@ -37,8 +37,8 @@ class SegmentationModelExecutor
 
  protected:
   // optimization_guide::BaseModelExecutor overrides.
-  void Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  const std::vector<float>& input) override;
+  absl::Status Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
+                          const std::vector<float>& input) override;
   float Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 };

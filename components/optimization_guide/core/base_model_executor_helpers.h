@@ -17,8 +17,9 @@ template <class OutputType, class... InputTypes>
 class InferenceDelegate {
  public:
   // Preprocesses |args| into |input_tensors|.
-  virtual void Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                          InputTypes... args) = 0;
+  virtual absl::Status Preprocess(
+      const std::vector<TfLiteTensor*>& input_tensors,
+      InputTypes... args) = 0;
 
   // Postprocesses |output_tensors| into the desired |OutputType|.
   virtual OutputType Postprocess(
@@ -52,8 +53,7 @@ class GenericModelExecutionTask
   // BaseTaskApi:
   absl::Status Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                           InputTypes... args) override {
-    delegate_->Preprocess(input_tensors, args...);
-    return absl::OkStatus();
+    return delegate_->Preprocess(input_tensors, args...);
   }
   tflite::support::StatusOr<OutputType> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors,
