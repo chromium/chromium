@@ -69,7 +69,7 @@ declare_args() {
   # Chrome's clang. crbug.com/1033839
   use_thin_lto =
       is_cfi ||
-      (is_official_build &&
+      (is_official_build && chrome_pgo_phase != 1 &&
        (is_linux || is_win || (is_android && target_os != "chromeos") ||
         ((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device)))
 
