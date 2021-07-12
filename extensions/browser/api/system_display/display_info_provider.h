@@ -140,6 +140,8 @@ class DisplayInfoProvider : public display::DisplayObserver {
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
+
   DISALLOW_COPY_AND_ASSIGN(DisplayInfoProvider);
 };
 

@@ -133,15 +133,11 @@ void DisplayInfoProvider::GetDisplayLayout(
 }
 
 void DisplayInfoProvider::StartObserving() {
-  display::Screen* screen = display::Screen::GetScreen();
-  if (screen)
-    screen->AddObserver(this);
+  display_observer_.emplace(this);
 }
 
 void DisplayInfoProvider::StopObserving() {
-  display::Screen* screen = display::Screen::GetScreen();
-  if (screen)
-    screen->RemoveObserver(this);
+  display_observer_.reset();
 }
 
 bool DisplayInfoProvider::OverscanCalibrationStart(const std::string& id) {
