@@ -18,7 +18,6 @@
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/util/shared_queue.h"
 #include "components/reporting/util/status.h"
-#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
