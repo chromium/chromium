@@ -235,8 +235,10 @@ class CastActivityManagerTest : public testing::Test,
       const absl::optional<std::string>& error_message,
       media_router::RouteRequestResult::ResultCode result_code) {
     ASSERT_FALSE(route);
-    DLOG(ERROR) << error_message.value();
+    LaunchSessionFailed();
   }
+
+  MOCK_METHOD(void, LaunchSessionFailed, ());
 
   void CallLaunchSessionCommon(
       const std::string& app_id,
@@ -560,6 +562,18 @@ TEST_F(CastActivityManagerTest, LaunchSessionFails) {
   response.result = cast_channel::LaunchSessionResponse::Result::kError;
   std::move(launch_session_callback_).Run(std::move(response));
   RunUntilIdle();
+}
+
+TEST_F(CastActivityManagerTest, LaunchSessionFailsWhenSessionIsRemoved) {
+  CallLaunchSessionFailure();
+  manager_->OnSessionRemoved(sink_);
+
+  // The launch session callback should still be called even if the session was
+  // removed before receiving a response from the receiver.
+  EXPECT_CALL(*this, LaunchSessionFailed());
+  cast_channel::LaunchSessionResponse response;
+  response.result = cast_channel::LaunchSessionResponse::Result::kError;
+  std::move(launch_session_callback_).Run(std::move(response));
 }
 
 TEST_F(CastActivityManagerTest, LaunchAppSessionFailsWithAppParams) {

@@ -785,11 +785,14 @@ void CastActivityManager::HandleLaunchSessionResponse(
 
   auto activity_it = activities_.find(route_id);
   if (activity_it == activities_.end()) {
-    logger_->LogError(
-        mojom::LogCategory::kRoute, kLoggerComponent,
-        "LaunchSession Response of the route that no longer exists.", sink.id(),
-        cast_source.source_id(),
-        MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+    const std::string error_message =
+        "LaunchSession Response of the route that no longer exists.";
+    logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
+                      error_message, sink.id(), cast_source.source_id(),
+                      MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+    std::move(params.callback)
+        .Run(absl::nullopt, nullptr, error_message,
+             RouteRequestResult::ResultCode::ROUTE_NOT_FOUND);
     return;
   }
 
