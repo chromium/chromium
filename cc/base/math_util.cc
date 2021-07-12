@@ -818,21 +818,24 @@ gfx::Vector2dF MathUtil::ProjectVector(const gfx::Vector2dF& source,
 }
 
 bool MathUtil::FromValue(const base::Value* raw_value, gfx::Rect* out_rect) {
-  const base::ListValue* value = nullptr;
-  if (!raw_value->GetAsList(&value))
+  if (!raw_value->is_list())
     return false;
 
-  if (value->GetSize() != 4)
+  base::Value::ConstListView list_view = raw_value->GetList();
+
+  if (list_view.size() != 4)
     return false;
 
-  int x, y, w, h;
-  bool ok = true;
-  ok &= value->GetInteger(0, &x);
-  ok &= value->GetInteger(1, &y);
-  ok &= value->GetInteger(2, &w);
-  ok &= value->GetInteger(3, &h);
-  if (!ok)
-    return false;
+  for (const auto& val : list_view) {
+    if (!val.is_int()) {
+      return false;
+    }
+  }
+
+  int x = list_view[0].GetInt();
+  int y = list_view[1].GetInt();
+  int w = list_view[2].GetInt();
+  int h = list_view[3].GetInt();
 
   *out_rect = gfx::Rect(x, y, w, h);
   return true;
