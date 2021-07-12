@@ -38,10 +38,10 @@ following steps:
 
 Inputs:
 * GN target metadata
-* Other `.build_config` files
+* Other `.build_config.json` files
 
 Outputs:
-* Target-specific `.build_config` file
+* Target-specific `.build_config.json` file
 
 `write_build_config.py` is run to record target metadata needed by future steps.
 For more details, see [build_config.md](build_config.md).
@@ -50,7 +50,7 @@ For more details, see [build_config.md](build_config.md).
 ### 2. Prepares resources:
 
 Inputs:
-* Target-specific `.build_config` file
+* Target-specific `.build_config.json` file
 * Files listed as `sources`
 
 Outputs:
@@ -93,7 +93,7 @@ public final class R {
 ### 4. Finalizes apk resources:
 
 Inputs:
-* Target-specific `.build_config` file
+* Target-specific `.build_config.json` file
 * Dependencies' `R.txt` files
 * Dependencies' `resources.zip` files
 

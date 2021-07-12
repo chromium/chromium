@@ -341,13 +341,13 @@ def main(args):
     depfile_deps += secondary_native_libs
 
   if options.java_resources:
-    # Included via .build_config, so need to write it to depfile.
+    # Included via .build_config.json, so need to write it to depfile.
     depfile_deps.extend(options.java_resources)
 
   assets = _ExpandPaths(options.assets)
   uncompressed_assets = _ExpandPaths(options.uncompressed_assets)
 
-  # Included via .build_config, so need to write it to depfile.
+  # Included via .build_config.json, so need to write it to depfile.
   depfile_deps.extend(x[0] for x in assets)
   depfile_deps.extend(x[0] for x in uncompressed_assets)
   depfile_deps.append(options.resource_apk)

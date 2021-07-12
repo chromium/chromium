@@ -76,7 +76,7 @@ _java_library_patterns = [
   "//android_webview/glue:glue",
 ]
 
-# These identify all non-leaf targets that have .build_config files. This is the
+# These identify all non-leaf targets that have .build_config.json files. This is the
 # set of patterns that other targets can use to filter out java targets.
 java_target_patterns = _java_library_patterns + _java_resource_patterns
 
@@ -138,7 +138,7 @@ foreach(lib, _art_lib_file_names) {
 # the error message about why non-existent dependencies are there.
 build_config_target_suffix = "__build_config_crbug_908819"
 
-# Write the target's .build_config file. This is a json file that contains a
+# Write the target's .build_config.json file. This is a json file that contains a
 # dictionary of information about how to build this target (things that
 # require knowledge about this target's dependencies and cannot be calculated
 # at gn-time). There is a special syntax to add a value in that dictionary to
@@ -206,7 +206,7 @@ template("write_build_config") {
           deps += [ "$_dep_label$build_config_target_suffix" ]
           _dep_gen_dir = get_label_info(_possible_dep, "target_gen_dir")
           _dep_name = get_label_info(_possible_dep, "name")
-          _dep_config = "$_dep_gen_dir/$_dep_name.build_config"
+          _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
 
           _deps_configs += [ _dep_config ]
           if (defined(invoker.possible_config_public_deps)) {
@@ -289,7 +289,7 @@ template("write_build_config") {
         _dep_gen_dir = get_label_info(_processor_dep, "target_gen_dir")
         _dep_name = get_label_info(_processor_dep, "name")
         deps += [ "$_dep_label$build_config_target_suffix" ]
-        _processor_configs += [ "$_dep_gen_dir/$_dep_name.build_config" ]
+        _processor_configs += [ "$_dep_gen_dir/$_dep_name.build_config.json" ]
       }
       _rebased_processor_configs =
           rebase_path(_processor_configs, root_build_dir)
@@ -331,7 +331,7 @@ template("write_build_config") {
           get_label_info(invoker.apk_under_test, "target_gen_dir")
       apk_under_test_name = get_label_info(invoker.apk_under_test, "name")
       apk_under_test_config =
-          "$apk_under_test_gen_dir/$apk_under_test_name.build_config"
+          "$apk_under_test_gen_dir/$apk_under_test_name.build_config.json"
       args += [
         "--tested-apk-config",
         rebase_path(apk_under_test_config, root_build_dir),
@@ -560,8 +560,8 @@ template("write_build_config") {
         deps += [ "$_dep_label$build_config_target_suffix" ]
         _dep_gen_dir = get_label_info(_dep_name, "target_gen_dir")
         _dep_name = get_label_info(_dep_name, "name")
-        _config =
-            rebase_path("$_dep_gen_dir/$_dep_name.build_config", root_build_dir)
+        _config = rebase_path("$_dep_gen_dir/$_dep_name.build_config.json",
+                              root_build_dir)
         _dependent_configs += [ _config ]
       }
       args += [ "--static-library-dependent-configs=$_dependent_configs" ]
@@ -582,7 +582,7 @@ template("write_build_config") {
       _dep_gen_dir = get_label_info(_base_label, "target_gen_dir")
       _dep_name = get_label_info(_base_label, "name")
       deps += [ "$_base_label$build_config_target_suffix" ]
-      _base_module_build_config = "$_dep_gen_dir/$_dep_name.build_config"
+      _base_module_build_config = "$_dep_gen_dir/$_dep_name.build_config.json"
       inputs += [ _base_module_build_config ]
       args += [
         "--base-module-build-config",
@@ -783,7 +783,7 @@ template("test_runner_script") {
       deps += [ "${invoker.apk_target}$build_config_target_suffix" ]
       _apk_build_config =
           get_label_info(invoker.apk_target, "target_gen_dir") + "/" +
-          get_label_info(invoker.apk_target, "name") + ".build_config"
+          get_label_info(invoker.apk_target, "name") + ".build_config.json"
       _rebased_apk_build_config = rebase_path(_apk_build_config, root_build_dir)
       not_needed([ "_rebased_apk_build_config" ])
     } else if (_test_type == "gtest") {
@@ -832,7 +832,8 @@ template("test_runner_script") {
           deps += [ "${invoker.apk_under_test}$build_config_target_suffix" ]
           _apk_under_test_build_config =
               get_label_info(invoker.apk_under_test, "target_gen_dir") + "/" +
-              get_label_info(invoker.apk_under_test, "name") + ".build_config"
+              get_label_info(invoker.apk_under_test, "name") +
+              ".build_config.json"
           _rebased_apk_under_test_build_config =
               rebase_path(_apk_under_test_build_config, root_build_dir)
           _apk_under_test = "@WrappedPath(@FileArg($_rebased_apk_under_test_build_config:deps_info:incremental_apk_path))"
@@ -853,7 +854,7 @@ template("test_runner_script") {
         _build_config =
             get_label_info(invoker.use_webview_provider, "target_gen_dir") +
             "/" + get_label_info(invoker.use_webview_provider, "name") +
-            ".build_config"
+            ".build_config.json"
         _rebased_build_config = rebase_path(_build_config, root_build_dir)
         executable_args += [
           "--use-webview-provider",
@@ -884,7 +885,7 @@ template("test_runner_script") {
 
       deps += [ ":${invoker.test_suite}$build_config_target_suffix" ]
       _junit_binary_build_config =
-          "${target_gen_dir}/${invoker.test_suite}.build_config"
+          "${target_gen_dir}/${invoker.test_suite}.build_config.json"
 
       _rebased_robolectric_runtime_deps_dir =
           rebase_path("$root_build_dir/lib.java/third_party/robolectric",
@@ -918,8 +919,9 @@ template("test_runner_script") {
     if (defined(invoker.additional_apks)) {
       foreach(additional_apk, invoker.additional_apks) {
         deps += [ "$additional_apk$build_config_target_suffix" ]
-        _build_config = get_label_info(additional_apk, "target_gen_dir") + "/" +
-                        get_label_info(additional_apk, "name") + ".build_config"
+        _build_config =
+            get_label_info(additional_apk, "target_gen_dir") + "/" +
+            get_label_info(additional_apk, "name") + ".build_config.json"
         _rebased_build_config = rebase_path(_build_config, root_build_dir)
         executable_args += [
           "--additional-apk",
@@ -1366,7 +1368,7 @@ if (enable_java_templates) {
   #
   # Variables
   #   main_class: The class containing the program entry point.
-  #   build_config: Path to .build_config for the jar (contains classpath).
+  #   build_config: Path to .build_config.json for the jar (contains classpath).
   #   script_name: Name of the script to generate.
   #   wrapper_script_args: List of extra arguments to pass to the executable.
   #   tiered_stop_at_level_one: Whether to pass --tiered-stop-at-level-one
@@ -2029,7 +2031,7 @@ if (enable_java_templates) {
   # Input variables:
   #   deps: Specifies the input dependencies for this target.
   #
-  #   build_config: Path to the .build_config file corresponding to the target.
+  #   build_config: Path to the .build_config.json file corresponding to the target.
   #
   #   sources:
   #     List of input resource files.
@@ -2114,9 +2116,9 @@ if (enable_java_templates) {
   #
   #   deps: Specifies the input dependencies for this target.
   #
-  #   build_config: Path to the .build_config file corresponding to the target.
+  #   build_config: Path to the .build_config.json file corresponding to the target.
   #
-  #   build_config_dep: Dep target to generate the .build_config file.
+  #   build_config_dep: Dep target to generate the .build_config.json file.
   #
   #   android_manifest: Path to root manifest for the binary.
   #
@@ -2708,7 +2710,7 @@ if (enable_java_templates) {
   # Variables
   #   apk_name: (optional) APK name (without .apk suffix). If provided, will
   #       be used to generate .info files later used by the supersize tool.
-  #   assets_build_config: Path to android_apk .build_config containing merged
+  #   assets_build_config: Path to android_apk .build_config.json containing merged
   #       asset information.
   #   deps: Specifies the dependencies of this target.
   #   dex_path: Path to classes.dex file to include (optional).
@@ -2937,7 +2939,7 @@ if (enable_java_templates) {
   #  java_sources_file: Optional path to file containing list of Java source
   #    file paths. This must always be provided if java_files is not empty
   #    and must match it exactly.
-  #  build_config: Path to the .build_config file of the corresponding
+  #  build_config: Path to the .build_config.json file of the corresponding
   #    java_library_impl() target. The following entries will be used by this
   #    template: javac:srcjars, deps_info:javac_full_classpath,
   #    deps_info:javac_full_interface_classpath, javac:processor_classpath,
@@ -3118,7 +3120,8 @@ if (enable_java_templates) {
         _dep_gen_dir = get_label_info(_errorprone_dep, "target_gen_dir")
         _dep_name = get_label_info(_errorprone_dep, "name")
         _rebased_errorprone_buildconfig =
-            rebase_path("$_dep_gen_dir/$_dep_name.build_config", root_build_dir)
+            rebase_path("$_dep_gen_dir/$_dep_name.build_config.json",
+                        root_build_dir)
         args += [
           "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:host_classpath)",
           "--enable-errorprone",
@@ -3418,7 +3421,7 @@ if (enable_java_templates) {
 
     # Define build_config_deps which will be a list of targets required to
     # build the _build_config.
-    _build_config = "$target_gen_dir/$_main_target_name.build_config"
+    _build_config = "$target_gen_dir/$_main_target_name.build_config.json"
     _build_config_target_name =
         "${_main_target_name}$build_config_target_suffix"
 
@@ -3459,7 +3462,7 @@ if (enable_java_templates) {
 
       # For static libraries, the javac jar output is created at the intermediate
       # path so that it can be processed by another target and moved to the final
-      # spot that the .build_config knows about. Technically this should be done
+      # spot that the .build_config.json knows about. Technically this should be done
       # for the ijar as well, but this is only used for APK targets where
       # the ijar path isn't actually used.
       if (_has_sources) {
@@ -4103,7 +4106,7 @@ template("create_android_app_bundle_module") {
   #       by apkbuild.py --format=bundle-module. This means not using
   #       apksigner and zipalign as well, nor the keystore. Other
   #       dependencies like extra native libraries are all pulled from the
-  #       .build_config through @FileArg() references (see below) and
+  #       .build_config.json through @FileArg() references (see below) and
   #       will be listed in the generated depfile instead.
   _inputs = [
     invoker.build_config,
@@ -4249,7 +4252,7 @@ template("create_android_app_bundle_module") {
 #   feature_jars_args: Optional list of args to be passed to dexsplitter.py.
 #     If used should include the jars owned by each feature (in the same order
 #     as all_modules). Allows invoker to pull the list of jars from a different
-#     .build_config than the module's .build_config.
+#     .build_config.json than the module's .build_config.
 template("dexsplitter") {
   action_with_pydeps(target_name) {
     forward_variables_from(invoker, [ "deps" ])

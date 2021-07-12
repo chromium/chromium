@@ -48,14 +48,14 @@ dex file. Ex:
 "deps_info": {
   ...
   "static_library_dependent_classpath_configs": {
-      "gen/android_webview/trichrome_webview_apk.build_config": [
+      "gen/android_webview/trichrome_webview_apk.build_config.json": [
         "obj/android_webview/trichrome_webview_apk/trichrome_webview_apk.jar",
         ...
       ],
-      "gen/chrome/android/trichrome_chrome_bundle.build_config": [
+      "gen/chrome/android/trichrome_chrome_bundle.build_config.json": [
         "lib.java/chrome/android/app_hooks_java.jar",
         ...
-      "gen/chrome/android/trichrome_library_apk.build_config": [
+      "gen/chrome/android/trichrome_library_apk.build_config.json": [
         "lib.java/base/base_java.jar",
         ...
       ]
@@ -68,10 +68,10 @@ dex file. Ex:
 
 TrichromeChromeBundle (base module) and TrichromeWebview do not have a final
 `dex` or `proguard` step. Instead the library APK creates a "fat" dex from the
-`.build_config:deps_info:java_runtime_classpath`.
+`.build_config.json:deps_info:java_runtime_classpath`.
 
-Then, the mapping of `.build_config` -> owned input jars stored in the
-`.build_config` is used by `dexsplitter` to generate final .dex files for
+Then, the mapping of `.build_config.json` -> owned input jars stored in the
+`.build_config.json` is used by `dexsplitter` to generate final .dex files for
 TrichromeLibrary, TrichromeChrome, and TrichromeWebview.
 
 ### Resources

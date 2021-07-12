@@ -705,7 +705,7 @@ generate_product_config_srcjar("webview_product_config") {
 # ProductConfig.java is excluded from the generated .jar
 # (via. jar_excluded_patterns) and the final version is inserted at the APK
 # level - with the list of pak locales populated by looking at the assets that
-# are listed in the final APK's .build_config.
+# are listed in the final APK's .build_config.json.
 android_library("android_webview_product_config_java") {
   sources = [ "java/src/org/chromium/android_webview/AwLocaleConfig.java" ]
   srcjar_deps = [ ":webview_product_config" ]

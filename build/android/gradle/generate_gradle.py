@@ -160,7 +160,7 @@ class _ProjectEntry(object):
   @classmethod
   def FromBuildConfigPath(cls, path):
     prefix = 'gen/'
-    suffix = '.build_config'
+    suffix = '.build_config.json'
     assert path.startswith(prefix) and path.endswith(suffix), path
     subdir = path[len(prefix):-len(suffix)]
     gn_target = '//%s:%s' % (os.path.split(subdir))
@@ -195,9 +195,9 @@ class _ProjectEntry(object):
     return self.GradleSubdir().replace(os.path.sep, '.')
 
   def BuildConfig(self):
-    """Reads and returns the project's .build_config JSON."""
+    """Reads and returns the project's .build_config.json JSON."""
     if not self._build_config:
-      path = os.path.join('gen', self.GradleSubdir() + '.build_config')
+      path = os.path.join('gen', self.GradleSubdir() + '.build_config.json')
       with open(_RebasePath(path)) as jsonfile:
         self._build_config = json.load(jsonfile)
     return self._build_config

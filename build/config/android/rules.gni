@@ -297,7 +297,7 @@ if (enable_java_templates) {
   # about the format of the header file.
   #
   # Variables
-  #   targets: List of .build_config supported targets to provide java sources.
+  #   targets: List of .build_config.json supported targets to provide java sources.
   #   header_output: Path to the generated .h file (optional).
   #   sources_exclusions: List of .java files that should be skipped. (optional)
   #   namespace: Registration functions will be wrapped into this. (optional)
@@ -341,7 +341,7 @@ if (enable_java_templates) {
         _build_config =
             get_label_info("${_target}($default_toolchain)", "target_gen_dir") +
             "/" + get_label_info("${_target}($default_toolchain)", "name") +
-            ".build_config"
+            ".build_config.json"
         _rebased_build_config = rebase_path(_build_config, root_build_dir)
         inputs += [ _build_config ]
 
@@ -788,7 +788,7 @@ if (enable_java_templates) {
   #
   template("android_generated_resources") {
     forward_variables_from(invoker, [ "testonly" ])
-    _build_config = "$target_gen_dir/${target_name}.build_config"
+    _build_config = "$target_gen_dir/${target_name}.build_config.json"
     _rtxt_out_path = "$target_gen_dir/${target_name}.R.txt"
     write_build_config("$target_name$build_config_target_suffix") {
       forward_variables_from(invoker, [ "resource_overlay" ])
@@ -998,7 +998,7 @@ if (enable_java_templates) {
 
     _resources_zip = "$target_out_dir/$target_name.resources.zip"
     _r_text_out_path = _base_path + "_R.txt"
-    _build_config = _base_path + ".build_config"
+    _build_config = _base_path + ".build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
     _deps = []
@@ -1121,7 +1121,7 @@ if (enable_java_templates) {
   template("android_assets") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    _build_config = "$target_gen_dir/$target_name.build_config"
+    _build_config = "$target_gen_dir/$target_name.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
     write_build_config(_build_config_target_name) {
@@ -1183,7 +1183,7 @@ if (enable_java_templates) {
     write_build_config("$target_name$build_config_target_suffix") {
       forward_variables_from(invoker, _build_config_vars)
       type = "group"
-      build_config = "$target_gen_dir/${invoker.target_name}.build_config"
+      build_config = "$target_gen_dir/${invoker.target_name}.build_config.json"
       supports_android = true
       if (defined(invoker.deps)) {
         possible_config_deps = invoker.deps
@@ -1298,7 +1298,7 @@ if (enable_java_templates) {
     _test_runner_target_name = "${target_name}__test_runner_script"
     _main_class = "org.chromium.testing.local.JunitTestMain"
 
-    _build_config = "$target_gen_dir/$target_name.build_config"
+    _build_config = "$target_gen_dir/$target_name.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
     _deps = [
       "//testing/android/junit:junit_test_support",
@@ -1558,7 +1558,7 @@ if (enable_java_templates) {
     if (defined(invoker.override_build_config)) {
       _build_config = invoker.override_build_config
     } else {
-      _build_config = "$target_gen_dir/$target_name.build_config"
+      _build_config = "$target_gen_dir/$target_name.build_config.json"
       _build_config_target_name = "$target_name$build_config_target_suffix"
 
       write_build_config(_build_config_target_name) {
@@ -1648,7 +1648,7 @@ if (enable_java_templates) {
       _deps += invoker.deps
     }
 
-    _build_config = "$target_gen_dir/$target_name.build_config"
+    _build_config = "$target_gen_dir/$target_name.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
     write_build_config(_build_config_target_name) {
@@ -1737,7 +1737,7 @@ if (enable_java_templates) {
     _direct_deps_only =
         defined(invoker.direct_deps_only) && invoker.direct_deps_only
 
-    _build_config = "$target_gen_dir/$target_name.build_config"
+    _build_config = "$target_gen_dir/$target_name.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
     write_build_config(_build_config_target_name) {
@@ -2142,7 +2142,7 @@ if (enable_java_templates) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     assert(defined(invoker.android_manifest))
     _base_path = "$target_out_dir/$target_name/$target_name"
-    _build_config = "$target_gen_dir/$target_name.build_config"
+    _build_config = "$target_gen_dir/$target_name.build_config.json"
     _build_config_target = "$target_name$build_config_target_suffix"
 
     _min_sdk_version = default_min_sdk_version
@@ -2377,7 +2377,7 @@ if (enable_java_templates) {
 
     if (!_incremental_apk) {
       # Bundle modules don't build the dex here, but need to write this path
-      # to their .build_config file.
+      # to their .build_config.json file.
       if (_proguard_enabled) {
         _final_dex_path = "$_base_path.r8dex.jar"
       } else {
@@ -2413,7 +2413,7 @@ if (enable_java_templates) {
 
     if (_generate_buildconfig_java &&
         defined(invoker.product_version_resources_dep)) {
-      # Needs to be added as a .build_config dep to pick up resources.
+      # Needs to be added as a .build_config.json dep to pick up resources.
       _deps += [ invoker.product_version_resources_dep ]
     }
 
@@ -2849,7 +2849,7 @@ if (enable_java_templates) {
       uncompress_shared_libraries = _uncompress_shared_libraries
 
       if (defined(_allowlist_r_txt_path) && _is_bundle_module) {
-        # Used to write the file path to the target's .build_config only.
+        # Used to write the file path to the target's .build_config.json only.
         base_allowlist_rtxt_path = _allowlist_r_txt_path
       }
     }
@@ -2921,7 +2921,7 @@ if (enable_java_templates) {
         }
 
         if (_is_static_library_provider) {
-          # The list of input jars is already recorded in the .build_config, but
+          # The list of input jars is already recorded in the .build_config.json, but
           # we need to explicitly add the java deps here to ensure they're
           # available to be used as inputs to the dex step.
           foreach(_dep, invoker.static_library_dependent_targets) {
@@ -2962,7 +2962,7 @@ if (enable_java_templates) {
           _module_config_target = "${_apk_as_module}$build_config_target_suffix"
           _module_gen_dir = get_label_info(_apk_as_module, "target_gen_dir")
           _module_name = get_label_info(_apk_as_module, "name")
-          _module_config = "$_module_gen_dir/$_module_name.build_config"
+          _module_config = "$_module_gen_dir/$_module_name.build_config.json"
           _static_library_modules += [
             {
               name = _module_name
@@ -4545,7 +4545,7 @@ if (enable_java_templates) {
     _base_target_gen_dir =
         get_label_info(invoker.base_module_target, "target_gen_dir")
     _base_module_build_config =
-        "$_base_target_gen_dir/${_base_target_name}.build_config"
+        "$_base_target_gen_dir/${_base_target_name}.build_config.json"
     _base_module_build_config_target =
         "${invoker.base_module_target}$build_config_target_suffix"
     _rebased_base_module_build_config =
@@ -4604,7 +4604,7 @@ if (enable_java_templates) {
         _module_target_gen_dir =
             get_label_info(_module_target, "target_gen_dir")
         _module.build_config =
-            "$_module_target_gen_dir/${_module_target_name}.build_config"
+            "$_module_target_gen_dir/${_module_target_name}.build_config.json"
         _module.build_config_target =
             "$_module_target$build_config_target_suffix"
         _module.parent = "base"
@@ -4630,8 +4630,7 @@ if (enable_java_templates) {
           get_label_info(invoker.static_library_provider, "name")
       _static_library_gen_dir =
           get_label_info(invoker.static_library_provider, "target_gen_dir")
-      _lib_proxy_module.build_config =
-          "$_static_library_gen_dir/$_static_library_target_name.build_config"
+      _lib_proxy_module.build_config = "$_static_library_gen_dir/$_static_library_target_name.build_config.json"
       _lib_proxy_module.build_config_target =
           "${invoker.static_library_provider}$build_config_target_suffix"
     }
@@ -4682,7 +4681,7 @@ if (enable_java_templates) {
       deps = [ "${invoker.base_module_target}__compile_resources" ]
     }
 
-    _build_config = "$target_gen_dir/${_target_name}.build_config"
+    _build_config = "$target_gen_dir/${_target_name}.build_config.json"
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
     _build_config_target = "$_target_name$build_config_target_suffix"
     if (defined(invoker.proguard_android_sdk_dep)) {

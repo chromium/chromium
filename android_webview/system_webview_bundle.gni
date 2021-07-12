@@ -11,7 +11,7 @@ template("system_webview_bundle") {
   _base_target_gen_dir =
       get_label_info(invoker.base_module_target, "target_gen_dir")
   _base_module_build_config =
-      "$_base_target_gen_dir/${_base_target_name}.build_config"
+      "$_base_target_gen_dir/${_base_target_name}.build_config.json"
   _rebased_base_module_build_config =
       rebase_path(_base_module_build_config, root_build_dir)
   _base_module_version_code =
