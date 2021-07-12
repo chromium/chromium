@@ -13,6 +13,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
+using base::TimeDelta;
 using testing::_;
 using testing::Field;
 using testing::InSequence;
@@ -85,6 +86,14 @@ VideoFrame MakeVideoFrame() {
   auto frame = std::make_unique<BasicDesktopFrame>(size);
   auto stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
   frame->mutable_updated_region()->SetRect(webrtc::DesktopRect::MakeSize(size));
+  return WebrtcVideoFrameAdapter::CreateVideoFrame(std::move(frame),
+                                                   std::move(stats));
+}
+
+VideoFrame MakeEmptyVideoFrame() {
+  DesktopSize size(kInputFrameWidth, kInputFrameHeight);
+  auto frame = std::make_unique<BasicDesktopFrame>(size);
+  auto stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
   return WebrtcVideoFrameAdapter::CreateVideoFrame(std::move(frame),
                                                    std::move(stats));
 }
@@ -186,7 +195,8 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_{};
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::RunLoop run_loop_;
 
@@ -305,6 +315,41 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
   encoder->Encode(frame2, &frame_types);
   task_environment_.RunUntilIdle();
   encoder->Encode(frame3, &frame_types);
+  PostQuitAndRun();
+}
+
+TEST_F(WebrtcVideoEncoderWrapperTest, EmptyFrameDropped) {
+  EXPECT_CALL(callback_, OnEncodedImage(_, _)).WillOnce(Return(kResultOk));
+
+  auto frame1 = MakeVideoFrame();
+  auto frame2 = MakeEmptyVideoFrame();
+  auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
+  std::vector<VideoFrameType> frame_types;
+  frame_types.push_back(VideoFrameType::kVideoFrameKey);
+  encoder->Encode(frame1, &frame_types);
+
+  // Need to fast-forward a little bit, so the frame is not dropped
+  // because of the busy encoder.
+  task_environment_.FastForwardBy(TimeDelta::FromMilliseconds(500));
+  encoder->Encode(frame2, &frame_types);
+
+  PostQuitAndRun();
+}
+
+TEST_F(WebrtcVideoEncoderWrapperTest, EmptyFrameNotDroppedAfter2Seconds) {
+  EXPECT_CALL(callback_, OnEncodedImage(_, _))
+      .Times(2)
+      .WillRepeatedly(Return(kResultOk));
+
+  auto frame1 = MakeVideoFrame();
+  auto frame2 = MakeEmptyVideoFrame();
+  auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
+  std::vector<VideoFrameType> frame_types;
+  frame_types.push_back(VideoFrameType::kVideoFrameKey);
+  encoder->Encode(frame1, &frame_types);
+  task_environment_.FastForwardBy(TimeDelta::FromMilliseconds(2500));
+  encoder->Encode(frame2, &frame_types);
+
   PostQuitAndRun();
 }
 

@@ -166,24 +166,12 @@ bool WebrtcFrameSchedulerSimple::OnFrameCaptured(
     return false;
   }
 
-  if (frame->updated_region().is_empty()) {
-    // If we've captured an empty frame we still need to encode and send the
-    // previous frame when top-off is active or a key-frame was requested. But
-    // it makes sense only when we have a frame to send, i.e. there is nothing
-    // to send if first capture request failed.
-    // Also send previous frame if there haven't been any frame updates for a
-    // while, to keep the video stream alive. Otherwise, the client will
-    // think the video stream is frozen and will attempt to recover it by
-    // requesting a key-frame every few seconds, wasting network resources.
-    bool send_frame =
-        top_off_is_active_ || key_frame_request_ ||
-        (now - latest_frame_encode_start_time_ > kKeepAliveInterval);
-    if (!send_frame) {
-      frame_pending_ = false;
-      ScheduleNextFrame();
-      return false;
-    }
-  }
+  // TODO(crbug.com/1192865): Change this method's return type to void. There
+  // used to be some logic for dropping frames here, but this should never
+  // happen with the standard encoding pipeline - the encoder-wrapper needs
+  // to see all frames, including "empty" ones, in case the previous frame
+  // was dropped. The "return false" above can safely be changed to "return"
+  // because the only caller that passes in nullptr ignores the returned value.
 
   // Encoder uses frame duration to calculate portion of the target bitrate it
   // can use for this frame. Higher values normally will cause bigger encoded
@@ -232,6 +220,7 @@ bool WebrtcFrameSchedulerSimple::OnFrameCaptured(
 
   params_out->clear_active_map = !top_off_is_active_;
 
+  ScheduleNextFrame();
   return true;
 }
 

@@ -134,6 +134,11 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   RunningSamples updated_region_area_ GUARDED_BY_CONTEXT(sequence_checker_){
       kStatsWindow};
 
+  // Stores the time when the most recent frame was sent to the encoder. This is
+  // used to rate-limit the encoding and sending of empty frames.
+  base::TimeTicks latest_frame_encode_start_time_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // TaskRunner used for notifying |video_channel_state_observer_|.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 

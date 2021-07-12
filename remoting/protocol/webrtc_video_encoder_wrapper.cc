@@ -65,6 +65,13 @@ const int kBigFrameThresholdPixels = 300000;
 // encoded "big" frame may be too large to be delivered to the client quickly.
 const int kEstimatedBytesPerMegapixel = 100000;
 
+// Minimum interval between frames needed to keep the connection alive. The
+// client will request a key-frame if it does not receive any frames for a
+// 3-second period. This is effectively a minimum frame-rate, so the value
+// should not be too small, otherwise the client may waste CPU cycles on
+// processing and rendering lots of identical frames.
+constexpr base::TimeDelta kKeepAliveInterval = base::TimeDelta::FromSeconds(2);
+
 std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
   using EncodeResult = WebrtcVideoEncoder::EncodeResult;
 
@@ -166,16 +173,16 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
     const std::vector<webrtc::VideoFrameType>* frame_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto now = base::TimeTicks::Now();
+
   bool webrtc_dropped_frame = false;
   if (next_frame_id_ != frame.id()) {
     webrtc_dropped_frame = true;
-    VLOG(0) << "WebRTC dropped frame.";
     next_frame_id_ = frame.id();
   }
   next_frame_id_++;
 
   if (encode_pending_) {
-    LOG(WARNING) << "Encoder busy, dropping frame.";
     accumulated_update_rect_.Union(frame.update_rect());
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -206,7 +213,7 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
 
-  frame_stats_->encode_started_time = base::TimeTicks::Now();
+  frame_stats_->encode_started_time = now;
 
   auto desktop_frame = video_frame_adapter->TakeDesktopFrame();
 
@@ -244,6 +251,20 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
     // being sent to the encoder, so empty it here.
     accumulated_update_rect_.MakeEmptyUpdate();
   }
+
+  // Limit the encoding and sending of empty frames to |kKeepAliveInterval|.
+  // This is done to save on network bandwidth and CPU usage.
+  if (desktop_frame->updated_region().is_empty() && !top_off_active_ &&
+      (now - latest_frame_encode_start_time_ < kKeepAliveInterval)) {
+    // Drop the frame. There is no need to track the update-rect as the
+    // frame being dropped is empty.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebrtcVideoEncoderWrapper::NotifyFrameDropped,
+                       weak_factory_.GetWeakPtr()));
+    return WEBRTC_VIDEO_CODEC_OK;
+  }
+  latest_frame_encode_start_time_ = now;
 
   WebrtcVideoEncoder::FrameParams frame_params;
 
