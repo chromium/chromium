@@ -190,8 +190,7 @@ TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
   // 3           <separator>
   // 4           No tabs from other Devices
 
-  int num_items = model.GetItemCount();
-  EXPECT_EQ(5, num_items);
+  EXPECT_EQ(5, model.GetItemCount());
   EXPECT_FALSE(model.IsEnabledAt(2));
   EXPECT_FALSE(model.IsEnabledAt(4));
   EXPECT_EQ(0, model.enable_count());
@@ -235,8 +234,7 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
   // 4           <tab for http://foo/1>
   // 5           <separator>
   // 6           No tabs from other Devices
-  int num_items = model.GetItemCount();
-  EXPECT_EQ(7, num_items);
+  EXPECT_EQ(7, model.GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(0));
   model.ActivatedAt(0);
   EXPECT_TRUE(model.IsEnabledAt(1));
@@ -295,20 +293,23 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
   // 0           History
   // 1           <separator>
   // 2           Recently closed header
-  // 3           <group1>
-  // 4           <group2>
+  // 3           <group2> *Note: group2 is closed after group1 above, placing it above group1 here*
+  // 4           <group1>
   // 5           <separator>
   // 6           No tabs from other Devices
-  int num_items = model.GetItemCount();
-  EXPECT_EQ(7, num_items);
+  EXPECT_EQ(7, model.GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(0));
   model.ActivatedAt(0);
   EXPECT_TRUE(model.IsEnabledAt(1));
   EXPECT_FALSE(model.IsEnabledAt(2));
   EXPECT_TRUE(model.IsEnabledAt(3));
   EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model.GetTypeAt(3));
+  const ui::MenuModel* sub_menu_model_3 = model.GetSubmenuModelAt(3);
+  EXPECT_EQ(3, sub_menu_model_3->GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(4));
   EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model.GetTypeAt(4));
+  const ui::MenuModel* sub_menu_model_4 = model.GetSubmenuModelAt(4);
+  EXPECT_EQ(2, sub_menu_model_4->GetItemCount());
   model.ActivatedAt(3);
   model.ActivatedAt(4);
   EXPECT_FALSE(model.IsEnabledAt(6));
@@ -354,15 +355,26 @@ TEST_F(RecentTabsSubMenuModelTest,
   SessionService* session_service = new SessionService(profile());
   SessionServiceFactory::SetForTestProfile(profile(),
                                            base::WrapUnique(session_service));
-  SessionID tab_id = SessionID::FromSerializedValue(1);
-  SessionID window_id = SessionID::FromSerializedValue(2);
+  const SessionID tab_id_0 = SessionID::FromSerializedValue(1);
+  const SessionID tab_id_1 = SessionID::FromSerializedValue(2);
+  const SessionID window_id = SessionID::FromSerializedValue(3);
+  const tab_groups::TabGroupId tab_group_id =
+      tab_groups::TabGroupId::GenerateNew();
   session_service->SetWindowType(window_id, Browser::TYPE_NORMAL);
-  session_service->SetTabWindow(window_id, tab_id);
-  session_service->SetTabIndexInWindow(window_id, tab_id, 0);
+  session_service->SetTabWindow(window_id, tab_id_0);
+  session_service->SetTabWindow(window_id, tab_id_1);
+  session_service->SetTabIndexInWindow(window_id, tab_id_0, 0);
+  session_service->SetTabIndexInWindow(window_id, tab_id_1, 1);
   session_service->SetSelectedTabInWindow(window_id, 0);
+  session_service->SetTabGroup(window_id, tab_id_1,
+                               absl::make_optional(tab_group_id));
   session_service->UpdateTabNavigation(
-      window_id, tab_id,
+      window_id, tab_id_0,
       sessions::ContentTestHelper::CreateNavigation("http://wnd1/tab0",
+                                                    "title"));
+  session_service->UpdateTabNavigation(
+      window_id, tab_id_1,
+      sessions::ContentTestHelper::CreateNavigation("http://wnd1/tab1",
                                                     "title"));
   // Set this, otherwise previous session won't be loaded.
   profile()->set_last_session_exited_cleanly(false);
@@ -392,8 +404,7 @@ TEST_F(RecentTabsSubMenuModelTest,
   // 3           <separator>
   // 4           No tabs from other Devices
 
-  int num_items = model.GetItemCount();
-  EXPECT_EQ(5, num_items);
+  EXPECT_EQ(5, model.GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(0));
   EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR, model.GetTypeAt(1));
   EXPECT_FALSE(model.IsEnabledAt(2));
@@ -410,7 +421,9 @@ TEST_F(RecentTabsSubMenuModelTest,
   // 0           History
   // 1           <separator>
   // 2           Recently closed header
-  // 3           <window for the tab http://wnd1/tab0>
+  // 3           <window>
+  // 3.0           <tab for http://wnd1/tab0>
+  // 3.1           <group with tab http://wnd1/tab1>
   // 4           <tab for http://wnd0/tab1>
   // 5           <tab for http://wnd0/tab0>
   // 6           <separator>
@@ -418,8 +431,7 @@ TEST_F(RecentTabsSubMenuModelTest,
 
   EXPECT_TRUE(delegate.got_changes());
 
-  num_items = model.GetItemCount();
-  EXPECT_EQ(8, num_items);
+  EXPECT_EQ(8, model.GetItemCount());
 
   EXPECT_TRUE(model.IsEnabledAt(0));
   model.ActivatedAt(0);
@@ -428,6 +440,12 @@ TEST_F(RecentTabsSubMenuModelTest,
   EXPECT_FALSE(model.IsEnabledAt(2));
   EXPECT_TRUE(model.IsEnabledAt(3));
   EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model.GetTypeAt(3));
+  const ui::MenuModel* const window_sub_menu_model = model.GetSubmenuModelAt(3);
+  EXPECT_EQ(3, window_sub_menu_model->GetItemCount());
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, window_sub_menu_model->GetTypeAt(2));
+  const ui::MenuModel* const group_sub_menu_model =
+      window_sub_menu_model->GetSubmenuModelAt(2);
+  EXPECT_EQ(1, group_sub_menu_model->GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(4));
   EXPECT_TRUE(model.IsEnabledAt(5));
   model.ActivatedAt(3);
@@ -506,8 +524,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   // 11-12       <2 tabs of window 1 of session 2>
 
   TestRecentTabsSubMenuModel model(nullptr, browser());
-  int num_items = model.GetItemCount();
-  EXPECT_EQ(13, num_items);
+  EXPECT_EQ(13, model.GetItemCount());
   model.ActivatedAt(0);
   EXPECT_TRUE(model.IsEnabledAt(0));
   model.ActivatedAt(1);
@@ -708,8 +725,7 @@ TEST_F(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
   // 11          <the only tab of the only window of session 1>
 
   TestRecentTabsSubMenuModel model(nullptr, browser());
-  int num_items = model.GetItemCount();
-  EXPECT_EQ(12, num_items);
+  EXPECT_EQ(12, model.GetItemCount());
 
   std::vector<std::u16string> tab_titles =
       recent_tabs_builder.GetTabTitlesSortedByRecency();
@@ -745,8 +761,7 @@ TEST_F(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
   // 5-8         <4 most-recent tabs of session>
 
   TestRecentTabsSubMenuModel model(nullptr, browser());
-  int num_items = model.GetItemCount();
-  EXPECT_EQ(9, num_items);
+  EXPECT_EQ(9, model.GetItemCount());
 
   std::vector<std::u16string> tab_titles =
       recent_tabs_builder.GetTabTitlesSortedByRecency();
