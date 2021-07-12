@@ -219,7 +219,7 @@ public class AccessibilitySettingsTest {
 
         Instrumentation.ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(
-                        new IntentFilter(Intent.ACTION_MAIN), null, false);
+                        new IntentFilter(Intent.ACTION_MAIN), null, true);
 
         // First scroll to bottom of the page, then click.
         onView(ViewMatchers.isRoot()).perform(swipeUp());
