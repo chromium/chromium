@@ -1476,7 +1476,7 @@ void ExistingUserController::StartAutoLoginTimer() {
   if (data_snapshotd_manager && !data_snapshotd_manager->IsAutoLoginAllowed() &&
       data_snapshotd_manager->IsAutoLoginConfigured()) {
     data_snapshotd_manager->set_reset_autologin_callback(
-        base::BindOnce(&ExistingUserController::ResetAutoLoginTimer,
+        base::BindOnce(&ExistingUserController::StartAutoLoginTimer,
                        weak_factory_.GetWeakPtr()));
     return;
   }

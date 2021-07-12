@@ -292,6 +292,9 @@ class ArcDataSnapshotdManager final
 
   State state() const { return state_; }
 
+  base::OnceClosure& get_reset_autologin_callback_for_testing() {
+    return reset_autologin_callback_;
+  }
   void set_reset_autologin_callback(base::OnceClosure callback) {
     reset_autologin_callback_ = std::move(callback);
   }

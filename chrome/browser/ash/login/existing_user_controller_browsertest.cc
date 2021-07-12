@@ -782,6 +782,9 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   EXPECT_EQ(public_session_account_id_, auto_login_account_id());
   EXPECT_EQ(0, auto_login_delay());
   EXPECT_FALSE(auto_login_timer());
+  auto& reset_autologin_callback =
+      arc_data_snapshotd_manager()->get_reset_autologin_callback_for_testing();
+  EXPECT_FALSE(reset_autologin_callback.is_null());
 
   // Allow to launch public account session (MGS).
   arc_data_snapshotd_manager()->set_state_for_testing(
@@ -794,7 +797,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
                            public_session_account_id_);
   user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail());
   ExpectSuccessfulLogin(user_context);
-  existing_user_controller()->OnSigninScreenReady();
+
+  std::move(reset_autologin_callback).Run();
 
   // Start auto-login and wait for login tasks to complete.
   content::RunAllPendingInMessageLoop();
