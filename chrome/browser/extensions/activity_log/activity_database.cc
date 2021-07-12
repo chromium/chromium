@@ -39,7 +39,7 @@ static const int kSizeThresholdForFlush = 200;
 
 ActivityDatabase::ActivityDatabase(ActivityDatabase::Delegate* delegate)
     : delegate_(delegate),
-      db_({.exclusive_locking = false, .page_size = 4096, .cache_size = 32}),
+      db_({.exclusive_locking = true, .page_size = 4096, .cache_size = 32}),
       valid_db_(false),
       batch_mode_(true),
       already_closed_(false),
