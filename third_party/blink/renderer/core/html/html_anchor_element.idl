@@ -40,7 +40,7 @@
     [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionDestination;
     [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionReportTo;
     [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionExpiry;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute boolean registerAttributionSource;
+    [RuntimeEnabled=ConversionMeasurementEventSources, CEReactions,Reflect] attribute boolean registerAttributionSource;
     [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionSourcePriority;
 
     // obsolete members

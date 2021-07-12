@@ -73,12 +73,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(),
                          "document.featurePolicy.features().includes('"
                          "attribution-reporting')"));
-  EXPECT_EQ(true, EvalJs(shell(), "window.attributionReporting !== undefined"));
-  EXPECT_EQ(
-      true,
-      EvalJs(shell(),
-             "typeof window.attributionReporting.registerAttributionSource "
-             "=== 'function'"));
+  EXPECT_EQ(true, EvalJs(shell(), "window.attributionReporting === undefined"));
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
@@ -114,33 +109,6 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
   TestNavigationObserver observer(web_contents());
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
   observer.Wait();
-
-  ConversionManagerImpl* conversion_manager =
-      static_cast<StoragePartitionImpl*>(
-          web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
-          ->GetConversionManager();
-
-  base::RunLoop run_loop;
-
-  // Verify we have received and logged an impression for the origin trial.
-  conversion_manager->GetActiveImpressionsForWebUI(base::BindLambdaForTesting(
-      [&](std::vector<StorableImpression> impressions) -> void {
-        EXPECT_EQ(1u, impressions.size());
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
-                       OriginTrialEnabled_ImpressionRegisteredViaJS) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), GURL("https://example.test/impression_with_origin_trial.html")));
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-    window.attributionReporting.registerAttributionSource({
-      attributionSourceEventId: "1",
-      attributionDestination: "https://example.test.com/",
-    });)"));
 
   ConversionManagerImpl* conversion_manager =
       static_cast<StoragePartitionImpl*>(

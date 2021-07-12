@@ -456,6 +456,10 @@
       status: "experimental",
     },
     {
+      name: "ConversionMeasurementEventSources",
+      status: "test",
+    },
+    {
       name: "CookiesWithoutSameSiteMustBeSecure",
       status: "test",
     },

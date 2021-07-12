@@ -194,10 +194,13 @@ class ImpressionDeclarationBrowserTest : public ImpressionDisabledBrowserTest {
  public:
   ImpressionDeclarationBrowserTest() = default;
 
-  // Sets up the blink runtime feature for ConversionMeasurement.
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Sets up the blink runtime feature for ConversionMeasurement.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+
+    // Sets up support for event sources.
+    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 };
 
