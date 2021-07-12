@@ -37,6 +37,8 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_coordinator.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_delegate.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
@@ -61,6 +63,7 @@
 #endif
 
 @interface NewTabPageCoordinator () <BooleanObserver,
+                                     DiscoverFeedPreviewDelegate,
                                      NewTabPageCommands,
                                      NewTabPageContentDelegate,
                                      NewTabPageFeedDelegate,
@@ -133,6 +136,11 @@
 
 // The view controller representing the Discover feed.
 @property(nonatomic, weak) UIViewController* discoverFeedViewController;
+
+// The Coordinator to display previews for Discover feed websites. It also
+// handles the actions related to them.
+@property(nonatomic, strong)
+    DiscoverFeedPreviewCoordinator* discoverFeedPreviewCoordinator;
 
 @end
 
@@ -505,6 +513,24 @@
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   DCHECK(IsRefactoredNTP());
   [self updateDiscoverFeedVisibility];
+}
+
+#pragma mark - DiscoverFeedPreviewDelegate
+
+- (UIViewController*)discoverFeedPreviewWithURL:(const GURL)URL {
+  self.discoverFeedPreviewCoordinator =
+      [[DiscoverFeedPreviewCoordinator alloc] initWithBrowser:self.browser
+                                                          URL:URL];
+  [self.discoverFeedPreviewCoordinator start];
+  return
+      [self.discoverFeedPreviewCoordinator discoverFeedPreviewViewController];
+}
+
+- (void)didTapDiscoverFeedPreview {
+  DCHECK(self.discoverFeedPreviewCoordinator);
+  [self.discoverFeedPreviewCoordinator handlePreviewAction];
+  [self.discoverFeedPreviewCoordinator stop];
+  self.discoverFeedPreviewCoordinator = nil;
 }
 
 #pragma mark - OverscrollActionsControllerDelegate

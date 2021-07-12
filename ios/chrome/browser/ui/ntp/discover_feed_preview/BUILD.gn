@@ -6,6 +6,7 @@ source_set("discover_feed_preview") {
   sources = [
     "discover_feed_preview_coordinator.h",
     "discover_feed_preview_coordinator.mm",
+    "discover_feed_preview_delegate.h",
   ]
   deps = [
     ":discover_feed_preview_ui",
