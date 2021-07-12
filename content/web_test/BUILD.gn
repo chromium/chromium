@@ -275,22 +275,11 @@ static_library("web_test_renderer") {
     "renderer/web_test_spell_checker.h",
   ]
   deps = [
-    ":web_test_common",
-    "//base",
-    "//cc",
-    "//cc/paint",
     "//components/plugins/renderer",
     "//components/viz/common",
     "//components/web_cache/renderer",
     "//content/public/common",
-    "//content/public/renderer",  # For component builds.
-    "//content/renderer:for_content_tests",  # For non-component builds.
-    "//content/shell:content_shell_lib",
     "//content/test:test_support",
-    "//device/gamepad/public/cpp:shared_with_blink",
-    "//device/gamepad/public/mojom",
-    "//gin",
-    "//gpu",
     "//gpu/command_buffer/client:gles2_interface",
     "//media/capture",
     "//printing/buildflags",
@@ -298,22 +287,37 @@ static_library("web_test_renderer") {
     # TODO(crbug.com/1200443) Remove //printing/mojom requirement coming from
     # //third_party/blink/public:blink_headers.
     "//printing/mojom",
-    "//services/device/public/mojom",
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia:test_fonts",
-    "//third_party/blink/public:blink_headers",
-    "//third_party/blink/public:test_headers",
-    "//third_party/blink/renderer/core/web_test",
-    "//ui/accessibility:ax_base",
-    "//ui/base/dragdrop/mojom",
     "//ui/base/ime:ime_types",
-    "//ui/display",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
     "//ui/events/blink",
     "//ui/gfx",
     "//ui/gfx:test_support",
+  ]
+
+  public_deps = [
+    ":web_test_common",
+    "//base",
+    "//cc",
+    "//cc/paint",
+    "//content/public/renderer",  # For component builds.
+    "//content/renderer:for_content_tests",  # For non-component builds.
+    "//content/shell:content_shell_lib",
+    "//device/gamepad/public/cpp:shared_with_blink",
+    "//device/gamepad/public/mojom",
+    "//gin",
+    "//gpu",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/core/web_test",
+    "//ui/accessibility:ax_base",
+    "//ui/base/dragdrop/mojom",
+    "//ui/display",
     "//ui/gfx/geometry",
     "//url",
     "//v8",
