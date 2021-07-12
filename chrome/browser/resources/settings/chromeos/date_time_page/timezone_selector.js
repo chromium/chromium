@@ -6,7 +6,20 @@
  * @fileoverview 'timezone-selector' is the time zone selector dropdown.
  */
 
+import '../../settings_shared_css.js';
+
+import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
+
+import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'timezone-selector',
 
   behaviors: [PrefsBehavior],
@@ -108,7 +121,7 @@ Polymer({
     // Setting several preferences at once will trigger several
     // |maybeGetTimeZoneList_| calls, which we don't want.
     this.getTimeZonesRequestSent_ = true;
-    settings.TimeZoneBrowserProxyImpl.getInstance()
+    TimeZoneBrowserProxyImpl.getInstance()
         .getTimeZones()
         .then(timezones => {
           this.setTimeZoneList_(timezones);
