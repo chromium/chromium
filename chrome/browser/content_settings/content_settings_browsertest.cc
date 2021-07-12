@@ -1347,9 +1347,49 @@ class ContentSettingsWithPrerenderingBrowserTest : public ContentSettingsTest {
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
-// Flaky on all platforms, see https://crbug.com/1225428
+// Used to wait for a prerendering page to set a cookie.
+class PrerenderCookieObserver : public content::WebContentsObserver {
+ public:
+  explicit PrerenderCookieObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+  ~PrerenderCookieObserver() override = default;
+
+  void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
+                         const content::CookieAccessDetails& details) override {
+    bool is_in_primary_frame =
+        navigation_handle->GetParentFrame()
+            ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
+            : navigation_handle->IsInPrimaryMainFrame();
+    if (is_in_primary_frame) {
+      cookie_accessed_in_primary_page_ = true;
+    } else {
+      run_loop_.Quit();
+    }
+  }
+
+  void OnCookiesAccessed(content::RenderFrameHost* rfh,
+                         const content::CookieAccessDetails& details) override {
+    if (rfh->GetPage().IsPrimary()) {
+      cookie_accessed_in_primary_page_ = true;
+    } else {
+      run_loop_.Quit();
+    }
+  }
+
+  bool CookieAccessedByPrimaryPage() const {
+    return cookie_accessed_in_primary_page_;
+  }
+
+  // Waits for the prerendering page to set a cookie.
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  bool cookie_accessed_in_primary_page_ = false;
+  base::RunLoop run_loop_;
+};
+
 IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
-                       DISABLED_PrerenderingPageSetsCookie) {
+                       PrerenderingPageSetsCookie) {
   const GURL main_url = embedded_test_server()->GetURL("/empty.html");
   const GURL prerender_url =
       embedded_test_server()->GetURL("/set_cookie_header.html");
@@ -1360,22 +1400,28 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
       GetWebContents()->GetMainFrame());
   ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
 
-  CookieChangeObserver cookie_change_observer(GetWebContents());
-  prerender_test_helper().AddPrerenderAsync(prerender_url);
-  cookie_change_observer.Wait();
-  prerender_test_helper().WaitForPrerenderLoadCompletion(prerender_url);
-  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
-  content::RenderFrameHost* prerender_frame =
-      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
-  EXPECT_NE(prerender_frame, nullptr);
+  {
+    PrerenderCookieObserver cookie_observer(GetWebContents());
+    prerender_test_helper().AddPrerender(prerender_url);
+    int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+    content::RenderFrameHost* prerender_frame =
+        prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+    EXPECT_NE(prerender_frame, nullptr);
+    // Ensure notification for cookie access by prerendering page has been sent.
+    cookie_observer.Wait();
 
-  auto* prerender_pscs =
-      PageSpecificContentSettings::GetForFrame(prerender_frame);
-  EXPECT_TRUE(prerender_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
-  EXPECT_EQ(prerender_pscs->allowed_local_shared_objects().GetObjectCount(),
-            1u);
-  EXPECT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
-  EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 0u);
+    auto* prerender_pscs =
+        PageSpecificContentSettings::GetForFrame(prerender_frame);
+    EXPECT_TRUE(prerender_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+    EXPECT_EQ(prerender_pscs->allowed_local_shared_objects().GetObjectCount(),
+              1u);
+    // Between when the cookie was set by the prerendering page and now, the
+    // main page might have accessed the cookie (for instance, when sending a
+    // request for a favicon) - check for the appropriate value based on
+    // observed behavior.
+    EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(),
+              cookie_observer.CookieAccessedByPrimaryPage() ? 1u : 0u);
+  }
 
   prerender_test_helper().NavigatePrimaryPage(prerender_url);
 
@@ -1407,7 +1453,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
 
   content::TestNavigationManager navigation_manager(GetWebContents(),
                                                     iframe_url);
-  CookieChangeObserver cookie_observer(GetWebContents());
+  PrerenderCookieObserver cookie_observer(GetWebContents());
   EXPECT_TRUE(content::ExecJs(
       prerender_frame,
       content::JsReplace("const iframe = document.createElement('iframe');"
@@ -1424,6 +1470,10 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   EXPECT_TRUE(prerender_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
   EXPECT_EQ(prerender_pscs->allowed_local_shared_objects().GetObjectCount(),
             1u);
-  EXPECT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
-  EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 0u);
+  // Between when the cookie was set by the prerendering page and now, the
+  // main page might have accessed the cookie (for instance, when sending a
+  // request for a favicon) - check for the appropriate value based on observed
+  // behavior.
+  EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(),
+            cookie_observer.CookieAccessedByPrimaryPage() ? 1u : 0u);
 }
