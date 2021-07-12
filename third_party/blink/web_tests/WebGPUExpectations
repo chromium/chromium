@@ -289,6 +289,10 @@ crbug.com/tint/481 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,varia
 crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,ImageBitmap,* [ Skip ]
 crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:* [ Skip ]
 
+# Validation rules of index buffer OOB in DrawIndexed are changing, skipped until the CTS are fix to spec.
+crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,index_access:out_of_bounds:* [ Skip ]
+crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,index_access:out_of_bounds_zero_sized_index_buffer:* [ Skip ]
+
 ###
 ### Mac (Metal) specific
 ###
