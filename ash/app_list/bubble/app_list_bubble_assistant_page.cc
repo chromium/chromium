@@ -5,30 +5,42 @@
 #include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
 
 #include <memory>
-#include <utility>
 
+#include "ash/app_list/views/assistant/assistant_dialog_plate.h"
+#include "ash/app_list/views/assistant/assistant_main_stage.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/controls/label.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
 
 using views::BoxLayout;
 
 namespace ash {
 
-AppListBubbleAssistantPage::AppListBubbleAssistantPage() {
-  SetLayoutManager(
+AppListBubbleAssistantPage::AppListBubbleAssistantPage(
+    AssistantViewDelegate* delegate) {
+  auto* layout = SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // TODO(https://crbug.com/1204551): Sort out whether this view needs its own
-  // search box, or if it can use the one owned by the parent. The assistant
-  // page in the tablet launcher owns its own search box, but that may be a side
-  // effect of animations or the historical need to host assistant in a widget.
+  // TODO(crbug.com/1216098): Dark background support. The assistant answer
+  // cards currently assume they are placed within a white container.
+  SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
 
-  // TODO(https://crbug.com/1204551): Embed the assistant.
-  AddChildView(std::make_unique<views::Label>(u"Assistant"));
+  dialog_plate_ =
+      AddChildView(std::make_unique<AssistantDialogPlate>(delegate));
+  main_stage_ =
+      AddChildView(std::make_unique<AppListAssistantMainStage>(delegate));
+  layout->SetFlexForView(main_stage_, 1);
 }
 
 AppListBubbleAssistantPage::~AppListBubbleAssistantPage() = default;
+
+void AppListBubbleAssistantPage::RequestFocus() {
+  dialog_plate_->RequestFocus();
+}
 
 BEGIN_METADATA(AppListBubbleAssistantPage, views::View)
 END_METADATA

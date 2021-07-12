@@ -11,16 +11,31 @@
 
 namespace ash {
 
-// The assistant page for the app list bubble / clamshell launcher.
+class AppListAssistantMainStage;
+class AssistantDialogPlate;
+class AssistantViewDelegate;
+
+// The assistant page for the app list bubble / clamshell launcher. Similar to
+// AssistantMainView in the fullscreen launcher.
 class ASH_EXPORT AppListBubbleAssistantPage : public views::View {
  public:
   METADATA_HEADER(AppListBubbleAssistantPage);
 
-  AppListBubbleAssistantPage();
+  explicit AppListBubbleAssistantPage(AssistantViewDelegate* delegate);
   AppListBubbleAssistantPage(const AppListBubbleAssistantPage&) = delete;
   AppListBubbleAssistantPage& operator=(const AppListBubbleAssistantPage&) =
       delete;
   ~AppListBubbleAssistantPage() override;
+
+  // views::View:
+  void RequestFocus() override;
+
+ private:
+  // The text and microphone input area. Owned by views hierarchy.
+  AssistantDialogPlate* dialog_plate_;
+
+  // The query and response output area. Owned by views hierarchy.
+  AppListAssistantMainStage* main_stage_;
 };
 
 }  // namespace ash

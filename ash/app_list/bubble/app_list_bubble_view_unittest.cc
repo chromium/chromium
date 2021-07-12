@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/bubble/app_list_bubble_apps_page.h"
+#include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
 #include "ash/app_list/bubble/app_list_bubble_search_page.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/search/test_search_result.h"
@@ -84,6 +85,15 @@ gfx::Rect GetShelfBounds() {
       ->GetWindowBoundsInScreen();
 }
 
+// Simulates the Assistant being enabled.
+void SimulateAssistantEnabled() {
+  Shell::Get()
+      ->app_list_controller()
+      ->GetSearchModel()
+      ->search_box()
+      ->SetShowAssistantButton(true);
+}
+
 class AppListBubbleViewTest : public AshTestBase {
  public:
   AppListBubbleViewTest() {
@@ -115,6 +125,10 @@ class AppListBubbleViewTest : public AshTestBase {
 
   AppListBubbleSearchPage* GetSearchPage() {
     return GetAppListTestHelper()->GetBubbleSearchPage();
+  }
+
+  AppListBubbleAssistantPage* GetAssistantPage() {
+    return GetAppListTestHelper()->GetBubbleAssistantPage();
   }
 
   base::test::ScopedFeatureList scoped_features_;
@@ -174,13 +188,7 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {
 }
 
 TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
-  // Simulate assistant being enabled.
-  Shell::Get()
-      ->app_list_controller()
-      ->GetSearchModel()
-      ->search_box()
-      ->SetShowAssistantButton(true);
-
+  SimulateAssistantEnabled();
   ShowAppList();
 
   // By default the assistant button is visible.
@@ -192,6 +200,19 @@ TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
   PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(view->assistant_button()->GetVisible());
   EXPECT_TRUE(view->close_button()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
+  SimulateAssistantEnabled();
+  ShowAppList();
+
+  SearchBoxView* search_box = GetSearchBoxView();
+  ClickButton(search_box->assistant_button());
+
+  EXPECT_FALSE(search_box->GetVisible());
+  EXPECT_FALSE(GetAppsPage()->GetVisible());
+  EXPECT_FALSE(GetSearchPage()->GetVisible());
+  EXPECT_TRUE(GetAssistantPage()->GetVisible());
 }
 
 TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {

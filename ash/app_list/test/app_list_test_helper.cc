@@ -113,4 +113,10 @@ AppListBubbleSearchPage* AppListTestHelper::GetBubbleSearchPage() {
       ->search_page_;
 }
 
+AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test()
+      ->assistant_page_;
+}
+
 }  // namespace ash

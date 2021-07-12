@@ -24,6 +24,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/scroll_view.h"
@@ -41,9 +42,6 @@ constexpr int kDefaultWidth = 544;
 // Space between the AppListBubbleView and the top of the screen should be at
 // least this value plus the shelf height.
 constexpr int kExtraTopOfScreenSpacing = 16;
-
-// Insets for the bubble contents.
-constexpr gfx::Insets kContentMargins(16);
 
 gfx::Rect GetWorkAreaForBubble(aura::Window* root_window) {
   display::Display display =
@@ -109,7 +107,9 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
 
   // Match the system tray bubble radius.
   set_corner_radius(kUnifiedTrayCornerRadius);
-  set_margins(kContentMargins);
+
+  // Remove the default margins so the content fills the bubble.
+  set_margins(gfx::Insets());
 
   // TODO(https://crbug.com/1218229): Add background blur. See TrayBubbleView
   // and BubbleBorder.
@@ -137,8 +137,8 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
       view_delegate, search_box_view_));
   search_page_->SetVisible(false);
 
-  assistant_page_ =
-      AddChildView(std::make_unique<AppListBubbleAssistantPage>());
+  assistant_page_ = AddChildView(std::make_unique<AppListBubbleAssistantPage>(
+      view_delegate->GetAssistantViewDelegate()));
   assistant_page_->SetVisible(false);
 }
 
@@ -183,14 +183,24 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
 void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   DCHECK_EQ(sender, search_box_view_);
   // TODO(https://crbug.com/1204551): Animated transitions.
-  // TODO(https://crbug.com/1204551): Handle assistant view.
   const bool has_search = search_box_view_->HasSearch();
   apps_page_->SetVisible(!has_search);
   search_page_->SetVisible(has_search);
+  assistant_page_->SetVisible(false);
 
   // Ask the controller to start the search.
   std::u16string query = view_delegate_->GetSearchModel()->search_box()->text();
   view_delegate_->StartSearch(query);
+}
+
+void AppListBubbleView::AssistantButtonPressed() {
+  // The assistant has its own text input field.
+  search_box_view_->SetVisible(false);
+
+  apps_page_->SetVisible(false);
+  search_page_->SetVisible(false);
+  assistant_page_->SetVisible(true);
+  assistant_page_->RequestFocus();
 }
 
 void AppListBubbleView::CloseButtonPressed() {

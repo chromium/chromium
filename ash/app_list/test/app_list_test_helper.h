@@ -13,6 +13,7 @@
 namespace ash {
 
 class AppListBubbleAppsPage;
+class AppListBubbleAssistantPage;
 class AppListBubbleSearchPage;
 class AppListControllerImpl;
 class AppListView;
@@ -76,6 +77,7 @@ class AppListTestHelper {
   RecentAppsView* GetBubbleRecentAppsView();
   ScrollableAppsGridView* GetScrollableAppsGridView();
   AppListBubbleSearchPage* GetBubbleSearchPage();
+  AppListBubbleAssistantPage* GetBubbleAssistantPage();
 
   TestAppListClient* app_list_client() { return app_list_client_.get(); }
 
