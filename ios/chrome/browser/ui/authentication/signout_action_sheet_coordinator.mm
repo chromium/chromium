@@ -139,15 +139,15 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
-                  if (weakSelf) {
+                  if (weakSelf)
                     weakSelf.completion(NO);
-                  }
                 }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
 }
 
 - (void)stop {
+  [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
 }
 

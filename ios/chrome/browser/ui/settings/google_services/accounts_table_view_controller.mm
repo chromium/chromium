@@ -458,11 +458,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
                       "-stopBrowserStateServiceObservers";
 
   [self reloadData];
-  if (![self authService]->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-      self.dismissAccountDetailsViewControllerBlock) {
-    self.dismissAccountDetailsViewControllerBlock(/*animated=*/YES);
-    self.dismissAccountDetailsViewControllerBlock = nil;
-  }
   // Only attempt to pop the top-most view controller once the account list
   // has been dismissed.
   [self popViewIfSignedOut];
@@ -602,11 +597,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
                             view:itemView];
   __weak AccountsTableViewController* weakSelf = self;
   self.signoutCoordinator.completion = ^(BOOL success) {
+    [weakSelf.signoutCoordinator stop];
+    weakSelf.signoutCoordinator = nil;
     if (success) {
       [weakSelf handleAuthenticationOperationDidFinish];
     }
-    [weakSelf.signoutCoordinator stop];
-    weakSelf.signoutCoordinator = nil;
   };
   self.signoutCoordinator.delegate = self;
   [self.signoutCoordinator start];
@@ -737,23 +732,44 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
   _isBeingDismissed = YES;
+  __weak __typeof(self) weakSelf = self;
   void (^popAccountsTableViewController)() = ^() {
     [base::mac::ObjCCastStrict<SettingsNavigationController>(
-        self.navigationController)
+        weakSelf.navigationController)
         popViewControllerOrCloseSettingsAnimated:YES];
   };
-  if (self.presentedViewController) {
+  if (self.dismissAccountDetailsViewControllerBlock) {
+    DCHECK(self.presentedViewController);
+    DCHECK(!self.alertCoordinator);
+    DCHECK(!self.removeAccountCoordinator);
+    DCHECK(!self.signoutCoordinator);
+    // TODO(crbug.com/1221066): Need to add a completion block in
+    // |dismissAccountDetailsViewControllerBlock| callback, to trigger
+    // |popAccountsTableViewController()|.
+    // Once we have a completion block, we can set |animated| to YES.
+    self.dismissAccountDetailsViewControllerBlock(/*animated=*/NO);
+    self.dismissAccountDetailsViewControllerBlock = nil;
+    popAccountsTableViewController();
+  } else if (self.alertCoordinator || self.removeAccountCoordinator ||
+             self.signoutCoordinator) {
+    DCHECK(self.presentedViewController);
     // If |self| is presenting a view controller (like |self.alertCoordinator|,
-    // |_removeAccountCoordinator| or the account detail view controller, it
-    // has to be dismissed before |self| can be poped from the navigation
-    // controller.
+    // |self.removeAccountCoordinator|, it has to be dismissed before |self| can
+    // be poped from the navigation controller.
     // This issue can be easily reproduced with EG tests, but not with Chrome
     // app itself.
     [self dismissViewControllerAnimated:NO
                              completion:^{
+                               [weakSelf.alertCoordinator stop];
+                               weakSelf.alertCoordinator = nil;
+                               [weakSelf.removeAccountCoordinator stop];
+                               weakSelf.removeAccountCoordinator = nil;
+                               [weakSelf.signoutCoordinator stop];
+                               weakSelf.signoutCoordinator = nil;
                                popAccountsTableViewController();
                              }];
   } else {
+    DCHECK(!self.presentedViewController);
     // Pops |self|.
     popAccountsTableViewController();
   }

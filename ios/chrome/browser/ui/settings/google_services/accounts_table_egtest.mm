@@ -139,6 +139,29 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
       performAction:grey_tap()];
 }
 
+// Opens the MyGoogleUI for the primary account, and then the primary account
+// is removed while MyGoogle UI is still opened.
+- (void)testRemoveAccountWithMyGoogleUIOpened {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+
+  // Sign In |fakeIdentity|, then open the Account Settings.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Open MyGoogleUI.
+  [SigninEarlGreyUI openMyGoogleDialogWithFakeIdentity:fakeIdentity];
+
+  // Forget Identity.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+
+  // Close settings.
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
 // Tests opening the remove identity confirmation dialog once, and cancel the
 // dialog. Then we open the remove identity confirmation dialog to remove the
 // identity. And finally the remove identity confirmation dialog is opened a
