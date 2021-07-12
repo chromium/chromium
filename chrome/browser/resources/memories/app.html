@@ -35,7 +35,7 @@
     <div id="title">[[title_]]</div>
   </div>
   <div id="clusters" on-remove-visits="onRemoveVisits_"
-      on-remove-empty-cluster-element="onRemoveEmptyClusterElement_">
+      on-cluster-changed-or-removed="onClusterChangedOrRemoved_">
     <template is="dom-repeat" items="[[result_.clusters]]">
       <history-cluster cluster="[[item]]"></history-cluster>
     </template>

@@ -93,7 +93,7 @@ class ClusterCardElement extends PolymerElement {
   /**
    * Called with the original remove params when the last accepted request to
    * browser to remove visits succeeds. Since the same visit may appear in
-   * multiple Clusters, all clusters receive this callback in order to get a
+   * multiple Clusters, all Clusters receive this callback in order to get a
    * chance to remove their matching visits.
    * @param {!Array<!URLVisit>} removedVisits
    * @private
@@ -125,10 +125,11 @@ class ClusterCardElement extends PolymerElement {
       });
     });
 
-    // If no more visits are left in the Cluster, notify the enclosing
-    // <clusters-app> to remove this Cluster element from the page.
+    // Depending on the selected option, removing a top visit results in the
+    // Cluster to either be removed or restructured. Notify the enclosing
+    // <clusters-app> to refresh the list of displayed Clusters.
     if (this.cluster.visits.length === 0) {
-      this.dispatchEvent(new CustomEvent('remove-empty-cluster-element', {
+      this.dispatchEvent(new CustomEvent('cluster-changed-or-removed', {
         bubbles: true,
         composed: true,
         detail: this.cluster.id,

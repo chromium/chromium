@@ -123,24 +123,35 @@ class HistoryClustersAppElement extends PolymerElement {
   // Event handlers
   //============================================================================
 
-  /**
-   * @private
-   */
+  /** @private */
   onCancelButtonClick_() {
     this.visitsToBeRemoved_ = [];
     this.$.confirmationDialog.get().close();
   }
 
   /**
+   * @param {CustomEvent<bigint>} event Event received when a cluster should be
+   *     removed or restructures due to all its visits or its top visit having
+   *     been removed. Contains the id of the Cluster in question.
    * @private
    */
+  onClusterChangedOrRemoved_(event) {
+    // Request up to as many of the freshest clusters as currently shown until
+    // now.
+    this.onBrowserIdle_().then(() => {
+      this.queryClusters_({
+        query: this.query_.trim(),
+        maxCount: this.result_.clusters.length,
+      });
+    });
+  }
+
+  /** @private */
   onConfirmationDialogCancel_() {
     this.visitsToBeRemoved_ = [];
   }
 
-  /**
-   * @private
-   */
+  /** @private */
   onRemoveButtonClick_() {
     this.pageHandler_.removeVisits(this.visitsToBeRemoved_)
         .then(({accepted}) => {
@@ -149,21 +160,6 @@ class HistoryClustersAppElement extends PolymerElement {
           }
         });
     this.$.confirmationDialog.get().close();
-  }
-
-  /**
-   * @param {CustomEvent<bigint>} event Event received from an empty
-   *     Cluster whose visits have been removed entirely and it should also be
-   *     removed from the page. Contains the id of the Cluster to be removed.
-   * @private
-   */
-  onRemoveEmptyClusterElement_(event) {
-    const index = this.result_.clusters.findIndex((cluster) => {
-      return cluster.id === event.detail;
-    });
-    if (index > -1) {
-      this.splice('result_.clusters', index, 1);
-    }
   }
 
   /**
@@ -249,7 +245,7 @@ class HistoryClustersAppElement extends PolymerElement {
   onClustersQueryResult_(result) {
     if (result.isContinuation) {
       // Do not replace the existing result. `result` contains a partial set of
-      // clusters that should be appended to the existing ones.
+      // Clusters that should be appended to the existing ones.
       this.push('result_.clusters', ...result.clusters);
       this.result_.continuationMaxTime = result.continuationMaxTime;
     } else {

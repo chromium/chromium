@@ -29,8 +29,8 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
       {"actionMenuDescription", IDS_HISTORY_ACTION_MENU_DESCRIPTION},
       {"cancel", IDS_CANCEL},
       {"remove", IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON},
-      {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
       {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
+      {"removeSelfFromHistory", IDS_HISTORY_REMOVE_PAGE},
       {"removeWarning", IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING},
       {"title", IDS_MEMORIES_PAGE_TITLE},
   };

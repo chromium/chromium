@@ -60,7 +60,7 @@ class TopVisitElement extends PolymerElement {
        */
       hiddenRelatedVisits_: {
         type: Object,
-        computed: `computeHiddenRelatedVisits_(visit)`,
+        computed: `computeHiddenRelatedVisits_(visit.*)`,
       },
 
       /** @private {string} */
@@ -75,7 +75,7 @@ class TopVisitElement extends PolymerElement {
        */
       visibleRelatedVisits_: {
         type: Object,
-        computed: `computeVisibleRelatedVisits_(visit)`,
+        computed: `computeVisibleRelatedVisits_(visit.*)`,
       },
     };
   }

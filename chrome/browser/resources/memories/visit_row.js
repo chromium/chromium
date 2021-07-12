@@ -74,23 +74,13 @@ class VisitRowElement extends PolymerElement {
       },
 
       /**
-       * Whether the visit is to the search results page.
+       * Whether the visit has related visits, regardless of initial visibility.
        * @private {boolean}
        */
-      isSearchResultsPage_: {
+      hasRelatedVisits_: {
         type: Boolean,
         value: false,
-        computed: 'computeIsSearchResultsPage_(visit)',
-      },
-
-      /**
-       * Title of the action menu button to remove this visit and its related
-       * visits, if applicable.
-       * @private {string}
-       */
-      removeButtonTitle_: {
-        type: String,
-        computed: 'computeRemoveButtonTitle_(visit)',
+        computed: 'computeHasRelatedVisits_(visit.*)',
       },
     };
   }
@@ -111,16 +101,13 @@ class VisitRowElement extends PolymerElement {
     }
 
     this.$.actionMenu.get().showAt(this.$.actionMenuButton);
-
-    // Prevent the enclosing <cr-expand-button> from receiving this event.
-    event.stopPropagation();
   }
 
   /**
    * @param {!MouseEvent} event
    * @private
    */
-  onRemoveButtonClick_(event) {
+  onRemoveAllButtonClick_(event) {
     // Only handle main (usually the left) and auxiliary (usually the wheel or
     // the middle) button presses.
     if (event.button > 1) {
@@ -134,9 +121,26 @@ class VisitRowElement extends PolymerElement {
     }));
 
     this.$.actionMenu.get().close();
+  }
 
-    // Prevent the enclosing <cr-expand-button> from receiving this event.
-    event.stopPropagation();
+  /**
+   * @param {!MouseEvent} event
+   * @private
+   */
+  onRemoveSelfButtonClick_(event) {
+    // Only handle main (usually the left) and auxiliary (usually the wheel or
+    // the middle) button presses.
+    if (event.button > 1) {
+      return;
+    }
+
+    this.dispatchEvent(new CustomEvent('remove-visits', {
+      bubbles: true,
+      composed: true,
+      detail: [this.visit],
+    }));
+
+    this.$.actionMenu.get().close();
   }
 
   //============================================================================
@@ -151,18 +155,6 @@ class VisitRowElement extends PolymerElement {
         .map(id => loadTimeData.getString(id));
   }
 
-  /** @private */
-  computeIsSearchResultsPage_() {
-    return this.visit.annotations.includes(Annotation.kSearchResultsPage);
-  }
-
-  /** @private */
-  computeRemoveButtonTitle_() {
-    return loadTimeData.getString(
-        this.visit.relatedVisits.length > 0 ? 'removeAllFromHistory' :
-                                              'removeFromHistory');
-  }
-
   /**
    * @param {!Url} url
    * @return {string} The domain name of the URL without the leading 'www.'.
@@ -170,6 +162,16 @@ class VisitRowElement extends PolymerElement {
    */
   getHostnameFromUrl_(url) {
     return getHostnameFromUrl(url);
+  }
+
+  /** @private */
+  computeHasRelatedVisits_() {
+    return this.visit.relatedVisits
+               .filter(visit => {
+                 // "Ghost" visits with scores of 0 (or below) are never shown.
+                 return visit.score > 0;
+               })
+               .length > 0;
   }
 }
 
