@@ -288,7 +288,7 @@ TEST_F(ZipReaderTest, current_entry_info_RegularFile) {
 
   // The expected time stamp: 2009-05-29 06:22:20
   base::Time::Exploded exploded = {};  // Zero-clear.
-  current_entry_info->last_modified().LocalExplode(&exploded);
+  current_entry_info->last_modified().UTCExplode(&exploded);
   EXPECT_EQ(2009, exploded.year);
   EXPECT_EQ(5, exploded.month);
   EXPECT_EQ(29, exploded.day_of_month);
@@ -357,7 +357,7 @@ TEST_F(ZipReaderTest, current_entry_info_Directory) {
 
   // The expected time stamp: 2009-05-31 15:49:52
   base::Time::Exploded exploded = {};  // Zero-clear.
-  current_entry_info->last_modified().LocalExplode(&exploded);
+  current_entry_info->last_modified().UTCExplode(&exploded);
   EXPECT_EQ(2009, exploded.year);
   EXPECT_EQ(5, exploded.month);
   EXPECT_EQ(31, exploded.day_of_month);

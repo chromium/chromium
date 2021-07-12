@@ -297,11 +297,11 @@ class ZipTest : public PlatformTest {
     // supports, which is 2 seconds. Note that between this call to Time::Now()
     // and zip::Zip() the clock can advance a bit, hence the use of EXPECT_GE.
     base::Time::Exploded now_parts;
-    base::Time::Now().LocalExplode(&now_parts);
+    base::Time::Now().UTCExplode(&now_parts);
     now_parts.second = now_parts.second & ~1;
     now_parts.millisecond = 0;
     base::Time now_time;
-    EXPECT_TRUE(base::Time::FromLocalExploded(now_parts, &now_time));
+    EXPECT_TRUE(base::Time::FromUTCExploded(now_parts, &now_time));
 
     EXPECT_EQ(1, base::WriteFile(src_file, "1", 1));
     EXPECT_TRUE(base::TouchFile(src_file, base::Time::Now(), test_mtime));
