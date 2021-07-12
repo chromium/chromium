@@ -186,6 +186,10 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
                                                     : ash::AppType::BROWSER));
 
   full_restore::ModifyWidgetParams(restore_id, &params);
+  // Override session restore bounds with Full Restore bounds if they exist.
+  if (!params.bounds.IsEmpty())
+    browser->set_override_bounds(params.bounds);
+
   return params;
 }
 

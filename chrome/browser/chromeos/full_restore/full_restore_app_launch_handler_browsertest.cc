@@ -27,6 +27,7 @@
 #include "chrome/browser/chromeos/full_restore/arc_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
@@ -99,7 +100,7 @@ constexpr char kTestAppActivity2[] = "test.arc.app.package.activity2";
 // Test values for a test WindowInfo object.
 constexpr int kActivationIndex = 2;
 constexpr int kDeskId = 2;
-constexpr gfx::Rect kCurrentBounds(200, 200);
+constexpr gfx::Rect kCurrentBounds(500, 200);
 constexpr chromeos::WindowStateType kWindowStateType =
     chromeos::WindowStateType::kPrimarySnapped;
 
@@ -694,6 +695,64 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   EXPECT_EQ(kDeskId, *stored_window_info->desk_id);
   EXPECT_EQ(kCurrentBounds, *stored_window_info->current_bounds);
   EXPECT_EQ(kWindowStateType, *stored_window_info->window_state_type);
+}
+
+// The PRE phase of the FullRestoreOverridesSessionRestoreTest. Creates a
+// browser and turns on session restore.
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       PRE_FullRestoreOverridesSessionRestoreTest) {
+  // Create a browser and create a tab for it. Its bounds should not equal
+  // |kCurrentBounds|.
+  Browser* browser = Browser::Create(Browser::CreateParams(profile(), true));
+  AddBlankTabAndShow(browser);
+  aura::Window* window = browser->window()->GetNativeWindow();
+  ASSERT_NE(kCurrentBounds, window->bounds());
+
+  // Ensure that |browser| is in a normal show state.
+  auto* window_state = ash::WindowState::Get(window);
+  window_state->Restore();
+  ASSERT_TRUE(window_state->IsNormalStateType());
+
+  // Turn on session restore.
+  SessionStartupPref::SetStartupPref(
+      profile(), SessionStartupPref(SessionStartupPref::LAST));
+}
+
+// Tests that Full Restore data overrides the browser's session restore data.
+// Session restore is turned on in the PRE phase of the test, simulating a user
+// logging out and back in.
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       FullRestoreOverridesSessionRestoreTest) {
+  constexpr int kRestoreId = 1;
+  auto* browser_list = BrowserList::GetInstance();
+  size_t count = browser_list->size();
+  ASSERT_EQ(0u, count);
+
+  // Create Full Restore launch data before launching any browser, simulating
+  // Full Restore data being saved prior to restart.
+  ::full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+                                extension_misc::kChromeAppId, kRestoreId));
+  CreateAndSaveWindowInfo(kDeskId, kCurrentBounds,
+                          chromeos::WindowStateType::kNormal,
+                          ui::SHOW_STATE_DEFAULT, kRestoreId);
+  WaitForAppLaunchInfoSaved();
+
+  // Launch the browser.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->SetShouldRestore();
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_EQ(count + 1u, browser_list->size());
+  ASSERT_EQ(1u, browser_list->size());
+
+  // The restored browser's bounds should be the bounds saved by Full Restore,
+  // i.e. |kCurrentBounds|.
+  const gfx::Rect& browser_bounds =
+      browser_list->get(0u)->window()->GetNativeWindow()->bounds();
+  EXPECT_EQ(kCurrentBounds, browser_bounds);
 }
 
 class FullRestoreAppLaunchHandlerChromeAppBrowserTest
