@@ -106,15 +106,6 @@ export class Photo extends ModeBase {
   }
 
   /**
-   * @return {boolean}
-   */
-  supportPTZ_() {
-    const {pan, tilt, zoom} =
-        this.stream_.getVideoTracks()[0].getCapabilities();
-    return pan !== undefined || tilt !== undefined || zoom !== undefined;
-  }
-
-  /**
    * @override
    */
   async start_() {
@@ -155,7 +146,7 @@ export class Photo extends ModeBase {
    * @return {!Promise<!Blob>}
    */
   async takePhoto_() {
-    if (this.supportPTZ_()) {
+    if (state.get(state.State.ENABLE_PTZ)) {
       // Workaround for b/184089334 on PTZ camera to use preview frame as
       // photo result.
       return this.handler_.getPreviewFrame();
