@@ -86,6 +86,12 @@ struct FormFieldData {
   // Must not be leaked to renderer process. See FieldGlobalId for details.
   FieldGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
 
+  // An identifier of the renderer form that contained this field.
+  // This may be from the browser form that contains this field in the case of a
+  // frame-transcending form. See ContentAutofillRouter for details on the
+  // distinction between renderer and browser forms.
+  FormGlobalId renderer_form_id() const { return {host_frame, host_form_id}; }
+
   // Returns true if both fields are identical, ignoring value- and
   // parsing related members.
   // See also SimilarFieldAs(), DynamicallySameFieldAs().

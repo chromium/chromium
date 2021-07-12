@@ -2564,7 +2564,13 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                           base::NumberToString(
                               HashFormSignature(form.form_signature()))});
   buffer << "\n Form name: " << form.form_name();
-  buffer << "\n Unique id: " << form.global_id();
+  buffer << "\n Identifiers: "
+         << base::StrCat(
+                {"renderer id: ",
+                 base::NumberToString(form.global_id().renderer_id.value()),
+                 ", host frame: ", form.global_id().frame_token.ToString(),
+                 " (", url::Origin::Create(form.source_url()).Serialize(),
+                 ")"});
   buffer << "\n Target URL:" << form.target_url();
   for (size_t i = 0; i < form.field_count(); ++i) {
     buffer << "\n Field " << i << ": ";
@@ -2573,9 +2579,9 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
            << base::StrCat(
                   {"renderer id: ",
                    base::NumberToString(field->unique_renderer_id.value()),
-                   ", host frame: ", form.global_id().frame_token.ToString(),
-                   " - ", field->origin.Serialize(),
-                   ", host form renderer id: ",
+                   ", host frame: ",
+                   field->renderer_form_id().frame_token.ToString(), " (",
+                   field->origin.Serialize(), "), host form renderer id: ",
                    base::NumberToString(field->host_form_id.value())});
     buffer << "\n  Signature: "
            << base::StrCat(
@@ -2626,7 +2632,13 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                           base::NumberToString(
                               HashFormSignature(form.form_signature()))});
   buffer << Tr{} << "Form name:" << form.form_name();
-  buffer << Tr{} << "Unique id:" << form.global_id();
+  buffer << Tr{} << "Identifiers: "
+         << base::StrCat(
+                {"renderer id: ",
+                 base::NumberToString(form.global_id().renderer_id.value()),
+                 ", host frame: ", form.global_id().frame_token.ToString(),
+                 " (", url::Origin::Create(form.source_url()).Serialize(),
+                 ")"});
   buffer << Tr{} << "Target URL:" << form.target_url();
   for (size_t i = 0; i < form.field_count(); ++i) {
     buffer << Tag{"tr"};
@@ -2638,9 +2650,9 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
            << base::StrCat(
                   {"renderer id: ",
                    base::NumberToString(field->unique_renderer_id.value()),
-                   ", host frame: ", form.global_id().frame_token.ToString(),
-                   " - ", field->origin.Serialize(),
-                   ", host form renderer id: ",
+                   ", host frame: ",
+                   field->renderer_form_id().frame_token.ToString(), " (",
+                   field->origin.Serialize(), "), host form renderer id: ",
                    base::NumberToString(field->host_form_id.value())});
     buffer << Tr{} << "Signature:"
            << base::StrCat(

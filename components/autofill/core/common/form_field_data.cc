@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -486,7 +487,14 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
 LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tag{"table"};
   buffer << Tr{} << "Name:" << field.name;
-  buffer << Tr{} << "Unique id:" << field.global_id();
+  buffer << Tr{} << "Identifiers:"
+         << base::StrCat(
+                {"renderer id: ",
+                 base::NumberToString(field.unique_renderer_id.value()),
+                 ", host frame: ",
+                 field.renderer_form_id().frame_token.ToString(), " (",
+                 field.origin.Serialize(), "), host form renderer id: ",
+                 base::NumberToString(field.host_form_id.value())});
   buffer << Tr{} << "Origin:" << field.origin.Serialize();
   buffer << Tr{} << "Name attribute:" << field.name_attribute;
   buffer << Tr{} << "Id attribute:" << field.id_attribute;
