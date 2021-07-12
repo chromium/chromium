@@ -63,6 +63,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -116,10 +117,9 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
   }
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC)
-  // Testing on some platforms is flaky due to slower loading interacting with
-  // deferred commits.
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Testing on some platforms is flaky due to slower loading interacting with
+    // deferred commits.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 #endif
@@ -793,34 +793,35 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpenInNewWindow) {
                kDontCheckTitle);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223445
-#define MAYBE_PopupsDisableBackForwardCache \
-  DISABLED_PopupsDisableBackForwardCache
-#else
-#define MAYBE_PopupsDisableBackForwardCache PopupsDisableBackForwardCache
-#endif
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       MAYBE_PopupsDisableBackForwardCache) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
   content::BackForwardCacheDisabledTester tester;
 
-  const GURL url1(
-      embedded_test_server()->GetURL("/popup_blocker/popup-many.html"));
-  content::RenderFrameHost* main_frame =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
-  int process_id = main_frame->GetProcess()->GetID();
-  int frame_routing_id = main_frame->GetRoutingID();
-  const GURL url2(embedded_test_server()->GetURL("/title1.html"));
+  // Navigate to a page with a popup that will be blocked.
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL(
+                                   "a.com", "/popup_blocker/popup-many.html"));
+  content::RenderFrameHostWrapper rfh(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+  int process_id = rfh->GetProcess()->GetID();
+  int frame_routing_id = rfh->GetRoutingID();
 
-  // Navigate to the page
-  ui_test_utils::NavigateToURL(browser(), url1);
-  // Navigate away while having blocked popups. This should block bfcache.
-  ui_test_utils::NavigateToURL(browser(), url2);
+  // Navigate to another page on the same domain. This will trigger a check on
+  // whether or not the RenderFrameHost can be cached.
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title1.html"));
 
+  // Ensure the RFH can not be cached due to the blocked popup.
   EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
       process_id, frame_routing_id,
       back_forward_cache::DisabledReason(
           back_forward_cache::DisabledReasonId::kPopupBlockerTabHelper)));
+
+  // Navigate to a different domain which will create a new RFH.
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Because the original RFH is not cacheable it will be deleted.
+  rfh.WaitUntilRenderFrameDeleted();
 }
 
 // Make sure the poput is attributed to the right WebContents when it is
@@ -828,7 +829,6 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 // https://crbug.com/1128495
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
                        PopupTriggeredFromDifferentWebContents) {
-  content::BackForwardCacheDisabledTester tester;
   const GURL url(
       embedded_test_server()->GetURL("/popup_blocker/popup-in-href.html"));
   ui_test_utils::NavigateToURL(browser(), url);
