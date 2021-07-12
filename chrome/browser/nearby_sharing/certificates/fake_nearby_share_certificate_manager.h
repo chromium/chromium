@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/time/clock.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"

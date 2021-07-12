@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

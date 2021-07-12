@@ -28,7 +28,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"

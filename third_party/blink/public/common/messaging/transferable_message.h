@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/containers/span.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"

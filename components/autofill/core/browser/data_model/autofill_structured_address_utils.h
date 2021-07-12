@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"

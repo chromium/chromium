@@ -6,7 +6,6 @@
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_MIGRATOR_H_
 
 #include "base/callback.h"
-#include "base/containers/span.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chromeos/chromeos_export.h"

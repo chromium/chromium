@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 
 namespace cr_fuchsia {

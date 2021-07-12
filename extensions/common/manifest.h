@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/values.h"
 #include "extensions/common/extension_id.h"

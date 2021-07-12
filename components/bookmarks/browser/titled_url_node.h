@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_TITLED_URL_NODE_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_TITLED_URL_NODE_H_
 
-#include "base/containers/span.h"
+#include <vector>
+
 #include "base/strings/string_piece.h"
 #include "url/gurl.h"
 
