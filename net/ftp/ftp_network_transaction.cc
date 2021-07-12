@@ -30,6 +30,7 @@
 #include "net/log/net_log_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/stream_socket.h"
+#include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
 namespace net {
@@ -664,7 +665,7 @@ int FtpNetworkTransaction::DoCtrlResolveHost() {
   // Using an empty NetworkIsolationKey here, since FTP support is deprecated,
   // and should go away soon.
   resolve_request_ =
-      resolver_->CreateRequest(HostPortPair::FromURL(request_->url),
+      resolver_->CreateRequest(url::SchemeHostPort(request_->url),
                                NetworkIsolationKey(), net_log_, absl::nullopt);
   return resolve_request_->Start(base::BindOnce(
       &FtpNetworkTransaction::OnIOComplete, base::Unretained(this)));
