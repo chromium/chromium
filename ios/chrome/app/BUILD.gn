@@ -208,7 +208,10 @@ source_set("enterprise_app_agent_ui") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
   ]
 }
 

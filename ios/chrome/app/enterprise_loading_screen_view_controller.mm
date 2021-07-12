@@ -4,48 +4,130 @@
 
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
 
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ios/chrome/common/ui/util/dynamic_type_util.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/1178818): implement final UI.
+namespace {
+
+// All the following values are from "ios/chrome/app/resources/LaunchScreen.xib"
+// and should be in sync so that the transition between app launch screen and
+// the enterprise launch screen is invisible for the users.
+constexpr CGFloat kBottomMargin = 20;
+constexpr CGFloat kLogoMultiplier = 0.381966;
+constexpr CGFloat kBrandWidth = 107;
+
+constexpr CGFloat kStatusWidth = 195;
+
+}  // namespace
+
+@interface EnterpriseLoadScreenViewController ()
+
+// Text displayed during the loading.
+@property(nonatomic, strong) UILabel* loadingLabel;
+
+@end
+
 @implementation EnterpriseLoadScreenViewController
+
+#pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = UIColor.whiteColor;
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
+  UIImageView* logo = [self createLogoView];
+  UIImageView* brand = [self createBrandView];
+  UIStackView* status = [self createStatusView];
+
+  UIStackView* mainStackView =
+      [[UIStackView alloc] initWithArrangedSubviews:@[ logo, status, brand ]];
+  mainStackView.axis = UILayoutConstraintAxisVertical;
+  mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  mainStackView.distribution = UIStackViewDistributionEqualSpacing;
+  mainStackView.alignment = UIStackViewAlignmentCenter;
+
+  [self.view addSubview:mainStackView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [logo.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
+                                   multiplier:kLogoMultiplier],
+    [logo.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
+    [brand.bottomAnchor
+        constraintEqualToAnchor:self.view.layoutMarginsGuide.bottomAnchor
+                       constant:-kBottomMargin],
+    [brand.widthAnchor constraintEqualToConstant:kBrandWidth],
+    [status.widthAnchor constraintEqualToConstant:kStatusWidth],
+    [mainStackView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
+    [mainStackView.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+  ]];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  // Limit the size of text to avoid truncation.
+  self.loadingLabel.font = PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryExtraExtraExtraLarge);
+}
+
+#pragma mark - Private
+
+// Creates and configures the logo image.
+- (UIImageView*)createLogoView {
   UIImage* logo = [UIImage imageNamed:@"launchscreen_app_logo"];
-  UIImageView* imageView = [[UIImageView alloc] initWithImage:logo];
-  imageView.contentMode = UIViewContentModeScaleAspectFit;
+  UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logo];
+  logoImageView.contentMode = UIViewContentModeScaleAspectFit;
+  logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  return logoImageView;
+}
 
-  UILabel* label = [[UILabel alloc] init];
-  label.text = @"[Test string] Loading enterprise policies...";
-  label.adjustsFontSizeToFitWidth = YES;
+// Creates and configures the brand name image.
+- (UIImageView*)createBrandView {
+  UIImage* brandNameLogo = [UIImage imageNamed:@"launchscreen_brand_name"];
+  UIImageView* brandImageView =
+      [[UIImageView alloc] initWithImage:brandNameLogo];
+  brandImageView.contentMode = UIViewContentModeScaleAspectFit;
+  brandImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  return brandImageView;
+}
+
+// Creates and configures the status view which contains the loading spinner and
+// loading text.
+- (UIStackView*)createStatusView {
+  self.loadingLabel = [[UILabel alloc] init];
+  // Chrome's localization utilities aren't available at this stage, so this
+  // method uses the native iOS API.
+  self.loadingLabel.text =
+      NSLocalizedString(@"IDS_IOS_FIRST_RUN_LAUNCH_SCREEN_ENTERPRISE", @"");
+
+  // Limit the size of text to avoid truncation.
+  self.loadingLabel.font = PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryExtraExtraExtraLarge);
+
+  self.loadingLabel.numberOfLines = 0;
+  self.loadingLabel.textColor = [UIColor colorNamed:kGrey600Color];
+  self.loadingLabel.textAlignment = NSTextAlignmentCenter;
 
   UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc] init];
   [spinner startAnimating];
 
-  UIStackView* statusStackView =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ spinner, label ]];
-  statusStackView.axis = UILayoutConstraintAxisHorizontal;
+  UIStackView* statusStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ spinner, self.loadingLabel ]];
+  statusStackView.axis = UILayoutConstraintAxisVertical;
   statusStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  statusStackView.distribution = UIStackViewDistributionEqualSpacing;
-  statusStackView.spacing = 7;
-
-  UIStackView* mainStackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ imageView, statusStackView ]];
-  mainStackView.axis = UILayoutConstraintAxisVertical;
-  mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  mainStackView.distribution = UIStackViewDistributionEqualSpacing;
-
-  [self.view addSubview:mainStackView];
-  AddSameConstraintsWithInsets(
-      mainStackView, self.view,
-      ChromeDirectionalEdgeInsetsMake(100, 20, 100, 20));
+  statusStackView.alignment = UIStackViewAlignmentCenter;
+  statusStackView.spacing = UIStackViewSpacingUseSystem;
+  return statusStackView;
 }
 
 @end

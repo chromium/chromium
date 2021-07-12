@@ -241,6 +241,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chrome uses Face ID to ensure authorized access to your passwords.
       </message>
+      <message name="IDS_IOS_FIRST_RUN_LAUNCH_SCREEN_ENTERPRISE" desc="The text of the launch screen presented to the user on First Run when the browser is managed [iOS only]">
+        Your organization is setting up Chrome...
+      </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE" desc="Subtitle of the screen suggesting to the user to sign in">
         To get the most out of Chrome, sign in to Chrome with your Google Account
       </message>
