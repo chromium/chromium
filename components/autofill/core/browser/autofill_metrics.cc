@@ -2914,4 +2914,9 @@ void AutofillMetrics::LogVirtualCardMetadataSynced(bool existing_card) {
                             existing_card);
 }
 
+// static
+void AutofillMetrics::LogImageFetchResult(bool succeeded) {
+  base::UmaHistogramBoolean("Autofill.ImageFetcher.Result", succeeded);
+}
+
 }  // namespace autofill

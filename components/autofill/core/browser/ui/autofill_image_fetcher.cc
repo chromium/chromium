@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
+#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -53,6 +54,8 @@ ImageFetchOperation::ImageFetchOperation(size_t image_count,
 
 void ImageFetchOperation::ImageFetched(const std::string& card_server_id,
                                        const gfx::Image& card_art_image) {
+  AutofillMetrics::LogImageFetchResult(/*succeeded=*/!card_art_image.IsEmpty());
+
   pending_request_count_--;
 
   if (!card_art_image.IsEmpty())

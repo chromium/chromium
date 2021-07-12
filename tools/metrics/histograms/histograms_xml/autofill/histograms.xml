@@ -1068,6 +1068,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ImageFetcher.Result" enum="BooleanSuccess"
+    expires_after="2022-07-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Record the image fetch result of one image. If true, then the image was
+    fetched successfully.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.InvalidProfileData.UsedForMetrics" enum="Boolean"
     expires_after="M95">
   <owner>battre@chromium.org</owner>

@@ -1715,6 +1715,9 @@ class AutofillMetrics {
   static void LogVerificationStatusOfAddressTokensOnProfileUsage(
       const AutofillProfile& profile);
 
+  // Logs the image fetching result for one image in AutofillImageFetcher.
+  static void LogImageFetchResult(bool succeeded);
+
   // The total number of values in the |CardUploadDecisionMetric| enum. Must be
   // updated each time a new value is added.
   static const int kNumCardUploadDecisionMetrics = 19;

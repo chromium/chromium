@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
@@ -106,6 +107,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
         received_images = card_art_image_map;
       });
 
+  base::HistogramTester histogram_tester;
   // Expect to be called twice.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(2);
   std::map<std::string, GURL> url_map = {
@@ -119,6 +121,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
   SimulateOnImageFetched("server_id2", fake_image2);
 
   ValidateResult(received_images, expected_images);
+  histogram_tester.ExpectBucketCount("Autofill.ImageFetcher.Result", true, 2);
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_InvalidUrlFailure) {
@@ -135,6 +138,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_InvalidUrlFailure) {
         received_images = card_art_image_map;
       });
 
+  base::HistogramTester histogram_tester;
   // Expect to be called once with one invalid url.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(1);
   std::map<std::string, GURL> url_map = {
@@ -147,6 +151,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_InvalidUrlFailure) {
   SimulateOnImageFetched("server_id1", fake_image1);
 
   ValidateResult(received_images, expected_images);
+  histogram_tester.ExpectBucketCount("Autofill.ImageFetcher.Result", true, 1);
+  histogram_tester.ExpectBucketCount("Autofill.ImageFetcher.Result", false, 1);
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
@@ -159,6 +165,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
         received_images = card_art_image_map;
       });
 
+  base::HistogramTester histogram_tester;
   // Expect to be called once.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(1);
   std::map<std::string, GURL> url_map = {
@@ -170,6 +177,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
   SimulateOnImageFetched("server_id1", gfx::Image());
 
   ValidateResult(received_images, expected_images);
+  histogram_tester.ExpectBucketCount("Autofill.ImageFetcher.Result", false, 1);
 }
 
 }  // namespace autofill
