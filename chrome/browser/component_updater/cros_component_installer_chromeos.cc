@@ -37,7 +37,7 @@ constexpr char kComponentsRootPath[] = "cros-components";
 const ComponentConfig kConfigs[] = {
     {"epson-inkjet-printer-escpr", ComponentConfig::PolicyType::kEnvVersion,
      "5.0", "1913a5e0a6cad30b6f03e176177e0d7ed62c5d6700a9c66da556d7c3f5d6a47e"},
-    {"cros-termina", ComponentConfig::PolicyType::kEnvVersion, "900.1",
+    {"cros-termina", ComponentConfig::PolicyType::kEnvVersion, "930.1",
      "e9d960f84f628e1f42d05de4046bb5b3154b6f1f65c08412c6af57a29aecaffb"},
     {"rtanalytics-light", ComponentConfig::PolicyType::kEnvVersion, "92.0",
      "69f09d33c439c2ab55bbbe24b47ab55cb3f6c0bd1f1ef46eefea3216ec925038"},
