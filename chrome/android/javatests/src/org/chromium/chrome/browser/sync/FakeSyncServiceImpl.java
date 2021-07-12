@@ -61,6 +61,7 @@ public class FakeSyncServiceImpl extends SyncServiceImpl {
 
     @Override
     public boolean isUsingExplicitPassphrase() {
+        ThreadUtils.assertOnUiThread();
         return true;
     }
 
@@ -81,18 +82,25 @@ public class FakeSyncServiceImpl extends SyncServiceImpl {
 
     @Override
     public boolean isTrustedVaultKeyRequired() {
+        ThreadUtils.assertOnUiThread();
         return mTrustedVaultKeyRequired;
     }
 
+    @AnyThread
     public void setTrustedVaultKeyRequired(boolean trustedVaultKeyRequired) {
-        mTrustedVaultKeyRequired = trustedVaultKeyRequired;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTrustedVaultKeyRequired = trustedVaultKeyRequired;
+            syncStateChanged();
+        });
     }
 
     @Override
     public boolean isTrustedVaultKeyRequiredForPreferredDataTypes() {
+        ThreadUtils.assertOnUiThread();
         return mTrustedVaultKeyRequiredForPreferredDataTypes;
     }
 
+    @AnyThread
     public void setTrustedVaultKeyRequiredForPreferredDataTypes(
             boolean trustedVaultKeyRequiredForPreferredDataTypes) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -104,9 +112,11 @@ public class FakeSyncServiceImpl extends SyncServiceImpl {
 
     @Override
     public boolean isTrustedVaultRecoverabilityDegraded() {
+        ThreadUtils.assertOnUiThread();
         return mTrustedVaultRecoverabilityDegraded;
     }
 
+    @AnyThread
     public void setTrustedVaultRecoverabilityDegraded(boolean recoverabilityDegraded) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTrustedVaultRecoverabilityDegraded = recoverabilityDegraded;
@@ -116,16 +126,22 @@ public class FakeSyncServiceImpl extends SyncServiceImpl {
 
     @Override
     public boolean isEncryptEverythingEnabled() {
+        ThreadUtils.assertOnUiThread();
         return mEncryptEverythingEnabled;
     }
 
     @Override
     public boolean canSyncFeatureStart() {
+        ThreadUtils.assertOnUiThread();
         return mCanSyncFeatureStart;
     }
 
+    @AnyThread
     public void setCanSyncFeatureStart(boolean canSyncFeatureStart) {
-        mCanSyncFeatureStart = canSyncFeatureStart;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mCanSyncFeatureStart = canSyncFeatureStart;
+            syncStateChanged();
+        });
     }
 
     @Override
@@ -142,7 +158,9 @@ public class FakeSyncServiceImpl extends SyncServiceImpl {
         });
     }
 
+    @AnyThread
     public void setEncryptEverythingEnabled(boolean encryptEverythingEnabled) {
-        mEncryptEverythingEnabled = encryptEverythingEnabled;
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mEncryptEverythingEnabled = encryptEverythingEnabled; });
     }
 }
