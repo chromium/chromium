@@ -20,6 +20,8 @@ source_set("data") {
     "share_to_data.mm",
     "share_to_data_builder.h",
     "share_to_data_builder.mm",
+    "url_with_title.h",
+    "url_with_title.mm",
   ]
   deps = [
     "//base",
@@ -29,7 +31,6 @@ source_set("data") {
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",

@@ -4,33 +4,23 @@
 
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 
-#import "ios/chrome/browser/ui/util/url_with_title.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface ReadingListAddCommand ()
+@implementation ReadingListAddCommand {
+  GURL _URL;
+}
 
-@property(nonatomic, strong) NSArray<URLWithTitle*>* URLs;
-
-@end
-
-@implementation ReadingListAddCommand
-
-@synthesize URLs = _URLs;
+@synthesize title = _title;
+@synthesize URL = _URL;
 
 - (instancetype)initWithURL:(const GURL&)URL title:(NSString*)title {
   if (self = [super init]) {
-    _URLs = @[ [[URLWithTitle alloc] initWithURL:URL title:title] ];
-  }
-  return self;
-}
-
-- (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs {
-  if (self = [super init]) {
-    _URLs = [URLs copy];
+    _URL = URL;
+    _title = title;
   }
   return self;
 }

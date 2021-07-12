@@ -170,7 +170,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/toolbar_container",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/url_loading",

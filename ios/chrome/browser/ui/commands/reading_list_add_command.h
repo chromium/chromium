@@ -8,19 +8,16 @@
 #import <Foundation/Foundation.h>
 
 class GURL;
-@class URLWithTitle;
 
 @interface ReadingListAddCommand : NSObject
 
-@property(nonatomic, readonly) NSArray<URLWithTitle*>* URLs;
+@property(nonatomic, readonly) const GURL& URL;
+@property(copy, nonatomic, readonly) NSString* title;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URL
-    NS_DESIGNATED_INITIALIZER;
 
 @end
 

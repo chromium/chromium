@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
-#import "ios/chrome/browser/ui/util/url_with_title.h"
+#import "ios/chrome/browser/ui/activity_services/data/url_with_title.h"
 
 #include "url/gurl.h"
 

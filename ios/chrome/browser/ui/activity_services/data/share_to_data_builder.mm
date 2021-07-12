@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #include "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_thumbnail_generator.h"
 #include "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
-#import "ios/chrome/browser/ui/util/url_with_title.h"
+#import "ios/chrome/browser/ui/activity_services/data/url_with_title.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
