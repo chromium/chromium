@@ -7,11 +7,12 @@
 // To test out locally:
 // - Assuming
 //     $OUT is your local build output directory with use_libbfuzzer set.
-//     $GEN is the suitable 'gen' directory under $OUT. $GEN is
-//         $OUT/gen/third_party_blink/renderer/modules/sanitizer_api.
+//     $GEN is the suitable 'gen' directory under $OUT.
+//
 // - Build:
 //   $ ninja -C $OUT sanitizer_api_fuzzer
 // - Run with:
+//   $ GEN=$OUT/gen/third_party/blink/renderer/modules/sanitizer_api
 //   $ $OUT/sanitizer_api_fuzzer --dict=$GEN/sanitizer_api.dict \
 //       $(mktemp -d) $GEN/corpus/
 
@@ -77,6 +78,7 @@ void MakeConfiguration(SanitizerConfig* sanitizer_config,
     sanitizer_config->setDropAttributes(drop_attributes);
   }
   sanitizer_config->setAllowCustomElements(proto.allow_custom_elements());
+  sanitizer_config->setAllowComments(proto.allow_comments());
 }
 
 void TextProtoFuzzer(const SanitizerConfigProto& proto,

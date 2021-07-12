@@ -26,12 +26,14 @@ if (use_libfuzzer) {
   corpus_source_config = [  # These match source files: corpus/*.txt
     "config1",
     "config2",
+    "config3",
     "default",
   ]
   corpus_source_html = [  # These match source files: corpus/*.html
     "simple1",
     "simple2",
     "simple3",
+    "simple4",
     "medium1",
     "medium2",
     "medium3",

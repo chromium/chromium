@@ -30,6 +30,7 @@ struct SanitizerConfigImpl {
   HashMap<String, Vector<String>> allow_attributes_;
   HashMap<String, Vector<String>> drop_attributes_;
   bool allow_custom_elements_;
+  bool allow_comments_;
 
   // Create a SantizerConfigImpl from a SanitizerConfig.
   // Will use the default config if it received nullptr.

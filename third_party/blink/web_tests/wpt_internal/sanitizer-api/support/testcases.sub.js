@@ -17,7 +17,13 @@ const testcases = [
   {config_input: {}, value: "<button formaction='javascript:evil.com'>Click.</button>", result: "<button>Click.</button>", message: "HTMLButtonElement with javascript formaction"},
   {config_input: {}, value: "<button formaction=' javascript:evil.com'>Click.</button>", result: "<button>Click.</button>", message: "HTMLButtonElement with javascript formaction start with space"},
   {config_input: {}, value: "<button formaction='http:evil.com'>Click.</button>", result: "<button formaction=\"http:evil.com\">Click.</button>", message: "HTMLButtonElement"},
-  {config_input: {}, value: "<p>Some text</p></body><!-- 1 --></html><!-- 2 --><p>Some more text</p>", result: "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>", message: "malformed HTML"},
+  {config_input: {}, value: "<p>Some text</p></body><!-- 1 --></html><!-- 2 --><p>Some more text</p>", result: "<p>Some text</p><p>Some more text</p>", message: "malformed HTML"},
+  {config_input: {}, value: "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>", result: "<p>Some text</p><p>Some more text</p>", message: "HTML with comments; comments not allowed"},
+  {config_input: {allowComments: true}, value: "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>", result: "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>", message: "HTML with comments; allowComments"},
+  {config_input: {allowComments: false}, value: "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>", result: "<p>Some text</p><p>Some more text</p>", message: "HTML with comments; !allowComments"},
+  {config_input: {}, value: "<p>comment<!-- hello -->in<!-- </p> -->text</p>", result: "<p>commentintext</p>", message: "HTML with comments deeper in the tree"},
+  {config_input: {allowComments: true}, value: "<p>comment<!-- hello -->in<!-- </p> -->text</p>", result: "<p>comment<!-- hello -->in<!-- </p> -->text</p>", message: "HTML with comments deeper in the tree, allowComments"},
+  {config_input: {allowComments: false}, value: "<p>comment<!-- hello -->in<!-- </p> -->text</p>", result: "<p>commentintext</p>", message: "HTML with comments deeper in the tree, !allowComments"},
 
   // Test cases from issue WICG/sanitizer-api#84
   {

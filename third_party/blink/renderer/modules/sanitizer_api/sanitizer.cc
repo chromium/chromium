@@ -47,7 +47,8 @@ bool ConfigIsEmpty(const SanitizerConfig* config) {
   return !config ||
          (!config->hasDropElements() && !config->hasBlockElements() &&
           !config->hasAllowElements() && !config->hasDropAttributes() &&
-          !config->hasAllowAttributes() && !config->hasAllowCustomElements());
+          !config->hasAllowAttributes() && !config->hasAllowCustomElements() &&
+          !config->hasAllowComments());
 }
 
 SanitizerConfig* SanitizerConfigCopy(const SanitizerConfig* config) {
@@ -60,6 +61,9 @@ SanitizerConfig* SanitizerConfigCopy(const SanitizerConfig* config) {
   }
   if (config->hasAllowCustomElements()) {
     copy->setAllowCustomElements(config->allowCustomElements());
+  }
+  if (config->hasAllowComments()) {
+    copy->setAllowComments(config->allowComments());
   }
   if (config->hasAllowElements()) {
     copy->setAllowElements(config->allowElements());
@@ -205,63 +209,83 @@ void Sanitizer::DoSanitizing(ContainerNode* fragment,
   Node* node = fragment->firstChild();
 
   while (node) {
-    // Skip non-Element nodes.
-    if (node->getNodeType() != Node::NodeType::kElementNode) {
-      node = NodeTraversal::Next(*node, fragment);
-      continue;
-    }
+    switch (node->getNodeType()) {
+      case Node::NodeType::kElementNode: {
+        // TODO(crbug.com/1126936): Review the sanitising algorithm for
+        // non-HTMLs.
+        // 1. Let |name| be |element|'s tag name.
+        String name = node->nodeName().UpperASCII();
 
-    // TODO(crbug.com/1126936): Review the sanitising algorithm for non-HTMLs.
-    // 1. Let |name| be |element|'s tag name.
-    String name = node->nodeName().UpperASCII();
+        // 2. Detect whether current element is a custom element or not.
+        bool is_custom_element =
+            CustomElement::IsValidName(AtomicString(name.LowerASCII()), false);
 
-    // 2. Detect whether current element is a custom element or not.
-    bool is_custom_element =
-        CustomElement::IsValidName(AtomicString(name.LowerASCII()), false);
-
-    // 3. If |kind| is `regular` and if |name| is not contained in the
-    // default element allow list, then 'drop'
-    if (baseline_drop_elements_.Contains(name)) {
-      node = DropElement(node, fragment);
-      UseCounter::Count(window->GetExecutionContext(),
-                        WebFeature::kSanitizerAPIActionTaken);
-    } else if (is_custom_element && !config_.allow_custom_elements_) {
-      // 4. If |kind| is `custom` and if allow_custom_elements_ is unset or set
-      // to anything other than `true`, then 'drop'.
-      node = DropElement(node, fragment);
-      UseCounter::Count(window->GetExecutionContext(),
-                        WebFeature::kSanitizerAPIActionTaken);
-    } else if (!node->IsHTMLElement()) {
-      // Presently unspec-ed: If |node| is in a non-HTML namespace: Drop.
-      node = DropElement(node, fragment);
-      UseCounter::Count(window->GetExecutionContext(),
-                        WebFeature::kSanitizerAPIActionTaken);
-    } else if (config_.drop_elements_.Contains(name)) {
-      // 5. If |name| is in |config|'s [=element drop list=] then 'drop'.
-      node = DropElement(node, fragment);
-      UseCounter::Count(window->GetExecutionContext(),
-                        WebFeature::kSanitizerAPIActionTaken);
-    } else if (config_.block_elements_.Contains(name)) {
-      // 6. If |name| is in |config|'s [=element block list=] then 'block'.
-      node = BlockElement(node, fragment, exception_state);
-      UseCounter::Count(window->GetExecutionContext(),
-                        WebFeature::kSanitizerAPIActionTaken);
-    } else if (!config_.allow_elements_.Contains(name)) {
-      // 7. if |name| is not in |config|'s [=element allow list=] then 'block'.
-      node = BlockElement(node, fragment, exception_state);
-      UseCounter::Count(window->GetExecutionContext(),
-                        WebFeature::kSanitizerAPIActionTaken);
-    } else if (IsA<HTMLTemplateElement>(node)) {
-      // 8. If |element|'s [=element interface=] is {{HTMLTemplateElement}}
-      // Run the steps of the [=sanitize document fragment=] algorithm on
-      // |element|'s |content| attribute.
-      DoSanitizing(To<HTMLTemplateElement>(node)->content(), window,
-                   exception_state);
-      UseCounter::Count(window->GetExecutionContext(),
-                        WebFeature::kSanitizerAPIActionTaken);
-      node = KeepElement(node, fragment, name, window);
-    } else {
-      node = KeepElement(node, fragment, name, window);
+        // 3. If |kind| is `regular` and if |name| is not contained in the
+        // default element allow list, then 'drop'
+        if (baseline_drop_elements_.Contains(name)) {
+          node = DropElement(node, fragment);
+          UseCounter::Count(window->GetExecutionContext(),
+                            WebFeature::kSanitizerAPIActionTaken);
+        } else if (is_custom_element && !config_.allow_custom_elements_) {
+          // 4. If |kind| is `custom` and if allow_custom_elements_ is unset or
+          // set to anything other than `true`, then 'drop'.
+          node = DropElement(node, fragment);
+          UseCounter::Count(window->GetExecutionContext(),
+                            WebFeature::kSanitizerAPIActionTaken);
+        } else if (!node->IsHTMLElement()) {
+          // Presently unspec-ed: If |node| is in a non-HTML namespace: Drop.
+          node = DropElement(node, fragment);
+          UseCounter::Count(window->GetExecutionContext(),
+                            WebFeature::kSanitizerAPIActionTaken);
+        } else if (config_.drop_elements_.Contains(name)) {
+          // 5. If |name| is in |config|'s [=element drop list=] then 'drop'.
+          node = DropElement(node, fragment);
+          UseCounter::Count(window->GetExecutionContext(),
+                            WebFeature::kSanitizerAPIActionTaken);
+        } else if (config_.block_elements_.Contains(name)) {
+          // 6. If |name| is in |config|'s [=element block list=] then 'block'.
+          node = BlockElement(node, fragment, exception_state);
+          UseCounter::Count(window->GetExecutionContext(),
+                            WebFeature::kSanitizerAPIActionTaken);
+        } else if (!config_.allow_elements_.Contains(name)) {
+          // 7. if |name| is not in |config|'s [=element allow list=] then
+          // 'block'.
+          node = BlockElement(node, fragment, exception_state);
+          UseCounter::Count(window->GetExecutionContext(),
+                            WebFeature::kSanitizerAPIActionTaken);
+        } else if (IsA<HTMLTemplateElement>(node)) {
+          // 8. If |element|'s [=element interface=] is {{HTMLTemplateElement}}
+          // Run the steps of the [=sanitize document fragment=] algorithm on
+          // |element|'s |content| attribute.
+          DoSanitizing(To<HTMLTemplateElement>(node)->content(), window,
+                       exception_state);
+          UseCounter::Count(window->GetExecutionContext(),
+                            WebFeature::kSanitizerAPIActionTaken);
+          node = KeepElement(node, fragment, name, window);
+        } else {
+          node = KeepElement(node, fragment, name, window);
+        }
+        break;
+      }
+      case Node::NodeType::kTextNode:
+        // Text node: Keep (by skipping over it).
+        node = NodeTraversal::Next(*node, fragment);
+        break;
+      case Node::NodeType::kCommentNode:
+        // Comment: Drop (unless allowed by config).
+        node = config_.allow_comments_ ? NodeTraversal::Next(*node, fragment)
+                                       : DropElement(node, fragment);
+        break;
+      case Node::NodeType::kDocumentNode:
+      case Node::NodeType::kDocumentFragmentNode:
+        // Document & DocumentFragment: Drop (unless it's the root).
+        node = !node->parentNode() ? NodeTraversal::Next(*node, fragment)
+                                   : DropElement(node, fragment);
+        break;
+      default:
+        // Default: Drop anything not explicitly handled.
+        node = DropElement(node, fragment);
+        break;
     }
   }
 }

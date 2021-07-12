@@ -329,6 +329,7 @@ SanitizerConfigImpl SanitizerConfigImpl::From(const SanitizerConfig* config) {
 
   impl.allow_custom_elements_ =
       config->hasAllowCustomElements() && config->allowCustomElements();
+  impl.allow_comments_ = config->hasAllowComments() && config->allowComments();
 
   // Format dropElements to uppercase.
   if (config->hasDropElements()) {
