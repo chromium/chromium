@@ -296,8 +296,9 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
   GatherChildren(&base, &sub_sup_pairs, &prescripts, &first_prescript_index,
                  &container_builder_);
   ChildrenAndMetrics sub_metrics, sup_metrics;
+  ChildAndMetrics prescripts_metrics;
   if (prescripts)
-    LayoutAndGetMetrics(prescripts);
+    prescripts_metrics = LayoutAndGetMetrics(prescripts);
   for (auto sub_sup_pair : sub_sup_pairs) {
     if (sub_sup_pair.sub)
       sub_metrics.emplace_back(LayoutAndGetMetrics(sub_sup_pair.sub));
@@ -356,6 +357,14 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
   container_builder_.AddChild(base_metrics.result->PhysicalFragment(),
                               base_offset);
   base.StoreMargins(ConstraintSpace(), base_metrics.margins);
+  if (prescripts) {
+    LogicalOffset prescripts_offset(inline_offset,
+                                    ascent - prescripts_metrics.ascent +
+                                        prescripts_metrics.margins.block_start);
+    container_builder_.AddChild(prescripts_metrics.result->PhysicalFragment(),
+                                prescripts_offset);
+    prescripts.StoreMargins(ConstraintSpace(), prescripts_metrics.margins);
+  }
   inline_offset += base_metrics.inline_size + base_metrics.margins.inline_end;
 
   // Position post scripts if needed.
