@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
@@ -224,11 +226,25 @@ public class TabUiThemeProvider {
             int alpha = context.getResources().getInteger(isSelected
                             ? R.integer.tab_thumbnail_placeholder_selected_color_alpha
                             : R.integer.tab_thumbnail_placeholder_color_alpha);
+
+            @StyleRes
+            int styleRes = isSelected ? R.style.TabThumbnailPlaceHolderStyle_Selected
+                                      : R.style.TabThumbnailPlaceHolderStyle;
+            TypedArray ta =
+                    context.obtainStyledAttributes(styleRes, R.styleable.TabThumbnailPlaceHolder);
+
             @ColorInt
-            int baseColor = isSelected
-                    ? MaterialColors.getColor(context, R.attr.colorPrimaryContainer, TAG)
-                    // TODO (crrev.com/c/2994242): Change light mode to Surface1.
-                    : MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
+            int baseColor = ta.getColor(
+                    R.styleable.TabThumbnailPlaceHolder_colorTileBase, Color.TRANSPARENT);
+            float tileSurfaceElevation =
+                    ta.getDimension(R.styleable.TabThumbnailPlaceHolder_elevationTileBase, 0);
+
+            ta.recycle();
+            if (tileSurfaceElevation != 0) {
+                ElevationOverlayProvider eop = new ElevationOverlayProvider(context);
+                baseColor = eop.compositeOverlay(baseColor, tileSurfaceElevation);
+            }
+
             return MaterialColors.compositeARGBWithAlpha(baseColor, alpha);
         }
     }

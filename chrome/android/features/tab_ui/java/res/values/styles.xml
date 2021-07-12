@@ -25,4 +25,14 @@
         <item name="tabDividerVisible">@integer/view_gone</item>
     </style>
 
+    <style name="TabThumbnailPlaceHolderStyle">
+        <item name="colorTileBase">?attr/colorSurface</item>
+        <item name="elevationTileBase">@dimen/default_elevation_1</item>
+    </style>
+
+    <style name="TabThumbnailPlaceHolderStyle.Selected">
+        <item name="colorTileBase">?attr/colorPrimaryContainer</item>
+        <item name="elevationTileBase">@dimen/default_elevation_0</item>
+    </style>
+
 </resources>
