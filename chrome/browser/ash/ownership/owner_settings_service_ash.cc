@@ -323,11 +323,12 @@ bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
   const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
   if (old_value && !old_value->is_list())
     return false;
-  std::unique_ptr<base::ListValue> new_value(
-      old_value ? static_cast<const base::ListValue*>(old_value)->DeepCopy()
-                : new base::ListValue());
-  new_value->Append(value.Clone());
-  return Set(setting, *new_value);
+
+  base::Value new_value =
+      old_value ? old_value->Clone() : base::Value(base::Value::Type::LIST);
+
+  new_value.Append(value.Clone());
+  return Set(setting, new_value);
 }
 
 bool OwnerSettingsServiceAsh::RemoveFromList(const std::string& setting,
