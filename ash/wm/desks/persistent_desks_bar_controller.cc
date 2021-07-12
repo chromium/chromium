@@ -44,7 +44,7 @@ std::unique_ptr<views::Widget> CreatePersistentDesksBarWidget() {
   params.parent = root_window->GetChildById(kShellWindowId_ShelfContainer);
   gfx::Rect bounds = display::Screen::GetScreen()
                          ->GetDisplayNearestWindow(root_window)
-                         .work_area();
+                         .bounds();
   bounds.set_height(kBarHeight);
   params.bounds = bounds;
   params.name = "PersistentDesksBarWidget";
