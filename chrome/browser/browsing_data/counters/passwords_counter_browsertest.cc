@@ -92,13 +92,25 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     run_loop_->Run();
   }
 
+  // Once the GetResult() or GetDomainExamples()  is called, it can be called
+  // again until the next result is available.
   BrowsingDataCounter::ResultInt GetResult() {
     DCHECK(finished_);
+    // Some tests call WaitForCounting() multiple times. Set `finished_` to
+    // false such that next call of WaitForCounting() will indeed block until
+    // counting is done.
+    finished_ = false;
     return result_;
   }
 
+  // Once the GetResult() or GetDomainExamples() is called, it can be called
+  // again until the next result is available.
   std::vector<std::string> GetDomainExamples() {
     DCHECK(finished_);
+    // Some tests call WaitForCounting() multiple times. Set `finished_` to
+    // false such that next call of WaitForCounting() will indeed block until
+    // counting is done.
+    finished_ = false;
     return domain_examples_;
   }
 
