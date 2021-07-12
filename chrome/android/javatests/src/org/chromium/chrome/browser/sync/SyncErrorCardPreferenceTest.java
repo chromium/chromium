@@ -62,7 +62,7 @@ public class SyncErrorCardPreferenceTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(4).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(5).build();
 
     private FakeSyncServiceImpl mFakeSyncServiceImpl;
 
@@ -200,7 +200,8 @@ public class SyncErrorCardPreferenceTest {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertEquals("TRUSTED_VAULT_KEY_REQUIRED SyncError should be set",
+                        -> Assert.assertEquals(
+                                "TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING SyncError should be set",
                                 SyncSettingsUtils.SyncError
                                         .TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
                                 SyncSettingsUtils.getSyncError()));
@@ -208,6 +209,29 @@ public class SyncErrorCardPreferenceTest {
         mSettingsActivityTestRule.startSettingsActivity();
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(), "sync_error_card_trusted_vault_key_required");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSyncErrorCardForTrustedVaultKeyForPasswords(boolean nightModeEnabled)
+            throws Exception {
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
+        mFakeSyncServiceImpl.setEncryptEverythingEnabled(false);
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> Assert.assertEquals(
+                                "TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS SyncError should be set",
+                                SyncSettingsUtils.SyncError
+                                        .TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
+                                SyncSettingsUtils.getSyncError()));
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+                "sync_error_card_trusted_vault_key_required_for_passwords");
     }
 
     @Test

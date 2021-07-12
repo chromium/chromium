@@ -38,6 +38,7 @@ namespace {
 const char kProfileSyncNotificationId[] = "chrome://settings/sync/";
 
 struct BubbleViewParameters {
+  int title_id;
   int message_id;
   base::RepeatingClosure click_action;
 };
@@ -70,6 +71,7 @@ BubbleViewParameters GetBubbleViewParameters(
     syncer::SyncService* sync_service) {
   if (ShouldShowSyncPassphraseError(sync_service)) {
     BubbleViewParameters params;
+    params.title_id = IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE;
     params.message_id = IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE;
     // |profile| is guaranteed to outlive the callback because the ownership of
     // the notification gets transferred to NotificationDisplayService, which is
@@ -81,6 +83,10 @@ BubbleViewParameters GetBubbleViewParameters(
 
   if (ShouldShowSyncKeysMissingError(sync_service, profile->GetPrefs())) {
     BubbleViewParameters params;
+    params.title_id =
+        sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
+            ? IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE
+            : IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE;
     params.message_id =
         sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
             ? IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
@@ -95,6 +101,10 @@ BubbleViewParameters GetBubbleViewParameters(
       sync_service, profile->GetPrefs()));
 
   BubbleViewParameters params;
+  params.title_id =
+      sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
+          ? IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE
+          : IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE;
   params.message_id =
       sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
           ? IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
@@ -167,7 +177,7 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
-          l10n_util::GetStringUTF16(IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE),
+          l10n_util::GetStringUTF16(parameters.title_id),
           l10n_util::GetStringUTF16(parameters.message_id), std::u16string(),
           GURL(notification_id_), notifier_id,
           message_center::RichNotificationData(),

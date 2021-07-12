@@ -163,6 +163,18 @@ public class SyncSettingsUtils {
         }
     }
 
+    /**
+     * Gets the title for a sync error.
+     * @param context The application context.
+     * @param error The sync error.
+     */
+    public static String getSyncErrorCardTitle(Context context, @SyncError int error) {
+        return (error == SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS
+                       || error == SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS)
+                ? context.getString(R.string.password_sync_error_summary)
+                : context.getString(R.string.sync_error_card_title);
+    }
+
     public static @Nullable String getSyncErrorCardButtonLabel(
             Context context, @SyncError int error) {
         switch (error) {

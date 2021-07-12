@@ -90,11 +90,11 @@ public class SyncErrorInfoBar
         Context context = getApplicationContext();
         @SyncError
         int error = SyncSettingsUtils.getSyncError();
-        String error_message = (error == SyncError.SYNC_SETUP_INCOMPLETE)
+        String errorMessage = (error == SyncError.SYNC_SETUP_INCOMPLETE)
                 ? context.getString(R.string.sync_settings_not_confirmed_title)
                 : SyncSettingsUtils.getSyncErrorHint(context, error);
-        return new SyncErrorInfoBar(getSyncErrorInfoBarType(),
-                context.getString(R.string.sync_error_card_title), error_message,
+        String title = SyncSettingsUtils.getSyncErrorCardTitle(context, error);
+        return new SyncErrorInfoBar(getSyncErrorInfoBarType(), title, errorMessage,
                 context.getString(R.string.open_settings_button));
     }
 

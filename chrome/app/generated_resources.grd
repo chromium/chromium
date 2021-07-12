@@ -8710,10 +8710,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification.">
         Sync isn't working
       </message>
+      <message name="IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification for the case where the error only affects sync-ed passwords.">
+        Password sync isn't working
+      </message>
       <message name="IDS_SYNC_ERROR_USER_MENU_TITLE" desc="Title of the sync/signin error header of desktop user menu.">
         Sync isn't working
       </message>
-      <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE" desc="Title of the sync/signin error header of desktop user menu.">
+      <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE" desc="Title of the sync/signin error header of desktop user menu for the case where the error only affects sync-ed passwords..">
         Password sync isn't working
       </message>
       <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE_SIGNED_IN_ONLY" desc="Title of the sync/signin error header of desktop user menu. Shown for users who are signed-in but not syncing.">

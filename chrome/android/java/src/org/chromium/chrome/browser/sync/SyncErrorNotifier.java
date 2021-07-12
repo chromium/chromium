@@ -84,7 +84,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
             cancelNotifications();
         } else if (shouldSyncAuthErrorBeShown()) {
             // Auth errors take precedence over passphrase errors.
-            showNotification(
+            showNotification(getString(R.string.sync_error_card_title),
                     SyncSettingsUtils.getSyncStatusSummaryForAuthError(
                             ContextUtils.getApplicationContext(), mSyncService.getAuthError()),
                     createSettingsIntent());
@@ -100,7 +100,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                 case PassphraseType.IMPLICIT_PASSPHRASE:
                 case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE:
                 case PassphraseType.CUSTOM_PASSPHRASE:
-                    showNotification(
+                    showNotification(getString(R.string.sync_error_card_title),
                             getString(R.string.hint_passphrase_required), createPassphraseIntent());
                     break;
                 case PassphraseType.TRUSTED_VAULT_PASSPHRASE:
@@ -130,7 +130,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
      * Displays the error notification with content |textBody|. The title of the notification is
      * fixed.
      */
-    private void showNotification(String textBody, Intent intentTriggeredOnClick) {
+    private void showNotification(String title, String textBody, Intent intentTriggeredOnClick) {
         // Converting |intentTriggeredOnClick| into a PendingIntent is needed because it will be
         // handed over to the Android notification manager, a foreign application.
         // FLAG_UPDATE_CURRENT ensures any cached intent extras are updated.
@@ -153,7 +153,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                                         NotificationConstants.NOTIFICATION_ID_SYNC))
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent)
-                        .setContentTitle(getString(R.string.sync_error_card_title))
+                        .setContentTitle(title)
                         .setContentText(textBody)
                         .setSmallIcon(R.drawable.ic_chrome)
                         .setTicker(textBody)
@@ -230,6 +230,9 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         }
         mTrustedVaultNotificationShownOrCreating = true;
 
+        String notificationTitle = getString(mSyncService.isEncryptEverythingEnabled()
+                        ? R.string.sync_error_card_title
+                        : R.string.password_sync_error_summary);
         String notificationTextBody = getString(mSyncService.isEncryptEverythingEnabled()
                         ? R.string.hint_sync_retrieve_keys_for_everything
                         : R.string.hint_sync_retrieve_keys_for_passwords);
@@ -240,7 +243,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                 // TODO(crbug.com/1071377): Sync state might have changed by the time |realIntent|
                 // is available, so showing the notification won't make sense.
                 .then((realIntent)
-                                -> showNotification(notificationTextBody,
+                                -> showNotification(notificationTitle, notificationTextBody,
                                         TrustedVaultKeyRetrievalProxyActivity
                                                 .createKeyRetrievalProxyIntent(realIntent)),
                         (exception)
