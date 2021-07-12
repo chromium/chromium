@@ -95,8 +95,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   void OnTrustedVaultKeysChanged() override;
   void OnTrustedVaultRecoverabilityChanged() override;
 
-  bool encryption_pending() const { return state_.encryption_pending; }
-
  private:
   enum class RequiredUserAction {
     kUnknownDuringInitialization,
@@ -173,11 +171,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
 
     // Whether we want to encrypt everything.
     bool encrypt_everything = false;
-
-    // Whether we're waiting for an attempt to encryption all sync data to
-    // complete. We track this at this layer in order to allow the user to
-    // cancel if they e.g. don't remember their explicit passphrase.
-    bool encryption_pending = false;
 
     // We cache the cryptographer's pending keys whenever
     // NotifyPassphraseRequired is called. This way, before the UI calls

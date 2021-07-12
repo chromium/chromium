@@ -262,7 +262,7 @@ bool SyncServiceCrypto::IsTrustedVaultRecoverabilityDegraded() const {
 bool SyncServiceCrypto::IsEncryptEverythingEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_.engine);
-  return state_.encrypt_everything || state_.encryption_pending;
+  return state_.encrypt_everything;
 }
 
 void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
