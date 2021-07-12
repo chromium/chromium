@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+#
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""
+This executable script symbolizes proto perfetto traces.
+"""
+
+import optparse
+import sys
+
+import symbolize_flags
+import symbolize_trace
+
+
+def _CreateOptionParser():
+  parser = optparse.OptionParser(description=('Symbolizes proto perfetto trace.'
+                                ' Takes a proto trace file as input.'),
+                                usage='%prog <proto_trace_file> [options] ',
+                                prog='tools/tracing/symbolize_trace',
+                                conflict_handler='resolve')
+
+  parser = symbolize_flags.AddSymbolizeOptions(parser)
+
+  return parser
+
+def main():
+  parser = _CreateOptionParser()
+  options, args = parser.parse_args()
+
+  # Argument error checking
+  trace_file = None
+  if not args:
+    raise ValueError('Proto trace file argument is required.')
+  elif len(args) > 1:
+    raise ValueError('Too many arguments passed. Pass only one proto trace file.')
+  else:
+    trace_file = args[0]
+
+  # Symbolize Trace
+  symbolize_trace.SymbolizeTrace(trace_file=trace_file,
+                                cloud_storage_bucket=options.cloud_storage_bucket,
+                                trace_processor_path=options.trace_processor_path,
+                                breakpad_output_dir=options.breakpad_output_dir)
+
+if __name__ == '__main__':
+  sys.exit(main())
