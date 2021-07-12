@@ -76,9 +76,6 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // Sets up the mock methods for integration tests.
   void SetUpForIntegrationTests();
 
-  // Adds the identities subject to minor mode restrictions given their name.
-  void AddMinorModeIdentities(NSArray* identitiesName);
-
   // Adds the managed identities given their name.
   void AddManagedIdentities(NSArray* identitiesName);
 
@@ -92,6 +89,11 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // When set to true, call to GetAccessToken() fakes a MDM error.
   void SetFakeMDMError(bool fakeMDMError);
 
+  // Adds a mapping from the |identity| to the capability name -> capability
+  // result value used when calling FetchCapabilities.
+  // Assumes the |identity| has been added to the available identities.
+  void SetCapabilities(ChromeIdentity* identity, NSDictionary* capabilities);
+
   // Waits until all asynchronous callbacks have been completed by the service.
   // Returns true on successful completion.
   bool WaitForServiceCallbacksToComplete();
@@ -99,8 +101,15 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // Triggers an update notification for |identity|.
   void TriggerIdentityUpdateNotification(ChromeIdentity* identity);
 
+ protected:
+  void FetchCapabilities(
+      NSArray* capabilities,
+      ChromeIdentity* identity,
+      ChromeIdentityCapabilitiesFetchCompletionBlock completion);
+
  private:
   NSMutableArray<ChromeIdentity*>* identities_;
+  NSMutableDictionary<NSString*, NSDictionary*>* capabilitiesByIdentity_;
 
   // If true, call to GetAccessToken() fakes a MDM error.
   bool _fakeMDMError;

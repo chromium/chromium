@@ -31,6 +31,12 @@
   [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity];
 }
 
+- (void)setCapabilities:(NSDictionary*)capabilities
+            forIdentity:(FakeChromeIdentity*)fakeIdentity {
+  [SigninEarlGreyAppInterface setCapabilities:capabilities
+                                  forIdentity:fakeIdentity];
+}
+
 - (void)forgetFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
   [SigninEarlGreyAppInterface forgetFakeIdentity:fakeIdentity];
 }

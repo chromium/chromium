@@ -1,3 +1,4 @@
 include_rules = [
   "+components/consent_auditor",
+  "+components/signin/internal/identity_manager/account_capabilities_constants.h",
 ]

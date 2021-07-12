@@ -12,6 +12,4 @@ namespace ios {
 
 NSString* const kManagedIdentityEmailSuffix = @"@google.com";
 
-NSString* const kMinorModeIdentityEmailSuffix = @"@minor-mode";
-
 }  // namespace ios

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -22,6 +24,10 @@
 #endif
 
 namespace {
+
+// Capability name for canOfferExtendedChromeSyncPromos.
+const NSString* kCanOfferExtendedChromeSyncPromos = [NSString
+    stringWithUTF8String:kCanOfferExtendedChromeSyncPromosCapabilityName];
 
 // Matcher for the sign-in recall promo.
 id<GREYMatcher> SigninRecallPromo() {
@@ -44,13 +50,21 @@ void VerifySigninPromoSufficientlyVisible() {
 AppLaunchConfiguration AppConfigurationForRelaunch() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(switches::kForceStartupSigninPromo);
-  config.features_disabled.push_back(switches::kMinorModeSupport);
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableSigninRecallPromo);
 
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
   return config;
+}
+
+// Wait for |timeout| in seconds.
+void WaitForInterval(NSTimeInterval timeout) {
+  XCTestExpectation* neverFulfilled =
+      [[XCTestExpectation alloc] initWithDescription:@"Wait"];
+  XCTWaiterResult result = [XCTWaiter waitForExpectations:@[ neverFulfilled ]
+                                                  timeout:timeout];
+  GREYAssertTrue(result == XCTWaiterResultTimedOut, @"Did not complete wait");
 }
 
 }  // namespace
@@ -70,6 +84,7 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
 - (void)testStartupSigninPromoNoRestrictions {
   // Create the config to relaunch Chrome.
   AppLaunchConfiguration config = AppConfigurationForRelaunch();
+  config.features_disabled.push_back(switches::kMinorModeSupport);
 
   // Relaunch the app to take the configuration into account.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -85,6 +100,7 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
 
   // Create the config to relaunch Chrome.
   AppLaunchConfiguration config = AppConfigurationForRelaunch();
+  config.features_disabled.push_back(switches::kMinorModeSupport);
   // Add the switch to make sure that fakeIdentity1 is known at startup to avoid
   // automatic sign out.
   config.additional_args.push_back(std::string("-") +
@@ -92,6 +108,34 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
 
   // Relaunch the app to take the configuration into account.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  WaitForInterval(5.0);
+
+  [[EarlGrey selectElementWithMatcher:SigninRecallPromo()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the sign-in promo is not visible at start-up for an account
+// with minor mode restrictions.
+- (void)testStartupSigninPromoNotShownForMinor {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setCapabilities:@{
+    kCanOfferExtendedChromeSyncPromos : [NSNumber
+        numberWithInt:static_cast<int>(
+                          ios::ChromeIdentityCapabilityResult::kFalse)]
+  }
+                      forIdentity:fakeIdentity];
+
+  // Create the config to relaunch Chrome.
+  AppLaunchConfiguration config = AppConfigurationForRelaunch();
+  config.features_enabled.push_back(switches::kMinorModeSupport);
+  // Sets up FakeChromeIdentityService for use in scene_controller.mm.
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kSignInAtStartup);
+
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  WaitForInterval(5.0);
 
   [[EarlGrey selectElementWithMatcher:SigninRecallPromo()]
       assertWithMatcher:grey_notVisible()];

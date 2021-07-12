@@ -51,6 +51,12 @@
       fakeIdentity);
 }
 
++ (void)setCapabilities:(NSDictionary*)capabilities
+            forIdentity:(FakeChromeIdentity*)fakeIdentity {
+  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
+      ->SetCapabilities(fakeIdentity, capabilities);
+}
+
 + (void)forgetFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->ForgetIdentity(fakeIdentity, nil);

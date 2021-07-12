@@ -32,6 +32,10 @@
 // Adds |fakeIdentity| to the fake identity service.
 - (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
+// Maps |capabilities| to the |fakeIdentity|. Check fails if the
+// |fakeIdentity| has not been added to the fake identity service.
+- (void)setCapabilities:(NSDictionary*)capabilities forIdentity:fakeIdentity;
+
 // Removes |fakeIdentity| from the fake identity service asynchronously to
 // simulate identity removal from the device.
 - (void)forgetFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
