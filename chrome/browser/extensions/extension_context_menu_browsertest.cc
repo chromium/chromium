@@ -96,7 +96,7 @@ class StateStoreObserver : public StateStore::TestObserver {
   base::ScopedObservation<StateStore, StateStore::TestObserver> observed_{this};
 };
 
-constexpr char kPersistentExtensionId[] = "cmgkkmeeoiceijkpmaabbmpgnkpaaela";
+constexpr char kPersistentExtensionId[] = "knldjmfmopnpolahpmmgbagdohdnhkik";
 
 }  // namespace
 
@@ -312,13 +312,6 @@ class ExtensionContextMenuLazyTest
                                          {.allow_in_incognito = true});
   }
 
-  base::FilePath GetDirForContext(base::StringPiece subdirectory) {
-    const char* context_dir = GetParam() == ContextType::kServiceWorker
-                                  ? "service_worker"
-                                  : "event_page";
-    return GetRootDir().AppendASCII(subdirectory).AppendASCII(context_dir);
-  }
-
   // This creates an extension that starts |enabled| and then switches to
   // |!enabled|.
   void TestEnabledContextMenu(bool enabled) {
@@ -397,9 +390,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Simple) {
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
   StateStoreObserver observer(profile());
   ResultCatcher catcher;
-  base::FilePath path =
-      GetDirForContext("persistent").AddExtensionASCII(".crx");
-  const extensions::Extension* extension = LoadExtension(path);
+  const extensions::Extension* extension =
+      LoadContextMenuExtension("persistent");
   ASSERT_TRUE(extension);
 
   // Wait for the extension to tell us it's been installed and the

@@ -359,11 +359,23 @@ bool ExtensionBrowserTest::CreateServiceWorkerBasedExtension(
 
   // This dir will contain all files for the Service Worker based extension.
   base::FilePath temp_extension_container;
-  if (!base::CreateTemporaryDirInDir(temp_dir_.GetPath(),
-                                     base::FilePath::StringType(),
+  base::FilePath temp_dir;
+  // Tests that have a PRE_ stage that are being converted to use
+  // a service worker-based extension need to exist in a temporary
+  // directory that persists after the test fixture is destroyed.
+  // The test bots are configured to use a unique temp directory that's
+  // cleaned up after the tests run, so this won't pollute the system
+  // tmp directory.
+  if (GetTestPreCount() == 0) {
+    temp_dir = temp_dir_.GetPath();
+  } else if (!base::GetTempDir(&temp_dir)) {
+    ADD_FAILURE() << "Could not get temporary dir for test.";
+    return false;
+  }
+  if (!base::CreateTemporaryDirInDir(temp_dir, base::FilePath::StringType(),
                                      &temp_extension_container)) {
     ADD_FAILURE() << "Could not create temporary dir for test under "
-                  << temp_dir_.GetPath();
+                  << temp_dir;
     return false;
   }
 
