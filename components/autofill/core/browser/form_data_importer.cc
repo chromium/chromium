@@ -55,7 +55,7 @@ using AddressImportRequirement =
 bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
                               ServerFieldType field_type,
                               const std::u16string& value,
-                              LogBuffer& import_log_buffer) {
+                              LogBuffer* import_log_buffer) {
   // Abandon the import if two fields of the same type are encountered.
   // This indicates ambiguous data or miscategorization of types.
   // Make an exception for:
@@ -74,19 +74,23 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
            ? field_type_group != FieldTypeGroup::kPhoneBilling &&
                  field_type_group != FieldTypeGroup::kPhoneHome
            : field_type != PHONE_HOME_NUMBER)) {
-    import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                      << "Multiple fields of type "
-                      << AutofillType::ServerFieldTypeToString(field_type)
-                      << "." << CTag{};
+    if (import_log_buffer) {
+      *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                         << "Multiple fields of type "
+                         << AutofillType::ServerFieldTypeToString(field_type)
+                         << "." << CTag{};
+    }
     return false;
   }
   // Abandon the import if an email address value shows up in a field that is
   // not an email address.
   if (field_type != EMAIL_ADDRESS && IsValidEmailAddress(value)) {
-    import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                      << "Email address found in field of different type: "
-                      << AutofillType::ServerFieldTypeToString(field_type)
-                      << CTag{};
+    if (import_log_buffer) {
+      *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                         << "Email address found in field of different type: "
+                         << AutofillType::ServerFieldTypeToString(field_type)
+                         << CTag{};
+    }
     return false;
   }
 
@@ -101,21 +105,21 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
 bool IsMinimumAddress(const AutofillProfile& profile,
                       const std::string& variation_country_code,
                       const std::string& app_locale,
-                      LogBuffer& import_log_buffer) {
+                      LogBuffer* import_log_buffer) {
   // Try to acquire the country code form the filled form.
   std::string country_code =
       base::UTF16ToASCII(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
-  if (!country_code.empty()) {
-    import_log_buffer << LogMessage::kImportAddressProfileFromFormCountrySource
-                      << "Country entry in form." << CTag{};
+  if (import_log_buffer && !country_code.empty()) {
+    *import_log_buffer << LogMessage::kImportAddressProfileFromFormCountrySource
+                       << "Country entry in form." << CTag{};
   }
 
   // As a fallback, use the finch state to get a country code.
   if (country_code.empty() && !variation_country_code.empty()) {
     country_code = variation_country_code;
-    if (!country_code.empty()) {
-      import_log_buffer
+    if (import_log_buffer && !country_code.empty()) {
+      *import_log_buffer
           << LogMessage::kImportAddressProfileFromFormCountrySource
           << "Variations service." << CTag{};
     }
@@ -124,8 +128,8 @@ bool IsMinimumAddress(const AutofillProfile& profile,
   // As the last resort, derive the country code from the app_locale.
   if (country_code.empty()) {
     country_code = AutofillCountry::CountryCodeForLocale(app_locale);
-    if (!country_code.empty()) {
-      import_log_buffer
+    if (import_log_buffer && !country_code.empty()) {
+      *import_log_buffer
           << LogMessage::kImportAddressProfileFromFormCountrySource
           << "App locale." << CTag{};
     }
@@ -134,15 +138,18 @@ bool IsMinimumAddress(const AutofillProfile& profile,
   AutofillCountry country(country_code, app_locale);
 
   // Include the details of the country to the log.
-  import_log_buffer << country;
+  if (import_log_buffer)
+    *import_log_buffer << country;
 
   // Check the |ADDRESS_HOME_LINE1| requirement.
   bool is_line1_missing = false;
   if (country.requires_line1() &&
       profile.GetRawInfo(ADDRESS_HOME_LINE1).empty() &&
       profile.GetRawInfo(ADDRESS_HOME_STREET_NAME).empty()) {
-    import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                      << "Missing required ADDRESS_HOME_LINE1." << CTag{};
+    if (import_log_buffer) {
+      *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                         << "Missing required ADDRESS_HOME_LINE1." << CTag{};
+    }
     is_line1_missing = true;
   }
 
@@ -150,8 +157,10 @@ bool IsMinimumAddress(const AutofillProfile& profile,
   bool is_city_missing = false;
   if (country.requires_city() &&
       profile.GetRawInfo(ADDRESS_HOME_CITY).empty()) {
-    import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                      << "Missing required ADDRESS_HOME_CITY." << CTag{};
+    if (import_log_buffer) {
+      *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                         << "Missing required ADDRESS_HOME_CITY." << CTag{};
+    }
     is_city_missing = true;
   }
 
@@ -159,16 +168,20 @@ bool IsMinimumAddress(const AutofillProfile& profile,
   bool is_state_missing = false;
   if (country.requires_state() &&
       profile.GetRawInfo(ADDRESS_HOME_STATE).empty()) {
-    import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                      << "Missing required ADDRESS_HOME_STATE." << CTag{};
+    if (import_log_buffer) {
+      *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                         << "Missing required ADDRESS_HOME_STATE." << CTag{};
+    }
     is_state_missing = true;
   }
 
   // Check the |ADDRESS_HOME_ZIP| requirement.
   bool is_zip_missing = false;
   if (country.requires_zip() && profile.GetRawInfo(ADDRESS_HOME_ZIP).empty()) {
-    import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                      << "Missing required ADDRESS_HOME_ZIP." << CTag{};
+    if (import_log_buffer) {
+      *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                         << "Missing required ADDRESS_HOME_ZIP." << CTag{};
+    }
     is_zip_missing = true;
   }
 
@@ -176,9 +189,12 @@ bool IsMinimumAddress(const AutofillProfile& profile,
   if (country.requires_zip_or_state() &&
       profile.GetRawInfo(ADDRESS_HOME_ZIP).empty() &&
       profile.GetRawInfo(ADDRESS_HOME_STATE).empty()) {
-    import_log_buffer
-        << LogMessage::kImportAddressProfileFromFormFailed
-        << "Missing required ADDRESS_HOME_ZIP or ADDRESS_HOME_STATE." << CTag{};
+    if (import_log_buffer) {
+      *import_log_buffer
+          << LogMessage::kImportAddressProfileFromFormFailed
+          << "Missing required ADDRESS_HOME_ZIP or ADDRESS_HOME_STATE."
+          << CTag{};
+    }
     is_zip_or_state_requirement_violated = true;
   }
 
@@ -340,7 +356,7 @@ bool FormDataImporter::IsValidLearnableProfile(
     const AutofillProfile& profile,
     const std::string& variation_country_code,
     const std::string& app_locale,
-    LogBuffer& import_log_buffer) {
+    LogBuffer* import_log_buffer) {
   // Check if the imported address qualifies as a minimum address.
   bool is_not_minimum_address = false;
   if (!IsMinimumAddress(profile, variation_country_code, app_locale,
@@ -352,28 +368,32 @@ bool FormDataImporter::IsValidLearnableProfile(
   bool is_email_invalid = false;
   std::u16string email = profile.GetRawInfo(EMAIL_ADDRESS);
   if (!email.empty() && !IsValidEmailAddress(email)) {
-    import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                      << "Invalid email address." << CTag{};
+    if (import_log_buffer) {
+      *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                         << "Invalid email address." << CTag{};
+    }
     is_email_invalid = true;
   }
 
   // Reject profiles with an invalid |HOME_ADDRESS_STATE| entry.
   bool is_state_invalid = false;
   if (profile.IsPresentButInvalid(ADDRESS_HOME_STATE)) {
-    import_log_buffer
-        << LogMessage::kImportAddressProfileFromFormFailed
-        << "Invalid state as of AutofillProfile::IsPresentButInvalid()."
-        << CTag{};
+    if (import_log_buffer)
+      *import_log_buffer
+          << LogMessage::kImportAddressProfileFromFormFailed
+          << "Invalid state as of AutofillProfile::IsPresentButInvalid()."
+          << CTag{};
     is_state_invalid = true;
   }
 
   // Reject profiles with an invalid |HOME_ADDRESS_ZIP| entry.
   bool is_zip_invalid = false;
   if (profile.IsPresentButInvalid(ADDRESS_HOME_ZIP)) {
-    import_log_buffer
-        << LogMessage::kImportAddressProfileFromFormFailed
-        << "Invalid ZIP as of AutofillProfile::IsPresentButInvalid()."
-        << CTag{};
+    if (import_log_buffer)
+      *import_log_buffer
+          << LogMessage::kImportAddressProfileFromFormFailed
+          << "Invalid ZIP as of AutofillProfile::IsPresentButInvalid()."
+          << CTag{};
     is_zip_invalid = true;
   }
 
@@ -443,8 +463,6 @@ bool FormDataImporter::ImportFormData(
 bool FormDataImporter::ImportAddressProfiles(const FormStructure& form) {
   // Create a buffer to collect logging output for the autofill-internals.
   LogBuffer import_log_buffer;
-  LogManager* log_manager = client_->GetLogManager();
-  import_log_buffer.set_active(log_manager && log_manager->IsLoggingActive());
   import_log_buffer << LoggingScope::kAddressProfileFormImport;
   // Print the full form into the logging scope.
   import_log_buffer << LogMessage::kImportAddressProfileFromForm << form
@@ -475,7 +493,7 @@ bool FormDataImporter::ImportAddressProfiles(const FormStructure& form) {
       import_log_buffer << LogMessage::kImportAddressProfileFromFormSection
                         << section << CTag{};
       // Try to import an address profile from the form fields of this section.
-      if (ImportAddressProfileForSection(form, section, import_log_buffer))
+      if (ImportAddressProfileForSection(form, section, &import_log_buffer))
         num_complete_profiles++;
       // And close the div of the section import log.
       import_log_buffer << CTag{"div"};
@@ -487,7 +505,7 @@ bool FormDataImporter::ImportAddressProfiles(const FormStructure& form) {
           AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT);
     } else if (sections.size() > 1) {
       // Try to import by combining all sections.
-      if (ImportAddressProfileForSection(form, "", import_log_buffer)) {
+      if (ImportAddressProfileForSection(form, "", &import_log_buffer)) {
         num_complete_profiles++;
         AutofillMetrics::LogAddressFormImportStatustMetric(
             AutofillMetrics::AddressProfileImportStatusMetric::
@@ -503,7 +521,9 @@ bool FormDataImporter::ImportAddressProfiles(const FormStructure& form) {
                     << num_complete_profiles << CTag{};
 
   // Write log buffer to autofill-internals.
-  SafeLog(log_manager) << std::move(import_log_buffer);
+  LogManager* log_manager = client_->GetLogManager();
+  if (log_manager)
+    log_manager->Log() << std::move(import_log_buffer);
 
   return num_complete_profiles > 0;
 }
@@ -511,7 +531,7 @@ bool FormDataImporter::ImportAddressProfiles(const FormStructure& form) {
 bool FormDataImporter::ImportAddressProfileForSection(
     const FormStructure& form,
     const std::string& section,
-    LogBuffer& import_log_buffer) {
+    LogBuffer* import_log_buffer) {
   // The candidate for profile import. There are many ways for the candidate to
   // be rejected (see everywhere this function returns false).
   AutofillProfile candidate_profile;
@@ -590,9 +610,11 @@ bool FormDataImporter::ImportAddressProfileForSection(
     if (server_field_type == EMAIL_ADDRESS &&
         types_seen.count(server_field_type) &&
         candidate_profile.GetRawInfo(EMAIL_ADDRESS) != value) {
-      import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                        << "Multiple different email addresses present."
-                        << CTag{};
+      if (import_log_buffer) {
+        *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                           << "Multiple different email addresses present."
+                           << CTag{};
+      }
       has_multiple_distinct_email_addresses = true;
     }
 
@@ -652,8 +674,10 @@ bool FormDataImporter::ImportAddressProfileForSection(
       }
       // Check if the country code was still not determined correctly.
       if (candidate_profile.GetRawInfo(ADDRESS_HOME_COUNTRY).empty()) {
-        import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                          << "Missing country." << CTag{};
+        if (import_log_buffer) {
+          *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                             << "Missing country." << CTag{};
+        }
         has_invalid_country = true;
       }
     }
@@ -668,8 +692,10 @@ bool FormDataImporter::ImportAddressProfileForSection(
         !candidate_profile.SetInfoWithVerificationStatus(
             AutofillType(PHONE_HOME_WHOLE_NUMBER), constructed_number,
             app_locale_, VerificationStatus::kObserved)) {
-      import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                        << "Invalid phone number." << CTag{};
+      if (import_log_buffer) {
+        *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                           << "Invalid phone number." << CTag{};
+      }
       has_invalid_phone_number = true;
     }
   }

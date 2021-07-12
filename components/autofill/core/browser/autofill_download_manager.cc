@@ -746,10 +746,12 @@ bool AutofillDownloadManager::StartUploadRequest(
   request_data.payload = std::move(payload);
 
   DVLOG(1) << "Sending Autofill Upload Request:\n" << upload;
-  SafeLog(log_manager_) << LoggingScope::kAutofillServer
+  if (log_manager_) {
+    log_manager_->Log() << LoggingScope::kAutofillServer
                         << LogMessage::kSendAutofillUpload << Br{}
                         << "Allow upload?: " << allow_upload << Br{}
                         << "Data: " << Br{} << upload;
+  }
 
   if (!allow_upload)
     return false;

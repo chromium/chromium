@@ -46,14 +46,6 @@
 //   LogBuffer buffer;
 //   for (...) { buffer << something; }
 //   LogBuffer() << std::move(buffer);
-//
-// You can override the streaming operator for your own class as follows:
-// LogBuffer& operator<<(LogBuffer& buffer, const YourClass& obj) {
-//   if (!buffer.active())
-//     return buf;
-//   buffer << obj.something;
-//   return buffer;
-// }
 
 namespace autofill {
 

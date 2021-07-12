@@ -258,8 +258,6 @@ void FormEventLoggerBase::LogUkmInteractedWithForm(
 void FormEventLoggerBase::RecordFunnelAndKeyMetrics() {
   LogBuffer funnel_rows;
   LogBuffer key_metrics_rows;
-  for (LogBuffer* buffer : {&funnel_rows, &key_metrics_rows})
-    buffer->set_active(log_manager_ && log_manager_->IsLoggingActive());
 
   funnel_rows << Tr{} << "Form Type: " << form_type_name_;
   key_metrics_rows << Tr{} << "Form Type: " << form_type_name_;
@@ -353,12 +351,14 @@ void FormEventLoggerBase::RecordFunnelAndKeyMetrics() {
                      << has_logged_will_submit_;
   }
 
-  SafeLog(log_manager_) << LoggingScope::kMetrics << LogMessage::kFunnelMetrics
+  if (log_manager_) {
+    log_manager_->Log() << LoggingScope::kMetrics << LogMessage::kFunnelMetrics
                         << Tag{"table"} << std::move(funnel_rows)
                         << CTag{"table"};
-  SafeLog(log_manager_) << LoggingScope::kMetrics << LogMessage::kKeyMetrics
+    log_manager_->Log() << LoggingScope::kMetrics << LogMessage::kKeyMetrics
                         << Tag{"table"} << std::move(key_metrics_rows)
                         << CTag{"table"};
+  }
 }
 
 void FormEventLoggerBase::RecordAblationMetrics() {

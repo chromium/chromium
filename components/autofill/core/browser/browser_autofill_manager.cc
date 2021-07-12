@@ -379,9 +379,11 @@ size_t TypeValueFormFillingLimit(ServerFieldType field_type) {
 // Logs the reason for suppressing autofill suggestions to
 // chrome://autofill-internals.
 void LogSuppressReason(LogManager* log_manager, const std::string& reason) {
-  SafeLog(log_manager) << LoggingScope::kFilling
-                       << LogMessage::kSuggestionSuppressed
-                       << " Reason: " << reason;
+  if (!log_manager)
+    return;
+  log_manager->Log() << LoggingScope::kFilling
+                     << LogMessage::kSuggestionSuppressed
+                     << " Reason: " << reason;
 }
 
 }  // namespace
@@ -656,11 +658,13 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                                                  SubmissionSource source) {
   base::UmaHistogramEnumeration("Autofill.FormSubmission.PerProfileType",
                                 client()->GetProfileType());
-  SafeLog(log_manager()) << LoggingScope::kSubmission
+  if (log_manager()) {
+    log_manager()->Log() << LoggingScope::kSubmission
                          << LogMessage::kFormSubmissionDetected << Br{}
                          << "known_success: " << known_success << Br{}
                          << "source: " << SubmissionSourceToString(source)
                          << Br{} << form;
+  }
 
   // Always upload page language metrics.
   LogLanguageMetrics(client()->GetLanguageState());
@@ -1677,7 +1681,6 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   DCHECK(autofill_field);
 
   LogBuffer buffer;
-  buffer.set_active(log_manager() && log_manager()->IsLoggingActive());
   buffer << "is credit card section: " << is_credit_card << Br{};
   buffer << "is refill: " << is_refill << Br{};
   buffer << *form_structure << Br{};
@@ -1865,9 +1868,11 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   if (action == AutofillDriver::FORM_DATA_ACTION_FILL && !is_refill)
     personal_data_->RecordUseOf(profile_or_credit_card);
 
-  SafeLog(log_manager()) << LoggingScope::kFilling
+  if (log_manager()) {
+    log_manager()->Log() << LoggingScope::kFilling
                          << LogMessage::kSendFillingData << Br{}
                          << std::move(buffer);
+  }
   driver()->SendFormDataToRenderer(query_id, action, result, field.origin,
                                    field_type_map);
 }

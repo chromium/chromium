@@ -484,8 +484,6 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
 }
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
-  if (!buffer.active())
-    return buffer;
   buffer << Tag{"table"};
   buffer << Tr{} << "Name:" << field.name;
   buffer << Tr{} << "Unique id:" << field.global_id();

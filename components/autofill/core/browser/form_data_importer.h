@@ -67,7 +67,7 @@ class FormDataImporter {
   static bool IsValidLearnableProfile(const AutofillProfile& profile,
                                       const std::string& finch_country_code,
                                       const std::string& app_locale,
-                                      LogBuffer& import_log_buffer);
+                                      LogBuffer* import_log_buffer);
 
   // Cache the last four of the fetched virtual card so we don't offer saving
   // them.
@@ -126,7 +126,7 @@ class FormDataImporter {
   // performed on the union of all sections.
   bool ImportAddressProfileForSection(const FormStructure& form,
                                       const std::string& section,
-                                      LogBuffer& import_log_buffer);
+                                      LogBuffer* import_log_buffer);
 
   // Go through the |form| fields and attempt to extract a new credit card in
   // |imported_credit_card|, or update an existing card.
