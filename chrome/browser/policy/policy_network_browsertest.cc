@@ -161,18 +161,10 @@ class QuicAllowedPolicyTestBase : public QuicTestBase {
 
   virtual void GetQuicAllowedPolicy(PolicyMap* values) = 0;
 
-  // Crashes the network service and restarts the QUIC server. If the QUIC
-  // server isn't restarted, requests will fail with ERR_QUIC_PROTOCOL_ERROR.
-  // TODO(https://crbug.com/851532): The reason the server restart is needed is
-  // unclear, but ideally that should be fixed.
-  void CrashNetworkServiceAndRestartQuicServer() {
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      net::QuicSimpleTestServer::Shutdown();
-    }
+  // Crashes the network service.
+  void CrashNetworkService() {
     SimulateNetworkServiceCrash();
     ConfigureMockCertVerifier();
-    ASSERT_TRUE(net::QuicSimpleTestServer::Start());
   }
 
  private:
@@ -206,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsFalse, QuicDisallowedForSystem) {
   // If using the network service, crash the service, and make sure QUIC is
   // still disabled.
   if (content::IsOutOfProcessNetworkService()) {
-    CrashNetworkServiceAndRestartQuicServer();
+    CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     g_browser_process->system_network_context_manager()
         ->FlushNetworkInterfaceForTesting();
@@ -221,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsFalse,
   // If using the network service, crash the service, and make sure QUIC is
   // still disabled.
   if (content::IsOutOfProcessNetworkService()) {
-    CrashNetworkServiceAndRestartQuicServer();
+    CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     g_browser_process->safe_browsing_service()
         ->FlushNetworkInterfaceForTesting();
@@ -235,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsFalse, QuicDisallowedForProfile) {
   // If using the network service, crash the service, and make sure QUIC is
   // still disabled.
   if (content::IsOutOfProcessNetworkService()) {
-    CrashNetworkServiceAndRestartQuicServer();
+    CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     browser()
         ->profile()
@@ -277,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue, MAYBE_QuicAllowedForSystem) {
   // If using the network service, crash the service, and make sure QUIC is
   // still enabled.
   if (content::IsOutOfProcessNetworkService()) {
-    CrashNetworkServiceAndRestartQuicServer();
+    CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     g_browser_process->system_network_context_manager()
         ->FlushNetworkInterfaceForTesting();
@@ -291,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue, QuicAllowedForSafeBrowsing) {
   // If using the network service, crash the service, and make sure QUIC is
   // still enabled.
   if (content::IsOutOfProcessNetworkService()) {
-    CrashNetworkServiceAndRestartQuicServer();
+    CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     g_browser_process->safe_browsing_service()
         ->FlushNetworkInterfaceForTesting();
@@ -305,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue, QuicAllowedForProfile) {
   // If using the network service, crash the service, and make sure QUIC is
   // still enabled.
   if (content::IsOutOfProcessNetworkService()) {
-    CrashNetworkServiceAndRestartQuicServer();
+    CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     browser()
         ->profile()
