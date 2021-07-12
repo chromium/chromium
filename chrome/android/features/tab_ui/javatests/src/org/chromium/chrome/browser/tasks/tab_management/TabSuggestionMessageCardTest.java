@@ -58,7 +58,8 @@ import java.util.concurrent.TimeoutException;
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID+"<Study",
         ChromeFeatureList.TAB_GROUPS_ANDROID,
-        ChromeFeatureList.CLOSE_TAB_SUGGESTIONS+"<Study"})
+        ChromeFeatureList.CLOSE_TAB_SUGGESTIONS+"<Study",
+        ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID+"<Study"})
 // Disable TAB_TO_GTS_ANIMATION to make it less flaky. When animation is enabled, the suggestion
 // cards will be removed temporarily, then append again.
 @Features.DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
