@@ -76,7 +76,8 @@ void AddCert(const std::string& cn, std::vector<CertDescription>* certs) {
   cert = net::x509_util::CreateCERTCertificateFromBytes(
       reinterpret_cast<const uint8_t*>(der_cert.data()), der_cert.size());
   ASSERT_TRUE(cert);
-  certs->push_back(CertDescription(key.release(), cert.release()));
+  certs->push_back(CertDescription(key.release(), cert.release(),
+                                   keymaster::mojom::ChapsSlot::kUser));
 }
 
 }  // namespace
