@@ -69,7 +69,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.protobuf.ByteString;
 
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -2679,9 +2678,7 @@ public class TabListMediatorUnitTest {
     @Test
     @Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
     public void testCloseButtonDescriptionStringSetup_TabSwitcher() {
-        Assume.assumeTrue("The close button changes are gated by a Chrome fast path fieldtrials"
-                        + "flag. Remove this assumption after the fast path flag is removed.",
-                TabUiFeatureUtilities.isLaunchPolishEnabled());
+        TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH.setForTesting(true);
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER);
         setUpCloseButtonDescriptionString(false);
         String targetString = "Close Tab1 tab";
@@ -2700,18 +2697,19 @@ public class TabListMediatorUnitTest {
         List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, tab3));
         createTabGroup(group1, TAB1_ID);
         setUpCloseButtonDescriptionString(true);
-        targetString = "Close tab group with 2 tabs.";
+        targetString = "Close tab group with 2 tabs";
 
         mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
         assertThat(mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
 
         // Set group name.
-        targetString = String.format("Close %s group with 2 tabs.", CUSTOMIZED_DIALOG_TITLE1);
+        targetString = String.format("Close %s group with 2 tabs", CUSTOMIZED_DIALOG_TITLE1);
         mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
         mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
+        TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH.setForTesting(false);
     }
 
     private void setUpCloseButtonDescriptionString(boolean isGroup) {
@@ -2719,21 +2717,21 @@ public class TabListMediatorUnitTest {
             doAnswer(invocation -> {
                 String title = invocation.getArgument(1);
                 String num = invocation.getArgument(2);
-                return String.format("Close %s group with %s tabs.", title, num);
+                return String.format("Close %s group with %s tabs", title, num);
             })
                     .when(mActivity)
                     .getString(anyInt(), anyString(), anyString());
 
             doAnswer(invocation -> {
                 String num = invocation.getArgument(1);
-                return String.format("Close tab group with %s tabs.", num);
+                return String.format("Close tab group with %s tabs", num);
             })
                     .when(mActivity)
                     .getString(anyInt(), anyString());
         } else {
             doAnswer(invocation -> {
                 String title = invocation.getArgument(1);
-                return String.format("Close %s, tab.", title);
+                return String.format("Close %s tab", title);
             })
                     .when(mActivity)
                     .getString(anyInt(), anyString());
