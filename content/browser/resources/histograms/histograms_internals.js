@@ -126,6 +126,10 @@ function addHistograms(histograms) {
     headerNode.setAttribute('histogram-name', name);
     headerNode.onclick = onHistogramHeaderClick;
     clone.querySelector('.histogram-header-text').textContent = header;
+    const link = clone.querySelector('.histogram-header-link');
+    link.href = '/' + name;
+    // Don't run expand/collapse handler on link click.
+    link.onclick = e => e.stopPropagation();
     clone.querySelector('p').textContent = body;
     // If we are not in monitoring mode, default to expand.
     if (!inMonitoringMode) {
