@@ -297,6 +297,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kOverviewButton;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPerDeskShelf;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPhoneHub;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPhoneHubCameraRoll;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPhoneHubRecentApps;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPinSetupForManagedUsers;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPipRoundedCorners;
@@ -491,6 +492,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPciguardUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPerDeskShelfEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubCameraRollEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubRecentAppsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitBackfillFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinSetupForManagedUsersEnabled();

@@ -2305,6 +2305,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "enable-phone-hub-recent-apps",
+    "owners": [ "dhnishi", "cros-recentapps@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],
     "expiry_milestone": 95
