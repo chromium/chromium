@@ -16,8 +16,11 @@ component("proxy") {
     # easily make async callbacks in the proxy. We can't depend on the
     # full C++ wrappers at this layer since the C++ wrappers expect
     # symbols defining the globals for "being a plugin" which we are not.
-    # These callback files are standalone.
+    #
+    # These callback files are supposed to be standalone, but are not; see
+    # http://crbug.com/1228394.
     "../cpp/completion_callback.h",
+    "../cpp/logging.h",
     "../utility/completion_callback_factory.h",
     "audio_buffer_resource.cc",
     "audio_buffer_resource.h",

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "ppapi/cpp/completion_callback.h"
-#include "ppapi/utility/completion_callback_factory_thread_traits.h"
+#include "ppapi/utility/completion_callback_factory_thread_traits.h"  // nogncheck http://crbug.com/1228394
 
 /// @file
 /// This file defines the API to create CompletionCallback objects that are
