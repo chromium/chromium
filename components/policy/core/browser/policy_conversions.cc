@@ -28,6 +28,8 @@ const webui::LocalizedString kPolicySources[POLICY_SOURCE_COUNT] = {
     {"priorityCloud", IDS_POLICY_SOURCE_CLOUD},
     {"merged", IDS_POLICY_SOURCE_MERGED},
     {"cloud_from_ash", IDS_POLICY_SOURCE_CLOUD_FROM_ASH},
+    {"restrictedManagedGuestSessionOverride",
+     IDS_POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE},
 };
 
 PolicyConversions::PolicyConversions(

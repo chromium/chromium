@@ -62,6 +62,10 @@ enum PolicySource {
   // The policy was set by Cloud in Ash and piped to Lacros.
   POLICY_SOURCE_CLOUD_FROM_ASH,
 
+  // The policy was set by the RestrictedManagedGuestSessionEnabled policy. This
+  // source should be kept as highest priority source.
+  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+
   // Number of source types. Has to be the last element.
   POLICY_SOURCE_COUNT
 };

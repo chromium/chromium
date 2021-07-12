@@ -1831,6 +1831,9 @@ message Policy {
     // A policy is set by Google's cloud management tool in Ash and piped to
     // Lacros.
     SOURCE_CLOUD_FROM_ASH = 9;
+
+    // A policy that is set by the restricted managed guest session override.
+    SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE = 10;
   }
   optional PolicySource source = 4;
 
