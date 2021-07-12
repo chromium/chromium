@@ -1056,8 +1056,7 @@ void NetworkContext::GetDomainReliabilityJSON(
     return;
   }
 
-  std::move(callback).Run(
-      std::move(*domain_reliability_monitor_->GetWebUIData()));
+  std::move(callback).Run(domain_reliability_monitor_->GetWebUIData());
 }
 
 void NetworkContext::CloseAllConnections(CloseAllConnectionsCallback callback) {

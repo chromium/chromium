@@ -73,7 +73,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityScheduler {
   // passed to the upload callback by the Uploader.
   void OnUploadComplete(const DomainReliabilityUploader::UploadResult& result);
 
-  std::unique_ptr<base::Value> GetWebUIData() const;
+  base::Value GetWebUIData() const;
 
   // Disables jitter in BackoffEntries to make scheduling deterministic for
   // unit tests.

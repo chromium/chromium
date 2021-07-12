@@ -67,7 +67,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
 
   // Gets a Value containing data that can be formatted into a web page for
   // debugging purposes.
-  std::unique_ptr<base::Value> GetWebUIData() const;
+  base::Value GetWebUIData() const;
 
   // Gets the beacons queued for upload in this context. `*beacons_out` will be
   // cleared and filled with pointers to the beacons; the pointers remain valid
@@ -91,9 +91,9 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   // Creates a report from all beacons associated with
   // `uploading_beacons_network_isolation_key_`. Updates
   // `uploading_beacons_size_`.
-  std::unique_ptr<const base::Value> CreateReport(base::TimeTicks upload_time,
-                                                  const GURL& collector_url,
-                                                  int* max_beacon_depth_out);
+  base::Value CreateReport(base::TimeTicks upload_time,
+                           const GURL& collector_url,
+                           int* max_beacon_depth_out);
 
   // Uses the state remembered by `MarkUpload` to remove successfully uploaded
   // data but keep beacons and request counts added after the upload started.

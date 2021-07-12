@@ -28,8 +28,6 @@
 namespace domain_reliability {
 namespace {
 
-using base::DictionaryValue;
-using base::ListValue;
 using base::Value;
 
 typedef std::vector<const DomainReliabilityBeacon*> BeaconVector;
@@ -85,36 +83,39 @@ std::string StatusFromInt(int i) {
   return base::StringPrintf("status%i.test", i);
 }
 
-template <typename ValueType,
-          bool (DictionaryValue::*GetValueType)(base::StringPiece, ValueType*)
-              const>
+template <typename ValueTypeFindResult,
+          typename ValueType,
+          ValueTypeFindResult (Value::*FindValueType)(base::StringPiece) const>
 struct HasValue {
-  bool operator()(const DictionaryValue& dict,
+  bool operator()(const Value& dict,
                   const std::string& key,
                   ValueType expected_value) {
-    ValueType actual_value;
-    bool got_value = (dict.*GetValueType)(key, &actual_value);
-    if (got_value)
-      EXPECT_EQ(expected_value, actual_value);
-    return got_value && (expected_value == actual_value);
+    ValueTypeFindResult actual_value = (dict.*FindValueType)(key);
+    if (actual_value)
+      EXPECT_EQ(expected_value, *actual_value);
+    return actual_value && (expected_value == *actual_value);
   }
 };
 
-HasValue<bool, &DictionaryValue::GetBoolean> HasBooleanValue;
-HasValue<double, &DictionaryValue::GetDouble> HasDoubleValue;
-HasValue<int, &DictionaryValue::GetInteger> HasIntegerValue;
-HasValue<std::string, &DictionaryValue::GetString> HasStringValue;
+HasValue<absl::optional<bool>, bool, &Value::FindBoolPath> HasBooleanValue;
+HasValue<absl::optional<double>, double, &Value::FindDoublePath> HasDoubleValue;
+HasValue<absl::optional<int>, int, &Value::FindIntPath> HasIntegerValue;
+HasValue<const std::string*, std::string, &Value::FindStringPath>
+    HasStringValue;
 
 bool GetEntryFromReport(const Value* report,
                         size_t index,
-                        const DictionaryValue** entry_out) {
-  const DictionaryValue* report_dict;
-  const ListValue* entries;
-
-  return report &&
-         report->GetAsDictionary(&report_dict) &&
-         report_dict->GetList("entries", &entries) &&
-         entries->GetDictionary(index, entry_out);
+                        const Value** entry_out) {
+  if (!report || !report->is_dict())
+    return false;
+  const Value* entries = report->FindListKey("entries");
+  if (!entries)
+    return false;
+  const Value& entry = entries->GetList()[index];
+  if (!entry.is_dict())
+    return false;
+  *entry_out = &entry;
+  return true;
 }
 
 class DomainReliabilityContextTest : public testing::Test {
@@ -363,7 +364,7 @@ TEST_F(DomainReliabilityContextTest, ReportUpload) {
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
   EXPECT_TRUE(HasStringValue(*entry, "failure_data.custom_error",
                              "net::ERR_CONNECTION_RESET"));
@@ -688,7 +689,7 @@ TEST_F(DomainReliabilityContextTest, NetworkChanged) {
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
   EXPECT_TRUE(HasBooleanValue(*entry, "network_changed", true));
 
@@ -719,7 +720,7 @@ TEST_F(DomainReliabilityContextTest,
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
 
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_broken", true));
@@ -753,7 +754,7 @@ TEST_F(DomainReliabilityContextTest,
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
 
   EXPECT_TRUE(HasStringValue(*entry, "status", "tcp.connection_reset"));
@@ -788,7 +789,7 @@ TEST_F(DomainReliabilityContextTest,
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_broken", true));
   EXPECT_TRUE(HasStringValue(*entry, "status", "tcp.connection_reset"));
@@ -834,7 +835,7 @@ TEST_F(DomainReliabilityContextTest, FractionalSampleRate) {
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
   EXPECT_TRUE(HasDoubleValue(*entry, "sample_rate", 0.5));
 

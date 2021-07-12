@@ -156,12 +156,10 @@ void DomainReliabilityMonitor::ClearBrowsingData(
   }
 }
 
-std::unique_ptr<base::Value> DomainReliabilityMonitor::GetWebUIData() const {
-  std::unique_ptr<base::DictionaryValue> data_value(
-      new base::DictionaryValue());
-  data_value->SetKey("contexts", base::Value::FromUniquePtrValue(
-                                     context_manager_.GetWebUIData()));
-  return std::move(data_value);
+base::Value DomainReliabilityMonitor::GetWebUIData() const {
+  base::Value data_value(base::Value::Type::DICTIONARY);
+  data_value.SetKey("contexts", context_manager_.GetWebUIData());
+  return data_value;
 }
 
 const DomainReliabilityContext* DomainReliabilityMonitor::AddContextForTesting(

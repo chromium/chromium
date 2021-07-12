@@ -125,7 +125,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityMonitor
 
   // Gets a Value containing data that can be formatted into a web page for
   // debugging purposes.
-  std::unique_ptr<base::Value> GetWebUIData() const;
+  base::Value GetWebUIData() const;
 
   // Returns pointer to the added context.
   const DomainReliabilityContext* AddContextForTesting(

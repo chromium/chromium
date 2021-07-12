@@ -100,12 +100,11 @@ void DomainReliabilityContextManager::RemoveContexts(
   }
 }
 
-std::unique_ptr<base::Value> DomainReliabilityContextManager::GetWebUIData()
-    const {
-  std::unique_ptr<base::ListValue> contexts_value(new base::ListValue());
+base::Value DomainReliabilityContextManager::GetWebUIData() const {
+  base::Value contexts_value(base::Value::Type::LIST);
   for (const auto& context_entry : contexts_)
-    contexts_value->Append(context_entry.second->GetWebUIData());
-  return std::move(contexts_value);
+    contexts_value.Append(context_entry.second->GetWebUIData());
+  return contexts_value;
 }
 
 DomainReliabilityContext* DomainReliabilityContextManager::GetContext(
