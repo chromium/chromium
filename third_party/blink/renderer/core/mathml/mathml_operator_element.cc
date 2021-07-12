@@ -34,7 +34,7 @@ UChar32 OperatorCodepoint(const String& text_content) {
   return character;
 }
 
-// https://mathml-refresh.github.io/mathml-core/#operator-dictionary-categories-values
+// https://w3c.github.io/mathml-core/#operator-dictionary-categories-values
 // Leading and trailing spaces are respresented in math units, i.e. 1/18em.
 struct MathMLOperatorDictionaryProperties {
   unsigned leading_space_in_math_unit : 3;
@@ -160,7 +160,7 @@ void MathMLOperatorElement::ParseAttribute(
   MathMLElement::ParseAttribute(param);
 }
 
-// https://mathml-refresh.github.io/mathml-core/#dfn-algorithm-for-determining-the-properties-of-an-embellished-operator
+// https://w3c.github.io/mathml-core/#dfn-algorithm-for-determining-the-properties-of-an-embellished-operator
 void MathMLOperatorElement::ComputeDictionaryCategory() {
   if (properties_.dictionary_category !=
       MathMLOperatorDictionaryCategory::kUndefined)
@@ -172,7 +172,7 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
 
   // We first determine the form attribute and use the default spacing and
   // properties.
-  // https://mathml-refresh.github.io/mathml-core/#dfn-form
+  // https://w3c.github.io/mathml-core/#dfn-form
   const auto& value = FastGetAttribute(mathml_names::kFormAttr);
   bool explicit_form = true;
   MathMLOperatorDictionaryForm form;
@@ -185,7 +185,7 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
   } else {
     // TODO(crbug.com/1121113): Implement the remaining rules for determining
     // form.
-    // https://mathml-refresh.github.io/mathml-core/#dfn-algorithm-for-determining-the-form-of-an-embellished-operator
+    // https://w3c.github.io/mathml-core/#dfn-algorithm-for-determining-the-form-of-an-embellished-operator
     explicit_form = false;
     if (!previousSibling() && nextSibling())
       form = MathMLOperatorDictionaryForm::kPrefix;
@@ -197,7 +197,7 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
 
   // We then try and find an entry in the operator dictionary to override the
   // default values.
-  // https://mathml-refresh.github.io/mathml-core/#dfn-algorithm-for-determining-the-properties-of-an-embellished-operator
+  // https://w3c.github.io/mathml-core/#dfn-algorithm-for-determining-the-properties-of-an-embellished-operator
   auto category = FindCategory(GetOperatorContent().characters, form);
   if (category != MathMLOperatorDictionaryCategory::kNone) {
     // Step 2.
@@ -228,7 +228,7 @@ void MathMLOperatorElement::ComputeOperatorProperty(OperatorPropertyFlag flag) {
   DCHECK(properties_.dirty_flags & flag);
   const auto& name = OperatorPropertyFlagToAttributeName(flag);
   if (absl::optional<bool> value = BooleanAttribute(name)) {
-    // https://mathml-refresh.github.io/mathml-core/#dfn-algorithm-for-determining-the-properties-of-an-embellished-operator
+    // https://w3c.github.io/mathml-core/#dfn-algorithm-for-determining-the-properties-of-an-embellished-operator
     // Step 1.
     if (*value) {
       properties_.flags |= flag;

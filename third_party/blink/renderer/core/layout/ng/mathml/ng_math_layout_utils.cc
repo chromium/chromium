@@ -90,7 +90,7 @@ static bool IsPrescriptDelimiter(const NGBlockNode& block_node) {
 }
 
 // Valid according to:
-// https://mathml-refresh.github.io/mathml-core/#prescripts-and-tensor-indices-mmultiscripts
+// https://w3c.github.io/mathml-core/#prescripts-and-tensor-indices-mmultiscripts
 inline bool IsValidMultiscript(const NGBlockNode& node) {
   auto child = To<NGBlockNode>(FirstChildInFlow(node));
   if (!child || IsPrescriptDelimiter(child))
@@ -185,7 +185,7 @@ RadicalVerticalParameters GetRadicalVerticalParameters(
 MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(
     const ComputedStyle& style,
     UChar character) {
-  // https://mathml-refresh.github.io/mathml-core/#dfn-preferred-inline-size-of-a-glyph-stretched-along-the-block-axis
+  // https://w3c.github.io/mathml-core/#dfn-preferred-inline-size-of-a-glyph-stretched-along-the-block-axis
   const SimpleFontData* font_data = style.GetFont().PrimaryFont();
   MinMaxSizes sizes;
   if (!font_data)
@@ -220,7 +220,7 @@ bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node) {
     return false;
   auto base = To<NGBlockNode>(FirstChildInFlow(node));
   // TODO(crbug.com/1124298)):
-  // https://mathml-refresh.github.io/mathml-core/#embellished-operators
+  // https://w3c.github.io/mathml-core/#embellished-operators
   if (auto* element =
           DynamicTo<MathMLOperatorElement>(base.GetDOMNode())) {
     return element->HasBooleanProperty(MathMLOperatorElement::kMovableLimits);
@@ -231,7 +231,7 @@ bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node) {
 bool IsOperatorWithSpecialShaping(const NGBlockNode& node) {
   if (!node.IsBlock() || !node.IsMathML() || !node.FirstChild().IsInline())
     return false;
-  // https://mathml-refresh.github.io/mathml-core/#layout-of-operators
+  // https://w3c.github.io/mathml-core/#layout-of-operators
   if (auto* element = DynamicTo<MathMLOperatorElement>(node.GetDOMNode())) {
     UChar32 base_code_point = element->GetOperatorContent().code_point;
     if (base_code_point == kNonCharacter ||

@@ -412,7 +412,7 @@ TEST(CharacterTest, TransformedIsUprightInMixedVertical) {
 }
 
 TEST(CharacterTest, IsVerticalMathCharacter) {
-  // https://mathml-refresh.github.io/mathml-core/#stretchy-operator-axis
+  // https://w3c.github.io/mathml-core/#stretchy-operator-axis
   const UChar stretchy_operator_with_inline_axis[]{
       0x003D, 0x005E, 0x005F, 0x007E, 0x00AF, 0x02C6, 0x02C7, 0x02C9, 0x02CD,
       0x02DC, 0x02F7, 0x0302, 0x0332, 0x203E, 0x20D0, 0x20D1, 0x20D6, 0x20D7,

@@ -17,7 +17,7 @@ namespace {
 // Describes the amount to shift the numerator/denominator of the fraction when
 // a fraction bar is present. Data is populated from the OpenType MATH table.
 // If the OpenType MATH table is not present fallback values are used.
-// https://mathml-refresh.github.io/mathml-core/#fraction-with-nonzero-line-thickness
+// https://w3c.github.io/mathml-core/#fraction-with-nonzero-line-thickness
 struct FractionParameters {
   LayoutUnit numerator_gap_min;
   LayoutUnit denominator_gap_min;
@@ -72,7 +72,7 @@ FractionParameters GetFractionParameters(const ComputedStyle& style) {
 // Describes the amount to shift the numerator/denominator of the fraction when
 // a fraction bar is not present. Data is populated from the OpenType MATH
 // table. If the OpenType MATH table is not present fallback values are used.
-// https://mathml-refresh.github.io/mathml-core/#fraction-with-zero-line-thickness
+// https://w3c.github.io/mathml-core/#fraction-with-zero-line-thickness
 struct FractionStackParameters {
   LayoutUnit gap_min;
   LayoutUnit top_shift_up;

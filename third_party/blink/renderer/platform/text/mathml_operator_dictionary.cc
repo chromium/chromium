@@ -10,12 +10,12 @@ namespace blink {
 
 namespace {
 
-// https://mathml-refresh.github.io/mathml-core/#operator-dictionary-compact-special-tables
+// https://w3c.github.io/mathml-core/#operator-dictionary-compact-special-tables
 const char* operators_2_ascii_chars[] = {
     "!!", "!=", "&&", "**", "*=", "++", "+=", "--", "-=", "->",
     "..", "//", "/=", ":=", "<=", "<>", "==", ">=", "||"};
 
-// https://mathml-refresh.github.io/mathml-core/#operator-dictionary-categories-hexa-table
+// https://w3c.github.io/mathml-core/#operator-dictionary-categories-hexa-table
 struct EntryRange {
   uint16_t entry;
   unsigned range_bounds_delta : 4;
@@ -30,7 +30,7 @@ static inline uint16_t ExtractCategory(const EntryRange& range) {
 // The following representation is taken from the spec, and reduces storage
 // requirements by mapping codepoints and category to better make use of the
 // available bytes. For details see
-// https://mathml-refresh.github.io/mathml-core/#operator-dictionary.
+// https://w3c.github.io/mathml-core/#operator-dictionary.
 static const EntryRange compact_dictionary[] = {
     {0x8025, 0},  {0x802A, 0},  {0x402B, 0},  {0x402D, 0},  {0x802E, 0},
     {0x402F, 0},  {0x803F, 1},  {0xC05C, 0},  {0x805E, 1},  {0x807C, 0},
@@ -126,7 +126,7 @@ MathMLOperatorDictionaryCategory FindCategory(
     return MathMLOperatorDictionaryCategory::kNone;
 
   // Handle special categories that are not encoded in the compact dictionary.
-  // https://mathml-refresh.github.io/mathml-core/#operator-dictionary-categories-values
+  // https://w3c.github.io/mathml-core/#operator-dictionary-categories-values
   if (form == MathMLOperatorDictionaryForm::kPrefix &&
       ((kDoubleStruckItalicCapitalDCharacter <= key &&
         key <= kDoubleStruckItalicSmallDCharacter) ||
@@ -169,7 +169,7 @@ MathMLOperatorDictionaryCategory FindCategory(
     return MathMLOperatorDictionaryCategory::kNone;
 
   // An entry is found: set the properties according the category.
-  // https://mathml-refresh.github.io/mathml-core/#operator-dictionary-categories-values
+  // https://w3c.github.io/mathml-core/#operator-dictionary-categories-values
   switch (ExtractCategory(*entry_range)) {
     case 0x0:
       return MathMLOperatorDictionaryCategory::kA;

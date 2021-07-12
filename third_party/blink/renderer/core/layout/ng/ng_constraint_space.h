@@ -277,7 +277,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
   // Inline/block target stretch size constraints.
   // See:
-  // https://mathml-refresh.github.io/mathml-core/#dfn-inline-stretch-size-constraint
+  // https://w3c.github.io/mathml-core/#dfn-inline-stretch-size-constraint
   LayoutUnit TargetStretchInlineSize() const {
     return HasRareData() ? rare_data_->TargetStretchInlineSize()
                          : kIndefiniteSize;

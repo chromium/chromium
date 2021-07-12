@@ -366,7 +366,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
                  scoped_refptr<const NGPhysicalFragment> physical_fragment,
                  NGLineBoxFragmentBuilder*);
 
-  // See https://mathml-refresh.github.io/mathml-core/#box-model
+  // See https://w3c.github.io/mathml-core/#box-model
   struct MathData {
     LayoutUnit italic_correction_;
   };

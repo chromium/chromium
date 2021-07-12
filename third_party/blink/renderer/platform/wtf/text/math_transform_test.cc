@@ -10,7 +10,7 @@ namespace WTF {
 
 namespace {
 
-// https://mathml-refresh.github.io/mathml-core/#italic-mappings
+// https://w3c.github.io/mathml-core/#italic-mappings
 TEST(MathTransform, Italics) {
   static struct ItalicsTestData {
     UChar32 code_point;

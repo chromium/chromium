@@ -93,7 +93,7 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
   }
   if (index) {
     // Handle layout of index child.
-    // (https://mathml-refresh.github.io/mathml-core/#root-with-index).
+    // (https://w3c.github.io/mathml-core/#root-with-index).
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), index);
     scoped_refptr<const NGLayoutResult> index_layout_result =

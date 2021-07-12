@@ -38,7 +38,7 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
   // properly laid out but the glyph will actually be used to determine a
   // "large" or "stretched" version, from which we perform measurement and
   // painting.
-  // See https://mathml-refresh.github.io/mathml-core/#layout-of-operators
+  // See https://w3c.github.io/mathml-core/#layout-of-operators
   NGLayoutInputNode child = Node().FirstChild();
   DCHECK(child && child.IsInline());
   DCHECK(!child.NextSibling());

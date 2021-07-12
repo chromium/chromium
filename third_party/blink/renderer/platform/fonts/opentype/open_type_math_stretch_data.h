@@ -30,7 +30,7 @@ class PLATFORM_EXPORT OpenTypeMathStretchData {
     bool is_extender;
   };
 
-  // https://mathml-refresh.github.io/mathml-core/#the-glyphassembly-table
+  // https://w3c.github.io/mathml-core/#the-glyphassembly-table
   struct AssemblyParameters {
     float connector_overlap{0};
     unsigned repetition_count{0};

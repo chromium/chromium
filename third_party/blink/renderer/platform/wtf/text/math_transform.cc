@@ -32,7 +32,7 @@ static UChar32 mathVariantLatin(UChar32 code_point, UChar32 base_char) {
   // earlier is added to obtain the final code point.
   UChar32 transformed_char =
       base_char + kMathBoldUpperA + (kMathItalicUpperA - kMathBoldUpperA);
-  // https://mathml-refresh.github.io/mathml-core/#italic-mappings
+  // https://w3c.github.io/mathml-core/#italic-mappings
   if (transformed_char == 0x1D455)
     return 0x210E;
   return transformed_char;

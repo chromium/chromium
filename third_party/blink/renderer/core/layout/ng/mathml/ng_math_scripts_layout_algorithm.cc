@@ -29,9 +29,9 @@ LayoutUnit GetSpaceAfterScript(const ComputedStyle& style) {
 // Describes the amount of shift to apply to the sub/sup boxes.
 // Data is populated from the OpenType MATH table.
 // If the OpenType MATH table is not present fallback values are used.
-// https://mathml-refresh.github.io/mathml-core/#base-with-subscript
-// https://mathml-refresh.github.io/mathml-core/#base-with-superscript
-// https://mathml-refresh.github.io/mathml-core/#base-with-subscript-and-superscript
+// https://w3c.github.io/mathml-core/#base-with-subscript
+// https://w3c.github.io/mathml-core/#base-with-superscript
+// https://w3c.github.io/mathml-core/#base-with-subscript-and-superscript
 struct ScriptsVerticalParameters {
   STACK_ALLOCATED();
 
@@ -146,7 +146,7 @@ void NGMathScriptsLayoutAlgorithm::GatherChildren(
         continue;
       case MathScriptType::kMultiscripts: {
         // The structure of mmultiscripts is specified here:
-        // https://mathml-refresh.github.io/mathml-core/#prescripts-and-tensor-indices-mmultiscripts
+        // https://w3c.github.io/mathml-core/#prescripts-and-tensor-indices-mmultiscripts
         if (IsPrescriptDelimiter(block_child)) {
           if (!number_of_scripts_is_even || *prescripts) {
             NOTREACHED();

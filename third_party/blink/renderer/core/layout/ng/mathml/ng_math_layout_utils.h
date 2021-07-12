@@ -39,7 +39,7 @@ bool IsValidMathMLFraction(const NGBlockNode&);
 bool IsValidMathMLScript(const NGBlockNode&);
 bool IsValidMathMLRadical(const NGBlockNode&);
 
-// https://mathml-refresh.github.io/mathml-core/#dfn-default-rule-thickness
+// https://w3c.github.io/mathml-core/#dfn-default-rule-thickness
 inline float RuleThicknessFallback(const ComputedStyle& style) {
   const SimpleFontData* font_data = style.GetFont().PrimaryFont();
   if (!font_data)
@@ -66,7 +66,7 @@ inline bool HasDisplayStyle(const ComputedStyle& style) {
 
 // Get parameters for horizontal positioning of mroot.
 // The parameters are defined here:
-// https://mathml-refresh.github.io/mathml-core/#layout-constants-mathconstants
+// https://w3c.github.io/mathml-core/#layout-constants-mathconstants
 struct RadicalHorizontalParameters {
   LayoutUnit kern_before_degree;
   LayoutUnit kern_after_degree;
@@ -76,7 +76,7 @@ RadicalHorizontalParameters GetRadicalHorizontalParameters(
 
 // Get parameters for vertical positioning of msqrt/mroot.
 // The parameters are defined here:
-// https://mathml-refresh.github.io/mathml-core/#layout-constants-mathconstants
+// https://w3c.github.io/mathml-core/#layout-constants-mathconstants
 struct RadicalVerticalParameters {
   LayoutUnit vertical_gap;
   LayoutUnit rule_thickness;
@@ -86,7 +86,7 @@ struct RadicalVerticalParameters {
 RadicalVerticalParameters GetRadicalVerticalParameters(const ComputedStyle&,
                                                        bool has_index);
 
-// https://mathml-refresh.github.io/mathml-core/#dfn-preferred-inline-size-of-a-glyph-stretched-along-the-block-axis
+// https://w3c.github.io/mathml-core/#dfn-preferred-inline-size-of-a-glyph-stretched-along-the-block-axis
 MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(const ComputedStyle&,
                                                       UChar character);
 

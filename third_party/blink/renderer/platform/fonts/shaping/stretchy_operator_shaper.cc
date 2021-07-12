@@ -48,7 +48,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
           : HB_DIRECTION_BTT;
 
   // Go over the assembly parts and determine parameters used below.
-  // https://mathml-refresh.github.io/mathml-core/#the-glyphassembly-table
+  // https://w3c.github.io/mathml-core/#the-glyphassembly-table
   float min_connector_overlap = HarfBuzzUnitsToFloat(
       hb_ot_math_get_min_connector_overlap(hb_font, hb_stretch_axis));
   float max_connector_overlap = std::numeric_limits<float>::max();

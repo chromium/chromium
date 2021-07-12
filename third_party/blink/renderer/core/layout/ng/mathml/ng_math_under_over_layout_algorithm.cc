@@ -19,8 +19,8 @@ namespace {
 // Describes the amount to shift to apply to the under/over boxes.
 // Data is populated from the OpenType MATH table.
 // If the OpenType MATH table is not present fallback values are used.
-// https://mathml-refresh.github.io/mathml-core/#base-with-underscript
-// https://mathml-refresh.github.io/mathml-core/#base-with-overscript
+// https://w3c.github.io/mathml-core/#base-with-underscript
+// https://w3c.github.io/mathml-core/#base-with-overscript
 struct UnderOverVerticalParameters {
   bool use_under_over_bar_fallback;
   LayoutUnit under_gap_min;
@@ -41,7 +41,7 @@ UnderOverVerticalParameters GetUnderOverVerticalParameters(
   if (!font_data)
     return parameters;
 
-  // https://mathml-refresh.github.io/mathml-core/#dfn-default-fallback-constant
+  // https://w3c.github.io/mathml-core/#dfn-default-fallback-constant
   const float default_fallback_constant = 0;
 
   if (is_base_large_operator) {
@@ -121,7 +121,7 @@ UnderOverVerticalParameters GetUnderOverVerticalParameters(
   return parameters;
 }
 
-// https://mathml-refresh.github.io/mathml-core/#underscripts-and-overscripts-munder-mover-munderover
+// https://w3c.github.io/mathml-core/#underscripts-and-overscripts-munder-mover-munderover
 bool HasAccent(const NGBlockNode& node, bool accent_under) {
   DCHECK(node);
   auto* underover = To<MathMLUnderOverElement>(node.GetDOMNode());
