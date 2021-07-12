@@ -128,11 +128,9 @@ void GrammarServiceClient::ParseGrammarCheckerResult(
 bool GrammarServiceClient::IsAvailable(Profile* profile) const {
   const PrefService* pref = profile->GetPrefs();
   DCHECK(pref);
-  // If prefs don't allow spell checking, if enhanced spell check is disabled,
-  // or if the profile is off the record, the grammar service should be
-  // unavailable.
+  // If prefs don't allow spell checking, if the profile is off the record, the
+  // grammar service should be unavailable.
   if (!pref->GetBoolean(spellcheck::prefs::kSpellCheckEnable) ||
-      !pref->GetBoolean(spellcheck::prefs::kSpellCheckUseSpellingService) ||
       profile->IsOffTheRecord())
     return false;
 

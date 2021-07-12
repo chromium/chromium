@@ -38,8 +38,6 @@ TEST_F(GrammarServiceClientTest, ReturnsEmptyResultWhenSpellCheckIsDiabled) {
 
   auto profile = std::make_unique<TestingProfile>();
   profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, false);
-  profile->GetPrefs()->SetBoolean(
-      spellcheck::prefs::kSpellCheckUseSpellingService, false);
 
   GrammarServiceClient client;
   base::RunLoop().RunUntilIdle();
@@ -63,8 +61,6 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
 
   auto profile = std::make_unique<TestingProfile>();
   profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, true);
-  profile->GetPrefs()->SetBoolean(
-      spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
   // Construct fake output
   machine_learning::mojom::GrammarCheckerResultPtr result =
@@ -112,8 +108,6 @@ TEST_F(GrammarServiceClientTest, RejectsNonEnglishQuery) {
 
   auto profile = std::make_unique<TestingProfile>();
   profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, true);
-  profile->GetPrefs()->SetBoolean(
-      spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
   // Construct fake output
   std::vector<machine_learning::mojom::TextLanguagePtr> languages;
@@ -142,8 +136,6 @@ TEST_F(GrammarServiceClientTest, RejectsLongQueries) {
 
   auto profile = std::make_unique<TestingProfile>();
   profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, true);
-  profile->GetPrefs()->SetBoolean(
-      spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
   GrammarServiceClient client;
   base::RunLoop().RunUntilIdle();
