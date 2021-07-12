@@ -16,8 +16,7 @@ class Instance;
 namespace chrome_pdf {
 
 // Returns a handle to the font mapped based on `desc` and `charset`, for use
-// as the font_id in GetPepperFontData() and DeletePepperFont() below. Returns
-// nullptr on failure.
+// as the font_id in GetPepperFontData() and DeletePepperFont() below.
 void* MapPepperFont(const blink::WebFontDescription& desc, int charset);
 
 // Reads data from the `font_id` handle for `table` into a `buffer` of

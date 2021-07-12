@@ -4,7 +4,7 @@
 
 #include "pdf/ppapi_migration/pdfium_font_linux.h"
 
-#include "base/notreached.h"
+#include "base/check.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/module.h"
 #include "ppapi/cpp/private/pdf.h"
@@ -40,16 +40,7 @@ FONT_WEIGHT_MATCH_ASSERT(900);
 }  // namespace
 
 void* MapPepperFont(const blink::WebFontDescription& desc, int charset) {
-  // Do not attempt to map fonts if PPAPI is not initialized (for Privet local
-  // printing).
-  // TODO(noamsml): Real font substitution (http://crbug.com/391978)
-  if (!pp::Module::Get())
-    return nullptr;
-
-  if (!pp::PDF::IsAvailable()) {
-    NOTREACHED();
-    return nullptr;
-  }
+  DCHECK(pp::PDF::IsAvailable());
 
   pp::BrowserFontDescription description;
 
@@ -77,10 +68,7 @@ unsigned long GetPepperFontData(void* font_id,
                                 unsigned int table,
                                 unsigned char* buffer,
                                 unsigned long buf_size) {
-  if (!pp::PDF::IsAvailable()) {
-    NOTREACHED();
-    return 0;
-  }
+  DCHECK(pp::PDF::IsAvailable());
 
   uint32_t size = buf_size;
   long res_id = reinterpret_cast<long>(font_id);

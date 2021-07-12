@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/i18n/encoding_detection.h"
@@ -105,10 +106,6 @@ BlinkFontMapper& GetBlinkFontMapper() {
   return *mapper;
 }
 
-bool UsePepperMapping() {
-  return PDFiumEngine::GetFontMappingMode() != FontMappingMode::kBlink;
-}
-
 blink::WebFontDescription::Weight WeightToBlinkWeight(int weight) {
   static_assert(blink::WebFontDescription::kWeight100 == 0, "Blink Weight min");
   static_assert(blink::WebFontDescription::kWeight900 == 8, "Blink Weight max");
@@ -139,6 +136,9 @@ void* MapFont(FPDF_SYSFONTINFO*,
               int pitch_family,
               const char* face,
               int* exact) {
+  if (PDFiumEngine::GetFontMappingMode() == FontMappingMode::kNoMapping)
+    return nullptr;
+
   // Pretend the system does not have the Symbol font to force a fallback to
   // the built in Symbol font in CFX_FontMapper::FindSubstFont().
   if (strcmp(face, "Symbol") == 0)
@@ -233,9 +233,10 @@ void* MapFont(FPDF_SYSFONTINFO*,
     desc.italic = italic > 0;
   }
 
-  if (UsePepperMapping())
+  if (PDFiumEngine::GetFontMappingMode() == FontMappingMode::kPepper)
     return MapPepperFont(desc, charset);
 
+  DCHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kBlink);
   return GetBlinkFontMapper().MapFont(desc, charset);
 }
 
@@ -244,18 +245,20 @@ unsigned long GetFontData(FPDF_SYSFONTINFO*,
                           unsigned int table,
                           unsigned char* buffer,
                           unsigned long buf_size) {
-  if (UsePepperMapping())
+  if (PDFiumEngine::GetFontMappingMode() == FontMappingMode::kPepper)
     return GetPepperFontData(font_id, table, buffer, buf_size);
 
+  DCHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kBlink);
   return GetBlinkFontMapper().GetFontData(font_id, table, buffer, buf_size);
 }
 
 void DeleteFont(FPDF_SYSFONTINFO*, void* font_id) {
-  if (UsePepperMapping()) {
+  if (PDFiumEngine::GetFontMappingMode() == FontMappingMode::kPepper) {
     DeletePepperFont(font_id);
     return;
   }
 
+  DCHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kBlink);
   GetBlinkFontMapper().DeleteFont(font_id);
 }
 
