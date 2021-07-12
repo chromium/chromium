@@ -83,7 +83,6 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   std::vector<ConversionReport> GetConversionsToReport(base::Time expiry_time,
                                                        int limit = -1) override;
   std::vector<StorableImpression> GetActiveImpressions(int limit = -1) override;
-  int DeleteExpiredImpressions() override;
   bool DeleteConversion(int64_t conversion_id) override;
   void ClearData(
       base::Time delete_begin,
@@ -98,6 +97,11 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   // Returns false on failure.
   bool DeleteImpressions(const std::vector<int64_t>& impression_ids)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+
+  // Deletes all impressions that have expired and have no pending conversion
+  // reports.
+  void DeleteExpiredImpressions() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Deletes the conversion with `conversion_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.

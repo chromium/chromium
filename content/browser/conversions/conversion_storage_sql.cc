@@ -614,11 +614,7 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   return conversions;
 }
 
-int ConversionStorageSql::DeleteExpiredImpressions() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
-    return 0;
-
+void ConversionStorageSql::DeleteExpiredImpressions() {
   // Delete all impressions that have no associated conversions and are past
   // their expiry time. Optimized by |kImpressionExpiryIndexSql|.
   static constexpr char kDeleteExpiredImpressionsSql[] =
@@ -628,8 +624,7 @@ int ConversionStorageSql::DeleteExpiredImpressions() {
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredImpressionsSql));
   delete_expired_statement.BindTime(0, clock_->Now());
   if (!delete_expired_statement.Run())
-    return 0;
-  int change_count = db_->GetLastChangeCount();
+    return;
 
   // Delete all impressions that have no associated conversions and are
   // inactive. This is done in a separate statement from
@@ -640,10 +635,7 @@ int ConversionStorageSql::DeleteExpiredImpressions() {
       "impression_id NOT IN(SELECT impression_id FROM conversions)";
   sql::Statement delete_inactive_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteInactiveImpressionsSql));
-
-  if (!delete_inactive_statement.Run())
-    return change_count;
-  return change_count + db_->GetLastChangeCount();
+  delete_inactive_statement.Run();
 }
 
 bool ConversionStorageSql::DeleteConversion(int64_t conversion_id) {

@@ -116,7 +116,6 @@ TEST_F(ConversionStorageTest,
       storage->MaybeCreateAndStoreConversionReport(DefaultConversion()));
   EXPECT_TRUE(storage->GetConversionsToReport(clock()->Now()).empty());
   EXPECT_TRUE(storage->GetActiveImpressions().empty());
-  EXPECT_EQ(0, storage->DeleteExpiredImpressions());
   EXPECT_EQ(0, storage->DeleteConversion(0));
   EXPECT_NO_FATAL_FAILURE(storage->ClearData(
       base::Time::Min(), base::Time::Max(), base::NullCallback()));
@@ -226,23 +225,6 @@ TEST_F(ConversionStorageTest, ImpressionExpired_ConversionsStoredPrior) {
       storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 }
 
-TEST_F(ConversionStorageTest, ImpressionNotExpired_NotDeleted) {
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
-  EXPECT_EQ(0, storage()->DeleteExpiredImpressions());
-}
-
-TEST_F(ConversionStorageTest, ImpressionExpired_Deleted) {
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
-  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
-  EXPECT_EQ(1, storage()->DeleteExpiredImpressions());
-}
-
 TEST_F(ConversionStorageTest,
        ImpressionWithMaxConversions_ConversionReportNotStored) {
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
@@ -301,58 +283,6 @@ TEST_F(ConversionStorageTest,
   clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
 
   EXPECT_EQ(0u, storage()->GetConversionsToReport(clock()->Now()).size());
-}
-
-TEST_F(ConversionStorageTest,
-       ExpiredImpressionWithPendingConversion_NotDeleted) {
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
-  EXPECT_TRUE(
-      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
-
-  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
-  EXPECT_EQ(0, storage()->DeleteExpiredImpressions());
-}
-
-TEST_F(ConversionStorageTest, TwoImpressionsOneExpired_OneDeleted) {
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(4))
-          .Build());
-
-  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
-  EXPECT_TRUE(
-      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
-  EXPECT_EQ(1, storage()->DeleteExpiredImpressions());
-}
-
-TEST_F(ConversionStorageTest, ExpiredImpressionWithSentConversion_Deleted) {
-  storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now())
-          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
-          .Build());
-  EXPECT_TRUE(
-      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
-
-  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
-  EXPECT_EQ(0, storage()->DeleteExpiredImpressions());
-
-  // Advance past the default report time.
-  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
-  EXPECT_EQ(0, storage()->DeleteExpiredImpressions());
-
-  std::vector<ConversionReport> reports =
-      storage()->GetConversionsToReport(clock()->Now());
-  EXPECT_EQ(1u, reports.size());
-  DeleteConversionReports(reports);
-
-  EXPECT_EQ(1, storage()->DeleteExpiredImpressions());
 }
 
 TEST_F(ConversionStorageTest, ConversionReportDeleted_RemovedFromStorage) {

@@ -127,10 +127,6 @@ class ConversionStorage {
   virtual std::vector<StorableImpression> GetActiveImpressions(int limit = -1)
       WARN_UNUSED_RESULT = 0;
 
-  // Deletes all impressions that have expired and have no pending conversion
-  // reports. Returns the number of impressions that were deleted.
-  virtual int DeleteExpiredImpressions() = 0;
-
   // Deletes the conversion report with the given |conversion_id|. Returns
   // whether the deletion was successful.
   virtual bool DeleteConversion(int64_t conversion_id) = 0;
