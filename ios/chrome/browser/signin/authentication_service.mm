@@ -260,10 +260,6 @@ ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
   return account_manager_service_->GetIdentityWithGaiaID(authenticated_gaia_id);
 }
 
-ChromeIdentity* AuthenticationService::GetAuthenticatedIdentity() const {
-  return GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-}
-
 void AuthenticationService::SignIn(ChromeIdentity* identity) {
   CHECK(signin::IsSigninAllowed(pref_service_));
   DCHECK(account_manager_service_->IsValidIdentity(identity));
@@ -574,12 +570,4 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
     // since this change comes from the user.
     ApproveAccountList();
   }
-}
-
-bool AuthenticationService::IsAuthenticated() const {
-  return HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-}
-
-bool AuthenticationService::IsAuthenticatedIdentityManaged() const {
-  return HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
 }

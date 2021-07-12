@@ -531,8 +531,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 // if the user is signed in. If not signed in, the default identity from
 // AccountManagerService.
 - (ChromeIdentity*)defaultIdentity {
-  if (self.authService->IsAuthenticated()) {
-    return self.authService->GetAuthenticatedIdentity();
+  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    return self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   }
   DCHECK(self.accountManagerService);
   return self.accountManagerService->GetDefaultIdentity();
