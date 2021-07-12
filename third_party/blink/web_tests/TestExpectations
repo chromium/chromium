@@ -1102,6 +1102,7 @@ virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-list-item-00
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-list-item-005.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-list-item-006.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-rule-nested-balancing-004.html [ Pass ]
+virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-scroll-content.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-006.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-007.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-008.html [ Pass ]
