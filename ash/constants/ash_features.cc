@@ -946,6 +946,11 @@ const base::Feature kSmartDimExperimentalComponent{
 const base::Feature kSmartLockUIRevamp{"SmartLockUIRevamp",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Deprecated. Use kSyncSettingsCategorization and kSyncConsentOptional instead.
+// TODO(https://crbug.com/1227417): Remove this after completing the migration.
+const base::Feature kSplitSettingsSync{"SplitSettingsSync",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // This feature:
 // - Creates a new "Sync your settings" section in Chrome OS settings
 // - Moves app, wallpaper and Wi-Fi sync to OS settings
@@ -953,13 +958,16 @@ const base::Feature kSmartLockUIRevamp{"SmartLockUIRevamp",
 //   preferences
 // - Makes the OS ModelTypes run in sync transport mode, controlled by a single
 //   pref for the entire OS sync feature
-// - Updates the OOBE sync consent screen
+const base::Feature kSyncSettingsCategorization{
+    "SyncSettingsCategorization", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Updates the OOBE sync consent screen
 //
-// NOTE: The feature is rolling out via a client-side Finch trial, so the actual
-// state will vary. See config in
+// NOTE: The feature will be rolled out via a client-side Finch trial, so the
+// actual state will vary. TODO(https://crbug.com/1227417): Migrate config in
 // chrome/browser/ash/sync/split_settings_sync_field_trial.cc
-const base::Feature kSplitSettingsSync{"SplitSettingsSync",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncConsentOptional{"SyncConsentOptional",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables battery indicator for styluses in the palette tray
 const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
@@ -1477,6 +1485,14 @@ bool IsShowDateInTrayButtonEnabled() {
 
 bool IsSplitSettingsSyncEnabled() {
   return base::FeatureList::IsEnabled(kSplitSettingsSync);
+}
+
+bool IsSyncSettingsCategorizationEnabled() {
+  return base::FeatureList::IsEnabled(kSyncSettingsCategorization);
+}
+
+bool IsSyncConsentOptionalEnabled() {
+  return base::FeatureList::IsEnabled(kSyncConsentOptional);
 }
 
 bool IsStylusBatteryStatusEnabled() {

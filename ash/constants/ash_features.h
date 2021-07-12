@@ -510,6 +510,8 @@ bool IsSettingsAppNotificationSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShowDateInTrayButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSplitSettingsSyncEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSyncSettingsCategorizationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSyncConsentOptionalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStylusBatteryStatusEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemLatinPhysicalTypingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTabClusterUIEnabled();
