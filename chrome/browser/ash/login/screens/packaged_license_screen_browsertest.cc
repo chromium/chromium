@@ -46,7 +46,7 @@ class PackagedLicenseScreenTest : public OobeBaseTest {
       dict.Get()->SetKey(policy::kDeviceStatePackagedLicense,
                          base::Value(true));
     } else {
-      dict.Get()->Remove(policy::kDeviceStatePackagedLicense, nullptr);
+      dict.Get()->RemoveKey(policy::kDeviceStatePackagedLicense);
     }
   }
 

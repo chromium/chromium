@@ -121,7 +121,7 @@ void Registry::ForgetFileSystem(const ProviderId& provider_id,
 
   file_systems_per_extension->RemoveKey(file_system_id);
   if (file_systems_per_extension->DictEmpty())
-    dict_update->Remove(provider_id.ToString(), NULL);
+    dict_update->RemoveKey(provider_id.ToString());
 }
 
 std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(

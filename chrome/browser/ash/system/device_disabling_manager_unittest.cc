@@ -178,7 +178,7 @@ void DeviceDisablingManagerOOBETest::SetDeviceDisabled(bool disabled) {
   if (disabled) {
     dict->SetString(policy::kDeviceStateMode, policy::kDeviceStateModeDisabled);
   } else {
-    dict->Remove(policy::kDeviceStateMode, nullptr);
+    dict->RemoveKey(policy::kDeviceStateMode);
   }
   dict->SetString(policy::kDeviceStateManagementDomain, kEnrollmentDomain);
   dict->SetString(policy::kDeviceStateDisabledMessage, kDisabledMessage1);

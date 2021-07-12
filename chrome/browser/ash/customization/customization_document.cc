@@ -714,7 +714,7 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
           break;
         }
         entry = app_entry->CreateDeepCopy();
-        entry->Remove(kIdAttr, nullptr);
+        entry->RemoveKey(kIdAttr);
       } else {
         LOG(ERROR) << "Wrong format of default application list";
         prefs->Clear();

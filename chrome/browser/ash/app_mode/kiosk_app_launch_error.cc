@@ -122,7 +122,7 @@ void KioskAppLaunchError::RecordMetricAndClear() {
   if (dict_update->GetInteger(kKeyLaunchError, &error))
     UMA_HISTOGRAM_ENUMERATION("Kiosk.Launch.Error", static_cast<Error>(error),
                               Error::kCount);
-  dict_update->Remove(kKeyLaunchError, NULL);
+  dict_update->RemoveKey(kKeyLaunchError);
 
   int cryptohome_failure;
   if (dict_update->GetInteger(kKeyCryptohomeFailure, &cryptohome_failure)) {
@@ -131,7 +131,7 @@ void KioskAppLaunchError::RecordMetricAndClear() {
         static_cast<AuthFailure::FailureReason>(cryptohome_failure),
         AuthFailure::NUM_FAILURE_REASONS);
   }
-  dict_update->Remove(kKeyCryptohomeFailure, NULL);
+  dict_update->RemoveKey(kKeyCryptohomeFailure);
 }
 
 }  // namespace ash
