@@ -172,10 +172,13 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             String guid = ((AutofillProfileEditorPreference) preference).getGUID();
             EditorDialog editorDialog = prepareEditorDialog(guid);
             mLastEditorDialogForTest = editorDialog;
-            AutofillAddress autofillAddress = guid == null
-                    ? null
-                    : new AutofillAddress(
-                            getActivity(), PersonalDataManager.getInstance().getProfile(guid));
+            AutofillAddress autofillAddress = null;
+            if (guid != null) {
+                AutofillProfile profile = PersonalDataManager.getInstance().getProfile(guid);
+                if (profile != null) {
+                    autofillAddress = new AutofillAddress(getActivity(), profile);
+                }
+            }
             editAddress(editorDialog, autofillAddress);
             return;
         }
