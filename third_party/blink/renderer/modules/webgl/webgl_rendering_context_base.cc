@@ -5981,6 +5981,14 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       CanUseTexImageViaGPU(format, type) &&
       transform == media::kNoTransformation;
 
+#if defined(OS_WIN)
+  // TODO(crbug.com/1227921): When OOP GPU rasterization is disabled, uploading
+  // via the GPU becomes extremely slow.
+  const bool gpu_teximage_is_slow = !caps.supports_oop_raster;
+#else
+  const bool gpu_teximage_is_slow = false;
+#endif
+
   // Callers may chose to provide a renderer which ensures that generated
   // intermediates will be cached across TexImage calls for the same frame.
   std::unique_ptr<media::PaintCanvasVideoRenderer> local_video_renderer;
@@ -6026,7 +6034,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     // TODO(crbug.com/1180879): I420A should be supported, but currently fails
     // conformance/textures/misc/texture-video-transparent.html.
     if (!media_video_frame->HasTextures() &&
-        media::IsOpaque(media_video_frame->format()) &&
+        media::IsOpaque(media_video_frame->format()) && !gpu_teximage_is_slow &&
         video_renderer->CopyVideoFrameYUVDataToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame, target,
             texture->Object(), adjusted_internalformat, format, type, level,
@@ -6094,9 +6102,9 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       function_id == kTexImage2D || function_id == kTexSubImage2D;
 #endif
 
-  const bool can_upload_via_gpu = function_supports_gpu_teximage &&
-                                  CanUseTexImageViaGPU(format, type) &&
-                                  source_image_rect_is_default;
+  const bool can_upload_via_gpu =
+      function_supports_gpu_teximage && CanUseTexImageViaGPU(format, type) &&
+      source_image_rect_is_default && !gpu_teximage_is_slow;
 
   // If we can upload via GPU, try to to use an accelerated resource provider
   // configured appropriately for video. Otherwise use the software cache.
