@@ -104,6 +104,18 @@ suite('SettingsBasicPageRedesign', () => {
     }
   }
 
+  /** @param {string} section */
+  function assertActiveSubpage(section) {
+    // Check that only the subpage of the |active| section is visible.
+    const settingsPages = page.shadowRoot.querySelectorAll(
+        `settings-section[active] settings-${section}-page`);
+    assertEquals(1, settingsPages.length);
+    const subpages =
+        settingsPages[0].shadowRoot.querySelectorAll('settings-subpage');
+    assertEquals(1, subpages.length);
+    assertTrue(isVisible(subpages[0]));
+  }
+
   test('OnlyOneSectionShown', async () => {
     // RouteState.INITIAL -> RoutState.TOP_LEVEL
     // Check that only one is marked as |active|.
@@ -152,7 +164,7 @@ suite('SettingsBasicPageRedesign', () => {
     Router.getInstance().navigateTo(routes.FONTS);
     await whenDone;
     await flushTasks();
-    assertActiveSection(routes.APPEARANCE.section);
+    assertActiveSubpage(routes.APPEARANCE.section);
     assertTrue(!!getCardElement());
     assertFalse(!!getDefault());
     assertTrue(!!getSubpage());
