@@ -109,6 +109,7 @@ if (is_chromeos_ash) {
     "users_private.idl",
     "wallpaper.json",
     "wallpaper_private.json",
+    "wm_desks_private.idl",
   ]
   if (use_cups) {
     schema_sources_ += [

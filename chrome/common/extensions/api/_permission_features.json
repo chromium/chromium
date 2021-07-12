@@ -952,5 +952,16 @@
       "B44D08FD98F1523ED5837D78D0A606EA9D6206E5",  // Web Store
       "2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4"   // Enterprise Web Store
     ]
+  },
+  "wmDesksPrivate": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"],
+    "platforms": ["chromeos"],
+    "allowlist": [
+      // Extension id hash for API test.
+      "74801F84D31D23D08BEA48AB82C6A6120EDB4D45",
+      "6A4D7AEC6414492BD25219C7A479265BF1177D42",  // http://crbug.com/1206836
+      "F80B163C896D50A685E0B683BEEEA94217F253D6"   // http://crbug.com/1206836
+    ]
   }
 }

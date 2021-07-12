@@ -959,5 +959,9 @@
       "chrome-untrusted://terminal/*"
     ],
     "platforms": ["chromeos"]
-  }]
+  }],
+  "wmDesksPrivate": {
+    "dependencies": ["permission:wmDesksPrivate"],
+    "contexts": ["blessed_extension"]
+  }
 }

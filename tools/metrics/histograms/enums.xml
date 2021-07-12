@@ -28753,6 +28753,11 @@ Called by update_extension_histograms.py.-->
   <int value="1556"
       label="ACCESSIBILITY_PRIVATE_GETLOCALIZEDDOMKEYSTRINGFORKEYCODE"/>
   <int value="1557" label="SCRIPTING_REGISTERCONTENTSCRIPTS"/>
+  <int value="1558" label="WMDESKSPRIVATE_CAPTUREACTIVEDESKANDSAVETEMPLATE"/>
+  <int value="1559" label="WMDESKSPRIVATE_UPDATEDESKTEMPLATE"/>
+  <int value="1560" label="WMDESKSPRIVATE_GETSAVEDDESKTEMPLATES"/>
+  <int value="1561" label="WMDESKSPRIVATE_DELETEDESKTEMPLATE"/>
+  <int value="1562" label="WMDESKSPRIVATE_LAUNCHDESKTEMPLATE"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -29373,6 +29378,7 @@ Called by update_extension_permission.py.-->
   <int value="228" label="kSearch"/>
   <int value="229" label="kTabGroups"/>
   <int value="230" label="kScripting"/>
+  <int value="231" label="kWmDesksPrivate"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

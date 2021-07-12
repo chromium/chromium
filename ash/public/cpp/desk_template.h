@@ -36,8 +36,9 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   }
 
  private:
-  const double uuid_;  // We'll use the current time in seconds since epoch to
-                       // uniquely identify the template.
+  // We'll use the current time in seconds since epoch to uniquely identify the
+  // template. TODO: change it to base::GUID type.
+  const double uuid_;
   std::u16string template_name_;
 
   // Contains the app launching and window information that can be used to

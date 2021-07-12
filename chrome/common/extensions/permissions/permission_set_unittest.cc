@@ -852,6 +852,7 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kWebrtcLoggingPrivateAudioDebug);
   skip.insert(APIPermissionID::kWebstorePrivate);
   skip.insert(APIPermissionID::kWebstoreWidgetPrivate);
+  skip.insert(APIPermissionID::kWmDesksPrivate);
 
   // Warned as part of host permissions.
   skip.insert(APIPermissionID::kDevtools);

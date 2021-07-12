@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/desks_client.h"
 
+#include <memory>
+
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_helper.h"
 #include "base/bind.h"
@@ -33,18 +35,35 @@ DesksClient* DesksClient::Get() {
   return g_desks_client_instance;
 }
 
-std::unique_ptr<ash::DeskTemplate> DesksClient::CaptureActiveDeskAsTemplate() {
-  return desks_helper_->CaptureActiveDeskAsTemplate();
+void DesksClient::CaptureActiveDeskAndSaveTemplate(
+    CaptureActiveDeskAndSaveTemplateCallback callback) {
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      desks_helper_->CaptureActiveDeskAsTemplate();
+  // TODO: Save it to storage.
+  std::move(callback).Run(/*success=*/true, std::move(desk_template));
 }
 
-void DesksClient::LaunchDeskTemplate(double template_uuid) {
+void DesksClient::UpdateDeskTemplate(double template_uuid,
+                                     const std::u16string& template_name,
+                                     UpdateDeskTemplateCallback callback) {}
+
+void DesksClient::DeleteDeskTemplate(double template_uuid,
+                                     DeleteDeskTemplateCallback callback) {}
+
+void DesksClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {}
+
+void DesksClient::LaunchDeskTemplate(double template_uuid,
+                                     LaunchDeskTemplateCallback callback) {
   MaybeCreateAppLaunchHandler();
-  if (!app_launch_handler_)
+  if (!app_launch_handler_) {
+    std::move(callback).Run(/*success=*/false);
     return;
+  }
 
   // TODO: Find the saved template associated with `template_uuid` from storage.
   if (!launch_template_for_test_ ||
       launch_template_for_test_->uuid() != template_uuid) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -53,21 +72,28 @@ void DesksClient::LaunchDeskTemplate(double template_uuid) {
       launch_template_for_test_->template_name(),
       base::BindOnce(&DesksClient::OnCreateAndActivateNewDesk,
                      weak_ptr_factory_.GetWeakPtr(),
-                     launch_template_for_test_.get()));
+                     launch_template_for_test_.get(), std::move(callback)));
 }
 
-void DesksClient::OnCreateAndActivateNewDesk(ash::DeskTemplate* desk_template,
-                                             bool on_create_activate_success) {
-  if (!on_create_activate_success)
+void DesksClient::OnCreateAndActivateNewDesk(
+    ash::DeskTemplate* desk_template,
+    LaunchDeskTemplateCallback callback,
+    bool on_create_activate_success) {
+  if (!on_create_activate_success) {
+    std::move(callback).Run(/*success=*/false);
     return;
+  }
 
   DCHECK(desk_template);
   full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
-  if (!restore_data)
+  if (!restore_data) {
+    std::move(callback).Run(/*success=*/false);
     return;
+  }
 
   DCHECK(app_launch_handler_);
   app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
+  std::move(callback).Run(/*success=*/true);
 }
 
 void DesksClient::MaybeCreateAppLaunchHandler() {

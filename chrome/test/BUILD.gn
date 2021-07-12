@@ -3323,6 +3323,7 @@ if (!is_android) {
         "../browser/chromeos/extensions/wallpaper_apitest.cc",
         "../browser/chromeos/extensions/wallpaper_manager_browsertest.cc",
         "../browser/chromeos/extensions/wallpaper_private_apitest.cc",
+        "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
         "../browser/chromeos/first_run/drive_first_run_browsertest.cc",
         "../browser/chromeos/full_restore/full_restore_app_launch_handler_browsertest.cc",
         "../browser/chromeos/input_method/input_method_engine_browsertests.cc",

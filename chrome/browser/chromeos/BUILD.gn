@@ -3221,6 +3221,8 @@ source_set("chromeos") {
     "extensions/wallpaper_function_base.h",
     "extensions/wallpaper_private_api.cc",
     "extensions/wallpaper_private_api.h",
+    "extensions/wm/wm_desks_private_api.cc",
+    "extensions/wm/wm_desks_private_api.h",
   ]
 
   if (use_iioservice) {
