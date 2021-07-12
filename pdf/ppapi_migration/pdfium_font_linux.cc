@@ -39,8 +39,11 @@ FONT_WEIGHT_MATCH_ASSERT(900);
 
 }  // namespace
 
-void* MapPepperFont(const blink::WebFontDescription& desc, int charset) {
+void* MapPepperFont(const blink::WebFontDescription& desc,
+                    const std::string& font_family,
+                    int charset) {
   DCHECK(pp::PDF::IsAvailable());
+  DCHECK(desc.family.IsEmpty());
 
   pp::BrowserFontDescription description;
 
@@ -52,7 +55,7 @@ void* MapPepperFont(const blink::WebFontDescription& desc, int charset) {
     description.set_family(PP_BROWSERFONT_TRUSTED_FAMILY_SERIF);
   }
 
-  description.set_face(desc.family.Utf8());
+  description.set_face(font_family);
   description.set_weight(ToPepperWeight(desc.weight));
   description.set_italic(desc.italic);
 

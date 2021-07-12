@@ -5,6 +5,8 @@
 #ifndef PDF_PPAPI_MIGRATION_PDFIUM_FONT_LINUX_H_
 #define PDF_PPAPI_MIGRATION_PDFIUM_FONT_LINUX_H_
 
+#include <string>
+
 namespace blink {
 struct WebFontDescription;
 }
@@ -15,9 +17,12 @@ class Instance;
 
 namespace chrome_pdf {
 
-// Returns a handle to the font mapped based on `desc` and `charset`, for use
-// as the font_id in GetPepperFontData() and DeletePepperFont() below.
-void* MapPepperFont(const blink::WebFontDescription& desc, int charset);
+// Returns a handle to the font mapped based on `desc`, `font_family`, and
+// `charset`. The handle is for use as the `font_id` in `GetPepperFontData()`
+// and `DeletePepperFont()` below.
+void* MapPepperFont(const blink::WebFontDescription& desc,
+                    const std::string& font_family,
+                    int charset);
 
 // Reads data from the `font_id` handle for `table` into a `buffer` of
 // `buf_size`. Returns the amount of data read on success, or 0 on failure. If

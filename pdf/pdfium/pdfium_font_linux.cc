@@ -144,7 +144,12 @@ void* MapFont(FPDF_SYSFONTINFO*,
   if (strcmp(face, "Symbol") == 0)
     return nullptr;
 
+  // TODO(crbug.com/702993): `blink::WebFontDescription::family` is a
+  // `blink::WebString`, which can only be used if Blink is initialized. Store
+  // the field in `font_family` for now, but remove the variable when this code
+  // will only execute in a renderer process.
   blink::WebFontDescription desc;
+  std::string font_family;
 
   if (pitch_family & FXFONT_FF_FIXEDPITCH) {
     desc.generic_family = blink::WebFontDescription::kGenericFamilyMonospace;
@@ -203,7 +208,7 @@ void* MapFont(FPDF_SYSFONTINFO*,
   size_t i;
   for (i = 0; i < base::size(kPdfFontSubstitutions); ++i) {
     if (strcmp(face, kPdfFontSubstitutions[i].pdf_name) == 0) {
-      desc.family = blink::WebString::FromUTF8(kPdfFontSubstitutions[i].face);
+      font_family = kPdfFontSubstitutions[i].face;
       if (kPdfFontSubstitutions[i].bold)
         desc.weight = blink::WebFontDescription::kWeightBold;
       if (kPdfFontSubstitutions[i].italic)
@@ -228,15 +233,16 @@ void* MapFont(FPDF_SYSFONTINFO*,
     if (face_utf8.empty())
       return nullptr;
 
-    desc.family = blink::WebString::FromUTF8(face_utf8);
+    font_family = face_utf8;
     desc.weight = WeightToBlinkWeight(weight);
     desc.italic = italic > 0;
   }
 
   if (PDFiumEngine::GetFontMappingMode() == FontMappingMode::kPepper)
-    return MapPepperFont(desc, charset);
+    return MapPepperFont(desc, font_family, charset);
 
   DCHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kBlink);
+  desc.family = blink::WebString::FromUTF8(font_family);
   return GetBlinkFontMapper().MapFont(desc, charset);
 }
 
