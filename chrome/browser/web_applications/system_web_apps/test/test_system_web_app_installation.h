@@ -151,6 +151,16 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithNewWindowMenuItem();
 
+  // This creates 4 system web app types for testing context menu with
+  // different windowing options:
+  //
+  // - SETTINGS: Single Window, No TabStrip
+  // - FILE_MANAGER: Multi Window, No TabStrip
+  // - MEDIA: Single Window, TabStrip
+  // - HELP: Multi Window, TabStrip
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetUpAppsForContestMenuTest();
+
   ~TestSystemWebAppInstallation();
 
   void WaitForAppInstall();

@@ -82,11 +82,15 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -591,6 +595,19 @@ bool IsPdfPluginURL(const GURL& url) {
 }
 #endif
 
+// If the link points to a system web app (in |profile|), return its type.
+// Otherwise nullopt.
+absl::optional<web_app::SystemAppType> GetLinkSystemAppType(Profile* profile,
+                                                            const GURL& url) {
+  absl::optional<web_app::AppId> link_app_id =
+      web_app::FindInstalledAppWithUrlInScope(profile, url);
+
+  if (!link_app_id)
+    return absl::nullopt;
+
+  return web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id);
+}
+
 }  // namespace
 
 // static
@@ -632,6 +649,10 @@ RenderViewContextMenu::RenderViewContextMenu(
   }
   set_content_type(
       ContextMenuContentTypeFactory::Create(source_web_contents_, params));
+
+  system_app_type_ = GetBrowser() && GetBrowser()->app_controller()
+                         ? GetBrowser()->app_controller()->system_app_type()
+                         : absl::nullopt;
 }
 
 RenderViewContextMenu::~RenderViewContextMenu() = default;
@@ -1208,23 +1229,48 @@ void RenderViewContextMenu::AppendLinkItems() {
     WebContents* active_web_contents =
         browser ? browser->tab_strip_model()->GetActiveWebContents() : nullptr;
 
-    menu_model_.AddItemWithStringId(
-        IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-        in_app ? IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP
-               : IDS_CONTENT_CONTEXT_OPENLINKNEWTAB);
-    if (!in_app) {
-      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                                      IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
+    Profile* profile = GetProfile();
+    absl::optional<web_app::SystemAppType> link_system_app_type =
+        GetLinkSystemAppType(profile, params_.link_url);
+    if (system_app_type_ && link_system_app_type) {
+      // Show "Open in new tab" if this link points to the current app, and the
+      // app has a tab strip.
+      //
+      // We don't show "open in tab" for links to a different SWA, because two
+      // SWAs can't share the same browser window.
+      if (system_app_type_ == link_system_app_type &&
+          web_app::WebAppProvider::GetForSystemWebApps(profile)
+              ->system_web_app_manager()
+              .ShouldHaveTabStrip(system_app_type_.value())) {
+        menu_model_.AddItemWithStringId(
+            IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+            IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP);
+      }
+
+      // Don't show "open in new window", this is instead handled below in
+      // |AppendOpenInWebAppLinkItems| (which includes app's name and icon).
+    } else {
+      menu_model_.AddItemWithStringId(
+          IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+          in_app ? IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP
+                 : IDS_CONTENT_CONTEXT_OPENLINKNEWTAB);
+      if (!in_app) {
+        menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                                        IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
+      }
     }
 
     if (params_.link_url.is_valid()) {
       AppendProtocolHandlerSubMenu();
     }
 
-    menu_model_.AddItemWithStringId(
-        IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
-        in_app ? IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP
-               : IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD);
+    // Links to system web app can't be opened in incognito / off-the-record.
+    if (!link_system_app_type) {
+      menu_model_.AddItemWithStringId(
+          IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+          in_app ? IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP
+                 : IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD);
+    }
 
     AppendOpenInWebAppLinkItems();
     AppendOpenWithLinkItems();
@@ -1391,15 +1437,26 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return;
 
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> link_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, params_.link_url);
-  if (!app_id)
+  if (!link_app_id)
     return;
+
+  // Don't show "Open link in new app window", if the link points to the
+  // current app, and the app is single windowed.
+  if (system_app_type_ &&
+      system_app_type_ ==
+          web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id) &&
+      web_app::WebAppProvider::GetForSystemWebApps(GetProfile())
+          ->system_web_app_manager()
+          .IsSingleWindow(*system_app_type_)) {
+    return;
+  }
 
   int open_in_app_string_id;
   const Browser* browser = GetBrowser();
   if (browser && browser->app_name() ==
-                     web_app::GenerateApplicationNameFromAppId(*app_id)) {
+                     web_app::GenerateApplicationNameFromAppId(*link_app_id)) {
     open_in_app_string_id = IDS_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP_SAMEAPP;
   } else {
     open_in_app_string_id = IDS_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP;
@@ -1410,10 +1467,11 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
       IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,
       l10n_util::GetStringFUTF16(
           open_in_app_string_id,
-          base::UTF8ToUTF16(provider->registrar().GetAppShortName(*app_id))));
+          base::UTF8ToUTF16(
+              provider->registrar().GetAppShortName(*link_app_id))));
 
   gfx::Image icon = gfx::Image::CreateFrom1xBitmap(
-      provider->icon_manager().GetFavicon(*app_id));
+      provider->icon_manager().GetFavicon(*link_app_id));
   menu_model_.SetIcon(menu_model_.GetItemCount() - 1,
                       ui::ImageModel::FromImage(icon));
 }

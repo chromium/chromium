@@ -123,6 +123,10 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl(
                    .GetAppStartUrl(params.app_id);
 }
 
+GURL SystemWebAppBrowserTestBase::GetStartUrl(SystemAppType type) {
+  return GetStartUrl(LaunchParamsForApp(type));
+}
+
 GURL SystemWebAppBrowserTestBase::GetStartUrl() {
   return GetStartUrl(LaunchParamsForApp(GetMockAppType()));
 }

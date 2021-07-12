@@ -56,6 +56,9 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // Returns the default start url.
   GURL GetStartUrl();
 
+  // Returns the URL for a installed system web app type.
+  GURL GetStartUrl(SystemAppType type);
+
   void WaitForTestSystemAppInstall();
 
   // Creates a default AppLaunchParams for |system_app_type|. Launches a window.

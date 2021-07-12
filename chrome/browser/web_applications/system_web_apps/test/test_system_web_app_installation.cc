@@ -539,6 +539,91 @@ TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem() {
       new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
+namespace {
+enum SystemWebAppWindowConfig {
+  SINGLE_WINDOW,
+  SINGLE_WINDOW_TAB_STRIP,
+  MULTI_WINDOW,
+  MULTI_WINDOW_TAB_STRIP,
+};
+
+std::unique_ptr<UnittestingSystemAppDelegate>
+CreateSystemAppDelegateWithWindowConfig(
+    const SystemAppType type,
+    const GURL& app_url,
+    SystemWebAppWindowConfig window_config) {
+  auto* delegate = new UnittestingSystemAppDelegate(
+      type, "Test App", app_url, base::BindLambdaForTesting([=]() {
+        auto info = std::make_unique<WebApplicationInfo>();
+        info->start_url = app_url;
+        info->scope = app_url.GetOrigin();
+        info->title = u"Test System App";
+        info->theme_color = 0xFF00FF00;
+        info->display_mode = blink::mojom::DisplayMode::kStandalone;
+        info->open_as_window = true;
+        return info;
+      }));
+
+  switch (window_config) {
+    case SystemWebAppWindowConfig::SINGLE_WINDOW:
+      delegate->SetShouldBeSingleWindow(true);
+      delegate->SetShouldHaveTabStrip(false);
+      break;
+    case SystemWebAppWindowConfig::SINGLE_WINDOW_TAB_STRIP:
+      delegate->SetShouldBeSingleWindow(true);
+      delegate->SetShouldHaveTabStrip(true);
+      break;
+    case SystemWebAppWindowConfig::MULTI_WINDOW:
+      delegate->SetShouldBeSingleWindow(false);
+      delegate->SetShouldHaveTabStrip(false);
+      break;
+    case SystemWebAppWindowConfig::MULTI_WINDOW_TAB_STRIP:
+      delegate->SetShouldBeSingleWindow(false);
+      delegate->SetShouldHaveTabStrip(true);
+      break;
+  }
+
+  return base::WrapUnique(delegate);
+}
+
+}  // namespace
+
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppsForContestMenuTest() {
+  std::vector<std::unique_ptr<UnittestingSystemAppDelegate>> delegates;
+  delegates.emplace_back(CreateSystemAppDelegateWithWindowConfig(
+      SystemAppType::SETTINGS, GURL("chrome://single-window/pwa.html"),
+      SystemWebAppWindowConfig::SINGLE_WINDOW));
+
+  delegates.emplace_back(CreateSystemAppDelegateWithWindowConfig(
+      SystemAppType::FILE_MANAGER, GURL("chrome://multi-window/pwa.html"),
+      SystemWebAppWindowConfig::MULTI_WINDOW));
+
+  delegates.emplace_back(CreateSystemAppDelegateWithWindowConfig(
+      SystemAppType::MEDIA, GURL("chrome://single-window-tab-strip/pwa.html"),
+      SystemWebAppWindowConfig::SINGLE_WINDOW_TAB_STRIP));
+
+  delegates.emplace_back(CreateSystemAppDelegateWithWindowConfig(
+      SystemAppType::HELP, GURL("chrome://multi-window-tab-strip/pwa.html"),
+      SystemWebAppWindowConfig::MULTI_WINDOW_TAB_STRIP));
+  auto* installation =
+      new TestSystemWebAppInstallation(std::move(delegates[0]));
+
+  for (size_t i = 1; i < delegates.size(); ++i) {
+    auto& delegate = delegates[i];
+    installation->web_ui_controller_factories_.push_back(
+        std::make_unique<TestSystemWebAppWebUIControllerFactory>(
+            GetDataSourceNameFromSystemAppInstallUrl(
+                delegate->GetInstallUrl())));
+
+    installation->system_app_delegates_.insert_or_assign(delegate->GetType(),
+                                                         std::move(delegate));
+  }
+
+  return base::WrapUnique(installation);
+}
+
 std::unique_ptr<KeyedService>
 TestSystemWebAppInstallation::CreateWebAppProvider(
     UnittestingSystemAppDelegate* delegate,

@@ -17,6 +17,7 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -343,6 +344,9 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // Shared clipboard menu observer.
   std::unique_ptr<SharedClipboardContextMenuObserver>
       shared_clipboard_context_menu_observer_;
+
+  // The type of system app (if any) associated with the WebContents we're in.
+  absl::optional<web_app::SystemAppType> system_app_type_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenu);
 };
