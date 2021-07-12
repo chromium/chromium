@@ -13,10 +13,10 @@ tast_disabled_tests_from_chrome_all = [
   "hwsec.ChapsRSAPSS",
 
   # crbug.com/1167243
-  "ui.ChromeLogin",
+  "login.Chrome",
 
   # crbug.com/1115622
-  "ui.ChromeLoginGAIA",
+  "login.ChromeGAIA",
 
   # crbug.com/1099695
   "platform.Drivefs",

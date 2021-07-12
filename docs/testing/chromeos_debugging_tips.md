@@ -103,7 +103,7 @@ To run a Tast test the same way it's ran on Chrome's builders:
 
 - Finally, run the Tast test on the device via the `cros_run_test` tool under
   `//third_party/chromite/bin/`. eg:
-  `cros_run_test --device $DEVICE_IP --tast ui.ChromeLogin`. See [here] for more
+  `cros_run_test --device $DEVICE_IP --tast login.Chrome`. See [here] for more
   info on cros_run_test.
 
 ## Telemetry
