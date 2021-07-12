@@ -19,6 +19,7 @@
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_navigation_ui_data.h"
+#include "chromecast/browser/cast_permission_user_data.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/common/mojom/activity_url_filter.mojom.h"
 #include "chromecast/common/mojom/queryable_data_store.mojom.h"
@@ -348,6 +349,11 @@ void CastWebContentsImpl::SetAppProperties(const std::string& session_id,
     return;
   shell::CastNavigationUIData::SetAppPropertiesForWebContents(
       web_contents_, session_id, is_audio_app);
+}
+
+void CastWebContentsImpl::SetCastPermissionUserData(const std::string& app_id) {
+  DCHECK(web_contents_);
+  new CastPermissionUserData(web_contents_, app_id);
 }
 
 void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,

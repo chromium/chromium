@@ -129,6 +129,8 @@ cast_source_set("browser_base") {
     "cast_overlay_manifests.h",
     "cast_permission_manager.cc",
     "cast_permission_manager.h",
+    "cast_permission_user_data.cc",
+    "cast_permission_user_data.h",
     "cast_quota_permission_context.cc",
     "cast_quota_permission_context.h",
     "cast_renderer_block_data.cc",

@@ -34,6 +34,10 @@ class MockCastWebContents : public CastWebContents {
               SetAppProperties,
               (const std::string& session_id, bool is_audio_app),
               (override));
+  MOCK_METHOD(void,
+              SetCastPermissionUserData,
+              (const std::string& app_id),
+              (override));
   MOCK_METHOD(void, LoadUrl, (const GURL&), (override));
   MOCK_METHOD(void, ClosePage, (), (override));
   MOCK_METHOD(void, Stop, (int), (override));
