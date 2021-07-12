@@ -1,3 +1,4 @@
 monorail: {
   component: "UI>Browser>Sharing"
 }
+team_email: "chrome-connect-eng@google.com"
