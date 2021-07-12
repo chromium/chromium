@@ -8,13 +8,12 @@
 
 namespace blink {
 
-void ElementSanitizer::SetSanitizedHTML(ScriptState* script_state,
-                                        Element& element,
-                                        const String& markup,
-                                        Sanitizer* sanitizer,
-                                        ExceptionState& exception_state) {
-  sanitizer->ElementSetSanitizedHTML(script_state, element, markup,
-                                     exception_state);
+void ElementSanitizer::SetHTML(ScriptState* script_state,
+                               Element& element,
+                               const String& markup,
+                               Sanitizer* sanitizer,
+                               ExceptionState& exception_state) {
+  sanitizer->ElementSetHTML(script_state, element, markup, exception_state);
 }
 
 }  // namespace blink

@@ -22,7 +22,7 @@ namespace http://www.w3.org/1999/xhtml
     property ENTITY_REFERENCE_NODE
     property NOTATION_NODE
     property PROCESSING_INSTRUCTION_NODE
-    property SetSanitizedHTML
+    property SetHTML
     property TEXT_NODE
     property accessKey
     property accessibleNode
@@ -1244,7 +1244,7 @@ namespace http://www.w3.org/2000/svg
     property ENTITY_REFERENCE_NODE
     property NOTATION_NODE
     property PROCESSING_INSTRUCTION_NODE
-    property SetSanitizedHTML
+    property SetHTML
     property TEXT_NODE
     property accessibleNode
     property addEventListener

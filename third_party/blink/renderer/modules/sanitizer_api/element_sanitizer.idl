@@ -8,8 +8,6 @@
   RuntimeEnabled=SanitizerAPI,
   ImplementedAs=ElementSanitizer
 ] partial interface Element {
-    // TODO(vogelheim): This name is likely going to change. Adapt when the
-    // standards PR changes as well.
-    [CEReactions, RaisesException, CallWith=ScriptState, MeasureAs=SanitizerAPIElementSetSanitized] void SetSanitizedHTML(DOMString markup, Sanitizer sanitizer);
+    [CEReactions, RaisesException, CallWith=ScriptState, MeasureAs=SanitizerAPIElementSetSanitized] void SetHTML(DOMString markup, Sanitizer sanitizer);
 };
 

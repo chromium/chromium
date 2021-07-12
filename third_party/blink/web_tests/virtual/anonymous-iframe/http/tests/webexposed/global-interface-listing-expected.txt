@@ -2252,7 +2252,7 @@ interface Element : Node
     getter shadowRoot
     getter slot
     getter tagName
-    method SetSanitizedHTML
+    method SetHTML
     method after
     method animate
     method append

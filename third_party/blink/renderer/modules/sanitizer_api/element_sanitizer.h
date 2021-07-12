@@ -17,11 +17,11 @@ class ScriptState;
 
 class MODULES_EXPORT ElementSanitizer final {
  public:
-  static void SetSanitizedHTML(ScriptState*,
-                               Element&,
-                               const String&,
-                               Sanitizer*,
-                               ExceptionState&);
+  static void SetHTML(ScriptState*,
+                      Element&,
+                      const String&,
+                      Sanitizer*,
+                      ExceptionState&);
 };
 
 }  // namespace blink
