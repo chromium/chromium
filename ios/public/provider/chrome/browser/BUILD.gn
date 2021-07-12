@@ -43,6 +43,13 @@ source_set("font_size_java_script_feature") {
   ]
 }
 
+group("provider_api") {
+  deps = [
+    # The individual APIs.
+    "//ios/public/provider/chrome/browser/modals:modals_api",
+  ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -86,6 +93,9 @@ group("test_providers") {
   deps = [
     # The target providing the ChromeBrowserProvider factory.
     ":test_provider_factory",
+
+    # The individual API implementations.
+    "//ios/public/provider/chrome/browser/modals:test_modals",
 
     # The provider API needs to provide MaterialDesignComponent API (as the
     # internal provider provides an alternate implementation).

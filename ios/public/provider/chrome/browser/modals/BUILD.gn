@@ -9,3 +9,15 @@ source_set("modals") {
     "modals_provider.mm",
   ]
 }
+
+source_set("modals_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "modals_api.h" ]
+}
+
+source_set("test_modals") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_modals.mm" ]
+  deps = [ ":modals_api" ]
+}

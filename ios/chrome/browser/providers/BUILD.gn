@@ -51,6 +51,9 @@ group("chromium_providers") {
     # The target providing the ChromeBrowserProvider factory.
     ":chromium_provider_factory",
 
+    # The individual API implementations.
+    "//ios/chrome/browser/providers/modals:chromium_modals",
+
     # The provider API needs to provide MaterialDesignComponent API (as the
     # internal provider provides an alternate implementation).
     "//ios/third_party/material_components_ios:material_components_ios+bundle",
