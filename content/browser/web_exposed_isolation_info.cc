@@ -4,6 +4,8 @@
 
 #include "content/browser/web_exposed_isolation_info.h"
 
+#include <ostream>
+
 namespace content {
 
 // static

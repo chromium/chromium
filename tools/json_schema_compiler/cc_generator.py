@@ -47,6 +47,7 @@ class _Generator(object):
                self._namespace.short_filename))
       .Append()
       .Append('#include <memory>')
+      .Append('#include <ostream>')
       .Append('#include <string>')
       .Append('#include <utility>')
       .Append('#include <vector>')

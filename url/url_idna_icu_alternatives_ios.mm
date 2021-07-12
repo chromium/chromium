@@ -4,6 +4,7 @@
 
 #include <string.h>
 
+#include <ostream>
 #include <string>
 
 #include "base/strings/string_piece.h"

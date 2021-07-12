@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/perf/random_selector.h"
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"

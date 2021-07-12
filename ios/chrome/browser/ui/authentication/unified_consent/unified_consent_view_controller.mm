@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/ios/ns_range.h"
 #include "components/google/core/common/google_util.h"

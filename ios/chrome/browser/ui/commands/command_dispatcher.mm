@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 
 #include <objc/runtime.h>
+
+#include <ostream>
 #include <unordered_map>
 #include <vector>
 

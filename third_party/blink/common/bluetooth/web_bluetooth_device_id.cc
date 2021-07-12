@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 
+#include <ostream>
 #include <utility>
 
 #include "base/base64.h"

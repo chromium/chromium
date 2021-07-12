@@ -4,6 +4,8 @@
 
 #include "components/web_package/test_support/web_bundle_builder.h"
 
+#include <ostream>
+
 namespace web_package {
 namespace test {
 

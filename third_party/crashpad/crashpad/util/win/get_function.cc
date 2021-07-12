@@ -14,6 +14,8 @@
 
 #include "util/win/get_function.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 

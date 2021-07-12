@@ -5,6 +5,7 @@
 #include "extensions/common/error_utils.h"
 
 #include <initializer_list>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/strings/string_piece.h"

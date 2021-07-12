@@ -4,12 +4,15 @@
 
 #include "net/base/escape.h"
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
+#include "build/build_config.h"
 
 namespace net {
 
