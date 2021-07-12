@@ -354,7 +354,8 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
                     context_provider_wrapper_->ContextProvider()
                         ->GetCapabilities())
               : GL_TEXTURE_2D),
-      use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
+      use_oop_rasterization_(is_accelerated &&
+                             context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
                                  .supports_oop_raster) {
   auto* gpu_memory_buffer_manager =
@@ -420,13 +421,14 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
   if (use_oop_rasterization_)
     return;
 
+  // For the non-accelerated case, writes are done on the CPU. So we don't need
+  // a texture for reads or writes.
+  if (!is_accelerated_)
+    return;
+
   owning_thread_data().texture_id_for_read_access =
       raster_interface->CreateAndConsumeForGpuRaster(shared_image_mailbox);
 
-  // For the non-accelerated case, writes are done on the CPU. So we don't need
-  // a texture for writes.
-  if (!is_accelerated_)
-    return;
   if (shared_image_usage_flags &
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
     owning_thread_data().texture_id_for_write_access =

@@ -986,7 +986,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   // If we cannot use overlay, we have to remove the scanout flag and the
   // concurrent read write flag.
   if (!is_gpu_memory_buffer_image_allowed ||
-      !capabilities.texture_storage_image) {
+      (is_accelerated && !capabilities.texture_storage_image)) {
     shared_image_usage_flags &= ~gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
     shared_image_usage_flags &= ~gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
