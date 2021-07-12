@@ -395,17 +395,6 @@ try_.chromium_android_builder(
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
-# Experimental builder to check dual coverage on android platform.
-try_.chromium_android_builder(
-    name = "android-marshmallow-arm64-rel-dual-coverage",
-    builderless = True,
-    cores = 16,
-    goma_jobs = goma.jobs.J300,
-    ssd = True,
-    use_java_coverage = True,
-    tryjob = try_.job(experiment_percentage = 3),
-)
-
 try_.chromium_android_builder(
     name = "android-marshmallow-x86-rel",
     branch_selector = branches.STANDARD_MILESTONE,

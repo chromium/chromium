@@ -865,24 +865,6 @@
         },
         'os_type': 'android',
       },
-      'android-marshmallow-arm64-rel-dual-coverage': {
-        'mixins': [
-          'enable_resultdb',
-          'bullhead',
-          'isolate_profile_data',
-          'marshmallow',
-        ],
-        'additional_compile_targets': [
-          'monochrome_static_initializers',
-          'weblayer_shell',
-        ],
-        'test_suites': {
-          'gtest_tests': 'android_lollipop_marshmallow_coverage_gtests',
-          'junit_tests': 'chromium_junit_tests',
-          'isolated_scripts': 'marshmallow_pie_isolated_scripts',
-        },
-        'os_type': 'android',
-      },
       'android-marshmallow-x86-rel': {
         'mixins': [
           'enable_resultdb',

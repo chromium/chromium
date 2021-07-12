@@ -3328,11 +3328,6 @@
       },
     },
   },
-  'webview_cts_tests_gtest': {
-    'remove_from': [
-      'android-marshmallow-arm64-rel-dual-coverage',
-    ],
-  },
   'webview_instrumentation_test_apk': {
     'remove_from': [
       # This test frequently fails on Android, https://crbug.com/824959
@@ -3380,11 +3375,6 @@
         ],
       },
     },
-  },
-  'webview_ui_instrumentation_tests': {
-    'remove_from': [
-      'android-marshmallow-arm64-rel-dual-coverage',
-    ],
   },
   'webview_ui_test_app_test_apk': {
     'remove_from': [
