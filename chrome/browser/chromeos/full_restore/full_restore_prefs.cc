@@ -18,11 +18,6 @@ namespace full_restore {
 // Refer to |RestoreOption|.
 const char kRestoreAppsAndPagesPrefName[] = "settings.restore_apps_and_pages";
 
-// An integer pref to count how many times the user selected the 'Restore'
-// button from the restore notification dialog.
-const char kRestoreSelectedCountPrefName[] =
-    "full_restore.restore_selected_count";
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   if (!::full_restore::features::IsFullRestoreEnabled())
     return;
@@ -31,8 +26,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-
-  registry->RegisterIntegerPref(kRestoreSelectedCountPrefName, 0);
 }
 
 bool HasRestorePref(PrefService* prefs) {
@@ -86,14 +79,6 @@ void UpdateRestorePrefIfNecessary(PrefService* prefs) {
     prefs->SetInteger(kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kAskEveryTime));
   }
-}
-
-int GetRestoreSelectedCountPref(PrefService* prefs) {
-  return prefs->GetInteger(kRestoreSelectedCountPrefName);
-}
-
-void SetRestoreSelectedCountPref(PrefService* prefs, int count) {
-  prefs->SetInteger(kRestoreSelectedCountPrefName, count);
 }
 
 }  // namespace full_restore

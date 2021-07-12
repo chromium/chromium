@@ -127,8 +127,7 @@ class FullRestoreServiceTest : public testing::Test {
   }
 
   void VerifyNotification(bool has_crash_notification,
-                          bool has_restore_notification,
-                          bool has_set_restore_notification) {
+                          bool has_restore_notification) {
     if (has_crash_notification)
       EXPECT_TRUE(HasNotificationFor(kRestoreForCrashNotificationId));
     else
@@ -138,11 +137,6 @@ class FullRestoreServiceTest : public testing::Test {
       EXPECT_TRUE(HasNotificationFor(kRestoreNotificationId));
     else
       EXPECT_FALSE(HasNotificationFor(kRestoreNotificationId));
-
-    if (has_set_restore_notification)
-      EXPECT_TRUE(HasNotificationFor(kSetRestorePrefNotificationId));
-    else
-      EXPECT_FALSE(HasNotificationFor(kSetRestorePrefNotificationId));
   }
 
   void SimulateClick(const std::string& notification_id,
@@ -170,10 +164,6 @@ class FullRestoreServiceTest : public testing::Test {
   RestoreOption GetRestoreOption() const {
     return static_cast<RestoreOption>(
         profile()->GetPrefs()->GetInteger(kRestoreAppsAndPagesPrefName));
-  }
-
-  int GetRestoreSelectedCount() const {
-    return profile()->GetPrefs()->GetInteger(kRestoreSelectedCountPrefName);
   }
 
   TestingProfile* profile() const { return profile_.get(); }
@@ -204,8 +194,7 @@ TEST_F(FullRestoreServiceTest, Crash) {
   CreateFullRestoreServiceForTesting();
 
   VerifyNotification(false /* has_crash_notification */,
-                     false /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
+                     false /* has_restore_notification */);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -222,8 +211,7 @@ TEST_F(FullRestoreServiceTest, AskEveryTime) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
   VerifyNotification(false /* has_crash_notification */,
-                     false /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
+                     false /* has_restore_notification */);
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
@@ -265,8 +253,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
   CreateFullRestoreServiceForTesting();
 
   VerifyNotification(true /* has_crash_notification */,
-                     false /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
+                     false /* has_restore_notification */);
 
   SimulateClick(kRestoreForCrashNotificationId,
                 RestoreNotificationButtonIndex::kRestore);
@@ -276,37 +263,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
 
   // Verify the set restore notification is not shown.
   VerifyNotification(false /* has_crash_notification */,
-                     false /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
-}
-
-// If the system is crash, and the restore option has been selected 3 times,
-// show the crash notification, and verify the restore flag when click the
-// restore button, without showing the set restore notification.
-TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
-       CrashAndRestoreWithoutSetRestorePrefNotification) {
-  profile()->set_last_session_exited_cleanly(false);
-
-  // Set |kRestoreSelectedCountPrefName| = 3 to simulate the restore option has
-  // been selected 3 times.
-  profile()->GetPrefs()->SetInteger(kRestoreSelectedCountPrefName, 3);
-
-  CreateFullRestoreServiceForTesting();
-
-  VerifyNotification(true /* has_crash_notification */,
-                     false /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
-
-  SimulateClick(kRestoreForCrashNotificationId,
-                RestoreNotificationButtonIndex::kRestore);
-
-  EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
-  EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
-
-  // Verify the set restore notification is not shown.
-  VerifyNotification(false /* has_crash_notification */,
-                     false /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
+                     false /* has_restore_notification */);
 }
 
 // If the system is crash, show the crash notification, and verify the restore
@@ -316,8 +273,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCancel) {
   CreateFullRestoreServiceForTesting();
 
   VerifyNotification(true /* has_crash_notification */,
-                     false /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
+                     false /* has_restore_notification */);
 
   SimulateClick(kRestoreForCrashNotificationId,
                 RestoreNotificationButtonIndex::kCancel);
@@ -341,7 +297,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 }
 
 // For a brand new user, if sync off, set 'Ask Every Time' as the default value,
@@ -352,7 +308,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncOff) {
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
@@ -367,7 +323,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
@@ -382,7 +338,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
 
   EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
@@ -416,7 +372,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
@@ -431,7 +387,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
@@ -464,7 +420,7 @@ TEST_F(FullRestoreServiceTest, ReImage) {
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
@@ -482,7 +438,7 @@ TEST_F(FullRestoreServiceTest, ReImage) {
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
@@ -518,7 +474,7 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
 
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_FALSE(::full_restore::CanPerformRestore(account_id()));
@@ -545,8 +501,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
   VerifyNotification(false /* has_crash_notification */,
-                     true /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
+                     true /* has_restore_notification */);
 
   SimulateClick(kRestoreNotificationId,
                 RestoreNotificationButtonIndex::kRestore);
@@ -555,7 +510,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
@@ -569,8 +524,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndCancel) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
   VerifyNotification(false /* has_crash_notification */,
-                     true /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
+                     true /* has_restore_notification */);
 
   SimulateClick(kRestoreNotificationId,
                 RestoreNotificationButtonIndex::kCancel);
@@ -579,7 +533,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndCancel) {
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 }
 
 // If the OS restore setting is 'Always', after reboot, don't show any
@@ -591,7 +545,7 @@ TEST_F(FullRestoreServiceTest, Always) {
 
   EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
@@ -607,77 +561,10 @@ TEST_F(FullRestoreServiceTest, NotRestore) {
 
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
 
-  VerifyNotification(false, false, false);
+  VerifyNotification(false, false);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_FALSE(::full_restore::CanPerformRestore(account_id()));
-}
-
-// If the restore option has been selected 3 times, show the set restore
-// notification.
-TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
-       SetRestorePrefNotification) {
-  profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
-      static_cast<int>(RestoreOption::kAskEveryTime));
-
-  // Set |kRestoreSelectedCountPrefName| = 2 to simulate the restore option has
-  // been selected twice.
-  profile()->GetPrefs()->SetInteger(kRestoreSelectedCountPrefName, 2);
-
-  CreateFullRestoreServiceForTesting();
-
-  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-
-  VerifyNotification(false /* has_crash_notification */,
-                     true /* has_restore_notification */,
-                     false /* has_set_restore_notification */);
-
-  // The restore option has been selected the 3rd times.
-  SimulateClick(kRestoreNotificationId,
-                RestoreNotificationButtonIndex::kRestore);
-
-  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
-  EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
-
-  // Verify the set restore notification is shown.
-  VerifyNotification(false /* has_crash_notification */,
-                     false /* has_restore_notification */,
-                     true /* has_set_restore_notification */);
-
-  EXPECT_EQ(3, GetRestoreSelectedCount());
-}
-
-// When |kRestoreSelectedCountPrefName| = 3, if the restore option is selected
-// again, |kRestoreSelectedCountPrefName| should not change.
-TEST_F(FullRestoreServiceTestHavingFullRestoreFile, RestoreSelectedCount) {
-  profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
-      static_cast<int>(RestoreOption::kAskEveryTime));
-
-  // Set |kRestoreSelectedCountPrefName| = 3 to simulate the restore option has
-  // been selected 3 times locally.
-  profile()->GetPrefs()->SetInteger(kRestoreSelectedCountPrefName, 3);
-
-  CreateFullRestoreServiceForTesting();
-
-  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-
-  // The restore option is selected.
-  SimulateClick(kRestoreNotificationId,
-                RestoreNotificationButtonIndex::kRestore);
-
-  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
-  EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
-
-  // Verify the set restore notification is shown.
-  VerifyNotification(false /* has_crash_notification */,
-                     false /* has_restore_notification */,
-                     true /* has_set_restore_notification */);
-
-  EXPECT_EQ(3, GetRestoreSelectedCount());
 }
 
 }  // namespace full_restore
