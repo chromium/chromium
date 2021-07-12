@@ -186,6 +186,9 @@ namespace cronet {
 class CronetPrefsManager;
 class CronetURLRequestContext;
 }  // namespace cronet
+namespace crosapi {
+class LacrosThreadPriorityDelegate;
+}  // namespace crosapi
 namespace dbus {
 class Bus;
 }
@@ -412,6 +415,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class content::WebContentsViewMac;
   friend class cronet::CronetPrefsManager;
   friend class cronet::CronetURLRequestContext;
+  friend class crosapi::LacrosThreadPriorityDelegate;
   friend class memory_instrumentation::OSMetrics;
   friend class metrics::AndroidMetricsServiceClient;
   friend class module_installer::ScopedAllowModulePakLoad;

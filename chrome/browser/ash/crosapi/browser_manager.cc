@@ -38,6 +38,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -88,15 +89,6 @@ constexpr uint32_t kGetActiveTabUrlMinVersion = 8;
 const char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
 const char kLacrosLauncherNotifierID[] = "lacros_launcher";
-
-// To be sure the lacros is running with neutral priority
-class ThreadPriorityDelegate : public base::LaunchOptions::PreExecDelegate {
- public:
-  void RunAsyncSafe() override {
-    base::PlatformThread::SetCurrentThreadPriority(
-        base::ThreadPriority::NORMAL);
-  }
-};
 
 base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
@@ -196,6 +188,18 @@ bool GetLaunchOnLoginPref() {
 }
 
 }  // namespace
+
+// To be sure the lacros is running with neutral priority.
+class LacrosThreadPriorityDelegate
+    : public base::LaunchOptions::PreExecDelegate {
+ public:
+  void RunAsyncSafe() override {
+    // SetCurrentThreadPriority() needs file I/O on /proc and /sys.
+    base::ScopedAllowBlocking allow_blocking;
+    base::PlatformThread::SetCurrentThreadPriority(
+        base::ThreadPriority::NORMAL);
+  }
+};
 
 // static
 BrowserManager* BrowserManager::Get() {
@@ -594,7 +598,7 @@ void BrowserManager::StartWithLogFile(
                << command_line.GetCommandLineString();
 
   // Lacros-chrome starts with NORMAL priority
-  ThreadPriorityDelegate thread_priority_delegate;
+  LacrosThreadPriorityDelegate thread_priority_delegate;
   options.pre_exec_delegate = &thread_priority_delegate;
 
   // Prepare to invite lacros-chrome to the Mojo universe of Crosapi.
