@@ -32,7 +32,7 @@ bool SharingHubAppMenuEnabled(content::BrowserContext* context) {
 }
 
 bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
-  return base::FeatureList::IsEnabled(kSharingHubDesktopAppMenu) &&
+  return base::FeatureList::IsEnabled(kSharingHubDesktopOmnibox) &&
          IsEnterprisePolicyEnabled(context);
 }
 
