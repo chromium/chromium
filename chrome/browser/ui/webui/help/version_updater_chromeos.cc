@@ -70,8 +70,10 @@ bool IsAutoUpdateDisabled() {
     return update_disabled;
   const base::Value* update_disabled_value =
       settings->GetPref(chromeos::kUpdateDisabled);
-  if (update_disabled_value)
-    CHECK(update_disabled_value->GetAsBoolean(&update_disabled));
+  if (update_disabled_value) {
+    CHECK(update_disabled_value->is_bool());
+    update_disabled = update_disabled_value->GetBool();
+  }
   return update_disabled;
 }
 

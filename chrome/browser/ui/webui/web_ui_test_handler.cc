@@ -81,7 +81,8 @@ void WebUITestHandler::JavaScriptComplete(base::Value result) {
   run_test_done_ = true;
   run_test_succeeded_ = false;
 
-  ASSERT_TRUE(result.GetAsBoolean(&run_test_succeeded_));
+  ASSERT_TRUE(result.is_bool());
+  run_test_succeeded_ = result.GetBool();
 }
 
 bool WebUITestHandler::WaitForResult() {

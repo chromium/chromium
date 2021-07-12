@@ -140,11 +140,12 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
     const TestWebUI::CallData& call_data = *web_ui_.call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
 
-    std::string event;
-    EXPECT_TRUE(call_data.arg1()->GetAsString(&event));
-    EXPECT_EQ(event, "os-sync-prefs-changed");
+    const std::string* event = call_data.arg1()->GetIfString();
+    EXPECT_TRUE(event);
+    EXPECT_EQ(*event, "os-sync-prefs-changed");
 
-    EXPECT_TRUE(call_data.arg2()->GetAsBoolean(feature_enabled));
+    EXPECT_TRUE(call_data.arg2()->is_bool());
+    *feature_enabled = call_data.arg2()->GetBool();
     EXPECT_TRUE(call_data.arg3()->GetAsDictionary(os_sync_prefs));
   }
 

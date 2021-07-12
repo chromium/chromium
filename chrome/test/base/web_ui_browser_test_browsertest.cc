@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, MAYBE_TestFailsFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("sample_downloads.js")));
   ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIDownloadsURL));
   EXPECT_FATAL_FAILURE(RunJavascriptTestNoReturn("DISABLED_BogusFunctionName"),
-                       "GetAsBoolean(&run_test_succeeded_)");
+                       "result.is_bool()");
 }
 
 // Test that bogus javascript fails fast - no timeout waiting for result.
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestRuntimeErrorFailsFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("runtime_error.js")));
   ui_test_utils::NavigateToURL(browser(), DummyUrl());
   EXPECT_FATAL_FAILURE(RunJavascriptTestNoReturn("TestRuntimeErrorFailsFast"),
-                       "GetAsBoolean(&run_test_succeeded_)");
+                       "result.is_bool()");
 }
 
 // Test times out in debug builds: https://crbug.com/902310
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, MAYBE_TestFailsAsyncFast) {
   ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIDownloadsURL));
   EXPECT_FATAL_FAILURE(
       RunJavascriptAsyncTestNoReturn("DISABLED_BogusFunctionName"),
-      "GetAsBoolean(&run_test_succeeded_)");
+      "result.is_bool()");
 }
 
 // Tests that the async framework works.
