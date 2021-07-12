@@ -83,6 +83,11 @@ template("apple_toolchain") {
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
+    if (defined(toolchain_args.use_lld)) {
+      toolchain_uses_lld = toolchain_args.use_lld
+    } else {
+      toolchain_uses_lld = use_lld
+    }
     if (defined(toolchain_args.use_xcode_clang)) {
       toolchain_uses_xcode_clang = toolchain_args.use_xcode_clang
     } else {
@@ -119,7 +124,7 @@ template("apple_toolchain") {
 
     # Set the explicit search path for clang++ so it uses the right linker
     # binary.
-    if (!use_lld) {
+    if (!toolchain_uses_lld) {
       ld += " -B " + invoker.bin_path
     }
 
@@ -244,7 +249,7 @@ template("apple_toolchain") {
     tool("alink") {
       rspfile = "{{output}}.rsp"
 
-      if (!use_lld) {
+      if (!toolchain_uses_lld) {
         # Note about -filelist: Apple's linker reads the file list file and
         # interprets each newline-separated chunk of text as a file name. It
         # doesn't do the things one would expect from the shell like unescaping
