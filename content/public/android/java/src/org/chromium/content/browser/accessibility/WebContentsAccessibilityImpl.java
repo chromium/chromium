@@ -47,6 +47,7 @@ import org.chromium.content.browser.accessibility.captioning.CaptioningControlle
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.WindowAndroid;
@@ -260,6 +261,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         Set<Integer> viewIndependentEvents = new HashSet<Integer>();
         viewIndependentEvents.add(AccessibilityEvent.TYPE_VIEW_HOVER_ENTER);
 
+        // Define an initial set of events relevant to AT.
+        // TODO(mschillaci): Update beyond an empty set once feature is no longer behind a flag.
+        Set<Integer> relevantEvents = new HashSet<Integer>();
+
         mEventDispatcher =
                 new AccessibilityEventDispatcher(new AccessibilityEventDispatcher.Client() {
                     @Override
@@ -298,7 +303,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
                         return true;
                     }
-                }, eventThrottleDelays, viewIndependentEvents);
+                }, eventThrottleDelays, viewIndependentEvents, relevantEvents);
 
         if (mDelegate.getNativeAXTree() != 0) {
             initializeNativeWithAXTreeUpdate(mDelegate.getNativeAXTree());
@@ -590,12 +595,32 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     // BrowserAccessibilityStateListener
 
     @Override
-    public void onBrowserAccessibilityStateChanged() {
+    public void onBrowserAccessibilityStateChanged(boolean newScreenReaderEnabledState) {
         if (!isAccessibilityEnabled()) return;
 
-        boolean screenReaderMode = BrowserAccessibilityState.screenReaderMode();
+        // Update the AXMode based on screen reader status.
         WebContentsAccessibilityImplJni.get().setAXMode(
-                mNativeObj, WebContentsAccessibilityImpl.this, screenReaderMode);
+                mNativeObj, WebContentsAccessibilityImpl.this, newScreenReaderEnabledState);
+
+        // Update the list of events we dispatch to enabled services.
+        // TODO(mschillaci): Remove this check once feature is no longer behind a flag
+        if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
+            int serviceEventMask = BrowserAccessibilityState.getAccessibilityServiceEventTypeMask();
+            mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
+        }
+    }
+
+    public Set<Integer> convertMaskToEventTypes(int serviceEventTypes) {
+        Set<Integer> relevantEventTypes = new HashSet<Integer>();
+        int eventTypeBit;
+
+        while (serviceEventTypes != 0) {
+            eventTypeBit = (1 << Integer.numberOfTrailingZeros(serviceEventTypes));
+            relevantEventTypes.add(eventTypeBit);
+            serviceEventTypes &= ~eventTypeBit;
+        }
+
+        return relevantEventTypes;
     }
 
     // WebContentsAccessibility

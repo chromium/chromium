@@ -41,10 +41,10 @@ public class BrowserAccessibilityState {
      * state has changed, which can happen when accessibility services start or stop.
      */
     public interface Listener {
-        public void onBrowserAccessibilityStateChanged();
+        public void onBrowserAccessibilityStateChanged(boolean newScreenReaderEnabledState);
     }
 
-    private static final String TAG = "Accessibility";
+    private static final String TAG = "ClankAccessibility";
 
     // Analysis of the most popular accessibility services on Android suggests
     // that any service that requests any of these three events is a screen reader
@@ -203,12 +203,12 @@ public class BrowserAccessibilityState {
             if (sNextDelayMillis < MAX_DELAY_MILLIS) sNextDelayMillis *= 2;
         }
 
-        boolean oldScreenReader = sScreenReader;
+        // Update all listeners that there was a state change and pass whether or not the
+        // new state includes a screen reader.
         sScreenReader = (0 != (sEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
-        if (sScreenReader != oldScreenReader) {
-            for (Listener listener : sListeners) {
-                listener.onBrowserAccessibilityStateChanged();
-            }
+        for (Listener listener : sListeners) {
+            Log.v(TAG, "Informing listeners of changes.");
+            listener.onBrowserAccessibilityStateChanged(sScreenReader);
         }
     }
 
@@ -224,7 +224,7 @@ public class BrowserAccessibilityState {
      * @return
      */
     @CalledByNative
-    private static int getAccessibilityServiceEventTypeMask() {
+    public static int getAccessibilityServiceEventTypeMask() {
         if (!sInitialized) updateAccessibilityServices();
         return sEventTypeMask;
     }

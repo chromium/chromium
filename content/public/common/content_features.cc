@@ -1019,6 +1019,11 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
 const base::Feature kBindingManagementWaiveCpu{
     "BindingManagementWaiveCpu", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows the use of an experimental feature to drop any AccessibilityEvents
+// that are not relevant to currently enabled accessibility services.
+const base::Feature kOnDemandAccessibilityEvents{
+    "OnDemandAccessibilityEvents", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Screen Capture API support for Android
 const base::Feature kUserMediaScreenCapturing{
     "UserMediaScreenCapturing", base::FEATURE_DISABLED_BY_DEFAULT};

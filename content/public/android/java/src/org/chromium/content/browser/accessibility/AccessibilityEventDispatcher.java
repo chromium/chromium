@@ -24,6 +24,10 @@ public class AccessibilityEventDispatcher {
     // populated once in the constructor.
     private Set<Integer> mViewIndependentEventsToThrottle;
 
+    // Set of AccessibilityEvent types that are relevant to enabled accessibility services and
+    // will be enqueued to be dispatched.
+    private Set<Integer> mRelevantEventTypes;
+
     // For events being throttled (see: |mEventsToThrottle|), this array will map the eventType
     // to the last time (long in milliseconds) such an event has been sent.
     private Map<Long, Long> mEventLastFiredTimes = new HashMap<Long, Long>();
@@ -73,10 +77,11 @@ public class AccessibilityEventDispatcher {
      *  Create an AccessibilityEventDispatcher and define the delays for event types.
      */
     public AccessibilityEventDispatcher(Client mClient, Map<Integer, Integer> eventThrottleDelays,
-            Set<Integer> viewIndependentEventsToThrottle) {
+            Set<Integer> viewIndependentEventsToThrottle, Set<Integer> relevantEventTypes) {
         this.mClient = mClient;
         this.mEventThrottleDelays = eventThrottleDelays;
         this.mViewIndependentEventsToThrottle = viewIndependentEventsToThrottle;
+        this.mRelevantEventTypes = relevantEventTypes;
     }
 
     /**
@@ -88,6 +93,12 @@ public class AccessibilityEventDispatcher {
      * @param eventType         The AccessibilityEvent type.
      */
     public void enqueueEvent(int virtualViewId, int eventType) {
+        // Check whether this is a relevant event type, and if not, escape.
+        // TODO(mschillaci): Remove empty check once feature is no longer behind a flag.
+        if (!mRelevantEventTypes.isEmpty() && !mRelevantEventTypes.contains(eventType)) {
+            return;
+        }
+
         // Check whether this type of event is one we want to throttle, and if not then send it
         if (!mEventThrottleDelays.containsKey(eventType)) {
             mClient.dispatchEvent(virtualViewId, eventType);
@@ -134,6 +145,14 @@ public class AccessibilityEventDispatcher {
                     (mEventLastFiredTimes.get(uuid) + mEventThrottleDelays.get(eventType)) - now);
             mPendingEvents.put(uuid, myRunnable);
         }
+    }
+
+    /**
+     * Helper method to update the list of relevant event types to be dispatched.
+     * @param relevantEventTypes        Set<Integer> relevant event types
+     */
+    public void updateRelevantEventTypes(Set<Integer> relevantEventTypes) {
+        this.mRelevantEventTypes = relevantEventTypes;
     }
 
     /**

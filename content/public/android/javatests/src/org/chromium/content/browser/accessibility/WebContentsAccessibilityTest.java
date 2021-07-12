@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.style.SuggestionSpan;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.test.filters.LargeTest;
@@ -55,6 +56,9 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -92,6 +96,8 @@ public class WebContentsAccessibilityTest {
     private static final String CACHING_ERROR = "AccessibilityNodeInfo cache has stale data";
     private static final String NODE_EXTRAS_UNCLIPPED_ERROR =
             "AccessibilityNodeInfo object should have unclipped bounds in extras bundle";
+    private static final String EVENT_TYPE_MASK_ERROR =
+            "Conversion of event masks to event types not correct.";
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
@@ -1296,6 +1302,48 @@ public class WebContentsAccessibilityTest {
         // Check whether the text of the encompassing node has been updated.
         mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
         Assert.assertEquals(CACHING_ERROR, "Example text 2", mNodeInfo.getText());
+    }
+
+    /**
+     * Test logic for converting event type masks to a list of relevant event types.
+     */
+    @Test
+    @SmallTest
+    public void testMaskToEventTypeConversion() {
+        // Build a simple web page.
+        setupTestWithHTML("<p>Test page</p>");
+
+        // Create some event masks with known outcomes.
+        int serviceEventMask_empty = 0;
+        int serviceEventMask_full = Integer.MAX_VALUE;
+        int serviceEventMask_test = AccessibilityEvent.TYPE_VIEW_CLICKED
+                | AccessibilityEvent.TYPE_VIEW_LONG_CLICKED | AccessibilityEvent.TYPE_VIEW_FOCUSED
+                | AccessibilityEvent.TYPE_VIEW_SCROLLED | AccessibilityEvent.TYPE_VIEW_SELECTED
+                | AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END;
+
+        // Convert each mask to a set of eventTypes.
+        Set<Integer> outcome_empty =
+                mActivityTestRule.mWcax.convertMaskToEventTypes(serviceEventMask_empty);
+        Set<Integer> outcome_full =
+                mActivityTestRule.mWcax.convertMaskToEventTypes(serviceEventMask_full);
+        Set<Integer> outcome_test =
+                mActivityTestRule.mWcax.convertMaskToEventTypes(serviceEventMask_test);
+
+        // Verify results.
+        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_empty);
+        Assert.assertTrue(EVENT_TYPE_MASK_ERROR, outcome_empty.isEmpty());
+
+        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_full);
+        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, 31, outcome_full.size());
+
+        Set<Integer> expected_test = new HashSet<Integer>(Arrays.asList(
+                AccessibilityEvent.TYPE_VIEW_CLICKED, AccessibilityEvent.TYPE_VIEW_LONG_CLICKED,
+                AccessibilityEvent.TYPE_VIEW_FOCUSED, AccessibilityEvent.TYPE_VIEW_SCROLLED,
+                AccessibilityEvent.TYPE_VIEW_SELECTED,
+                AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END));
+
+        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_test);
+        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, expected_test, outcome_test);
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
