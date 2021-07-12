@@ -75,6 +75,11 @@
       }
     ]
   },
+  "Linux Builder (j-500) (g-ip) (reclient)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "Linux Builder (j-500) (n2) (reclient)": {
     "additional_compile_targets": [
       "all"
@@ -429,6 +434,11 @@
     ]
   },
   "TSAN Release (deps-cache) (reclient)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  },
+  "TSAN Release (g-ip) (reclient)": {
     "additional_compile_targets": [
       "chromium_builder_asan"
     ]

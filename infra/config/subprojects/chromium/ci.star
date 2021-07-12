@@ -3864,6 +3864,21 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "Linux Builder (j-500) (g-ip) (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "reg",
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = 500,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    schedule = "triggered",
+)
+
+ci.fyi_builder(
     name = "Linux Builder (j-500) (n2) (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux",
@@ -3975,6 +3990,23 @@ ci.fyi_builder(
     kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     schedule = "triggered",  # triggered manually via Scheduler UI
+)
+
+ci.fyi_builder(
+    name = "TSAN Release (g-ip) (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux tsan",
+        short_name = "rreg",
+    ),
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 1,
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
 ci.fyi_builder(

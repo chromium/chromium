@@ -198,6 +198,15 @@
       "use_rbe": true
     }
   },
+  "Linux Builder (j-500) (g-ip) (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_rbe": true
+    }
+  },
   "Linux Builder (j-500) (n2) (reclient)": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
@@ -313,6 +322,15 @@
     }
   },
   "TSAN Release (deps-cache) (reclient)": {
+    "gn_args": {
+      "enable_nacl": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_tsan": true,
+      "use_rbe": true
+    }
+  },
+  "TSAN Release (g-ip) (reclient)": {
     "gn_args": {
       "enable_nacl": false,
       "is_component_build": false,

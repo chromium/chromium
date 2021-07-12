@@ -2519,6 +2519,16 @@
           'scripts': 'chromium_linux_scripts',
         }
       },
+      'Linux Builder (j-500) (g-ip) (reclient)': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+      },
       'Linux Builder (j-500) (n2) (reclient)': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
@@ -2596,6 +2606,11 @@
         ],
       },
       'TSAN Release (deps-cache) (reclient)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
+      'TSAN Release (g-ip) (reclient)': {
         'additional_compile_targets': [
           'chromium_builder_asan',
         ],
