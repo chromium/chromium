@@ -501,52 +501,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, ConsoleError) {
               HasSubstr("Logged from MV3 service worker"));
 }
 
-// Tests that two extensions with the same ServiceWorkerContext* can be
-// disabled successfully. This test ensures that the DCHECK in
-// ServiceWorkerTaskQueue::StopObserving does not fail in such a scenario.
-// Regression test for https://crbug.com/1223476
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       ObserveServiceWorkerContext) {
-  static constexpr char kManifest1[] =
-      R"({
-           "name": "Empty Extension",
-           "manifest_version": 3,
-           "version": "0.1",
-           "background": {"service_worker": "worker.js"}
-         })";
-  static constexpr char kScript[] = "";
-
-  TestExtensionDir test_dir1;
-  test_dir1.WriteManifest(kManifest1);
-  test_dir1.WriteFile(FILE_PATH_LITERAL("worker.js"), kScript);
-
-  scoped_refptr<const Extension> extension1 =
-      LoadExtension(test_dir1.UnpackedPath());
-  ASSERT_TRUE(extension1);
-
-  static constexpr char kManifest2[] =
-      R"({
-           "name": "Empty Extension",
-           "manifest_version": 3,
-           "version": "0.1",
-           "background": {"service_worker": "worker.js"}
-         })";
-
-  TestExtensionDir test_dir2;
-  test_dir2.WriteManifest(kManifest2);
-  test_dir2.WriteFile(FILE_PATH_LITERAL("worker.js"), kScript);
-
-  scoped_refptr<const Extension> extension2 =
-      LoadExtension(test_dir2.UnpackedPath());
-  ASSERT_TRUE(extension2);
-  EXPECT_NE(extension1->id(), extension2->id());
-
-  extension_service()->DisableExtension(extension1->id(),
-                                        disable_reason::DISABLE_USER_ACTION);
-  extension_service()->DisableExtension(extension2->id(),
-                                        disable_reason::DISABLE_USER_ACTION);
-}
-
 // Tests chrome.runtime.onInstalled fires for extension service workers.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, OnInstalledEvent) {
   ASSERT_TRUE(RunExtensionTest(
