@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -77,9 +78,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
 
  private:
   // content::WebContentsObserver implementation.
-  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
-  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
-                              content::RenderFrameHost* new_host) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
@@ -97,9 +95,7 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
       bool is_main_frame,
       ShouldOverrideUrlLoadingCallback callback) override;
 
-  bool IsRenderViewReady() const;
-
-  void ResetLocalMainFrameRemote(content::RenderFrameHost* frame_host);
+  mojom::LocalMainFrame* GetLocalMainFrameRemote();
 
   AwRenderViewHostExtClient* client_;
 
@@ -114,6 +110,8 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
 
   // Some WebView users might want to show their own error pages / logic.
   bool will_suppress_error_page_ = false;
+
+  content::GlobalFrameRoutingId main_frame_global_id_;
 
   content::WebContentsFrameReceiverSet<mojom::FrameHost> frame_host_receivers_;
 
