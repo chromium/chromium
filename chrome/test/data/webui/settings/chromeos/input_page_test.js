@@ -497,7 +497,7 @@ suite('input page', () => {
 
       Polymer.dom.flush();
       // spell check is initially on
-      spellCheckToggle = inputPage.$.enableSpellcheckingToggle;
+      spellCheckToggle = inputPage.$$('#enableSpellcheckingToggle');
       assertTrue(!!spellCheckToggle);
       assertTrue(spellCheckToggle.checked);
 
@@ -819,11 +819,14 @@ suite('input page', () => {
       inputPage.languageSettingsV2Update2Enabled_ = true;
       // However, we should still set loadTimeData as some other code may use
       // it (such as languages.js).
-      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
+      loadTimeData.overrideValues({
+        enableLanguageSettingsV2Update2: true,
+        onDeviceGrammarCheckEnabled: true,
+      });
       Polymer.dom.flush();
 
       // Spell check is initially on.
-      spellCheckToggle = inputPage.$.enableSpellcheckingToggle;
+      spellCheckToggle = inputPage.$$('#enableSpellcheckingToggle');
       assertTrue(!!spellCheckToggle);
       assertTrue(spellCheckToggle.checked);
 
@@ -1151,15 +1154,6 @@ suite('input page', () => {
       Polymer.dom.flush();
       assertTrue(errorDivs[0].hidden);
       assertTrue(retryButtons[0].hidden);
-    });
-
-    test('toggle off disables enhanced spell check', () => {
-      const enhancedSpellCheckToggle =
-          inputPage.$$('#enhancedSpellCheckToggle');
-      assertFalse(enhancedSpellCheckToggle.disabled);
-      spellCheckToggle.click();
-
-      assertTrue(enhancedSpellCheckToggle.disabled);
     });
 
     test('toggle off disables edit dictionary', () => {

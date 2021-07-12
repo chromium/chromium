@@ -352,6 +352,10 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
       {"inputMethodNotAllowed",
        IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_NOT_ALLOWED},
       {"spellCheckTitle", IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE},
+      {"spellAndGrammarCheckTitle",
+       IDS_OS_SETTINGS_LANGUAGES_SPELL_AND_GRAMMAR_CHECK_TITLE},
+      {"spellAndGrammarCheckDescription",
+       IDS_OS_SETTINGS_LANGUAGES_SPELL_AND_GRAMMAR_CHECK_DESCRIPTION},
       {"spellCheckEnhancedLabel",
        IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_LABEL},
       {"spellCheckLanguagesListTitle",
@@ -464,6 +468,9 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           base::FeatureList::IsEnabled(::chromeos::features::kImeMojoDecoder));
   html_source->AddBoolean("enableLanguageSettingsV2Update2",
                           IsLanguageSettingsV2Update2Enabled());
+  html_source->AddBoolean("onDeviceGrammarCheckEnabled",
+                          base::FeatureList::IsEnabled(
+                              ::chromeos::features::kOnDeviceGrammarCheck));
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {

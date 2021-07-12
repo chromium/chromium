@@ -112,6 +112,14 @@ Polymer({
       computed: `getShortcutReminderBody_(showLastUsedIMEShortcutReminder_,
           showNextIMEShortcutReminder_)`,
     },
+
+    /** @private */
+    onDeviceGrammarCheckEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('onDeviceGrammarCheckEnabled');
+      },
+    },
   },
 
   /** @private {?settings.LanguagesMetricsProxy} */
