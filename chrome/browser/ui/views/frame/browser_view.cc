@@ -437,7 +437,7 @@ BEGIN_METADATA(ContentsSeparator, views::Separator)
 END_METADATA
 
 bool ShouldShowWindowIcon(const Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
   // window icon, crbug.com/119411. Child windows (i.e. popups) do show an icon.
   if (browser->is_trusted_source())
@@ -2520,7 +2520,7 @@ bool BrowserView::GetSupportsIcon() const {
 #endif
 
 bool BrowserView::ShouldShowWindowTitle() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
   // title, crbug.com/119411. Child windows (i.e. popups) do show a title.
   if (browser_->is_trusted_source())
