@@ -110,13 +110,13 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,
   AudioData* audio_data = nullptr;
   auto audio_data_chunk = CreateAudioData(script_state, &audio_data);
   EXPECT_NE(audio_data, nullptr);
-  EXPECT_NE(audio_data->buffer(), nullptr);
+  EXPECT_NE(audio_data->data(), nullptr);
   ScriptPromiseTester write_tester(
       script_state,
       writer->write(script_state, audio_data_chunk, exception_state));
   // |audio_data| should be invalidated after sending it to the sink.
   write_tester.WaitUntilSettled();
-  EXPECT_EQ(audio_data->buffer(), nullptr);
+  EXPECT_EQ(audio_data->data(), nullptr);
   write_loop.Run();
 
   writer->releaseLock(script_state);

@@ -17,55 +17,59 @@ function createDefaultAudioData() {
 }
 
 async_test(t => {
-  let localData = createDefaultAudioData();
+  let originalData = createDefaultAudioData();
 
   let channel = new MessageChannel();
   let localPort = channel.port1;
   let externalPort = channel.port2;
 
   externalPort.onmessage = t.step_func((e) => {
-    let externalData = e.data;
-    let buffer = externalData.buffer;
-    // We should have a valid deserialized buffer.
-    assert_true(buffer != undefined || buffer != null);
-    assert_equals(buffer.numberOfChannels,
-                  localData.buffer.numberOfChannels, "numberOfChannels");
+    let newData = e.data;
 
-    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
-      // This gives us the actual array that contains the data
-      var dest_array = buffer.getChannelData(channel);
-      var source_array = localData.buffer.getChannelData(channel);
-      for (var i = 0; i < dest_array.length; i+=10) {
-        assert_equals(dest_array[i], source_array[i],
+    // We should have a valid deserialized buffer.
+    assert_equals(newData.numberOfFrames, defaultInit.frames, 'numberOfFrames');
+    assert_equals(
+        newData.numberOfChannels, defaultInit.channels, 'numberOfChannels');
+    assert_equals(newData.sampleRate, defaultInit.sampleRate, 'sampleRate');
+
+    const originalData_copyDest = new Float32Array(defaultInit.frames);
+    const newData_copyDest = new Float32Array(defaultInit.frames);
+
+    for (var channel = 0; channel < defaultInit.channels; channel++) {
+      originalData.copyTo(originalData_copyDest, { planeIndex: channel});
+      newData.copyTo(newData_copyDest, { planeIndex: channel});
+
+      for (var i = 0; i < newData_copyDest.length; i+=10) {
+        assert_equals(newData_copyDest[i], originalData_copyDest[i],
           "data (ch=" + channel + ", i=" + i + ")");
       }
     }
 
-    externalData.close();
+    newData.close();
     externalPort.postMessage("Done");
   })
 
   localPort.onmessage = t.step_func_done((e) => {
-    assert_true(localData.buffer != null);
-    localData.close();
+    assert_equals(originalData.numberOfFrames, defaultInit.frames);
+    originalData.close();
   })
 
-  localPort.postMessage(localData);
+  localPort.postMessage(originalData);
 
 }, 'Verify closing AudioData does not propagate accross contexts.');
 
 async_test(t => {
-  let localData = createDefaultAudioData();
+  let data = createDefaultAudioData();
 
   let channel = new MessageChannel();
   let localPort = channel.port1;
 
   localPort.onmessage = t.unreached_func();
 
-  localData.close();
+  data.close();
 
   assert_throws_dom("DataCloneError", () => {
-    localPort.postMessage(localData);
+    localPort.postMessage(data);
   });
 
   t.done();

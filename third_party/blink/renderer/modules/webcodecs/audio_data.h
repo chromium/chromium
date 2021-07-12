@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_H_
 
 #include "media/base/audio_buffer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sample_format.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -14,6 +16,7 @@ namespace blink {
 
 class ExceptionState;
 class AudioDataInit;
+class AudioDataCopyToOptions;
 
 class MODULES_EXPORT AudioData final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -33,8 +36,18 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   AudioData* clone(ExceptionState&);
 
   void close();
+
+  absl::optional<V8AudioSampleFormat> format() const;
+  uint32_t sampleRate() const;
+  uint32_t numberOfFrames() const;
+  uint32_t numberOfChannels() const;
+  uint64_t duration() const;
   int64_t timestamp() const;
-  AudioBuffer* buffer();
+
+  uint32_t allocationSize(AudioDataCopyToOptions*, ExceptionState&);
+  void copyTo(const V8BufferSource* destination,
+              AudioDataCopyToOptions*,
+              ExceptionState&);
 
   scoped_refptr<media::AudioBuffer> data() const { return data_; }
 
@@ -42,12 +55,14 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  void CopyDataToBuffer();
+  bool IsInterleaved();
+  uint32_t BytesPerSample();
 
   scoped_refptr<media::AudioBuffer> data_;
 
+  absl::optional<V8AudioSampleFormat> format_;
+
   int64_t timestamp_;
-  Member<AudioBuffer> buffer_;
 };
 
 }  // namespace blink

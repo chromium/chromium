@@ -2,32 +2,69 @@
 // META: script=/webcodecs/utils.js
 
 // Merge all audio buffers into a new big one with all the data.
-function join_buffers(buffers) {
-  assert_greater_than_equal(buffers.length, 0);
-  let total_length = 0;
-  let base_buffer = buffers[0];
-  for (const buffer of buffers) {
-    assert_not_equals(buffer, null);
-    assert_equals(buffer.sampleRate, base_buffer.sampleRate);
-    assert_equals(buffer.numberOfChannels, base_buffer.numberOfChannels);
-    total_length += buffer.length;
+function join_audio_data(audio_data_array) {
+  assert_greater_than_equal(audio_data_array.length, 0);
+  let total_frames = 0;
+  let base_buffer = audio_data_array[0];
+  for (const data of audio_data_array) {
+    assert_not_equals(data, null);
+    assert_equals(data.sampleRate, base_buffer.sampleRate);
+    assert_equals(data.numberOfChannels, base_buffer.numberOfChannels);
+    assert_equals(data.format, base_buffer.format);
+    total_frames += data.numberOfFrames;
   }
 
-  let result = new AudioBuffer({
-    length: total_length,
-    numberOfChannels: base_buffer.numberOfChannels,
-    sampleRate: base_buffer.sampleRate
-  });
+  assert_true(base_buffer.format == 'FLT' || base_buffer.format == 'FLTP');
 
-  for (let i = 0; i < base_buffer.numberOfChannels; i++) {
-    let channel = result.getChannelData(i);
-    let position = 0;
-    for (const buffer of buffers) {
-      channel.set(buffer.getChannelData(i), position);
-      position += buffer.length;
+  if (base_buffer.format == 'FLT')
+    return join_interleaved_data(audio_data_array, total_frames);
+
+  // The format is 'FLTP'.
+  return join_planar_data(audio_data_array, total_frames);
+}
+
+function join_interleaved_data(audio_data_array, total_frames) {
+  let base_data =  audio_data_array[0];
+  let channels = base_data.numberOfChannels;
+  let total_samples = total_frames * channels;
+
+  let result = new Float32Array(total_samples);
+
+  let copy_dest = new Float32Array(base_data.numberOfFrames * channels);
+
+  // Copy all the interleaved data.
+  let position = 0;
+  for (const data of audio_data_array) {
+    let samples = data.numberOfFrames * channels;
+    if (copy_dest.length < samples)
+      copy_dest = new Float32Array(samples);
+
+    data.copyTo(copy_dest, {planeIndex: 0});
+    result.set(copy_dest, position);
+    position += samples;
+  }
+
+  assert_equals(position, total_samples);
+
+  return result;
+}
+
+function join_planar_data(audio_data_array, total_frames) {
+  let base_frames = audio_data_array[0].numberOfFrames;
+  let channels = audio_data_array[0].numberOfChannels;
+  let result = new Float32Array(total_frames*channels);
+  let copyDest = new Float32Array(base_frames);
+
+  // Merge all samples and lay them out according to the FLTP memory layout.
+  let position = 0;
+  for (let ch = 0; ch < channels; ch++) {
+    for (const data of audio_data_array) {
+      data.copyTo(copyDest, { planeIndex: ch});
+      result.set(copyDest, position);
+      position += data.numberOfFrames;
     }
-    assert_equals(position, total_length);
   }
+  assert_equals(position, total_frames * channels);
 
   return result;
 }
@@ -167,9 +204,9 @@ function channelNumberVariationTests() {
     let length = sample_rate / 10;
     let data1 = make_audio_data(ts, channels, sample_rate, length);
 
-    ts += Math.floor(data1.buffer.duration / 1000000);
+    ts += Math.floor(data1.duration / 1000000);
     let data2 = make_audio_data(ts, channels, sample_rate, length);
-    ts += Math.floor(data2.buffer.duration / 1000000);
+    ts += Math.floor(data2.duration / 1000000);
 
     let bad_data = make_audio_data(ts, channels + 1, sample_rate, length);
     promise_test(async t =>
@@ -193,9 +230,9 @@ function sampleRateVariationTests() {
     let length = sample_rate / 10;
     let data1 = make_audio_data(ts, channels, sample_rate, length);
 
-    ts += Math.floor(data1.buffer.duration / 1000000);
+    ts += Math.floor(data1.duration / 1000000);
     let data2 = make_audio_data(ts, channels, sample_rate, length);
-    ts += Math.floor(data2.buffer.duration / 1000000);
+    ts += Math.floor(data2.duration / 1000000);
 
     let bad_data = make_audio_data(ts, channels, sample_rate + 333, length);
     promise_test(async t =>
@@ -255,28 +292,45 @@ promise_test(async t => {
   decoder.close();
 
 
-  let total_input = join_buffers(input_data.map(f => f.buffer));
-  let total_output = join_buffers(output_data.map(f => f.buffer));
-  assert_equals(total_output.numberOfChannels, 2);
-  assert_equals(total_output.sampleRate, sample_rate);
+  let total_input = join_audio_data(input_data);
+  let frames_per_plane = total_input.length / config.numberOfChannels;
+
+  let total_output = join_audio_data(output_data);
+
+  let base_input = input_data[0];
+  let base_output = output_data[0];
+
+  // TODO: Convert formats to simplify conversions, once
+  // https://github.com/w3c/webcodecs/issues/232 is resolved.
+  assert_equals(base_input.format, "FLTP");
+  assert_equals(base_output.format, "FLT");
+
+  assert_equals(base_output.numberOfChannels, config.numberOfChannels);
+  assert_equals(base_output.sampleRate, sample_rate);
 
   // Output can be slightly longer that the input due to padding
   assert_greater_than_equal(total_output.length, total_input.length);
-  assert_greater_than_equal(total_output.duration, total_duration_s);
-  assert_approx_equals(total_output.duration, total_duration_s, 0.1);
 
   // Compare waveform before and after encoding
-  for (let channel = 0; channel < total_input.numberOfChannels; channel++) {
-    let input_data = total_input.getChannelData(channel);
-    let output_data = total_output.getChannelData(channel);
-    for (let i = 0; i < total_input.length; i += 10) {
+  for (let channel = 0; channel < base_input.numberOfChannels; channel++) {
+
+    let plane_start = channel * frames_per_plane;
+    let input_plane = total_input.slice(
+        plane_start, plane_start + frames_per_plane);
+
+    for (let i = 0; i < base_input.numberOfFrames; i += 10) {
+      // Instead of de-interleaving the data, directly look into |total_output|
+      // for the sample we are interested in.
+      let ouput_index = i * base_input.numberOfChannels + channel;
+
       // Checking only every 10th sample to save test time in slow
       // configurations like MSAN etc.
-      assert_approx_equals(input_data[i], output_data[i], 0.5,
-        "Difference between input and output is too large."
-        + " index: " + i
-        + " input: " + input_data[i]
-        + " output: " + output_data[i]);
+      assert_approx_equals(
+          input_plane[i], total_output[ouput_index], 0.5,
+          'Difference between input and output is too large.' +
+              ' index: ' + i + ' channel: ' + channel +
+              ' input: ' + input_plane[i] +
+              ' output: ' + total_output[ouput_index]);
     }
   }
 

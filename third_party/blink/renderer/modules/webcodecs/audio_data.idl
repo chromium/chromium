@@ -14,6 +14,14 @@
 
   void close();
 
+  [RaisesException] unsigned long allocationSize(AudioDataCopyToOptions options);
+  [RaisesException] void copyTo([AllowShared] BufferSource destination,
+                                AudioDataCopyToOptions options);
+
+  readonly attribute AudioSampleFormat format;
+  readonly attribute unsigned long sampleRate;
+  readonly attribute unsigned long numberOfFrames;
+  readonly attribute unsigned long numberOfChannels;
+  readonly attribute unsigned long long duration;
   readonly attribute long long timestamp;  // microseconds
-  readonly attribute AudioBuffer buffer;
 };

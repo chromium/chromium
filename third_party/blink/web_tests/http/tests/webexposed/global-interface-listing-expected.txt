@@ -327,11 +327,17 @@ interface AudioContext : BaseAudioContext
     method suspend
 interface AudioData
     attribute @@toStringTag
-    getter buffer
+    getter duration
+    getter format
+    getter numberOfChannels
+    getter numberOfFrames
+    getter sampleRate
     getter timestamp
+    method allocationSize
     method clone
     method close
     method constructor
+    method copyTo
 interface AudioDecoder
     static method isConfigSupported
     attribute @@toStringTag

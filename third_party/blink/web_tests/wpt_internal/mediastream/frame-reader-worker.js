@@ -27,7 +27,7 @@ self.addEventListener('message', function(e) {
         isValid = false;
       }
     } else {
-      if (!value.buffer) {
+      if (!value.numberOfFrames) {
         self.postMessage({ success: false, message: "Audio data is invalid" });
         isValid = false;
       }

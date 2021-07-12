@@ -18,8 +18,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
@@ -1087,13 +1090,13 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
 
   auto audio_bus = media::AudioBus::Create(kChannels, kFrames);
 
-  // Populate each frame with a unique value.
-  const unsigned kTotalFrames = (kFrames * kChannels);
-  const float kFramesMultiplier = 1.0 / kTotalFrames;
+  // Populate each sample with a unique value.
+  const unsigned kTotalSamples = (kFrames * kChannels);
+  const float kSampleMultiplier = 1.0 / kTotalSamples;
   for (unsigned ch = 0; ch < kChannels; ++ch) {
     float* data = audio_bus->channel(ch);
     for (unsigned i = 0; i < kFrames; ++i)
-      data[i] = (i + ch * kFrames) * kFramesMultiplier;
+      data[i] = (i + ch * kFrames) * kSampleMultiplier;
   }
 
   // Copying the data from an AudioBus instead of creating a media::AudioBuffer
@@ -1109,29 +1112,38 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
 
   // The data should have been copied, not transferred.
-  EXPECT_TRUE(audio_data->buffer());
+  EXPECT_TRUE(audio_data->data());
 
   ASSERT_TRUE(V8AudioData::HasInstance(result, scope.GetIsolate()));
 
   AudioData* new_data = V8AudioData::ToImpl(result.As<v8::Object>());
   EXPECT_EQ(base::TimeDelta::FromMicroseconds(new_data->timestamp()),
             kTimestamp);
-  EXPECT_EQ(new_data->buffer()->numberOfChannels(), kChannels);
-  EXPECT_EQ(new_data->buffer()->sampleRate(), kSampleRate);
-  EXPECT_EQ(new_data->buffer()->length(), kFrames);
+  EXPECT_EQ(new_data->numberOfChannels(), kChannels);
+  EXPECT_EQ(new_data->numberOfFrames(), kFrames);
+  EXPECT_EQ(new_data->sampleRate(), kSampleRate);
 
-  // Make sure the data wasn't changed during the transfer.
-  for (unsigned ch = 0; ch < kChannels; ++ch) {
-    float* src_data = audio_data->buffer()->getChannelData(ch)->Data();
-    float* dst_data = new_data->buffer()->getChannelData(ch)->Data();
-    for (unsigned i = 0; i < kFrames; ++i) {
-      EXPECT_EQ(src_data[i], dst_data[i]);
-    }
+  // Copy out the frames to make sure they haven't been changed during the
+  // transfer.
+  DOMArrayBuffer* copy_dest = DOMArrayBuffer::Create(kFrames, sizeof(float));
+  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(copy_dest);
+  AudioDataCopyToOptions* options =
+      MakeGarbageCollected<AudioDataCopyToOptions>();
+
+  for (unsigned int ch = 0; ch < kChannels; ++ch) {
+    options->setPlaneIndex(ch);
+    new_data->copyTo(dest, options, scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+    float* new_samples = static_cast<float*>(copy_dest->Data());
+
+    for (unsigned int i = 0; i < kFrames; ++i)
+      ASSERT_EQ(new_samples[i], (i + ch * kFrames) * kSampleMultiplier);
   }
 
   // Closing the original |audio_data| should not affect |new_data|.
   audio_data->close();
-  EXPECT_TRUE(new_data->buffer());
+  EXPECT_TRUE(new_data->data());
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {

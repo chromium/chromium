@@ -18,11 +18,17 @@ Starting worker: resources/global-interface-listing-worker.js.php
 [Worker]     setter onabort
 [Worker] interface AudioData
 [Worker]     attribute @@toStringTag
-[Worker]     getter buffer
+[Worker]     getter duration
+[Worker]     getter format
+[Worker]     getter numberOfChannels
+[Worker]     getter numberOfFrames
+[Worker]     getter sampleRate
 [Worker]     getter timestamp
+[Worker]     method allocationSize
 [Worker]     method clone
 [Worker]     method close
 [Worker]     method constructor
+[Worker]     method copyTo
 [Worker] interface AudioDecoder
 [Worker]     static method isConfigSupported
 [Worker]     attribute @@toStringTag
