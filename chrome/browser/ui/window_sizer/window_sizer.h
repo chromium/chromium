@@ -38,10 +38,13 @@ class WindowSizer {
    public:
     virtual ~StateProvider() = default;
 
-    // Retrieve the persisted bounds of the window. Returns true if there was
-    // persisted data to retrieve state information, false otherwise.
-    // The |show_state| variable will only be touched if there was persisted
-    // data and the |show_state| variable is SHOW_STATE_DEFAULT.
+    // Retrieve the persisted bounds of the window. Returns true if there were
+    // persisted bounds and false otherwise. If this method returns false, none
+    // of the out parameters are touched. If it returns true, |bounds| was
+    // overwritten, and |work_area| may have been overwritten if there was also
+    // a saved work area.  The |show_state| variable will only be touched if
+    // there was persisted data and the |show_state| variable is
+    // SHOW_STATE_DEFAULT.
     virtual bool GetPersistentState(gfx::Rect* bounds,
                                     gfx::Rect* work_area,
                                     ui::WindowShowState* show_state) const = 0;

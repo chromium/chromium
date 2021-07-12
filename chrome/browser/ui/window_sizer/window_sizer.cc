@@ -51,37 +51,25 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
     if (!browser_ || !browser_->profile()->GetPrefs())
       return false;
 
-    const base::DictionaryValue* wp_pref =
-        chrome::GetWindowPlacementDictionaryReadOnly(
-            chrome::GetWindowName(browser_), browser_->profile()->GetPrefs());
-    int top = 0, left = 0, bottom = 0, right = 0;
-    bool maximized = false;
-    bool has_prefs = wp_pref &&
-                     wp_pref->GetInteger("top", &top) &&
-                     wp_pref->GetInteger("left", &left) &&
-                     wp_pref->GetInteger("bottom", &bottom) &&
-                     wp_pref->GetInteger("right", &right) &&
-                     wp_pref->GetBoolean("maximized", &maximized);
-    bounds->SetRect(left, top, std::max(0, right - left),
-                    std::max(0, bottom - top));
+    const base::Value* pref = chrome::GetWindowPlacementDictionaryReadOnly(
+        chrome::GetWindowName(browser_), browser_->profile()->GetPrefs());
 
-    int work_area_top = 0;
-    int work_area_left = 0;
-    int work_area_bottom = 0;
-    int work_area_right = 0;
-    if (wp_pref) {
-      wp_pref->GetInteger("work_area_top", &work_area_top);
-      wp_pref->GetInteger("work_area_left", &work_area_left);
-      wp_pref->GetInteger("work_area_bottom", &work_area_bottom);
-      wp_pref->GetInteger("work_area_right", &work_area_right);
-      if (*show_state == ui::SHOW_STATE_DEFAULT && maximized)
-        *show_state = ui::SHOW_STATE_MAXIMIZED;
-    }
-    work_area->SetRect(work_area_left, work_area_top,
-                      std::max(0, work_area_right - work_area_left),
-                      std::max(0, work_area_bottom - work_area_top));
+    absl::optional<gfx::Rect> pref_bounds = RectFromPrefixedPref(pref, "");
+    absl::optional<gfx::Rect> pref_area =
+        RectFromPrefixedPref(pref, "work_area_");
+    absl::optional<bool> maximized =
+        pref ? pref->FindBoolPath("maximized") : absl::nullopt;
 
-    return has_prefs;
+    if (!pref_bounds || !maximized)
+      return false;
+
+    *bounds = pref_bounds.value();
+    if (pref_area)
+      *work_area = pref_area.value();
+    if (*show_state == ui::SHOW_STATE_DEFAULT && maximized.value())
+      *show_state = ui::SHOW_STATE_MAXIMIZED;
+
+    return true;
   }
 
   bool GetLastActiveWindowState(
@@ -128,6 +116,27 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
   }
 
  private:
+  static absl::optional<gfx::Rect> RectFromPrefixedPref(
+      const base::Value* pref,
+      const std::string& prefix) {
+    if (!pref)
+      return absl::nullopt;
+
+    absl::optional<int> top, left, bottom, right;
+
+    top = pref->FindIntKey(prefix + "top");
+    left = pref->FindIntKey(prefix + "left");
+    bottom = pref->FindIntKey(prefix + "bottom");
+    right = pref->FindIntKey(prefix + "right");
+
+    if (!top || !left || !bottom || !right)
+      return absl::nullopt;
+
+    return gfx::Rect(left.value(), top.value(),
+                     std::max(0, right.value() - left.value()),
+                     std::max(0, bottom.value() - top.value()));
+  }
+
   std::string app_name_;
 
   // If set, is used as the reference browser for GetLastActiveWindowState.

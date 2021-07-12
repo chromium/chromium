@@ -109,6 +109,9 @@ bool WindowSizerChromeOS::GetBrowserBounds(
       // Finally, prioritize the last saved |show_state|. If you have questions
       // or comments about this behavior please contact oshima@chromium.org.
       gfx::Rect ignored_bounds, ignored_work_area;
+      // TODO(ellyjones): This code shouldn't ignore the return value of
+      // GetPersistentState()... we could end up using an undefined
+      // |show_state|?
       state_provider()->GetPersistentState(&ignored_bounds, &ignored_work_area,
                                            show_state);
       // |determined| is not set here, so we fall back to cross-platform window
