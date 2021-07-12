@@ -38,6 +38,7 @@ class HatsHandler : public SettingsPageUIHandler {
     RAN_SAFETY_CHECK = 0,
     USED_PRIVACY_CARD = 1,
     OPENED_PRIVACY_SANDBOX = 2,
+    OPENED_PASSWORD_MANAGER = 3,
   };
 
   // Requests the appropriate HaTS survey, which may be none, for |interaction|.

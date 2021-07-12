@@ -163,6 +163,11 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   scoped_feature_list_.InitWithFeaturesAndParameters({feature_and_params}, {});
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
   handler()->HandleTrustSafetyInteractionOccurred(&args);
+
+  EXPECT_CALL(*mock_sentiment_service_, OpenedPasswordManager(web_contents()));
+  args.GetList()[0] = base::Value(static_cast<int>(
+      HatsHandler::TrustSafetyInteraction::OPENED_PASSWORD_MANAGER));
+  handler()->HandleTrustSafetyInteractionOccurred(&args);
 }
 
 }  // namespace settings

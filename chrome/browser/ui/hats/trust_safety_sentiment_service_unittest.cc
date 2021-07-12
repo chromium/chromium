@@ -45,6 +45,7 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string privacy_settings_trigger_id = "privacy-settings-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
     std::string transactions_trigger_id = "transactions-test";
+    std::string transactions_password_manager_time = "20s";
   };
 
   void SetupFeatureParameters(FeatureParams params) {
@@ -63,6 +64,8 @@ class TrustSafetySentimentServiceTest : public testing::Test {
             {"privacy-settings-trigger-id", params.privacy_settings_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
             {"transactions-trigger-id", params.transactions_trigger_id},
+            {"transactions-password-manager-time",
+             params.transactions_password_manager_time},
         });
   }
 
@@ -204,7 +207,7 @@ TEST_F(TrustSafetySentimentServiceTest, TriggersClearOnLaunch) {
   service()->OpenedNewTabPage();
 }
 
-TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher) {
+TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher_PrivacySettings) {
   FeatureParams params;
   params.privacy_settings_probability = "1.0";
   params.privacy_settings_time = "10s";
@@ -245,6 +248,63 @@ TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher) {
               LaunchSurvey(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   service()->InteractedWithPrivacySettings(web_contents.get());
+  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(5));
+  task_environment()->RunUntilIdle();
+  service()->OpenedNewTabPage();
+
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL("http://unrelated.com"));
+  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(15));
+  task_environment()->RunUntilIdle();
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher_PasswordManager) {
+  FeatureParams params;
+  params.transactions_probability = "1.0";
+  params.transactions_password_manager_time = "10s";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  // Check that after being informed of a visit to the password manager page,
+  // the service correctly watches the provided WebContents to check if the
+  // user stays on settings.
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL(chrome::kChromeUISettingsURL));
+
+  // A survey should not be shown unless the user spends at least the required
+  // time on settings after opening password manager.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  service()->OpenedPasswordManager(web_contents.get());
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // Once the user has spent sufficient time on settings after visiting the
+  // password manager, they should be eligible for the Transactions copy of the
+  // survey.
+  std::map<std::string, bool> expected_psd = {{"Saved password", false}};
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyTransactions,
+                           testing::_, testing::_, expected_psd));
+
+  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(20));
+  task_environment()->RunUntilIdle();
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // Leaving settings before the required time should not make the user
+  // eligible.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  service()->OpenedPasswordManager(web_contents.get());
   task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(5));
   task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
@@ -298,10 +358,16 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   // privacy setting.
   FeatureParams params;
   params.privacy_settings_probability = "1.0";
+  params.privacy_settings_time = "0s";
   params.min_time_to_prompt = "0s";
   params.ntp_visits_min_range = "0";
   params.ntp_visits_max_range = "0";
   SetupFeatureParameters(params);
+
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL(chrome::kChromeUISettingsURL));
 
   std::map<std::string, bool> expected_psd = {{"Non default setting", false},
                                               {"Ran safety check", false}};
@@ -310,7 +376,8 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
                            testing::_, testing::_, expected_psd));
-  service()->SettingsWatcherComplete(/*stayed_on_settings=*/true);
+  service()->InteractedWithPrivacySettings(web_contents.get());
+  task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
   testing::Mock::VerifyAndClearExpectations(mock_hats_service());
 
@@ -344,7 +411,8 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
                            testing::_, testing::_, expected_psd));
-  service()->SettingsWatcherComplete(/*stayed_on_settings=*/true);
+  service()->InteractedWithPrivacySettings(web_contents.get());
+  task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
   testing::Mock::VerifyAndClearExpectations(mock_hats_service());
   profile()->GetPrefs()->ClearPref(prefs::kEnableDoNotTrack);
@@ -356,7 +424,8 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
                            testing::_, testing::_, expected_psd));
-  service()->SettingsWatcherComplete(/*stayed_on_settings=*/true);
+  service()->InteractedWithPrivacySettings(web_contents.get());
+  task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
   testing::Mock::VerifyAndClearExpectations(mock_hats_service());
 
@@ -368,7 +437,8 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   profile()->GetTestingPrefService()->SetUserPref(
       prefs::kGoogleServicesConsentedToSync,
       std::make_unique<base::Value>(true));
-  service()->SettingsWatcherComplete(/*stayed_on_settings=*/true);
+  service()->InteractedWithPrivacySettings(web_contents.get());
+  task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
 }
 

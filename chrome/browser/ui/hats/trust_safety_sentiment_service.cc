@@ -218,15 +218,23 @@ void TrustSafetySentimentService::OpenedNewTabPage() {
 
 void TrustSafetySentimentService::InteractedWithPrivacySettings(
     content::WebContents* web_contents) {
-  // Only observe one instance of the settings page at a time, simply ignoring
-  // repeated settings events. This reduces the likelihood the user will be
-  // recorded as staying on settings, but is much simpler.
+  // Only observe one instance settings at a time. This ignores both multiple
+  // instances of settings, and repeated interactions with settings. This
+  // reduces the chance that a user is eligible for a survey, but is much
+  // simpler. As interactions with settings (visiting password manager and using
+  // the privacy card) can occur independently, there is also little risk of
+  // starving one interaction.
   if (settings_watcher_)
     return;
 
   settings_watcher_ = std::make_unique<SettingsWatcher>(
       web_contents,
       features::kTrustSafetySentimentSurveyPrivacySettingsTime.Get(),
+      base::BindOnce(&TrustSafetySentimentService::TriggerOccurred,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     FeatureArea::kPrivacySettings,
+                     GetPrivacySettingsProductSpecificData(
+                         profile_, /*ran_safety_check=*/false)),
       base::BindOnce(&TrustSafetySentimentService::SettingsWatcherComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -268,6 +276,25 @@ void TrustSafetySentimentService::SavedPassword() {
   TriggerOccurred(FeatureArea::kTransactions, {{"Saved password", true}});
 }
 
+void TrustSafetySentimentService::OpenedPasswordManager(
+    content::WebContents* web_contents) {
+  if (settings_watcher_)
+    return;
+
+  std::map<std::string, bool> product_specific_data = {
+      {"Saved password", false}};
+
+  settings_watcher_ = std::make_unique<SettingsWatcher>(
+      web_contents,
+      features::kTrustSafetySentimentSurveyTransactionsPasswordManagerTime
+          .Get(),
+      base::BindOnce(&TrustSafetySentimentService::TriggerOccurred,
+                     weak_ptr_factory_.GetWeakPtr(), FeatureArea::kTransactions,
+                     product_specific_data),
+      base::BindOnce(&TrustSafetySentimentService::SettingsWatcherComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
   // Only interested in the primary OTR profile i.e. the one used for incognito
@@ -307,8 +334,10 @@ TrustSafetySentimentService::PendingTrigger::PendingTrigger(
 TrustSafetySentimentService::SettingsWatcher::SettingsWatcher(
     content::WebContents* web_contents,
     base::TimeDelta required_open_time,
-    base::OnceCallback<void(bool)> complete_callback)
+    base::OnceCallback<void()> success_callback,
+    base::OnceCallback<void()> complete_callback)
     : web_contents_(web_contents),
+      success_callback_(std::move(success_callback)),
       complete_callback_(std::move(complete_callback)) {
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -322,7 +351,7 @@ TrustSafetySentimentService::SettingsWatcher::SettingsWatcher(
 TrustSafetySentimentService::SettingsWatcher::~SettingsWatcher() = default;
 
 void TrustSafetySentimentService::SettingsWatcher::WebContentsDestroyed() {
-  std::move(complete_callback_).Run(/*stayed_on_settings*/ false);
+  std::move(complete_callback_).Run();
 }
 
 void TrustSafetySentimentService::SettingsWatcher::TimerComplete() {
@@ -331,20 +360,17 @@ void TrustSafetySentimentService::SettingsWatcher::TimerComplete() {
       web_contents_->GetVisibility() == content::Visibility::VISIBLE &&
       web_contents_->GetLastCommittedURL().host_piece() ==
           chrome::kChromeUISettingsHost;
-  std::move(complete_callback_).Run(stayed_on_settings);
+  if (stayed_on_settings)
+    std::move(success_callback_).Run();
+
+  std::move(complete_callback_).Run();
 }
 
 TrustSafetySentimentService::PageInfoState::PageInfoState()
     : opened_time(base::Time::Now()) {}
 
-void TrustSafetySentimentService::SettingsWatcherComplete(
-    bool stayed_on_settings) {
+void TrustSafetySentimentService::SettingsWatcherComplete() {
   settings_watcher_.reset();
-  if (stayed_on_settings) {
-    TriggerOccurred(FeatureArea::kPrivacySettings,
-                    GetPrivacySettingsProductSpecificData(
-                        profile_, /*ran_safety_check=*/false));
-  }
 }
 
 void TrustSafetySentimentService::TriggerOccurred(

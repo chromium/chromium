@@ -984,6 +984,12 @@ const base::FeatureParam<base::TimeDelta>
     kTrustSafetySentimentSurveyTrustedSurfaceTime{
         &kTrustSafetySentimentSurvey, "trusted-surface-time",
         base::TimeDelta::FromSeconds(5)};
+// The time the user must remain on settings after visiting the password
+// manager page.
+const base::FeatureParam<base::TimeDelta>
+    kTrustSafetySentimentSurveyTransactionsPasswordManagerTime{
+        &kTrustSafetySentimentSurvey, "transactions-password-manager-time",
+        base::TimeDelta::FromSeconds(20)};
 
 #endif
 

@@ -60,6 +60,7 @@ js_library("address_edit_dialog") {
 js_library("autofill_page") {
   deps = [
     ":password_check_behavior",
+    "..:hats_browser_proxy",
     "..:open_window_proxy",
     "..:route",
     "..:router",

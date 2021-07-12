@@ -54,6 +54,12 @@ class TrustSafetySentimentService : public KeyedService,
   // action is recorded.
   virtual void PageInfoClosed();
 
+  // Called when the user visits chrome://settings/passwords. Calling this
+  // allows the service to monitor |web_contents| to determine if the user
+  // remains on settings after visiting the page for the required time. Virtual
+  // to allow mocking in tests.
+  virtual void OpenedPasswordManager(content::WebContents* web_contents);
+
   // Profile Observer:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -79,7 +85,10 @@ class TrustSafetySentimentService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, TriggerProbability);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
                            TriggersClearOnLaunch);
-  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, SettingsWatcher);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
+                           SettingsWatcher_PrivacySettings);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
+                           SettingsWatcher_PasswordManager);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, RanSafetyCheck);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
                            PrivacySettingsProductSpecificData);
@@ -102,12 +111,15 @@ class TrustSafetySentimentService : public KeyedService,
 
   // Class which observes the provided |web_contents| for |required_open_time|
   // and then checks if |web_contents| is currently visible, and has settings
-  // open.
+  // open. Calls |success_callback| if the user stays on settings for the
+  // required time, calls |complete_callback| when the observation time has
+  // expired, or |web_contents| has been destroyed.
   class SettingsWatcher : content::WebContentsObserver {
    public:
     SettingsWatcher(content::WebContents* web_contents,
                     base::TimeDelta required_open_time,
-                    base::OnceCallback<void(bool)> complete_callback);
+                    base::OnceCallback<void()> success_callback,
+                    base::OnceCallback<void()> complete_callback);
     ~SettingsWatcher() override;
 
     // WebContentsObserver:
@@ -117,7 +129,8 @@ class TrustSafetySentimentService : public KeyedService,
     void TimerComplete();
 
     content::WebContents* web_contents_;
-    base::OnceCallback<void(bool)> complete_callback_;
+    base::OnceCallback<void()> success_callback_;
+    base::OnceCallback<void()> complete_callback_;
     base::WeakPtrFactory<SettingsWatcher> weak_ptr_factory_{this};
   };
 
@@ -128,7 +141,7 @@ class TrustSafetySentimentService : public KeyedService,
     bool interacted = false;
   };
 
-  void SettingsWatcherComplete(bool stayed_on_settings);
+  void SettingsWatcherComplete();
 
   // Record that a trigger occurred, placing it in the set of pending triggers.
   // Private as the service itself determines when a trigger has occurred, and

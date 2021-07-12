@@ -32,6 +32,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
 import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
+import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import '../prefs/prefs.js';
@@ -401,6 +402,9 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
     afterNextRender(this, function() {
       IronA11yAnnouncer.requestAvailability();
     });
+
+    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+        TrustSafetyInteraction.OPENED_PASSWORD_MANAGER);
   }
 
   /** @override */

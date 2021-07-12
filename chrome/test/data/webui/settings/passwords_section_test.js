@@ -8,13 +8,16 @@
 import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SettingsPluralStringProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {createExceptionEntry, createMultiStoreExceptionEntry, createMultiStorePasswordEntry, createPasswordEntry, makeCompromisedCredential, makePasswordCheckStatus, PasswordSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from 'chrome://test/settings/passwords_export_test.js';
 import {getSyncAllPrefs, simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
 import {TestPluralStringProxy} from 'chrome://test/test_plural_string_proxy.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
+
+import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
+
 // clang-format on
 
 const PasswordCheckState = chrome.passwordsPrivate.PasswordCheckState;
@@ -324,12 +327,17 @@ suite('PasswordsSection', function() {
   /** @type {TestPluralStringProxy} */
   let pluralString = null;
 
+  /** @type {TestHatsBrowserProxy} */
+  let testHatsBrowserProxy = null;
+
   setup(function() {
     PolymerTest.clearBody();
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
     pluralString = new TestPluralStringProxy();
     SettingsPluralStringProxyImpl.setInstance(pluralString);
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.instance_ = testHatsBrowserProxy;
 
     PasswordManagerImpl.instance_ = passwordManager;
     elementFactory = new PasswordSectionElementFactory(document);
@@ -2085,5 +2093,13 @@ suite('PasswordsSection', function() {
         await passwordManager.whenCalled('recordPasswordCheckReferrer');
     assertEquals(
         PasswordManagerProxy.PasswordCheckReferrer.PASSWORD_SETTINGS, referrer);
+  });
+
+  test('hatsInformedOnOpen', async function() {
+    const passwordsSection =
+        elementFactory.createPasswordsSection(passwordManager, [], []);
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.OPENED_PASSWORD_MANAGER, interaction);
   });
 });
