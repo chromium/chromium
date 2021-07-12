@@ -2007,6 +2007,17 @@ TEST(TimeDelta, Overflows) {
   static_assert((kLargeDelta / 0.5).is_max(), "");
   static_assert((kLargeDelta / -0.5).is_min(), "");
 
+  // Test math operators on Max() and Min() values
+  // Calculations that would overflow are saturated.
+  static_assert(TimeDelta::Max() + kOneSecond == TimeDelta::Max(), "");
+  static_assert(TimeDelta::Max() * 7 == TimeDelta::Max(), "");
+  static_assert(TimeDelta::FiniteMax() + kOneSecond == TimeDelta::Max(), "");
+  static_assert(TimeDelta::Min() - kOneSecond == TimeDelta::Min(), "");
+  static_assert(TimeDelta::Min() * 7 == TimeDelta::Min(), "");
+  static_assert(TimeDelta::FiniteMin() - kOneSecond == TimeDelta::Min(), "");
+
+  // Division is done by converting to double with Max()/Min() converted to
+  // +/- infinities.
   static_assert(
       TimeDelta::Max() / kOneSecond == std::numeric_limits<double>::infinity(),
       "");

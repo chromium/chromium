@@ -25,9 +25,9 @@ namespace browser_watcher {
 namespace {
 
 MULTIPROCESS_TEST_MAIN(Sleeper) {
-  // Sleep forever - the test harness will kill this process to give it an
-  // exit code.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(INFINITE));
+  // Sleep as long as possible - the test harness will kill this process to give
+  // it an exit code.
+  base::PlatformThread::Sleep(base::TimeDelta::Max());
   return 1;
 }
 

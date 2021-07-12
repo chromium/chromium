@@ -166,13 +166,17 @@ class BASE_EXPORT TimeDelta {
   }
 
   // Returns the maximum time delta, which should be greater than any reasonable
-  // time delta we might compare it to. Adding or subtracting the maximum time
-  // delta to a time or another time delta has an undefined result.
+  // time delta we might compare it to. If converted to double with ToDouble()
+  // it becomes an IEEE double infinity. Use FiniteMax() if you want a very
+  // large number that doesn't do this. TimeDelta math saturates at the end
+  // points so adding to TimeDelta::Max() leaves the value unchanged.
+  // Subtracting should leave the value unchanged but currently changes it
+  // TODO(https://crbug.com/869387).
   static constexpr TimeDelta Max();
 
   // Returns the minimum time delta, which should be less than than any
-  // reasonable time delta we might compare it to. Adding or subtracting the
-  // minimum time delta to a time or another time delta has an undefined result.
+  // reasonable time delta we might compare it to. For more details see the
+  // comments for Max().
   static constexpr TimeDelta Min();
 
   // Returns the maximum time delta which is not equivalent to infinity. Only
