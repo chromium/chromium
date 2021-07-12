@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Check direction assert_equals: expected "ltr" but got "rtl"
+Harness: the test ran to completion.
+

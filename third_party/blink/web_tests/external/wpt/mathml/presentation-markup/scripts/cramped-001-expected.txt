@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS child of non-cramped element
+PASS child of cramped element
+PASS child of msqrt
+PASS child of mroot
+PASS child of mfrac
+FAIL child of msub assert_greater_than: subscript should be cramped expected a number greater than 25 but got 20
+PASS child of msup
+FAIL child of msubsup assert_greater_than: subscript should be cramped expected a number greater than 25 but got 20
+FAIL child of munder assert_less_than: underscript should not be cramped expected a number less than 25 but got 49.984375
+PASS child of mover (non-accent overscript)
+FAIL child of munderover (non-accent overscript) assert_less_than: underscript should not be cramped expected a number less than 25 but got 49.984375
+PASS accent child of mover (accent overscript)
+FAIL accent child of munderover (accent overscript) assert_less_than: underscript should not be cramped expected a number less than 25 but got 49.984375
+FAIL mmultiscripts assert_greater_than: post-subscript should be cramped expected a number greater than 25 but got 20
+PASS element with specified CSS math-style
+Harness: the test ran to completion.
+

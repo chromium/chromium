@@ -1214,14 +1214,6 @@ crbug.com/958381 [ Mac ] fragmentation/single-line-cells-paginated-with-text.htm
 
 # ====== MathMLCore-only tests from here ======
 
-crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction-006.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction-009.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-elements-001.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-axis-height-1.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/cramped-001.html [ Failure ]
-
 # These tests fail because we don't support MathML ink metrics.
 crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-001.html [ Failure ]
 crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-002.html [ Failure ]
@@ -1238,6 +1230,7 @@ crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-002.
 crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-004.html [ Failure ]
 
 # These tests fail because we don't support MathML tables.
+crbug.com/1125111 external/wpt/mathml/presentation-markup/direction/direction-006.html [ Failure ]
 crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-001.html [ Failure ]
 crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-002.html [ Failure ]
 crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-axis-height.html [ Failure ]
@@ -1252,6 +1245,7 @@ crbug.com/1093840 external/wpt/mathml/relations/html5-tree/math-global-event-han
 # These tests fail because we don't parse math display values according to the spec.
 crbug.com/1127222 external/wpt/css/css-display/display-math-on-pseudo-elements-001.html [ Failure ]
 crbug.com/1127222 external/wpt/css/css-display/display-math-on-pseudo-elements-002.html [ Failure ]
+crbug.com/1127222 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-elements-001.html [ Failure ]
 
 # This test fails on windows. It should really be made more reliable and take
 # into account fallback parameters.
