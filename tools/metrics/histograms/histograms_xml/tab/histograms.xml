@@ -1883,7 +1883,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.SavedTabLoadTime.{SavedTabMethod}.{SavedTabLoadResult}"
-    units="ms" expires_after="2021-08-26">
+    units="ms" expires_after="2022-07-11">
   <owner>davidjm@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
