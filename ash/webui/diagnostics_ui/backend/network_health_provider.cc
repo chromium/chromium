@@ -18,20 +18,18 @@ namespace diagnostics {
 namespace {
 
 namespace network_mojom = ::chromeos::network_config::mojom;
-using network_mojom::ConnectionStateType;
-using network_mojom::NetworkType;
 
 bool IsSupportedNetworkType(network_mojom::NetworkType type) {
   switch (type) {
-    case NetworkType::kWiFi:
-    case NetworkType::kCellular:
-    case NetworkType::kEthernet:
+    case network_mojom::NetworkType::kWiFi:
+    case network_mojom::NetworkType::kCellular:
+    case network_mojom::NetworkType::kEthernet:
       return true;
-    case NetworkType::kMobile:
-    case NetworkType::kTether:
-    case NetworkType::kVPN:
-    case NetworkType::kAll:
-    case NetworkType::kWireless:
+    case network_mojom::NetworkType::kMobile:
+    case network_mojom::NetworkType::kTether:
+    case network_mojom::NetworkType::kVPN:
+    case network_mojom::NetworkType::kAll:
+    case network_mojom::NetworkType::kWireless:
       return false;
   }
 }
@@ -41,34 +39,34 @@ bool IsNetworkOnline(network_mojom::ConnectionStateType connection_state) {
 }
 
 constexpr mojom::NetworkState ConnectionStateToNetworkState(
-    ConnectionStateType connection_state) {
+    network_mojom::ConnectionStateType connection_state) {
   switch (connection_state) {
-    case ConnectionStateType::kOnline:
+    case network_mojom::ConnectionStateType::kOnline:
       return mojom::NetworkState::kOnline;
-    case ConnectionStateType::kConnected:
+    case network_mojom::ConnectionStateType::kConnected:
       return mojom::NetworkState::kConnected;
-    case ConnectionStateType::kPortal:
+    case network_mojom::ConnectionStateType::kPortal:
       return mojom::NetworkState::kPortal;
-    case ConnectionStateType::kConnecting:
+    case network_mojom::ConnectionStateType::kConnecting:
       return mojom::NetworkState::kConnecting;
-    case ConnectionStateType::kNotConnected:
+    case network_mojom::ConnectionStateType::kNotConnected:
       return mojom::NetworkState::kNotConnected;
   }
 }
 
-constexpr mojom::NetworkType GetNetworkType(NetworkType type) {
+constexpr mojom::NetworkType GetNetworkType(network_mojom::NetworkType type) {
   switch (type) {
-    case NetworkType::kWiFi:
+    case network_mojom::NetworkType::kWiFi:
       return mojom::NetworkType::kWiFi;
-    case NetworkType::kCellular:
+    case network_mojom::NetworkType::kCellular:
       return mojom::NetworkType::kCellular;
-    case NetworkType::kEthernet:
+    case network_mojom::NetworkType::kEthernet:
       return mojom::NetworkType::kEthernet;
-    case NetworkType::kMobile:
-    case NetworkType::kTether:
-    case NetworkType::kVPN:
-    case NetworkType::kAll:
-    case NetworkType::kWireless:
+    case network_mojom::NetworkType::kMobile:
+    case network_mojom::NetworkType::kTether:
+    case network_mojom::NetworkType::kVPN:
+    case network_mojom::NetworkType::kAll:
+    case network_mojom::NetworkType::kWireless:
       NOTREACHED();
       return mojom::NetworkType::kUnsupported;
   }
