@@ -39,4 +39,9 @@ public interface ProcessScope {
     default ImagePrefetcher provideImagePrefetcher() {
         return null;
     }
+
+    @Nullable
+    default ReliabilityLoggingTestUtil provideReliabilityLoggingTestUtil() {
+        return null;
+    }
 }
