@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
