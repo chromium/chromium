@@ -11,7 +11,9 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 
 namespace password_manager {
 
@@ -41,25 +43,8 @@ PasswordStoreImpl::~PasswordStoreImpl() = default;
 
 void PasswordStoreImpl::ShutdownOnUIThread() {
   PasswordStore::ShutdownOnUIThread();
-  ScheduleTask(base::BindOnce(&PasswordStoreImpl::ResetLoginDB, this));
-}
-
-bool PasswordStoreImpl::InitOnBackgroundSequence() {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(login_db_);
-  bool success = true;
-  if (!login_db_->Init()) {
-    login_db_.reset();
-    // The initialization should be continued, because PasswordSyncBridge
-    // has to be initialized even if database initialization failed.
-    success = false;
-    LOG(ERROR) << "Could not create/open login database.";
-  }
-  if (success) {
-    login_db_->SetDeletionsHaveSyncedCallback(base::BindRepeating(
-        &PasswordStoreImpl::NotifyDeletionsHaveSynced, base::Unretained(this)));
-  }
-  return PasswordStore::InitOnBackgroundSequence() && success;
+  ScheduleTask(
+      base::BindOnce(&PasswordStoreImpl::DestroyOnBackgroundSequence, this));
 }
 
 void PasswordStoreImpl::ReportMetricsImpl(const std::string& sync_username,
@@ -306,6 +291,13 @@ void PasswordStoreImpl::RemoveFieldInfoByTimeImpl(base::Time remove_begin,
     login_db_->field_info_table().RemoveRowsByTime(remove_begin, remove_end);
 }
 
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+PasswordStoreImpl::GetSyncControllerDelegateOnBackgroundSequence() {
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(sync_bridge_);
+  return sync_bridge_->change_processor()->GetControllerDelegate();
+}
+
 bool PasswordStoreImpl::IsEmpty() {
   if (!login_db_)
     return true;
@@ -342,6 +334,13 @@ bool PasswordStoreImpl::UpdateInsecureCredentialsSync(
 PasswordStoreChangeList PasswordStoreImpl::RemoveLoginSync(
     const PasswordForm& form) {
   return RemoveLoginImpl(form);
+}
+
+void PasswordStoreImpl::NotifyLoginsChanged(
+    const PasswordStoreChangeList& changes) {
+  PasswordStore::NotifyLoginsChanged(changes);
+  if (sync_bridge_ && !changes.empty())
+    sync_bridge_->ActOnPasswordStoreChanges(changes);
 }
 
 bool PasswordStoreImpl::BeginTransaction() {
@@ -398,6 +397,16 @@ bool PasswordStoreImpl::DeleteAndRecreateDatabaseFile() {
   return login_db_ && login_db_->DeleteAndRecreateDatabaseFile();
 }
 
+void PasswordStoreImpl::InitBackend(
+    base::RepeatingClosure sync_enabled_or_disabled_cb,
+    base::OnceCallback<void(bool)> completion) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::InitOnBackgroundSequence, this,
+                     std::move(sync_enabled_or_disabled_cb)),
+      std::move(completion));
+}
+
 void PasswordStoreImpl::GetAllLoginsAsync(LoginsReply callback) {
   background_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&PasswordStoreImpl::GetAllLoginsInternal, this),
@@ -426,9 +435,38 @@ void PasswordStoreImpl::FillMatchingLoginsAsync(
       std::move(callback));
 }
 
-void PasswordStoreImpl::ResetLoginDB() {
+bool PasswordStoreImpl::InitOnBackgroundSequence(
+    base::RepeatingClosure sync_enabled_or_disabled_cb) {
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(login_db_);
+  bool success = true;
+  if (!login_db_->Init()) {
+    login_db_.reset();
+    // The initialization should be continued, because PasswordSyncBridge
+    // has to be initialized even if database initialization failed.
+    success = false;
+    LOG(ERROR) << "Could not create/open login database.";
+  }
+  if (success) {
+    login_db_->SetDeletionsHaveSyncedCallback(base::BindRepeating(
+        &PasswordStoreImpl::NotifyDeletionsHaveSynced, base::Unretained(this)));
+  }
+
+  // TODO(crbug.com/1226042): Remove static_cast when PasswordStoreImpl inherits
+  // PasswordStoreSync directly.
+  sync_bridge_ = std::make_unique<PasswordSyncBridge>(
+      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          syncer::PASSWORDS, base::DoNothing()),
+      /*password_store_sync=*/static_cast<PasswordStoreSync*>(this),
+      sync_enabled_or_disabled_cb);
+
+  return success;
+}
+
+void PasswordStoreImpl::DestroyOnBackgroundSequence() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   login_db_.reset();
+  sync_bridge_.reset();
 }
 
 LoginsResult PasswordStoreImpl::GetAllLoginsInternal() {

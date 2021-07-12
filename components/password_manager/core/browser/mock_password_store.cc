@@ -17,8 +17,4 @@ MockPasswordStore::CreateBackgroundTaskRunner() const {
   return base::SequencedTaskRunnerHandle::Get();
 }
 
-bool MockPasswordStore::InitOnBackgroundSequence() {
-  return true;
-}
-
 }  // namespace password_manager

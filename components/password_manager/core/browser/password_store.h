@@ -50,7 +50,6 @@ class AffiliatedMatchHelper;
 class PasswordStoreConsumer;
 class InsecureCredentialsConsumer;
 class PasswordStoreConsumer;
-class PasswordSyncBridge;
 struct FieldInfo;
 
 // Partial, cross-platform implementation for storing form passwords.
@@ -229,14 +228,6 @@ class PasswordStore : protected PasswordStoreSync,
   virtual scoped_refptr<base::SequencedTaskRunner> CreateBackgroundTaskRunner()
       const;
 
-  // Creates PasswordSyncBridge and PasswordReuseDetector instances on the
-  // background sequence. Subclasses can add more logic. Returns true on
-  // success. If |upload_phished_credentials_to_sync| is true, metadata will be
-  // dropped to force syncing, if local phished credentials information exist.
-  // Dropping metadata clears all of the information about previous syncing and
-  // force uploading all the local passwords with security issues again.
-  virtual bool InitOnBackgroundSequence();
-
   // Methods below will be run in PasswordStore's own sequence.
   // Synchronous implementation that reports usage metrics.
   virtual void ReportMetricsImpl(const std::string& sync_username,
@@ -319,6 +310,13 @@ class PasswordStore : protected PasswordStoreSync,
   // store is empty.
   virtual bool IsEmpty() = 0;
 
+  // Returns the sync controller delegate for syncing passwords. It must be
+  // called on the background sequence.
+  // TODO(crbug.bom/1226042): Remove this after fully switching to the
+  // PasswordStoreInterface.
+  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSyncControllerDelegateOnBackgroundSequence() = 0;
+
   // Called by *Internal() methods once the underlying data-modifying operation
   // has been performed. Notifies observers that password store data may have
   // been changed.
@@ -347,7 +345,6 @@ class PasswordStore : protected PasswordStoreSync,
   // TODO(crbug.com/1217071): Make private std::unique_ptr as soon as the
   // backend is passed into the store instead of it being the store(_impl).
   PasswordStoreBackend* backend_ = nullptr;
-
  private:
   using StatsResult = std::vector<InteractionsStats>;
   using StatsTask = base::OnceCallback<StatsResult()>;
@@ -488,20 +485,11 @@ class PasswordStore : protected PasswordStoreSync,
       const PasswordForm& updated_android_form,
       const std::vector<std::string>& affiliated_web_realms);
 
-  // Returns the sync controller delegate for syncing passwords. It must be
-  // called on the background sequence.
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegateOnBackgroundSequence();
-
   // Schedules UpdateAffiliatedWebLoginsImpl() to run on the background
   // sequence. Should be called from the main sequence.
   void ScheduleUpdateAffiliatedWebLoginsImpl(
       const PasswordForm& updated_android_form,
       const std::vector<std::string>& affiliated_web_realms);
-
-  // Deletes object that should be destroyed on the background sequence.
-  // WARNING: this method can be skipped on shutdown.
-  void DestroyOnBackgroundSequence();
 
   // TaskRunner for tasks that run on the main sequence (usually the UI thread).
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
@@ -511,10 +499,6 @@ class PasswordStore : protected PasswordStoreSync,
 
   // The observers.
   scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
-
-  std::unique_ptr<PasswordSyncBridge> sync_bridge_;
-
-  base::RepeatingClosure sync_enabled_or_disabled_cb_;
 
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 

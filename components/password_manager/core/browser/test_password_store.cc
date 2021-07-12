@@ -137,11 +137,24 @@ bool TestPasswordStore::IsEmpty() {
   return number_of_passwords == 0u;
 }
 
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+TestPasswordStore::GetSyncControllerDelegateOnBackgroundSequence() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 TestPasswordStore::~TestPasswordStore() = default;
 
 scoped_refptr<base::SequencedTaskRunner>
 TestPasswordStore::CreateBackgroundTaskRunner() const {
   return base::SequencedTaskRunnerHandle::Get();
+}
+
+void TestPasswordStore::InitBackend(
+    base::RepeatingClosure sync_enabled_or_disabled_cb,
+    base::OnceCallback<void(bool)> completion) {
+  main_task_runner()->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(completion), true));
 }
 
 void TestPasswordStore::GetAllLoginsAsync(LoginsReply callback) {

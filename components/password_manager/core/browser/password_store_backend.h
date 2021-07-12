@@ -38,6 +38,11 @@ class PasswordStoreBackend {
   PasswordStoreBackend& operator=(PasswordStoreBackend&&) = delete;
   virtual ~PasswordStoreBackend() = default;
 
+  // TODO(crbug.bom/1226042): Rename this to Init after PasswordStoreImpl no
+  // longer inherits PasswordStore.
+  virtual void InitBackend(base::RepeatingClosure sync_enabled_or_disabled_cb,
+                           base::OnceCallback<void(bool)> completion) = 0;
+
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status) and notify `consumer` on completion. Callback is called on the main
   // sequence.

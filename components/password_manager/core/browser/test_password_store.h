@@ -71,6 +71,9 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   // have entries of size 0.
   bool IsEmpty() override;
 
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSyncControllerDelegateOnBackgroundSequence() override;
+
   int fill_matching_logins_calls() const { return fill_matching_logins_calls_; }
 
  protected:
@@ -80,6 +83,8 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
       const override;
 
   // PasswordStoreBackend interface
+  void InitBackend(base::RepeatingClosure sync_enabled_or_disabled_cb,
+                   base::OnceCallback<void(bool)> completion) override;
   void GetAllLoginsAsync(LoginsReply callback) override;
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(

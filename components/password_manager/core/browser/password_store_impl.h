@@ -16,6 +16,8 @@
 
 namespace password_manager {
 
+class PasswordSyncBridge;
+
 // Simple password store implementation that delegates everything to
 // the LoginDatabase.
 // TODO(crbug.com/1217071): Currently, only implicitly inherits from protected
@@ -33,9 +35,6 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
 
  protected:
   ~PasswordStoreImpl() override;
-
-  // Opens |login_db_| on the background sequence.
-  bool InitOnBackgroundSequence() override;
 
   // Implements PasswordStore interface.
   void ReportMetricsImpl(const std::string& sync_username,
@@ -84,6 +83,8 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
                                  base::Time remove_end) override;
 
   bool IsEmpty() override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSyncControllerDelegateOnBackgroundSequence() override;
 
   // Implements PasswordStoreSync interface.
   PasswordStoreChangeList AddLoginSync(const PasswordForm& form,
@@ -96,6 +97,7 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
       const PasswordForm& form,
       base::span<const InsecureCredential> credentials) override;
   PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) override;
+  void NotifyLoginsChanged(const PasswordStoreChangeList& changes) override;
   bool BeginTransaction() override;
   void RollbackTransaction() override;
   bool CommitTransaction() override;
@@ -116,15 +118,20 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, UpdateInsecureCredentialsSync);
 
   // Implements PasswordStoreBackend interface.
-
+  void InitBackend(base::RepeatingClosure sync_enabled_or_disabled_cb,
+                   base::OnceCallback<void(bool)> completion) override;
   void GetAllLoginsAsync(LoginsReply callback) override;
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
       const std::vector<PasswordFormDigest>& forms) override;
 
-  // Resets |login_db_| on the background sequence.
-  void ResetLoginDB();
+  // Opens |login_db_| and creates |sync_bridge_| on the background sequence.
+  bool InitOnBackgroundSequence(
+      base::RepeatingClosure sync_enabled_or_disabled_cb);
+
+  // Resets |login_db_| and |sync_bridge_| on the background sequence.
+  void DestroyOnBackgroundSequence();
 
   // Synchronous implementation of GetAllLoginsAsync.
   LoginsResult GetAllLoginsInternal();
@@ -141,6 +148,8 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   // called on the background sequence in a deferred manner. If opening the DB
   // fails, |login_db_| will be reset and stay NULL for the lifetime of |this|.
   std::unique_ptr<LoginDatabase> login_db_;
+
+  std::unique_ptr<PasswordSyncBridge> sync_bridge_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreImpl);
 };

@@ -2053,23 +2053,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       false);
 }
 
-// TODO(crbug.com/589586): Disabled, since history is not yet marked as
-// a filterable datatype.
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       DISABLED_RemoveCompromisedCredentialsByUrlAndTime) {
-  RemovePasswordsTester tester(GetProfile());
-  auto builder = BrowsingDataFilterBuilder::Create(
-      BrowsingDataFilterBuilder::Mode::kDelete);
-  builder->AddRegisterableDomain(kTestRegisterableDomain1);
-  base::RepeatingCallback<bool(const GURL&)> filter = builder->BuildUrlFilter();
-
-  EXPECT_CALL(*tester.profile_store(),
-              RemoveCompromisedCredentialsByUrlAndTimeImpl(
-                  ProbablySameFilter(filter), base::Time(), base::Time::Max()));
-  BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
-                              constants::DATA_TYPE_HISTORY, std::move(builder));
-}
-
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        RemoveContentSettingsWithPreserveFilter) {
   // This test relies on async loading to complete. RunUntilIdle() should be

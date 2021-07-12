@@ -40,12 +40,10 @@
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/statistics_table.h"
-#include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 namespace password_manager {
@@ -82,15 +80,15 @@ bool PasswordStore::Init(PrefService* prefs,
   DCHECK(main_task_runner_);
   background_task_runner_ = CreateBackgroundTaskRunner();
   DCHECK(background_task_runner_);
-  sync_enabled_or_disabled_cb_ = std::move(sync_enabled_or_disabled_cb);
   prefs_ = prefs;
 
-  if (background_task_runner_) {
+  // TODO(crbug.bom/1226042): Backend might be null in tests, remove this after
+  // tests switch to MockPasswordStoreInterface.
+  if (background_task_runner_ && backend_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         "passwords", "PasswordStore::InitOnBackgroundSequence", this);
-    background_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&PasswordStore::InitOnBackgroundSequence, this),
+    backend_->InitBackend(
+        std::move(sync_enabled_or_disabled_cb),
         base::BindOnce(&PasswordStore::OnInitCompleted, this));
   }
 
@@ -378,8 +376,6 @@ bool PasswordStore::IsAbleToSavePasswords() const {
 }
 
 void PasswordStore::ShutdownOnUIThread() {
-  ScheduleTask(
-      base::BindOnce(&PasswordStore::DestroyOnBackgroundSequence, this));
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
   shutdown_called_ = true;
@@ -421,25 +417,12 @@ PasswordStore::CreateBackgroundTaskRunner() const {
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 }
 
-bool PasswordStore::InitOnBackgroundSequence() {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-
-  sync_bridge_ = base::WrapUnique(new PasswordSyncBridge(
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-          syncer::PASSWORDS, base::DoNothing()),
-      /*password_store_sync=*/this, sync_enabled_or_disabled_cb_));
-
-  return true;
-}
-
 void PasswordStore::NotifyLoginsChanged(
     const PasswordStoreChangeList& changes) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   if (!changes.empty()) {
     observers_->Notify(FROM_HERE, &Observer::OnLoginsChanged,
                        base::RetainedRef(this), changes);
-    if (sync_bridge_)
-      sync_bridge_->ActOnPasswordStoreChanges(changes);
   }
 }
 
@@ -886,18 +869,6 @@ void PasswordStore::ScheduleUpdateAffiliatedWebLoginsImpl(
   ScheduleTask(base::BindOnce(&PasswordStore::UpdateAffiliatedWebLoginsImpl,
                               this, updated_android_form,
                               affiliated_web_realms));
-}
-
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-PasswordStore::GetSyncControllerDelegateOnBackgroundSequence() {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(sync_bridge_);
-  return sync_bridge_->change_processor()->GetControllerDelegate();
-}
-
-void PasswordStore::DestroyOnBackgroundSequence() {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  sync_bridge_.reset();
 }
 
 }  // namespace password_manager
