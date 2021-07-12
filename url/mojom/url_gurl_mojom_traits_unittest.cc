@@ -99,51 +99,69 @@ TEST_F(MojoGURLStructTraitsTest, ExcessivelyLongUrl) {
 // Test for the GURL testcase based on https://crbug.com/1214098 (which in turn
 // was based on ContentSecurityPolicyBrowserTest.FileURLs).
 TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
-  GURL url1("file://hostname/");
-  ExpectSerializationRoundtrips(url1);
-  EXPECT_EQ("/", url1.path());
-  EXPECT_EQ("hostname", url1.host());
+  {
+    // #1: Try creating a file URL with a non-empty hostname.
+    GURL url_without_windows_drive_letter("file://hostname/");
+    EXPECT_EQ("/", url_without_windows_drive_letter.path());
+    EXPECT_EQ("hostname", url_without_windows_drive_letter.host());
+    ExpectSerializationRoundtrips(url_without_windows_drive_letter);
+  }
 
-  // Use GURL::Replacement to create a GURL with 1) a path that starts with a C:
-  // drive letter and 2) has a non-empty hostname (inherited from `url1` above).
-  // Without GURL::Replacement we would just get `url2` below, with an empty
-  // hostname, because of how DoParseUNC resets the hostname on Win32 (for more
-  // details see https://crbug.com/1214098#c4).
-  GURL::Replacements repl;
-  const std::string kNewPath = "/C:/dir/file.txt";
-  repl.SetPath(kNewPath.c_str(), url::Component(0, kNewPath.length()));
-  GURL url1_with_replaced_path = url1.ReplaceComponents(repl);
-  EXPECT_EQ(kNewPath, url1_with_replaced_path.path());
-  EXPECT_EQ("hostname", url1_with_replaced_path.host());
+  {
+    // #2: Use GURL::Replacement to create a GURL with 1) a path that starts
+    // with a Windows drive letter and 2) has a non-empty hostname (inherited
+    // from `url_without_windows_drive_letter` above). This used to not go
+    // through the DoParseUNC path that normally strips the hostname (for more
+    // details, see https://crbug.com/1214098#c4).
+    GURL::Replacements repl;
+    const std::string kNewPath = "/C:/dir/file.txt";
+    repl.SetPath(kNewPath.c_str(), url::Component(0, kNewPath.length()));
+    GURL url_made_with_replace_components =
+        GURL("file://hostname/").ReplaceComponents(repl);
 
+    EXPECT_EQ(kNewPath, url_made_with_replace_components.path());
 #ifdef WIN32
-  // TODO(https://crbug.com/1214098): All GURLs should round-trip when bounced
-  // through IPC, but this doesn't work for `url1_with_replaced_path` on
-  // Windows.
-  GURL roundtrip = BounceUrl(url1_with_replaced_path);
-  EXPECT_NE(roundtrip.host(), url1_with_replaced_path.host());
+    // Due to the reparsing logic in ReplaceComponents, the hostname is stripped
+    // for this URL too.
+    EXPECT_EQ("", url_made_with_replace_components.host());
+    EXPECT_EQ("file:///C:/dir/file.txt",
+              url_made_with_replace_components.spec());
 #else
-  // This is the MAIN VERIFICATION in this test.  The fact that this
-  // verification fails on Windows is the bug tracked in
-  // https://crbug.com/1214098.
-  ExpectSerializationRoundtrips(url1_with_replaced_path);
+    EXPECT_EQ("hostname", url_made_with_replace_components.host());
+    EXPECT_EQ("file://hostname/C:/dir/file.txt",
+              url_made_with_replace_components.spec());
 #endif
+    // This is the MAIN VERIFICATION in this test. This used to fail on Windows,
+    // see https://crbug.com/1214098.
+    ExpectSerializationRoundtrips(url_made_with_replace_components);
+  }
 
-  // On Windows, IPC will serialize/deserialze `url1_with_replaced_path` as
-  // `url2` (i.e. it won't round-trip the URL spec).  The test assertions below
-  // help illustrate why we can't assert ExpectSerializationRoundtrips above (on
-  // Windows).
-  EXPECT_EQ("file://hostname/C:/dir/file.txt", url1_with_replaced_path.spec());
-  GURL url2(url1_with_replaced_path.spec());
+  {
+    // #3: Try to create a URL with a Windows drive letter and a non-empty
+    // hostname directly.
+    GURL url_created_directly("file://hostname/C:/dir/file.txt");
+    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.path());
 #ifdef WIN32
-  EXPECT_NE(url2.spec(), url1_with_replaced_path.spec());
-  EXPECT_EQ("", url2.host());
+    // On Win32, the hostname will be reset by DoParseUNC.
+    EXPECT_EQ("", url_created_directly.host());
+    EXPECT_EQ("file:///C:/dir/file.txt", url_created_directly.spec());
 #else
-  EXPECT_EQ(url2.spec(), url1_with_replaced_path.spec());
-  EXPECT_EQ("hostname", url2.host());
+    // On other platforms, the hostname is kept.
+    EXPECT_EQ("hostname", url_created_directly.host());
+    EXPECT_EQ("file://hostname/C:/dir/file.txt", url_created_directly.spec());
 #endif
-  EXPECT_EQ(url2.path(), url1_with_replaced_path.path());
-  ExpectSerializationRoundtrips(url2);
+    ExpectSerializationRoundtrips(url_created_directly);
+
+    // The URL created directly and the URL created through ReplaceComponents
+    // should be the same.
+    GURL::Replacements repl;
+    const std::string kNewPath = "/C:/dir/file.txt";
+    repl.SetPath(kNewPath.c_str(), url::Component(0, kNewPath.length()));
+    GURL url_made_with_replace_components =
+        GURL("file://hostname/").ReplaceComponents(repl);
+    EXPECT_EQ(url_created_directly.spec(),
+              url_made_with_replace_components.spec());
+  }
 }
 
 // Test of basic Origin serialization.

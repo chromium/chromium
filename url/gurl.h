@@ -468,6 +468,8 @@ class COMPONENT_EXPORT(URL) GURL {
     return base::StringPiece(&spec_[comp.begin], comp.len);
   }
 
+  void ProcessFileOrFileSystemURLAfterReplaceComponents(GURL& url) const;
+
   // The actual text of the URL, in canonical ASCII form.
   std::string spec_;
 

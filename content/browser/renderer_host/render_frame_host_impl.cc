@@ -853,19 +853,6 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   if (renderer_side_origin.opaque() && browser_side_origin.opaque())
     return;
 
-#if defined(OS_WIN)
-  // TODO(https://crbug.com/1214098): Navigating to a test-crafted
-  // (GURL::ReplaceComponents-crafted) file://localhost/C:/dir/file.txt URL will
-  // fail to round-trip the URL causing `browser_side_origin` and
-  // `renderer_side_origin` to be different (file://localhost/ vs file:///). In
-  // particular, without the following "if" statement the test
-  // ContentSecurityPolicyBrowserTest.FileURLs fails.
-  if (browser_side_origin.scheme() == url::kFileScheme &&
-      renderer_side_origin.scheme() == url::kFileScheme) {
-    return;
-  }
-#endif
-
   DCHECK_EQ(browser_side_origin, renderer_side_origin)
       << "; navigation_request->GetURL() = " << navigation_request->GetURL();
 }
