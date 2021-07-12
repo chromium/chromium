@@ -98,21 +98,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL _closeSettingsOnAddAccount;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
-  // Modal alert for sign out.
-  AlertCoordinator* _alertCoordinator;
   // Whether an authentication operation is in progress (e.g switch accounts,
   // sign out).
   BOOL _authenticationOperationInProgress;
   // Whether the view controller is currently being dismissed and new dismiss
   // requests should be ignored.
   BOOL _isBeingDismissed;
-  ios::DismissASMViewControllerBlock _dimissAccountDetailsViewControllerBlock;
   ResizedAvatarCache* _avatarCache;
   std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
 
   // Enable lookup of item corresponding to a given identity GAIA ID string.
   NSDictionary<NSString*, TableViewItem*>* _identityMap;
 }
+
+// Modal alert for sign out.
+@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+
+// Callback to dismiss MyGoogle (Account Detail).
+@property(nonatomic, copy)
+    ios::DismissASMViewControllerBlock dismissAccountDetailsViewControllerBlock;
 
 // Modal alert for confirming account removal.
 @property(nonatomic, strong) AlertCoordinator* removeAccountCoordinator;
@@ -177,8 +181,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)settingsWillBeDismissed {
-  [_alertCoordinator stop];
-  _alertCoordinator = nil;
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
   [self.signoutCoordinator stop];
   self.signoutCoordinator = nil;
   [self.removeAccountCoordinator stop];
@@ -455,9 +459,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [self reloadData];
   if (![self authService]->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-      _dimissAccountDetailsViewControllerBlock) {
-    _dimissAccountDetailsViewControllerBlock(/*animated=*/YES);
-    _dimissAccountDetailsViewControllerBlock = nil;
+      self.dismissAccountDetailsViewControllerBlock) {
+    self.dismissAccountDetailsViewControllerBlock(/*animated=*/YES);
+    self.dismissAccountDetailsViewControllerBlock = nil;
   }
   // Only attempt to pop the top-most view controller once the account list
   // has been dismissed.
@@ -467,7 +471,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Authentication operations
 
 - (void)showAddAccount {
-  DCHECK(!_alertCoordinator);
+  DCHECK(!self.alertCoordinator);
   _authenticationOperationInProgress = YES;
 
   __weak __typeof(self) weakSelf = self;
@@ -492,8 +496,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)showAccountDetails:(ChromeIdentity*)identity
                   itemView:(UIView*)itemView {
-  DCHECK(!_alertCoordinator);
-  _alertCoordinator = [[ActionSheetCoordinator alloc]
+  DCHECK(!self.alertCoordinator);
+  self.alertCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser
                            title:nil
@@ -502,7 +506,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                             view:itemView];
   __weak __typeof(self) weakSelf = self;
   if (signin::IsSSOEditingEnabled()) {
-    [_alertCoordinator
+    [self.alertCoordinator
         addItemWithTitle:l10n_util::GetNSString(
                              IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)
                   action:^{
@@ -510,42 +514,42 @@ typedef NS_ENUM(NSInteger, ItemType) {
                   }
                    style:UIAlertActionStyleDefault];
   }
-  [_alertCoordinator
+  [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE)
                 action:^{
                   [weakSelf handleRemoveSecondaryAccountWithIdentity:identity];
                 }
                  style:UIAlertActionStyleDestructive];
-  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                               action:^() {
-                                 [weakSelf handleAlertCoordinatorCancel];
-                               }
-                                style:UIAlertActionStyleCancel];
-  [_alertCoordinator start];
+  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                                   action:^() {
+                                     [weakSelf handleAlertCoordinatorCancel];
+                                   }
+                                    style:UIAlertActionStyleCancel];
+  [self.alertCoordinator start];
 }
 
-// Handles the manage Google account action from |_alertCoordinator|.
+// Handles the manage Google account action from |self.alertCoordinator|.
 // Action sheet created in |showAccountDetails:itemView:|
 - (void)handleManageGoogleAccountWithIdentity:(ChromeIdentity*)identity {
-  DCHECK(_alertCoordinator);
-  // |_alertCoordinator| should not be stopped, since the coordinator has been
-  // confirmed.
-  _alertCoordinator = nil;
-  _dimissAccountDetailsViewControllerBlock =
+  DCHECK(self.alertCoordinator);
+  // |self.alertCoordinator| should not be stopped, since the coordinator has
+  // been confirmed.
+  self.alertCoordinator = nil;
+  self.dismissAccountDetailsViewControllerBlock =
       ios::GetChromeBrowserProvider()
           .GetChromeIdentityService()
           ->PresentAccountDetailsController(identity, self,
                                             /*animated=*/YES);
 }
 
-// Handles the secondary account remove action from |_alertCoordinator|.
+// Handles the secondary account remove action from |self.alertCoordinator|.
 // Action sheet created in |showAccountDetails:itemView:|
 - (void)handleRemoveSecondaryAccountWithIdentity:(ChromeIdentity*)identity {
-  DCHECK(_alertCoordinator);
-  // |_alertCoordinator| should not be stopped, since the coordinator has been
-  // confirmed.
-  _alertCoordinator = nil;
+  DCHECK(self.alertCoordinator);
+  // |self.alertCoordinator| should not be stopped, since the coordinator has
+  // been confirmed.
+  self.alertCoordinator = nil;
   DCHECK(!self.removeAccountCoordinator);
   NSString* title =
       l10n_util::GetNSStringF(IDS_IOS_REMOVE_ACCOUNT_ALERT_TITLE,
@@ -610,7 +614,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)showSignOutWithClearData:(BOOL)forceClearData
                         itemView:(UIView*)itemView {
-  DCHECK(!_alertCoordinator);
+  DCHECK(!self.alertCoordinator);
   DCHECK(!base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS));
   if (_authenticationOperationInProgress ||
       self != [self.navigationController topViewController]) {
@@ -636,7 +640,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     actionStyle = UIAlertActionStyleDefault;
   }
 
-  _alertCoordinator =
+  self.alertCoordinator =
       [[ActionSheetCoordinator alloc] initWithBaseViewController:self
                                                          browser:_browser
                                                            title:nil
@@ -645,28 +649,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                                             view:itemView];
 
   __weak AccountsTableViewController* weakSelf = self;
-  [_alertCoordinator
+  [self.alertCoordinator
       addItemWithTitle:signOutTitle
                 action:^{
                   [weakSelf handleSignOutWithForceClearData:forceClearData];
                 }
                  style:actionStyle];
-  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                               action:^() {
-                                 [weakSelf handleAlertCoordinatorCancel];
-                               }
-                                style:UIAlertActionStyleCancel];
-  [_alertCoordinator start];
+  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                                   action:^() {
+                                     [weakSelf handleAlertCoordinatorCancel];
+                                   }
+                                    style:UIAlertActionStyleCancel];
+  [self.alertCoordinator start];
 }
 
 - (void)handleSignOutWithForceClearData:(BOOL)forceClearData {
   if (!_browser)
     return;
 
-  // |_alertCoordinator| should not be stopped, since the coordinator has been
-  // confirmed.
-  DCHECK(_alertCoordinator);
-  _alertCoordinator = nil;
+  // |self.alertCoordinator| should not be stopped, since the coordinator has
+  // been confirmed.
+  DCHECK(self.alertCoordinator);
+  self.alertCoordinator = nil;
 
   AuthenticationService* authService = [self authService];
   if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
@@ -701,12 +705,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-// Handles the cancel action for |_alertCoordinator|.
+// Handles the cancel action for |self.alertCoordinator|.
 - (void)handleAlertCoordinatorCancel {
-  DCHECK(_alertCoordinator);
-  // |_alertCoordinator| should not be stopped, since the coordinator has been
-  // cancelled.
-  _alertCoordinator = nil;
+  DCHECK(self.alertCoordinator);
+  // |self.alertCoordinator| should not be stopped, since the coordinator has
+  // been cancelled.
+  self.alertCoordinator = nil;
 }
 
 // Sets |_authenticationOperationInProgress| to NO and pops this accounts
@@ -739,7 +743,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         popViewControllerOrCloseSettingsAnimated:YES];
   };
   if (self.presentedViewController) {
-    // If |self| is presenting a view controller (like |_alertCoordinator|,
+    // If |self| is presenting a view controller (like |self.alertCoordinator|,
     // |_removeAccountCoordinator| or the account detail view controller, it
     // has to be dismissed before |self| can be poped from the navigation
     // controller.
