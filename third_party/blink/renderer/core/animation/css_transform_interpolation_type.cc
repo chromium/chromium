@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/interpolable_transform_list.h"
 #include "third_party/blink/renderer/core/animation/length_units_checker.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
@@ -24,7 +23,7 @@ namespace blink {
 namespace {
 InterpolationValue ConvertTransform(TransformOperations&& transform) {
   return InterpolationValue(
-      InterpolableTransformList::Create(std::move(transform)));
+      std::make_unique<InterpolableTransformList>(std::move(transform)));
 }
 
 InterpolationValue ConvertTransform(const TransformOperations& transform) {

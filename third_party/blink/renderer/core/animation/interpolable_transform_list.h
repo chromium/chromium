@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_TRANSFORM_LIST_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -22,8 +23,6 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
   InterpolableTransformList(TransformOperations&& operations)
       : operations_(std::move(operations)) {}
 
-  static std::unique_ptr<InterpolableTransformList> Create(
-      TransformOperations&&);
   static std::unique_ptr<InterpolableTransformList> ConvertCSSValue(
       const CSSValue&,
       const StyleResolverState*);
