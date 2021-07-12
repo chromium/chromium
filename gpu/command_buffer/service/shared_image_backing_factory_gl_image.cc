@@ -143,14 +143,15 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
     return nullptr;
   }
 
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
-    LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
+  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
+    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane) << " for "
                << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }
 
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
-    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane) << " for "
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format,
+                                                     plane)) {
+    LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
                << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }

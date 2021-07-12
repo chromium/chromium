@@ -242,7 +242,8 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     SkAlphaType alpha_type,
     uint32_t usage,
     const VulkanImageUsageCache* image_usage_cache) {
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(
+          size, buffer_format, gfx::BufferPlane::DEFAULT)) {
     DLOG(ERROR) << "Invalid image size for format.";
     return nullptr;
   }

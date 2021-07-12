@@ -27,8 +27,9 @@ bool IsImageFromGpuMemoryBufferFormatSupported(
 }
 
 bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
-                                              gfx::BufferFormat format) {
-  switch (format) {
+                                              gfx::BufferFormat format,
+                                              gfx::BufferPlane plane) {
+  switch (GetPlaneBufferFormat(plane, format)) {
     case gfx::BufferFormat::R_8:
     case gfx::BufferFormat::R_16:
     case gfx::BufferFormat::RG_88:

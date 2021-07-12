@@ -90,7 +90,8 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> ValidateAndOpenSharedHandle(
     return nullptr;
   }
 
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(
+          size, format, gfx::BufferPlane::DEFAULT)) {
     DLOG(ERROR) << "Invalid image size " << size.ToString() << " for "
                 << gfx::BufferFormatToString(format);
     return nullptr;

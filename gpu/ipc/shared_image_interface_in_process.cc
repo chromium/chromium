@@ -246,7 +246,7 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
 
   // TODO(piman): DCHECK GMB format support.
   DCHECK(IsImageSizeValidForGpuMemoryBufferFormat(
-      gpu_memory_buffer->GetSize(), gpu_memory_buffer->GetFormat()));
+      gpu_memory_buffer->GetSize(), gpu_memory_buffer->GetFormat(), plane));
   DCHECK(IsPlaneValidForGpuMemoryBufferFormat(plane,
                                               gpu_memory_buffer->GetFormat()));
 

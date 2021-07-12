@@ -509,6 +509,7 @@ void GLES2CommandBufferStub::CreateImage(mojom::CreateImageParamsPtr params) {
   const int32_t id = params->id;
   const gfx::Size& size = params->size;
   const gfx::BufferFormat& format = params->format;
+  const gfx::BufferPlane& plane = params->plane;
   const uint64_t image_release_count = params->image_release_count;
   ScopedContextOperation operation(*this);
   if (!operation.is_context_current())
@@ -527,19 +528,19 @@ void GLES2CommandBufferStub::CreateImage(mojom::CreateImageParamsPtr params) {
     return;
   }
 
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format, plane)) {
     LOG(ERROR) << "Invalid image size for format.";
     return;
   }
 
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(params->plane, format)) {
-    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(params->plane)
-               << " for " << gfx::BufferFormatToString(format);
+  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, format)) {
+    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane) << " for "
+               << gfx::BufferFormatToString(format);
     return;
   }
 
   scoped_refptr<gl::GLImage> image = channel()->CreateImageForGpuMemoryBuffer(
-      std::move(params->gpu_memory_buffer), size, format, params->plane,
+      std::move(params->gpu_memory_buffer), size, format, plane,
       surface_handle_);
   if (!image.get())
     return;
