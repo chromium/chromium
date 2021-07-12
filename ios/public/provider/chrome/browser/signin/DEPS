@@ -1,6 +1,7 @@
 include_rules = [
   "+components/sync/driver/trusted_vault_client.h",
   "+components/signin/internal/identity_manager/account_capabilities_constants.h",
+  "+components/signin/public/base/signin_metrics.h",
 ]
 
 specific_include_rules = {

@@ -78,6 +78,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Signin.AccountCapabilities.GetFromSystemLibraryResult"
+    enum="AccountCapabilitiesGetFromSystemLibraryResult"
+    expires_after="2021-12-31">
+  <owner>aliceywang@chromium.org</owner>
+  <owner>fernandex@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>triploblastic@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the outcome of the account capabilities fetch
+    operation. This is recorded only on Android and iOS where Chrome fetches the
+    account capabilities from the system library.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountConsistencyPromoAction"
     enum="AccountConsistencyPromoAction" expires_after="2022-01-02">
   <owner>bsazonov@chromium.org</owner>

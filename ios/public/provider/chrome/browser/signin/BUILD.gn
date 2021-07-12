@@ -92,6 +92,7 @@ source_set("unit_tests") {
     ":signin",
     "//base",
     "//base/test:test_support",
+    "//components/signin/internal/identity_manager",
     "//testing/gmock",
     "//testing/gtest",
   ]

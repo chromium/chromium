@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
@@ -81,17 +82,48 @@ struct FunctorCollectIdentities : Functor<FunctorCollectIdentities> {
   }
 };
 
-}  // anonymous namespace
+// Helper struct for computing the result of fetching account capabilities.
+struct FetchCapabilitiesResult {
+  FetchCapabilitiesResult() = default;
+  ~FetchCapabilitiesResult() = default;
 
-namespace {
-ChromeIdentityCapabilityResult CapabilityResultFromNSNumber(NSNumber* result) {
-  DCHECK(result);
-  int resultInt = [result intValue];
-  DCHECK_GE(resultInt,
-            static_cast<int>(ChromeIdentityCapabilityResult::kFalse));
-  DCHECK_LE(resultInt,
-            static_cast<int>(ChromeIdentityCapabilityResult::kUnknown));
-  return static_cast<ChromeIdentityCapabilityResult>(resultInt);
+  ChromeIdentityCapabilityResult capability_value;
+  signin_metrics::FetchAccountCapabilitiesFromSystemLibraryResult fetch_result;
+};
+
+// Computes the value of fetching account capabilities.
+FetchCapabilitiesResult ComputeFetchCapabilitiesResult(
+    NSNumber* capability_value,
+    NSError* error) {
+  FetchCapabilitiesResult result;
+  if (error) {
+    result.capability_value = ChromeIdentityCapabilityResult::kUnknown;
+    result.fetch_result = signin_metrics::
+        FetchAccountCapabilitiesFromSystemLibraryResult::kErrorGeneric;
+  } else if (!capability_value) {
+    result.capability_value = ChromeIdentityCapabilityResult::kUnknown;
+    result.fetch_result =
+        signin_metrics::FetchAccountCapabilitiesFromSystemLibraryResult::
+            kErrorMissingCapability;
+  } else {
+    int capability_value_int = capability_value.intValue;
+    switch (capability_value_int) {
+      case static_cast<int>(ChromeIdentityCapabilityResult::kFalse):
+      case static_cast<int>(ChromeIdentityCapabilityResult::kTrue):
+      case static_cast<int>(ChromeIdentityCapabilityResult::kUnknown):
+        result.capability_value =
+            static_cast<ChromeIdentityCapabilityResult>(capability_value_int);
+        result.fetch_result = signin_metrics::
+            FetchAccountCapabilitiesFromSystemLibraryResult::kSuccess;
+        break;
+      default:
+        result.capability_value = ChromeIdentityCapabilityResult::kUnknown;
+        result.fetch_result =
+            signin_metrics::FetchAccountCapabilitiesFromSystemLibraryResult::
+                kErrorUnexpectedValue;
+    }
+  }
+  return result;
 }
 
 }  // namespace
@@ -220,11 +252,16 @@ void ChromeIdentityService::CanOfferExtendedSyncPromos(
         base::UmaHistogramTimes(
             "Signin.AccountCapabilities.GetFromSystemLibraryDuration",
             base::TimeTicks::Now() - fetch_start);
-        if (!completion) {
-          return;
-        }
-        completion(CapabilityResultFromNSNumber(
-            [capabilities objectForKey:canOfferExtendedChromeSyncPromos]));
+
+        FetchCapabilitiesResult result = ComputeFetchCapabilitiesResult(
+            [capabilities objectForKey:canOfferExtendedChromeSyncPromos],
+            error);
+        base::UmaHistogramEnumeration(
+            "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+            result.fetch_result);
+
+        if (completion)
+          completion(result.capability_value);
       });
 }
 
