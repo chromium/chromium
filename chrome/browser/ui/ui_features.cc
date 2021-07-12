@@ -36,6 +36,12 @@ const base::Feature kChromeWhatsNewInMainMenuNewBadge{
     "ChromeWhatsNewInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Enables "Enterprise Casting" UI.
+const base::Feature kEnterpriseCastingUI{"EnterpriseCastingUI",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables showing the EV certificate details in the Page Info bubble.
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};

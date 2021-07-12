@@ -36,6 +36,10 @@ extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;
 
 extern const base::Feature kCommander;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const base::Feature kEnterpriseCastingUI;
+#endif
+
 extern const base::Feature kEvDetailsInPageInfo;
 
 extern const base::Feature kExtensionsSidePanel;
