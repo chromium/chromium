@@ -396,6 +396,11 @@ void ResourcePrefetchPredictorTablesTest::InitializeSampleData() {
 }
 
 void ResourcePrefetchPredictorTablesTest::ReopenDatabase() {
+  // Ensure that the database is closed before attempting to reopen it.
+  db_ = nullptr;
+  tables_ = nullptr;
+  content::RunAllTasksUntilIdle();
+
   db_ = std::make_unique<PredictorDatabase>(&profile_, task_runner_);
   content::RunAllTasksUntilIdle();
   tables_ = db_->resource_prefetch_tables();
