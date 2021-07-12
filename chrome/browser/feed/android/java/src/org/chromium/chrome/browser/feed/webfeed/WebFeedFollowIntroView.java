@@ -12,6 +12,8 @@ import android.view.View;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.textbubble.ClickableTextBubble;
@@ -30,7 +32,9 @@ import org.chromium.ui.widget.ViewRectProvider;
  * they can follow.
  */
 class WebFeedFollowIntroView {
+    private static final String TAG = "WFFIntroView";
     private static final int sAcceleratorTimeout = 10 * 1000; // 10 seconds
+    private static final int IPH_WAIT_TIME_MS = 5 * 1000;
 
     private final Activity mActivity;
     private final AppMenuHandler mAppMenuHandler;
@@ -70,6 +74,22 @@ class WebFeedFollowIntroView {
         turnOnHighlightForFollowMenuItem();
 
         mFollowBubble.show();
+    }
+
+    void showAcceleratorIPH(View.OnTouchListener onTouchListener, Tracker featureEngagementTracker,
+            UserEducationHelper helper) {
+        int iphStringResource = R.string.follow_accelerator;
+        int iphAccessibilityStringResource = R.string.accessibility_follow_accelerator_iph;
+
+        // Make the request to show the IPH.
+        helper.requestShowIPH(
+                new IPHCommandBuilder(mMenuButtonAnchorView.getContext().getResources(),
+                        FeatureConstants.FEED_HEADER_MENU_FEATURE, iphStringResource,
+                        iphAccessibilityStringResource)
+                        .setAnchorView(mMenuButtonAnchorView)
+                        .setDismissOnTouch(false)
+                        .setAutoDismissTimeout(IPH_WAIT_TIME_MS)
+                        .build());
     }
 
     void showLoadingUI() {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.feed.webfeed;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.util.Base64;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -45,6 +47,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class WebFeedFollowIntroController {
     static final long INTRO_WAIT_TIME_MS = TimeUnit.SECONDS.toMillis(8);
+    public static final String TAG = "WFFIController";
+
     // Visit history requirements.
     static final int DEFAULT_DAILY_VISIT_MIN = 3;
     static final int DEFAULT_NUM_VISIT_MIN = 5;
@@ -185,7 +189,7 @@ public class WebFeedFollowIntroController {
 
     private void maybeShowFollowIntro() {
         if (!shouldShowFollowIntro()) return;
-        // TODO(crbug/1152592): Add IPH variation.
+
         showFollowAccelerator();
     }
 
@@ -224,7 +228,9 @@ public class WebFeedFollowIntroController {
         };
 
         if (shouldUseIPH()) {
-            // TODO(petewil)
+            UserEducationHelper helper = new UserEducationHelper(mActivity, new Handler());
+            mWebFeedFollowIntroView.showAcceleratorIPH(
+                    onTouchListener, mFeatureEngagementTracker, helper);
         } else {
             mWebFeedFollowIntroView.showAccelerator(onTouchListener, mFeatureEngagementTracker);
         }

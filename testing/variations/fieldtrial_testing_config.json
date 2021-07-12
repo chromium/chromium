@@ -3513,7 +3513,7 @@
                     "name": "Enaled",
                     "params": {
                         "availability": "any",
-                        "event_trigger": "name:iph_feed_header_menu_triggered;comparator:==0;window:360;storage:360",
+                        "event_trigger": "name:iph_feed_header_menu_triggered;comparator:<5;window:360;storage:360",
                         "event_used": "name:feed_header_menu_clicked;comparator:==0;window:360;storage:360",
                         "session_rate": "==0"
                     },
