@@ -1937,20 +1937,34 @@ bool Document::NeedsFullLayoutTreeUpdate() const {
   // chain to decide if we can let getComputedStyle() use the current
   // ComputedStyle without doing the lifecycle update (implemented in
   // Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked()).
-  if (!IsActive() || !View())
+  recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate Start");
+  if (!IsActive() || !View()) {
+    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #1");
     return false;
-  if (style_engine_->NeedsFullStyleUpdate())
+  }
+  if (style_engine_->NeedsFullStyleUpdate()) {
+    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #2");
     return true;
-  if (!use_elements_needing_update_.IsEmpty())
+  }
+  if (!use_elements_needing_update_.IsEmpty()) {
+    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #3");
     return true;
+  }
   // We have scheduled an invalidation set on the document node which means any
   // element may need a style recalc.
-  if (NeedsStyleInvalidation())
+  if (NeedsStyleInvalidation()) {
+    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #4");
     return true;
-  if (IsSlotAssignmentOrLegacyDistributionDirty())
+  }
+  if (IsSlotAssignmentOrLegacyDistributionDirty()) {
+    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #5");
     return true;
-  if (document_animations_->NeedsAnimationTimingUpdate())
+  }
+  if (document_animations_->NeedsAnimationTimingUpdate()) {
+    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #6");
     return true;
+  }
+  recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #7");
   return false;
 }
 
@@ -2504,7 +2518,8 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
 
   if (NeedsFullLayoutTreeUpdate() || node.NeedsStyleRecalc() ||
       node.NeedsStyleInvalidation()) {
-    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #4");
+    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #4 %d %d",
+                         node.NeedsStyleRecalc(), node.NeedsStyleInvalidation());
     return true;
   }
   for (const ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node);
