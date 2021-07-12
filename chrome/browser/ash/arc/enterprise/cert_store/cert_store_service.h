@@ -14,7 +14,6 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer.h"
-#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -121,14 +120,9 @@ class CertStoreService : public KeyedService,
       net::ScopedCERTCertificate cert,
       bool certificate_allowed) const;
 
-  void OnCertificatesListed(keymaster::mojom::ChapsSlot slot,
-                            std::vector<CertDescription> certificates,
-                            net::ScopedCERTCertificateList cert_list);
-  // Processes metadata from |allowed_certs| stored in the given |slot| and
-  // appends them to |certificates|.
+  void OnGetNSSCertDatabaseForProfile(net::NSSCertDatabase* database);
+  void OnCertificatesListed(net::ScopedCERTCertificateList cert_list);
   void OnFilteredAllowedCertificates(
-      keymaster::mojom::ChapsSlot slot,
-      std::vector<CertDescription> certificates,
       net::ScopedCERTCertificateList allowed_certs);
   void OnUpdatedKeymasterKeys(std::vector<CertDescription> certificates,
                               bool success);
