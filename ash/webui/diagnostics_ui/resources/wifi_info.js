@@ -9,7 +9,7 @@ import './diagnostics_shared_css.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network} from './diagnostics_types.js';
-import {getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
+import {convertFrequencyToChannel, getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
 
 /**
  * @fileoverview
@@ -42,6 +42,20 @@ Polymer({
    */
   joinNameServers_(nameServers) {
     return nameServers ? nameServers.join(', ') : '';
+  },
+
+  /**
+   * Builds channel text based frequency conversion. If value returned by
+   * conversion function is null then we display a question mark for channel
+   * value. Frequency used to calculate converted from MHz to GHz for display.
+   * @protected
+   * @param {number} frequency Given in MHz.
+   * @return {string}
+   */
+  getChannelDescription_(frequency) {
+    const channel = convertFrequencyToChannel(frequency);
+    const ghz = (frequency / 1000).toFixed(3);
+    return `${channel || '?'} (${ghz} GHz)`;
   },
 
   /**

@@ -4,31 +4,32 @@
   <div hidden$="[[showIpConfigProperties]]"
       class="horizontal-data-point-container">
     <div class="data-point-container">
+      <data-point id="name" header="Network Name"
+        value="[[network.name]]"
+        orientation="horizontal">
+      </data-point>
       <data-point id="ipAddress" header="IP Address"
         value="[[network.ipConfig.ipAddress]]"
         orientation="horizontal">
       </data-point>
-      <data-point id="name" header="name"
-      value="[[network.name]]"
-      orientation="horizontal">
+      <data-point id="bssid" header="BSSID"
+        value="[[network.typeProperties.wifi.bssid]]"
+        orientation="horizontal">
       </data-point>
     </div>
     <div class="divider-horizontal"></div>
     <div class="data-point-container">
-        <data-point id="bssid" header="bssid"
-        value="[[network.typeProperties.wifi.bssid]]"
+      <data-point id="signalStrength" header="Signal Strength"
+        value="[[network.typeProperties.wifi.signalStrength]]"
         orientation="horizontal">
       </data-point>
-      <data-point id="ssid" header="ssid"
-        value="[[network.typeProperties.wifi.ssid]]"
-        orientation="horizontal">
-      </data-point>
-      <data-point id="ipAddress" header="IP Address"
-        value="[[network.ipConfig.ipAddress]]"
+      <data-point id="channel" header="Channel"
+        value="[[getChannelDescription_(network.typeProperties.wifi.frequency)]]"
         orientation="horizontal">
       </data-point>
     </div>
   </div>
+  <!-- TODO(ashleydp): Move IP configuration data into distinct element. -->
   <div hidden$="[[!showIpConfigProperties]]"
       class="horizontal-data-point-container">
     <div class="data-point-container">
