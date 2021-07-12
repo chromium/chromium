@@ -104,6 +104,7 @@ class ASH_EXPORT QuickAnswersControllerImpl
 
  private:
   void MaybeDismissQuickAnswersNotice();
+  void MaybeDismissQuickAnswersConsent();
 
   void HandleQuickAnswerRequest(
       const chromeos::quick_answers::QuickAnswersRequest& request);

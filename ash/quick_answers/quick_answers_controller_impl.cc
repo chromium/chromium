@@ -129,7 +129,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
 void QuickAnswersControllerImpl::DismissQuickAnswers(bool is_active) {
   visibility_ = QuickAnswersVisibility::kClosed;
   MaybeDismissQuickAnswersNotice();
-  quick_answers_ui_controller_->CloseUserConsentView();
+  MaybeDismissQuickAnswersConsent();
   bool closed = quick_answers_ui_controller_->CloseQuickAnswersView();
   // |quick_answer_| could be null before we receive the result from the server.
   // Do not send the signal since the quick answer is dismissed before ready.
@@ -254,13 +254,8 @@ void QuickAnswersControllerImpl::OnNoticeSettingsRequestedByUser() {
 void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
   quick_answers_ui_controller_->CloseUserConsentView();
 
-  auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  prefs->SetBoolean(
-      chromeos::quick_answers::prefs::kQuickAnswersConsentStatus,
-      consented ? chromeos::quick_answers::prefs::ConsentStatus::kAccepted
-                : chromeos::quick_answers::prefs::ConsentStatus::kRejected);
-  prefs->SetBoolean(chromeos::quick_answers::prefs::kQuickAnswersEnabled,
-                    consented);
+  ash::QuickAnswersState::Get()->OnConsentResult(
+      consented ? ConsentResultType::kAllow : ConsentResultType::kNoThanks);
 
   if (consented) {
     // Display Quick-Answer for the cached query when user consent has
@@ -285,6 +280,12 @@ void QuickAnswersControllerImpl::MaybeDismissQuickAnswersNotice() {
   quick_answers_ui_controller_->CloseUserNoticeView();
 }
 
+void QuickAnswersControllerImpl::MaybeDismissQuickAnswersConsent() {
+  if (quick_answers_ui_controller_->is_showing_user_consent_view())
+    ash::QuickAnswersState::Get()->OnConsentResult(ConsentResultType::kDismiss);
+  quick_answers_ui_controller_->CloseUserConsentView();
+}
+
 bool QuickAnswersControllerImpl::ShouldShowUserNotice() const {
   return notice_controller_->ShouldShowNotice();
 }
@@ -307,6 +308,7 @@ void QuickAnswersControllerImpl::ShowUserConsent(
   if (!quick_answers_ui_controller_->is_showing_user_consent_view()) {
     quick_answers_ui_controller_->CreateUserConsentView(
         anchor_bounds_, intent_type, intent_text);
+    QuickAnswersState::Get()->StartConsent();
   }
 }
 

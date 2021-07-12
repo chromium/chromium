@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/timer/timer.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -20,6 +21,21 @@ class PrefChangeRegistrar;
 class PrefService;
 
 namespace ash {
+
+// The consent will appear up to a total of 3 times.
+constexpr int kConsentImpressionCap = 3;
+// The consent will appear until viewed for a cumulative 8 seconds.
+constexpr int kConsentDurationCap = 8;
+
+// Consent result of the consent-view.
+enum class ConsentResultType {
+  // When user clicks on the "Allow" button.
+  kAllow = 0,
+  // When user clicks on the "No thanks" button.
+  kNoThanks = 1,
+  // When user dismisses or ignores the consent-view.
+  kDismiss = 2
+};
 
 // A checked observer which receives Quick Answers state change.
 class ASH_PUBLIC_EXPORT QuickAnswersStateObserver
@@ -51,6 +67,9 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
   void OnAssistantSettingsEnabled(bool enabled) override;
   void OnAssistantContextEnabled(bool enabled) override;
   void OnLocaleChanged(const std::string& locale) override;
+
+  void StartConsent();
+  void OnConsentResult(ConsentResultType result);
 
   bool settings_enabled() const { return settings_enabled_; }
   chromeos::quick_answers::prefs::ConsentStatus consent_status() const {
@@ -100,6 +119,9 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
 
   // Whether the pref values has been initialized.
   bool prefs_initialized_ = false;
+
+  // Time when the notice is shown.
+  base::TimeTicks consent_start_time_;
 
   // Observes user profile prefs for the Assistant.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

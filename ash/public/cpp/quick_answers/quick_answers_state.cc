@@ -23,6 +23,8 @@ using chromeos::quick_answers::prefs::ConsentStatus;
 using chromeos::quick_answers::prefs::kQuickAnswersConsentStatus;
 using chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled;
 using chromeos::quick_answers::prefs::kQuickAnswersEnabled;
+using chromeos::quick_answers::prefs::kQuickAnswersNoticeImpressionCount;
+using chromeos::quick_answers::prefs::kQuickAnswersNoticeImpressionDuration;
 using chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled;
 using chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled;
 
@@ -56,8 +58,17 @@ void MigrateQuickAnswersConsentStatus(PrefService* prefs) {
     } else {
       // Set the consent status to unknown for new users.
       prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kUnknown);
+      // Reset the impression count and duration for new users.
+      prefs->SetInteger(kQuickAnswersNoticeImpressionCount, 0);
+      prefs->SetInteger(kQuickAnswersNoticeImpressionDuration, 0);
     }
   }
+}
+
+void IncrementPrefCounter(PrefService* prefs,
+                          const std::string& path,
+                          int count) {
+  prefs->SetInteger(path, prefs->GetInteger(path) + count);
 }
 
 }  // namespace
@@ -149,6 +160,49 @@ void QuickAnswersState::OnAssistantContextEnabled(bool enabled) {
 
 void QuickAnswersState::OnLocaleChanged(const std::string& locale) {
   UpdateEligibility();
+}
+
+void QuickAnswersState::StartConsent() {
+  // Increments impression count.
+  IncrementPrefCounter(pref_change_registrar_->prefs(),
+                       kQuickAnswersNoticeImpressionCount, 1);
+
+  consent_start_time_ = base::TimeTicks::Now();
+}
+
+void QuickAnswersState::OnConsentResult(ConsentResultType result) {
+  auto* prefs = pref_change_registrar_->prefs();
+
+  // Increments impression duration.
+  DCHECK(!consent_start_time_.is_null());
+  auto duration = base::TimeTicks::Now() - consent_start_time_;
+  IncrementPrefCounter(prefs, kQuickAnswersNoticeImpressionDuration,
+                       duration.InSeconds());
+
+  switch (result) {
+    case ConsentResultType::kAllow:
+      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
+      break;
+    case ConsentResultType::kNoThanks:
+      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
+      prefs->SetBoolean(kQuickAnswersEnabled, false);
+      break;
+    case ConsentResultType::kDismiss:
+      // If the count or duration cap is reached, set the consented status to
+      // false;
+      bool impression_cap_reached =
+          prefs->GetInteger(kQuickAnswersNoticeImpressionCount) >=
+          kConsentImpressionCap;
+      bool duration_cap_reached =
+          prefs->GetInteger(kQuickAnswersNoticeImpressionDuration) >=
+          kConsentDurationCap;
+      if (impression_cap_reached || duration_cap_reached) {
+        prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
+        prefs->SetBoolean(kQuickAnswersEnabled, false);
+      }
+  }
+
+  consent_start_time_ = base::TimeTicks();
 }
 
 void QuickAnswersState::InitializeObserver(
