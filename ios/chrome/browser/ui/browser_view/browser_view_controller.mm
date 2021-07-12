@@ -3783,19 +3783,25 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   __weak BrowserViewController* weakSelf = self;
   GURL link = params.link_url;
+  bool isLink = link.is_valid();
+  GURL imageUrl = params.src_url;
+  bool isImage = imageUrl.is_valid();
+
   const GURL& lastCommittedURL = webState->GetLastCommittedURL();
+  web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
-
-  NSString* title;
+  MenuScenario menuScenario = isImage && isLink
+                                  ? MenuScenario::kContextMenuImageLink
+                                  : isImage ? MenuScenario::kContextMenuImage
+                                            : MenuScenario::kContextMenuLink;
 
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithBrowser:self.browser
-                                    scenario:MenuScenario::kContextMenuLink];
+                                    scenario:menuScenario];
 
   if (link.SchemeIs(url::kJavaScriptScheme)) {
     // Open.
-    title = l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_OPEN);
     UIAction* open = [actionFactory actionToOpenJavascriptWithBlock:^{
       [weakSelf openJavascript:base::SysUTF8ToNSString(link.GetContent())];
     }];
@@ -3803,8 +3809,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   if (web::UrlHasWebScheme(link)) {
-    web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
-
     // Open in New Tab.
     UIAction* openNewTab = [actionFactory actionToOpenInNewTabWithBlock:^{
       BrowserViewController* strongSelf = weakSelf;
@@ -3836,13 +3840,80 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [menuElements addObject:openNewWindow];
     }
 
-    // TODO(crbug.com/1140387): Add to reading list action.
+    if (link.SchemeIsHTTPOrHTTPS()) {
+      NSString* innerText = params.link_text;
+      if ([innerText length] > 0) {
+        // Add to reading list.
+        UIAction* addToReadingList =
+            [actionFactory actionToAddToReadingListWithBlock:^{
+              [weakSelf addToReadingListURL:link title:innerText];
+            }];
+        [menuElements addObject:addToReadingList];
+      }
+    }
 
     // Copy Link.
     UIAction* copyLink = [actionFactory actionToCopyURL:link];
     [menuElements addObject:copyLink];
+  }
 
-    // TODO(crbug.com/1140387): Share action.
+  if (isImage) {
+    // Save Image.
+    UIAction* saveImage = [actionFactory actionSaveImageWithBlock:^{
+      [weakSelf.imageSaver saveImageAtURL:imageUrl
+                                 referrer:referrer
+                                 webState:weakSelf.currentWebState];
+    }];
+    [menuElements addObject:saveImage];
+
+    // Copy Image.
+    UIAction* copyImage = [actionFactory actionCopyImageWithBlock:^{
+      [weakSelf.imageCopier copyImageAtURL:imageUrl
+                                  referrer:referrer
+                                  webState:weakSelf.currentWebState];
+    }];
+    [menuElements addObject:copyImage];
+
+    // Open Image.
+    UIAction* openImage = [actionFactory actionOpenImageWithURL:imageUrl
+                                                     completion:nil];
+    [menuElements addObject:openImage];
+
+    // Open Image in new tab.
+    UrlLoadParams loadParams = UrlLoadParams::InNewTab(imageUrl);
+    loadParams.SetInBackground(YES);
+    loadParams.web_params.referrer = referrer;
+    loadParams.in_incognito = self.isOffTheRecord;
+    loadParams.append_to = kCurrentTab;
+    loadParams.origin_point = [params.view convertPoint:params.location
+                                                 toView:nil];
+    UIAction* openImageInNewTab =
+        [actionFactory actionOpenImageInNewTabWithUrlLoadParams:loadParams
+                                                     completion:nil];
+    [menuElements addObject:openImageInNewTab];
+
+    // Search by image.
+    TemplateURLService* service =
+        ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
+    if (search_engines::SupportsSearchByImage(service)) {
+      const TemplateURL* defaultURL = service->GetDefaultSearchProvider();
+      NSString* title = l10n_util::GetNSStringF(
+          IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE, defaultURL->short_name());
+      UIAction* searchByImage = [actionFactory
+          actionSearchImageWithTitle:title
+                               Block:^{
+                                 ImageFetchTabHelper* image_fetcher =
+                                     ImageFetchTabHelper::FromWebState(
+                                         self.currentWebState);
+                                 DCHECK(image_fetcher);
+                                 image_fetcher->GetImageData(
+                                     imageUrl, referrer, ^(NSData* data) {
+                                       [weakSelf searchByImageData:data
+                                                             atURL:imageUrl];
+                                     });
+                               }];
+      [menuElements addObject:searchByImage];
+    }
   }
 
   // Truncate context meny titles that originate from URLs, leaving text titles
@@ -3856,7 +3927,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
-        RecordMenuShown(MenuScenario::kContextMenuLink);
+        RecordMenuShown(menuScenario);
         return [UIMenu menuWithTitle:menuTitle children:menuElements];
       };
 

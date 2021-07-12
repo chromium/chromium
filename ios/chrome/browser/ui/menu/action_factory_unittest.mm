@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -448,5 +449,89 @@ TEST_F(ActionFactoryTest, OpenWithJavaScript) {
     }];
     EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
     EXPECT_EQ(expectedImage, actionWithBlock.image);
+  }
+}
+
+// Tests that the save image action has the right title and image.
+TEST_F(ActionFactoryTest, SaveImageAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = [UIImage imageNamed:@"download"];
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE);
+
+    UIAction* action = [factory actionSaveImageWithBlock:^{
+    }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
+// Tests that the copy image action has the right title and image.
+TEST_F(ActionFactoryTest, CopyImageAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = [UIImage imageNamed:@"copy"];
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_COPYIMAGE);
+
+    UIAction* action = [factory actionCopyImageWithBlock:^{
+    }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
+// Tests that the open image action has the right title and image.
+TEST_F(ActionFactoryTest, OpenImageAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    GURL testURL = GURL("https://example.com/logo.png");
+
+    UIImage* expectedImage = [UIImage imageNamed:@"open"];
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE);
+
+    UIAction* action = [factory actionOpenImageWithURL:testURL
+                                            completion:^{
+                                            }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
+// Tests that the open image in new tab action has the right title and image.
+TEST_F(ActionFactoryTest, OpenImageInNewTabAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    GURL testURL = GURL("https://example.com/logo.png");
+    UrlLoadParams testParams = UrlLoadParams::InNewTab(testURL);
+
+    UIImage* expectedImage = [UIImage imageNamed:@"open_image_in_new_tab"];
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
+
+    UIAction* action =
+        [factory actionOpenImageInNewTabWithUrlLoadParams:testParams
+                                               completion:^{
+                                               }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
   }
 }

@@ -20,6 +20,14 @@ imageset("close") {
   ]
 }
 
+imageset("copy") {
+  sources = [
+    "copy.imageset/Contents.json",
+    "copy.imageset/copy@2x.png",
+    "copy.imageset/copy@3x.png",
+  ]
+}
+
 imageset("copy_link_url") {
   sources = [
     "copy_link_url.imageset/Contents.json",
@@ -36,11 +44,27 @@ imageset("delete") {
   ]
 }
 
+imageset("download") {
+  sources = [
+    "download.imageset/Contents.json",
+    "download.imageset/download@2x.png",
+    "download.imageset/download@3x.png",
+  ]
+}
+
 imageset("edit") {
   sources = [
     "edit.imageset/Contents.json",
     "edit.imageset/edit@2x.png",
     "edit.imageset/edit@3x.png",
+  ]
+}
+
+imageset("open_image_in_new_tab") {
+  sources = [
+    "open_image_in_new_tab.imageset/Contents.json",
+    "open_image_in_new_tab.imageset/open_image_in_new_tab@2x.png",
+    "open_image_in_new_tab.imageset/open_image_in_new_tab@3x.png",
   ]
 }
 
@@ -81,6 +105,14 @@ imageset("remove") {
     "remove.imageset/Contents.json",
     "remove.imageset/remove@2x.png",
     "remove.imageset/remove@3x.png",
+  ]
+}
+
+imageset("search_image") {
+  sources = [
+    "search_image.imageset/Contents.json",
+    "search_image.imageset/search_image@2x.png",
+    "search_image.imageset/search_image@3x.png",
   ]
 }
 

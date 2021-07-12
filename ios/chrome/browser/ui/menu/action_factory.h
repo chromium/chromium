@@ -122,6 +122,28 @@ API_AVAILABLE(ios(13.0))
 // Creates a UIAction instance for closing a tab.
 - (UIAction*)actionToCloseTabWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for saving an image.
+- (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for copying an image.
+- (UIAction*)actionCopyImageWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for opening an image |URL| in current tab and
+// invoke the given |completion| block after execution.
+- (UIAction*)actionOpenImageWithURL:(const GURL)URL
+                         completion:(ProceduralBlock)completion;
+
+// Creates a UIAction instance for opening an image |params| in a new tab and
+// invoke the given |completion| block after execution.
+- (UIAction*)actionOpenImageInNewTabWithUrlLoadParams:(UrlLoadParams)params
+                                           completion:
+                                               (ProceduralBlock)completion;
+
+// Creates a UIAction instance for searching an image with given search service
+// |title|. Invokes the given |completion| block after execution.
+- (UIAction*)actionSearchImageWithTitle:(NSString*)title
+                                  Block:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_

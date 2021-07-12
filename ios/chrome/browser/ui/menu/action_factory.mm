@@ -275,4 +275,67 @@
   return action;
 }
 
+- (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block {
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE)
+                image:[UIImage imageNamed:@"download"]
+                 type:MenuActionType::Save
+                block:block];
+  return action;
+}
+
+- (UIAction*)actionCopyImageWithBlock:(ProceduralBlock)block {
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_COPYIMAGE)
+                image:[UIImage imageNamed:@"copy"]
+                 type:MenuActionType::Copy
+                block:block];
+  return action;
+}
+
+- (UIAction*)actionOpenImageWithURL:(const GURL)URL
+                         completion:(ProceduralBlock)completion {
+  UrlLoadingBrowserAgent* loadingAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE)
+                image:[UIImage imageNamed:@"open"]
+                 type:MenuActionType::OpenInCurrentTab
+                block:^{
+                  loadingAgent->Load(UrlLoadParams::InCurrentTab(URL));
+                  if (completion) {
+                    completion();
+                  }
+                }];
+  return action;
+}
+
+- (UIAction*)actionOpenImageInNewTabWithUrlLoadParams:(UrlLoadParams)params
+                                           completion:
+                                               (ProceduralBlock)completion {
+  UrlLoadingBrowserAgent* loadingAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB)
+                      image:[UIImage imageNamed:@"open_image_in_new_tab"]
+                       type:MenuActionType::OpenInNewTab
+                      block:^{
+                        loadingAgent->Load(params);
+                        if (completion) {
+                          completion();
+                        }
+                      }];
+  return action;
+}
+
+- (UIAction*)actionSearchImageWithTitle:(NSString*)title
+                                  Block:(ProceduralBlock)block {
+  UIAction* action = [self actionWithTitle:title
+                                     image:[UIImage imageNamed:@"search_image"]
+                                      type:MenuActionType::SearchImage
+                                     block:block];
+  return action;
+}
+
 @end

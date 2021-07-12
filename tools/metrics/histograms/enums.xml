@@ -43105,6 +43105,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="16" label="Add to Bookmarks"/>
   <int value="17" label="Close Tab"/>
   <int value="18" label="Edit Bookmark"/>
+  <int value="19" label="Save"/>
+  <int value="20" label="Open in Current Tab"/>
+  <int value="21" label="Search Image"/>
 </enum>
 
 <enum name="IOSMenuScenario">
