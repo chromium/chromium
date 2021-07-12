@@ -435,6 +435,30 @@ void PasswordStoreImpl::FillMatchingLoginsAsync(
       std::move(callback));
 }
 
+void PasswordStoreImpl::AddLoginAsync(OptionalStoreChangeListReply callback,
+                                      const PasswordForm& form) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::AddLoginInternal, this, form),
+      std::move(callback));
+}
+
+void PasswordStoreImpl::UpdateLoginAsync(OptionalStoreChangeListReply callback,
+                                         const PasswordForm& form) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::UpdateLoginInternal, this, form),
+      std::move(callback));
+}
+
+void PasswordStoreImpl::RemoveLoginAsync(OptionalStoreChangeListReply callback,
+                                         const PasswordForm& form) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::RemoveLoginInternal, this, form),
+      std::move(callback));
+}
+
 bool PasswordStoreImpl::InitOnBackgroundSequence(
     base::RepeatingClosure sync_enabled_or_disabled_cb) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
@@ -505,6 +529,48 @@ LoginsResult PasswordStoreImpl::FillMatchingLoginsInternal(
                    std::make_move_iterator(matched_forms.end()));
   }
   return results;
+}
+
+PasswordStoreChangeList PasswordStoreImpl::AddLoginInternal(
+    const PasswordForm& form) {
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  BeginTransaction();
+  PasswordStoreChangeList changes = AddLoginSync(form, /*error=*/nullptr);
+  NotifyLoginsChanged(changes);
+  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
+  // CommitTransaction() must be called after NotifyLoginsChanged(), because
+  // sync codebase needs to update metadata atomically together with the login
+  // data.
+  CommitTransaction();
+  return changes;
+}
+
+PasswordStoreChangeList PasswordStoreImpl::UpdateLoginInternal(
+    const PasswordForm& form) {
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  BeginTransaction();
+  PasswordStoreChangeList changes = UpdateLoginSync(form, /*error=*/nullptr);
+  NotifyLoginsChanged(changes);
+  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
+  // CommitTransaction() must be called after NotifyLoginsChanged(), because
+  // sync codebase needs to update metadata atomically together with the login
+  // data.
+  CommitTransaction();
+  return changes;
+}
+
+PasswordStoreChangeList PasswordStoreImpl::RemoveLoginInternal(
+    const PasswordForm& form) {
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  BeginTransaction();
+  PasswordStoreChangeList changes = RemoveLoginSync(form);
+  NotifyLoginsChanged(changes);
+  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
+  // CommitTransaction() must be called after NotifyLoginsChanged(), because
+  // sync codebase needs to update metadata atomically together with the login
+  // data.
+  CommitTransaction();
+  return changes;
 }
 
 }  // namespace password_manager

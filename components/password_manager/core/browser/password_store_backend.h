@@ -68,11 +68,11 @@ class PasswordStoreBackend {
   //  PasswordStore and the async method on backend_ instead.
 
   virtual void AddLoginAsync(OptionalStoreChangeListReply callback,
-                             const PasswordForm& form) {}
+                             const PasswordForm& form) = 0;
   virtual void UpdateLoginAsync(OptionalStoreChangeListReply callback,
-                                const PasswordForm& form) {}
+                                const PasswordForm& form) = 0;
   virtual void RemoveLoginAsync(OptionalStoreChangeListReply callback,
-                                const PasswordForm& form) {}
+                                const PasswordForm& form) = 0;
   virtual void RemoveLoginsByURLAndTimeAsync(
       OptionalStoreChangeListReply callback,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,

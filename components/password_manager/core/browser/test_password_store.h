@@ -90,7 +90,12 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   void FillMatchingLoginsAsync(
       LoginsReply callback,
       const std::vector<PasswordFormDigest>& forms) override;
-
+  void AddLoginAsync(OptionalStoreChangeListReply callback,
+                     const PasswordForm& form) override;
+  void UpdateLoginAsync(OptionalStoreChangeListReply callback,
+                        const PasswordForm& form) override;
+  void RemoveLoginAsync(OptionalStoreChangeListReply callback,
+                        const PasswordForm& form) override;
   // PasswordStore interface
   PasswordStoreChangeList AddLoginImpl(const PasswordForm& form,
                                        AddLoginError* error) override;

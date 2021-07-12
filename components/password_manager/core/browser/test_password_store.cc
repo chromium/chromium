@@ -183,6 +183,33 @@ void TestPasswordStore::FillMatchingLoginsAsync(
       std::move(callback));
 }
 
+void TestPasswordStore::AddLoginAsync(OptionalStoreChangeListReply callback,
+                                      const PasswordForm& form) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TestPasswordStore::AddLoginImpl, base::Unretained(this),
+                     form, /*error=*/nullptr),
+      std::move(callback));
+}
+
+void TestPasswordStore::UpdateLoginAsync(OptionalStoreChangeListReply callback,
+                                         const PasswordForm& form) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TestPasswordStore::UpdateLoginImpl,
+                     base::Unretained(this), form, /*error=*/nullptr),
+      std::move(callback));
+}
+
+void TestPasswordStore::RemoveLoginAsync(OptionalStoreChangeListReply callback,
+                                         const PasswordForm& form) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TestPasswordStore::RemoveLoginImpl,
+                     base::Unretained(this), form),
+      std::move(callback));
+}
+
 PasswordStoreChangeList TestPasswordStore::AddLoginImpl(
     const PasswordForm& form,
     AddLoginError* error) {
