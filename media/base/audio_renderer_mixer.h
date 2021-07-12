@@ -60,7 +60,7 @@ class MEDIA_EXPORT AudioRendererMixer
              AudioBus* audio_bus) override;
   void OnRenderError() override;
 
-  bool is_master_sample_rate(int sample_rate) const {
+  bool can_passthrough(int sample_rate) const {
     return sample_rate == output_params_.sample_rate();
   }
 
@@ -82,12 +82,12 @@ class MEDIA_EXPORT AudioRendererMixer
 
   // Each of these converters mixes inputs with a given sample rate and
   // resamples them to the output sample rate. Inputs not requiring resampling
-  // go directly to |master_converter_|.
+  // go directly to |aggregate_converter_|.
   AudioConvertersMap converters_ GUARDED_BY(lock_);
 
-  // Master converter which mixes all the outputs from |converters_| as well as
-  // mixer inputs that are in the output sample rate.
-  AudioConverter master_converter_ GUARDED_BY(lock_);
+  // Aggregate converter which mixes all the outputs from |converters_| as well
+  // as mixer inputs that are in the output sample rate.
+  AudioConverter aggregate_converter_ GUARDED_BY(lock_);
 
   // Handles physical stream pause when no inputs are playing.  For latency
   // reasons we don't want to immediately pause the physical stream.
