@@ -23,6 +23,10 @@ class InterventionPolicyDatabaseComponentInstallerPolicy
  public:
   InterventionPolicyDatabaseComponentInstallerPolicy(
       resource_coordinator::InterventionPolicyDatabase* database);
+  InterventionPolicyDatabaseComponentInstallerPolicy(
+      const InterventionPolicyDatabaseComponentInstallerPolicy&) = delete;
+  InterventionPolicyDatabaseComponentInstallerPolicy& operator=(
+      const InterventionPolicyDatabaseComponentInstallerPolicy&) = delete;
   ~InterventionPolicyDatabaseComponentInstallerPolicy() override = default;
 
  private:
@@ -45,7 +49,6 @@ class InterventionPolicyDatabaseComponentInstallerPolicy
 
   resource_coordinator::InterventionPolicyDatabase* database_;
 
-  DISALLOW_COPY_AND_ASSIGN(InterventionPolicyDatabaseComponentInstallerPolicy);
 };
 
 // Call once to make the component update service aware of the Intervention

@@ -17,6 +17,8 @@ class ShareTargetsObserver;
 
 class ShareTargets {
  public:
+  ShareTargets(const ShareTargets&) = delete;
+  ShareTargets& operator=(const ShareTargets&) = delete;
   virtual ~ShareTargets();
 
   static ShareTargets* GetInstance();  // Singleton

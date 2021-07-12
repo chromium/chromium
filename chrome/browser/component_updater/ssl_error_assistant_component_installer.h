@@ -22,6 +22,10 @@ class SSLErrorAssistantComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   SSLErrorAssistantComponentInstallerPolicy() = default;
+  SSLErrorAssistantComponentInstallerPolicy(
+      const SSLErrorAssistantComponentInstallerPolicy&) = delete;
+  SSLErrorAssistantComponentInstallerPolicy& operator=(
+      const SSLErrorAssistantComponentInstallerPolicy&) = delete;
   ~SSLErrorAssistantComponentInstallerPolicy() override = default;
 
  private:
@@ -44,7 +48,6 @@ class SSLErrorAssistantComponentInstallerPolicy
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
 
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorAssistantComponentInstallerPolicy);
 };
 
 void RegisterSSLErrorAssistantComponent(ComponentUpdateService* cus);

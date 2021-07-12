@@ -28,6 +28,10 @@ class DesktopSharingHubComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   DesktopSharingHubComponentInstallerPolicy() = default;
+  DesktopSharingHubComponentInstallerPolicy(
+      const DesktopSharingHubComponentInstallerPolicy&) = delete;
+  DesktopSharingHubComponentInstallerPolicy& operator=(
+      const DesktopSharingHubComponentInstallerPolicy&) = delete;
   ~DesktopSharingHubComponentInstallerPolicy() override = default;
 
  private:
@@ -49,8 +53,6 @@ class DesktopSharingHubComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSharingHubComponentInstallerPolicy);
 };
 
 // Call once during startup to make the component update service aware of

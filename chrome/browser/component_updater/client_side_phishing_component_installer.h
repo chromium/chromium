@@ -28,6 +28,10 @@ class ClientSidePhishingComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   ClientSidePhishingComponentInstallerPolicy() = default;
+  ClientSidePhishingComponentInstallerPolicy(
+      const ClientSidePhishingComponentInstallerPolicy&) = delete;
+  ClientSidePhishingComponentInstallerPolicy& operator=(
+      const ClientSidePhishingComponentInstallerPolicy&) = delete;
   ~ClientSidePhishingComponentInstallerPolicy() override = default;
 
  private:
@@ -49,8 +53,6 @@ class ClientSidePhishingComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSidePhishingComponentInstallerPolicy);
 };
 
 // Call once during startup to make the component update service aware of

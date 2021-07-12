@@ -28,6 +28,10 @@ class FileTypePoliciesComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   FileTypePoliciesComponentInstallerPolicy() = default;
+  FileTypePoliciesComponentInstallerPolicy(
+      const FileTypePoliciesComponentInstallerPolicy&) = delete;
+  FileTypePoliciesComponentInstallerPolicy& operator=(
+      const FileTypePoliciesComponentInstallerPolicy&) = delete;
   ~FileTypePoliciesComponentInstallerPolicy() override = default;
 
  private:
@@ -49,8 +53,6 @@ class FileTypePoliciesComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
-
-  DISALLOW_COPY_AND_ASSIGN(FileTypePoliciesComponentInstallerPolicy);
 };
 
 // Call once during startup to make the component update service aware of

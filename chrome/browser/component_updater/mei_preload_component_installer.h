@@ -30,6 +30,10 @@ class MediaEngagementPreloadComponentInstallerPolicy
  public:
   explicit MediaEngagementPreloadComponentInstallerPolicy(
       base::OnceClosure on_load_closure);
+  MediaEngagementPreloadComponentInstallerPolicy(
+      const MediaEngagementPreloadComponentInstallerPolicy&) = delete;
+  MediaEngagementPreloadComponentInstallerPolicy& operator=(
+      const MediaEngagementPreloadComponentInstallerPolicy&) = delete;
   ~MediaEngagementPreloadComponentInstallerPolicy() override;
 
  private:
@@ -55,7 +59,6 @@ class MediaEngagementPreloadComponentInstallerPolicy
   // Called when the data is loaded into the preloaded list.
   base::OnceClosure on_load_closure_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementPreloadComponentInstallerPolicy);
 };
 
 // Call once during startup to make the component update service aware of

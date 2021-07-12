@@ -24,6 +24,8 @@ class ComponentUpdateService;
 class CRLSetPolicy : public ComponentInstallerPolicy {
  public:
   CRLSetPolicy();
+  CRLSetPolicy(const CRLSetPolicy&) = delete;
+  CRLSetPolicy& operator=(const CRLSetPolicy&) = delete;
   ~CRLSetPolicy() override;
 
   // Queues a task to reconfigure the network service returned by
@@ -57,8 +59,6 @@ class CRLSetPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CRLSetPolicy);
 };
 
 // Registers a CRLSet component with |cus|. On a new CRLSet update, the default
