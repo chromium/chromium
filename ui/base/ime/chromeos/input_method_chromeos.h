@@ -90,7 +90,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   // Process a key returned from the input method.
   virtual ui::EventDispatchDetails ProcessKeyEventPostIME(
       ui::KeyEvent* event,
-      bool skip_process_filtered,
       bool handled,
       bool stopped_propagation) WARN_UNUSED_RESULT;
 

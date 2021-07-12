@@ -133,7 +133,7 @@ ui::EventDispatchDetails InputMethodChromeOS::DispatchKeyEvent(
       if (ExecuteCharacterComposer(*event)) {
         // Treating as PostIME event if character composer handles key event and
         // generates some IME event,
-        return ProcessKeyEventPostIME(event, false,
+        return ProcessKeyEventPostIME(event,
                                       /* handled */ true,
                                       /* stopped_propagation */ true);
       }
@@ -166,7 +166,7 @@ void InputMethodChromeOS::ProcessKeyEventDone(ui::KeyEvent* event,
     }
   }
   if (event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED) {
-    ignore_result(ProcessKeyEventPostIME(event, false, is_handled,
+    ignore_result(ProcessKeyEventPostIME(event, is_handled,
                                          /* stopped_propagation */ false));
   }
   handling_key_event_ = false;
@@ -511,7 +511,6 @@ void InputMethodChromeOS::UpdateContextFocusState() {
 
 ui::EventDispatchDetails InputMethodChromeOS::ProcessKeyEventPostIME(
     ui::KeyEvent* event,
-    bool skip_process_filtered,
     bool handled,
     bool stopped_propagation) {
   TextInputClient* client = GetTextInputClient();
@@ -521,7 +520,7 @@ ui::EventDispatchDetails InputMethodChromeOS::ProcessKeyEventPostIME(
     return DispatchKeyEventPostIME(event);
   }
 
-  if (event->type() == ET_KEY_PRESSED && handled && !skip_process_filtered) {
+  if (event->type() == ET_KEY_PRESSED && handled) {
     ui::EventDispatchDetails dispatch_details =
         ProcessFilteredKeyPressEvent(event);
     if (event->stopped_propagation()) {

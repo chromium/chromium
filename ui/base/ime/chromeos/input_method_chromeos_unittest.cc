@@ -74,17 +74,14 @@ class TestableInputMethodChromeOS : public InputMethodChromeOS {
   // Overridden from InputMethodChromeOS:
   ui::EventDispatchDetails ProcessKeyEventPostIME(
       ui::KeyEvent* key_event,
-      bool skip_process_filtered,
       bool handled,
       bool stopped_propagation) override {
     ui::EventDispatchDetails details =
-        InputMethodChromeOS::ProcessKeyEventPostIME(
-            key_event, skip_process_filtered, handled, stopped_propagation);
-    if (!skip_process_filtered) {
-      process_key_event_post_ime_args_.event = *key_event;
-      process_key_event_post_ime_args_.handled = handled;
-      ++process_key_event_post_ime_call_count_;
-    }
+        InputMethodChromeOS::ProcessKeyEventPostIME(key_event, handled,
+                                                    stopped_propagation);
+    process_key_event_post_ime_args_.event = *key_event;
+    process_key_event_post_ime_args_.handled = handled;
+    ++process_key_event_post_ime_call_count_;
     return details;
   }
   void CommitText(
@@ -1155,7 +1152,7 @@ TEST_F(InputMethodChromeOSKeyEventTest, DeadKeyPressTest) {
                       0,
                       DomKey::DeadKeyFromCombiningCharacter('^'),
                       EventTimeForNow());
-  ime_->ProcessKeyEventPostIME(&eventA, false, true, true);
+  ime_->ProcessKeyEventPostIME(&eventA, true, true);
 
   const ui::KeyEvent& key_event = dispatched_key_event_;
 
