@@ -192,7 +192,14 @@ class StartupTracingTest
   StartupTracingTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kTraceStartup);
+    // TODO(crbug/1220772): Ideally we shouldn't remove any categories and all
+    // should be well formed, however gpu.angle.* events don't correctly end
+    // their trace events causing stack depths to explode, this triggers a
+    // DCHECK failure on debug builds causing test failures. So remove them
+    // until https://bugs.chromium.org/p/angleproject/issues/detail?id=6158 is
+    // fixed.
+    command_line->AppendSwitchASCII(switches::kTraceStartup,
+                                    "-gpu.angle,-gpu.angle.gpu");
     if (GetFinishType() == FinishType::kWaitForTimeout) {
       command_line->AppendSwitchASCII(switches::kTraceStartupDuration, "3");
     } else {
@@ -316,14 +323,7 @@ INSTANTIATE_TEST_SUITE_P(
             OutputLocation::kDirectoryWithDefaultBasename,
             OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop)));
 
-// TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-// TODO(crbug.com/1224903): Failing on Linux dbg tests.
-#if (defined(OS_WIN) || defined(OS_LINUX)) && DCHECK_IS_ON()
-#define MAYBE_TestEnableTracing DISABLED_TestEnableTracing
-#else
-#define MAYBE_TestEnableTracing TestEnableTracing
-#endif
-IN_PROC_BROWSER_TEST_P(StartupTracingTest, MAYBE_TestEnableTracing) {
+IN_PROC_BROWSER_TEST_P(StartupTracingTest, TestEnableTracing) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   if (GetOutputLocation() ==
@@ -355,28 +355,14 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OutputType::kJSON, OutputType::kProto),
         testing::Values(OutputLocation::kDirectoryWithDefaultBasename)));
 
-// TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-// TODO(crbug.com/1224903): Failing on Linux dbg tests.
-#if (defined(OS_WIN) || defined(OS_LINUX)) && DCHECK_IS_ON()
-#define MAYBE_StopOnUIThread DISABLED_StopOnUIThread
-#else
-#define MAYBE_StopOnUIThread StopOnUIThread
-#endif
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnUIThread) {
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnUIThread) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   StartupTracingController::EmergencyStop();
   CheckOutput(GetExpectedPath(), GetOutputType());
 }
 
-// TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-// TODO(crbug.com/1224903): Failing on Linux dbg tests.
-#if (defined(OS_WIN) || defined(OS_LINUX)) && DCHECK_IS_ON()
-#define MAYBE_StopOnThreadPool DISABLED_StopOnThreadPool
-#else
-#define MAYBE_StopOnThreadPool StopOnThreadPool
-#endif
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnThreadPool) {
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPool) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   auto expected_path = GetExpectedPath();
@@ -393,14 +379,7 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnThreadPool) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-// TODO(crbug.com/1224903): Failing on Linux dbg tests.
-#if (defined(OS_WIN) || defined(OS_LINUX)) && DCHECK_IS_ON()
-#define MAYBE_StopOnThreadPoolTwice DISABLED_StopOnThreadPoolTwice
-#else
-#define MAYBE_StopOnThreadPoolTwice StopOnThreadPoolTwice
-#endif
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnThreadPoolTwice) {
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPoolTwice) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   auto expected_path = GetExpectedPath();
