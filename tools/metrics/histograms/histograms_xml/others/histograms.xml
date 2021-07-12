@@ -6830,6 +6830,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Graphics.Smoothness.FrameSequenceLength" units="count"
     expires_after="2021-08-15">
+  <obsolete>
+    Removed 2021-07-09.
+  </obsolete>
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

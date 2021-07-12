@@ -88,12 +88,6 @@ std::string GetMissedDeadlineHistogramName(FrameSequenceTrackerType type,
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
-std::string GetFrameSequenceLengthHistogramName(FrameSequenceTrackerType type) {
-  return base::StrCat(
-      {"Graphics.Smoothness.FrameSequenceLength.",
-       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
-}
-
 bool IsInteractionType(FrameSequenceTrackerType sequence_type) {
   return sequence_type == FrameSequenceTrackerType::kScrollbarScroll ||
          sequence_type == FrameSequenceTrackerType::kTouchScroll ||
@@ -431,17 +425,6 @@ int FrameSequenceMetrics::ThroughputData::ReportDroppedFramePercentHistogram(
   DCHECK(CanReportHistogram(metrics, thread_type, data) ||
          sequence_type == FrameSequenceTrackerType::kCanvasAnimation ||
          sequence_type == FrameSequenceTrackerType::kJSAnimation);
-
-  if (metrics->GetEffectiveThread() == thread_type) {
-    STATIC_HISTOGRAM_POINTER_GROUP(
-        GetFrameSequenceLengthHistogramName(sequence_type),
-        static_cast<int>(sequence_type),
-        static_cast<int>(FrameSequenceTrackerType::kMaxType),
-        Add(data.frames_expected),
-        base::Histogram::FactoryGet(
-            GetFrameSequenceLengthHistogramName(sequence_type), 1, 1000, 50,
-            base::HistogramBase::kUmaTargetedHistogramFlag));
-  }
 
   // Throughput means the percent of frames that was expected to show on the
   // screen but didn't. In other words, the lower the throughput is, the

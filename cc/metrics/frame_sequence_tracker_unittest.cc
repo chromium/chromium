@@ -905,13 +905,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame2) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -934,13 +928,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame3) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -963,13 +951,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame4) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1033,13 +1015,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame7) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1062,13 +1038,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame8) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1091,13 +1061,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame9) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1153,13 +1117,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame12) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1182,13 +1140,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame13) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1204,13 +1156,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame14) {
   // The tracker should have been removed from the removal_tracker_ list.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1240,13 +1186,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame15) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1269,13 +1209,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame16) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1298,13 +1232,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame17) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1328,13 +1256,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame18) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1357,13 +1279,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame19) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }
@@ -1386,13 +1302,7 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame20) {
   // Now the |removal_tracker| should have been destroyed.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  std::string metric = "Graphics.Smoothness.FrameSequenceLength.TouchScroll";
-  // Impl thread reports 101 frames expected.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 101), 1);
-  // The main thread does not submit a report because it is not the effective
-  // thread.
-  EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 0);
-  metric =
+  std::string metric =
       "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll";
   EXPECT_EQ(histogram_tester.GetBucketCount(metric, 0), 1);
 }

@@ -56,21 +56,6 @@ TEST(FrameSequenceMetricsTest, ScrollingThreadMergeMetrics) {
 }
 #endif  // DCHECK_IS_ON()
 
-TEST(FrameSequenceMetricsTest, VideoReportsOnImplOnly) {
-  base::HistogramTester histograms;
-
-  FrameSequenceMetrics first(FrameSequenceTrackerType::kVideo, nullptr);
-  first.impl_throughput().frames_expected = 120;
-  first.impl_throughput().frames_produced = 80;
-  first.impl_throughput().frames_ontime = 80;
-  first.main_throughput().frames_expected = 0;
-  first.main_throughput().frames_produced = 0;
-  first.main_throughput().frames_ontime = 0;
-  first.ReportMetrics();
-  histograms.ExpectTotalCount("Graphics.Smoothness.FrameSequenceLength.Video",
-                              1u);
-}
-
 TEST(FrameSequenceMetricsTest, AllMetricsReported) {
   base::HistogramTester histograms;
 
