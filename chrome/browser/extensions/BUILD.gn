@@ -981,16 +981,6 @@ static_library("extensions") {
     }
   }
 
-  if (enable_autofill_assistant_api) {
-    sources += [
-      "api/autofill_assistant_private/autofill_assistant_private_api.cc",
-      "api/autofill_assistant_private/autofill_assistant_private_api.h",
-      "api/autofill_assistant_private/extension_access_token_fetcher.cc",
-      "api/autofill_assistant_private/extension_access_token_fetcher.h",
-    ]
-    deps += [ "//components/autofill_assistant/browser" ]
-  }
-
   if (is_chromeos) {
     sources += [
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",

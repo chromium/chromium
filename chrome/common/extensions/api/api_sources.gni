@@ -124,10 +124,6 @@ if (enable_service_discovery) {
   schema_sources_ += [ "mdns.idl" ]
 }
 
-if (enable_autofill_assistant_api) {
-  schema_sources_ += [ "autofill_assistant_private.idl" ]
-}
-
 uncompiled_sources_ = [
   "action.json",
   "browser_action.json",

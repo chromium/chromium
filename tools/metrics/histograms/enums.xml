@@ -27071,9 +27071,10 @@ Called by update_extension_histograms.py.-->
   <int value="445" label="PRINTING_ON_JOB_STATUS_CHANGED"/>
   <int value="446" label="DECLARATIVE_NET_REQUEST_ON_RULE_MATCHED_DEBUG"/>
   <int value="447" label="TERMINAL_PRIVATE_ON_SETTINGS_CHANGED"/>
-  <int value="448" label="AUTOFILL_ASSISTANT_PRIVATE_ON_ACTIONS_CHANGED"/>
+  <int value="448"
+      label="DELETED_AUTOFILL_ASSISTANT_PRIVATE_ON_ACTIONS_CHANGED"/>
   <int value="449"
-      label="AUTOFILL_ASSISTANT_PRIVATE_ON_STATUS_MESSAGE_CHANGED"/>
+      label="DELETED_AUTOFILL_ASSISTANT_PRIVATE_ON_STATUS_MESSAGE_CHANGED"/>
   <int value="450" label="BLUETOOTH_PRIVATE_ON_DEVICE_ADDRESS_CHANGED"/>
   <int value="451"
       label="PASSWORDS_PRIVATE_ON_ACCOUNT_STORAGE_OPT_IN_STATE_CHANGED"/>
@@ -28616,11 +28617,11 @@ Called by update_extension_histograms.py.-->
   <int value="1435" label="PRINTING_SUBMITJOB"/>
   <int value="1436" label="IDENTITYPRIVATE_SETCONSENTRESULT"/>
   <int value="1437" label="PRINTING_CANCELJOB"/>
-  <int value="1438" label="AUTOFILLASSISTANTPRIVATE_CREATE"/>
-  <int value="1439" label="AUTOFILLASSISTANTPRIVATE_START"/>
-  <int value="1440" label="AUTOFILLASSISTANTPRIVATE_GETSTATE"/>
-  <int value="1441" label="AUTOFILLASSISTANTPRIVATE_PERFORMACTION"/>
-  <int value="1442" label="AUTOFILLASSISTANTPRIVATE_PROVIDEUSERDATA"/>
+  <int value="1438" label="DELETED_AUTOFILLASSISTANTPRIVATE_CREATE"/>
+  <int value="1439" label="DELETED_AUTOFILLASSISTANTPRIVATE_START"/>
+  <int value="1440" label="DELETED_AUTOFILLASSISTANTPRIVATE_GETSTATE"/>
+  <int value="1441" label="DELETED_AUTOFILLASSISTANTPRIVATE_PERFORMACTION"/>
+  <int value="1442" label="DELETED_AUTOFILLASSISTANTPRIVATE_PROVIDEUSERDATA"/>
   <int value="1443" label="PASSWORDSPRIVATE_ISOPTEDINFORACCOUNTSTORAGE"/>
   <int value="1444" label="AUTOTESTPRIVATE_PINSHELFICON"/>
   <int value="1445" label="AUTOTESTPRIVATE_WAITFOROVERVIEWSTATE"/>
@@ -29359,7 +29360,7 @@ Called by update_extension_permission.py.-->
   <int value="223" label="kPrintingMetrics"/>
   <int value="224" label="kPrinting"/>
   <int value="225" label="kCrashReportPrivate"/>
-  <int value="226" label="kAutofillAssistantPrivate"/>
+  <int value="226" label="kDeleted_AutofillAssistantPrivate"/>
   <int value="227" label="kEnterpriseNetworkingAttributes"/>
   <int value="228" label="kSearch"/>
   <int value="229" label="kTabGroups"/>

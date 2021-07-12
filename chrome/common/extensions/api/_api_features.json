@@ -762,10 +762,6 @@
       "chrome://settings/*"
     ]
   }],
-  "autofillAssistantPrivate": {
-    "dependencies": ["permission:autofillAssistantPrivate"],
-    "contexts": ["blessed_extension"]
-  },
   "signedInDevices": {
     "dependencies": ["permission:signedInDevices"],
     "contexts": ["blessed_extension"]

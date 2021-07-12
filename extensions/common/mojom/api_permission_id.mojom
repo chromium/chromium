@@ -249,7 +249,7 @@ enum APIPermissionID {
   kPrintingMetrics = 223,
   kPrinting = 224,
   kCrashReportPrivate = 225,
-  kAutofillAssistantPrivate = 226,
+  kDeleted_AutofillAssistantPrivate = 226,
   kEnterpriseNetworkingAttributes = 227,
   kSearch = 228,
   kTabGroups = 229,

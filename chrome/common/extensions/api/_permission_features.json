@@ -801,16 +801,6 @@
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // https://crbug.com/839189
     ]
   }],
-  "autofillAssistantPrivate": {
-    "channel": "trunk",
-    "extension_types": ["extension"],
-    "location": "component",
-    "allowlist": [
-      // api_test extension "jjeoclcdfjddkdjokiejckgcildcflpp"
-      // https://crbug.com/1015753
-      "64B58C7B53E3E1447FD0DEA62C5E654206179F99"
-    ]
-  },
   "signedInDevices": {
     "channel": "dev",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]

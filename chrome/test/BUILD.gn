@@ -2747,10 +2747,6 @@ if (!is_android) {
         "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
       ]
 
-      if (enable_autofill_assistant_api) {
-        sources += [ "../browser/extensions/api/autofill_assistant_private/autofill_assistant_private_apitest.cc" ]
-      }
-
       if (enable_background_mode) {
         sources += [ "../browser/extensions/background_app_browsertest.cc" ]
       }
@@ -2820,12 +2816,6 @@ if (!is_android) {
         "//extensions/common:mojom",
         "//extensions/common/api",
       ]
-
-      if (enable_autofill_assistant_api) {
-        deps += [
-          "//components/autofill_assistant/browser:extensions_test_support",
-        ]
-      }
 
       data += [
         "//chrome/test/data/extensions/",
@@ -6637,10 +6627,6 @@ test("unit_tests") {
         "../browser/extensions/system_display/system_display_serialization_unittest.cc",
         "../renderer/extensions/accessibility_private_hooks_delegate_unittest.cc",
       ]
-    }
-
-    if (enable_autofill_assistant_api) {
-      sources += [ "../browser/extensions/api/autofill_assistant_private/extension_access_token_fetcher_unittest.cc" ]
     }
 
     allow_circular_includes_from = [
