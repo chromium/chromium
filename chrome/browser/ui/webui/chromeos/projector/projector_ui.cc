@@ -17,11 +17,11 @@ namespace {
 
 content::WebUIDataSource* CreateProjectorHTMLSource() {
   content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIProjectorSelfieCamHost);
+      content::WebUIDataSource::Create(chrome::kChromeUIProjectorHost);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kProjectorResources, kProjectorResourcesSize),
-      IDR_PROJECTOR_SELFIE_CAM_HTML);
+      IDR_PROJECTOR_PLAYER_APP_HTML);
   return source;
 }
 

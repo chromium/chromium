@@ -841,7 +841,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       !profile->IsOffTheRecord()) {
     return &NewWebUI<nearby_share::NearbyShareDialogUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIProjectorSelfieCamHost)
+  if (url.host_piece() == chrome::kChromeUIProjectorHost)
     return &NewWebUI<chromeos::ProjectorUI>;
   if (url.host_piece() == chrome::kChromeUISetTimeHost)
     return &NewWebUI<chromeos::SetTimeUI>;

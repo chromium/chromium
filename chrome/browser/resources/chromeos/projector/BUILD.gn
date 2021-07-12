@@ -8,10 +8,14 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash, "Projector is ChromeOS only")
 
+resources_grd_file = "$target_gen_dir/resources.grd"
 generate_grd("build_grd") {
   grd_prefix = "projector"
-  out_grd = "$target_gen_dir/resources.grd"
+  out_grd = resources_grd_file
   input_files = [
+    "player_app.html",
+    "player_app.js",
+    "player_app.css",
     "selfie_cam.html",
     "selfie_cam.js",
     "selfie_cam.css",
@@ -22,7 +26,7 @@ generate_grd("build_grd") {
 grit("resources") {
   # These arguments are needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
+  source = resources_grd_file
   deps = [ ":build_grd" ]
 
   outputs = [
@@ -35,9 +39,14 @@ grit("resources") {
 }
 
 js_type_check("closure_compile") {
-  deps = [ ":projector" ]
+  deps = [
+    ":player_app",
+    ":selfie_cam",
+  ]
 }
 
-js_library("projector") {
-  sources = [ "selfie_cam.js" ]
+js_library("player_app") {
+}
+
+js_library("selfie_cam") {
 }
