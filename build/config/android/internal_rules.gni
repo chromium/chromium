@@ -1282,7 +1282,7 @@ if (enable_java_templates) {
     _ignore_desugar_missing_deps =
         defined(invoker.ignore_desugar_missing_deps) &&
         invoker.ignore_desugar_missing_deps
-    if (!_ignore_desugar_missing_deps && !enable_bazel_desugar) {
+    if (!_ignore_desugar_missing_deps) {
       _args += [ "--show-desugar-default-interface-warnings" ]
     }
 
@@ -1430,8 +1430,8 @@ if (enable_java_templates) {
         !defined(invoker.enable_multidex) || invoker.enable_multidex
     _enable_main_dex_list = _enable_multidex && _min_sdk_version < 21
     _enable_desugar = !defined(invoker.enable_desugar) || invoker.enable_desugar
-    _use_classic_desugar = (defined(invoker.use_classic_desugar) &&
-                            invoker.use_classic_desugar) || enable_bazel_desugar
+    _use_classic_desugar =
+        defined(invoker.use_classic_desugar) && invoker.use_classic_desugar
     _desugar_needs_classpath = _enable_desugar && !_use_classic_desugar
 
     # It's not safe to dex merge with libraries dex'ed at higher api versions.
@@ -3454,8 +3454,7 @@ if (enable_java_templates) {
         _enable_desugar =
             !defined(invoker.enable_desugar) || invoker.enable_desugar
         _use_classic_desugar =
-            (defined(invoker.use_classic_desugar) &&
-             invoker.use_classic_desugar) || enable_bazel_desugar
+            defined(invoker.use_classic_desugar) && invoker.use_classic_desugar
       }
 
       # For static libraries, the javac jar output is created at the intermediate

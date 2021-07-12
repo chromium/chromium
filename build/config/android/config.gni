@@ -272,10 +272,6 @@ if (is_android || is_chromeos) {
     # Use hashed symbol names to reduce JNI symbol overhead.
     use_hashed_jni_names = !is_java_debug
 
-    # Desugar lambdas and interfaces methods using Desugar.jar rather than
-    # D8/R8. D8/R8 will still be used for backported method desugaring.
-    enable_bazel_desugar = false
-
     # Enables Java library desugaring.
     # This will cause an extra classes.dex file to appear in every apk.
     enable_jdk_library_desugaring = true
