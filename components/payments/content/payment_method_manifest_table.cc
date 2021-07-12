@@ -154,12 +154,8 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
                                 "WHERE credential_id=? "
                                 "AND relying_party_id<>?"));
     int index = 0;
-    if (!s0.BindBlob(index++, instrument.credential_id))
-      return false;
-
-    if (!s0.BindString(index++, instrument.relying_party_id))
-      return false;
-
+    s0.BindBlob(index++, instrument.credential_id);
+    s0.BindString(index++, instrument.relying_party_id);
     if (s0.Step())
       return false;
   }
@@ -168,8 +164,7 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
     sql::Statement s1(db_->GetUniqueStatement(
         "DELETE FROM secure_payment_confirmation_instrument "
         "WHERE credential_id=?"));
-    if (!s1.BindBlob(0, instrument.credential_id))
-      return false;
+    s1.BindBlob(0, instrument.credential_id);
 
     if (!s1.Run())
       return false;
@@ -181,17 +176,10 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
         "(credential_id, relying_party_id, label, icon) "
         "VALUES (?, ?, ?, ?)"));
     int index = 0;
-    if (!s2.BindBlob(index++, instrument.credential_id))
-      return false;
-
-    if (!s2.BindString(index++, instrument.relying_party_id))
-      return false;
-
-    if (!s2.BindString16(index++, instrument.label))
-      return false;
-
-    if (!s2.BindBlob(index++, instrument.icon))
-      return false;
+    s2.BindBlob(index++, instrument.credential_id);
+    s2.BindString(index++, instrument.relying_party_id);
+    s2.BindString16(index++, instrument.label);
+    s2.BindBlob(index++, instrument.icon);
 
     if (!s2.Run())
       return false;
@@ -218,8 +206,7 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationInstruments(
     if (credential_id.empty())
       continue;
 
-    if (!s.BindBlob(0, credential_id))
-      continue;
+    s.BindBlob(0, credential_id);
 
     if (!s.Step())
       continue;
