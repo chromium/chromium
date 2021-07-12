@@ -5857,7 +5857,7 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
   if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           profile, url, &dialog_data,
           enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY)) {
-    dialog_data.text.push_back(base::UTF8ToUTF16(data));
+    dialog_data.text.push_back(data);
     enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
         web_contents, std::move(dialog_data),
         base::BindOnce(

@@ -43,8 +43,8 @@ constexpr char kUserName[] = "test@chromium.org";
 constexpr char kScanId1[] = "scan id 1";
 constexpr char kScanId2[] = "scan id 2";
 
-std::u16string text() {
-  return base::UTF8ToUTF16(std::string(100, 'a'));
+std::string text() {
+  return std::string(100, 'a');
 }
 
 class FakeBinaryUploadService : public BinaryUploadService {
@@ -469,8 +469,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
       BinaryUploadService::Result::SUCCESS, response);
 
   // The DLP verdict means an event should be reported. The content size is
-  // equal to the length of the concatenated texts (2 * 100 * 'a') times
-  // 2 since they are wide characters ((100 + 100) * 2 = 400).
+  // equal to the length of the concatenated texts (2 * 100 * 'a').
   validator.ExpectSensitiveDataEvent(
       /*url*/ "about:blank",
       /*filename*/ "Text data",
@@ -479,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
       /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       /*dlp_verdict*/ *result,
       /*mimetype*/ TextMimeTypes(),
-      /*size*/ 400,
+      /*size*/ 200,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,

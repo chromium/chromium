@@ -10,10 +10,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/platform_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -176,8 +173,8 @@ void ContentAnalysisDelegate::BypassWarnings() {
     std::fill(result_.text_results.begin(), result_.text_results.end(), true);
 
     int64_t content_size = 0;
-    for (const std::u16string& entry : data_.text)
-      content_size += (entry.size() * sizeof(char16_t));
+    for (const std::string& entry : data_.text)
+      content_size += entry.size();
 
     ReportAnalysisConnectorWarningBypass(
         profile_, url_, "Text data", std::string(), "text/plain",
@@ -392,8 +389,8 @@ void ContentAnalysisDelegate::StringRequestCallback(
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
   int64_t content_size = 0;
-  for (const std::u16string& entry : data_.text)
-    content_size += (entry.size() * sizeof(char16_t));
+  for (const std::string& entry : data_.text)
+    content_size += entry.size();
   RecordDeepScanMetrics(access_point_,
                         base::TimeTicks::Now() - upload_start_time_,
                         content_size, result, response);
@@ -503,8 +500,8 @@ bool ContentAnalysisDelegate::UploadData() {
 
 void ContentAnalysisDelegate::PrepareTextRequest() {
   std::string full_text;
-  for (const auto& text : data_.text)
-    full_text.append(base::UTF16ToUTF8(text));
+  for (const std::string& text : data_.text)
+    full_text.append(text);
 
   // The request is considered complete if there is no text or if the text is
   // too small compared to the minimum size. This means a minimum_data_size of

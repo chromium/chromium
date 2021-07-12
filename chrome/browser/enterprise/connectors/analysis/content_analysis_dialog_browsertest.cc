@@ -74,8 +74,8 @@ constexpr char kBlockingScansForDlpAndMalwareWithCustomMessage[] = R"(
   }]
 })";
 
-std::u16string text() {
-  return base::UTF8ToUTF16(std::string(100, 'a'));
+std::string text() {
+  return std::string(100, 'a');
 }
 
 // Tests the behavior of the dialog in the following ways:

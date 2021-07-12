@@ -708,7 +708,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData) {
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
                                                  BULK_DATA_ENTRY));
 
-  data.text.emplace_back(base::UTF8ToUTF16(large_text()));
+  data.text.emplace_back(large_text());
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -733,8 +733,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData2) {
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
                                                  BULK_DATA_ENTRY));
 
-  data.text.emplace_back(base::UTF8ToUTF16(large_text()));
-  data.text.emplace_back(base::UTF8ToUTF16(large_text()));
+  data.text.emplace_back(large_text());
+  data.text.emplace_back(large_text());
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -762,8 +762,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData3) {
 
   // Because the strings are small, they are exempt from scanning and will be
   // allowed even when a negative verdict is mocked.
-  data.text.emplace_back(base::UTF8ToUTF16(small_text()));
-  data.text.emplace_back(base::UTF8ToUTF16(small_text()));
+  data.text.emplace_back(small_text());
+  data.text.emplace_back(small_text());
 
   SetDLPResponse(FakeContentAnalysisDelegate::DlpResponse(
       ContentAnalysisResponse::Result::SUCCESS, "rule", TriggeredRule::BLOCK));
@@ -1093,7 +1093,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileData) {
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
                                                  BULK_DATA_ENTRY));
 
-  data.text.emplace_back(base::UTF8ToUTF16(large_text()));
+  data.text.emplace_back(large_text());
   CreateFilesForTest(
       {FILE_PATH_LITERAL("foo.doc"), FILE_PATH_LITERAL("bar.doc")}, &data);
 
@@ -1124,8 +1124,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataNoDLP) {
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
                                                  BULK_DATA_ENTRY));
 
-  data.text.emplace_back(base::UTF8ToUTF16(large_text()));
-  data.text.emplace_back(base::UTF8ToUTF16(large_text()));
+  data.text.emplace_back(large_text());
+  data.text.emplace_back(large_text());
   CreateFilesForTest(
       {FILE_PATH_LITERAL("foo.doc"), FILE_PATH_LITERAL("bar.doc")}, &data);
 
@@ -1156,8 +1156,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataFailedDLP) {
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
                                                  BULK_DATA_ENTRY));
 
-  data.text.emplace_back(base::UTF8ToUTF16(large_text()));
-  data.text.emplace_back(base::UTF8ToUTF16(large_text()));
+  data.text.emplace_back(large_text());
+  data.text.emplace_back(large_text());
 
   SetDLPResponse(FakeContentAnalysisDelegate::DlpResponse(
       ContentAnalysisResponse::Result::SUCCESS, "rule", TriggeredRule::BLOCK));
@@ -1186,7 +1186,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataPartialSuccess) {
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
                                                  BULK_DATA_ENTRY));
 
-  data.text.emplace_back(base::UTF8ToUTF16(large_text()));
+  data.text.emplace_back(large_text());
   CreateFilesForTest({FILE_PATH_LITERAL("foo.doc"),
                       FILE_PATH_LITERAL("foo_fail_malware_1.doc"),
                       FILE_PATH_LITERAL("foo_fail_malware_2.doc"),
@@ -1245,7 +1245,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, NoDelay) {
   ASSERT_TRUE(
       ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
-  data.text.emplace_back(u"dlp_text");
+  data.text.emplace_back("dlp_text");
   CreateFilesForTest({FILE_PATH_LITERAL("foo_fail_malware_0.doc"),
                       FILE_PATH_LITERAL("foo_fail_malware_1.doc"),
                       FILE_PATH_LITERAL("foo_fail_malware_2.doc"),

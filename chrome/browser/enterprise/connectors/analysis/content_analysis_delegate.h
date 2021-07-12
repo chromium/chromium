@@ -72,8 +72,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     // URL of the page that is to receive sensitive data.
     GURL url;
 
-    // Text data to scan, such as plain text, URLs, HTML content, etc.
-    std::vector<std::u16string> text;
+    // UTF-8 encoded text data to scan, such as plain text, URLs, HTML, etc.
+    std::vector<std::string> text;
 
     // List of files to scan.
     std::vector<base::FilePath> paths;

@@ -95,13 +95,13 @@ void HandleOnPerformDrop(
 
   // Collect the data that needs to be scanned.
   if (!drop_data.url_title.empty())
-    data.text.push_back(drop_data.url_title);
+    data.text.push_back(base::UTF16ToUTF8(drop_data.url_title));
   if (drop_data.text)
-    data.text.push_back(*drop_data.text);
+    data.text.push_back(base::UTF16ToUTF8(*drop_data.text));
   if (drop_data.html)
-    data.text.push_back(*drop_data.html);
+    data.text.push_back(base::UTF16ToUTF8(*drop_data.html));
   if (!drop_data.file_contents.empty())
-    data.text.push_back(base::UTF8ToUTF16(drop_data.file_contents));
+    data.text.push_back(drop_data.file_contents);
 
   if (drop_data.filenames.empty()) {
     ScanData(web_contents, std::move(callback), std::move(data));
