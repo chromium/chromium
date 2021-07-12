@@ -1004,6 +1004,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderView.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderViewBinder.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderViewProperties.java",
+  "java/src/org/chromium/chrome/browser/omnibox/suggestions/mostvisited/ExploreIconProvider.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/mostvisited/MostVisitedTilesProcessor.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/AlignmentManager.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionProcessor.java",

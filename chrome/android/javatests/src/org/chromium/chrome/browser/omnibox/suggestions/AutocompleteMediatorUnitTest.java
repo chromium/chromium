@@ -214,7 +214,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                 mAutocompleteDelegate, mTextStateProvider, mListModel,
                 mHandler, mLifecycleDispatcher, () -> mModalDialogManager, null, null,
-                mLocationBarDataProvider, tab -> {}, null, url -> false);
+                mLocationBarDataProvider, tab -> {}, null, url -> false,
+                (pixelSize, callback) -> {});
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mMediator.setAutocompleteProfile(mProfile);

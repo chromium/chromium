@@ -342,6 +342,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/clipboard/ClipboardSuggestionProcessorTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/editurl/EditUrlSuggestionUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/entity/EntitySuggestionProcessorUnitTest.java",
+  "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/mostvisited/MostVisitedTilesProcessorUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/mostvisited/MostVisitedTilesTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/tiles/TileSuggestionProcessorUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchConsentUiRenderTest.java",

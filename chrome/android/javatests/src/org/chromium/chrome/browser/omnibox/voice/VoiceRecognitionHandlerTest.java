@@ -416,7 +416,8 @@ public class VoiceRecognitionHandlerTest {
             // clang-format off
             super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider,
                     mLifecycleDispatcher, () -> mModalDialogManager, null, null, mDataProvider,
-                    mProfileSupplier, (tab) -> {}, null, (url) -> false);
+                    mProfileSupplier, (tab) -> {}, null, (url) -> false,
+                    (pixelSize, callback) -> {});
             // clang-format on
         }
 

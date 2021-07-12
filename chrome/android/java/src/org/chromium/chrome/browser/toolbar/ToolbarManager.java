@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
@@ -81,6 +82,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -532,6 +534,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                             postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
             ChromePageInfo toolbarPageInfo =
                     new ChromePageInfo(modalDialogManagerSupplier, null, OpenedFromSource.TOOLBAR);
+            ExploreIconProvider exploreIconProvider = (pixelSize, callback) -> {
+                if (profileSupplier.get() != null) {
+                    ExploreSitesBridge.getSummaryImage(profileSupplier.get(), pixelSize, callback);
+                } else {
+                    callback.onResult(null);
+                }
+            };
             LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
                     mActivity.findViewById(R.id.location_bar), toolbarLayout, profileSupplier,
                     PrivacyPreferencesManagerImpl.getInstance(), mLocationBarModel,
@@ -546,7 +555,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     NewTabPageUma::recordOmniboxNavigation, TabWindowManagerSingleton::getInstance,
                     (url) -> mBookmarkBridgeSupplier.hasValue()
                             && mBookmarkBridgeSupplier.get().isBookmarked(url),
-                    VoiceToolbarButtonController::isToolbarMicEnabled);
+                    VoiceToolbarButtonController::isToolbarMicEnabled, exploreIconProvider);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mLocationBar = locationBarCoordinator;
         }

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
+import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -128,6 +129,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param tabWindowManagerSupplier Supplier of glue-level TabWindowManager object.
      * @param bookmarkState State of a URL bookmark state.
      * @param isToolbarMicEnabledSupplier Whether toolbar mic is enabled or not.
+     * @param exploreIconProvider The provider to get explore sites icon.
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
@@ -146,7 +148,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState,
-            @NonNull BooleanSupplier isToolbarMicEnabledSupplier) {
+            @NonNull BooleanSupplier isToolbarMicEnabledSupplier,
+            @NonNull ExploreIconProvider exploreIconProvider) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -172,7 +175,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 mUrlCoordinator, activityLifecycleDispatcher, modalDialogManagerSupplier,
                 activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
                 profileObservableSupplier, bringTabToFrontCallback, tabWindowManagerSupplier,
-                bookmarkState);
+                bookmarkState, exploreIconProvider);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,

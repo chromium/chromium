@@ -8,12 +8,17 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
@@ -28,8 +33,10 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -52,19 +59,29 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final RoundedIconGenerator mIconGenerator;
     private static final int DEFAULT_TILE_TYPE = 0;
 
+    private @NonNull ExploreIconProvider mExploreIconProvider;
+    private @NonNull DiscardableReferencePool mReferencePool;
+    private @Nullable DiscardableReferencePool
+            .DiscardableReference<RoundedBitmapDrawable> mExploreSitesIcon;
+
     /**
      * Constructor.
      *
      * @param context An Android context.
      * @param host SuggestionHost receiving notifications about user actions.
      * @param iconBridgeSupplier Supplier of the LargeIconBridge used to fetch site favicons.
+     * @param exploreIconProvider The provider to get the large icon of explore sites.
      */
     public MostVisitedTilesProcessor(@NonNull Context context, @NonNull SuggestionHost host,
-            @NonNull Supplier<LargeIconBridge> iconBridgeSupplier) {
+            @NonNull Supplier<LargeIconBridge> iconBridgeSupplier,
+            @NonNull ExploreIconProvider exploreIconProvider,
+            @NonNull DiscardableReferencePool referencePool) {
         super(context);
         mContext = context;
         mSuggestionHost = host;
         mIconBridgeSupplier = iconBridgeSupplier;
+        mExploreIconProvider = exploreIconProvider;
+        mReferencePool = referencePool;
         mMinCarouselItemViewHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height);
         mDesiredFaviconWidthPx = mContext.getResources().getDimensionPixelSize(
@@ -78,6 +95,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
         mIconGenerator = new RoundedIconGenerator(fallbackIconSize, fallbackIconSize,
                 fallbackIconSize / 2, fallbackIconColor, fallbackIconTextSize);
+        mExploreSitesIcon = null;
     }
 
     @Override
@@ -129,7 +147,9 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
             Bitmap fallbackIcon = mIconGenerator.generateIconForUrl(url);
             tileModel.set(TileViewProperties.ICON, new BitmapDrawable(fallbackIcon));
 
-            if (iconBridge != null) {
+            if (TextUtils.equals(url.getSpec(), UrlConstants.EXPLORE_URL)) {
+                setExploreSitesIcon(tileModel);
+            } else if (iconBridge != null) {
                 iconBridge.getLargeIconForUrl(tiles.get(index).url, mDesiredFaviconWidthPx,
                         (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
                                 int iconType) -> {
@@ -143,6 +163,44 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
         model.set(BaseCarouselSuggestionViewProperties.TILES, tileList);
         model.set(BaseCarouselSuggestionViewProperties.SHOW_TITLE, false);
+    }
+
+    /**
+     * Sets the Explore sites icon to the property model.
+     */
+    void setExploreSitesIcon(PropertyModel tileModel) {
+        if (mExploreSitesIcon == null || mExploreSitesIcon.get() == null) {
+            // Only fetches the Explore sites icon once per Chrome launch, since the icon
+            // is updated once a month or less.
+            mExploreIconProvider.getSummaryImage(mDesiredFaviconWidthPx, (Bitmap icon) -> {
+                if (icon == null) return;
+
+                RoundedBitmapDrawable roundIcon = getRoundIconFromBitmap(icon);
+                mExploreSitesIcon = mReferencePool.put(roundIcon);
+                setLargeIcon(tileModel, roundIcon);
+            });
+        } else {
+            setLargeIcon(tileModel, mExploreSitesIcon.get());
+        }
+    }
+
+    /**
+     * Gets a round icon from the given bitmap.
+     */
+    private RoundedBitmapDrawable getRoundIconFromBitmap(Bitmap icon) {
+        RoundedBitmapDrawable roundedIcon = ViewUtils.createRoundedBitmapDrawable(
+                mContext.getResources(), icon, mDesiredFaviconWidthPx);
+        roundedIcon.setAntiAlias(true);
+        roundedIcon.setFilterBitmap(true);
+        return roundedIcon;
+    }
+
+    /**
+     * Sets the large icon to the given property model.
+     */
+    private void setLargeIcon(PropertyModel tileModel, RoundedBitmapDrawable icon) {
+        tileModel.set(TileViewProperties.SHOW_LARGE_ICON, true);
+        tileModel.set(TileViewProperties.ICON, icon);
     }
 
     /**
@@ -173,5 +231,10 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 parent.getContext(), OmniboxTheme.LIGHT_THEME, R.attr.selectableItemBackground);
         tile.setBackgroundDrawable(background);
         return tile;
+    }
+
+    @VisibleForTesting
+    RoundedBitmapDrawable getExploreSitesIconForTesting() {
+        return mExploreSitesIcon != null ? mExploreSitesIcon.get() : null;
     }
 }
