@@ -35,6 +35,7 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/public/v8_platform.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_loader_impl.h"
 #include "pdf/draw_utils/coordinates.h"
 #include "pdf/draw_utils/shadow.h"
@@ -247,12 +248,20 @@ bool IsV8Initialized() {
 }
 
 void SetUpV8() {
+#if !BUILDFLAG(ENABLE_PDF_UNSEASONED)
+  // TODO(crbug.com/1111024): V8 flags for the Unseasoned Viewer need to be
+  // set up as soon as the renderer process is created in the constructor of
+  // `content::RenderProcessImpl`.
   const char* recommended = FPDF_GetRecommendedV8Flags();
   v8::V8::SetFlagsFromString(recommended, strlen(recommended));
+
+  // The isolate holder is already initialized in the renderer process.
   gin::IsolateHolder::Initialize(
       gin::IsolateHolder::kNonStrictMode,
       static_cast<v8::ArrayBuffer::Allocator*>(
           FPDF_GetArrayBufferAllocatorSharedInstance()));
+#endif
+
   DCHECK(!g_isolate_holder);
   g_isolate_holder = new gin::IsolateHolder(
       base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kSingleThread,
@@ -264,6 +273,8 @@ void SetUpV8() {
 }
 
 void TearDownV8() {
+  // TODO(crbug.com/1056170): How should cppgc be properly shutdown when it is
+  // used in other parts of the renderer process?
 #if defined(PDF_ENABLE_XFA)
   gin::MaybeShutdownCppgc();
 #endif
