@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
@@ -265,6 +266,23 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     horizontal_shaper.Shape(&math, target_size);
     vertical_shaper.Shape(&math, target_size);
   }
+}
+
+// See createStretchy() in
+// third_party/blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py
+TEST_F(StretchyOperatorShaperTest, NonBMPCodePoint) {
+  Font math = CreateMathFont("operators.woff");
+
+  StretchyOperatorShaper horizontal_shaper(
+      kArabicMathematicalOperatorHahWithDal,
+      OpenTypeMathStretchData::StretchAxis::Horizontal);
+
+  float target_size = 10000;
+  StretchyOperatorShaper::Metrics metrics;
+  horizontal_shaper.Shape(&math, target_size, &metrics);
+  EXPECT_NEAR(metrics.advance, target_size, kSizeError);
+  EXPECT_NEAR(metrics.ascent, 1000, kSizeError);
+  EXPECT_FLOAT_EQ(metrics.descent, 0);
 }
 
 // See third_party/blink/web_tests/external/wpt/mathml/tools/largeop.py

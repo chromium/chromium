@@ -27,7 +27,7 @@ class PLATFORM_EXPORT StretchyOperatorShaper final {
   DISALLOW_NEW();
 
  public:
-  StretchyOperatorShaper(UChar stretchy_character,
+  StretchyOperatorShaper(UChar32 stretchy_character,
                          OpenTypeMathStretchData::StretchAxis stretch_axis)
       : stretchy_character_(stretchy_character), stretch_axis_(stretch_axis) {}
 
@@ -48,7 +48,7 @@ class PLATFORM_EXPORT StretchyOperatorShaper final {
   ~StretchyOperatorShaper() = default;
 
  private:
-  const UChar stretchy_character_;
+  const UChar32 stretchy_character_;
   const OpenTypeMathStretchData::StretchAxis stretch_axis_;
 };
 
