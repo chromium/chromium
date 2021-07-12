@@ -2059,6 +2059,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3192947282887913208">Audio fayllar</translation>
 <translation id="3197453258332670132">Oʻng klik yoki biroz bosib turilsa, belgilangan matn uchun aloqador axborot chiqariladi</translation>
 <translation id="3199127022143353223">Serverlar</translation>
+<translation id="3200061262156232574">Xarid qutingizda</translation>
 <translation id="3201422919974259695">Mavjud USB qurilmalar bu yerda chiqadi.</translation>
 <translation id="3202131003361292969">Fayl yo‘lagi</translation>
 <translation id="3202173864863109533">Bu ichki oyna ovozi o‘chirib qo‘yilgan</translation>
@@ -2991,6 +2992,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="42126664696688958">Eksport</translation>
 <translation id="42137655013211669">Server bu manbaga kirishga ruxsat bermagan.</translation>
 <translation id="4217571870635786043">Ovoz bilan yozish</translation>
+<translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Sozlashda xatolik yuz berdi.</translation>
 <translation id="4222772810963087151">Nashr axboroti</translation>
 <translation id="4225020013797061859">“<ph name="ACTION" />” amali uchun belgilanadigan kalit yoki tugmani bosing</translation>
@@ -4284,6 +4286,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5677503058916217575">Sahifa tili:</translation>
 <translation id="5677928146339483299">Bloklangan</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />’ga o‘qish va yozish uchun ruxsat berildi.</translation>
+<translation id="5678821117681811450"><ph name="WEB_DRIVE" /> omboriga yuborilmoqda</translation>
 <translation id="5678955352098267522">Ma’lumotlarni <ph name="WEBSITE_1" /> saytida ko‘rish</translation>
 <translation id="5680050361008726776"><ph name="ESIM_PROFILE_NAME" /> olib tashlansinmi?</translation>
 <translation id="5683806393796685434">Aktivatsiya kodini kiriting</translation>
@@ -4743,6 +4746,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6207200176136643843">Standart masshtab</translation>
 <translation id="6207937957461833379">Mamlakat / hudud</translation>
 <translation id="6208521041562685716">Mobil tarmoq faollashtirilmoqda</translation>
+<translation id="6208725777148613371"><ph name="WEB_DRIVE" /> omboriga saqlanmadi, sababi: <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Komponent yangilanmoqda</translation>
 <translation id="6209908325007204267">Bu qurilmada Chrome korporativ litsenziyasi bor, lekin qurilmadagi foydalanuvchi nomi korporativ hisobga tegishli emas. Boshqa qurilma orqali g.co/ChromeEnterpriseAccount sahifasidan korporativ hisob oching.</translation>
 <translation id="6212039847102026977">Qo‘shimcha tarmoq parametrlari</translation>
@@ -5739,6 +5743,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7326004502692201767">Bu <ph name="DEVICE_TYPE" /> qurilmasini farzand uchun sozlang</translation>
 <translation id="7326025035243649350">Chrome OS tizimidagi ichki oʻrnatilgan ekrandan oʻqish vositasi – ChromeVox faollashtirilsinmi?</translation>
 <translation id="7327989755579928735">ADB tuzatish vositasi <ph name="MANAGER" /> tomonidan faolsizlantirildi. <ph name="DEVICE_TYPE" /> qurilmasini qayta ishga tushirsangiz, tashqaridan yuklab olingan ilovalarga kira olmaysiz.</translation>
+<translation id="7328119182036084494"><ph name="WEB_DRIVE" /> omboriga saqlandi</translation>
 <translation id="7328867076235380839">Xato kombinatsiya</translation>
 <translation id="7329154610228416156">Kirish amalga oshmadi, chunki u xavfli URL manzildan foydalanish uchun moslangan (<ph name="BLOCKED_URL" />). Administrator bilan bog‘laning.</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
@@ -6626,6 +6631,7 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="8235418492073272647">Sahifa <ph name="DEVICE_NAME" /> qurilmasidan ulashilgan</translation>
 <translation id="8236911020904880539">chiqish</translation>
 <translation id="8236917170563564587">Oʻrniga bu varaqni ulashish</translation>
+<translation id="8237471930911823556">Brauzer yangi varaqlari <ph name="APP_NAME" /> ilovasida ochiladi, tegishli havolalar ham brauzerda ochiladi.</translation>
 <translation id="8237647586961940482">Toʻq pushti va qizil</translation>
 <translation id="8239032431519548577">Korporativ domenda qayd qilindi</translation>
 <translation id="8239932336306009582">Bildirishnomalar yuborishga ruxsat berilmagan</translation>
@@ -7162,6 +7168,7 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="8835786707922974220">Saqlangan parollaringizni doim ocha olishingizni tekshiring</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> maʼlumotlaringizni zaxiralash va bu <ph name="DEVICE_TYPE" /> qurilmasini 1 hafta ichida qaytarishingizni talab qilmoqda. <ph name="LINK_BEGIN" />Tafsilotlar<ph name="LINK_END" /></translation>
 <translation id="8836782447513334597">davom etish</translation>
+<translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Shaffoflik</translation>
 <translation id="8838770651474809439">Gamburger</translation>
 <translation id="883911313571074303">Rasmni izohlash</translation>

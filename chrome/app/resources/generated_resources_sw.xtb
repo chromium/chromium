@@ -2068,6 +2068,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3192947282887913208">Faili za Sauti</translation>
 <translation id="3197453258332670132">Ukibofya kulia au ukibonyeza kwa muda mrefu, unaweza kuonyesha maelezo yanayohusiana na maandishi uliyoyachagua</translation>
 <translation id="3199127022143353223">Seva</translation>
+<translation id="3200061262156232574">Katika kikapu chako cha ununuzi</translation>
 <translation id="3201422919974259695">Vifaa vya USB vinavyopatikana vitaonekana hapa.</translation>
 <translation id="3202131003361292969">Njia</translation>
 <translation id="3202173864863109533">Sauti ya kichupo hiki inazimwa.</translation>
@@ -2998,6 +2999,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="42126664696688958">Hamisha</translation>
 <translation id="42137655013211669">Idhini ya kufikia rasilimali hii ilizuiwa na seva.</translation>
 <translation id="4217571870635786043">Kuandika kwa kutamka</translation>
+<translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Hitilafu imetokea wakati wa kuwasha mipangilio.</translation>
 <translation id="4222772810963087151">Maelezo ya Muundo</translation>
 <translation id="4225020013797061859">Bonyeza swichi au kitufe ili ukabidhi kitendo cha "<ph name="ACTION" />"</translation>
@@ -4291,6 +4293,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5677503058916217575">Lugha ya ukurasa:</translation>
 <translation id="5677928146339483299">Kumezuiwa</translation>
 <translation id="5678550637669481956">Idhini ya kufikia kusoma na kuandika kwenye <ph name="VOLUME_NAME" /> imeruhusiwa.</translation>
+<translation id="5678821117681811450">Inatumwa kwa <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Soma data yako kwenye <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Ungependa kuondoa "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5683806393796685434">Tafadhali weka msimbo wako wa kuanza kutumia</translation>
@@ -4750,6 +4753,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6207200176136643843">Rejesha kiwango cha kukuza kuwa chaguomsingi</translation>
 <translation id="6207937957461833379">Nchi/Eneo</translation>
 <translation id="6208521041562685716">Data ya mtandao wa simu inawashwa</translation>
+<translation id="6208725777148613371">Imeshindwa kuhifadhi kwenye <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Inasasisha vipengele</translation>
 <translation id="6209908325007204267">Kifaa chako kina Chrome Enterprise Upgrade, lakini jina lako la mtumiaji halijahusishwa na akaunti ya biashara. Tafadhali fungua akaunti ya biashara kwa kutembelea g.co/ChromeEnterpriseAccount kwenye kifaa kingine.</translation>
 <translation id="6212039847102026977">Onyesha sifa za kina za mtandao</translation>
@@ -5745,6 +5749,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7326004502692201767">Weka mipangilio kwenye <ph name="DEVICE_TYPE" /> hii kwa ajili ya mtoto</translation>
 <translation id="7326025035243649350">Je, ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa cha Mfumo wa Uendeshaji wa Chrome?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> imezima utatuzi wa ADB. Ukizima kisha uwashe <ph name="DEVICE_TYPE" /> yako, hutaweza kupakia programu kutoka kifaa kingine.</translation>
+<translation id="7328119182036084494">Imehifadhiwa kwenye <ph name="WEB_DRIVE" /></translation>
 <translation id="7328867076235380839">Mkusanyiko si sahihi</translation>
 <translation id="7329154610228416156">Haikufaulu kuingia katika akaunti kwa sababu ilisanidiwa ili itumie URL isiyo salama (<ph name="BLOCKED_URL" />). Tafadhali wasiliana na msimamizi wako.</translation>
 <translation id="7332053360324989309">Mfanyakazi Maalum: <ph name="SCRIPT_URL" /></translation>
@@ -6636,6 +6641,7 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi</translation>
 <translation id="8235418492073272647">Ukurasa umeshirikiwa kutoka <ph name="DEVICE_NAME" /></translation>
 <translation id="8236911020904880539">ufunge</translation>
 <translation id="8236917170563564587">Shiriki kichupo hiki badala yake</translation>
+<translation id="8237471930911823556"><ph name="APP_NAME" /> imewekewa mipangilio ya kufunguka katika kichupo kipya cha kivinjari, viungo vinavyoweza kutumika pia vitafunguka katika kivinjari hicho.</translation>
 <translation id="8237647586961940482">Nyekundu na waridi iliyokolea</translation>
 <translation id="8239032431519548577">Usajili wa biashara umekamilika</translation>
 <translation id="8239932336306009582">Zisizoruhusiwa kutuma arifa</translation>
@@ -7172,6 +7178,7 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi</translation>
 <translation id="8835786707922974220">Hakikisha kwamba unaweza kufikia manenosiri uliyoyahifadhi kila wakati</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii ndani ya wiki moja. <ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" /></translation>
 <translation id="8836782447513334597">uendelee</translation>
+<translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Isiyopenyeza nuru</translation>
 <translation id="8838770651474809439">Hambaga</translation>
 <translation id="883911313571074303">Eleza kuhusu picha</translation>

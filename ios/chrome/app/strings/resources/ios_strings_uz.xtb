@@ -236,6 +236,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="3371831930909698441">Tarjima mavjud. Parametrlar ekranning quyi qismiga yaqinroq joyda</translation>
 <translation id="3393920035788932672">Qalqib chiquvchi oynalarga ruxsat</translation>
 <translation id="3399930248910934354">Chrome sozlamalarini oching</translation>
+<translation id="3404744938087714423">Hisobdan chiqsangiz, sinxronizatsiya oʻchiriladi.</translation>
 <translation id="3425644765244388016">Karta nomi</translation>
 <translation id="3433057996795775706">Bu parol olib tashlangani bilan <ph name="WEBSITE" /> hisobingiz oʻchib ketmaydi. Boshqalardan himoyalash maqsadida <ph name="WEBSITE" /> hisobingiz parolini almashtiring.</translation>
 <translation id="3443810440409579745">Varaq qabul qilindi.</translation>
@@ -268,6 +269,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="3607167657931203000">Avto-to‘ldirish ma’l-ri</translation>
 <translation id="3609785682760573515">Sinxronlanmoqda...</translation>
 <translation id="3638472932233958418">Oldindan yuklash</translation>
+<translation id="3648013730801605241">Google hisobingizga kirganingizda <ph name="BEGIN_LINK" />Qidiruv tarixi<ph name="END_LINK" /> va <ph name="BEGIN_LINK" />boshqa shakldagi harakatlaringiz<ph name="END_LINK" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.</translation>
 <translation id="3661160521073045932">Profil konfiguratsiyasi mavjud</translation>
 <translation id="3670030362669914947">Raqam</translation>
 <translation id="3691593122358196899">Xatcho‘p “<ph name="FOLDER_TITLE" />” jildiga saqlandi</translation>
@@ -647,6 +649,10 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="734758817008927353">Kartalarni saqlash parametrlari</translation>
 <translation id="7348502496356775519">Bukmark</translation>
 <translation id="7353432112255316844">Bu siz ekaningizni isbotlang</translation>
+<translation id="7376492662175718683">Google hisobingizdan chiqmaysiz. Google hisobingizga kirganingizda <ph name="BEGIN_LINK" />boshqa shakldagi harakatlaringiz<ph name="END_LINK" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.
+
+        
+Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi koʻrsatmalarni oching.</translation>
 <translation id="7383797227493018512">Mutolaa ro‘yxati</translation>
 <translation id="7398893703713203428">Havola yaratish</translation>
 <translation id="739941347996872055">Avvalgi varaq</translation>
@@ -789,6 +795,10 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="8840513115188359703">Google hisobingizdan chiqmaysiz.</translation>
+<translation id="8851300969441660830">Google hisobingizdan chiqmaysiz. Google hisobingizga kirganingizda <ph name="BEGIN_LINK" />boshqa shakldagi harakatlaringiz<ph name="END_LINK" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.
+
+
+Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsatmalarini oching.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ta varaq}other{{count} ta varaq}}</translation>
 <translation id="8870413625673593573">Yaqinda yopilganlar</translation>
 <translation id="8876882697946675716">Qurilmalaringizni sinxronlab boring</translation>

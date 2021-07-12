@@ -236,6 +236,7 @@
 <translation id="3371831930909698441">පරිවර්තනය ලැබේ. තිරයේ පහළට ආසන්නව විකල්ප ලබා ගත හැක.</translation>
 <translation id="3393920035788932672">උත්පතන වලට ඉඩ දෙන ලද</translation>
 <translation id="3399930248910934354">Chrome සැකසීම් විවෘත කරන්න</translation>
+<translation id="3404744938087714423">වැරීම සමමුහුර්ත කිරීම ක්‍රියාවිරහිත කරනු ඇත.</translation>
 <translation id="3425644765244388016">කාඩ්පත් අපනාමය</translation>
 <translation id="3433057996795775706">මෙම මුරපදය මැකීම <ph name="WEBSITE" /> මත ඔබේ ගිණුම මකන්නේ නැත. එය අන් අයගෙන් ආරක්ෂිතව තබා ගැනීමට <ph name="WEBSITE" /> හි ඔබගේ මුරපදය වෙනස් කරන්න.</translation>
 <translation id="3443810440409579745">ලැබූ පටිත්ත.</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">ස්වයං පිරවුම් දත්ත</translation>
 <translation id="3609785682760573515">සමමු වේ...</translation>
 <translation id="3638472932233958418">පෙර පූරණ වෙබ් පිටු</translation>
+<translation id="3648013730801605241"><ph name="BEGIN_LINK" />සෙවීම් ඉතිහාසය<ph name="END_LINK" /> සහ <ph name="BEGIN_LINK" />ක්‍රියාකාරකම්වල වෙනත් ආකාර<ph name="END_LINK" /> ඔබ පුරන විට ඔබගේ Google ගිණුමේ සුරැකිය හැකිය. ඔබට ඒවා ඕනෑම අවස්ථාවක මැකිය හැකිය.</translation>
 <translation id="3661160521073045932">වින්‍යාසකරණ පැතිකඩක් ලබා ගත හැකිය</translation>
 <translation id="3670030362669914947">අංකය</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> වෙත පිටුසන් යොදන ලදී</translation>
@@ -647,6 +649,10 @@
 <translation id="734758817008927353">කාඩ්පත සුරැකීමට විකල්ප</translation>
 <translation id="7348502496356775519">පිටුසන</translation>
 <translation id="7353432112255316844">ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
+<translation id="7376492662175718683">ඔබව ඔබගේ Google ගිණුමෙන් නොවරනු ඇත. <ph name="BEGIN_LINK" />ක්‍රියාකාරකම්වල වෙනත් ආකාර<ph name="END_LINK" /> ඔබ පුරන විට ඔබගේ Google ගිණුමේ සුරැකිය හැකිය. ඔබට ඒවා ඕනෑම අවස්ථාවක මැකිය හැකිය.
+
+        
+ඔබගේ සෙවීම් යන්ත්‍රය වන්නේ <ph name="DSE_NAME" />. අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔවුන්ගේ උපදෙස් බලන්න.</translation>
 <translation id="7383797227493018512">කියවීම් ලැයිස්තුව</translation>
 <translation id="7398893703713203428">සබැඳියක් තනන්න</translation>
 <translation id="739941347996872055">පෙර ටැබය</translation>
@@ -789,6 +795,10 @@
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">පිටුසන්</translation>
 <translation id="8840513115188359703">ඔබව ඔබගේ Google ගිණුමෙන් වරනය නොවනු ඇත</translation>
+<translation id="8851300969441660830">ඔබව ඔබගේ Google ගිණුමෙන් නොවරනු ඇත. <ph name="BEGIN_LINK" />ක්‍රියාකාරකම්වල වෙනත් ආකාර<ph name="END_LINK" /> ඔබ පුරන විට ඔබගේ Google ගිණුමේ සුරැකිය හැකිය. ඔබට ඒවා ඕනෑම අවස්ථාවක මැකිය හැකිය.
+
+
+අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔබගේ සෙවීම් යන්ත්‍රයේ උපදෙස් බලන්න.</translation>
 <translation id="8868471676553493380">{count,plural, =1{ටැබ {count}}one{ටැබ {count}}other{ටැබ {count}}}</translation>
 <translation id="8870413625673593573">මෑතකදී වසන ලද</translation>
 <translation id="8876882697946675716">ඔබගේ උපාංග සමමුහුර්තව තබා ගන්න</translation>

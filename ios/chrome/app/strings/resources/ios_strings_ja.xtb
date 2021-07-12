@@ -236,6 +236,7 @@
 <translation id="3371831930909698441">翻訳が利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="3393920035788932672">ポップアップ許可済み</translation>
 <translation id="3399930248910934354">Chrome の設定を開く</translation>
+<translation id="3404744938087714423">ログアウトすると、同期がオフになります。</translation>
 <translation id="3425644765244388016">カードのニックネーム</translation>
 <translation id="3433057996795775706">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。他のサイトに被害が及ばないように、<ph name="WEBSITE" /> でパスワードを変更してください。</translation>
 <translation id="3443810440409579745">タブが共有されました。</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">自動入力のデータ</translation>
 <translation id="3609785682760573515">同期しています...</translation>
 <translation id="3638472932233958418">ウェブページのプリロード</translation>
+<translation id="3648013730801605241">ログイン中は Google アカウントに<ph name="BEGIN_LINK" />検索履歴<ph name="END_LINK" />や<ph name="BEGIN_LINK" />その他のアクティビティ<ph name="END_LINK" />が保存される可能性があります。保存されたデータはいつでも削除できます。</translation>
 <translation id="3661160521073045932">設定プロファイルを使用できます</translation>
 <translation id="3670030362669914947">番号</translation>
 <translation id="3691593122358196899">「<ph name="FOLDER_TITLE" />」にブックマークしました</translation>
@@ -647,6 +649,10 @@
 <translation id="734758817008927353">カードの保存オプション</translation>
 <translation id="7348502496356775519">ブックマーク</translation>
 <translation id="7353432112255316844">本人確認</translation>
+<translation id="7376492662175718683">Google アカウントへのログイン状態は維持されます。ログイン中は Google アカウントに<ph name="BEGIN_LINK" />その他のアクティビティ<ph name="END_LINK" />が保存される可能性があります。保存されたデータはいつでも削除できます。
+
+        
+検索エンジンは <ph name="DSE_NAME" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="7383797227493018512">リーディング リスト</translation>
 <translation id="7398893703713203428">リンクを作成</translation>
 <translation id="739941347996872055">前のタブ</translation>
@@ -789,6 +795,10 @@
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8840513115188359703">Google アカウントへのログイン状態は維持されます。</translation>
+<translation id="8851300969441660830">Google アカウントへのログイン状態は維持されます。ログイン中は Google アカウントに<ph name="BEGIN_LINK" />その他のアクティビティ<ph name="END_LINK" />が保存される可能性があります。保存されたデータはいつでも削除できます。
+
+
+検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} 個のタブ}other{{count} 個のタブ}}</translation>
 <translation id="8870413625673593573">最近閉じたタブ</translation>
 <translation id="8876882697946675716">デバイスを同期したままにする</translation>

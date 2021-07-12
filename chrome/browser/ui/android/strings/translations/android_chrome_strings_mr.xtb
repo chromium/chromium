@@ -488,6 +488,7 @@
 <translation id="4181841719683918333">भाषा</translation>
 <translation id="4183868528246477015"><ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> Google लेन्स वापरून शोधा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
+<translation id="4196597275619698563">कार्ड तयार करा</translation>
 <translation id="4198423547019359126">कोणतीही डाउनलोड स्थाने उपलब्ध नाहीत</translation>
 <translation id="4209895695669353772">Google ने सुचवलेला पर्सनलाइझ केलेला आशय मिळवण्यासाठी, सिंक सुरू करा</translation>
 <translation id="4225895483398857530">टूलबार शॉर्टकट</translation>
@@ -1047,6 +1048,7 @@
 <translation id="7704317875155739195">ऑटोकंप्लीट शोध आणि URL</translation>
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
 <translation id="7725024127233776428">तुम्ही बुकमार्क केलेली पेज येथे दिसतील</translation>
+<translation id="7731260005404856143">तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK1" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK1" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> वरून शेअर केलेला मजकूर</translation>
 <translation id="7761849928583394409">तारीख आणि वेळ निवडा</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
@@ -1237,6 +1239,7 @@
 <translation id="8854223127042600341">तुमच्या ऑफलाइन फाइल पहा</translation>
 <translation id="8856607253650333758">वर्णने मिळवा</translation>
 <translation id="8873817150012960745">सुरू करण्यासाठी येथे टॅप करा</translation>
+<translation id="8881973373982641723">सर्च बॉक्समधील इतिहासाच्या समावेशासह, इतिहास साफ करते.</translation>
 <translation id="889338405075704026">Chrome सेटिंग्जवर जा</translation>
 <translation id="8898822736010347272">नवीन धोके शोधण्यात आणि वेबवरील प्रत्येकाचे संरक्षण करण्यात मदत करण्यासाठी, तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि काही पेज आशय Google ला पाठवते.</translation>
 <translation id="8909135823018751308">शेअर करा...</translation>
@@ -1290,6 +1293,7 @@
 <translation id="9209888181064652401">कॉल करू शकत नाही</translation>
 <translation id="9212845824145208577">तळाशी जाऊ शकत नाही. पेजच्या आणखी तळाशी जाऊन सुरुवात करून पहा.</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="923957533152125119">तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK1" />शोध इतिहास<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK2" /> सेव्ह केली जाऊ शकते. तुम्ही ते कधीही हटवू शकता.</translation>
 <translation id="926205370408745186">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाका</translation>
 <translation id="927968626442779827">Google Chrome वर लाइट मोड वापरा</translation>
 <translation id="932327136139879170">होम</translation>

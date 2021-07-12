@@ -2071,6 +2071,7 @@
 <translation id="3192947282887913208">音效檔案</translation>
 <translation id="3197453258332670132">按一下右鍵或長按畫面，即可查看所選文字的相關資料</translation>
 <translation id="3199127022143353223">伺服器</translation>
+<translation id="3200061262156232574">購物車內商品</translation>
 <translation id="3201422919974259695">可用的 USB 裝置將會在這裡顯示。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">此分頁的音效已設為靜音。</translation>
@@ -3003,6 +3004,7 @@
 <translation id="42126664696688958">匯出</translation>
 <translation id="42137655013211669">伺服器已禁止存取此資源。</translation>
 <translation id="4217571870635786043">語音輸入</translation>
+<translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">啟用時發生錯誤。</translation>
 <translation id="4222772810963087151">版本詳細資料</translation>
 <translation id="4225020013797061859">請按下要為「<ph name="ACTION" />」動作指派的按鈕裝置或按鍵</translation>
@@ -4296,6 +4298,7 @@
 <translation id="5677503058916217575">網頁語言：</translation>
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="5678550637669481956">已授與「<ph name="VOLUME_NAME" />」的讀取和寫入權限。</translation>
+<translation id="5678821117681811450">正在傳送至「<ph name="WEB_DRIVE" />」</translation>
 <translation id="5678955352098267522">讀取您在 <ph name="WEBSITE_1" /> 上的資料</translation>
 <translation id="5680050361008726776">要移除「<ph name="ESIM_PROFILE_NAME" />」嗎？</translation>
 <translation id="5683806393796685434">請輸入您的確認碼</translation>
@@ -4755,6 +4758,7 @@
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
 <translation id="6207937957461833379">國家/地區</translation>
 <translation id="6208521041562685716">正在啟用流動數據</translation>
+<translation id="6208725777148613371">無法儲存至「<ph name="WEB_DRIVE" />」- <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">正在更新組件</translation>
 <translation id="6209908325007204267">您的裝置包含一項 Chrome Enterprise 升級，但您的使用者名稱尚未連結企業賬戶。請透過另一部裝置前往 g.co/ChromeEnterpriseAccount 建立企業帳戶。</translation>
 <translation id="6212039847102026977">顯示進階網絡屬性</translation>
@@ -5750,6 +5754,7 @@
 <translation id="7326004502692201767">為子女設定此 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7326025035243649350">要啟用 Chrome 作業系統內置的螢幕閱讀器 ChromeVox 嗎？</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，您將無法載入應用程式。</translation>
+<translation id="7328119182036084494">已儲存至「<ph name="WEB_DRIVE" />」</translation>
 <translation id="7328867076235380839">無效的組合</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>
 <translation id="7332053360324989309">專用工作程式：<ph name="SCRIPT_URL" /></translation>
@@ -6639,6 +6644,7 @@
 <translation id="8235418492073272647">透過「<ph name="DEVICE_NAME" />」分享的網頁</translation>
 <translation id="8236911020904880539">離開</translation>
 <translation id="8236917170563564587">改為分享此分頁</translation>
+<translation id="8237471930911823556">「<ph name="APP_NAME" />」已設定為在新瀏覽器分頁中開啟，支援的連結亦會在瀏覽器中開啟。</translation>
 <translation id="8237647586961940482">深粉紅色和紅色</translation>
 <translation id="8239032431519548577">企業註冊完成</translation>
 <translation id="8239932336306009582">不允許傳送通知</translation>
@@ -7175,6 +7181,7 @@
 <translation id="8835786707922974220">請確保您可隨時存取已儲存的密碼</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> 要求您備份資料，並在 1 星期內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" /></translation>
 <translation id="8836782447513334597">繼續</translation>
+<translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡包</translation>
 <translation id="883911313571074303">為圖片加入註釋</translation>

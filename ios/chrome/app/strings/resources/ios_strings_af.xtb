@@ -236,6 +236,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="3371831930909698441">Vertaal is beskikbaar. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="3393920035788932672">Opspringers word toegelaat</translation>
 <translation id="3399930248910934354">Maak Chrome-instellings oop</translation>
+<translation id="3404744938087714423">Afmelding skakel sinkronisering af.</translation>
 <translation id="3425644765244388016">Kaartbynaam</translation>
 <translation id="3433057996795775706">As hierdie wagwoord uitgevee word, sal dit nie jou rekening op <ph name="WEBSITE" /> uitvee nie. Verander jou wagwoord op <ph name="WEBSITE" /> om dit veilig van ander mense te hou.</translation>
 <translation id="3443810440409579745">Oortjie is ontvang.</translation>
@@ -268,6 +269,7 @@ Volg die stappe hieronder:</translation>
 <translation id="3607167657931203000">Outovuldata</translation>
 <translation id="3609785682760573515">Sinkroniseer tans …</translation>
 <translation id="3638472932233958418">Laai webbladsye vooraf</translation>
+<translation id="3648013730801605241"><ph name="BEGIN_LINK" />Soekgeskiedenis<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />ander soorte aktiwiteit<ph name="END_LINK" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan dit enige tyd uitvee.</translation>
 <translation id="3661160521073045932">Opstellingprofiel is beskikbaar</translation>
 <translation id="3670030362669914947">Nommer</translation>
 <translation id="3691593122358196899">Geboekmerk in <ph name="FOLDER_TITLE" /></translation>
@@ -647,6 +649,10 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="734758817008927353">Opsies om 'n kaart te stoor</translation>
 <translation id="7348502496356775519">Boekmerk</translation>
 <translation id="7353432112255316844">Verifieer dis jy</translation>
+<translation id="7376492662175718683">Jy sal nie uit jou Google-rekening afgemeld word nie. <ph name="BEGIN_LINK" />Ander soorte aktiwiteit<ph name="END_LINK" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan dit enige tyd uitvee.
+
+        
+Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="7383797227493018512">Leeslys</translation>
 <translation id="7398893703713203428">Skep skakel</translation>
 <translation id="739941347996872055">Vorige oortjie</translation>
@@ -789,6 +795,10 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="8840513115188359703">Jy sal nie uit jou Google-rekening afgemeld word nie.</translation>
+<translation id="8851300969441660830">Jy sal nie uit jou Google-rekening afgemeld word nie. <ph name="BEGIN_LINK" />Ander soorte aktiwiteit<ph name="END_LINK" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan dit enige tyd uitvee.
+
+
+Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} oortjie}other{{count} oortjies}}</translation>
 <translation id="8870413625673593573">Onlangs toegemaak</translation>
 <translation id="8876882697946675716">Hou jou toestelle gesinkroniseer</translation>

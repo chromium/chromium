@@ -4390,6 +4390,7 @@
 <translation id="5794700615121138172">Linux ने शेअर केलेले फोल्डर</translation>
 <translation id="5794786537412027208">सर्व Chrome Apps मधून बाहेर पडा</translation>
 <translation id="5797070761912323120">शोध, जाहिरात आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google कदाचित तुमच्या इतिहासाचा वापर करू शकते</translation>
+<translation id="5797521893972859201">सर्च बॉक्समधील इतिहासाच्या समावेशासह, इतिहास साफ करते</translation>
 <translation id="5798079537501238810">साइट पेमेंट हँडलर इंस्टॉल करू शकतात</translation>
 <translation id="579907812742603813">संरक्षित आशय</translation>
 <translation id="579915268381781820">तुमची सिक्युरिटी की काढून टाकली होती.</translation>
@@ -4473,6 +4474,7 @@
 <translation id="5900302528761731119">Google प्रोफाइल फोटो</translation>
 <translation id="590036993063074298">मिररिंगच्या गुणवत्तेचे तपशील</translation>
 <translation id="5901069264981746702">तुमचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला आहे आणि तो तुमच्या <ph name="DEVICE_TYPE" /> मध्येच राहील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="5901089233978050985">कॅप्चर करणाऱ्या टॅबवर स्विच करा</translation>
 <translation id="5901494423252125310">प्रिंटरचे दार उघडे आहे</translation>
 <translation id="5901630391730855834">पिवळा</translation>
 <translation id="5904614460720589786">कॉन्फिगरेशनच्या समस्येमुळे <ph name="APP_NAME" /> सेट करता आले नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
@@ -4746,6 +4748,7 @@
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" एक्स्टेंशनने तुमच्या प्रॉक्सी सेटिंग्जचे नियंत्रण घेतले आहे, याचा अर्थ हे तुम्ही ऑनलाइन करता ती कोणतीही गोष्ट बदलू शकते, खंडित करू शकते किंवा चोरून ऐकू शकते. हा बदल का झाला, याबद्दल तुम्ही खात्री नसल्यास, तुम्हाला कदाचित तो नको आहे.</translation>
 <translation id="6198102561359457428">साइन आउट करा नंतर पुन्हा साइन इन करा...</translation>
 <translation id="6198252989419008588">पिन बदला</translation>
+<translation id="6200047250927636406">फाइल काढून टाका</translation>
 <translation id="6202304368170870640">तुमच्या डिव्हाइसमध्ये साइन इन करण्यासाठी किंवा ते अनलॉक करण्यासाठी तुम्ही तुमचा पिन वापरू शकता.</translation>
 <translation id="6206311232642889873">इमेज कॉ&amp;पी करा</translation>
 <translation id="6207200176136643843">झूम स्तर डीफॉल्टवर रीसेट करा</translation>
@@ -5313,6 +5316,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6833479554815567477">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामधून काढून टाकला आहे</translation>
 <translation id="683373380308365518">स्मार्ट आणि सुरक्षित ब्राउझरवर बदला</translation>
+<translation id="6834652994408928492">सूर्यास्ताच्या वेळी गडद मोड आपोआप सुरू होईल</translation>
 <translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> फाइल उघडा</translation>
 <translation id="6835762382653651563">कृपया तुमचे <ph name="DEVICE_TYPE" /> अपडेट करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
 <translation id="6838034009068684089">साइटला तुमच्या स्क्रीनवर विंडो उघडायच्या आणि ठेवायच्या असतील तेव्हा विचारा (शिफारस केलेले)</translation>
@@ -6026,6 +6030,7 @@
 <translation id="7622114377921274169">चार्ज होत आहे.</translation>
 <translation id="7622768823216805500">आणखी सोपे चेकआउट यासारख्या खरेदी वैशिष्ट्यांसाठी साइट सामान्यपणे पेमेंट हँडलर इंस्टॉल करतात</translation>
 <translation id="7622903810087708234">पासवर्डचे तपशील</translation>
+<translation id="7622966771025050155">कॅप्चर केलेल्या टॅबवर स्विच करा</translation>
 <translation id="7624337243375417909">कॅप्सलॉक बंद आहे</translation>
 <translation id="7625568159987162309">परवानग्या आणि साइटवर स्टोअर केलेला डेटा पहा</translation>
 <translation id="7628201176665550262">रिफ्रेश रेट</translation>
@@ -6192,6 +6197,7 @@
 <translation id="7784067724422331729">तुमच्या कॉंप्युटरवरील सुरक्षितता सेटिंग्जने ही फाइल ब्लॉक केली.</translation>
 <translation id="7784796923038949829">साइटचा डेटा रीड करू किंवा बदलू शकत नाही</translation>
 <translation id="778480864305029524">इंस्टंट टेदरिंग वापरण्यासाठी, Google Play सेवा च्या सूचना सुरू करा.</translation>
+<translation id="7785471469930192436">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी तुमच्या शोध इंजीनच्या सूचना पहा</translation>
 <translation id="7786889348652477777">&amp;अ‍ॅप रीलोड करा</translation>
 <translation id="7787308148023287649">दुसऱ्या स्क्रीनवर डिस्प्ले करा</translation>
 <translation id="7788298548579301890">तुमच्या कॉंप्युटरवरील दुसर्‍या प्रोग्रामने एक अ‍ॅप जोडला जो Chrome ची काम करण्‍याची पद्धत कदाचित बदलू शकतो.
@@ -6802,6 +6808,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8438566539970814960">शोध आणि ब्राउझ करणे चांगले करा</translation>
 <translation id="8439506636278576865">या भाषेमध्ये पेज भाषांतरीत करण्यासाठी ऑफर</translation>
 <translation id="8440630305826533614">Linux ॲप्स</translation>
+<translation id="8446225304314102060"><ph name="TAB_ORIGIN" /> टॅबवर स्विच करा</translation>
 <translation id="8446884382197647889">अधिक जाणून घ्या</translation>
 <translation id="8447409163267621480">एकतर Ctrl किंवा Alt समाविष्‍ट करा</translation>
 <translation id="8448729345478502352">तुमच्या स्क्रीनवर आयटम लहान किंवा मोठे करा</translation>
@@ -7464,6 +7471,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9148058034647219655">निर्गमन</translation>
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>
 <translation id="9148963623915467028">ही साइट तुमचे स्थान अ‍ॅक्सेस करू शकते.</translation>
+<translation id="9149529198050266366">सूर्योदयाच्या वेळी गडद मोड आपोआप बंद होईल</translation>
 <translation id="9149866541089851383">संपादन...</translation>
 <translation id="9150045010208374699">तुमचा कॅमेरा वापरा</translation>
 <translation id="9150079578948279438">प्रोफाइल काढून टाकता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा तांत्रिक सपोर्टसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>

@@ -2072,6 +2072,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3192947282887913208">Oudiolêers</translation>
 <translation id="3197453258332670132">Wys verwante inligting vir jou tekskeuse met 'n regsklik of langdruk</translation>
 <translation id="3199127022143353223">Bedieners</translation>
+<translation id="3200061262156232574">In jou inkopiemandjie</translation>
 <translation id="3201422919974259695">Beskikbare USB-toestelle sal hier verskyn.</translation>
 <translation id="3202131003361292969">Pad</translation>
 <translation id="3202173864863109533">Hierdie oortjie se klank word gedemp.</translation>
@@ -3004,6 +3005,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="42126664696688958">Voer uit</translation>
 <translation id="42137655013211669">Toegang tot hierdie hulpbron is deur die bediener verbied.</translation>
 <translation id="4217571870635786043">Diktee</translation>
+<translation id="4219558185499589032">Boks</translation>
 <translation id="4220648711404560261">Kon nie aktiveer nie.</translation>
 <translation id="4222772810963087151">Boubesonderhede</translation>
 <translation id="4225020013797061859">Druk 'n skakelaar of sleutel om "<ph name="ACTION" />" toe te wys</translation>
@@ -4298,6 +4300,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5677503058916217575">Bladsytaal:</translation>
 <translation id="5677928146339483299">Geblokkeer</translation>
 <translation id="5678550637669481956">Lees- en skryftoegang tot <ph name="VOLUME_NAME" /> is toegestaan.</translation>
+<translation id="5678821117681811450">Stuur tans aan <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Lees jou data op <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Verwyder "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5683806393796685434">Voer asseblief jou aktiveringkode in</translation>
@@ -4757,6 +4760,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6207200176136643843">Stel terug na verstek-zoemvlak</translation>
 <translation id="6207937957461833379">Land/Streek</translation>
 <translation id="6208521041562685716">Mobiele data word tans geaktiveer</translation>
+<translation id="6208725777148613371">Kon nie in <ph name="WEB_DRIVE" /> stoor nie – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Komponentopdatering</translation>
 <translation id="6209908325007204267">Jou toestel sluit 'n Chrome Enterprise-opgradering in, maar jou gebruikernaam word nie met 'n ondernemingrekening geassosieer nie. Skep asseblief 'n ondernemingrekening deur g.co/ChromeEnterpriseAccount op 'n sekondêre toestel te besoek.</translation>
 <translation id="6212039847102026977">Wys gevorderde netwerkeienskappe</translation>
@@ -5752,6 +5756,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7326004502692201767">Stel hierdie <ph name="DEVICE_TYPE" /> vir 'n kind op</translation>
 <translation id="7326025035243649350">Wil jy ChromeVox, Chrome-bedryfstelsel se ingeboude skermleser, aktiveer?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer. Jy sal nie programme direk kan laai nadat jy jou <ph name="DEVICE_TYPE" /> herbegin het nie.</translation>
+<translation id="7328119182036084494">Gestoor in <ph name="WEB_DRIVE" /></translation>
 <translation id="7328867076235380839">Ongeldige kombinasie</translation>
 <translation id="7329154610228416156">Kon nie aanmeld nie omdat dit opgestel is om 'n onveilige URL (<ph name="BLOCKED_URL" />) te gebruik. Kontak jou administrateur.</translation>
 <translation id="7332053360324989309">Toegewyde werker: <ph name="SCRIPT_URL" /></translation>
@@ -6640,6 +6645,7 @@ Druk 'n toegewese skakelaar om toewysing te verwyder</translation>
 <translation id="8235418492073272647">Bladsy vanaf <ph name="DEVICE_NAME" /> gedeel</translation>
 <translation id="8236911020904880539">gaan uit</translation>
 <translation id="8236917170563564587">Deel eerder hierdie oortjie</translation>
+<translation id="8237471930911823556"><ph name="APP_NAME" /> is gestel om in 'n nuwe blaaieroortjie oop te maak; gesteunde skakels sal ook in die blaaier oopmaak.</translation>
 <translation id="8237647586961940482">Donkerpienk en rooi</translation>
 <translation id="8239032431519548577">Onderneminginskrywing is voltooi</translation>
 <translation id="8239932336306009582">Mag nie kennisgewings stuur nie</translation>
@@ -7176,6 +7182,7 @@ Druk 'n toegewese skakelaar om toewysing te verwyder</translation>
 <translation id="8835786707922974220">Maak seker dat jy altyd toegang tot jou gestoorde wagwoorde het</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> binne 1 week terugstuur. <ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" /></translation>
 <translation id="8836782447513334597">gaan voort</translation>
+<translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Ondeursigtig</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Maak aantekening by prent</translation>

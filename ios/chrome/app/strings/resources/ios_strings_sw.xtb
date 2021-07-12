@@ -236,6 +236,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="3371831930909698441">Huduma ya Tafsiri inapatikana. Chaguo zinapatikana karibu na sehemu ya chini ya skrini.</translation>
 <translation id="3393920035788932672">Ibukizi zimeruhusiwa</translation>
 <translation id="3399930248910934354">Fungua Mipangilio ya Chrome</translation>
+<translation id="3404744938087714423">Hatua ya kuondoka kwenye akaunti huzima kipengele cha kusawazisha.</translation>
 <translation id="3425644765244388016">Jina la Kuwakilisha Kadi</translation>
 <translation id="3433057996795775706">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="WEBSITE" />. Badilisha nenosiri lako kwenye <ph name="WEBSITE" /> ili ulilinde dhidi ya watu wengine.</translation>
 <translation id="3443810440409579745">Umepokea kichupo.</translation>
@@ -268,6 +269,7 @@ Fuata hatua zifuatazo:</translation>
 <translation id="3607167657931203000">Jaza Data Kiotomatiki</translation>
 <translation id="3609785682760573515">Inasawazisha...</translation>
 <translation id="3638472932233958418">Pakia Kurasa za wavuti Mapema</translation>
+<translation id="3648013730801605241">Huenda <ph name="BEGIN_LINK" />historia ya mambo uliyotafuta<ph name="END_LINK" /> na <ph name="BEGIN_LINK" />aina nyingine za shughuli<ph name="END_LINK" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.</translation>
 <translation id="3661160521073045932">Wasifu wa Mipangilio Unapatikana</translation>
 <translation id="3670030362669914947">Nambari</translation>
 <translation id="3691593122358196899">Imetiwa alamisho kwenye <ph name="FOLDER_TITLE" /></translation>
@@ -647,6 +649,10 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="734758817008927353">Chaguo za Kuhifadhi Kadi</translation>
 <translation id="7348502496356775519">Alamisha</translation>
 <translation id="7353432112255316844">Thibitisha Kwamba Ni Wewe</translation>
+<translation id="7376492662175718683">Hutaondolewa katika Akaunti yako ya Google. Huenda <ph name="BEGIN_LINK" />aina nyingine za shughuli<ph name="END_LINK" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.
+
+        
+Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="7383797227493018512">Orodha ya Kusoma</translation>
 <translation id="7398893703713203428">Weka Kiungo</translation>
 <translation id="739941347996872055">Kichupo Kilichotangulia</translation>
@@ -789,6 +795,10 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Alamisho</translation>
 <translation id="8840513115188359703">Hutaondolewa katika Akaunti yako ya Google.</translation>
+<translation id="8851300969441660830">Hutaondolewa katika Akaunti yako ya Google. Huenda <ph name="BEGIN_LINK" />aina nyingine za shughuli<ph name="END_LINK" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.
+
+
+Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="8868471676553493380">{count,plural, =1{Kichupo {count}}other{Vichupo {count}}}</translation>
 <translation id="8870413625673593573">Zilizofungwa Hivi Karibuni</translation>
 <translation id="8876882697946675716">Hakikisha Vifaa Vyako Vinasawazishwa</translation>
