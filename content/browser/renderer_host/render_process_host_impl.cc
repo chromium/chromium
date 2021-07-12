@@ -1691,6 +1691,10 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 const unsigned int RenderProcessHostImpl::kMaxFrameDepthForPriority =
     std::numeric_limits<unsigned int>::max();
 
+// static
+const base::TimeDelta RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout =
+    base::TimeDelta::FromMilliseconds(kKeepAliveHandleFactoryTimeoutInMSec);
+
 RenderProcessHostImpl::RenderProcessHostImpl(
     BrowserContext* browser_context,
     StoragePartitionImpl* storage_partition_impl,
@@ -2339,11 +2343,14 @@ void RenderProcessHostImpl::DelayProcessShutdown(
     tracker->IncrementSiteProcessCount(site_info, GetID());
   }
 
+  // Don't delay shutdown longer than the maximum delay for renderer process,
+  // enforced for security reasons (https://crbug.com/1177674).
   GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RenderProcessHostImpl::CancelProcessShutdownDelay,
                      weak_factory_.GetWeakPtr(), site_info),
-      subframe_shutdown_timeout + unload_handler_timeout);
+      std::min(subframe_shutdown_timeout + unload_handler_timeout,
+               kKeepAliveHandleFactoryTimeout));
 
   time_spent_running_unload_handlers_ = unload_handler_timeout;
 }

@@ -28,6 +28,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_launcher.h"
@@ -177,6 +178,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
  public:
   // Special depth used when there are no PriorityClients.
   static const unsigned int kMaxFrameDepthForPriority;
+
+  // Exposed as a public constant to share with other entities that need to
+  // accommodate frame/process shutdown delays.
+  static constexpr int kKeepAliveHandleFactoryTimeoutInMSec = 30 * 1000;
+  static const base::TimeDelta kKeepAliveHandleFactoryTimeout;
 
   // Create a new RenderProcessHost. The storage partition for the process
   // is retrieved from |browser_context| based on information in

@@ -97,6 +97,8 @@ class CONTENT_EXPORT RenderViewHostImpl
       public IPC::Listener,
       public base::RefCounted<RenderViewHostImpl> {
  public:
+  static constexpr int kUnloadTimeoutInMSec = 500;
+
   // Convenience function, just like RenderViewHost::FromID.
   static RenderViewHostImpl* FromID(int process_id, int routing_id);
 
@@ -347,7 +349,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // Delay to wait on closing the WebContents for a beforeunload/unload handler
   // to fire.
   static constexpr base::TimeDelta kUnloadTimeout =
-      base::TimeDelta::FromMilliseconds(500);
+      base::TimeDelta::FromMilliseconds(kUnloadTimeoutInMSec);
 
   // The RenderWidgetHost.
   const std::unique_ptr<RenderWidgetHostImpl> render_widget_host_;

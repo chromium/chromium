@@ -20,6 +20,7 @@
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "content/browser/can_commit_status.h"
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/isolation_context.h"
@@ -647,7 +648,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Allows tests to modify the delay in cleaning up BrowsingInstanceIds. If the
   // delay is set to zero, cleanup happens immediately.
   void SetBrowsingInstanceCleanupDelayForTesting(int64_t delay_in_seconds) {
-    browsing_instance_cleanup_delay_in_seconds_ = delay_in_seconds;
+    browsing_instance_cleanup_delay_ =
+        base::TimeDelta::FromSeconds(delay_in_seconds);
   }
 
  private:
@@ -1011,7 +1013,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // TODO(wjmaclean): we know the IncrementKeepAliveRefCount API needs
   // improvement, and with it the BrowsingInstance cleanup here can also be
   // improved.
-  int64_t browsing_instance_cleanup_delay_in_seconds_;
+  base::TimeDelta browsing_instance_cleanup_delay_;
 
   DISALLOW_COPY_AND_ASSIGN(ChildProcessSecurityPolicyImpl);
 };

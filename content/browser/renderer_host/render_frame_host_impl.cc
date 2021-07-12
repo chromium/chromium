@@ -373,6 +373,14 @@ class RenderFrameHostOrProxy {
 
 namespace {
 
+constexpr int kSubframeProcessShutdownLongDelayInMSec = 8 * 1000;
+static_assert(kSubframeProcessShutdownLongDelayInMSec +
+                      RenderViewHostImpl::kUnloadTimeoutInMSec <
+                  RenderProcessHostImpl::kKeepAliveHandleFactoryTimeoutInMSec,
+              "The maximum process shutdown delay should not exceed the "
+              "keepalive timeout. This has security implications, see "
+              "https://crbug.com/1177674.");
+
 #if defined(OS_ANDROID)
 const void* const kRenderFrameHostAndroidKey = &kRenderFrameHostAndroidKey;
 #endif  // OS_ANDROID
@@ -941,7 +949,9 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
 
   static constexpr base::TimeDelta kShortDelay =
       base::TimeDelta::FromSeconds(2);
-  static constexpr base::TimeDelta kLongDelay = base::TimeDelta::FromSeconds(8);
+  static constexpr base::TimeDelta kLongDelay =
+      base::TimeDelta::FromMilliseconds(
+          kSubframeProcessShutdownLongDelayInMSec);
   // Added to delay if based on recent performance (i.e., |kHistoryBased| and
   // |kHistoryBasedLong|) to account for small variations in timing.
   static constexpr base::TimeDelta kDelayBuffer =
@@ -1461,9 +1471,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
               BrowserThread::GetTaskRunnerForThread(
                   ServiceWorkerContext::GetCoreThreadId()))),
       frame_token_(frame_token),
-      keep_alive_handle_factory_(agent_scheduling_group_.GetProcess(),
-                                 base::TimeDelta::FromSeconds(
-                                     kKeepAliveHandleFactoryTimeoutInSeconds)),
+      keep_alive_handle_factory_(
+          agent_scheduling_group_.GetProcess(),
+          RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout),
       subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
@@ -3082,10 +3092,10 @@ void RenderFrameHostImpl::DeleteRenderFrame(
 
     // We change the lifecycle state to kRunningUnloadHandlers at the end of
     // this method to wait until OnUnloadACK() is invoked.
-    // But for subframes, we delay process shutdown if unload event handlers
-    // are set in order to avoid an immediate process shutdown on a page with an
-    // OOPIF navigating cross-process. Also we have the maximum delay limit
-    // for security reasons. See, crbug entries for the following comments.
+    // For subframes, process shutdown may be delayed for two reasons:
+    // (1) to allow the process to be potentially reused by future navigations
+    // withjin a short time window, and
+    // (2) to give the subframe unload handlers a chance to execute.
     if (!frame_tree_node_->IsMainFrame() && IsActive()) {
       base::TimeDelta subframe_shutdown_timeout =
           delegate_->IsBeingDestroyed()
@@ -3096,17 +3106,15 @@ void RenderFrameHostImpl::DeleteRenderFrame(
       // have a chance to execute by delaying process cleanup. This will prevent
       // the process from shutting down immediately in the case where this is
       // the last active frame in the process. See https://crbug.com/852204.
+      // Note that in the majority of cases, this is not necessary now that we
+      // keep track of pending delete RenderFrameHost
+      // (https://crbug.com/609963), but there are still a few exceptions where
+      // this is needed (https://crbug.com/1014550).
       const base::TimeDelta unload_handler_timeout =
           has_unload_handlers() ? subframe_unload_timeout_ : base::TimeDelta();
 
       if (!subframe_shutdown_timeout.is_zero() ||
           !unload_handler_timeout.is_zero()) {
-        // Don't delay shutdown longer than the maximum delay for renderer
-        // processes, enforced for security reasons (crbug.com/1177674).
-        DCHECK_LE(subframe_shutdown_timeout + unload_handler_timeout,
-                  base::TimeDelta::FromSeconds(
-                      kKeepAliveHandleFactoryTimeoutInSeconds));
-
         RenderProcessHostImpl* process =
             static_cast<RenderProcessHostImpl*>(GetProcess());
         process->DelayProcessShutdown(subframe_shutdown_timeout,
