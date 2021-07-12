@@ -197,10 +197,9 @@ class PasswordStore : protected PasswordStoreSync,
   CreateSyncControllerDelegate();
 
   // Sets |deletion_notifier_|. Must not pass a nullptr.
-  void SetUnsyncedCredentialsDeletionNotifier(
-      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier);
-
-  void SetSyncTaskTimeoutForTest(base::TimeDelta timeout);
+  virtual void SetUnsyncedCredentialsDeletionNotifier(
+      std::unique_ptr<UnsyncedCredentialsDeletionNotifier>
+          deletion_notifier) = 0;
 
  protected:
   using LoginsTask = base::OnceCallback<LoginsResult()>;
@@ -322,11 +321,6 @@ class PasswordStore : protected PasswordStoreSync,
   // been changed.
   void NotifyLoginsChanged(const PasswordStoreChangeList& changes) override;
 
-  void NotifyDeletionsHaveSynced(bool success) override;
-
-  void NotifyUnsyncedCredentialsWillBeDeleted(
-      std::vector<PasswordForm> unsynced_credentials) override;
-
   // Invokes callback and notifies observers if there was a change to the list
   // of insecure passwords. It also informs Sync about the updated password
   // forms to sync up the changes about insecure credentials.
@@ -396,12 +390,6 @@ class PasswordStore : protected PasswordStoreSync,
   void RemoveLoginInternal(const PasswordForm& form);
   void UpdateLoginWithPrimaryKeyInternal(const PasswordForm& new_form,
                                          const PasswordForm& old_primary_key);
-  void RemoveLoginsByURLAndTimeInternal(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceClosure completion,
-      base::OnceCallback<void(bool)> sync_completion);
   void RemoveLoginsCreatedBetweenInternal(base::Time delete_begin,
                                           base::Time delete_end,
                                           base::OnceClosure completion);
@@ -504,21 +492,9 @@ class PasswordStore : protected PasswordStoreSync,
 
   PrefService* prefs_ = nullptr;
 
-  std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier_;
-
-  // A list of callbacks that should be run once all pending deletions have been
-  // sent to the Sync server. Note that the vector itself lives on the
-  // background thread, but the callbacks must be run on the main thread!
-  std::vector<base::OnceCallback<void(bool)>> deletions_have_synced_callbacks_;
-  // Timeout closure that runs if sync takes too long to propagate deletions.
-  base::CancelableOnceClosure deletions_have_synced_timeout_;
-
   bool shutdown_called_ = false;
 
   InitStatus init_status_ = InitStatus::kUnknown;
-
-  // This is usually constant, only changed in tests.
-  base::TimeDelta sync_task_timeout_ = base::TimeDelta::FromSeconds(30);
 
   DISALLOW_COPY_AND_ASSIGN(PasswordStore);
 };
