@@ -1125,15 +1125,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest, Upgrade) {
   EXPECT_EQ(GetManager().GetRegisteredSystemAppsForTesting().size(),
             app_ids.size());
 
-  for (const auto& app_id : app_ids) {
-    const auto type = GetManager().GetSystemAppTypeForAppId(app_id).value();
+  // Some system web apps keep their resources (e.g. html pages) in real
+  // Chrome OS images. Here we test a few apps whose resources are bundled in
+  // chrome and always available. These apps are able to cover the code path we
+  // execute when launching the app.
+  const SystemAppType apps_to_launch[] = {
+      SystemAppType::SETTINGS,
+      SystemAppType::MEDIA,  // Uses File Handling with launch directory
+  };
 
-    // We don't launch Terminal in browsertest, because it requires resources
-    // that are only available in Chrome OS images.
-    if (type == SystemAppType::TERMINAL)
-      continue;
-
-    // Launch other System Apps normally, and check the app's launch_url loads.
+  for (const auto& type : apps_to_launch) {
     EXPECT_TRUE(LaunchApp(type));
   }
 }
