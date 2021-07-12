@@ -192,9 +192,9 @@ std::unique_ptr<base::Value> AsValue(const SkPaint& paint) {
     val->SetString("Style", gStyleStrings[paint.getStyle()]);
   }
 
-  if (paint.getBlendMode() != default_paint.getBlendMode()) {
-    val->SetKey("Xfermode",
-                base::Value::FromUniquePtrValue(AsValue(paint.getBlendMode())));
+  if (paint.asBlendMode() != default_paint.asBlendMode()) {
+    val->SetKey("Xfermode", base::Value::FromUniquePtrValue(AsValue(
+                                paint.getBlendMode_or(SkBlendMode::kSrcOver))));
   }
 
   if (paint.isAntiAlias() || paint.isDither()) {

@@ -340,8 +340,11 @@ std::unique_ptr<JSONObject> ObjectForSkPaint(const SkPaint& paint) {
   paint_item->SetString("strokeCap", StrokeCapName(paint.getStrokeCap()));
   paint_item->SetString("strokeJoin", StrokeJoinName(paint.getStrokeJoin()));
   paint_item->SetString("styleName", StyleName(paint.getStyle()));
-  if (paint.getBlendMode() != SkBlendMode::kSrcOver)
-    paint_item->SetString("blendMode", SkBlendMode_Name(paint.getBlendMode()));
+  const auto bm = paint.asBlendMode();
+  if (bm != SkBlendMode::kSrcOver) {
+    paint_item->SetString("blendMode",
+                          bm ? SkBlendMode_Name(bm.value()) : "custom");
+  }
   if (paint.getImageFilter())
     paint_item->SetString("imageFilter", "SkImageFilter");
   return paint_item;
