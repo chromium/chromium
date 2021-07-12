@@ -25,7 +25,7 @@ class CookieJar : public GarbageCollected<CookieJar> {
   bool CookiesEnabled();
 
  private:
-  void RequestRestrictedCookieManagerIfNeeded();
+  bool RequestRestrictedCookieManagerIfNeeded();
 
   HeapMojoRemote<network::mojom::blink::RestrictedCookieManager> backend_;
   Member<blink::Document> document_;

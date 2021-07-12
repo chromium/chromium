@@ -1417,6 +1417,7 @@ source_set("unit_tests") {
     "layout/visual_rect_mapping_test.cc",
     "loader/alternate_signed_exchange_resource_info_test.cc",
     "loader/base_fetch_context_test.cc",
+    "loader/cookie_jar_unittest.cc",
     "loader/document_load_timing_test.cc",
     "loader/document_loader_test.cc",
     "loader/font_preload_manager_test.cc",
