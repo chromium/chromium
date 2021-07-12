@@ -19032,6 +19032,15 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebApp.UrlHandling.DialogState"
+    enum="WebAppUrlHandlingDialogState" expires_after="2022-06-25">
+  <owner>mek@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the user action taken on the URL Handling intent picker dialog.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.UrlHandling.GetValidProfilesAtStartUp"
     units="microseconds" expires_after="2022-06-20">
   <owner>mek@chromium.org</owner>

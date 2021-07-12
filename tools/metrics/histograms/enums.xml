@@ -85129,6 +85129,15 @@ others/histograms.xml -->
   <int value="14" label="Externally managed Arc apps"/>
 </enum>
 
+<enum name="WebAppUrlHandlingDialogState">
+  <summary>State of the URL Handling intent picker dialog.</summary>
+  <int value="0" label="Dialog Closed"/>
+  <int value="1" label="Remember open in broswer"/>
+  <int value="2" label="Open in browser"/>
+  <int value="3" label="Remember open in app"/>
+  <int value="4" label="Open in app"/>
+</enum>
+
 <enum name="WebAppUrlLoaderResult">
   <int value="0" label="UrlLoaded"/>
   <int value="1" label="RedirectedUrlLoaded"/>

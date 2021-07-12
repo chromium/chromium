@@ -34,5 +34,8 @@ specific_include_rules = {
   ],
   "sad_tab_helper.cc": [
     "+content/common/content_navigation_policy.h",
+  ],
+  "startup_browser_creator_browsertest.cc": [
+    "+chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h",
   ]
 }

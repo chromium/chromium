@@ -123,6 +123,7 @@
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/url_handler_manager.h"
@@ -1875,6 +1876,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
                        DialogAccepted_RememberBrowserLaunch) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppUrlHandlerIntentPickerView");
+  base::HistogramTester histogram_tester;
 
   apps::UrlHandlerInfo url_handler;
   url_handler.origin = url::Origin::Create(GURL(kStartUrl));
@@ -1891,6 +1893,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION, 0);
   Start(command_line);
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::
+          kBrowserAcceptedAndRememberChoice,
+      1);
 
   // When dialog is closed, URL will be launched in a browser window.
   // Check for new browser window.
@@ -1920,12 +1928,16 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
   ASSERT_TRUE(other_browser);
   ASSERT_FALSE(
       web_app::AppBrowserController::IsForWebApp(other_browser, app_id));
+
+  // Dialog wasn't shown, the total count of dialog state stays the same.
+  histogram_tester.ExpectTotalCount("WebApp.UrlHandling.DialogState", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
                        DialogAccepted_RememberWebAppLaunch) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppUrlHandlerIntentPickerView");
+  base::HistogramTester histogram_tester;
   apps::UrlHandlerInfo url_handler;
   url_handler.origin = url::Origin::Create(GURL(kStartUrl));
 
@@ -1941,6 +1953,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION, 1);
   Start(command_line);
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::
+          kAppAcceptedAndRememberChoice,
+      1);
 
   // Check for new app window.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -2119,6 +2137,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
       "WebApp.UrlHandling.GetValidProfilesAtStartUp", 1);
   histogram_tester.ExpectTotalCount(
       "WebApp.UrlHandling.LoadWebAppRegistrarsAtStartUp", 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::kClosed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest, UrlNotCaptured) {

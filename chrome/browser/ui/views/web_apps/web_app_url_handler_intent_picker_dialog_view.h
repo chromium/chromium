@@ -40,6 +40,17 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
  public:
   METADATA_HEADER(WebAppUrlHandlerIntentPickerView);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class DialogState {
+    kClosed = 0,
+    kBrowserAcceptedAndRememberChoice = 1,
+    kBrowserAcceptedNoRememberChoice = 2,
+    kAppAcceptedAndRememberChoice = 3,
+    kAppAcceptedNoRememberChoice = 4,
+    kMaxValue = kAppAcceptedNoRememberChoice,
+  };
+
   WebAppUrlHandlerIntentPickerView(
       const GURL& url,
       std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,

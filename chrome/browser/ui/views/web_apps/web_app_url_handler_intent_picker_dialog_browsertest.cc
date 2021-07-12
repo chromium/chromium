@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -85,6 +86,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
                        ShowWebAppUrlHandlerIntentPickerDialog) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        kViewClassName);
+  base::HistogramTester histogram_tester;
   web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
 
   base::MockCallback<chrome::WebAppUrlHandlerAcceptanceCallback>
@@ -111,12 +113,16 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
       views::Widget::ClosedReason::kEscKeyPressed);
   EXPECT_FALSE(dialog_accepted);
   EXPECT_FALSE(result_launch_params.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::kClosed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
                        OpenIsDisabledByDefault) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        kViewClassName);
+  base::HistogramTester histogram_tester;
   web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
 
   base::MockCallback<chrome::WebAppUrlHandlerAcceptanceCallback>
@@ -146,12 +152,16 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
   // Verify "Open" button is disabled by default.
   EXPECT_FALSE(dialog_delegate->GetOkButton()->GetEnabled());
   AutoCloseDialog(widget);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::kClosed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
                        SelectBrowser) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        kViewClassName);
+  base::HistogramTester histogram_tester;
   web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
 
   base::MockCallback<chrome::WebAppUrlHandlerAcceptanceCallback>
@@ -179,12 +189,18 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
   EXPECT_TRUE(dialog_accepted);
   EXPECT_FALSE(result_launch_params.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::
+          kBrowserAcceptedNoRememberChoice,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
                        SelectApp) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        kViewClassName);
+  base::HistogramTester histogram_tester;
   web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
 
   base::MockCallback<chrome::WebAppUrlHandlerAcceptanceCallback>
@@ -213,6 +229,11 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
   // Select the second choice - the app.
   EXPECT_TRUE(dialog_accepted);
   EXPECT_EQ(result_launch_params, launch_params_list[0]);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::
+          kAppAcceptedNoRememberChoice,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,

@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -1018,6 +1020,7 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
                        DialogAccepted_RememberBrowserLaunch) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppUrlHandlerIntentPickerView");
+  base::HistogramTester histogram_tester;
 
   apps::UrlHandlerInfo url_handler;
   url_handler.origin = url::Origin::Create(GURL(kStartUrl));
@@ -1033,6 +1036,12 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION, 0);
   SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::
+          kBrowserAcceptedAndRememberChoice,
+      1);
 
   // When dialog is closed, URL will be launched in a browser tab.
   // Check for new tab.
@@ -1062,12 +1071,16 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   // Check the link of the new tab that was opened.
   web_contents = tab_strip->GetWebContentsAt(2);
   EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+
+  // Dialog wasn't shown, the total count of dialog state stays the same.
+  histogram_tester.ExpectTotalCount("WebApp.UrlHandling.DialogState", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
                        DialogAccepted_RememberWebAppLaunch) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppUrlHandlerIntentPickerView");
+  base::HistogramTester histogram_tester;
   apps::UrlHandlerInfo url_handler;
   url_handler.origin = url::Origin::Create(GURL(kStartUrl));
 
@@ -1082,6 +1095,12 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION, 1);
   SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::
+          kAppAcceptedAndRememberChoice,
+      1);
 
   // Check for new app window.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -1111,6 +1130,9 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   app_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(app_browser);
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Dialog wasn't shown, the total count of dialog state stays the same.
+  histogram_tester.ExpectTotalCount("WebApp.UrlHandling.DialogState", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
@@ -1252,6 +1274,9 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
       "WebApp.UrlHandling.GetValidProfilesAtStartUp", 1);
   histogram_tester.ExpectTotalCount(
       "WebApp.UrlHandling.LoadWebAppRegistrarsAtStartUp", 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.UrlHandling.DialogState",
+      WebAppUrlHandlerIntentPickerView::DialogState::kClosed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest, UrlNotCaptured) {

@@ -88,6 +88,11 @@ std::unique_ptr<views::Separator> CreateHorizontalSeparator() {
   return separator;
 }
 
+void RecordDialogState(
+    WebAppUrlHandlerIntentPickerView::DialogState dialog_state) {
+  base::UmaHistogramEnumeration("WebApp.UrlHandling.DialogState", dialog_state);
+}
+
 }  // namespace
 
 // static
@@ -369,19 +374,30 @@ void WebAppUrlHandlerIntentPickerView::RunCloseCallback(bool accepted) {
       break;
   }
 
-  if (accepted_override && enable_remember_checkbox_ &&
-      remember_selection_checkbox_->GetChecked()) {
-    if (launch_params) {
-      // An app is selected as the default choice.
-      web_app::url_handler_prefs::SaveOpenInApp(
-          g_browser_process->local_state(), launch_params->app_id,
-          launch_params->profile_path, launch_params->url);
+  auto state = DialogState::kClosed;
+  if (accepted_override) {
+    const bool remember_choice_checked =
+        enable_remember_checkbox_ && remember_selection_checkbox_->GetChecked();
+
+    if (remember_choice_checked) {
+      if (launch_params) {
+        // An app is selected as the default choice.
+        web_app::url_handler_prefs::SaveOpenInApp(
+            g_browser_process->local_state(), launch_params->app_id,
+            launch_params->profile_path, launch_params->url);
+        state = DialogState::kAppAcceptedAndRememberChoice;
+      } else {
+        // The browser is the selected default choice.
+        web_app::url_handler_prefs::SaveOpenInBrowser(
+            g_browser_process->local_state(), url_);
+        state = DialogState::kBrowserAcceptedAndRememberChoice;
+      }
     } else {
-      // The browser is the selected default choice.
-      web_app::url_handler_prefs::SaveOpenInBrowser(
-          g_browser_process->local_state(), url_);
+      state = launch_params ? DialogState::kAppAcceptedNoRememberChoice
+                            : DialogState::kBrowserAcceptedNoRememberChoice;
     }
   }
+  RecordDialogState(state);
 
   std::move(close_callback_).Run(accepted_override, std::move(launch_params));
 }
