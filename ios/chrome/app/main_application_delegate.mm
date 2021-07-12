@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/web/common/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -251,6 +252,12 @@ const int kMainIntentCheckDelay = 1;
                                memoryHelper:_memoryHelper];
 }
 
+#pragma mark - optionals from UIApplicationDelegate required by ChromeInternal
+
+// TODO(crbug.com/1227456): Remove when fixed in ChromeInternal
+- (UIWindow*)window {
+  return GetAnyKeyWindow();
+}
 
 #pragma mark - Testing methods
 

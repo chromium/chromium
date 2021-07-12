@@ -377,6 +377,7 @@ source_set("app_internal") {
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web/common:features",
+    "//ios/web/common:uikit",
     "//ios/web/public/webui",
     "//net",
     "//skia",
