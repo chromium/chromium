@@ -5318,7 +5318,7 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
       // If there is no response or no headers in the response, there are
       // definitely no trial token headers.
       response_head_ && response_head_->headers &&
-      blink::TrialTokenValidator().RequestEnablesFeature(
+      blink::TrialTokenValidator().RequestEnablesDeprecatedFeature(
           common_params_->url, response_head_->headers.get(),
           "PrivateNetworkAccessNonSecureContextsAllowed", base::Time::Now())) {
     // TODO(https://crbug.com/1225977): Record that we need to increment a

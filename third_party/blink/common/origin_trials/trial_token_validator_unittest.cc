@@ -443,6 +443,13 @@ TEST_F(TrialTokenValidatorTest, ValidateRequestInsecure) {
       Now()));
 }
 
+TEST_F(TrialTokenValidatorTest, ValidateRequestForDeprecationInsecure) {
+  response_headers_->AddHeader("Origin-Trial", kInsecureOriginToken);
+  EXPECT_TRUE(validator_.RequestEnablesDeprecatedFeature(
+      GURL(kInsecureOrigin), response_headers_.get(), kAppropriateFeatureName,
+      Now()));
+}
+
 TEST_F(TrialTokenValidatorTest, ValidateRequestValidToken) {
   response_headers_->AddHeader("Origin-Trial", kSampleToken);
   EXPECT_TRUE(validator_.RequestEnablesFeature(GURL(kAppropriateOrigin),
@@ -450,8 +457,21 @@ TEST_F(TrialTokenValidatorTest, ValidateRequestValidToken) {
                                                kAppropriateFeatureName, Now()));
 }
 
+TEST_F(TrialTokenValidatorTest, ValidateRequestForDeprecationValidToken) {
+  response_headers_->AddHeader("Origin-Trial", kSampleToken);
+  EXPECT_TRUE(validator_.RequestEnablesDeprecatedFeature(
+      GURL(kAppropriateOrigin), response_headers_.get(),
+      kAppropriateFeatureName, Now()));
+}
+
 TEST_F(TrialTokenValidatorTest, ValidateRequestNoTokens) {
   EXPECT_FALSE(validator_.RequestEnablesFeature(
+      GURL(kAppropriateOrigin), response_headers_.get(),
+      kAppropriateFeatureName, Now()));
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateRequestForDeprecationNoTokens) {
+  EXPECT_FALSE(validator_.RequestEnablesDeprecatedFeature(
       GURL(kAppropriateOrigin), response_headers_.get(),
       kAppropriateFeatureName, Now()));
 }

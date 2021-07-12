@@ -57,14 +57,36 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
                                          const url::Origin* third_party_origin,
                                          base::Time current_time) const;
 
+  // |request| must not be nullptr.
   bool RequestEnablesFeature(const net::URLRequest* request,
                              base::StringPiece feature_name,
                              base::Time current_time) const;
 
+  // Returns whether the given response for the given URL enable the named
+  // Origin or Deprecation Trial at the given time.
+  //
+  // |response_headers| must not be nullptr.
   bool RequestEnablesFeature(const GURL& request_url,
                              const net::HttpResponseHeaders* response_headers,
                              base::StringPiece feature_name,
                              base::Time current_time) const;
+
+  // Similar to |RequestEnablesFeature()|, but for Deprecation Trials that may
+  // be enabled on insecure origins.
+  //
+  // For Origin Trials (as opposed to Deprecation Trials) or Deprecation Trials
+  // that are enabled exclusively on secure origins, use
+  // |RequestEnablesFeature()| instead.
+  //
+  // Functionally, the only difference is that this can return true even if
+  // |request_url|'s origin is not secure.
+  //
+  // |response_headers| must not be nullptr.
+  bool RequestEnablesDeprecatedFeature(
+      const GURL& request_url,
+      const net::HttpResponseHeaders* response_headers,
+      base::StringPiece feature_name,
+      base::Time current_time) const;
 
   // Returns all valid tokens in |headers|.
   std::unique_ptr<FeatureToTokensMap> GetValidTokensFromHeaders(
@@ -84,6 +106,15 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   static void ResetOriginTrialPolicyGetter();
 
   static bool IsTrialPossibleOnOrigin(const GURL& url);
+
+ private:
+  // Helper for |RequestEnablesFeature()| and
+  // |RequestEnablesDeprecatedFeature()|.
+  bool ResponseBearsValidTokenForFeature(
+      const GURL& request_url,
+      const net::HttpResponseHeaders& response_headers,
+      base::StringPiece feature_name,
+      base::Time current_time) const;
 };  // class TrialTokenValidator
 
 }  // namespace blink

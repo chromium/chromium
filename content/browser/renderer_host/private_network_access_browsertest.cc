@@ -2376,10 +2376,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, OriginEnabled) {
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1225977): Expect `kAllow` once support for trials
-  // on insecure origins is fixed in `blink::TrialTokenValidator`.
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, OriginDisabled) {
