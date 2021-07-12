@@ -1527,11 +1527,9 @@ class SmbfsTestVolume : public LocalTestVolume {
         &SmbfsTestVolume::CreateMounter, base::Unretained(this)));
 
     bool success = false;
-    ash::file_system_provider::MountOptions mount_options;
-    mount_options.display_name = "SMB Share";
     base::RunLoop run_loop;
     smb_service->Mount(
-        mount_options, base::FilePath("smb://server/share"), "" /* username */,
+        "SMB Share", base::FilePath("smb://server/share"), "" /* username */,
         "" /* password */, false /* use_chromad_kerberos */,
         false /* should_open_file_manager_after_mount */,
         false /* save_credentials */,

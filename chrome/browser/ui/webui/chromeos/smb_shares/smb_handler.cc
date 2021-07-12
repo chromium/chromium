@@ -81,18 +81,16 @@ void SmbHandler::HandleSmbMount(const base::ListValue* args) {
     return;
   }
 
-  file_system_provider::MountOptions mo;
-  mo.display_name = mount_name.empty() ? mount_url : mount_name;
-  mo.writable = true;
+  std::string display_name = mount_name.empty() ? mount_url : mount_name;
 
   auto mount_response =
       base::BindOnce(&SmbHandler::HandleSmbMountResponse,
                      weak_ptr_factory_.GetWeakPtr(), callback_id);
-  auto mount_call =
-      base::BindOnce(&smb_client::SmbService::Mount, base::Unretained(service),
-                     mo, base::FilePath(mount_url), username, password,
-                     use_kerberos, should_open_file_manager_after_mount,
-                     save_credentials, std::move(mount_response));
+  auto mount_call = base::BindOnce(
+      &smb_client::SmbService::Mount, base::Unretained(service), display_name,
+      base::FilePath(mount_url), username, password, use_kerberos,
+      should_open_file_manager_after_mount, save_credentials,
+      std::move(mount_response));
 
   if (host_discovery_done_) {
     std::move(mount_call).Run();

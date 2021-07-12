@@ -179,8 +179,6 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     // Takes ownership of |disk_mount_manager_|.
     chromeos::disks::DiskMountManager::InitializeForTesting(
         disk_mount_manager_);
-
-    mount_options_.display_name = kDisplayName;
   }
 
   ~SmbServiceWithSmbfsTest() override {
@@ -203,7 +201,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
 
   void ExpectInvalidUrl(const std::string& url) {
     SmbMountResult result = SmbMountResult::kSuccess;
-    smb_service_->Mount({} /* options */, base::FilePath(url),
+    smb_service_->Mount("" /* display_name */, base::FilePath(url),
                         "" /* username */, "" /* password */,
                         false /* use_chromad_kerberos */,
                         false /* should_open_file_manager_after_mount */,
@@ -214,7 +212,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
 
   void ExpectInvalidSsoUrl(const std::string& url) {
     SmbMountResult result = SmbMountResult::kSuccess;
-    smb_service_->Mount({} /* options */, base::FilePath(url),
+    smb_service_->Mount("" /* display_name */, base::FilePath(url),
                         "" /* username */, "" /* password */,
                         true /* use_chromad_kerberos */,
                         false /* should_open_file_manager_after_mount */,
@@ -294,7 +292,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
             });
 
     base::RunLoop run_loop;
-    smb_service_->Mount(mount_options_, base::FilePath(share_path),
+    smb_service_->Mount(kDisplayName, base::FilePath(share_path),
                         "" /* username */, "" /* password */,
                         false /* use_chromad_kerberos */,
                         false /* should_open_file_manager_after_mount */,
@@ -320,8 +318,6 @@ class SmbServiceWithSmbfsTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<SmbService> smb_service_;
-
-  file_system_provider::MountOptions mount_options_;
 };
 
 TEST_F(SmbServiceWithSmbfsTest, InvalidUrls) {
@@ -391,7 +387,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount) {
 
   base::RunLoop run_loop;
   smb_service_->Mount(
-      mount_options_, base::FilePath(kSharePath), kTestUser, kTestPassword,
+      kDisplayName, base::FilePath(kSharePath), kTestUser, kTestPassword,
       false /* use_chromad_kerberos */,
       false /* should_open_file_manager_after_mount */,
       false /* save_credentials */,
@@ -483,7 +479,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_SaveCredentials) {
 
   base::RunLoop run_loop;
   smb_service_->Mount(
-      mount_options_, base::FilePath(kSharePath), kTestUser, kTestPassword,
+      kDisplayName, base::FilePath(kSharePath), kTestUser, kTestPassword,
       false /* use_chromad_kerberos */,
       false /* should_open_file_manager_after_mount */,
       true /* save_credentials */,
@@ -553,7 +549,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_ActiveDirectory) {
 
   base::RunLoop run_loop;
   smb_service_->Mount(
-      mount_options_, base::FilePath(kSharePath),
+      kDisplayName, base::FilePath(kSharePath),
       base::StrCat({kTestUser, "@", kTestDomain}), kTestPassword,
       true /* use_chromad_kerberos */,
       false /* should_open_file_manager_after_mount */,

@@ -67,7 +67,7 @@ class SmbService : public KeyedService,
   // Starts the process of mounting an SMB file system.
   // |use_kerberos| indicates whether the share should be mounted with a user's
   // chromad kerberos tickets.
-  void Mount(const file_system_provider::MountOptions& options,
+  void Mount(const std::string& display_name,
              const base::FilePath& share_path,
              const std::string& username,
              const std::string& password,
@@ -138,8 +138,7 @@ class SmbService : public KeyedService,
   // Mounts an SMB share with url |share_url| using either smbprovider or smbfs
   // based on feature flags.
   // Calls SmbProviderClient::Mount() or start the smbfs mount process.
-  void MountInternal(const file_system_provider::MountOptions& options,
-                     const SmbShareInfo& info,
+  void MountInternal(const SmbShareInfo& info,
                      const std::string& password,
                      bool save_credentials,
                      bool skip_connect,

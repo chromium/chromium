@@ -283,7 +283,7 @@ void SmbService::OnUpdateSharePathResponse(
   std::move(reply).Run(true /* should_retry_start_read_dir */);
 }
 
-void SmbService::Mount(const file_system_provider::MountOptions& options,
+void SmbService::Mount(const std::string& display_name,
                        const base::FilePath& share_path,
                        const std::string& username_input,
                        const std::string& password_input,
@@ -358,26 +358,6 @@ void SmbService::Mount(const file_system_provider::MountOptions& options,
     }
   }
 
-  // Construct the file system ID before calling mount so that numerous
-  // arguments don't have to be plumbed through.
-  file_system_provider::MountOptions provider_options(options);
-  if (use_kerberos) {
-    provider_options.file_system_id =
-        CreateFileSystemId(share_path, use_kerberos);
-  } else {
-    std::string full_username;
-    if (save_credentials) {
-      // Only save the username if the user request credentials be saved.
-      full_username = username;
-      if (!workgroup.empty()) {
-        DCHECK(!username.empty());
-        full_username.append("@");
-        full_username.append(workgroup);
-      }
-    }
-    provider_options.file_system_id =
-        CreateFileSystemIdForUser(share_path, full_username);
-  }
   std::vector<uint8_t> salt;
   if (save_credentials && !password.empty()) {
     // Only generate a salt if threre's a password and we've been asked to save
@@ -386,10 +366,9 @@ void SmbService::Mount(const file_system_provider::MountOptions& options,
     salt.resize(kSaltLength);
     crypto::RandBytes(salt);
   }
-  SmbShareInfo info(parsed_url, options.display_name, username, workgroup,
-                    use_kerberos, salt);
-  MountInternal(provider_options, info, password, save_credentials,
-                false /* skip_connect */,
+  SmbShareInfo info(parsed_url, display_name, username, workgroup, use_kerberos,
+                    salt);
+  MountInternal(info, password, save_credentials, false /* skip_connect */,
                 base::BindOnce(&SmbService::MountInternalDone,
                                base::Unretained(this), std::move(callback),
                                info, should_open_file_manager_after_mount));
@@ -420,7 +399,6 @@ void SmbService::MountInternalDone(MountResponse callback,
 }
 
 void SmbService::MountInternal(
-    const file_system_provider::MountOptions& options,
     const SmbShareInfo& info,
     const std::string& password,
     bool save_credentials,
@@ -657,8 +635,8 @@ void SmbService::OnRemountResponse(const std::string& file_system_id,
 
 void SmbService::MountSavedSmbfsShare(const SmbShareInfo& info) {
   MountInternal(
-      {} /* fsp::MountOptions, ignored by smbfs */, info, "" /* password */,
-      true /* save_credentials */, true /* skip_connect */,
+      info, "" /* password */, true /* save_credentials */,
+      true /* skip_connect */,
       base::BindOnce(
           [](SmbMountResult result, const base::FilePath& mount_path) {
             LOG_IF(ERROR, result != SmbMountResult::kSuccess)
@@ -667,25 +645,13 @@ void SmbService::MountSavedSmbfsShare(const SmbShareInfo& info) {
 }
 
 void SmbService::MountPreconfiguredShare(const SmbUrl& share_url) {
-  file_system_provider::MountOptions mount_options;
-  mount_options.display_name =
+  std::string display_name =
       base::FilePath(share_url.ToString()).BaseName().value();
-  mount_options.writable = true;
-  // |is_chromad_kerberos| is false because we do not pass user and workgroup
-  // at mount time. Premounts also do not get remounted and currently
-  // |is_chromad_kerberos| is only used at remounts to determine if the share
-  // was mounted with chromad kerberos.
-  // TODO(crbug.com/922269): Support kerberos for preconfigured shares.
-  mount_options.file_system_id = CreateFileSystemId(
-      base::FilePath(share_url.ToString()), false /* is_chromad_kerberos */);
-  // Disable remounting of preconfigured shares.
-  mount_options.persistent = false;
-
   // Note: Preconfigured shares are mounted without credentials.
-  SmbShareInfo info(share_url, mount_options.display_name, "" /* username */,
+  SmbShareInfo info(share_url, display_name, "" /* username */,
                     "" /* workgroup */, false /* use_kerberos */);
   MountInternal(
-      mount_options, info, "" /* password */, false /* save_credentials */,
+      info, "" /* password */, false /* save_credentials */,
       true /* skip_connect */,
       base::BindOnce(&SmbService::OnMountPreconfiguredShareDone, AsWeakPtr()));
 }
