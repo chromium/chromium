@@ -403,14 +403,14 @@ TEST_F(KnownUserTest, RemovePrefOnCustomPref) {
   }
 }
 
-// Test failing on linux-chromeos-chrome (crbug.com/1198519)
-TEST_F(KnownUserTest, DISABLED_RemovePrefOnReservedPref) {
+TEST_F(KnownUserTest, RemovePrefOnReservedPref) {
   KnownUser known_user(local_state());
   const std::string kReservedPrefName = "device_id";
 
   known_user.SetStringPref(kDefaultAccountId, kReservedPrefName, "value");
-  ASSERT_DEATH(known_user.RemovePref(kDefaultAccountId, kReservedPrefName),
-               ".*Check failed.*");
+  // Don't verify the message because on some builds CHECK failures do not print
+  // debug messages (https://crbug.com/1198519).
+  ASSERT_DEATH(known_user.RemovePref(kDefaultAccountId, kReservedPrefName), "");
 }
 
 TEST_F(KnownUserTest, GaiaIdMigrationStatus) {
