@@ -271,6 +271,9 @@ void FakeCrasAudioClient::RemoveActiveInputNode(uint64_t node_id) {
 
 void FakeCrasAudioClient::SwapLeftRight(uint64_t node_id, bool swap) {}
 
+void FakeCrasAudioClient::SetDisplayRotation(uint64_t node_id,
+                                             cras::DisplayRotation rotation) {}
+
 void FakeCrasAudioClient::SetGlobalOutputChannelRemix(
     int32_t channels,
     const std::vector<double>& mixer) {}

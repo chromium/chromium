@@ -19,6 +19,7 @@
 #include "chromeos/dbus/audio/audio_node.h"
 #include "chromeos/dbus/audio/volume_state.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace dbus {
 class Bus;
@@ -190,6 +191,12 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // The dbus message will be dropped if this feature is not supported on the
   // |node_id|.
   virtual void SwapLeftRight(uint64_t node_id, bool swap) = 0;
+
+  // Sets the display |rotation| attribute of the primary active output device.
+  // The dbus message will be dropped if this feature is not supported on the
+  // |node_id|.
+  virtual void SetDisplayRotation(uint64_t node_id,
+                                  cras::DisplayRotation rotation) = 0;
 
   virtual void SetGlobalOutputChannelRemix(
       int32_t channels,

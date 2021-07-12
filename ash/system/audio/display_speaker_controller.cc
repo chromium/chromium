@@ -6,10 +6,24 @@
 
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/shell.h"
-#include "ui/display/display.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+
+inline cras::DisplayRotation ToCRASDisplayRotation(
+    display::Display::Rotation rotation) {
+  switch (rotation) {
+    case display::Display::ROTATE_0:
+      return cras::DisplayRotation::ROTATE_0;
+    case display::Display::ROTATE_90:
+      return cras::DisplayRotation::ROTATE_90;
+    case display::Display::ROTATE_180:
+      return cras::DisplayRotation::ROTATE_180;
+    case display::Display::ROTATE_270:
+      return cras::DisplayRotation::ROTATE_270;
+  };
+}
 
 namespace ash {
 
@@ -27,7 +41,8 @@ void DisplaySpeakerController::OnDisplayAdded(
     const display::Display& new_display) {
   if (!new_display.IsInternal())
     return;
-  ChangeInternalSpeakerChannelMode();
+
+  UpdateInternalSpeakerForDisplayRotation();
 
   // This event will be triggered when the lid of the device is opened to exit
   // the docked mode, we should always start or re-start HDMI re-discovering
@@ -39,7 +54,7 @@ void DisplaySpeakerController::OnDisplayRemoved(
     const display::Display& old_display) {
   if (!old_display.IsInternal())
     return;
-  ChangeInternalSpeakerChannelMode();
+  UpdateInternalSpeakerForDisplayRotation();
 
   // This event will be triggered when the lid of the device is closed to enter
   // the docked mode, we should always start or re-start HDMI re-discovering
@@ -53,8 +68,9 @@ void DisplaySpeakerController::OnDisplayMetricsChanged(
   if (!display.IsInternal())
     return;
 
-  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)
-    ChangeInternalSpeakerChannelMode();
+  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION) {
+    UpdateInternalSpeakerForDisplayRotation();
+  }
 
   // The event could be triggered multiple times during the HDMI display
   // transition, we don't need to restart HDMI re-discovering grace period
@@ -69,15 +85,19 @@ void DisplaySpeakerController::SuspendDone(base::TimeDelta sleep_duration) {
   CrasAudioHandler::Get()->SetActiveHDMIOutoutRediscoveringIfNecessary(true);
 }
 
-void DisplaySpeakerController::ChangeInternalSpeakerChannelMode() {
+void DisplaySpeakerController::UpdateInternalSpeakerForDisplayRotation() {
   // Swap left/right channel only if it is in Yoga mode.
   bool swap = false;
   if (display::Display::HasInternalDisplay()) {
     const display::ManagedDisplayInfo& display_info =
         Shell::Get()->display_manager()->GetDisplayInfo(
             display::Display::InternalDisplayId());
-    if (display_info.GetActiveRotation() == display::Display::ROTATE_180)
+    display::Display::Rotation rotation = display_info.GetActiveRotation();
+    if (rotation == display::Display::ROTATE_180)
       swap = true;
+
+    CrasAudioHandler::Get()->SetDisplayRotation(
+        ToCRASDisplayRotation(rotation));
   }
   CrasAudioHandler::Get()->SwapInternalSpeakerLeftRightChannel(swap);
 }

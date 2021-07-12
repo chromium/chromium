@@ -63,6 +63,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void AddActiveOutputNode(uint64_t node_id) override;
   void RemoveActiveOutputNode(uint64_t node_id) override;
   void SwapLeftRight(uint64_t node_id, bool swap) override;
+  void SetDisplayRotation(uint64_t node_id,
+                          cras::DisplayRotation rotation) override;
   void SetGlobalOutputChannelRemix(int32_t channels,
                                    const std::vector<double>& mixer) override;
   void SetPlayerPlaybackStatus(const std::string& playback_status) override;
