@@ -44,20 +44,18 @@ public class CastAudioFocusRequest {
     }
 
     private int getStreamType() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (mAudioAttributes != null) {
-                switch (mAudioAttributes.getContentType()) {
-                    case AudioAttributes.CONTENT_TYPE_MOVIE:
-                    case AudioAttributes.CONTENT_TYPE_MUSIC:
-                        return AudioManager.STREAM_MUSIC;
-                    case AudioAttributes.CONTENT_TYPE_SONIFICATION:
-                        return AudioManager.STREAM_ALARM;
-                    case AudioAttributes.CONTENT_TYPE_SPEECH:
-                        return AudioManager.STREAM_VOICE_CALL;
-                    case AudioAttributes.CONTENT_TYPE_UNKNOWN:
-                    default:
-                        return AudioManager.STREAM_SYSTEM;
-                }
+        if (mAudioAttributes != null) {
+            switch (mAudioAttributes.getContentType()) {
+                case AudioAttributes.CONTENT_TYPE_MOVIE:
+                case AudioAttributes.CONTENT_TYPE_MUSIC:
+                    return AudioManager.STREAM_MUSIC;
+                case AudioAttributes.CONTENT_TYPE_SONIFICATION:
+                    return AudioManager.STREAM_ALARM;
+                case AudioAttributes.CONTENT_TYPE_SPEECH:
+                    return AudioManager.STREAM_VOICE_CALL;
+                case AudioAttributes.CONTENT_TYPE_UNKNOWN:
+                default:
+                    return AudioManager.STREAM_SYSTEM;
             }
         }
         return 0;

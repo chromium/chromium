@@ -144,13 +144,6 @@ public class CastWebContentsActivity extends Activity {
             mAudioManagerState.set(CastAudioManager.getAudioManager(this));
         }));
 
-        // Clean up stream mute state on pause events.
-        mAudioManagerState.andThen(Observable.not(mResumedState))
-                .map(Both::getFirst)
-                .subscribe(Observers.onEnter((CastAudioManager audioManager) -> {
-                    audioManager.releaseStreamMuteIfNecessary(AudioManager.STREAM_MUSIC);
-                }));
-
         // Handle each new Intent.
         Controller<CastWebContentsSurfaceHelper.StartParams> startParamsState = new Controller<>();
         mGotIntentState.and(Observable.not(mIsFinishingState))

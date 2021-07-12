@@ -11,7 +11,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -36,7 +35,6 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowActivity;
 
-import org.chromium.chromecast.base.Observable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
@@ -48,6 +46,9 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CastWebContentsActivityTest {
+    /**
+     * ShadowActivity that allows us to intercept calls to setTurnScreenOn.
+     */
     @Implements(Activity.class)
     public static class ExtendedShadowActivity extends ShadowActivity {
         private boolean mTurnScreenOn;
@@ -106,17 +107,6 @@ public class CastWebContentsActivityTest {
         mActivity.finishForTesting();
         Intent intent = mShadowActivity.getNextStartedActivity();
         assertNull(intent);
-    }
-
-    @Test
-    public void testReleasesStreamMuteIfNecessaryOnPause() {
-        CastAudioManager mockAudioManager = mock(CastAudioManager.class);
-        when(mockAudioManager.requestAudioFocusWhen(anyObject()))
-                .thenReturn(mock(Observable.class));
-        mActivity.setAudioManagerForTesting(mockAudioManager);
-        mActivityLifecycle.create().start().resume();
-        mActivityLifecycle.pause();
-        verify(mockAudioManager).releaseStreamMuteIfNecessary(AudioManager.STREAM_MUSIC);
     }
 
     @Test
