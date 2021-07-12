@@ -4993,7 +4993,7 @@ crbug.com/1207342 http/tests/devtools/elements/node-xpath.js [ Pass Failure ]
 crbug.com/1207342 http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Pass Failure ]
 crbug.com/1207342 http/tests/inspector-protocol/page/frameScheduledNavigation.js [ Pass Failure ]
 crbug.com/1207342 http/tests/devtools/persistence/persistence-external-change-breakpoints.js [ Pass Failure ]
-crbug.com/1207342 http/tests/devtools/sources/debugger-pause/debugger-pause-infinite-loop.js [ Pass Failure ]
+crbug.com/1207342 crbug.com/1135652 http/tests/devtools/sources/debugger-pause/debugger-pause-infinite-loop.js [ Pass Failure Timeout ]
 
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
