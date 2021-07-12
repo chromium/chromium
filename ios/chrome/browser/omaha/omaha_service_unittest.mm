@@ -138,10 +138,10 @@ TEST_F(OmahaServiceTest, PingMessageTest) {
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*\\(\\.[0-9][0-9]*\\)*\""
       " arch=\"[^\"]*\"/>"
-      "<app version=\"[^\"]*\" nextversion=\"\" lang=\"[^\"]*\""
+      "<app version=\"[^\"]*\" nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\""
       " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\""
       " installage=\"0\">"
-      "<updatecheck tag=\"[^\"]*\"/>"
+      "<updatecheck/>"
       "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
 
   OmahaService service(false);
@@ -167,9 +167,9 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*\\(\\.[0-9][0-9]*\\)*\""
       " arch=\"[^\"]*\"/>"
-      "<app version=\"[^\"]*\" nextversion=\"\" lang=\"[^\"]*\""
+      "<app version=\"[^\"]*\" nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\""
       " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\">"
-      "<updatecheck tag=\"[^\"]*\"/>"
+      "<updatecheck/>"
       "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
 
   OmahaService service(false);
@@ -197,7 +197,7 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*(\\.[0-9][0-9]*)*\""
       " arch=\"[^\"]*\"/>"
-      "<app version=\"%s\" nextversion=\"[^\"]*\" lang=\"[^\"]*\""
+      "<app version=\"%s\" nextversion=\"[^\"]*\" ap=\"[^\"]*\" lang=\"[^\"]*\""
       " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\""
       " installage=\"%d\">"
       "<event eventtype=\"%d\" eventresult=\"1\"/>"
@@ -546,9 +546,9 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*\\(\\.[0-9][0-9]*\\)*\""
       " arch=\"[^\"]*\"/>"
-      "<app version=\"[^\"]*\" nextversion=\"\" lang=\"[^\"]*\""
+      "<app version=\"[^\"]*\" nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\""
       " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\">"
-      "<updatecheck tag=\"[^\"]*\"/>"
+      "<updatecheck/>"
       "<ping active=\"1\" ad=\"4088\" rd=\"4088\"/></app></request>";
 
   std::string content = service.GetPingContent(

@@ -552,6 +552,7 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
     xml_wrapper.WriteAttribute("version", versionName.c_str());
     xml_wrapper.WriteAttribute("nextversion", "");
   }
+  xml_wrapper.WriteAttribute("ap", channelName.c_str());
   xml_wrapper.WriteAttribute("lang", locale_lang_.c_str());
   xml_wrapper.WriteAttribute("brand", provider->GetBrandCode().c_str());
   xml_wrapper.WriteAttribute("client", "");
@@ -584,7 +585,6 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
   } else {
     // Set up <updatecheck/>
     xml_wrapper.StartElement("updatecheck");
-    xml_wrapper.WriteAttribute("tag", channelName.c_str());
     xml_wrapper.EndElement();
 
     // Set up <ping active=1/>
