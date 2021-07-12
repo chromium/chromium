@@ -527,9 +527,8 @@ bool GetOptionalDouble(const base::DictionaryValue* dict,
                        base::StringPiece path,
                        double* out_value,
                        bool* has_value) {
-  // base::Value::GetAsDouble already converts int to double if needed.
-  return GetOptionalValueDeprecated(dict, path, out_value, has_value,
-                                    &base::Value::GetAsDouble);
+  return GetOptionalValue(dict, path, out_value, has_value,
+                          &base::Value::GetIfDouble);
 }
 
 bool GetOptionalString(const base::DictionaryValue* dict,
