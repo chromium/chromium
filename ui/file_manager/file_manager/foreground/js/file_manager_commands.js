@@ -2204,7 +2204,7 @@ CommandHandler.COMMANDS_['zip-selection'] = new class extends FilesCommand {
 
     // TODO(crbug/1226915) Make it work with MTP.
     const isOnEligibleLocation =
-        !util.isZipPackEnabled() || !fileManager.directoryModel.isOnMTP();
+        !util.isZipPackEnabled() || fileManager.directoryModel.isOnNative();
 
     event.canExecute = dirEntry && !fileManager.directoryModel.isReadOnly() &&
         isOnEligibleLocation && selection && selection.totalCount > 0;

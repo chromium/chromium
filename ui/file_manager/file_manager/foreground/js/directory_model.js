@@ -249,6 +249,16 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
+   * @return {boolean} True if it's on a Linux native volume.
+   */
+  isOnNative() {
+    const rootType = this.getCurrentRootType();
+    return rootType != null && !util.isRecentRootType(rootType) &&
+        VolumeManagerCommon.VolumeType.isNative(
+            VolumeManagerCommon.getVolumeTypeFromRootType(rootType));
+  }
+
+  /**
    * @param {VolumeManagerCommon.VolumeType} volumeType Volume Type
    * @return {boolean} True if current root volume type is equal to specified
    *     volume type.
