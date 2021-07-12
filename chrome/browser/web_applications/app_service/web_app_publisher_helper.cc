@@ -52,6 +52,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/sessions/core/session_id.h"
 #endif
@@ -530,6 +531,12 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
   apps::AppLaunchParams params_for_restore(
       params.app_id, params.container, params.disposition, params.source,
       params.display_id, params.launch_files, params.intent);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Create the FullRestoreSaveHandler instance before launching the app to
+  // observe the browser window.
+  full_restore::FullRestoreSaveHandler::GetInstance();
+#endif
 
   content::WebContents* const web_contents =
       web_app_launch_manager_->OpenApplication(std::move(params));

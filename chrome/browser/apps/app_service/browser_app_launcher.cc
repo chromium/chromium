@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/sessions/core/session_id.h"
 #endif
@@ -45,6 +46,10 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
     apps::mojom::AppLaunchSource source = params.source;
     apps::mojom::LaunchContainer container = params.container;
     int restore_id = params.restore_id;
+
+    // Create the FullRestoreSaveHandler instance before launching the app to
+    // observe the browser window.
+    full_restore::FullRestoreSaveHandler::GetInstance();
 
     auto* web_contents =
         web_app_launch_manager_.OpenApplication(std::move(params));
