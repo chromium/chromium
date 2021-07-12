@@ -148,6 +148,7 @@ js_library("wallpaper_images_element") {
 js_library("wallpaper_selected_element") {
   deps = [
     ":personalization_controller",
+    ":personalization_reducers",
     ":personalization_store",
     ":styles",
     "../common:styles",

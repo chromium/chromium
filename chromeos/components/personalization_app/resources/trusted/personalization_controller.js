@@ -128,6 +128,17 @@ export async function selectWallpaper(image, provider, store) {
 }
 
 /**
+ * @param {!chromeos.personalizationApp.mojom.WallpaperLayout} layout
+ * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ *     provider
+ * @param {!PersonalizationStore} store
+ */
+export async function setCustomWallpaperLayout(layout, provider, store) {
+  await provider.setCustomWallpaperLayout(layout);
+  getCurrentWallpaper(provider, store);
+}
+
+/**
  * Fetches list of collections, then fetches list of images for each collection.
  * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
  *     provider

@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -82,6 +83,8 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   void SelectLocalImage(const base::UnguessableToken& id,
                         SelectLocalImageCallback callback) override;
 
+  void SetCustomWallpaperLayout(ash::WallpaperLayout layout) override;
+
  private:
   mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
       wallpaper_receiver_{this};
@@ -102,7 +105,7 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
                                 const SkBitmap* bitmap,
                                 base::File::Error error);
 
-  void OnGetOnlineImageAttribution(const uint64_t& asset_id,
+  void OnGetOnlineImageAttribution(const ash::WallpaperInfo& info,
                                    const GURL& gurl,
                                    GetCurrentWallpaperCallback callback,
                                    bool success,

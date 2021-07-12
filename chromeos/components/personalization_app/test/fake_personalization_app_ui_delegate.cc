@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/check_op.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom-forward.h"
@@ -65,7 +66,9 @@ void FakePersonalizationAppUiDelegate::GetCurrentWallpaper(
   std::move(callback).Run(
       chromeos::personalization_app::mojom::CurrentWallpaper::New(
           GURL("https://test.googleusercontent.com/0"),
-          std::vector<std::string>({"this is a test"})));
+          std::vector<std::string>({"this is a test"}),
+          ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
+          ash::WallpaperType::CUSTOMIZED));
 }
 
 void FakePersonalizationAppUiDelegate::SelectWallpaper(
@@ -78,4 +81,9 @@ void FakePersonalizationAppUiDelegate::SelectLocalImage(
     const base::UnguessableToken& token,
     SelectLocalImageCallback callback) {
   std::move(callback).Run(/*success=*/true);
+}
+
+void FakePersonalizationAppUiDelegate::SetCustomWallpaperLayout(
+    ash::WallpaperLayout layout) {
+  return;
 }

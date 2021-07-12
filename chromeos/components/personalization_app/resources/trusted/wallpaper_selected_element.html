@@ -57,6 +57,24 @@
     font-weight: 400;
     line-height: 20px;
   }
+
+  #currentWallpaperMoreOptions {
+    display: flex;
+  }
+
+  #currentWallpaperMoreOptions > div {
+    display: flex;
+    padding: 8px;
+    margin-right: 8px;
+    border: 1px solid var(--google-grey-refresh-300);
+    border-radius: 16px;
+  }
+
+  #currentWallpaperMoreOptions #center.selected,
+  #currentWallpaperMoreOptions #fill.selected {
+    color: var(--cr-toggle-color);
+    pointer-events: none;
+  }
 </style>
 <header id="container" tabindex="0" aria-label="[[getAriaLabel_(image_)]]"
   role="heading" aria-level="1">
@@ -71,7 +89,22 @@
           <p title="[[item]]">[[item]]</p>
         </template>
       </dom-repeat>
+      <template is="dom-if" if="[[showMoreOptions_]]">
+        <div id="currentWallpaperMoreOptions">
+          <div id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
+              class$="[[computeFillOptionClass_(image_)]]">
+            <!-- TODO(b/178105894) add icon -->
+            <div class="text">[[i18n('fill')]]</div>
+          </div>
+          <div id="center" data-layout="CENTER" on-click="onClickLayoutIcon_"
+              class$="[[computeCenterOptionClass_(image_)]]">
+            <!-- TODO(b/178105894) add icon -->
+            <div class="text">[[i18n('center')]]</div>
+          </div>
+        </div>
+      </template>
     </div>
+
   </template>
   <template is="dom-if" if="[[hasError_]]">
     <!-- TODO(b/186668250) real error state -->

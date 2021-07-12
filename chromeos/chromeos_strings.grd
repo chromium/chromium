@@ -1532,6 +1532,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES" desc="Label for a wallpaper collection with multiple images">
         <ph name="IMAGE_COUNT">$1<ex>5</ex></ph> Images
       </message>
+      <message name="IDS_PERSONALIZATION_APP_CENTER" desc="Label for center cropping option for local images">
+        Center
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_FILL" desc="Label for fill cropping option for local images">
+        Fill
+      </message>
     </messages>
   </release>
 </grit>

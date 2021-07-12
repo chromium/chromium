@@ -7,9 +7,11 @@
  * wallpaper.
  */
 
+import {assert} from 'chrome://resources/js/assert.m.js'
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {getCurrentWallpaper} from './personalization_controller.js';
+import {getCurrentWallpaper, setCustomWallpaperLayout} from './personalization_controller.js';
+import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 /**
@@ -70,6 +72,12 @@ export class WallpaperSelected extends WithPersonalizationStore {
         type: Boolean,
         computed: 'computeShowImage_(image_, isLoading_)',
       },
+
+      /** @private */
+      showMoreOptions_: {
+        type: Boolean,
+        computed: 'computeShowMoreOptions_(image_)',
+      },
     };
   }
 
@@ -112,6 +120,50 @@ export class WallpaperSelected extends WithPersonalizationStore {
    */
   computeShowImage_(image, loading) {
     return !loading && !!image;
+  }
+
+  /**
+   * @private
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @return {boolean}
+   */
+  computeShowMoreOptions_(image) {
+    return !!image && !!image.type && image.type === WallpaperType.kCustomized;
+  }
+
+  /**
+   * @private
+   * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @return {string}
+   */
+  computeCenterOptionClass_(image) {
+    if (image.layout === WallpaperLayout.kCenter)
+      return 'selected';
+    return '';
+  }
+
+  /**
+   * @private
+   * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @return {string}
+   */
+  computeFillOptionClass_(image) {
+    if (image.layout === WallpaperLayout.kCenterCropped)
+      return 'selected';
+    return '';
+  }
+
+  /**
+   * @private
+   * @param {!Event} event
+   */
+  onClickLayoutIcon_(event) {
+    const layout = event.currentTarget.dataset.layout;
+    assert(layout === 'CENTER' || layout === 'FILL');
+    setCustomWallpaperLayout(
+        layout === 'CENTER' ? WallpaperLayout.kCenter :
+                              WallpaperLayout.kCenterCropped,
+        this.wallpaperProvider_, this.getStore());
   }
 
   /**

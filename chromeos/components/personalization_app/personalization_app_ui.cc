@@ -61,7 +61,9 @@ void AddStrings(content::WebUIDataSource* source) {
       {"back", IDS_PERSONALIZATION_APP_BACK_BUTTON},
       {"currentlySet", IDS_PERSONALIZATION_APP_CURRENTLY_SET},
       {"myImagesLabel", IDS_PERSONALIZATION_APP_MY_IMAGES},
-      {"wallpaperCollections", IDS_PERSONALIZATION_APP_WALLPAPER_COLLECTIONS}};
+      {"wallpaperCollections", IDS_PERSONALIZATION_APP_WALLPAPER_COLLECTIONS},
+      {"center", IDS_PERSONALIZATION_APP_CENTER},
+      {"fill", IDS_PERSONALIZATION_APP_FILL}};
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
 }

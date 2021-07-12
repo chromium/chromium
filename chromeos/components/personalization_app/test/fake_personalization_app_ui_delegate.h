@@ -53,6 +53,8 @@ class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   void SelectLocalImage(const base::UnguessableToken& token,
                         SelectLocalImageCallback callback) override;
 
+  void SetCustomWallpaperLayout(ash::WallpaperLayout layout) override;
+
  private:
   mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
       wallpaper_receiver_{this};

@@ -77,7 +77,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
     /**
      * @public
-     * @type {!chromeos.personalizationApp.mojom.WallpaperImage}
+     * @type {!chromeos.personalizationApp.mojom.CurrentWallpaper}
      */
     this.currentWallpaper = this.images_[1];
 
@@ -146,6 +146,11 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   selectLocalImage(id) {
     this.methodCalled('selectLocalImage', id);
     return Promise.resolve({success: this.selectLocalImageResponse});
+  }
+
+  /** @override */
+  setCustomWallpaperLayout(layout) {
+    this.methodCalled('selectCustomWallpaperLayout', layout);
   }
 
   /**

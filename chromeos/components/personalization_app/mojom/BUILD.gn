@@ -11,4 +11,25 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromeos.personalization_app.mojom.WallpaperLayout"
+          cpp = "ash::WallpaperLayout"
+        },
+        {
+          mojom = "chromeos.personalization_app.mojom.WallpaperType"
+          cpp = "ash::WallpaperType"
+        },
+      ]
+      traits_headers = [ "personalization_app_mojom_traits.h" ]
+      traits_sources = [ "personalization_app_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//ash/public/cpp",
+        "//skia",
+      ]
+    },
+  ]
 }

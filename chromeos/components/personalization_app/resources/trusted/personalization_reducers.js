@@ -12,6 +12,16 @@ import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
 import {ActionName} from './personalization_actions.js';
 
 /**
+ * @typedef {chromeos.personalizationApp.mojom.WallpaperLayout}
+ */
+export let WallpaperLayout = chromeos.personalizationApp.mojom.WallpaperLayout;
+
+/**
+ * @typedef {chromeos.personalizationApp.mojom.WallpaperType}
+ */
+export let WallpaperType = chromeos.personalizationApp.mojom.WallpaperType;
+
+/**
  * @typedef {chromeos.personalizationApp.mojom.LocalImage|
  *           chromeos.personalizationApp.mojom.WallpaperImage}
  */
