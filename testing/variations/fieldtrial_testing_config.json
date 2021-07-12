@@ -3510,7 +3510,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enaled",
+                    "name": "Enabled",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:iph_feed_header_menu_triggered;comparator:<5;window:360;storage:360",
