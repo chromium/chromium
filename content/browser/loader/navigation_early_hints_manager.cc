@@ -306,10 +306,7 @@ void NavigationEarlyHintsManager::WaitForPreloadsFinishedForTesting(
 void NavigationEarlyHintsManager::MaybePreloadHintedResource(
     const network::mojom::LinkHeaderPtr& link,
     const network::ResourceRequest& navigation_request) {
-  // Subframes aren't supported. To support subframes, this needs to know the
-  // origin of the top frame to create an appropriate IsolationInfo.
-  if (!navigation_request.is_main_frame)
-    return;
+  DCHECK(navigation_request.is_main_frame);
 
   was_preload_link_header_received_ = true;
 

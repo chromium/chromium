@@ -758,6 +758,12 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
   DCHECK_NE(early_hints->ip_address_space,
             network::mojom::IPAddressSpace::kUnknown);
 
+  // Allow Early Hints preload only for the main frame. Calculating appropriate
+  // parameters to create URLLoaderFactory for subframes is complicated and not
+  // supported yet.
+  if (!resource_request_->is_main_frame)
+    return;
+
   if (!early_hints_manager_) {
     // TODO(crbug.com/1225556): Create URLLoaderFactory via
     // URLLoaderFactoryParams of which values are calculated from `early_hints`

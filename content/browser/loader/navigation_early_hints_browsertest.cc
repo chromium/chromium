@@ -67,6 +67,10 @@ const char kPageWithHintedCorsScriptPath[] = "/page_with_hinted_cors_js.html";
 const char kPageWithHintedCorsScriptBody[] =
     "<script src=\"/hinted.js\" crossorigin></script>";
 
+const char kPageWithIframePath[] = "/page_with_iframe.html";
+const char kPageWithIframeBody[] =
+    "<iframe src=\"page_with_hinted_js.html\"></iframe>";
+
 const char kPageWithHintedModuleScriptPath[] =
     "/page_with_hinted_module_js.html";
 const char kPageWithHintedModuleScriptBody[] =
@@ -342,6 +346,34 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, ModulePreload) {
   ASSERT_FALSE(it->second.was_canceled);
   ASSERT_TRUE(it->second.error_code.has_value());
   EXPECT_EQ(it->second.error_code.value(), net::OK);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, DisallowPreloadFromIframe) {
+  ResponseEntry page_entry(kPageWithIframePath, net::HTTP_OK);
+  page_entry.body = kPageWithIframeBody;
+  RegisterResponse(page_entry);
+
+  ResponseEntry iframe_entry = CreatePageEntryWithHintedScript(net::HTTP_OK);
+  RegisterResponse(iframe_entry);
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), net::QuicSimpleTestServer::GetFileURL(kPageWithIframePath)));
+
+  // Find RenderFrameHost for the iframe.
+  std::vector<RenderFrameHost*> all_frames =
+      CollectAllRenderFrameHosts(shell()->web_contents());
+  ASSERT_EQ(all_frames.size(), 2UL);
+  ASSERT_TRUE(all_frames[1]->IsDescendantOf(all_frames[0]));
+  RenderFrameHostImpl* iframe_host =
+      static_cast<RenderFrameHostImpl*>(all_frames[1]);
+
+  EXPECT_TRUE(WaitForLoadStop(WebContents::FromRenderFrameHost(iframe_host)));
+  ASSERT_EQ(iframe_host->GetLastCommittedURL(),
+            net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath));
+
+  // NavigationEarlyHintsManager should not be created for subframes. If it were
+  // created it should have been created before navigation commit.
+  EXPECT_EQ(iframe_host->early_hints_manager(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NavigationServerError) {
