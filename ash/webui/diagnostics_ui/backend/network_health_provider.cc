@@ -141,8 +141,8 @@ mojom::NetworkPtr CreateNetwork(const NetworkProperties& network_props,
   network->type = ConvertNetworkType(network_props.network_state->type);
   network->type_properties = PopulateNetworkTypeProperties(
       network_props.network_state->type_state.get(), network->type);
-  bool has_ip_config = network_props.managed_properties &&
-                       network_props.managed_properties->saved_ip_config;
+  const bool has_ip_config = network_props.managed_properties &&
+                             network_props.managed_properties->saved_ip_config;
   if (has_ip_config) {
     network->ip_config = PopulateIPConfigProperties(
         network_props.managed_properties->saved_ip_config.get());
