@@ -160,6 +160,8 @@ bool ChromeCrashReporterClient::GetCrashDumpLocation(std::wstring* crash_dir) {
 
 bool ChromeCrashReporterClient::GetCrashMetricsLocation(
     std::wstring* metrics_dir) {
+  if (!GetCollectStatsConsent())
+    return false;
   install_static::GetUserDataDirectory(metrics_dir, nullptr);
   return !metrics_dir->empty();
 }
