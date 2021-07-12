@@ -40,9 +40,9 @@ enum BlacklistState {
 
 namespace elf_sec {
 
-// The name of the registry key holding the finch "emergency-off"
-// switch for sandbox::MITIGATION_EXTENSION_POINT_DISABLE.
-extern const wchar_t kRegSecurityFinchKeyName[];
+// The name of the registry key which controls the enablement of
+// sandbox::MITIGATION_EXTENSION_POINT_DISABLE for the browser process.
+extern const wchar_t kRegBrowserExtensionPointKeyName[];
 
 }  // namespace elf_sec
 

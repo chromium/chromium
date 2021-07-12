@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <windows.h>
 
+#include "chrome/chrome_elf/chrome_elf_security.h"
 #include "chrome/chrome_elf/crash/crash_helper.h"
 #include "chrome/chrome_elf/third_party_dlls/beacon.h"
 #include "chrome/chrome_elf/third_party_dlls/main.h"
@@ -64,6 +65,9 @@ BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved) {
 
     if (install_static::IsBrowserProcess()) {
       __try {
+        // Disable third party extension points.
+        elf_security::EarlyBrowserSecurity();
+
         // Initialize the blocking of third-party DLLs if the initialization of
         // the safety beacon succeeds.
         if (third_party_dlls::LeaveSetupBeacon())
