@@ -202,7 +202,6 @@ source_set("application_delegate_internal") {
     "//components/prefs",
     "//components/previous_session_info",
     "//components/search_engines",
-    "//components/ukm/ios:features",
     "//components/ukm/ios:ukm_reporting_ios_util",
     "//ios/chrome/app",
     "//ios/chrome/app:mode",

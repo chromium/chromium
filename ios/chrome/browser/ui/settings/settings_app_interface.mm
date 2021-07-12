@@ -75,18 +75,6 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
   chrome_test_util::WaitForBreakpadQueue();
 }
 
-// TODO(crbug.com/953862): Remove as part of feature flag cleanup.
-+ (void)setMetricsReportingEnabled:(BOOL)reportingEnabled
-                          wifiOnly:(BOOL)wifiOnly {
-  chrome_test_util::SetBooleanLocalStatePref(
-      metrics::prefs::kMetricsReportingEnabled, reportingEnabled);
-  chrome_test_util::SetBooleanLocalStatePref(prefs::kMetricsReportingWifiOnly,
-                                             wifiOnly);
-  // Breakpad uses dispatch_async to update its state. Wait to get to a
-  // consistent state.
-  chrome_test_util::WaitForBreakpadQueue();
-}
-
 + (void)setCellularNetworkEnabled:(BOOL)cellularNetworkEnabled {
   chrome_test_util::SetWWANStateTo(cellularNetworkEnabled);
   // Breakpad uses dispatch_async to update its state. Wait to get to a

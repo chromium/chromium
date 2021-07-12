@@ -49,7 +49,6 @@
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
-#include "components/ukm/ios/features.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/update_client/update_client.h"
 #include "components/variations/service/variations_service.h"
@@ -102,19 +101,23 @@ const char kInvalidatorSavedInvalidations[] = "invalidator.saved_invalidations";
 // Deprecated 9/2020
 const char kPasswordManagerOnboardingState[] =
     "profile.password_manager_onboarding_state";
-
 const char kWasOnboardingFeatureCheckedBefore[] =
     "profile.was_pwm_onboarding_feature_checked_before";
+
+// Deprecated 12/2020
+const char kDomainsWithCookiePref[] = "signin.domains_with_cookie";
 
 // Deprecated 03/2021
 const char kOmniboxGeolocationAuthorizationState[] =
     "ios.omnibox.geolocation_authorization_state";
 const char kOmniboxGeolocationLastAuthorizationAlertVersion[] =
     "ios.omnibox.geolocation_last_authorization_alert_version";
-}
 
-// Deprecated 12/2020
-const char kDomainsWithCookiePref[] = "signin.domains_with_cookie";
+// Deprecated 07/2021
+const char kMetricsReportingWifiOnly[] =
+    "ios.user_experience_metrics.wifi_only";
+
+}
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   BrowserStateInfoCache::RegisterPrefs(registry);
@@ -152,10 +155,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kLastSessionExitedCleanly, true);
-  if (!base::FeatureList::IsEnabled(kUmaCellular)) {
-    registry->RegisterBooleanPref(prefs::kMetricsReportingWifiOnly, true);
-  }
-
+  registry->RegisterBooleanPref(kMetricsReportingWifiOnly, true);
   registry->RegisterBooleanPref(kGCMChannelStatus, true);
   registry->RegisterIntegerPref(kGCMChannelPollIntervalSeconds, 0);
   registry->RegisterInt64Pref(kGCMChannelLastCheckTime, 0);
@@ -281,6 +281,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 2021/03.
   prefs->ClearPref(kOmniboxGeolocationAuthorizationState);
   prefs->ClearPref(kOmniboxGeolocationLastAuthorizationAlertVersion);
+
+  // Added 7/2021
+  prefs->ClearPref(kMetricsReportingWifiOnly);
 }
 
 // This method should be periodically pruned of year+ old migrations.

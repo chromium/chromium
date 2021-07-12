@@ -5,18 +5,7 @@
 assert(target_os == "ios")
 
 group("ios") {
-  public_deps = [
-    ":features",
-    ":ukm_url_recorder",
-  ]
-}
-
-source_set("features") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  deps = [ "//base" ]
+  public_deps = [ ":ukm_url_recorder" ]
 }
 
 source_set("ukm_url_recorder") {

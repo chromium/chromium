@@ -18,7 +18,6 @@
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "components/ukm/ios/features.h"
 #include "components/ukm/ios/ukm_reporting_ios_util.h"
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -294,12 +293,6 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 - (void)updateMetricsStateBasedOnPrefsUserTriggered:(BOOL)isUserTriggered {
   BOOL optIn = [self areMetricsEnabled];
   BOOL allowUploading = [self isUploadingEnabled];
-  if (!base::FeatureList::IsEnabled(kUmaCellular)) {
-    BOOL wifiOnly = GetApplicationContext()->GetLocalState()->GetBoolean(
-        prefs::kMetricsReportingWifiOnly);
-    optIn = optIn && wifiOnly;
-  }
-
   if (isUserTriggered)
     [self updateMetricsPrefsOnPermissionChange:optIn];
   [self setMetricsEnabled:optIn withUploading:allowUploading];
@@ -326,19 +319,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 }
 
 - (BOOL)isUploadingEnabled {
-  BOOL optIn = [self areMetricsEnabled];
-  if (base::FeatureList::IsEnabled(kUmaCellular)) {
-    return optIn;
-  }
-  BOOL wifiOnly = GetApplicationContext()->GetLocalState()->GetBoolean(
-      prefs::kMetricsReportingWifiOnly);
-  BOOL allowUploading = optIn;
-  if (optIn && wifiOnly) {
-    BOOL usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(
-        net::NetworkChangeNotifier::GetConnectionType());
-    allowUploading = !usingWWAN;
-  }
-  return allowUploading;
+  return [self areMetricsEnabled];
 }
 
 #pragma mark - Internal methods.
@@ -528,13 +509,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 }
 
 - (BOOL)isMetricsReportingEnabledWifiOnly {
-  BOOL optIn = GetApplicationContext()->GetLocalState()->GetBoolean(
+  return GetApplicationContext()->GetLocalState()->GetBoolean(
       metrics::prefs::kMetricsReportingEnabled);
-  if (base::FeatureList::IsEnabled(kUmaCellular)) {
-    return optIn;
-  }
-  return optIn && GetApplicationContext()->GetLocalState()->GetBoolean(
-                      prefs::kMetricsReportingWifiOnly);
 }
 
 @end

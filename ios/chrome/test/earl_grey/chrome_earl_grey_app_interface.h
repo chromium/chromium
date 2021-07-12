@@ -487,9 +487,6 @@
 // Returns YES if a variation triggering server-side behavior is enabled.
 + (BOOL)isTriggerVariationEnabled:(int)variationID;
 
-// Returns YES if UmaCellular feature is enabled.
-+ (BOOL)isUMACellularEnabled WARN_UNUSED_RESULT;
-
 // Returns YES if UKM feature is enabled.
 + (BOOL)isUKMEnabled WARN_UNUSED_RESULT;
 

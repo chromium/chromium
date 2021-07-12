@@ -26,12 +26,6 @@
 // Allows turning on and off metrics reporting.
 + (void)setMetricsReportingEnabled:(BOOL)reportingEnabled;
 
-// Allows turning on and off metrics reporting. |wifiOnly| is appllicable only
-// if reporting is enabled. Reporting will not happen on cellular connection if
-// |wifiOnly| is YES.
-+ (void)setMetricsReportingEnabled:(BOOL)reportingEnabled
-                          wifiOnly:(BOOL)wifiOnly;
-
 // Allows simulating turning the cellular network on/off.
 + (void)setCellularNetworkEnabled:(BOOL)cellularNetworkEnabled;
 

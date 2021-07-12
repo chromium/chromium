@@ -49,7 +49,6 @@ source_set("google_services") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/sync",
-    "//components/ukm/ios:features",
     "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",

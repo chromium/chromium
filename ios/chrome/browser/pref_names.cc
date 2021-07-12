@@ -106,11 +106,6 @@ const char kLastSessionExitedCleanly[] =
 const char kNTPContentSuggestionsEnabled[] =
     "ios.ntp.content_suggestions_enabled";
 
-// Preference that hold a boolean indicating whether metrics reporting should
-// be limited to wifi (when enabled).
-const char kMetricsReportingWifiOnly[] =
-    "ios.user_experience_metrics.wifi_only";
-
 // Boolean that is true when Suggest support is enabled.
 const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 

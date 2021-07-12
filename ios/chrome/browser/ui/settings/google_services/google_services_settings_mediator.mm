@@ -16,7 +16,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/ukm/ios/features.h"
 #include "components/unified_consent/pref_names.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -227,13 +226,6 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         initWithPrefService:localPrefService
                    prefName:metrics::prefs::kMetricsReportingEnabled];
     _sendDataUsagePreference.observer = self;
-    if (!base::FeatureList::IsEnabled(kUmaCellular)) {
-      // When flag is not, kMetricsReportingWifiOnly pref has not been
-      // initialized, so don't create a PrefBackedBoolean for it.
-      _sendDataUsageWifiOnlyPreference = [[PrefBackedBoolean alloc]
-          initWithPrefService:localPrefService
-                     prefName:prefs::kMetricsReportingWifiOnly];
-    }
     _passwordLeakCheckEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:password_manager::prefs::

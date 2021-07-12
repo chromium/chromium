@@ -43,7 +43,6 @@ source_set("flags") {
     "//components/strings:components_strings",
     "//components/sync/driver",
     "//components/translate/core/browser",
-    "//components/ukm/ios:features",
     "//components/unified_consent",
     "//components/variations",
     "//ios/chrome/app/strings:ios_strings",

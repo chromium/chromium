@@ -3613,21 +3613,6 @@
             ]
         }
     ],
-    "FixUmaCellularMetricsRecording": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FixUmaCellularMetricsRecording"
-                    ]
-                }
-            ]
-        }
-    ],
     "FuzzyAppSearch": [
         {
             "platforms": [

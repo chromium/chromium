@@ -55,7 +55,6 @@
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/translate/core/browser/translate_prefs.h"
-#include "components/ukm/ios/features.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/crash_report/features.h"
@@ -469,9 +468,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"settings-refresh", flag_descriptions::kSettingsRefreshName,
      flag_descriptions::kSettingsRefreshDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSettingsRefresh)},
-    {"send-uma-cellular", flag_descriptions::kSendUmaOverAnyNetwork,
-     flag_descriptions::kSendUmaOverAnyNetworkDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kUmaCellular)},
     {"autofill-use-mobile-label-disambiguation",
      flag_descriptions::kAutofillUseMobileLabelDisambiguationName,
      flag_descriptions::kAutofillUseMobileLabelDisambiguationDescription,

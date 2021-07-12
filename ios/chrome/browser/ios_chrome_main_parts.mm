@@ -34,7 +34,6 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_download_manager.h"
-#include "components/ukm/ios/features.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
@@ -105,12 +104,6 @@ bool ShouldInstallAllocatorShim() {
          base::ios::IsRunningOnOrLater(13, 5, 0);
 }
 #endif
-
-// If enabled, always pass |true| to MetricsServicesManager
-// UpdateUploadPermissions.  Once impact of the UmaCellular logic to check
-// cellular is determined, this flag and the incorrect logic can be removed.
-const base::Feature kFixUmaCellularMetricsRecording{
-    "FixUmaCellularMetricsRecording", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace
 
@@ -381,25 +374,6 @@ void IOSChromeMainParts::SetupMetrics() {
 }
 
 void IOSChromeMainParts::StartMetricsRecording() {
-  bool isConnectionCellular = net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType());
-  bool mayUpload = false;
-  if (base::FeatureList::IsEnabled(kUmaCellular)) {
-    if (base::FeatureList::IsEnabled(kFixUmaCellularMetricsRecording)) {
-      mayUpload = true;
-    } else {
-      // This is wrong and should be removed, but the fix is gated by the
-      // feature flag above to measure impact.
-      mayUpload = !isConnectionCellular;
-    }
-  } else {
-    // TODO(crbug.com/1179809): Now that kUmaCellular is default, all references
-    // to kUmaCellular and kMetricsReportingWifiOnly should be removed, but only
-    // after a study of kFixUmaCellularMetricsRecording is completed.
-    bool wifiOnly = local_state_->GetBoolean(prefs::kMetricsReportingWifiOnly);
-    mayUpload = !wifiOnly || !isConnectionCellular;
-  }
-
   application_context_->GetMetricsServicesManager()->UpdateUploadPermissions(
-      mayUpload);
+      true);
 }

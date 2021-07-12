@@ -29,7 +29,6 @@
 #include "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "components/ukm/ios/features.h"
 #include "components/web_resource/web_resource_pref_names.h"
 #include "ios/chrome/app/app_metrics_app_state_agent.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
@@ -798,16 +797,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   _localStatePrefObserverBridge->ObserveChangesForPreference(
       metrics::prefs::kMetricsReportingEnabled,
       &_localStatePrefChangeRegistrar);
-  if (!base::FeatureList::IsEnabled(kUmaCellular)) {
-    _localStatePrefObserverBridge->ObserveChangesForPreference(
-        prefs::kMetricsReportingWifiOnly, &_localStatePrefChangeRegistrar);
-  }
 
   // Calls the onPreferenceChanged function in case there was
   // a change to the observed preferences before the observer
   // bridge was set up.
   [self onPreferenceChanged:metrics::prefs::kMetricsReportingEnabled];
-  [self onPreferenceChanged:prefs::kMetricsReportingWifiOnly];
 
   // Track changes to default search engine.
   TemplateURLService* service =
@@ -1121,8 +1115,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   // Turn on or off metrics & crash reporting when either preference changes.
-  if (preferenceName == metrics::prefs::kMetricsReportingEnabled ||
-      preferenceName == prefs::kMetricsReportingWifiOnly) {
+  if (preferenceName == metrics::prefs::kMetricsReportingEnabled) {
     [_metricsMediator updateMetricsStateBasedOnPrefsUserTriggered:YES];
   }
 }

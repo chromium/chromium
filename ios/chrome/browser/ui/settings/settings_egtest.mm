@@ -250,94 +250,27 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 }
 
 - (void)assertsMetricsPrefsForService:(MetricsServiceType)serviceType {
-  // Two preferences, each with two values - on or off.  Check all four
-  // combinations:
-  // kMetricsReportingEnabled OFF and kMetricsReportingWifiOnly OFF
+  // kMetricsReportingEnabled OFF
   //  - Services do not record data and do not upload data.
+  [SettingsAppInterface setMetricsReportingEnabled:NO];
 
-  // kMetricsReportingEnabled OFF and kMetricsReportingWifiOnly ON
-  //  - Services do not record data and do not upload data.
-  //    Note that if kMetricsReportingEnabled is OFF, the state of
-  //    kMetricsReportingWifiOnly does not matter.
-
-  // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly ON
-  //  - Services record data and upload data only when the device is using
-  //    a wifi connection.  Note:  rather than checking for wifi, the code
-  //    checks for a cellular network (wwan).  wwan != wifi.  So if wwan is
-  //    true, services do not upload any data.
-
-  // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly OFF
-  //  - Services record data and upload data.
-
-  if ([ChromeEarlGrey isUMACellularEnabled]) {
-    // kMetricsReportingEnabled OFF
-    [SettingsAppInterface setMetricsReportingEnabled:NO];
-  } else {
-    // kMetricsReportingEnabled OFF and kMetricsReportingWifiOnly OFF
-    [SettingsAppInterface setMetricsReportingEnabled:NO wifiOnly:NO];
-  }
   // Service should be completely disabled.
   // I.e. no recording of data, and no uploading of what's been recorded.
   [self assertMetricsServiceDisabled:serviceType];
 
-  if ([ChromeEarlGrey isUMACellularEnabled]) {
-    // kMetricsReportingEnabled OFF
-    [SettingsAppInterface setMetricsReportingEnabled:NO];
-  } else {
-    // kMetricsReportingEnabled OFF and kMetricsReportingWifiOnly ON
-    [SettingsAppInterface setMetricsReportingEnabled:NO wifiOnly:YES];
-  }
-  // If kMetricsReportingEnabled is OFF, any service should remain completely
-  // disabled, i.e. no uploading even if kMetricsReportingWifiOnly is ON.
-  [self assertMetricsServiceDisabled:serviceType];
-
-// Split here:  Official build vs. Development build.
-// Official builds allow recording and uploading of data, honoring the
-// metrics prefs.  Development builds should never record or upload data.
+  // kMetricsReportingEnabled ON
+  //  - Services record data and upload data.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Official build.
-  // The values of the prefs and the wwan vs wifi state should be honored by
-  // the services, turning on and off according to the rules laid out above.
-
-  if (![ChromeEarlGrey isUMACellularEnabled]) {
-    // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly ON.
-    [SettingsAppInterface setMetricsReportingEnabled:YES wifiOnly:YES];
-    // Service should be enabled.
-    [self assertMetricsServiceEnabled:serviceType];
-
-    // Set the network to use a cellular network, which should disable uploading
-    // when the wifi-only flag is set.
-    [SettingsAppInterface setCellularNetworkEnabled:YES];
-    [self assertMetricsServiceEnabledButNotUploading:serviceType];
-
-    // Turn off cellular network usage, which should enable uploading.
-    [SettingsAppInterface setCellularNetworkEnabled:NO];
-    [self assertMetricsServiceEnabled:serviceType];
-
-    // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly OFF
-    [SettingsAppInterface setMetricsReportingEnabled:YES wifiOnly:NO];
-    [self assertMetricsServiceEnabled:serviceType];
-  }
-
+  // Official builds allow recording and uploading of data, honoring the
+  // metrics prefs.  Development builds should never record or upload data.
+  [SettingsAppInterface setMetricsReportingEnabled:YES];
+  // Service should be enabled.
+  [self assertMetricsServiceEnabled:serviceType];
 #else
   // Development build.  Do not allow any recording or uploading of data.
-  // Specifically, the kMetricsReportingEnabled preference is completely
-  // disregarded for non-official builds, and checking its value always returns
-  // false (NO).
-  // This tests that no matter the state change, pref or network connection,
-  // services remain disabled.
-
-  if (![ChromeEarlGrey isUMACellularEnabled]) {
-    // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly ON
-    [SettingsAppInterface setMetricsReportingEnabled:YES wifiOnly:YES];
-    // Service should remain disabled.
-    [self assertMetricsServiceDisabled:serviceType];
-
-    // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly OFF
-    [SettingsAppInterface setMetricsReportingEnabled:YES wifiOnly:NO];
-    // Service should remain disabled.
-    [self assertMetricsServiceDisabled:serviceType];
-  }
+  [SettingsAppInterface setMetricsReportingEnabled:YES];
+  // Service should remain disabled.
+  [self assertMetricsServiceDisabled:serviceType];
 #endif
 }
 
@@ -388,14 +321,13 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 }
 
 // Verifies that metrics reporting works properly under possible settings of the
-// preferences kMetricsReportingEnabled and kMetricsReportingWifiOnly.
+// preference kMetricsReportingEnabled.
 - (void)testMetricsReporting {
   [self assertsMetricsPrefsForService:kMetrics];
 }
 
 // Verifies that breakpad reporting works properly under possible settings of
-// the preferences |kMetricsReportingEnabled| and |kMetricsReportingWifiOnly|
-// for non-first-launch runs.
+// the preference |kMetricsReportingEnabled|.
 // NOTE: breakpad only allows uploading for non-first-launch runs.
 - (void)testBreakpadReporting {
   [self setTearDownHandler:^{
@@ -408,8 +340,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 }
 
 // Verifies that breakpad reporting works properly under possible settings of
-// the preferences |kMetricsReportingEnabled| and |kMetricsReportingWifiOnly|
-// for first-launch runs.
+// the preference |kMetricsReportingEnabled|.
 // NOTE: breakpad only allows uploading for non-first-launch runs.
 - (void)testBreakpadReportingFirstLaunch {
   [self setTearDownHandler:^{

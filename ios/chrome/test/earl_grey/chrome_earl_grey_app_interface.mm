@@ -18,7 +18,6 @@
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
-#import "components/ukm/ios/features.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
@@ -991,10 +990,6 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
       {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
        variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
   return std::find(ids.begin(), ids.end(), variationID) != ids.end();
-}
-
-+ (BOOL)isUMACellularEnabled {
-  return base::FeatureList::IsEnabled(kUmaCellular);
 }
 
 + (BOOL)isUKMEnabled {
