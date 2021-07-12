@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 
+#include <limits>
+
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -180,6 +183,28 @@ bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
   return local_location &&
          LayoutNGBlockFlowMixin<LayoutSVGBlock>::NodeAtPoint(
              result, *local_location, accumulated_offset, action);
+}
+
+PositionWithAffinity LayoutNGSVGText::PositionForPoint(
+    const PhysicalOffset& point_in_contents) const {
+  NOT_DESTROYED();
+  FloatPoint point(point_in_contents.left, point_in_contents.top);
+  float min_distance = std::numeric_limits<float>::max();
+  const LayoutSVGInlineText* closest_inline_text = nullptr;
+  for (const LayoutObject* descendant = FirstChild(); descendant;
+       descendant = descendant->NextInPreOrder(this)) {
+    const auto* text = DynamicTo<LayoutSVGInlineText>(descendant);
+    if (!text)
+      continue;
+    float distance = descendant->ObjectBoundingBox().SquaredDistanceTo(point);
+    if (distance >= min_distance)
+      continue;
+    min_distance = distance;
+    closest_inline_text = text;
+  }
+  if (!closest_inline_text)
+    return CreatePositionWithAffinity(0);
+  return closest_inline_text->PositionForPoint(point_in_contents);
 }
 
 void LayoutNGSVGText::SetNeedsPositioningValuesUpdate() {

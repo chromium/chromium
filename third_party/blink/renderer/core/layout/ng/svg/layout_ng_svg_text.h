@@ -38,6 +38,8 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
                    const HitTestLocation& hit_test_location,
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction action) override;
+  PositionWithAffinity PositionForPoint(
+      const PhysicalOffset& point_in_contents) const override;
 
   // LayoutBox override:
   bool CreatesNewFormattingContext() const override;

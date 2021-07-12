@@ -66,6 +66,44 @@ TEST_P(PhysicalRectUniteTest, Data) {
   EXPECT_EQ(expected, actual);
 }
 
+TEST(PhysicalRectTest, SquaredDistanceTo) {
+  PhysicalRect rect(0, 0, 200, 200);
+  EXPECT_EQ(200, rect.SquaredDistanceTo(PhysicalOffset(-10, -10)))
+      << "over the top-left corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(0, 0)))
+      << "on the top-left corner";
+  EXPECT_EQ(100, rect.SquaredDistanceTo(PhysicalOffset(10, -10)))
+      << "over the top edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(10, 0)))
+      << "on the top edge";
+  EXPECT_EQ(200, rect.SquaredDistanceTo(PhysicalOffset(210, -10)))
+      << "over the top-right corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(200, 0)))
+      << "on the top-right corner";
+  EXPECT_EQ(100, rect.SquaredDistanceTo(PhysicalOffset(210, 10)))
+      << "over the right edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(200, 10)))
+      << "on the right edge";
+  EXPECT_EQ(200, rect.SquaredDistanceTo(PhysicalOffset(210, 210)))
+      << "over the bottom-right corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(200, 200)))
+      << "on the bottom-right corner";
+  EXPECT_EQ(10000, rect.SquaredDistanceTo(PhysicalOffset(100, 300)))
+      << "over the bottom edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(100, 200)))
+      << "on the bottom edge";
+  EXPECT_EQ(401, rect.SquaredDistanceTo(PhysicalOffset(-20, 201)))
+      << "over the bottom-left corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(0, 200)))
+      << "on the bottom-left corner";
+  EXPECT_EQ(9, rect.SquaredDistanceTo(PhysicalOffset(-3, 100)))
+      << "over the left edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(0, 3)))
+      << "on the left edge";
+
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(10, 190))) << "contained";
+}
+
 TEST(PhysicalRectTest, InclusiveIntersect) {
   PhysicalRect rect(11, 12, 0, 0);
   EXPECT_TRUE(rect.InclusiveIntersect(PhysicalRect(11, 12, 13, 14)));

@@ -465,8 +465,8 @@ PositionWithAffinity LayoutSVGRoot::PositionForPoint(
 
   LayoutObject* layout_object = closest_descendant;
   AffineTransform transform = layout_object->LocalToSVGParentTransform();
-  transform.Translate(To<LayoutSVGText>(layout_object)->Location().X(),
-                      To<LayoutSVGText>(layout_object)->Location().Y());
+  transform.Translate(To<LayoutBox>(layout_object)->Location().X(),
+                      To<LayoutBox>(layout_object)->Location().Y());
   while (layout_object) {
     layout_object = layout_object->Parent();
     if (layout_object->IsSVGRoot())

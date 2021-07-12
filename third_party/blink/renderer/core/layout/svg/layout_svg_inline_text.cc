@@ -26,10 +26,13 @@
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/line/svg_inline_text_box.h"
@@ -175,16 +178,59 @@ bool LayoutSVGInlineText::CharacterStartsNewTextChunk(int position) const {
   return it->value.HasX() || it->value.HasY();
 }
 
+FloatRect LayoutSVGInlineText::ObjectBoundingBox() const {
+  NOT_DESTROYED();
+  if (!IsInLayoutNGInlineFormattingContext())
+    return FloatLinesBoundingBox();
+
+  FloatRect bounds;
+  NGInlineCursor cursor;
+  cursor.MoveTo(*this);
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+    const NGFragmentItem& item = *cursor.CurrentItem();
+    if (item.Type() == NGFragmentItem::kSvgText)
+      bounds.Unite(item.ObjectBoundingBox());
+  }
+  return bounds;
+}
+
 PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
 
-  if (IsInLayoutNGInlineFormattingContext())
-    return LayoutText::PositionForPoint(point);
-  // TODO(layout-dev): Remove this function entirely after eliminating the
-  // legacy layout.
+  if (IsInLayoutNGInlineFormattingContext()) {
+    NGInlineCursor cursor;
+    cursor.MoveTo(*this);
+    NGInlineCursor last_hit_cursor;
+    PhysicalOffset last_hit_transformed_point;
+    LayoutUnit closest_distance = LayoutUnit::Max();
+    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+      PhysicalOffset transformed_point =
+          cursor.CurrentItem()->MapPointInContainer(point);
+      PhysicalRect item_rect = cursor.Current().RectInContainerFragment();
+      LayoutUnit distance;
+      if (!item_rect.Contains(transformed_point) ||
+          !cursor.PositionForPointInChild(transformed_point))
+        distance = item_rect.SquaredDistanceTo(transformed_point);
+      // Intentionally apply '<=', not '<', because we'd like to choose a later
+      // item.
+      if (distance <= closest_distance) {
+        closest_distance = distance;
+        last_hit_cursor = cursor;
+        last_hit_transformed_point = transformed_point;
+      }
+    }
+    if (last_hit_cursor) {
+      auto position_with_affinity =
+          last_hit_cursor.PositionForPointInChild(last_hit_transformed_point);
+      // Note: Due by Bidi adjustment, |position_with_affinity| isn't relative
+      // to this.
+      return AdjustForEditingBoundary(position_with_affinity);
+    }
+    return CreatePositionWithAffinity(0);
+  }
 
   if (!HasInlineFragments() || !TextLength())
     return CreatePositionWithAffinity(0);

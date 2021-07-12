@@ -82,6 +82,10 @@ struct CORE_EXPORT PhysicalRect {
   // Each distance is zero if |this| contains |target| in that direction.
   PhysicalSize DistanceAsSize(PhysicalOffset target) const;
 
+  // Returns square of the distance from |point| to the closest edge of |this|.
+  // This function returns 0 if |this| contains |point|.
+  LayoutUnit SquaredDistanceTo(const PhysicalOffset& point) const;
+
   bool Contains(const PhysicalRect&) const;
   bool Contains(LayoutUnit px, LayoutUnit py) const {
     return px >= offset.left && px < Right() && py >= offset.top &&

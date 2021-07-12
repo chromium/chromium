@@ -70,6 +70,7 @@ class LayoutSVGInlineText final : public LayoutText {
     NOT_DESTROYED();
     return "LayoutSVGInlineText";
   }
+  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
  private:
   void TextDidChange() override;
@@ -78,10 +79,7 @@ class LayoutSVGInlineText final : public LayoutText {
 
   void AddMetricsFromRun(const TextRun&, bool& last_character_was_white_space);
 
-  FloatRect ObjectBoundingBox() const override {
-    NOT_DESTROYED();
-    return FloatLinesBoundingBox();
-  }
+  FloatRect ObjectBoundingBox() const override;
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
@@ -89,7 +87,6 @@ class LayoutSVGInlineText final : public LayoutText {
            LayoutText::IsOfType(type);
   }
 
-  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
   LayoutRect LocalCaretRect(
       const InlineBox*,
       int caret_offset,

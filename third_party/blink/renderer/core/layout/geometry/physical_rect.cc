@@ -27,6 +27,13 @@ PhysicalSize PhysicalRect::DistanceAsSize(PhysicalOffset target) const {
   return distance;
 }
 
+LayoutUnit PhysicalRect::SquaredDistanceTo(const PhysicalOffset& point) const {
+  LayoutUnit diff_x =
+      point.left - clampTo<LayoutUnit>(point.left, X(), Right());
+  LayoutUnit diff_y = point.top - clampTo<LayoutUnit>(point.top, Y(), Bottom());
+  return diff_x * diff_x + diff_y * diff_y;
+}
+
 bool PhysicalRect::Contains(const PhysicalRect& other) const {
   return offset.left <= other.offset.left && offset.top <= other.offset.top &&
          Right() >= other.Right() && Bottom() >= other.Bottom();

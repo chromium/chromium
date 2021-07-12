@@ -455,7 +455,7 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
   // containers that could contain LayoutSVGTexts that are closer.
   for (LayoutObject* child = layout_object->SlowLastChild(); child;
        child = child->PreviousSibling()) {
-    if (child->IsSVGText()) {
+    if (child->IsSVGText() || child->IsNGSVGText()) {
       float distance = DistanceToChildLayoutObject(child, point);
       if (distance >= closest_text.distance)
         continue;

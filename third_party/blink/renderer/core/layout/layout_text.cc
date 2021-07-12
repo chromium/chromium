@@ -893,52 +893,25 @@ PositionWithAffinity LayoutText::PositionForPoint(
     const auto* const text_combine = DynamicTo<LayoutNGTextCombine>(Parent());
     const NGPhysicalBoxFragment* container_fragment = nullptr;
     PhysicalOffset point_in_container_fragment;
-    if (!IsSVGInlineText()) {
-      for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-        DCHECK(&cursor.ContainerFragment());
-        if (container_fragment != &cursor.ContainerFragment()) {
-          container_fragment = &cursor.ContainerFragment();
+    DCHECK(!IsSVGInlineText());
+    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+      DCHECK(&cursor.ContainerFragment());
+      if (container_fragment != &cursor.ContainerFragment()) {
+        container_fragment = &cursor.ContainerFragment();
+        point_in_container_fragment =
+            point_in_contents - container_fragment->OffsetFromOwnerLayoutBox();
+        if (UNLIKELY(text_combine)) {
           point_in_container_fragment =
-              point_in_contents -
-              container_fragment->OffsetFromOwnerLayoutBox();
-          if (UNLIKELY(text_combine)) {
-            point_in_container_fragment = text_combine->AdjustOffsetForHitTest(
-                point_in_container_fragment);
-          }
-        }
-        if (!EnclosingIntRect(cursor.Current().RectInContainerFragment())
-                 .Contains(FlooredIntPoint(point_in_container_fragment)))
-          continue;
-        if (auto position_with_affinity =
-                cursor.PositionForPointInChild(point_in_container_fragment)) {
-          // Note: Due by Bidi adjustment, |position_with_affinity| isn't
-          // relative to this.
-          return AdjustForEditingBoundary(position_with_affinity);
+              text_combine->AdjustOffsetForHitTest(point_in_container_fragment);
         }
       }
-    } else {
-      NGInlineCursor last_hit_cursor;
-      for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-        DCHECK(&cursor.ContainerFragment());
-        if (container_fragment != &cursor.ContainerFragment()) {
-          container_fragment = &cursor.ContainerFragment();
-          point_in_container_fragment =
-              point_in_contents -
-              container_fragment->OffsetFromOwnerLayoutBox();
-        }
-        point_in_container_fragment = cursor.CurrentItem()->MapPointInContainer(
-            point_in_container_fragment);
-        if (!cursor.Current().RectInContainerFragment().Contains(
-                point_in_container_fragment))
-          continue;
-        if (cursor.PositionForPointInChild(point_in_container_fragment))
-          last_hit_cursor = cursor;
-      }
-      if (last_hit_cursor) {
-        auto position_with_affinity = last_hit_cursor.PositionForPointInChild(
-            point_in_container_fragment);
-        // Note: Due by Bidi adjustment, |position_with_affinity| isn't relative
-        // to this.
+      if (!EnclosingIntRect(cursor.Current().RectInContainerFragment())
+               .Contains(FlooredIntPoint(point_in_container_fragment)))
+        continue;
+      if (auto position_with_affinity =
+              cursor.PositionForPointInChild(point_in_container_fragment)) {
+        // Note: Due by Bidi adjustment, |position_with_affinity| isn't
+        // relative to this.
         return AdjustForEditingBoundary(position_with_affinity);
       }
     }
