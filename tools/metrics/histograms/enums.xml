@@ -58533,6 +58533,20 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Web app missing"/>
 </enum>
 
+<enum name="NoteTemplate">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Classic"/>
+  <int value="2" label="Friendly"/>
+  <int value="3" label="Fresh"/>
+  <int value="4" label="Powerful"/>
+  <int value="5" label="Impactful"/>
+  <int value="6" label="Lovely"/>
+  <int value="7" label="Groovy"/>
+  <int value="8" label="Monochrome"/>
+  <int value="9" label="Bold"/>
+  <int value="10" label="Dreamy"/>
+</enum>
+
 <enum name="NotificationActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Notification added"/>
