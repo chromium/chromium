@@ -122,14 +122,15 @@ void SystemClipboard::WritePlainText(const String& plain_text,
 #if defined(OS_WIN)
   ReplaceNewlinesWithWindowsStyleNewlines(text);
 #endif
-  clipboard_->WriteText(NonNullString(text));
+  if (clipboard_.is_bound())
+    clipboard_->WriteText(NonNullString(text));
 }
 
 String SystemClipboard::ReadHTML(KURL& url,
                                  unsigned& fragment_start,
                                  unsigned& fragment_end) {
   String html;
-  if (IsValidBufferType(buffer_)) {
+  if (IsValidBufferType(buffer_) && clipboard_.is_bound()) {
     clipboard_->ReadHtml(buffer_, &html, &url,
                          static_cast<uint32_t*>(&fragment_start),
                          static_cast<uint32_t*>(&fragment_end));
@@ -145,6 +146,8 @@ String SystemClipboard::ReadHTML(KURL& url,
 void SystemClipboard::WriteHTML(const String& markup,
                                 const KURL& document_url,
                                 SmartReplaceOption smart_replace_option) {
+  if (!clipboard_.is_bound())
+    return;
   clipboard_->WriteHtml(NonNullString(markup), document_url);
   if (smart_replace_option == kCanSmartReplace)
     clipboard_->WriteSmartPasteMarker();
@@ -160,7 +163,8 @@ void SystemClipboard::ReadSvg(
 }
 
 void SystemClipboard::WriteSvg(const String& markup) {
-  clipboard_->WriteSvg(NonNullString(markup));
+  if (clipboard_.is_bound())
+    clipboard_->WriteSvg(NonNullString(markup));
 }
 
 String SystemClipboard::ReadRTF() {
@@ -209,6 +213,8 @@ void SystemClipboard::WriteImageWithTag(Image* image,
   SkBitmap bitmap;
   if (sk_sp<SkImage> sk_image = paint_image.GetSwSkImage())
     sk_image->asLegacyBitmap(&bitmap);
+  if (!clipboard_.is_bound())
+    return;
   // The bitmap backing a canvas can be in non-native skia pixel order (aka
   // RGBA when kN32_SkColorType is BGRA-ordered, or higher bit-depth color-types
   // like F16. The IPC to the browser requires the bitmap to be in N32 format
@@ -237,7 +243,8 @@ void SystemClipboard::WriteImageWithTag(Image* image,
 }
 
 void SystemClipboard::WriteImage(const SkBitmap& bitmap) {
-  clipboard_->WriteImage(bitmap);
+  if (clipboard_.is_bound())
+    clipboard_->WriteImage(bitmap);
 }
 
 mojom::blink::ClipboardFilesPtr SystemClipboard::ReadFiles() {
@@ -258,6 +265,8 @@ String SystemClipboard::ReadCustomData(const String& type) {
 
 void SystemClipboard::WriteDataObject(DataObject* data_object) {
   DCHECK(data_object);
+  if (!clipboard_.is_bound())
+    return;
   // This plagiarizes the logic in DropDataBuilder::Build, but only extracts the
   // data needed for the implementation of WriteDataObject.
   //
@@ -268,7 +277,6 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
   // TODO(slangley): Use a mojo struct to send web_drag_data and allow receiving
   // side to extract the data required.
   // TODO(dcheng): Properly support text/uri-list here.
-
   HashMap<String, String> custom_data;
   WebDragData data = data_object->ToWebDragData();
   for (const WebDragData::Item& item : data.Items()) {
@@ -288,12 +296,14 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
 }
 
 void SystemClipboard::CommitWrite() {
-  clipboard_->CommitWrite();
+  if (clipboard_.is_bound())
+    clipboard_->CommitWrite();
 }
 
 void SystemClipboard::CopyToFindPboard(const String& text) {
 #if defined(OS_MAC)
-  clipboard_->WriteStringToFindPboard(text);
+  if (clipboard_.is_bound())
+    clipboard_->WriteStringToFindPboard(text);
 #endif
 }
 
