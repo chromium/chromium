@@ -162,8 +162,6 @@ def xcode_enum(version):
 
 # Keep this in-sync with the versions of bots in //ios/build/bots/.
 xcode = struct(
-    # in use by webrtc mac builders
-    x11c29 = xcode_enum("11c29"),
     # (current default for other projects) xc12.0 gm seed
     x12a7209 = xcode_enum("12a7209"),
     # (current default for iOS) xc12.4 gm seed
