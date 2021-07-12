@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/profiling_host/background_profiling_triggers.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom-forward.h"
 
 namespace base {
@@ -46,20 +45,12 @@ class ProfilingProcessHost {
       SaveTraceFinishedCallback done,
       bool stop_immediately_after_heap_dump_for_tests);
 
-  // Sends a message to the profiling process to report all profiled processes
-  // memory data to the crash server (slow-report).
-  void RequestProcessReport(std::string trigger_name);
-
  private:
   friend struct base::DefaultSingletonTraits<ProfilingProcessHost>;
-  friend class BackgroundProfilingTriggersTest;
   friend class MemlogBrowserTest;
 
   ProfilingProcessHost();
   ~ProfilingProcessHost();
-
-  // Called on the UI thread after the heap dump has been added to the trace.
-  void DumpProcessFinishedUIThread();
 
   void SaveTraceToFileOnBlockingThread(base::FilePath dest,
                                        std::string trace,
@@ -68,16 +59,8 @@ class ProfilingProcessHost {
   // Reports the profiling mode.
   void ReportMetrics();
 
-  // Handle background triggers on high memory pressure. A trigger will call
-  // |RequestProcessReport| on this instance.
-  BackgroundProfilingTriggers background_triggers_;
-
   // Every 24-hours, reports the profiling mode.
   base::RepeatingTimer metrics_timer_;
-
-  // If this URL is non empty, then we will use it instead of the default crash
-  // service URL.
-  std::string upload_url_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfilingProcessHost);
 };

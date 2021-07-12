@@ -257,11 +257,7 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::ListValue* args) {
 
 void MemoryInternalsDOMHandler::HandleReportProcess(
     const base::ListValue* args) {
-  if (!args->is_list() || args->GetList().size() != 1)
-    return;
-
-  ProfilingProcessHost::GetInstance()->RequestProcessReport(
-      "MEMLOG_MANUAL_TRIGGER");
+  // TODO(etienneb): Delete the use of this method.
 }
 
 void MemoryInternalsDOMHandler::HandleStartProfiling(

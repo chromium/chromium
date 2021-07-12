@@ -4,8 +4,6 @@
 
 static_library("profiling_host") {
   sources = [
-    "background_profiling_triggers.cc",
-    "background_profiling_triggers.h",
     "chrome_browser_main_extra_parts_profiling.cc",
     "chrome_browser_main_extra_parts_profiling.h",
     "chrome_client_connection_manager.cc",
