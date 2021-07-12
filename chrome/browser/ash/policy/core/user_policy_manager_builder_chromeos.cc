@@ -116,10 +116,8 @@ void CreateConfigurationPolicyProvider(
   //   |UserCloudPolicyManagerChromeOS| is created here.
   // All other user types do not have user policy.
   const AccountId& account_id = user->GetAccountId();
-  if (user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED ||
-      (user->GetType() != user_manager::USER_TYPE_CHILD &&
-       BrowserPolicyConnector::IsNonEnterpriseUser(
-           account_id.GetUserEmail()))) {
+  if (user->GetType() != user_manager::USER_TYPE_CHILD &&
+      BrowserPolicyConnector::IsNonEnterpriseUser(account_id.GetUserEmail())) {
     DLOG(WARNING) << "No policy loaded for known non-enterprise user";
     // Mark this profile as not requiring policy.
     user_manager::known_user::SetProfileRequiresPolicy(

@@ -133,7 +133,7 @@ Polymer({
    * @private
    */
   shouldShowEmail_(user) {
-    return !user.isSupervised && user.name !== user.displayEmail;
+    return !user.isChild && user.name !== user.displayEmail;
   },
 
   /**

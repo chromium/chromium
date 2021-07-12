@@ -105,7 +105,6 @@ LoginState::LoggedInUserType ChromeUserManager::GetLoggedInUserType(
       return LoginState::LOGGED_IN_USER_REGULAR;
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return LoginState::LOGGED_IN_USER_KIOSK_APP;
-    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
     case user_manager::NUM_USER_TYPES:
       break;  // Go to invalid-type handling code.
       // Since there is no default, the compiler warns about unhandled types.

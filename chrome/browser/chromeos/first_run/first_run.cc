@@ -51,7 +51,6 @@ namespace {
 bool IsRegularUserOrSupervisedChild(user_manager::UserManager* user_manager) {
   switch (user_manager->GetActiveUser()->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
     case user_manager::USER_TYPE_CHILD:
       return true;
     default:
@@ -59,8 +58,7 @@ bool IsRegularUserOrSupervisedChild(user_manager::UserManager* user_manager) {
   }
 }
 
-// Getting started module is shown to  unmanaged regular, supervised and child
-// accounts.
+// Getting started module is shown to unmanaged regular and child accounts.
 bool ShouldShowGetStarted(Profile* profile,
                           user_manager::UserManager* user_manager) {
   // Child users return true for IsManaged. These are not EDU accounts though,
@@ -69,7 +67,6 @@ bool ShouldShowGetStarted(Profile* profile,
     return true;
   switch (user_manager->GetActiveUser()->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
       return !profile->GetProfilePolicyConnector()->IsManaged();
     default:
       return false;

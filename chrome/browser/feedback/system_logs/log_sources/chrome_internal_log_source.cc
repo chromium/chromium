@@ -137,8 +137,6 @@ std::string GetPrimaryAccountTypeString() {
       return "guest";
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return "public_account";
-    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
-      return "supervised";
     case user_manager::USER_TYPE_KIOSK_APP:
       return "kiosk_app";
     case user_manager::USER_TYPE_CHILD:

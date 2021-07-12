@@ -421,8 +421,7 @@ SupervisedUserView::SupervisedUserView()
     : ManagedStateView(PressedCallback(),
                        IDS_ASH_STATUS_TRAY_SUPERVISED_LABEL,
                        GetSupervisedUserIcon()) {
-  bool visible =
-      Shell::Get()->session_controller()->IsUserChildOrDeprecatedSupervised();
+  bool visible = Shell::Get()->session_controller()->IsUserChild();
   SetVisible(visible);
   if (visible)
     SetTooltipText(GetSupervisedUserMessage());

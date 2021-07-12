@@ -150,9 +150,6 @@ em::ExtensionInstallReportLogEvent_UserType ConvertUserTypeToProto(
       return em::ExtensionInstallReportLogEvent::USER_TYPE_GUEST;
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return em::ExtensionInstallReportLogEvent::USER_TYPE_PUBLIC_ACCOUNT;
-    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
-      return em::ExtensionInstallReportLogEvent::
-          USER_TYPE_SUPERVISED_DEPRECATED;
     case user_manager::USER_TYPE_KIOSK_APP:
       return em::ExtensionInstallReportLogEvent::USER_TYPE_KIOSK_APP;
     case user_manager::USER_TYPE_CHILD:

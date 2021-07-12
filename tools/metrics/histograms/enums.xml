@@ -73578,7 +73578,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Guest"/>
   <int value="2" label="New Regular"/>
   <int value="3" label="Public Account"/>
-  <int value="4" label="Locally Managed"/>
+  <int value="4" label="(Obsolete) Locally Managed"/>
   <int value="5" label="Kiosk App"/>
   <int value="6" label="Regular Supervised"/>
   <int value="7" label="ARC Kiosk"/>
@@ -82577,7 +82577,7 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Guest"/>
   <int value="2" label="Retail Mode"/>
   <int value="3" label="Public Account"/>
-  <int value="4" label="Locally Managed"/>
+  <int value="4" label="(Obsolete) Locally Managed"/>
   <int value="5" label="Kiosk App"/>
   <int value="6" label="Regular Supervised"/>
   <int value="7" label="ARC Kiosk"/>

@@ -266,7 +266,7 @@ TEST_F(SessionControllerImplTest, GetLoginStatus) {
       {SessionState::LOGIN_PRIMARY, LoginStatus::NOT_LOGGED_IN},
       {SessionState::LOGGED_IN_NOT_ACTIVE, LoginStatus::NOT_LOGGED_IN},
       {SessionState::LOCKED, LoginStatus::LOCKED},
-      // TODO: Add LOGIN_SECONDARY if we added a status for it.
+      // TODO(jamescook): Add LOGIN_SECONDARY if we added a status for it.
   };
 
   SessionInfo info;
@@ -298,7 +298,8 @@ TEST_F(SessionControllerImplTest, GetLoginStateForActiveSession) {
       {user_manager::USER_TYPE_CHILD, LoginStatus::CHILD},
       {user_manager::USER_TYPE_ARC_KIOSK_APP, LoginStatus::KIOSK_APP},
       {user_manager::USER_TYPE_WEB_KIOSK_APP, LoginStatus::KIOSK_APP}
-      // TODO: Add USER_TYPE_ACTIVE_DIRECTORY if we add a status for it.
+      // TODO(jamescook): Add USER_TYPE_ACTIVE_DIRECTORY if we add a status for
+      // it.
   };
 
   for (const auto& test_case : kTestCases) {
@@ -414,9 +415,6 @@ TEST_F(SessionControllerImplTest, IsUserChild) {
   controller()->UpdateUserSession(session);
 
   EXPECT_TRUE(controller()->IsUserChild());
-
-  // Child accounts are supervised.
-  EXPECT_TRUE(controller()->IsUserChildOrDeprecatedSupervised());
 }
 
 using SessionControllerImplPrefsTest = NoSessionAshTestBase;

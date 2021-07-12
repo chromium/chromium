@@ -24,16 +24,13 @@ typedef enum {
   // ephemeral.
   USER_TYPE_GUEST = 1,
 
-  /* USER_TYPE_RETAIL_MODE = 2, // deprecated */
+  // USER_TYPE_RETAIL_MODE = 2, // deprecated
 
   // Public account user, logs in without authentication. Available only if
   // enabled through device policy. No Gaia account. Always ephemeral.
   USER_TYPE_PUBLIC_ACCOUNT = 3,
 
-  // Legacy supervised user, being deprecated. Logs in only with local
-  // authentication. No Gaia account. Never ephemeral. Could have a sync token
-  // to fetch some basic account info.
-  USER_TYPE_SUPERVISED_DEPRECATED = 4,
+  // USER_TYPE_SUPERVISED_DEPRECATED = 4,
 
   // Kiosk users used to launch application in a single app mode. Logs in
   // without authentications. No Gaia user account. Uses device robot account.

@@ -21,7 +21,6 @@ const users = [
     displayEmail: 'test@gmail.com',
     name: 'test',
     isOwner: false,
-    isSupervised: false,
     isChild: false
   },
   {
@@ -29,7 +28,6 @@ const users = [
     displayEmail: 'test1@gmail.com',
     name: 'test1',
     isOwner: false,
-    isSupervised: false,
     isChild: false
   },
   {
@@ -37,7 +35,6 @@ const users = [
     displayEmail: 'test2@gmail.com',
     name: 'test2',
     isOwner: false,
-    isSupervised: false,
     isChild: false
   },
   {
@@ -45,7 +42,6 @@ const users = [
     displayEmail: 'owner@gmail.com',
     name: 'owner',
     isOwner: true,
-    isSupervised: false,
     isChild: false
   }
 ];

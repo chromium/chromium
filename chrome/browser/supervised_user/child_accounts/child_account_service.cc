@@ -353,16 +353,10 @@ void ChildAccountService::PropagateChildStatusToUser(bool is_child) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (user) {
-    // Note that deprecated legacy supervised users are allowed to change type
-    // due to legacy initialization.
-    if (user->GetType() != user_manager::USER_TYPE_SUPERVISED_DEPRECATED) {
-      if (is_child != (user->GetType() == user_manager::USER_TYPE_CHILD))
-        LOG(FATAL) << "User child flag has changed: " << is_child;
-    }
-  } else if (chromeos::ProfileHelper::IsRegularProfile(profile_)) {
+  if (user && is_child != (user->GetType() == user_manager::USER_TYPE_CHILD))
+    LOG(FATAL) << "User child flag has changed: " << is_child;
+  if (!user && chromeos::ProfileHelper::IsRegularProfile(profile_))
     LOG(DFATAL) << "User instance not found while setting child account flag.";
-  }
 #endif
 }
 

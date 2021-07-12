@@ -477,9 +477,6 @@ void ExistingUserController::UpdateLoginDisplay(
     // KioskAppManager, ArcKioskAppManager and WebKioskAppManager.
     if (user->IsKioskType())
       continue;
-    // TODO(xiyuan): Clean user profile whose email is not in allowlist.
-    if (user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED)
-      continue;
     // Allow offline login from the error screen if user of one of these types
     // has already logged in.
     if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
@@ -1220,9 +1217,6 @@ user_manager::UserList ExistingUserController::ExtractLoginUsers(
     // kiosk UI) is currently disabled and it gets the apps directly from
     // KioskAppManager, ArcKioskAppManager and WebKioskAppManager.
     if (user->IsKioskType())
-      continue;
-    // TODO(xiyuan): Clean user profile whose email is not in allowlist.
-    if (user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED)
       continue;
     const bool meets_allowlist_requirements =
         !user->HasGaiaAccount() ||

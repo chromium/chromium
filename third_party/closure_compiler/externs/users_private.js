@@ -20,7 +20,6 @@ chrome.usersPrivate = {};
  *   displayEmail: string,
  *   name: string,
  *   isOwner: boolean,
- *   isSupervised: boolean,
  *   isChild: boolean
  * }}
  */

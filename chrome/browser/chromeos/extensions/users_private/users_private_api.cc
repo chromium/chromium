@@ -77,7 +77,6 @@ api::users_private::User CreateApiUser(const std::string& email,
   api_user.name = base::UTF16ToUTF8(user.GetDisplayName());
   api_user.is_owner = user.GetAccountId() ==
                       user_manager::UserManager::Get()->GetOwnerAccountId();
-  api_user.is_supervised = user.IsChildOrDeprecatedSupervised();
   api_user.is_child = user.IsChild();
   return api_user;
 }
@@ -89,7 +88,6 @@ api::users_private::User CreateUnknownApiUser(const std::string& email) {
   api_user.display_email = email;
   api_user.name = email;
   api_user.is_owner = false;
-  api_user.is_supervised = false;
   api_user.is_child = false;
   return api_user;
 }

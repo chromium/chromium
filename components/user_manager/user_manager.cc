@@ -115,7 +115,7 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
       LOG(FATAL) << "Incorrect child user type " << user_type;
     }
 
-    // TODO (rsorokin): Check for reverse: account_id AD type should imply
+    // TODO(rsorokin): Check for reverse: account_id AD type should imply
     // AD user type.
     if (user_type == USER_TYPE_ACTIVE_DIRECTORY &&
         account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY) {
@@ -128,9 +128,6 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
   // User is new
   if (is_child)
     return USER_TYPE_CHILD;
-
-  if (IsDeprecatedSupervisedAccountId(account_id))
-    return USER_TYPE_SUPERVISED_DEPRECATED;
 
   if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY)
     return USER_TYPE_ACTIVE_DIRECTORY;
