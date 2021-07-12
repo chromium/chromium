@@ -201,7 +201,8 @@ void ConversionStorageSql::StoreImpression(
       SQL_FROM_HERE, kDeactivateMatchingConvertedImpressionsSql));
   deactivate_statement.BindString(0, serialized_conversion_destination);
   deactivate_statement.BindString(1, serialized_reporting_origin);
-  deactivate_statement.Run();
+  if (!deactivate_statement.Run())
+    return;
 
   const StorableImpression::AttributionLogic attribution_logic =
       delegate_->SelectAttributionLogic(impression);
@@ -747,11 +748,12 @@ void ConversionStorageSql::ClearData(
   // second conversion in limbo (it was not in the deletion time range).
   // Delete all unattributed conversions here to ensure everything is cleaned
   // up.
+  static constexpr char kDeleteVestigialConversionSql[] =
+      "DELETE FROM conversions WHERE impression_id = ?";
+  sql::Statement delete_vestigial_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteVestigialConversionSql));
   for (int64_t impression_id : impression_ids_to_delete) {
-    static constexpr char kDeleteVestigialConversionSql[] =
-        "DELETE FROM conversions WHERE impression_id = ?";
-    sql::Statement delete_vestigial_statement(
-        db_->GetCachedStatement(SQL_FROM_HERE, kDeleteVestigialConversionSql));
+    delete_vestigial_statement.Reset(/*clear_bound_vars=*/true);
     delete_vestigial_statement.BindInt64(0, impression_id);
     if (!delete_vestigial_statement.Run())
       return;
@@ -851,20 +853,19 @@ void ConversionStorageSql::ClearAllDataAllTime() {
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
     return;
+
   static constexpr char kDeleteAllConversionsSql[] = "DELETE FROM conversions";
-  static constexpr char kDeleteAllImpressionsSql[] = "DELETE FROM impressions";
   sql::Statement delete_all_conversions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllConversionsSql));
-  sql::Statement delete_all_impressions_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllImpressionsSql));
   if (!delete_all_conversions_statement.Run())
     return;
-
   int num_conversions_deleted = db_->GetLastChangeCount();
 
+  static constexpr char kDeleteAllImpressionsSql[] = "DELETE FROM impressions";
+  sql::Statement delete_all_impressions_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllImpressionsSql));
   if (!delete_all_impressions_statement.Run())
     return;
-
   int num_impressions_deleted = db_->GetLastChangeCount();
 
   if (!rate_limit_table_.ClearAllDataAllTime(db_.get()))

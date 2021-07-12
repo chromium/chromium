@@ -200,11 +200,12 @@ bool RateLimitTable::ClearDataForOriginsInRange(
   if (!transaction.Begin())
     return false;
 
+  static constexpr char kDeleteRateLimitSql[] =
+      "DELETE FROM rate_limits WHERE rate_limit_id = ?";
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
   for (int64_t rate_limit_id : rate_limit_ids_to_delete) {
-    static constexpr char kDeleteRateLimitSql[] =
-        "DELETE FROM rate_limits WHERE rate_limit_id = ?";
-    sql::Statement statement(
-        db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
+    statement.Reset(/*clear_bound_vars=*/true);
     statement.BindInt64(0, rate_limit_id);
     if (!statement.Run())
       return false;
