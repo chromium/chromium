@@ -305,8 +305,6 @@ class TargetHandler::Throttle : public content::NavigationThrottle {
  private:
   void CleanupPointers();
 
-  base::WeakPtrFactory<TargetHandler::Throttle> weak_factory_{this};
-
   DISALLOW_COPY_AND_ASSIGN(Throttle);
 };
 
@@ -415,13 +413,17 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
       devtools_session_->ResumeSendingMessagesToAgent();
   }
 
-  void SetThrottle(scoped_refptr<DevToolsThrottleHandle> throttle) {
-    throttle_ = throttle;
+  void SetThrottle(Throttle* throttle) { throttle_ = throttle; }
+  void SetServiceWorkerThrottle(
+      scoped_refptr<DevToolsThrottleHandle> service_worker_throttle) {
+    service_worker_throttle_ = service_worker_throttle;
   }
 
   void ResumeIfThrottled() {
     if (throttle_)
-      throttle_.reset();
+      throttle_->Clear();
+    if (service_worker_throttle_)
+      service_worker_throttle_.reset();
   }
 
   void SendMessageToAgentHost(base::span<const uint8_t> message) {
@@ -431,14 +433,14 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     // method that |message| is JSON.
     DCHECK(!flatten_protocol_);
 
-    if (throttle_) {
+    if (throttle_ || service_worker_throttle_) {
       absl::optional<base::Value> value =
           base::JSONReader::Read(base::StringPiece(
               reinterpret_cast<const char*>(message.data()), message.size()));
       const std::string* method;
       if (value.has_value() && (method = value->FindStringKey(kMethod)) &&
           *method == kResumeMethod) {
-        throttle_.reset();
+        ResumeIfThrottled();
       }
     }
 
@@ -518,7 +520,8 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
   std::string id_;
   bool flatten_protocol_;
   DevToolsSession* devtools_session_ = nullptr;
-  scoped_refptr<DevToolsThrottleHandle> throttle_;
+  Throttle* throttle_ = nullptr;
+  scoped_refptr<DevToolsThrottleHandle> service_worker_throttle_;
 
   DISALLOW_COPY_AND_ASSIGN(Session);
 };
@@ -550,10 +553,10 @@ void TargetHandler::Throttle::CleanupPointers() {
 void TargetHandler::Throttle::SetThrottledAgentHost(
     DevToolsAgentHost* agent_host) {
   agent_host_ = agent_host;
-  target_handler_->AddThrottle(
-      agent_host_.get(),
-      base::MakeRefCounted<DevToolsThrottleHandle>(base::BindOnce(
-          &TargetHandler::Throttle::Clear, weak_factory_.GetWeakPtr())));
+  if (agent_host_) {
+    target_handler_->auto_attached_sessions_[agent_host_.get()]->SetThrottle(
+        this);
+  }
 }
 
 const char* TargetHandler::Throttle::GetNameForLogging() {
@@ -1135,14 +1138,14 @@ void TargetHandler::ApplyNetworkContextParamsOverrides(
   }
 }
 
-void TargetHandler::AddThrottle(
+void TargetHandler::AddServiceWorkerThrottle(
     DevToolsAgentHost* agent_host,
     scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
   if (!agent_host)
     return;
 
   if (auto_attached_sessions_[agent_host]) {
-    auto_attached_sessions_[agent_host]->SetThrottle(
+    auto_attached_sessions_[agent_host]->SetServiceWorkerThrottle(
         std::move(throttle_handle));
   }
 }

@@ -398,7 +398,7 @@ void ThrottleForServiceWorkerAgentHost(
     scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
   for (auto* target_handler :
        protocol::TargetHandler::ForAgentHost(requesting_agent_host)) {
-    target_handler->AddThrottle(agent_host, throttle_handle);
+    target_handler->AddServiceWorkerThrottle(agent_host, throttle_handle);
   }
 }
 
