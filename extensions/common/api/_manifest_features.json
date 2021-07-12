@@ -122,12 +122,12 @@
   "cross_origin_embedder_policy": {
     // TODO(crbug.com/1199491): Enable on stable.
     "channel": "trunk",
-    "extension_types": ["extension"]
+    "extension_types": ["extension", "platform_app"]
   },
   "cross_origin_opener_policy": {
     // TODO(crbug.com/1199491): Enable on stable.
     "channel": "trunk",
-    "extension_types": ["extension"]
+    "extension_types": ["extension", "platform_app"]
   },
   "current_locale": {
     "channel": "stable",

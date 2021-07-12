@@ -48,15 +48,25 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  struct Options {
+    const char* coep_value = nullptr;
+    const char* coop_value = nullptr;
+    bool use_service_worker = false;
+    const char* background_script = "";
+    const char* test_js = "";
+    bool is_platform_app = false;
+  };
   const Extension* LoadExtension(TestExtensionDir& dir,
-                                 const char* coep_value,
-                                 const char* coop_value,
-                                 bool use_service_worker = false,
-                                 const char* background_script = "",
-                                 const char* test_js = "") {
+                                 const Options& options) {
+    CHECK(options.coep_value);
+    CHECK(options.coop_value);
+    CHECK(!options.is_platform_app || !options.use_service_worker)
+        << "Platform apps cannot use 'service_worker' key.";
+
     constexpr char kManifestTemplate[] = R"(
       {
-        "background": { %s },
+        %s,
+        %s
         "manifest_version": 2,
         "name": "CrossOriginIsolation",
         "version": "1.1",
@@ -66,29 +76,50 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
         "cross_origin_opener_policy": {
           "value": "%s"
         },
-        "web_accessible_resources": ["test.html"],
-        "browser_action": {
-          "default_title": "foo"
-        },
         "permissions": ["http://foo.test:*/*"]
       }
     )";
 
-    constexpr char kPersistentBackgroundValue[] = R"(
-      "scripts": ["background.js"]
+    const char* background_script = nullptr;
+    const char* extension_only_keys = R"(
+      "web_accessible_resources": ["test.html"],
+      "browser_action": {
+          "default_title": "foo"
+      },
     )";
-    constexpr char kServiceWorkerValue[] = R"(
-      "service_worker": "background.js"
-    )";
+    if (options.is_platform_app) {
+      background_script = R"(
+        "app": {
+          "background": {
+            "scripts": ["background.js"]
+          }
+        }
+      )";
+      extension_only_keys = "";
+    } else if (options.use_service_worker) {
+      background_script = R"(
+        "background" : {
+          "service_worker": "background.js"
+        }
+      )";
+    } else {
+      background_script = R"(
+        "background": {
+          "scripts": ["background.js"]
+        }
+      )";
+    }
 
-    dir.WriteManifest(base::StringPrintf(
-        kManifestTemplate,
-        use_service_worker ? kServiceWorkerValue : kPersistentBackgroundValue,
-        coep_value, coop_value));
-    dir.WriteFile(FILE_PATH_LITERAL("background.js"), background_script);
+    CHECK(background_script);
+    std::string manifest = base::StringPrintf(
+        kManifestTemplate, background_script, extension_only_keys,
+        options.coep_value, options.coop_value);
+    dir.WriteManifest(manifest);
+    dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                  options.background_script);
     dir.WriteFile(FILE_PATH_LITERAL("test.html"),
                   "<script src='test.js'></script>");
-    dir.WriteFile(FILE_PATH_LITERAL("test.js"), test_js);
+    dir.WriteFile(FILE_PATH_LITERAL("test.js"), options.test_js);
     return ExtensionBrowserTest::LoadExtension(dir.UnpackedPath());
   }
 
@@ -123,8 +154,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, CrossOriginIsolation) {
   RestrictProcessCount();
 
   TestExtensionDir coi_test_dir;
-  const Extension* coi_extension =
-      LoadExtension(coi_test_dir, "require-corp", "same-origin");
+  const Extension* coi_extension = LoadExtension(
+      coi_test_dir,
+      {.coep_value = "require-corp", .coop_value = "same-origin"});
   ASSERT_TRUE(coi_extension);
   content::RenderFrameHost* coi_background_rfh =
       GetBackgroundRenderFrameHost(*coi_extension);
@@ -133,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, CrossOriginIsolation) {
 
   TestExtensionDir non_coi_test_dir;
   const Extension* non_coi_extension =
-      LoadExtension(non_coi_test_dir, "unsafe-none", "same-origin");
+      LoadExtension(non_coi_test_dir,
+                    {.coep_value = "unsafe-none", .coop_value = "same-origin"});
   ASSERT_TRUE(non_coi_extension);
   content::RenderFrameHost* non_coi_background_rfh =
       GetBackgroundRenderFrameHost(*non_coi_extension);
@@ -146,14 +179,48 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, CrossOriginIsolation) {
             non_coi_background_rfh->GetProcess());
 }
 
+// Tests that platform apps can opt into cross origin isolation.
+IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
+                       CrossOriginIsolation_PlatformApps) {
+  RestrictProcessCount();
+
+  TestExtensionDir coi_test_dir;
+  const Extension* coi_app =
+      LoadExtension(coi_test_dir, {.coep_value = "require-corp",
+                                   .coop_value = "same-origin",
+                                   .is_platform_app = true});
+  ASSERT_TRUE(coi_app);
+  ASSERT_TRUE(coi_app->is_platform_app());
+  content::RenderFrameHost* coi_app_background_rfh =
+      GetBackgroundRenderFrameHost(*coi_app);
+  ASSERT_TRUE(coi_app_background_rfh);
+  EXPECT_TRUE(IsCrossOriginIsolated(coi_app_background_rfh));
+
+  TestExtensionDir non_coi_test_dir;
+  const Extension* non_coi_extension =
+      LoadExtension(non_coi_test_dir,
+                    {.coep_value = "unsafe-none", .coop_value = "same-origin"});
+  ASSERT_TRUE(non_coi_extension);
+  content::RenderFrameHost* non_coi_background_rfh =
+      GetBackgroundRenderFrameHost(*non_coi_extension);
+  ASSERT_TRUE(non_coi_background_rfh);
+  EXPECT_FALSE(IsCrossOriginIsolated(non_coi_background_rfh));
+
+  // A cross-origin-isolated platform app should not share a process with a
+  // non-cross-origin-isolated extension.
+  EXPECT_NE(coi_app_background_rfh->GetProcess(),
+            non_coi_background_rfh->GetProcess());
+}
+
 // Tests that a web accessible frame from a cross origin isolated extension is
 // not cross origin isolated.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   RestrictProcessCount();
 
   TestExtensionDir coi_test_dir;
-  const Extension* coi_extension =
-      LoadExtension(coi_test_dir, "require-corp", "same-origin");
+  const Extension* coi_extension = LoadExtension(
+      coi_test_dir,
+      {.coep_value = "require-corp", .coop_value = "same-origin"});
   ASSERT_TRUE(coi_extension);
   content::RenderFrameHost* coi_background_rfh =
       GetBackgroundRenderFrameHost(*coi_extension);
@@ -293,8 +360,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
                                               true /* will_reply */);
   TestExtensionDir coi_test_dir;
   const Extension* coi_extension =
-      LoadExtension(coi_test_dir, "require-corp", "same-origin",
-                    true /* use_service_worker */, kServiceWorkerScript);
+      LoadExtension(coi_test_dir, {.coep_value = "require-corp",
+                                   .coop_value = "same-origin",
+                                   .use_service_worker = true,
+                                   .background_script = kServiceWorkerScript});
   ASSERT_TRUE(coi_extension);
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -345,8 +414,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        WebAccessibleFrame_WindowApis) {
   TestExtensionDir coi_test_dir;
-  const Extension* coi_extension =
-      LoadExtension(coi_test_dir, "require-corp", "same-origin");
+  const Extension* coi_extension = LoadExtension(
+      coi_test_dir,
+      {.coep_value = "require-corp", .coop_value = "same-origin"});
   ASSERT_TRUE(coi_extension);
   content::RenderFrameHost* coi_background_rfh =
       GetBackgroundRenderFrameHost(*coi_extension);
@@ -454,9 +524,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   )";
 
   TestExtensionDir coi_test_dir;
-  const Extension* coi_extension = LoadExtension(
-      coi_test_dir, "require-corp", "same-origin",
-      false /* use_service_worker */, "" /* background_js */, kTestJs);
+  const Extension* coi_extension =
+      LoadExtension(coi_test_dir, {.coep_value = "require-corp",
+                                   .coop_value = "same-origin",
+                                   .test_js = kTestJs});
   ASSERT_TRUE(coi_extension);
 
   ui_test_utils::NavigateToURL(
@@ -552,9 +623,12 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
   ExtensionTestMessageListener ready_listener("ready", true /* will_reply */);
   TestExtensionDir coi_test_dir;
-  const Extension* coi_extension = LoadExtension(
-      coi_test_dir, "require-corp", "same-origin",
-      true /* use_service_worker */, kServiceWorkerScript, kTestJs);
+  const Extension* coi_extension =
+      LoadExtension(coi_test_dir, {.coep_value = "require-corp",
+                                   .coop_value = "same-origin",
+                                   .use_service_worker = true,
+                                   .background_script = kServiceWorkerScript,
+                                   .test_js = kTestJs});
   ASSERT_TRUE(coi_extension);
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
