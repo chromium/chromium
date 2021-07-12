@@ -176,6 +176,12 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   ArcWindowHandler* window_handler_ = nullptr;
 
+  // If the system is under memory pressuure or high CPU usage rate, only launch
+  // 1 window following the window stack priority. `first_run_` is used to check
+  // whether this is the first window to be restored, which can skip the system
+  // memory and CPU usage rate checking.
+  bool first_run_ = true;
+
   // The number to record how many times the current top window has been
   // launched.
   int launch_count_ = 0;

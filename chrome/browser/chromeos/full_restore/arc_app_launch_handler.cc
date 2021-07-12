@@ -360,7 +360,7 @@ bool ArcAppLaunchHandler::IsAppReady(const std::string& app_id) {
 }
 
 void ArcAppLaunchHandler::MaybeLaunchApp() {
-  if (!CanLaunchApp())
+  if (!first_run_ && !CanLaunchApp())
     return;
 
   for (auto it = pending_windows_.begin(); it != pending_windows_.end(); ++it) {
@@ -406,6 +406,7 @@ void ArcAppLaunchHandler::MaybeLaunchApp() {
 void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
                                     int32_t window_id) {
   DCHECK(handler_);
+
   const auto it = handler_->restore_data_->app_id_to_launch_list().find(app_id);
   if (it == handler_->restore_data_->app_id_to_launch_list().end())
     return;
@@ -418,6 +419,8 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
   const auto data_it = it->second.find(window_id);
   if (data_it == it->second.end())
     return;
+
+  first_run_ = false;
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(handler_->profile_);
   DCHECK(proxy);
