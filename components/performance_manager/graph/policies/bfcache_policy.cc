@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/task/task_traits.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
@@ -94,6 +95,14 @@ void BFCachePolicy::OnMemoryPressure(
   // This shouldn't happen but add the check anyway in case the API changes.
   if (new_level == base::MemoryPressureListener::MemoryPressureLevel::
                        MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
+  if (new_level == base::MemoryPressureListener::MemoryPressureLevel::
+                       MEMORY_PRESSURE_LEVEL_NONE &&
+      !performance_manager::features::BFCachePerformanceManagerPolicyParams::
+           GetParams()
+               .flush_on_moderate_pressure()) {
     return;
   }
 

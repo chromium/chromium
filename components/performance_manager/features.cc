@@ -86,5 +86,27 @@ const base::Feature kHighPMFDiscardPolicy{"HighPMFDiscardPolicy",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kBFCachePerformanceManagerPolicy{
+    "BFCachePerformanceManagerPolicy", base::FEATURE_DISABLED_BY_DEFAULT};
+
+BFCachePerformanceManagerPolicyParams::BFCachePerformanceManagerPolicyParams() =
+    default;
+BFCachePerformanceManagerPolicyParams::BFCachePerformanceManagerPolicyParams(
+    const BFCachePerformanceManagerPolicyParams& rhs) = default;
+BFCachePerformanceManagerPolicyParams::
+    ~BFCachePerformanceManagerPolicyParams() = default;
+
+constexpr base::FeatureParam<bool>
+    BFCachePerformanceManagerPolicyParams::kFlushOnModeratePressure;
+
+// static
+BFCachePerformanceManagerPolicyParams
+BFCachePerformanceManagerPolicyParams::GetParams() {
+  BFCachePerformanceManagerPolicyParams params = {};
+  params.flush_on_moderate_pressure_ =
+      BFCachePerformanceManagerPolicyParams::kFlushOnModeratePressure.Get();
+  return params;
+}
+
 }  // namespace features
 }  // namespace performance_manager

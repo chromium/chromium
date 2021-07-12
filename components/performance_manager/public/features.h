@@ -85,6 +85,37 @@ extern const base::Feature kHighPMFDiscardPolicy;
 extern const base::Feature kBackgroundTabLoadingFromPerformanceManager;
 #endif
 
+// Policy that evicts the BFCache of pages that become non visible or the
+// BFCache of all pages when the system is under memory pressure.
+extern const base::Feature kBFCachePerformanceManagerPolicy;
+
+// Parameters allowing to control some aspects of the
+// |kBFCachePerformanceManagerPolicy|.
+class BFCachePerformanceManagerPolicyParams {
+ public:
+  ~BFCachePerformanceManagerPolicyParams();
+
+  static BFCachePerformanceManagerPolicyParams GetParams();
+
+  // Whether or not the BFCache of all pages should be flushed when the system
+  // is under *moderate* memory pressure. The policy always flushes the bfcache
+  // under critical pressure.
+  bool flush_on_moderate_pressure() const {
+    return flush_on_moderate_pressure_;
+  }
+
+  static constexpr base::FeatureParam<bool> kFlushOnModeratePressure{
+      &features::kBFCachePerformanceManagerPolicy, "flush_on_moderate_pressure",
+      true};
+
+ private:
+  BFCachePerformanceManagerPolicyParams();
+  BFCachePerformanceManagerPolicyParams(
+      const BFCachePerformanceManagerPolicyParams& rhs);
+
+  bool flush_on_moderate_pressure_ = true;
+};
+
 }  // namespace features
 }  // namespace performance_manager
 

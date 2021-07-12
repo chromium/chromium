@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/performance_manager/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -28,19 +30,36 @@ namespace policies {
 
 namespace {
 
+struct PolicyTestParams {
+  const std::string scenario;
+  bool enable_policy = false;
+  bool enable_trim_on_moderate_pressure = false;
+};
+
 class BFCachePolicyBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<std::string> {
+      public ::testing::WithParamInterface<PolicyTestParams> {
  public:
   ~BFCachePolicyBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-           {"ignore_outstanding_network_request_for_testing", "true"}}}},
-        {features::kBackForwardCacheMemoryControls});
+    EnableFeature(::features::kBackForwardCache,
+                  {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+                   {"ignore_outstanding_network_request_for_testing", "true"}});
+    DisableFeature(::features::kBackForwardCacheMemoryControls);
 
+    if (GetParam().enable_policy) {
+      EnableFeature(
+          performance_manager::features::kBFCachePerformanceManagerPolicy,
+          {{"flush_on_moderate_pressure",
+            GetParam().enable_trim_on_moderate_pressure ? "true" : "false"}});
+    } else {
+      DisableFeature(
+          performance_manager::features::kBFCachePerformanceManagerPolicy);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features_,
+                                                disabled_features_);
     InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -51,6 +70,15 @@ class BFCachePolicyBrowserTest
   }
 
  protected:
+  void EnableFeature(const base::Feature& feature,
+                     const base::FieldTrialParams& params) {
+    enabled_features_.emplace_back(feature, params);
+  }
+
+  void DisableFeature(const base::Feature& feature) {
+    disabled_features_.emplace_back(feature);
+  }
+
   content::WebContents* web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -59,7 +87,22 @@ class BFCachePolicyBrowserTest
     return web_contents()->GetMainFrame();
   }
 
+  void VerifyEvictionExpectation(bool should_be_evicted,
+                                 content::RenderFrameHostWrapper& rfh) {
+    if (should_be_evicted) {
+      // When the page is evicted the RenderFrame will be deleted.
+      rfh.WaitUntilRenderFrameDeleted();
+    } else {
+      EXPECT_EQ(rfh->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    }
+  }
+
+ private:
   base::test::ScopedFeatureList feature_list_;
+  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+      enabled_features_;
+  std::vector<base::Feature> disabled_features_;
 };
 
 }  // namespace
@@ -83,12 +126,12 @@ IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, CacheFlushed) {
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  if (GetParam() == "FlushWhenTabBackgrounded") {
+  if (GetParam().scenario == "FlushWhenTabBackgrounded") {
     // Backgrounding the page will evict it from BFCache.
     web_contents()->WasHidden();
-    // When the page is evicted the RenderFrame will be deleted.
-    rfh_a.WaitUntilRenderFrameDeleted();
-  } else if (GetParam() == "FlushWhenTabBackgroundDuringNavigation") {
+    VerifyEvictionExpectation(
+        /* should_be_evicted = */ GetParam().enable_policy, rfh_a);
+  } else if (GetParam().scenario == "FlushWhenTabBackgroundDuringNavigation") {
     web_contents()->GetController().GoBack();
     // Make the tab backgrounded before the back navigation completes. |rfh_a|
     // will become the active frame and the cache will be flushed (i.e. |rfh_b|
@@ -96,27 +139,48 @@ IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, CacheFlushed) {
     web_contents()->WasHidden();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(rfh_a.get(), top_frame_host());
-    rfh_b.WaitUntilRenderFrameDeleted();
-  } else if (GetParam() == "FlushOnModerateMemoryPressure") {
+    VerifyEvictionExpectation(
+        /* should_be_evicted = */ GetParam().enable_policy, rfh_b);
+  } else if (GetParam().scenario == "FlushOnModerateMemoryPressure") {
     // A moderate memory pressure signal will evict the page from BFCache.
     fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
         base::MemoryPressureListener::MemoryPressureLevel::
             MEMORY_PRESSURE_LEVEL_MODERATE);
-    // When the page is evicted the RenderFrame will be deleted.
-    rfh_a.WaitUntilRenderFrameDeleted();
-  } else if (GetParam() == "FlushOnCriticalMemoryPressure") {
+    VerifyEvictionExpectation(
+        /* should_be_evicted = */ (GetParam().enable_policy &&
+                                   GetParam().enable_trim_on_moderate_pressure),
+        rfh_a);
+  } else if (GetParam().scenario == "FlushOnCriticalMemoryPressure") {
     // A critical memory pressure signal will evict the page from BFCache.
     fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
         base::MemoryPressureListener::MemoryPressureLevel::
             MEMORY_PRESSURE_LEVEL_CRITICAL);
-    // When the page is evicted the RenderFrame will be deleted.
-    rfh_a.WaitUntilRenderFrameDeleted();
+    VerifyEvictionExpectation(
+        /* should_be_evicted = */ GetParam().enable_policy, rfh_a);
   }
 }
 
-std::vector<std::string> BFCachePolicyBrowserTestValues() {
-  return {"FlushWhenTabBackgrounded", "FlushWhenTabBackgroundDuringNavigation",
-          "FlushOnModerateMemoryPressure", "FlushOnCriticalMemoryPressure"};
+std::vector<PolicyTestParams> BFCachePolicyBrowserTestValues() {
+  const std::vector<std::string> kTestScenarios = {
+      "FlushWhenTabBackgrounded", "FlushWhenTabBackgroundDuringNavigation",
+      "FlushOnModerateMemoryPressure", "FlushOnCriticalMemoryPressure"};
+  std::vector<PolicyTestParams> test_cases;
+
+  for (const auto& test_scenario : kTestScenarios) {
+    test_cases.push_back({.scenario = test_scenario, .enable_policy = false});
+
+    // Test the policy with |flush_on_moderate_pressure| enabled.
+    test_cases.push_back({.scenario = test_scenario,
+                          .enable_policy = true,
+                          .enable_trim_on_moderate_pressure = true});
+
+    // Test the policy with |flush_on_moderate_pressure| disabled.
+    test_cases.push_back({.scenario = test_scenario,
+                          .enable_policy = true,
+                          .enable_trim_on_moderate_pressure = false});
+  }
+
+  return test_cases;
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
