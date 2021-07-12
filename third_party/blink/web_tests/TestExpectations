@@ -5888,8 +5888,6 @@ crbug.com/1061131 [ Mac ] editing/selection/replaced-boundaries-1.html [ Failure
 
 crbug.com/1058888 [ Linux ] animations/animationworklet/peek-updated-composited-property-on-main.html [ Failure Pass ]
 
-crbug.com/1091665 [ Debug ] external/wpt/html/cross-origin-embedder-policy/reporting-navigation.https.html [ Failure Pass ]
-
 # [virtual/...]external/wpt/web-animation test flakes
 crbug.com/1064065 virtual/threaded/external/wpt/css/css-animations/event-dispatch.tentative.html [ Failure Pass ]
 
