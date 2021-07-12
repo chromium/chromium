@@ -142,7 +142,9 @@ TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonSetTest', function() {
 });
 
 // Tests that a static lesson does not show the 'Practice area' button.
-TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
+// TODO(crbug.com/1193799): fix ax node errors causing console spew and
+// breaking tests
+TEST_F('ChromeVoxTutorialTest', 'DISABLED_NoPracticeAreaTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
@@ -168,7 +170,9 @@ TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
 });
 
 // Tests that an interactive lesson shows the 'Practice area' button.
-TEST_F('ChromeVoxTutorialTest', 'HasPracticeAreaTest', function() {
+// TODO(crbug.com/1193799): fix ax node errors causing console spew and
+// breaking tests
+TEST_F('ChromeVoxTutorialTest', 'DISABLED_HasPracticeAreaTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
@@ -295,7 +299,9 @@ TEST_F('ChromeVoxTutorialTest', 'EscapeTest', function() {
 });
 
 // Tests that the main menu button navigates the user to the main menu screen.
-TEST_F('ChromeVoxTutorialTest', 'MainMenuButton', function() {
+// TODO(crbug.com/1193799): fix ax node errors causing console spew and
+// breaking tests
+TEST_F('ChromeVoxTutorialTest', 'DISABLED_MainMenuButton', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
@@ -410,7 +416,9 @@ TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', function() {
 });
 
 // Tests that we read a hint for navigating a lesson when it is shown.
-TEST_F('ChromeVoxTutorialTest', 'LessonHint', function() {
+// TODO(crbug.com/1193799): fix ax node errors causing console spew and
+// breaking tests
+TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonHint', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
