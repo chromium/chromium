@@ -312,7 +312,7 @@ void SystemRoutineController::OnRoutineStarted(
   if (response_ptr->status ==
           healthd::DiagnosticRoutineStatusEnum::kFailedToStart ||
       response_ptr->id == healthd::kFailedToStartId) {
-    OnStandardRoutineResult(mojom::RoutineType::kCpuStress,
+    OnStandardRoutineResult(routine_type,
                             TestStatusToResult(response_ptr->status));
     return;
   }

@@ -809,6 +809,27 @@ TEST_F(SystemRoutineControllerTest, RoutineResultEmitted) {
                                       /*expected_count=*/1);
 }
 
+TEST_F(SystemRoutineControllerTest,
+       RoutineFailedToStartCalledWithCorrectRoutineType) {
+  SetRunRoutineResponse(healthd::kFailedToStartId,
+                        healthd::DiagnosticRoutineStatusEnum::kFailedToStart);
+
+  base::HistogramTester histogram_tester;
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuCache,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kCpuCache,
+                      mojom::StandardRoutineResult::kUnableToRun);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.DiagnosticsUi.CpuCacheResult",
+      mojom::StandardRoutineResult::kUnableToRun,
+      /*expected_count=*/1);
+}
+
 TEST_F(SystemRoutineControllerTest, MemoryRuntimeEmitted) {
   // Run the CpuStress routine.
   SetRunRoutineResponse(/*id=*/1,
