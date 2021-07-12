@@ -4,6 +4,8 @@
 
 /** @fileoverview Test suite for chrome-untrusted://help-app. */
 
+import {GUEST_TEST} from './guest_query_receiver.js';
+
 // Test that language is set correctly on the guest frame.
 GUEST_TEST('GuestHasLang', () => {
   assertEquals(document.documentElement.lang, 'en-US');
@@ -23,7 +25,9 @@ async function waitForInitialIndexUpdate() {
     // 'Chrome' appears in the mock app's fake search results, and should appear
     // in the real app's search results.
     const response = await delegate.findInSearchIndex('Chrome');
-    if (response && response.results && response.results.length > 0) break;
+    if (response && response.results && response.results.length > 0) {
+      break;
+    }
     await new Promise(resolve => {setTimeout(resolve, 50)});
   }
   return delegate;
@@ -34,33 +38,37 @@ async function waitForInitialIndexUpdate() {
 GUEST_TEST('GuestCanSearchWithHeadings', async () => {
   const delegate = await waitForInitialIndexUpdate();
 
-  await delegate.addOrUpdateSearchIndex([{
-    // Title match. No subheadings.
-    id: 'test-id-1',
-    title: 'Title with verycomplicatedsearchtoken',
-    body: 'Body text',
-    mainCategoryName: 'Help',
-    locale: 'en-US',
-  },{
-    // Subheading match.
-    id: 'test-id-2',
-    title: 'Title 2',
-    subheadings: [
-      'Subheading 1',
-      'verycomplicatedsearchtoken in subheading. Verycomplicatedsearchtoken',
-      'Another subheading with verycomplicatedsearchtoken',
-    ],
-    body: 'Body text',
-    mainCategoryName: 'Help',
-    locale: 'en-US',
-  },{
-    // Should not appear in the results.
-    id: 'test-id-3',
-    title: 'Title of irrelevant article',
-    body: 'Body text',
-    mainCategoryName: 'Help',
-    locale: 'en-US',
-  }]);
+  await delegate.addOrUpdateSearchIndex([
+    {
+      // Title match. No subheadings.
+      id: 'test-id-1',
+      title: 'Title with verycomplicatedsearchtoken',
+      body: 'Body text',
+      mainCategoryName: 'Help',
+      locale: 'en-US',
+    },
+    {
+      // Subheading match.
+      id: 'test-id-2',
+      title: 'Title 2',
+      subheadings: [
+        'Subheading 1',
+        'verycomplicatedsearchtoken in subheading. Verycomplicatedsearchtoken',
+        'Another subheading with verycomplicatedsearchtoken',
+      ],
+      body: 'Body text',
+      mainCategoryName: 'Help',
+      locale: 'en-US',
+    },
+    {
+      // Should not appear in the results.
+      id: 'test-id-3',
+      title: 'Title of irrelevant article',
+      body: 'Body text',
+      mainCategoryName: 'Help',
+      locale: 'en-US',
+    }
+  ]);
 
   // Keep polling until the index finishes updating or too much time has passed.
   /** @type {?helpApp.FindResponse} */
@@ -69,7 +77,9 @@ GUEST_TEST('GuestCanSearchWithHeadings', async () => {
     // This search query was chosen because it is unlikely to show any search
     // results for the real app's data.
     response = await delegate.findInSearchIndex('verycomplicatedsearchtoken');
-    if (response && response.results && response.results.length > 0) break;
+    if (response && response.results && response.results.length > 0) {
+      break;
+    }
     await new Promise(resolve => {setTimeout(resolve, 50)});
   }
 
@@ -102,33 +112,37 @@ GUEST_TEST('GuestCanSearchWithHeadings', async () => {
 GUEST_TEST('GuestCanSearchWithCategories', async () => {
   const delegate = await waitForInitialIndexUpdate();
 
-  await delegate.addOrUpdateSearchIndex([{
-    // Main category match. No subcategories.
-    id: 'test-id-1',
-    title: 'Title with of article',
-    body: 'Body text',
-    mainCategoryName: 'Verycomplicatedsearchtoken',
-    locale: 'en-US',
-  },{
-    // Subcategory match.
-    id: 'test-id-2',
-    title: 'Title 2',
-    subcategoryNames: [
-      'Subcategory 1',
-      'verycomplicatedsearchtoken in subcategory. Verycomplicatedsearchtoken',
-      'Another subcategory with verycomplicatedsearchtoken',
-    ],
-    body: 'Body text',
-    mainCategoryName: 'Help',
-    locale: 'en-US',
-  },{
-    // Should not appear in the results.
-    id: 'test-id-3',
-    title: 'Title of irrelevant article',
-    body: 'Body text',
-    mainCategoryName: 'Help',
-    locale: 'en-US',
-  }]);
+  await delegate.addOrUpdateSearchIndex([
+    {
+      // Main category match. No subcategories.
+      id: 'test-id-1',
+      title: 'Title with of article',
+      body: 'Body text',
+      mainCategoryName: 'Verycomplicatedsearchtoken',
+      locale: 'en-US',
+    },
+    {
+      // Subcategory match.
+      id: 'test-id-2',
+      title: 'Title 2',
+      subcategoryNames: [
+        'Subcategory 1',
+        'verycomplicatedsearchtoken in subcategory. Verycomplicatedsearchtoken',
+        'Another subcategory with verycomplicatedsearchtoken',
+      ],
+      body: 'Body text',
+      mainCategoryName: 'Help',
+      locale: 'en-US',
+    },
+    {
+      // Should not appear in the results.
+      id: 'test-id-3',
+      title: 'Title of irrelevant article',
+      body: 'Body text',
+      mainCategoryName: 'Help',
+      locale: 'en-US',
+    }
+  ]);
 
   // Keep polling until the index finishes updating or too much time has passed.
   /** @type {?helpApp.FindResponse} */
@@ -137,30 +151,32 @@ GUEST_TEST('GuestCanSearchWithCategories', async () => {
     // This search query was chosen because it is unlikely to show any search
     // results for the real app's data.
     response = await delegate.findInSearchIndex('verycomplicatedsearchtoken');
-    if (response && response.results && response.results.length > 0) break;
+    if (response && response.results && response.results.length > 0) {
+      break;
+    }
     await new Promise(resolve => {setTimeout(resolve, 50)});
   }
 
   // Don't test the ordering of search results because they should have similar
   // relevance.
   chai.expect(response.results).to.have.deep.members([
-      // This result only matches on the main category.
-      {
-        id: 'test-id-1',
-        titlePositions: [],
-        subheadingIndex: null,
-        subheadingPositions: null,
-        bodyPositions: [],
-      },
-      // This result only matches on the second and third subcategories.
-      {
-        id: 'test-id-2',
-        titlePositions: [],
-        subheadingIndex: null,
-        subheadingPositions: null,
-        bodyPositions: [],
-      },
-    ]);
+    // This result only matches on the main category.
+    {
+      id: 'test-id-1',
+      titlePositions: [],
+      subheadingIndex: null,
+      subheadingPositions: null,
+      bodyPositions: [],
+    },
+    // This result only matches on the second and third subcategories.
+    {
+      id: 'test-id-2',
+      titlePositions: [],
+      subheadingIndex: null,
+      subheadingPositions: null,
+      bodyPositions: [],
+    },
+  ]);
 });
 
 // Test that the number of search results is reduced when maxResults is

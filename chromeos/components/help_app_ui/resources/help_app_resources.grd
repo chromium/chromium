@@ -19,23 +19,16 @@
           type="BINDATA" />
       <include name="IDR_HELP_APP_ICON_512" file="app_icon_512.png"
           type="BINDATA" />
-      <include name="IDR_HELP_APP_HELP_APP_MOJOM_JS"
-          file="${root_gen_dir}/chromeos/components/help_app_ui/help_app_ui.mojom-lite.js"
-          resource_path="help_app_ui.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_HELP_APP_LOCAL_SEARCH_SERVICE_TYPES_MOJOM_JS"
-          file="${root_gen_dir}/chromeos/components/local_search_service/public/mojom/types.mojom-lite.js"
-          resource_path="local_search_service_types.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_HELP_APP_LOCAL_SEARCH_SERVICE_INDEX_MOJOM_JS"
-          file="${root_gen_dir}/chromeos/components/local_search_service/public/mojom/index.mojom-lite.js"
-          resource_path="local_search_service_index.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_HELP_APP_SEARCH_MOJOM_JS"
-          file="${root_gen_dir}/chromeos/components/help_app_ui/search/search.mojom-lite.js"
-          resource_path="help_app_search.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_HELP_APP_INDEX_SCRIPTS_JS" file="help_app_index_scripts.js" flattenhtml="true" type="BINDATA" />
-
+      <include name="IDR_HELP_APP_BROWSER_PROXY_JS"
+          file="${root_gen_dir}/chromeos/components/help_app_ui/resources/browser_proxy.rollup.js"
+          resource_path="browser_proxy.js"
+          use_base_dir="false" type="BINDATA" />
       <!-- Unprivileged guest contents. -->
       <include name="IDR_HELP_APP_APP_HTML" file="app.html" type="BINDATA" />
-      <include name="IDR_HELP_APP_APP_SCRIPTS_JS" file="help_app_app_scripts.js" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_HELP_APP_RECEIVER_JS"
+          file="${root_gen_dir}/chromeos/components/help_app_ui/resources/receiver.rollup.js"
+          resource_path="receiver.js" use_base_dir="false"
+          type="BINDATA" />
     </includes>
   </release>
 </grit>

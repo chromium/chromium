@@ -15,6 +15,7 @@ stage_folder = "$target_gen_dir/stage"
 copy("stage_static") {
   sources = [
     "../../../../../ui/file_manager/image_loader/piex_loader.js",
+    "//chromeos/components/system_apps/public/js/sandboxed_load_time_data.js",
     "app_context_test_support.js",
     "error_reporter.js",
     "launch.js",
@@ -22,7 +23,6 @@ copy("stage_static") {
     "piex_module.js",
     "piex_module_loader.js",
     "receiver.js",
-    "sandboxed_load_time_data.js",
   ]
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 }
@@ -158,17 +158,14 @@ js_library("piex_module") {
   deps = [ "//ui/file_manager/image_loader:piex_loader" ]
 }
 
-js_library("sandboxed_load_time_data") {
-}
-
 js_library("receiver") {
   externs_list = [ "media_app.externs.js" ]
   deps = [
     ":app_context_test_support",
     ":message_types.m",
     ":piex_module_loader",
-    ":sandboxed_load_time_data",
     "//chromeos/components/system_apps/public/js:message_pipe.m",
+    "//chromeos/components/system_apps/public/js:sandboxed_load_time_data",
   ]
 }
 

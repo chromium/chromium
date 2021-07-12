@@ -6,6 +6,10 @@
  * @fileoverview
  * A script for the app inside the iframe. Implements a delegate.
  */
+import './sandboxed_load_time_data.js';
+
+import {MessagePipe} from './message_pipe.m.js';
+import {Message} from './message_types.js';
 
 /** A pipe through which we can send messages to the parent frame. */
 const parentMessagePipe = new MessagePipe('chrome://help-app', window.parent);
@@ -70,3 +74,5 @@ const DELEGATE = {
 window.customLaunchData = {
   delegate: DELEGATE,
 };
+
+export const TEST_ONLY = {parentMessagePipe};

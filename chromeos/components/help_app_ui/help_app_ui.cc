@@ -16,6 +16,7 @@
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/components/local_search_service/public/mojom/types.mojom.h"
+#include "chromeos/components/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_help_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -37,16 +38,8 @@ content::WebUIDataSource* CreateHostDataSource() {
   source->SetDefaultResource(IDR_HELP_APP_HOST_INDEX_HTML);
   source->AddResourcePath("app_icon_192.png", IDR_HELP_APP_ICON_192);
   source->AddResourcePath("app_icon_512.png", IDR_HELP_APP_ICON_512);
-  source->AddResourcePath("help_app_index_scripts.js",
-                          IDR_HELP_APP_INDEX_SCRIPTS_JS);
-  source->AddResourcePath("help_app.mojom-lite.js",
-                          IDR_HELP_APP_HELP_APP_MOJOM_JS);
-  source->AddResourcePath("local_search_service_types.mojom-lite.js",
-                          IDR_HELP_APP_LOCAL_SEARCH_SERVICE_TYPES_MOJOM_JS);
-  source->AddResourcePath("local_search_service_index.mojom-lite.js",
-                          IDR_HELP_APP_LOCAL_SEARCH_SERVICE_INDEX_MOJOM_JS);
-  source->AddResourcePath("help_app_search.mojom-lite.js",
-                          IDR_HELP_APP_SEARCH_MOJOM_JS);
+  source->AddResourcePath("browser_proxy.js", IDR_HELP_APP_BROWSER_PROXY_JS);
+
   source->AddLocalizedString("appTitle", IDS_HELP_APP_EXPLORE);
   return source;
 }
@@ -81,6 +74,12 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
+
+  if (MaybeConfigureTestableDataSource(host_source)) {
+    host_source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::TrustedTypes,
+        std::string("trusted-types test-harness;"));
+  }
 
   // Register common permissions for chrome-untrusted:// pages.
   // TODO(https://crbug.com/1113568): Remove this after common permissions are
