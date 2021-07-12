@@ -179,8 +179,7 @@ NetworkHealthProvider::~NetworkHealthProvider() = default;
 NetworkProperties& NetworkHealthProvider::GetNetworkProperties(
     const std::string& guid) {
   DCHECK(base::Contains(network_properties_map_, guid));
-  auto network_props_iter = network_properties_map_.find(guid);
-  return network_props_iter->second;
+  return network_properties_map_.at(guid);
 }
 
 void NetworkHealthProvider::GetNetworkState() {
