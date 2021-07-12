@@ -50,6 +50,10 @@ class ReentryGuard {
 
   operator bool() { return allowed_; }
 
+  // This function must be called in very early of the process start-up in
+  // order to acquire a low TLS slot number because glibc TLS implementation
+  // will require a malloc call to allocate storage for a higher slot number
+  // (>= PTHREAD_KEY_2NDLEVEL_SIZE == 32).  c.f. heap_profiling::InitTLSSlot.
   static void Init() {
     int error = pthread_key_create(&entered_key_, nullptr);
     CHECK(!error);
@@ -568,6 +572,12 @@ void PoissonAllocationSampler::SuppressRandomnessForTest(bool suppress) {
 }
 
 void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
+  // The following implementation (including ScopedMuteThreadSamples) will use
+  // `thread_local`, which may cause a reentrancy issue.  So, temporarily
+  // disable the sampling by having a ReentryGuard.
+  ReentryGuard guard;
+  ignore_result(guard);
+
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
   DCHECK(ranges::find(observers_, observer) == observers_.end());
@@ -578,6 +588,12 @@ void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
 
 void PoissonAllocationSampler::RemoveSamplesObserver(
     SamplesObserver* observer) {
+  // The following implementation (including ScopedMuteThreadSamples) will use
+  // `thread_local`, which may cause a reentrancy issue.  So, temporarily
+  // disable the sampling by having a ReentryGuard.
+  ReentryGuard guard;
+  ignore_result(guard);
+
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
   auto it = ranges::find(observers_, observer);
