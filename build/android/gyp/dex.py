@@ -37,8 +37,6 @@ _IGNORE_WARNINGS = (
     r'Missing class sun.misc.Unsafe',
     # Caused when the test apk and the apk under test do not having native libs.
     r'Missing class org.chromium.build.NativeLibraries',
-    # Caused by internal annotation: https://crbug.com/1180222
-    r'Missing class com.google.errorprone.annotations.RestrictedInheritance',
     # Caused by internal protobuf package: https://crbug.com/1183971
     r'referenced from: com.google.protobuf.GeneratedMessageLite$GeneratedExtension',  # pylint: disable=line-too-long
     # Caused by using Bazel desugar instead of D8 for desugar, since Bazel
