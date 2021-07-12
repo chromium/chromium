@@ -13,6 +13,7 @@ path_util.AddPyUtilsToPath()
 path_util.AddTracingToPath()
 
 import metadata_extractor
+from metadata_extractor import OSName
 from core.tbmv3 import trace_processor
 
 import mock
@@ -131,7 +132,7 @@ class ExtractMetadataTestCase(unittest.TestCase):
     extractor.Initialize()
 
     self.assertEqual(extractor.version_number, '36.9.7934.4')
-    self.assertEqual(extractor.os_name, 'Android')
+    self.assertEqual(extractor.os_name, OSName.ANDROID)
     self.assertEqual(extractor.architecture, 'x86_64')
     self.assertEqual(extractor.bitness, '64')
     self.assertEqual(extractor.version_code, '857854')
@@ -189,6 +190,92 @@ class ExtractMetadataTestCase(unittest.TestCase):
     extractor.Initialize()
 
     self.assertEqual(extractor.version_number, '36.9.7934.4')
+
+  def testParseOSNameAndroid(self):
+    def side_effect(*args):
+      params = self._CreateRunQueryResultsFromValues(os_name='Android')
+      return params[args]
+
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
+    extractor.Initialize()
+
+    self.assertEqual(extractor.os_name, OSName.ANDROID)
+
+  def testParseOSNameLinux(self):
+    def side_effect(*args):
+      params = self._CreateRunQueryResultsFromValues(os_name='Linux')
+      return params[args]
+
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
+    extractor.Initialize()
+
+    self.assertEqual(extractor.os_name, OSName.LINUX)
+
+  def testParseOSNameMac(self):
+    def side_effect(*args):
+      params = self._CreateRunQueryResultsFromValues(os_name='Mac OS X')
+      return params[args]
+
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
+    extractor.Initialize()
+
+    self.assertEqual(extractor.os_name, OSName.MAC)
+
+  def testParseOSNameWindows(self):
+    def side_effect(*args):
+      params = self._CreateRunQueryResultsFromValues(os_name='Windows NT')
+      return params[args]
+
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
+    extractor.Initialize()
+
+    self.assertEqual(extractor.os_name, OSName.WINDOWS)
+
+  def testParseOSNameCrOS(self):
+    def side_effect(*args):
+      params = self._CreateRunQueryResultsFromValues(os_name='CrOS')
+      return params[args]
+
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
+    extractor.Initialize()
+
+    self.assertEqual(extractor.os_name, OSName.CROS)
+
+  def testParseOSNameFuschia(self):
+    def side_effect(*args):
+      params = self._CreateRunQueryResultsFromValues(os_name='Fuschia')
+      return params[args]
+
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
+    extractor.Initialize()
+
+    self.assertEqual(extractor.os_name, OSName.FUSCHIA)
+
+  def testParseOSNameNotRecognized(self):
+    def side_effect(*args):
+      params = self._CreateRunQueryResultsFromValues(os_name='blah')
+      return params[args]
+
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
+
+    with self.assertRaises(Exception) as context:
+      extractor.Initialize()
+
+    self.assertTrue('OS name blah not recognized.' in str(context.exception))
 
 
 if __name__ == '__main__':

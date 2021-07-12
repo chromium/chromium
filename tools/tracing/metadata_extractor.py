@@ -23,6 +23,15 @@ VERSION_CODE_QUERY = (
 MODULES_QUERY = 'select name, build_id from stack_profile_mapping'
 
 
+class OSName():
+  ANDROID = 'Android'
+  LINUX = 'Linux'
+  MAC = 'Mac OS X'
+  WINDOWS = 'Windows NT'
+  CROS = 'CrOS'
+  FUSCHIA = 'Fuschia'
+
+
 class MetadataExtractor:
   """Extracts and stores metadata from a perfetto trace.
 
@@ -32,7 +41,8 @@ class MetadataExtractor:
     _trace_processor_path: path to the trace_processor executable.
     _trace_file: path to a perfetto system trace file.
     version_number: chrome version number (eg: 93.0.4537.0).
-    os_name: platform of the trace writer (eg. Android).
+    os_name: platform of the trace writer of type OSName
+      (eg. OSName.Android).
     architecture: OS arch of the trace writer, as returned by
       base::SysInfo::OperatingSystemArchitecture() (eg: 'x86_64).
     bitness: integer of architecture bitness (eg. 32, 64).
@@ -89,13 +99,46 @@ class MetadataExtractor:
     else:
       self.version_number = version_number
 
-    self.os_name = self._GetStringValueFromQuery(OS_NAME_QUERY)
+    raw_os_name = self._GetStringValueFromQuery(OS_NAME_QUERY)
+    self.os_name = self._ParseOSName(raw_os_name)
+
     self.architecture = self._GetStringValueFromQuery(ARCH_QUERY)
     self.bitness = self._GetIntValueFromQuery(BITNESS_QUERY)
     self.version_code = self._GetIntValueFromQuery(VERSION_CODE_QUERY)
 
     # Parse module to be a mapping between module name and debug id
     self.modules = self._ExtractValidModuleMap()
+
+  def _ParseOSName(self, raw_os_name):
+    """Parsed OS name string into an enum.
+
+    Args:
+      raw_os_name: An OS name string returned from
+        base::SysInfo::OperatingSystemName().
+
+    Returns:
+      An enum of type OSName.
+
+    Raises:
+      Exception: If OS name string is not recognized.
+    """
+    if raw_os_name is None:
+      return None
+
+    if raw_os_name == 'Android':
+      return OSName.ANDROID
+    elif raw_os_name == 'Linux':
+      return OSName.LINUX
+    elif raw_os_name == 'Mac OS X':
+      return OSName.MAC
+    elif raw_os_name == 'Windows NT':
+      return OSName.WINDOWS
+    elif raw_os_name == 'CrOS':
+      return OSName.CROS
+    elif raw_os_name == 'Fuschia':
+      return OSName.FUSCHIA
+    else:
+      raise Exception('OS name %s not recognized.' % (raw_os_name))
 
   def _GetStringValueFromQuery(self, sql):
     """Runs SQL query on trace processor and returns 'str_value' result.
