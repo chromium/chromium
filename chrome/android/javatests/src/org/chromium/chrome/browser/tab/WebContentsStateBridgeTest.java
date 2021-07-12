@@ -19,6 +19,7 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 

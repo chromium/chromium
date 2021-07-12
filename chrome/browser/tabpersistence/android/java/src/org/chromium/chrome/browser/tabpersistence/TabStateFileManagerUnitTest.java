@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tabstate;
+package org.chromium.chrome.browser.tabpersistence;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +18,6 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tab.WebContentsState;
 
 import java.io.DataOutputStream;

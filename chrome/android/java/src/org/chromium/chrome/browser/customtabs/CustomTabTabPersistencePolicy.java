@@ -27,12 +27,12 @@ import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

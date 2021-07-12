@@ -206,7 +206,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/tabbed_mode/TabbedAppMenuPropertiesDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorImplTest.java",
   "junit/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorProfileSupplierTest.java",
-  "junit/src/org/chromium/chrome/browser/tabstate/TabStateFileManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tasks/EngagementTimeUtilTest.java",
   "junit/src/org/chromium/chrome/browser/tasks/JourneyManagerTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/LocationBarModelUnitTest.java",

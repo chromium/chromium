@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab;
+package org.chromium.chrome.browser.tabpersistence;
 
 import android.os.SystemClock;
 import android.util.Pair;
@@ -13,6 +13,10 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
 import java.io.BufferedOutputStream;
@@ -173,7 +177,7 @@ public class TabStateFileManager {
                         "Failed to read shouldPreserve flag from tab state. "
                                 + "Assuming shouldPreserve is false");
             }
-            tabState.mIsIncognito = encrypted;
+            tabState.isIncognito = encrypted;
             try {
                 tabState.themeColor = stream.readInt();
             } catch (EOFException eof) {

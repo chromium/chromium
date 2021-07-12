@@ -37,10 +37,10 @@ public class TabState {
     public @Nullable @TabLaunchType Integer tabLaunchTypeAtCreation;
 
     /** Whether this TabState was created from a file containing info about an incognito Tab. */
-    protected boolean mIsIncognito;
+    public boolean isIncognito;
 
     public boolean isIncognito() {
-        return mIsIncognito;
+        return isIncognito;
     }
 
     /** @return The theme color of the tab or {@link #UNSPECIFIED_THEME_COLOR} if not set. */

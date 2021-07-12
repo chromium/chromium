@@ -1143,7 +1143,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tab/TabParentIntent.java",
   "java/src/org/chromium/chrome/browser/tab/TabStateBrowserControlsVisibilityDelegate.java",
   "java/src/org/chromium/chrome/browser/tab/TabStateExtractor.java",
-  "java/src/org/chromium/chrome/browser/tab/TabStateFileManager.java",
   "java/src/org/chromium/chrome/browser/tab/TabThemeColorHelper.java",
   "java/src/org/chromium/chrome/browser/tab/TabUma.java",
   "java/src/org/chromium/chrome/browser/tab/TabUtils.java",
