@@ -5321,8 +5321,9 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
       blink::TrialTokenValidator().RequestEnablesDeprecatedFeature(
           common_params_->url, response_head_->headers.get(),
           "PrivateNetworkAccessNonSecureContextsAllowed", base::Time::Now())) {
-    // TODO(https://crbug.com/1225977): Record that we need to increment a
-    // usecounter after commit.
+    web_features_to_log_.push_back(
+        blink::mojom::WebFeature::
+            kPrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial);
     private_network_request_policy_ =
         network::mojom::PrivateNetworkRequestPolicy::kAllow;
     return;
@@ -5335,6 +5336,13 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
           features::kBlockInsecurePrivateNetworkRequests)
           ? network::mojom::PrivateNetworkRequestPolicy::kBlock
           : network::mojom::PrivateNetworkRequestPolicy::kWarn;
+}
+
+std::vector<blink::mojom::WebFeature>
+NavigationRequest::TakeWebFeaturesToLog() {
+  std::vector<blink::mojom::WebFeature> result;
+  result.swap(web_features_to_log_);
+  return result;
 }
 
 void NavigationRequest::ReadyToCommitNavigation(bool is_error) {

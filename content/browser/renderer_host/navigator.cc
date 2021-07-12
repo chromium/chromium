@@ -60,6 +60,8 @@ namespace content {
 
 namespace {
 
+// TODO(titouan): Move the feature computation logic into `NavigationRequest`,
+// and use `NavigationRequest::TakeWebFeatureToLog()` to record them later.
 void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
                                       bool has_embedding_control,
                                       bool is_error_page) {
@@ -156,6 +158,15 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
                             kSameOriginDocumentsWithDifferentCOOPStatus);
       }
     }
+  }
+}
+
+// Records the fact that `rfh` made use of `web_features`.
+void RecordMetrics(RenderFrameHostImpl& rfh,
+                   const std::vector<blink::mojom::WebFeature>& web_features) {
+  ContentBrowserClient& client = *GetContentClient()->browser();
+  for (const auto feature : web_features) {
+    client.LogWebFeatureForCurrentPage(&rfh, feature);
   }
 }
 
@@ -501,6 +512,12 @@ void Navigator::DidNavigate(
   bool is_error_page = navigation_request->IsErrorPage();
   const GURL original_request_url = navigation_request->GetOriginalRequestURL();
 
+  // Get the list of web features that the navigating document made use of
+  // before it could commit. We attribute these to the new document once it
+  // has committed.
+  std::vector<blink::mojom::WebFeature> web_features =
+      navigation_request->TakeWebFeaturesToLog();
+
   // Send notification about committed provisional loads. This notification is
   // different from the NAV_ENTRY_COMMITTED notification which doesn't include
   // the actual URL navigated to and isn't sent for AUTO_SUBFRAME navigations.
@@ -516,6 +533,7 @@ void Navigator::DidNavigate(
   if (did_create_new_document) {
     RecordWebPlatformSecurityMetrics(render_frame_host, has_embedding_control,
                                      is_error_page);
+    RecordMetrics(*render_frame_host, web_features);
   }
 
   if (!did_navigate)

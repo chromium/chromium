@@ -22,12 +22,14 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/dom_distiller/core/url_constants.h"
+#include "components/embedder_support/switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/private_network_access_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
@@ -95,6 +97,8 @@ std::string FetchScript(const GURL& url) {
       "fetch($1).then(response => true).catch(error => false)", url);
 }
 
+constexpr char kFeatureHistogramName[] = "Blink.UseCounter.Features";
+
 constexpr WebFeature kAllAddressSpaceFeatures[] = {
     WebFeature::kAddressSpacePrivateSecureContextEmbeddedLocal,
     WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
@@ -123,7 +127,7 @@ std::map<WebFeature, int> GetAddressSpaceFeatureBucketCounts(
     const base::HistogramTester& tester) {
   std::map<WebFeature, int> counts;
   for (WebFeature feature : kAllAddressSpaceFeatures) {
-    int count = tester.GetBucketCount("Blink.UseCounter.Features", feature);
+    int count = tester.GetBucketCount(kFeatureHistogramName, feature);
     if (count == 0) {
       continue;
     }
@@ -134,15 +138,17 @@ std::map<WebFeature, int> GetAddressSpaceFeatureBucketCounts(
 }
 
 // Private Network Access is a web platform specification aimed at securing
-// requests made from public websites to the private network and localhost. It
-// is entirely implemented in content/. Its integration with Blink UseCounters
-// cannot be tested in content/, however, thus we define this standalone test
-// here.
+// requests made from public websites to the private network and localhost.
+//
+// It is mostly implemented in content/, but some of its integrations (
+// (with Blink UseCounters, with chrome/-specific special schemes) cannot be
+// tested in content/, however, thus we define this standalone test here.
 //
 // See also:
 //
 //  - specification: https://wicg.github.io/private-network-access.
-//  - feature browsertests in content/: RenderFrameHostImplTest.
+//  - feature browsertests:
+//    //content/browser/renderer_host/private_network_access_browsertest.cc
 //
 class PrivateNetworkAccessBrowserTestBase : public InProcessBrowserTest {
  public:
@@ -185,6 +191,15 @@ class PrivateNetworkAccessBrowserTestBase : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // The public key used to verify test trial tokens.
+    // See: //docs/origin_trial_integration.md
+    constexpr char kOriginTrialTestPublicKey[] =
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
+    command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
+                                    kOriginTrialTestPublicKey);
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -207,6 +222,7 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
                 dom_distiller::kReaderMode,
             },
             {}) {}
@@ -227,6 +243,14 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
     }
   }
 };
+
+// ================
+// USECOUNTER TESTS
+// ================
+//
+// UseCounters are translated into UMA histograms at the chrome/ layer, by the
+// page_load_metrics component. These tests verify that UseCounters are recorded
+// correctly by Private Network Access code in the right circumstances.
 
 // This test verifies that no feature is counted for the initial navigation from
 // a new tab to a page served by localhost.
@@ -565,6 +589,30 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
       ElementsAre(Pair(
           WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal, 1)));
 }
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       RecordsAddressSpaceFeatureForDeprecationTrial) {
+  base::HistogramTester histogram_tester;
+  content::DeprecationTrialURLLoaderInterceptor interceptor;
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), interceptor.EnabledUrl()));
+  EXPECT_TRUE(NavigateAndFlushHistograms());
+
+  EXPECT_EQ(
+      histogram_tester.GetBucketCount(
+          kFeatureHistogramName,
+          WebFeature::
+              kPrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial),
+      1);
+}
+
+// ====================
+// SPECIAL SCHEME TESTS
+// ====================
+//
+// These tests verify the IP address space assigned to documents loaded from a
+// variety of special URL schemes. Since these are not loaded over the network,
+// an IP address space must be made up for them.
 
 // This test verifies that the chrome-untrusted:// scheme is considered local
 // for the purpose of Private Network Access computations.

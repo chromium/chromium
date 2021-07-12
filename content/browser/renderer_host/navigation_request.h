@@ -898,6 +898,12 @@ class CONTENT_EXPORT NavigationRequest
 
   void RenderFallbackContentForObjectTag();
 
+  // Returns the vector of web features used during the navigation, whose
+  // recording was delayed until the new document that used them commits.
+  //
+  // Empties this instance's vector.
+  std::vector<blink::mojom::WebFeature> TakeWebFeaturesToLog();
+
   // Helper for logging crash keys related to a NavigationRequest (e.g.
   // "navigation_request_url" and "navigation_request_initiator").  The crash
   // keys will be logged if a ScopedCrashKeys instance exists when a crash or
@@ -1820,6 +1826,11 @@ class CONTENT_EXPORT NavigationRequest
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
       network::mojom::PrivateNetworkRequestPolicy::kWarn;
+
+  // The list of web features that were used by the new document during
+  // navigation. These can only be logged once the document commits, so they are
+  // held in this vector until then.
+  std::vector<blink::mojom::WebFeature> web_features_to_log_;
 
   // Messages to be printed on the console in the target RenderFrameHost of this
   // NavigationRequest.

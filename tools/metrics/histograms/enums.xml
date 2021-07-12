@@ -33953,6 +33953,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3955" label="SameSiteNoneIncludedBySamePartyAncestors"/>
   <int value="3956" label="SameSiteNoneIncludedBySameSiteLax"/>
   <int value="3957" label="SameSiteNoneIncludedBySameSiteStrict"/>
+  <int value="3958"
+      label="PrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
