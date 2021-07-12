@@ -97,18 +97,25 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
     NGBoxFragmentBuilder* builder,
-    PhysicalSize size,
+    PhysicalSize outer_size,
+    PhysicalSize inner_size,
     const NGContainingBlock<LogicalOffset>& containing_block) {
   return NGContainingBlock<PhysicalOffset>(
       containing_block.offset.ConvertToPhysical(
-          builder->Style().GetWritingDirection(), size,
-          containing_block.fragment ? containing_block.fragment->Size()
-                                    : PhysicalSize()),
+          builder->Style().GetWritingDirection(), outer_size, inner_size),
       containing_block.relative_offset.ConvertToPhysical(
-          builder->Style().GetWritingDirection(), size,
-          containing_block.fragment ? containing_block.fragment->Size()
-                                    : PhysicalSize()),
+          builder->Style().GetWritingDirection(), outer_size, inner_size),
       containing_block.fragment);
+}
+
+NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
+    NGBoxFragmentBuilder* builder,
+    PhysicalSize size,
+    const NGContainingBlock<LogicalOffset>& containing_block) {
+  PhysicalSize containing_block_size =
+      containing_block.fragment ? containing_block.fragment->Size() : size;
+  return PhysicalContainingBlock(builder, size, containing_block_size,
+                                 containing_block);
 }
 
 }  // namespace
@@ -473,15 +480,25 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
     : mathml_paint_info(std::move(builder->mathml_paint_info_)) {
   oof_positioned_fragmentainer_descendants.ReserveCapacity(
       builder->oof_positioned_fragmentainer_descendants_.size());
-  const WritingModeConverter converter(
-      {builder->Style().GetWritingMode(), builder->Direction()}, size);
   for (const auto& descendant :
        builder->oof_positioned_fragmentainer_descendants_) {
+    // The static position should remain relative to the containing block.
+    PhysicalSize containing_block_size = size;
+    WritingDirectionMode writing_direction = builder->GetWritingDirection();
+    if (descendant.containing_block.fragment) {
+      containing_block_size = descendant.containing_block.fragment->Size();
+      writing_direction =
+          descendant.containing_block.fragment->Style().GetWritingDirection();
+    }
+    const WritingModeConverter converter(writing_direction,
+                                         containing_block_size);
+
     oof_positioned_fragmentainer_descendants.emplace_back(
         descendant.Node(),
         descendant.static_position.ConvertToPhysical(converter),
         descendant.inline_container,
-        PhysicalContainingBlock(builder, size, descendant.containing_block),
+        PhysicalContainingBlock(builder, size, containing_block_size,
+                                descendant.containing_block),
         PhysicalContainingBlock(builder, size,
                                 descendant.fixedpos_containing_block));
   }
