@@ -130,6 +130,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
+  set_close_on_deactivate(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
@@ -235,18 +236,13 @@ void PermissionPromptBubbleView::UpdateAnchorPosition() {
 void PermissionPromptBubbleView::SetPromptStyle(
     PermissionPromptStyle prompt_style) {
   prompt_style_ = prompt_style;
-  // If bubble hanging off the padlock icon, with no chip showing, it shouldn't
-  // close on deactivate and it should stick until user makes a decision.
-  // Otherwise, the chip is indicating the pending permission request and so the
-  // bubble can be opened and closed repeatedly.
+  // If bubble hanging off the padlock icon, with no chip showing, closing the
+  // dialog should dismiss the pending request because there's no way to bring
+  // the bubble back.
   if (prompt_style == PermissionPromptStyle::kBubbleOnly) {
-    set_close_on_deactivate(false);
     DialogDelegate::SetCloseCallback(
         base::BindOnce(&PermissionPromptBubbleView::ClosingPermission,
                        base::Unretained(this)));
-  } else {
-    set_close_on_deactivate(true);
-    DialogDelegate::SetCloseCallback(base::OnceClosure());
   }
 }
 

@@ -119,16 +119,6 @@ class PermissionPromptBubbleViewBrowserTest
     }
   }
 
-  bool VerifyUi() override {
-    const bool should_close_on_deactivate = GetChip();
-    views::Widget* prompt_widget = test_api_->GetPromptWindow();
-    views::BubbleDialogDelegate* bubble_dialog =
-        prompt_widget->widget_delegate()->AsBubbleDialogDelegate();
-    EXPECT_EQ(bubble_dialog->close_on_deactivate(), should_close_on_deactivate);
-
-    return DialogBrowserTest::VerifyUi();
-  }
-
   GURL GetTestUrl() { return GURL("https://example.com"); }
 
   content::RenderFrameHost* GetActiveMainFrame() {
