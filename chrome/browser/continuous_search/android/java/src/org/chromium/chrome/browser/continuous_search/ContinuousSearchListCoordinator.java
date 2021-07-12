@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -38,9 +39,10 @@ public class ContinuousSearchListCoordinator {
     private final PropertyModel mRootViewModel;
     private final Resources mResources;
 
-    public ContinuousSearchListCoordinator(ObservableSupplier<Tab> tabSupplier,
-            Callback<VisibilitySettings> setLayoutVisibility, ThemeColorProvider themeColorProvider,
-            Resources resources) {
+    public ContinuousSearchListCoordinator(
+            BrowserControlsStateProvider browserControlsStateProvider,
+            ObservableSupplier<Tab> tabSupplier, Callback<VisibilitySettings> setLayoutVisibility,
+            ThemeColorProvider themeColorProvider, Resources resources) {
         mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         ModelList listItems = new ModelList();
         mRecyclerViewAdapter = new SimpleRecyclerViewAdapter(listItems);
@@ -59,8 +61,8 @@ public class ContinuousSearchListCoordinator {
                         -> inflateListItemView(parent, ListItemType.AD),
                 ContinuousSearchListViewBinder::bindListItem);
 
-        mListMediator = new ContinuousSearchListMediator(
-                listItems, mRootViewModel, setLayoutVisibility, themeColorProvider, resources);
+        mListMediator = new ContinuousSearchListMediator(browserControlsStateProvider, listItems,
+                mRootViewModel, setLayoutVisibility, themeColorProvider, resources);
         mTabSupplier = tabSupplier;
         mTabSupplier.addObserver(mListMediator);
     }

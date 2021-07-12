@@ -105,6 +105,17 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
         updateCurrentUrlInternal(url, true);
     }
 
+    boolean isMatchingSrp(GURL url) {
+        if (mData == null || mData.getQuery() == null || mData.getQuery().isEmpty()) {
+            return false;
+        }
+
+        String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
+        return query != null && query.equals(mData.getQuery())
+                && SearchUrlHelper.getSrpPageCategoryFromUrl(url)
+                == mData.getProvider().getCategory();
+    }
+
     private void updateCurrentUrlInternal(GURL url, boolean notify) {
         if (!isValid()) return;
 
@@ -125,15 +136,6 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
         for (ContinuousNavigationUserDataObserver observer : mObservers) {
             observer.onUrlChanged(url, onSrp);
         }
-    }
-
-    private boolean isMatchingSrp(GURL url) {
-        if (mData.getQuery() == null || mData.getQuery().isEmpty()) return false;
-
-        String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
-        return query != null && query.equals(mData.getQuery())
-                && SearchUrlHelper.getSrpPageCategoryFromUrl(url)
-                == mData.getProvider().getCategory();
     }
 
     private boolean equalsValidUrl(GURL validUrl, GURL url) {

@@ -84,7 +84,7 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         mContainerMediator = new ContinuousSearchContainerMediator(browserControlsStateProvider,
                 layoutManager, canAnimateNativeBrowserControls, defaultTopContainerHeightSupplier,
                 this::initializeLayout, hideToolbarShadow);
-        mListCoordinator = new ContinuousSearchListCoordinator(
+        mListCoordinator = new ContinuousSearchListCoordinator(browserControlsStateProvider,
                 tabSupplier, this::updateVisibility, themeColorProvider, resources);
     }
 

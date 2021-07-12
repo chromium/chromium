@@ -7,15 +7,20 @@ package org.chromium.chrome.browser.continuous_search;
 import android.content.res.Resources;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -29,12 +34,19 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Business logic for the UI component of Continuous Search Navigation. This class updates the UI on
  * search result updates.
  */
 class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserver, Callback<Tab>,
                                               ThemeColorProvider.ThemeColorObserver {
+    @VisibleForTesting
+    static final String TRIGGER_MODE_PARAM = "trigger_mode";
+
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ModelList mModelList;
     private final PropertyModel mRootViewModel;
     private final Callback<VisibilitySettings> mSetLayoutVisibility;
@@ -48,10 +60,22 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private boolean mScrolled;
     // The navigation index when CSN metadata was retrieved.
     private int mStartNavigationIndex;
+    private int mSrpVisits;
+    private BrowserControlsStateProvider.Observer mScrollObserver;
 
-    ContinuousSearchListMediator(ModelList modelList, PropertyModel rootViewModel,
+    @IntDef({TriggerMode.ALWAYS, TriggerMode.AFTER_SECOND_SRP, TriggerMode.ON_REVERSE_SCROLL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TriggerMode {
+        int ALWAYS = 0;
+        int AFTER_SECOND_SRP = 1;
+        int ON_REVERSE_SCROLL = 2;
+    };
+
+    ContinuousSearchListMediator(BrowserControlsStateProvider browserControlsStateProvider,
+            ModelList modelList, PropertyModel rootViewModel,
             Callback<VisibilitySettings> setLayoutVisibility, ThemeColorProvider themeColorProvider,
             Resources resources) {
+        mBrowserControlsStateProvider = browserControlsStateProvider;
         mModelList = modelList;
         mRootViewModel = rootViewModel;
         mSetLayoutVisibility = setLayoutVisibility;
@@ -69,6 +93,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                             ? getColor(R.color.default_icon_color_dark)
                             : getColor(R.color.default_icon_color_light));
         }
+        initScrollObserver();
     }
 
     private void invalidateOnUserRequest() {
@@ -91,11 +116,18 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
             mCurrentUserData = null;
         }
 
+        if (mScrollObserver != null) {
+            mBrowserControlsStateProvider.removeObserver(mScrollObserver);
+        }
+
         setVisibility(false, null);
         reset();
         mCurrentTab = tab;
         if (mCurrentTab == null) return;
 
+        if (mScrollObserver != null) {
+            mBrowserControlsStateProvider.addObserver(mScrollObserver);
+        }
         mCurrentUserData = ContinuousNavigationUserDataImpl.getOrCreateForTab(mCurrentTab);
         mCurrentUserData.addObserver(this);
     }
@@ -108,11 +140,12 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private void reset() {
         mModelList.clear();
         mOnSrp = false;
+        mSrpVisits = 0;
     }
 
     @Override
     public void onUpdate(ContinuousNavigationMetadata metadata) {
-        mModelList.clear();
+        reset();
 
         ContinuousNavigationMetadata.Provider provider = metadata.getProvider();
         mPageCategory = provider.getCategory();
@@ -143,6 +176,8 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     @Override
     public void onUrlChanged(GURL currentUrl, boolean onSrp) {
         mOnSrp = onSrp;
+        if (mOnSrp) mSrpVisits++;
+
         for (ListItem listItem : mModelList) {
             if (listItem.type == ListItemType.PROVIDER) continue;
 
@@ -150,7 +185,22 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                     && currentUrl.equals(listItem.model.get(ListItemProperties.URL));
             listItem.model.set(ListItemProperties.IS_SELECTED, isSelected);
         }
-        setVisibility(mModelList.size() > 0 && !mOnSrp, null);
+
+        boolean shouldTrigger = false;
+        switch (getTriggerMode()) {
+            case TriggerMode.ALWAYS:
+                shouldTrigger = true;
+                break;
+            case TriggerMode.AFTER_SECOND_SRP:
+                shouldTrigger = mSrpVisits >= 2;
+                break;
+        }
+        setVisibility(mModelList.size() > 0 && !mOnSrp && shouldTrigger, null);
+    }
+
+    private @TriggerMode int getTriggerMode() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CONTINUOUS_SEARCH, TRIGGER_MODE_PARAM, TriggerMode.ALWAYS);
     }
 
     /**
@@ -249,6 +299,28 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         mScrolled = false;
     }
 
+    private void initScrollObserver() {
+        if (getTriggerMode() != TriggerMode.ON_REVERSE_SCROLL) return;
+
+        mScrollObserver = new BrowserControlsStateProvider.Observer() {
+            @Override
+            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
+                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+                if (mVisible) return;
+
+                final boolean shouldShow = mModelList.size() > 0 && !mOnSrp;
+                if (!shouldShow) return;
+
+                // Show the UI only when the browser controls are fully hidden then on any
+                // subsequent reverse scroll the omnibox will be shown along with the UI.
+                if (BrowserControlsUtils.areBrowserControlsOffScreen(
+                            mBrowserControlsStateProvider)) {
+                    setVisibility(true, null);
+                }
+            }
+        };
+    }
+
     @Override
     public void onThemeColorChanged(int color, boolean shouldAnimate) {
         // TODO(crbug.com/1192781): Animate the color change if necessary.
@@ -293,5 +365,9 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     void destroy() {
         if (mCurrentUserData != null) mCurrentUserData.removeObserver(this);
         if (mThemeColorProvider != null) mThemeColorProvider.removeThemeColorObserver(this);
+
+        if (mScrollObserver != null) {
+            mBrowserControlsStateProvider.removeObserver(mScrollObserver);
+        }
     }
 }

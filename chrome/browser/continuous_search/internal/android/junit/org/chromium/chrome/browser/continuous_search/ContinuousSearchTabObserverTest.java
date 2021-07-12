@@ -83,6 +83,7 @@ public class ContinuousSearchTabObserverTest {
         mJniMocker.mock(SearchUrlHelperJni.TEST_HOOKS, mSearchUrlHelperJniMock);
         doReturn(TEST_QUERY).when(mSearchUrlHelperJniMock).getQueryIfValidSrpUrl(eq(mSrpUrl));
         doReturn(null).when(mSearchUrlHelperJniMock).getQueryIfValidSrpUrl(eq(mNonSrpUrl));
+        doReturn(false).when(mUserDataMock).isMatchingSrp(eq(mSrpUrl));
         ContinuousNavigationUserDataImpl.setInstanceForTesting(mUserDataMock);
 
         SearchResultProducerFactory.overrideFactory(new FakeSearchResultProducerFactory());
@@ -133,6 +134,9 @@ public class ContinuousSearchTabObserverTest {
         mObserver.onResult(metadata);
         inOrder.verify(mUserDataMock).updateData(eq(metadata), eq(mSrpUrl));
 
+        doReturn(true).when(mUserDataMock).isMatchingSrp(eq(mSrpUrl));
+        mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
+        inOrder.verify(mUserDataMock).isMatchingSrp(eq(mSrpUrl));
         inOrder.verifyNoMoreInteractions();
     }
 

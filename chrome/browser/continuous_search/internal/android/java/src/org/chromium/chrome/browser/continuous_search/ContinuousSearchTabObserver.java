@@ -41,6 +41,9 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         // Cancel any existing requests.
         resetProducer();
 
+        // Don't fetch new data if we already have data for this SRP.
+        if (continuousNavigationUserData.isMatchingSrp(url)) return;
+
         String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
         if (query == null) return;
 

@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -12,13 +16,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -37,33 +45,27 @@ import java.util.Arrays;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContinuousSearchListMediatorTest {
+    private static final String TRIGGER_MODE_ALWAYS = "0";
+    private static final String TRIGGER_MODE_AFTER_SECOND_SRP = "1";
+    private static final String TRIGGER_MODE_ON_REVERSE_SCROLL = "2";
+
     private ContinuousSearchListMediator mMediator;
     private MVCListAdapter.ModelList mModelList;
     private PropertyModel mRootViewModel;
     private CallbackHelper mLayoutVisibilityTrue;
     private CallbackHelper mLayoutVisibilityFalse;
+    private int mTriggerMode;
+
+    @Mock
+    private BrowserControlsStateProvider mBrowserControlsStateProviderMock;
 
     @Before
     public void setUp() {
+        initMocks(this);
         mModelList = new MVCListAdapter.ModelList();
         mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         mLayoutVisibilityTrue = new CallbackHelper();
         mLayoutVisibilityFalse = new CallbackHelper();
-        mMediator = new ContinuousSearchListMediator(mModelList, mRootViewModel,
-                (visibilitySettings)
-                        -> {
-                    if (visibilitySettings.isVisible()) {
-                        mLayoutVisibilityTrue.notifyCalled();
-                    } else {
-                        mLayoutVisibilityFalse.notifyCalled();
-                        Runnable runnable = visibilitySettings.getOnHideRunnable();
-                        if (runnable != null) {
-                            runnable.run();
-                        }
-                    }
-                },
-                Mockito.mock(ThemeColorProvider.class),
-                ApplicationProvider.getApplicationContext().getResources());
         ContinuousNavigationUserDataImpl continuousNavigationUserData =
                 Mockito.mock(ContinuousNavigationUserDataImpl.class);
         Mockito.doAnswer((invocation) -> {
@@ -82,10 +84,12 @@ public class ContinuousSearchListMediatorTest {
     }
 
     /**
-     * Tests the show/hide logic for the CNS.
+     * Tests the show/hide logic for the always show mode.
      */
     @Test
-    public void testVisibility() {
+    public void testVisibilityAlwaysShow() {
+        initMediatorWithTriggerMode(TRIGGER_MODE_ALWAYS);
+
         Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
                 mLayoutVisibilityTrue.getCallCount());
         Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 0,
@@ -146,10 +150,145 @@ public class ContinuousSearchListMediatorTest {
     }
 
     /**
+     * Tests the show/hide logic for show after second SRP mode.
+     */
+    @Test
+    public void testVisibilityAfterSecondSrp() {
+        initMediatorWithTriggerMode(TRIGGER_MODE_AFTER_SECOND_SRP);
+
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 0,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // UI should hide on observing a new tab.
+        mMediator.onResult(Mockito.mock(Tab.class));
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 1,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // 1 result available. UI will not show on first page.
+        PageItem pageItem = new PageItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), "result 1");
+        PageGroup pageGroup = new PageGroup("result", false, Arrays.asList(pageItem));
+        ContinuousNavigationMetadata continuousNavigationMetadata =
+                new ContinuousNavigationMetadata(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL),
+                        "query", getProvider(null), Arrays.asList(pageGroup));
+        mMediator.onUpdate(continuousNavigationMetadata);
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), true);
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 3,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Back to SRP. UI should be hidden.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), true);
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 4,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Back to result. UI should be shown.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
+        Assert.assertEquals("mLayoutVisibilityTrue should have been called.", 1,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 4,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Back to SRP. UI should be hidden.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), true);
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 1,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 5,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Back to result. UI should be shown.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
+        Assert.assertEquals("mLayoutVisibilityTrue should have been called.", 2,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 5,
+                mLayoutVisibilityFalse.getCallCount());
+    }
+
+    /**
+     * Tests the show/hide logic for the reverse scroll mode.
+     */
+    @Test
+    public void testVisibilityReverseScroll() {
+        initMediatorWithTriggerMode(TRIGGER_MODE_ON_REVERSE_SCROLL);
+        ArgumentCaptor<BrowserControlsStateProvider.Observer> browserControlsObserverCaptor =
+                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
+
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 0,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // UI should hide on observing a new tab.
+        mMediator.onResult(Mockito.mock(Tab.class));
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 1,
+                mLayoutVisibilityFalse.getCallCount());
+
+        verify(mBrowserControlsStateProviderMock)
+                .addObserver(browserControlsObserverCaptor.capture());
+        BrowserControlsStateProvider.Observer observer = browserControlsObserverCaptor.getValue();
+        Assert.assertNotNull(observer);
+
+        // 1 result available. UI will not show immediately.
+        PageItem pageItem = new PageItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), "result 1");
+        PageGroup pageGroup = new PageGroup("result", false, Arrays.asList(pageItem));
+        ContinuousNavigationMetadata continuousNavigationMetadata =
+                new ContinuousNavigationMetadata(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL),
+                        "query", getProvider(null), Arrays.asList(pageGroup));
+        mMediator.onUpdate(continuousNavigationMetadata);
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 2,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Controls visible so no change.
+        when(mBrowserControlsStateProviderMock.getBrowserControlHiddenRatio())
+                .thenReturn(0.0f)
+                .thenReturn(1.0f);
+        observer.onControlsOffsetChanged(0, 0, 0, 0, false);
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 2,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Controls hidden so set to showing.
+        observer.onControlsOffsetChanged(0, 0, 0, 0, false);
+        Assert.assertEquals("mLayoutVisibilityTrue should have been called.", 1,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 2,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Back to SRP. UI should be hidden.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), true);
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 1,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 3,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Controls hidden, but on SRP so don't set showing.
+        observer.onControlsOffsetChanged(0, 0, 0, 0, false);
+        Assert.assertEquals("mLayoutVisibilityTrue should have been called.", 1,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 3,
+                mLayoutVisibilityFalse.getCallCount());
+    }
+
+    /**
      * Tests provider label navigates user to the start page when clicked.
      */
     @Test
     public void testProviderLabel() {
+        initMediatorWithTriggerMode(TRIGGER_MODE_ALWAYS);
+
         // Prepare mock classes.
         Tab tab = Mockito.mock(Tab.class);
         WebContents webContents = Mockito.mock(WebContents.class);
@@ -196,6 +335,7 @@ public class ContinuousSearchListMediatorTest {
      */
     @Test
     public void testModelList() {
+        initMediatorWithTriggerMode(TRIGGER_MODE_ALWAYS);
         Tab tab = Mockito.mock(Tab.class);
         mMediator.onResult(tab);
         // Mock 3 SearchResultGroups, with 1, 2 and 3 SearchResults. The first group is an ad group.
@@ -249,6 +389,7 @@ public class ContinuousSearchListMediatorTest {
      */
     @Test
     public void testUserInvalidate() {
+        initMediatorWithTriggerMode(TRIGGER_MODE_ALWAYS);
         mMediator.onResult(Mockito.mock(Tab.class));
         PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
         PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
@@ -267,6 +408,7 @@ public class ContinuousSearchListMediatorTest {
      */
     @Test
     public void testObserveNewTab() {
+        initMediatorWithTriggerMode(TRIGGER_MODE_ALWAYS);
         PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
         PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
         ContinuousNavigationMetadata continuousNavigationMetadata =
@@ -284,6 +426,7 @@ public class ContinuousSearchListMediatorTest {
      */
     @Test
     public void testThemeColorChanged() {
+        initMediatorWithTriggerMode(TRIGGER_MODE_ALWAYS);
         PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
         PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
         ContinuousNavigationMetadata continuousNavigationMetadata =
@@ -303,6 +446,31 @@ public class ContinuousSearchListMediatorTest {
         mMediator.onThemeColorChanged(color, false);
         Assert.assertEquals("Background color incorrect.", color,
                 mRootViewModel.get(ContinuousSearchListProperties.BACKGROUND_COLOR));
+    }
+
+    private void initMediatorWithTriggerMode(String triggerMode) {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CONTINUOUS_SEARCH, true);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTINUOUS_SEARCH,
+                ContinuousSearchListMediator.TRIGGER_MODE_PARAM, triggerMode);
+        FeatureList.setTestValues(testValues);
+
+        mMediator = new ContinuousSearchListMediator(mBrowserControlsStateProviderMock, mModelList,
+                mRootViewModel,
+                (visibilitySettings)
+                        -> {
+                    if (visibilitySettings.isVisible()) {
+                        mLayoutVisibilityTrue.notifyCalled();
+                    } else {
+                        mLayoutVisibilityFalse.notifyCalled();
+                        Runnable runnable = visibilitySettings.getOnHideRunnable();
+                        if (runnable != null) {
+                            runnable.run();
+                        }
+                    }
+                },
+                Mockito.mock(ThemeColorProvider.class),
+                ApplicationProvider.getApplicationContext().getResources());
     }
 
     private void assertListItemEqualsSearchResult(
