@@ -119,6 +119,7 @@
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -2151,6 +2152,10 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   SecurityContext& security_context = frame_->DomWindow()->GetSecurityContext();
   security_context.SetSandboxFlags(sandbox_flags_);
+
+  // TODO(https://crbug.com/1224901): Send storage key with the commit params
+  // and use the storage key sent by the browser directly here.
+  frame_->DomWindow()->SetStorageKey(BlinkStorageKey(security_origin));
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that
   // wants to inspect sandbox flags.

@@ -131,6 +131,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -2112,6 +2113,10 @@ ukm::UkmRecorder* LocalDOMWindow::UkmRecorder() {
 ukm::SourceId LocalDOMWindow::UkmSourceID() const {
   DCHECK(document_);
   return document_->UkmSourceID();
+}
+
+void LocalDOMWindow::SetStorageKey(const BlinkStorageKey& storage_key) {
+  storage_key_ = storage_key;
 }
 
 }  // namespace blink

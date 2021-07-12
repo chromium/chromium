@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -431,6 +432,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   ukm::UkmRecorder* UkmRecorder() override;
   ukm::SourceId UkmSourceID() const override;
 
+  const BlinkStorageKey& GetStorageKey() const { return storage_key_; }
+  void SetStorageKey(const BlinkStorageKey& storage_key);
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -548,6 +552,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // this UKM is logged.
   // TODO(crbug.com/1112491): Remove when no longer needed.
   Deque<ukm::SourceId> post_message_ukm_recorded_source_ids_;
+
+  // The storage key for this LocalDomWindow.
+  BlinkStorageKey storage_key_;
 };
 
 template <>

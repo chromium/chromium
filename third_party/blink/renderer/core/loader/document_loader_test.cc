@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -431,6 +432,26 @@ TEST_F(DocumentLoaderTest,
   EXPECT_FALSE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
+TEST_F(DocumentLoaderTest, NavigationToAboutBlank) {
+  const KURL& requestor_url =
+      KURL(NullURL(), "https://subdomain.example.com/foo.html");
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
+
+  const KURL& about_blank_url = KURL(NullURL(), "about:blank");
+  std::unique_ptr<WebNavigationParams> params =
+      std::make_unique<WebNavigationParams>();
+  params->url = about_blank_url;
+  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
+  params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
+  LocalFrame* local_frame =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  local_frame->Loader().CommitNavigation(std::move(params), nullptr);
+
+  EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(requestor_url)),
+            local_frame->DomWindow()->GetStorageKey());
+}
+
 TEST_F(DocumentLoaderTest, SameOriginNavigation) {
   const KURL& requestor_url =
       KURL(NullURL(), "https://www.example.com/foo.html");
@@ -447,6 +468,8 @@ TEST_F(DocumentLoaderTest, SameOriginNavigation) {
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
+  EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(same_origin_url)),
+            local_frame->DomWindow()->GetStorageKey());
   EXPECT_TRUE(local_frame->Loader()
                   .GetDocumentLoader()
                   ->LastNavigationHadTrustedInitiator());
@@ -468,6 +491,8 @@ TEST_F(DocumentLoaderTest, CrossOriginNavigation) {
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
+  EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(other_origin_url)),
+            local_frame->DomWindow()->GetStorageKey());
   EXPECT_FALSE(local_frame->Loader()
                    .GetDocumentLoader()
                    ->LastNavigationHadTrustedInitiator());
