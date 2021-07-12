@@ -2074,7 +2074,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, DataDecoderRestart) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_ANDROID)
 #define MAYBE_ParseMetadataCrash DISABLED_ParseMetadataCrash
 #else
 #define MAYBE_ParseMetadataCrash ParseMetadataCrash
@@ -2093,7 +2093,13 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_ParseMetadataCrash) {
       console_message);
 }
 
-IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, ParseResponseCrash) {
+// TODO(https://crbug.com/1225178): flaky
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_ANDROID)
+#define MAYBE_ParseResponseCrash DISABLED_ParseResponseCrash
+#else
+#define MAYBE_ParseResponseCrash ParseResponseCrash
+#endif
+IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_ParseResponseCrash) {
   base::FilePath test_file_path = GetTestDataPath("mocked.wbn");
   MockParserFactory mock_factory({GURL(kTestPageUrl)}, test_file_path);
   mock_factory.SimulateParseResponseCrash();
