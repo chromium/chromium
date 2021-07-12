@@ -223,17 +223,6 @@ def UpdatePackage(package_name, host_os):
     package_file = 'clang'
   elif package_name == 'clang-tidy':
     package_file = 'clang-tidy'
-  elif package_name == 'lld_mac':
-    # TODO(thakis): Remove this block eventually.
-    if host_os not in ('mac', 'mac-arm64'):
-      print('The lld_mac package can only be downloaded on macOS.',
-            file=sys.stderr)
-      print('On non-mac, lld is included in the clang package.',
-            file=sys.stderr)
-    else:
-      print('lld is now included in the clang package even on mac.',
-            file=sys.stderr)
-    return 1
   elif package_name == 'objdump':
     package_file = 'llvmobjdump'
   elif package_name == 'translation_unit':

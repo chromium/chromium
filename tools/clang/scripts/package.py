@@ -507,29 +507,8 @@ def main():
             filter=PrintTarProgress)
   MaybeUpload(args.upload, clang_tidy_dir + '.tgz', gcs_platform)
 
-  # On Mac, lld wasn't part of the main zip.  Upload it in a separate zip
-  # until everything uses the version in the default package.
   if sys.platform == 'darwin':
-    llddir = 'lld-' + stamp
-    shutil.rmtree(llddir, ignore_errors=True)
-    os.makedirs(os.path.join(llddir, 'bin'))
-    shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'lld'),
-                os.path.join(llddir, 'bin'))
-    shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'llvm-ar'),
-                os.path.join(llddir, 'bin'))
-    shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'llvm-objcopy'),
-                os.path.join(llddir, 'bin'))
-    os.symlink('lld', os.path.join(llddir, 'bin', 'ld.lld'))
-    os.symlink('lld', os.path.join(llddir, 'bin', 'ld64.lld'))
-    os.symlink('lld', os.path.join(llddir, 'bin', 'lld-link'))
-    os.symlink('lld', os.path.join(llddir, 'bin', 'wasm-ld'))
-    os.symlink('llvm-objcopy', os.path.join(llddir, 'bin', 'llvm-strip'))
-    with tarfile.open(llddir + '.tgz', 'w:gz') as tar:
-      tar.add(os.path.join(llddir, 'bin'), arcname='bin',
-              filter=PrintTarProgress)
-    MaybeUpload(args.upload, llddir + '.tgz', gcs_platform)
-
-    # dsymutil isn't part of the main zip either, and it gets periodically
+    # dsymutil isn't part of the main zip, and it gets periodically
     # deployed to CIPD (manually, not as part of clang rolls) for use in the
     # Mac build toolchain.
     dsymdir = 'dsymutil-' + stamp
