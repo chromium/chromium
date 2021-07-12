@@ -12,7 +12,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
-#include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/record.pb.h"

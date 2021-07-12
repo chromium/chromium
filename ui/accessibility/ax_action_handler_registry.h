@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/values.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_tree_id.h"

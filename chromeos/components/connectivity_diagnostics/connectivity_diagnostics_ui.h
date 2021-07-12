@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-forward.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

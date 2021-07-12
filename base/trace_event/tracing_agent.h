@@ -8,7 +8,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/values.h"
 
 namespace base {
 
