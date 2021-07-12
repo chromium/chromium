@@ -432,6 +432,11 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
         ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED);
     report->set_token(token);
     report->set_show_download_in_folder(show_download_in_folder);
+    // If the download is opened, it indicates the user has bypassed the warning
+    // and decided to proceed.
+    report->set_did_proceed(true);
+    report->set_download_verdict(
+        DownloadDangerTypeToDownloadResponseVerdict(item->GetDangerType()));
     std::string serialized_report;
     if (report->SerializeToString(&serialized_report)) {
       sb_service_->SendSerializedDownloadReport(profile, serialized_report);

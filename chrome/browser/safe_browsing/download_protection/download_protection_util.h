@@ -8,6 +8,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_UTIL_H_
 
 #include "base/callback_list.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "net/cert/x509_certificate.h"
@@ -144,6 +145,11 @@ void GetCertificateAllowlistStrings(
     std::vector<std::string>* allowlist_strings);
 
 GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url);
+
+// Converts download danger type back to download response verdict. Returns
+// SAFE if there is no corresponding verdict type for the danger type.
+ClientDownloadResponse::Verdict DownloadDangerTypeToDownloadResponseVerdict(
+    download::DownloadDangerType download_danger_type);
 
 }  // namespace safe_browsing
 

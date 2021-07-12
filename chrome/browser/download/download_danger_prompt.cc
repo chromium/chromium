@@ -9,11 +9,13 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
@@ -84,28 +86,14 @@ void DownloadDangerPrompt::SendSafeBrowsingDownloadReport(
       content::DownloadItemUtils::GetBrowserContext(&download));
   auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
   report->set_type(report_type);
-  switch (download.GetDangerType()) {
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-      report->set_download_verdict(ClientDownloadResponse::DANGEROUS);
-      break;
-    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
-      report->set_download_verdict(ClientDownloadResponse::UNCOMMON);
-      break;
-    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
-      report->set_download_verdict(
-          ClientDownloadResponse::POTENTIALLY_UNWANTED);
-      break;
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
-      report->set_download_verdict(ClientDownloadResponse::DANGEROUS_HOST);
-      break;
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
-      report->set_download_verdict(
-          ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE);
-      break;
-    default:  // Don't send report for any other danger types.
-      return;
+  ClientDownloadResponse::Verdict download_verdict =
+      safe_browsing::DownloadDangerTypeToDownloadResponseVerdict(
+          download.GetDangerType());
+  if (download_verdict == ClientDownloadResponse::SAFE) {
+    // Don't send report if the verdict is SAFE.
+    return;
   }
+  report->set_download_verdict(download_verdict);
   report->set_url(download.GetURL().spec());
   report->set_did_proceed(did_proceed);
   std::string token =
