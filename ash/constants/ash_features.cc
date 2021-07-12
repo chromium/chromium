@@ -295,6 +295,10 @@ const base::Feature kCrostiniResetLxdDb{"CrostiniResetLxdDb",
 // Enables or disables Crostini using Buster container images.
 const base::Feature kCrostiniUseBusterImage{"CrostiniUseBusterImage",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
+// Use DLC instead of component updater for managing the Termina image if set
+// (and component updater instead of DLC if not).
+const base::Feature kCrostiniUseDlc{"CrostiniUseDlc",
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables using Cryptauth's GetDevicesActivityStatus API.
 const base::Feature kCryptAuthV2DeviceActivityStatus{

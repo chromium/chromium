@@ -1014,13 +1014,13 @@ bool CrostiniManager::IsDevKvmPresent() {
   return is_dev_kvm_present_;
 }
 
-void CrostiniManager::RunSessionStartTasks() {
+void CrostiniManager::MaybeUpdateCrostini() {
   // This is a new user session, perhaps using an old CrostiniManager.
   container_upgrade_prompt_shown_.clear();
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CrostiniManager::CheckPaths),
-      base::BindOnce(&CrostiniManager::MaybeUpgradeCrostiniAfterChecks,
+      base::BindOnce(&CrostiniManager::MaybeUpdateCrostiniAfterChecks,
                      weak_ptr_factory_.GetWeakPtr()));
   // Probe Concierge - if it's still running after an unclean shutdown, a
   // success response will be received.
@@ -1054,7 +1054,7 @@ void CrostiniManager::CheckPaths() {
   is_dev_kvm_present_ = base::PathExists(base::FilePath("/dev/kvm"));
 }
 
-void CrostiniManager::MaybeUpgradeCrostiniAfterChecks() {
+void CrostiniManager::MaybeUpdateCrostiniAfterChecks() {
   if (!CrostiniFeatures::Get()->IsEnabled(profile_)) {
     return;
   }
@@ -1065,6 +1065,8 @@ void CrostiniManager::MaybeUpgradeCrostiniAfterChecks() {
     upgrade_available_notification_ =
         CrostiniUpgradeAvailableNotification::Show(profile_, base::DoNothing());
   }
+  // TODO(crbug/953544) Remove this once we have transitioned completely to DLC
+  InstallTermina(base::DoNothing(), /*is_initial_install=*/false);
 }
 
 void CrostiniManager::InstallTermina(CrostiniResultCallback callback,

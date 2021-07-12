@@ -2413,6 +2413,9 @@ extern const char kCrostiniUseBusterImageDescription[];
 extern const char kCrostiniGpuSupportName[];
 extern const char kCrostiniGpuSupportDescription[];
 
+extern const char kCrostiniUseDlcName[];
+extern const char kCrostiniUseDlcDescription[];
+
 extern const char kCrostiniResetLxdDbName[];
 extern const char kCrostiniResetLxdDbDescription[];
 

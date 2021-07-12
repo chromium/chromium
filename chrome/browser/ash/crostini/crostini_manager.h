@@ -220,12 +220,13 @@ class CrostiniManager : public KeyedService,
   // Returns true if the /dev/kvm directory is present.
   static bool IsDevKvmPresent();
 
-  // Run tasks for session start. Currently this means: checking that /dev/kvm
-  // exists, promting for container upgrade (if needed), and checking if there's
-  // an running VM from a previous crashed session.
-  void RunSessionStartTasks();
+  // Upgrades cros-termina component if the current version is not
+  // compatible. This is a no-op if chromeos::features::kCrostiniUseDlc is
+  // enabled.
+  void MaybeUpdateCrostini();
 
-  // Installs termina using DLC service
+  // Installs termina using either component updater or the DLC service
+  // depending on the value of chromeos::features::kCrostiniUseDlc
   void InstallTermina(CrostiniResultCallback callback, bool is_initial_install);
 
   // Try to cancel a previous InstallTermina call. This is done on a best-effort
@@ -799,13 +800,13 @@ class CrostiniManager : public KeyedService,
   // Callback for AnsibleManagementService::ConfigureDefaultContainer
   void OnDefaultContainerConfigured(bool success);
 
-  // Helper for CrostiniManager::RunSessionStartTasks. Makes blocking calls to
+  // Helper for CrostiniManager::MaybeUpdateCrostini. Makes blocking calls to
   // check for /dev/kvm.
   static void CheckPaths();
 
-  // Helper for CrostiniManager::RunSessionStartTasks. Separated because
-  // checking for /dev/kvm can block.
-  void MaybeUpgradeCrostiniAfterChecks();
+  // Helper for CrostiniManager::MaybeUpdateCrostini. Separated because the
+  // checking component registration code may block.
+  void MaybeUpdateCrostiniAfterChecks();
 
   void FinishRestart(CrostiniRestarter* restarter, CrostiniResult result);
 
