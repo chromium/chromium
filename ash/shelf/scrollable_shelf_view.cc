@@ -4,6 +4,8 @@
 
 #include "ash/shelf/scrollable_shelf_view.h"
 
+#include <algorithm>
+
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -1664,9 +1666,9 @@ float ScrollableShelfView::CalculatePageScrollingOffsetInAbs(
     }
   }
 
-  DCHECK_GE(offset, 0);
-
-  return offset;
+  // Ensure the return value to be non-negative. Note that if the screen is too
+  // small (usually on the Linux emulator), `offset` may be negative.
+  return std::fmax(offset, 0.f);
 }
 
 float ScrollableShelfView::CalculateTargetOffsetAfterScroll(
