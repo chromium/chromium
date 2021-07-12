@@ -102,6 +102,22 @@ void StreamTextureProxy::OnFrameWithInfoAvailable(
 
 void StreamTextureProxy::ForwardStreamTextureForSurfaceRequest(
     const base::UnguessableToken& request_token) {
+  base::AutoLock lock(lock_);
+  if (!task_runner_)
+    return;
+
+  if (!task_runner_->BelongsToCurrentThread()) {
+    // Note that Unretained is safe here because this object is deleted
+    // exclusively by posting a task to the same task runner, after its owner
+    // has dropped the only reference to it.
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &StreamTextureProxy::ForwardStreamTextureForSurfaceRequest,
+            base::Unretained(this), request_token));
+    return;
+  }
+
   host_->ForwardStreamTextureForSurfaceRequest(request_token);
 }
 
