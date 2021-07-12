@@ -83,6 +83,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_resource.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -845,7 +846,7 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
 
   // Only need to check SODA installation and locale preference if offline
   // dictation is enabled.
-  if (!::switches::IsExperimentalAccessibilityDictationOfflineEnabled())
+  if (!features::IsExperimentalAccessibilityDictationOfflineEnabled())
     return;
 
   const bool enabled =

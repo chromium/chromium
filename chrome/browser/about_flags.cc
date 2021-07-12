@@ -4057,8 +4057,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExperimentalAccessibilityDictationOfflineName,
      flag_descriptions::kExperimentalAccessibilityDictationOfflineDescription,
      kOsCrOS,
-     SINGLE_VALUE_TYPE(
-         ::switches::kEnableExperimentalAccessibilityDictationOffline)},
+     FEATURE_VALUE_TYPE(features::kExperimentalAccessibilityDictationOffline)},
     {"enable-experimental-accessibility-switch-access-text",
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextName,
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextDescription,

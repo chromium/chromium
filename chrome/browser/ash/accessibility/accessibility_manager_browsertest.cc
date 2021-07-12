@@ -35,7 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -278,8 +278,8 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalAccessibilityDictationOffline);
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kExperimentalAccessibilityDictationOffline);
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -292,6 +292,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
  private:
   ui::ScopedAnimationDurationScaleMode disable_animations_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   DISALLOW_COPY_AND_ASSIGN(AccessibilityManagerTest);
 };
 

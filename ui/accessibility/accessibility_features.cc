@@ -136,6 +136,15 @@ bool IsExperimentalAccessibilityDictationListeningEnabled() {
       ::features::kExperimentalAccessibilityDictationListening);
 }
 
+const base::Feature kExperimentalAccessibilityDictationOffline{
+    "ExperimentalAccessibilityDictationOffline",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsExperimentalAccessibilityDictationOfflineEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilityDictationOffline);
+}
+
 const base::Feature kEnhancedNetworkVoices{"EnhancedNetworkVoices",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 

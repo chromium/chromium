@@ -17,7 +17,7 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
@@ -41,7 +41,7 @@ AccessibilityHandler::AccessibilityHandler(Profile* profile)
 AccessibilityHandler::~AccessibilityHandler() {
   if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning())
     a11y_nav_buttons_toggle_metrics_reporter_timer_.FireNow();
-  if (::switches::IsExperimentalAccessibilityDictationOfflineEnabled())
+  if (features::IsExperimentalAccessibilityDictationOfflineEnabled())
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
@@ -134,7 +134,7 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
 }
 
 void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
-  if (::switches::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+  if (features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
     if (speech::SodaInstaller::GetInstance()->IsSodaInstalled())
       OnSodaInstalled();
     else

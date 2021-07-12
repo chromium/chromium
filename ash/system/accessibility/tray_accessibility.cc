@@ -24,7 +24,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/controls/label.h"
@@ -82,7 +82,7 @@ AccessibilityDetailedView::AccessibilityDetailedView(
 }
 
 AccessibilityDetailedView::~AccessibilityDetailedView() {
-  if (::switches::IsExperimentalAccessibilityDictationOfflineEnabled())
+  if (features::IsExperimentalAccessibilityDictationOfflineEnabled())
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
@@ -535,7 +535,7 @@ void AccessibilityDetailedView::ShowHelp() {
 }
 
 void AccessibilityDetailedView::UpdateSodaInstallerObserverStatus() {
-  if (!::switches::IsExperimentalAccessibilityDictationOfflineEnabled())
+  if (!features::IsExperimentalAccessibilityDictationOfflineEnabled())
     return;
 
   bool dictation_enabled =

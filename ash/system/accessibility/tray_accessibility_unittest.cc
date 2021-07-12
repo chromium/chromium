@@ -16,9 +16,10 @@
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -112,6 +113,8 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();
     speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kExperimentalAccessibilityDictationOffline);
   }
 
   void TearDown() override {
@@ -401,6 +404,7 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
   std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<tray::AccessibilityDetailedView> detailed_menu_;
   std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TrayAccessibilityTest);
 };
@@ -677,8 +681,6 @@ TEST_F(TrayAccessibilityTest, SodaDownloadUnitTest) {
 
 // Ensures that we don't respond to soda download updates when dictation is off.
 TEST_F(TrayAccessibilityTest, SodaDownloadDictationDisabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnableExperimentalAccessibilityDictationOffline);
   CreateDetailedMenu();
   EnableDictation(false);
   SetDictationViewSubtitleText(u"This is a test");
@@ -690,8 +692,6 @@ TEST_F(TrayAccessibilityTest, SodaDownloadDictationDisabled) {
 // Ensures that we respond to soda download updates when dictation is on.
 // For this test, we enable dictation before the menu is created.
 TEST_F(TrayAccessibilityTest, SodaDownloadDictationEnabledBeforeMenuCreated) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnableExperimentalAccessibilityDictationOffline);
   EnableDictation(true);
   CreateDetailedMenu();
   SetDictationViewSubtitleText(u"This is a test");
@@ -703,8 +703,6 @@ TEST_F(TrayAccessibilityTest, SodaDownloadDictationEnabledBeforeMenuCreated) {
 // Ensures that we respond to soda download updates when dictation is on.
 // For this test, we enable dictation after the menu is created.
 TEST_F(TrayAccessibilityTest, SodaDownloadDictationEnabledAfterMenuCreated) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnableExperimentalAccessibilityDictationOffline);
   CreateDetailedMenu();
   EnableDictation(true);
   SetDictationViewSubtitleText(u"This is a test");

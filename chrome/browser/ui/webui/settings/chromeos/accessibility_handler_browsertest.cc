@@ -11,7 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace chromeos {
 namespace settings {
@@ -31,8 +31,8 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
   ~AccessibilityHandlerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::switches::kEnableExperimentalAccessibilityDictationOffline);
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kExperimentalAccessibilityDictationOffline);
   }
 
   void SetUpOnMainThread() override {
@@ -86,6 +86,7 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestAccessibilityHandler> handler_;
   content::TestWebUI web_ui_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A sanity check that ensures that |handler_| can be used to call into

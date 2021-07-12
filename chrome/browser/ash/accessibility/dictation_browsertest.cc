@@ -22,7 +22,6 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
 #include "ui/base/ime/dummy_text_input_client.h"
@@ -86,17 +85,23 @@ class DictationTest : public InProcessBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
     if (GetParam().first == kTestWithLongerListening) {
-      scoped_feature_list_.InitAndEnableFeature(
+      enabled_features.push_back(
           features::kExperimentalAccessibilityDictationListening);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
+      disabled_features.push_back(
           features::kExperimentalAccessibilityDictationListening);
     }
     if (GetParam().second == kOnDeviceRecognition) {
-      command_line->AppendSwitch(
-          switches::kEnableExperimentalAccessibilityDictationOffline);
+      enabled_features.push_back(
+          features::kExperimentalAccessibilityDictationOffline);
+    } else {
+      disabled_features.push_back(
+          features::kExperimentalAccessibilityDictationOffline);
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUpOnMainThread() override {

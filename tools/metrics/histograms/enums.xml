@@ -47727,6 +47727,8 @@ from previous Chrome versions.
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
   <int value="-867087281" label="enable-virtual-keyboard"/>
   <int value="-866993841" label="OfflinePagesCTV2:disabled"/>
+  <int value="-866097797"
+      label="ExperimentalAccessibilityDictationOffline:disabled"/>
   <int value="-864266073" label="cros-regions-mode"/>
   <int value="-864234985" label="UseDdljsonApi:enabled"/>
   <int value="-864232986" label="StartSurfaceAndroid:disabled"/>
@@ -49151,6 +49153,8 @@ from previous Chrome versions.
   <int value="359896413" label="SplitPartiallyOccludedQuads:disabled"/>
   <int value="360391863" label="NTPOfflineBadge:enabled"/>
   <int value="360599302" label="enable-gpu-rasterization"/>
+  <int value="361984896"
+      label="ExperimentalAccessibilityDictationOffline:enabled"/>
   <int value="362623880"
       label="HoldingSpaceInProgressDownloadsIntegration:disabled"/>
   <int value="362644448" label="memlog-in-process"/>
