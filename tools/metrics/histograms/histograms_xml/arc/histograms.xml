@@ -390,6 +390,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.CompatMode.InitialResizeLockState"
+    enum="ArcResizeLockState" expires_after="2022-07-27">
+  <owner>toshikikikuchi@google.com</owner>
+  <owner>takise@google.com</owner>
+  <summary>
+    The initial resize lock state of ARC apps. The histogram is emitted when any
+    ARC window is initialized.
+  </summary>
+</histogram>
+
 <histogram name="Arc.ComplianceReportSinceUpdateNotificationTime" units="ms"
     expires_after="M85">
   <owner>alexchau@google.com</owner>

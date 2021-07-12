@@ -8,6 +8,8 @@ module arc.mojom;
 
 // Contains the types of resize lock setting status that overrides the state
 // Android calculates.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 [Extensible]
 enum ArcResizeLockState {
   // The setting value is not set.

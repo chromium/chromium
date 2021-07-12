@@ -3932,6 +3932,20 @@ Unknown properties are collapsed to zero. -->
   <int value="13" label="Account is not present in Chrome"/>
 </enum>
 
+<enum name="ArcResizeLockState">
+<!-- Value from components/arc/mojom/compatibility_mode.mojom -->
+
+  <summary>
+    Defines the types of resize lock setting status that overrides the state
+    Android calculates
+  </summary>
+  <int value="0" label="UNDEFINED"/>
+  <int value="1" label="READY"/>
+  <int value="2" label="ON"/>
+  <int value="3" label="OFF"/>
+  <int value="4" label="FULLY_LOCKED"/>
+</enum>
+
 <enum name="ArcSdkVersionUpgradeType">
   <summary>Defines the types of ARC SDK version upgrade</summary>
   <int value="0" label="NO_UPGRADE"/>

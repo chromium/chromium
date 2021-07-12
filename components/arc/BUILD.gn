@@ -24,6 +24,8 @@ static_library("arc") {
     "compat_mode/arc_splash_screen_dialog_view.h",
     "compat_mode/arc_window_property_util.cc",
     "compat_mode/arc_window_property_util.h",
+    "compat_mode/metrics.cc",
+    "compat_mode/metrics.h",
     "compat_mode/overlay_dialog.cc",
     "compat_mode/overlay_dialog.h",
     "compat_mode/resize_confirmation_dialog_view.cc",

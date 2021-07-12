@@ -12,6 +12,8 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "components/arc/compat_mode/metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -216,6 +218,41 @@ TEST_F(ArcResizeLockManagerTest, ResizeLockStateForFirstTimeLaunch) {
                           ash::ArcResizeLockType::FULLY_LOCKED);
   EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
             mojom::ArcResizeLockState::FULLY_LOCKED);
+}
+
+// Tests that metrics for initial resize lock state is recorded correctly.
+TEST_F(ArcResizeLockManagerTest, TestMetricsForInitialResizeLockState) {
+  std::string app_id_resize_locked = "resize-locked-app-id";
+  std::string app_id_non_resize_locked = "non-resize-locked-app-id";
+  const auto* initial_state_histogram =
+      GetResizeLockStateHistogramNameForTesting(
+          ResizeLockStateHistogramType::InitialState);
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectTotalCount(initial_state_histogram, 0);
+
+  // Not record histogram without the app id ready.
+  auto* resize_locked_window = CreateFakeWindow(true);
+  auto* non_resize_locked_window = CreateFakeWindow(true);
+  pref_delegate()->SetResizeLockState(app_id_resize_locked,
+                                      mojom::ArcResizeLockState::ON);
+  histogram_tester.ExpectTotalCount(initial_state_histogram, 0);
+
+  // Record histogram when the app id is ready.
+  resize_locked_window->SetProperty(ash::kAppIDKey, &app_id_resize_locked);
+  histogram_tester.ExpectTotalCount(initial_state_histogram, 1);
+  histogram_tester.ExpectBucketCount(initial_state_histogram,
+                                     mojom::ArcResizeLockState::ON, 1);
+  non_resize_locked_window->SetProperty(ash::kAppIDKey,
+                                        &app_id_non_resize_locked);
+  histogram_tester.ExpectTotalCount(initial_state_histogram, 2);
+  histogram_tester.ExpectBucketCount(initial_state_histogram,
+                                     mojom::ArcResizeLockState::UNDEFINED, 1);
+
+  // Record histogram only once on initialized.
+  pref_delegate()->SetResizeLockState(app_id_resize_locked,
+                                      mojom::ArcResizeLockState::OFF);
+  histogram_tester.ExpectTotalCount(initial_state_histogram, 2);
 }
 
 }  // namespace arc

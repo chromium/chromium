@@ -8,7 +8,9 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/flat_map.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
+#include "components/arc/compat_mode/metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -241,6 +243,34 @@ TEST_F(ResizeToggleMenuTest, TestDelayedAutoCloseCancel) {
   EXPECT_TRUE(IsMenuRunning());
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsMenuRunning());
+}
+
+// Tests that user action metrics are recorded correctly.
+TEST_F(ResizeToggleMenuTest, TestUserActionMetrics) {
+  base::UserActionTester user_action_tester;
+
+  ClickButton(ResizeCompatMode::kPhone);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
+                ResizeLockActionType::ResizeToPhone)));
+
+  ClickButton(ResizeCompatMode::kTablet);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
+                ResizeLockActionType::ResizeToTablet)));
+
+  ClickButton(ResizeCompatMode::kResizable);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
+                ResizeLockActionType::TurnOffResizeLock)));
+
+  ClickButton(ResizeCompatMode::kPhone);
+  EXPECT_EQ(2,
+            user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
+                ResizeLockActionType::ResizeToPhone)));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
+                ResizeLockActionType::TurnOnResizeLock)));
 }
 
 }  // namespace arc

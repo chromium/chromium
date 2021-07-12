@@ -2881,6 +2881,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ArcResizeLock_ResizeToPhone">
+  <owner>toshikikikuchi@chromium.org</owner>
+  <owner>takise@chromium.org</owner>
+  <description>
+    User pressed Phone button in compatibility mode menu to resize the ARC app
+    window.
+  </description>
+</action>
+
+<action name="ArcResizeLock_ResizeToTablet">
+  <owner>toshikikikuchi@chromium.org</owner>
+  <owner>takise@chromium.org</owner>
+  <description>
+    User pressed Tablet button in compatibility mode menu to resize the ARC app
+    window.
+  </description>
+</action>
+
+<action name="ArcResizeLock_TurnOffResizeLock">
+  <owner>toshikikikuchi@chromium.org</owner>
+  <owner>takise@chromium.org</owner>
+  <description>
+    User pressed Resizable button in compatibility mode menu to turn off the
+    resize lock for the ARC app window.
+  </description>
+</action>
+
+<action name="ArcResizeLock_TurnOnResizeLock">
+  <owner>toshikikikuchi@chromium.org</owner>
+  <owner>takise@chromium.org</owner>
+  <description>
+    User pressed non Resizable button in compatibility mode menu to turn on the
+    resize lock for the ARC app window.
+  </description>
+</action>
+
 <action name="Ash_Tablet_BackGesture">
   <owner>minch@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>

@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/compat_mode/arc_window_property_util.h"
+#include "components/arc/compat_mode/metrics.h"
 #include "components/arc/compat_mode/resize_confirmation_dialog_view.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
@@ -67,12 +68,16 @@ void ResizeToPhone(views::Widget* widget) {
   if (widget->IsMaximized())
     widget->Restore();
   widget->CenterWindow(GetPossibleSizeInWorkArea(widget, kPortraitPhoneDp));
+
+  RecordResizeLockAction(ResizeLockActionType::ResizeToPhone);
 }
 
 void ResizeToTablet(views::Widget* widget) {
   if (widget->IsMaximized())
     widget->Restore();
   widget->CenterWindow(GetPossibleSizeInWorkArea(widget, kLandscapeTabletDp));
+
+  RecordResizeLockAction(ResizeLockActionType::ResizeToTablet);
 }
 
 void TurnOnResizeLock(views::Widget* widget,
@@ -81,6 +86,8 @@ void TurnOnResizeLock(views::Widget* widget,
   if (app_id && pref_delegate->GetResizeLockState(*app_id) !=
                     mojom::ArcResizeLockState::ON) {
     pref_delegate->SetResizeLockState(*app_id, mojom::ArcResizeLockState::ON);
+
+    RecordResizeLockAction(ResizeLockActionType::TurnOnResizeLock);
   }
 }
 
@@ -93,6 +100,8 @@ void TurnOffResizeLock(views::Widget* target_widget,
   }
 
   pref_delegate->SetResizeLockState(*app_id, mojom::ArcResizeLockState::OFF);
+
+  RecordResizeLockAction(ResizeLockActionType::TurnOffResizeLock);
 
   auto* const toast_manager = ash::ToastManager::Get();
   // |toast_manager| can be null in some unittests.

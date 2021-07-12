@@ -22,6 +22,7 @@
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
 #include "components/arc/compat_mode/arc_window_property_util.h"
+#include "components/arc/compat_mode/metrics.h"
 #include "components/arc/compat_mode/resize_toggle_menu.h"
 #include "components/arc/compat_mode/resize_util.h"
 #include "components/arc/vector_icons/vector_icons.h"
@@ -198,6 +199,22 @@ void ArcResizeLockManager::OnWindowInitialized(aura::Window* new_window) {
     return;
 
   window_observations_.AddObservation(new_window);
+
+  AppIdObserver::RunOnReady(
+      new_window,
+      base::BindOnce(
+          [](base::WeakPtr<ArcResizeLockManager> manager,
+             aura::Window* window) {
+            if (!manager)
+              return;
+            if (!manager->pref_delegate_)
+              return;
+            const auto state =
+                manager->pref_delegate_->GetResizeLockState(*GetAppId(window));
+            RecordResizeLockStateHistogram(
+                ResizeLockStateHistogramType::InitialState, state);
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
