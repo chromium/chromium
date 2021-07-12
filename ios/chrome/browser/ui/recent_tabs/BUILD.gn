@@ -107,7 +107,7 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/modals",
+    "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ios/public/provider/chrome/browser/signin",
     "//ui/base",
   ]

@@ -74,8 +74,7 @@ source_set("grid_ui") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/modals",
+    "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ui/base",
   ]
 }
