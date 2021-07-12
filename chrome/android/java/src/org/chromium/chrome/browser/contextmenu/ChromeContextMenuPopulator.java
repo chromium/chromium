@@ -99,7 +99,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private static final String LENS_SUPPORT_STATUS_HISTOGRAM_NAME =
             "ContextMenu.LensSupportStatus";
     private static final String SHARED_HIGHLIGHTING_SUPPORT_URL =
-            "https://support.google.com/chrome?=shared_highlighting";
+            "https://support.google.com/chrome?p=shared_highlighting";
 
     // True when the tracker indicates IPH in the form of "new" label needs to be shown.
     private Boolean mShowEphemeralTabNewLabel;
