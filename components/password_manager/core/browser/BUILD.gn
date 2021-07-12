@@ -675,7 +675,6 @@ source_set("unit_tests") {
     "password_reuse_manager_impl_unittest.cc",
     "password_save_manager_impl_unittest.cc",
     "password_store_impl_unittest.cc",
-    "password_store_origin_unittest.h",
     "password_store_unittest.cc",
     "password_sync_util_unittest.cc",
     "password_ui_utils_unittest.cc",

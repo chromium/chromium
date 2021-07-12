@@ -183,6 +183,25 @@ PasswordForm MakePasswordForm(const std::string& signon_realm) {
   return form;
 }
 
+bool MatchesOrigin(const GURL& origin, const GURL& url) {
+  return origin.GetOrigin() == url.GetOrigin();
+}
+
+PasswordFormData CreateTestPasswordFormDataByOrigin(const char* origin_url) {
+  PasswordFormData data = {PasswordForm::Scheme::kHtml,
+                           origin_url,
+                           origin_url,
+                           "login_element",
+                           u"submit_element",
+                           u"username_element",
+                           u"password_element",
+                           u"username_value",
+                           u"password_value",
+                           true,
+                           1};
+  return data;
+}
+
 }  // namespace
 
 class PasswordStoreTest : public testing::Test {
@@ -1524,6 +1543,130 @@ TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
+}
+
+// Collection of origin-related testcases common to all platform-specific
+// stores.
+class PasswordStoreOriginTest : public PasswordStoreTest {
+ public:
+  void SetUp() override {
+    PasswordStoreTest::SetUp();
+    store_ = CreatePasswordStore();
+    store_->Init(nullptr);
+  }
+
+  void TearDown() override {
+    PasswordStoreTest::TearDown();
+    store_->ShutdownOnUIThread();
+  }
+
+  PasswordStore* store() { return store_.get(); }
+
+ private:
+  scoped_refptr<PasswordStoreImpl> store_;
+};
+
+TEST_F(PasswordStoreOriginTest,
+       RemoveLoginsByURLAndTimeImpl_AllFittingOriginAndTime) {
+  constexpr char origin_url[] = "http://foo.example.com/";
+  std::unique_ptr<PasswordForm> form =
+      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url));
+  store()->AddLogin(*form);
+  WaitForPasswordStore();
+
+  MockPasswordStoreObserver observer;
+  store()->AddObserver(&observer);
+
+  const GURL origin = GURL(origin_url);
+  base::RepeatingCallback<bool(const GURL&)> filter =
+      base::BindRepeating(&MatchesOrigin, origin);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer,
+              OnLoginsChanged(_, ElementsAre(PasswordStoreChange(
+                                     PasswordStoreChange::REMOVE, *form))));
+  store()->RemoveLoginsByURLAndTime(filter, base::Time(), base::Time::Max(),
+                                    run_loop.QuitClosure());
+  run_loop.Run();
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(PasswordStoreOriginTest,
+       RemoveLoginsByURLAndTimeImpl_SomeFittingOriginAndTime) {
+  constexpr char fitting_url[] = "http://foo.example.com/";
+  std::unique_ptr<PasswordForm> form =
+      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(fitting_url));
+  store()->AddLogin(*form);
+
+  const char nonfitting_url[] = "http://bar.example.com/";
+  store()->AddLogin(*FillPasswordFormWithData(
+      CreateTestPasswordFormDataByOrigin(nonfitting_url)));
+
+  WaitForPasswordStore();
+
+  MockPasswordStoreObserver observer;
+  store()->AddObserver(&observer);
+
+  const GURL fitting_origin = GURL(fitting_url);
+  base::RepeatingCallback<bool(const GURL&)> filter =
+      base::BindRepeating(&MatchesOrigin, fitting_origin);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer,
+              OnLoginsChanged(_, ElementsAre(PasswordStoreChange(
+                                     PasswordStoreChange::REMOVE, *form))));
+  store()->RemoveLoginsByURLAndTime(filter, base::Time(), base::Time::Max(),
+                                    run_loop.QuitClosure());
+  run_loop.Run();
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(PasswordStoreOriginTest,
+       RemoveLoginsByURLAndTimeImpl_NonMatchingOrigin) {
+  constexpr char origin_url[] = "http://foo.example.com/";
+  std::unique_ptr<PasswordForm> form =
+      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url));
+  store()->AddLogin(*form);
+  WaitForPasswordStore();
+
+  MockPasswordStoreObserver observer;
+  store()->AddObserver(&observer);
+
+  const GURL other_origin = GURL("http://bar.example.com/");
+  base::RepeatingCallback<bool(const GURL&)> filter =
+      base::BindRepeating(&MatchesOrigin, other_origin);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnLoginsChanged).Times(0);
+  store()->RemoveLoginsByURLAndTime(filter, base::Time(), base::Time::Max(),
+                                    run_loop.QuitClosure());
+  run_loop.Run();
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(PasswordStoreOriginTest,
+       RemoveLoginsByURLAndTimeImpl_NotWithinTimeInterval) {
+  constexpr char origin_url[] = "http://foo.example.com/";
+  std::unique_ptr<PasswordForm> form =
+      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url));
+  store()->AddLogin(*form);
+  WaitForPasswordStore();
+
+  MockPasswordStoreObserver observer;
+  store()->AddObserver(&observer);
+
+  const GURL origin = GURL(origin_url);
+  base::RepeatingCallback<bool(const GURL&)> filter =
+      base::BindRepeating(&MatchesOrigin, origin);
+  base::Time time_after_creation_date =
+      form->date_created + base::TimeDelta::FromDays(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnLoginsChanged).Times(0);
+  store()->RemoveLoginsByURLAndTime(filter, time_after_creation_date,
+                                    base::Time::Max(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  store()->RemoveObserver(&observer);
 }
 
 }  // namespace password_manager

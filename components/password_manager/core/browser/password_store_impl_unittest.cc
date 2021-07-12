@@ -20,7 +20,6 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_origin_unittest.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -151,10 +150,6 @@ base::FilePath PasswordStoreImplTestDelegate::test_login_db_file_path() const {
 }
 
 }  // anonymous namespace
-
-INSTANTIATE_TYPED_TEST_SUITE_P(Default,
-                               PasswordStoreOriginTest,
-                               PasswordStoreImplTestDelegate);
 
 TEST(PasswordStoreImplTest, NonASCIIData) {
   PasswordStoreImplTestDelegate delegate;
