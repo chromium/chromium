@@ -112,23 +112,18 @@ mojom::NetworkTypePropertiesPtr PopulateNetworkTypeProperties(
     mojom::NetworkType type) {
   auto type_properties = mojom::NetworkTypeProperties::New();
   switch (type) {
-    case mojom::NetworkType::kWiFi: {
+    case mojom::NetworkType::kWiFi:
       type_properties->set_wifi(
           PopulateWiFiStateProperties(network_type_props));
       break;
-    }
-    case mojom::NetworkType::kEthernet: {
-      auto ethernet_props = mojom::EthernetStateProperties::New();
+    case mojom::NetworkType::kEthernet:
       type_properties->set_ethernet(
           PopulateEthernetStateProperties(network_type_props));
       break;
-    }
-    case mojom::NetworkType::kCellular: {
-      auto cellular_props = mojom::CellularStateProperties::New();
+    case mojom::NetworkType::kCellular:
       type_properties->set_cellular(
           PopulateCellularStateProperties(network_type_props));
       break;
-    }
     case mojom::NetworkType::kUnsupported:
       NOTREACHED();
       break;
