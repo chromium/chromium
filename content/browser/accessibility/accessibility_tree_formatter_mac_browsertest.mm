@@ -252,6 +252,21 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       ParameterizedAttributes_TextMarkerArray) {
+  TestAndCheck(
+      R"~~(data:text/html,
+                    <textbox id="textbox">Text</textbox>)~~",
+      {{"text_range:= textbox.AXTextMarkerRangeForUIElement(textbox)", SCRIPT},
+       {"textbox.AXTextMarkerRangeForUnorderedTextMarkers([text_range."
+        "anchor, text_range.focus])",
+        SCRIPT}},
+      {{"*", "*"}},
+      R"~~(text_range={anchor: {:3, 0, down}, focus: {:3, 4, down}}
+ textbox.AXTextMarkerRangeForUnorderedTextMarkers([text_range.anchor, text_range.focus])={anchor: {:3, 0, down}, focus: {:3, 4, down}}
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_NSRange_WrongParameters) {
   TestWrongParameters(R"~~(data:text/html,
                            <p contentEditable='true'>Text</p>)~~",

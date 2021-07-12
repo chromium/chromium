@@ -117,6 +117,7 @@ class CONTENT_EXPORT AttributeInvoker final {
   NSNumber* PropertyNodeToInt(const ui::AXPropertyNode&) const;
   NSString* PropertyNodeToString(const ui::AXPropertyNode&) const;
   NSArray* PropertyNodeToIntArray(const ui::AXPropertyNode&) const;
+  NSArray* PropertyNodeToTextMarkerArray(const ui::AXPropertyNode&) const;
   NSValue* PropertyNodeToRange(const ui::AXPropertyNode&) const;
   gfx::NativeViewAccessible PropertyNodeToUIElement(
       const ui::AXPropertyNode&) const;

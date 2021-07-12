@@ -296,6 +296,11 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
   if (property_name == "AXCellForColumnAndRow") {  // IntArray
     return OptionalNSObject::NotNilOrError(PropertyNodeToIntArray(arg_node));
   }
+  if (property_name ==
+      "AXTextMarkerRangeForUnorderedTextMarkers") {  // TextMarkerArray
+    return OptionalNSObject::NotNilOrError(
+        PropertyNodeToTextMarkerArray(arg_node));
+  }
   if (property_name == "AXStringForRange") {  // NSRange
     return OptionalNSObject::NotNilOrError(PropertyNodeToRange(arg_node));
   }
@@ -348,6 +353,26 @@ NSArray* AttributeInvoker::PropertyNodeToIntArray(
       INTARRAY_FAIL(arraynode, paramnode.name_or_value + " is not a number")
     }
     [array addObject:@(*param)];
+  }
+  return array;
+}
+
+// NSArray of AXTextMarker objects.
+NSArray* AttributeInvoker::PropertyNodeToTextMarkerArray(
+    const AXPropertyNode& arraynode) const {
+  if (!arraynode.IsArray()) {
+    INTARRAY_FAIL(arraynode, "not array")
+  }
+
+  NSMutableArray* array =
+      [[NSMutableArray alloc] initWithCapacity:arraynode.arguments.size()];
+  for (const auto& paramnode : arraynode.arguments) {
+    OptionalNSObject text_marker = Invoke(paramnode);
+    if (!text_marker.IsNotNil()) {
+      INTARRAY_FAIL(arraynode,
+                    paramnode.ToFlatString() + "is not a text marker")
+    }
+    [array addObject:(*text_marker)];
   }
   return array;
 }
