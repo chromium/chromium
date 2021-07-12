@@ -3922,7 +3922,7 @@ Press an assigned switch to remove assignment
     Ask every time
   </message>
   <message name="IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE" desc="Label for the dropdown menu which enables the do not restore option, which means not restore apps or pages on startup.">
-    Never restore
+    Off
   </message>
 </if>
 </grit-part>

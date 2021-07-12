@@ -26,6 +26,7 @@
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace chromeos {
@@ -179,17 +180,22 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {
       base::ToUpperASCII(IDS_RESTORE_NOTIFICATION_CANCEL_BUTTON)));
   notification_data.buttons.push_back(cancel_button);
 
-  int title_id = IDS_RESTORE_NOTIFICATION_TITLE;
+  std::u16string title;
+  if (id == kRestoreForCrashNotificationId) {
+    title = l10n_util::GetStringFUTF16(IDS_RESTORE_CRASH_NOTIFICATION_TITLE,
+                                       ui::GetChromeOSDeviceName());
+  } else {
+    title = l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_TITLE);
+  }
 
   int message_id;
   if (id == kRestoreForCrashNotificationId)
-    message_id = IDS_RESTORE_FOR_CRASH_NOTIFICATION_MESSAGE;
+    message_id = IDS_RESTORE_CRASH_NOTIFICATION_MESSAGE;
   else
     message_id = IDS_RESTORE_NOTIFICATION_MESSAGE;
 
   notification_ = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, id,
-      l10n_util::GetStringUTF16(title_id),
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, title,
       l10n_util::GetStringUTF16(message_id),
       l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE),
       GURL(),
