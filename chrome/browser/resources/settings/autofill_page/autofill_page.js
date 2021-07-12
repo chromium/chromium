@@ -21,17 +21,17 @@ import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-import {PasswordCheckBehavior, PasswordCheckBehaviorInterface} from './password_check_behavior.js';
+import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_behavior.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {PasswordCheckBehaviorInterface}
+ * @implements {PasswordCheckMixinInterface}
  */
 const SettingsAutofillPageElementBase =
-    mixinBehaviors([PrefsBehavior, PasswordCheckBehavior], PolymerElement);
+    mixinBehaviors([PrefsBehavior], PasswordCheckMixin(PolymerElement));
 
 /** @polymer */
 class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {

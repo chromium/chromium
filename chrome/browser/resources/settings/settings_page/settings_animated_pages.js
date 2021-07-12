@@ -19,9 +19,9 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {dom, DomIf, html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dom, DomIf, html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 
 
@@ -29,8 +29,7 @@ import {getSettingIdParameter} from '../setting_id_param_util.js';
  * @constructor
  * @extends {PolymerElement}
  */
-const SettingsAnimatedPagesElementBase =
-    mixinBehaviors([RouteObserverBehavior], PolymerElement);
+const SettingsAnimatedPagesElementBase = RouteObserverMixin(PolymerElement);
 
 /** @polymer */
 class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {

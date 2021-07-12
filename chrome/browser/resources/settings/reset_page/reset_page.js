@@ -18,11 +18,11 @@ import '../incompatible_applications_page/incompatible_applications_page.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
 
@@ -30,10 +30,9 @@ import {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  */
-const SettingsResetPageElementBase =
-    mixinBehaviors([RouteObserverBehavior], PolymerElement);
+const SettingsResetPageElementBase = RouteObserverMixin(PolymerElement);
 
 /** @polymer */
 class SettingsResetPageElement extends SettingsResetPageElementBase {
@@ -63,9 +62,8 @@ class SettingsResetPageElement extends SettingsResetPageElementBase {
   }
 
   /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   * @protected
+   * RouteObserverMixin
+   * @override
    */
   currentRouteChanged(route) {
     const lazyRender =

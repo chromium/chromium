@@ -15,7 +15,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource} from '../site_settings/constants.js';
 import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from '../site_settings/site_settings_behavior.js';
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
@@ -28,11 +28,8 @@ import {RawSiteException, RecentSitePermissions} from '../site_settings/site_set
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsRecentSitePermissionsElementBase = mixinBehaviors(
-    [
-      RouteObserverBehavior, SiteSettingsBehavior, WebUIListenerBehavior,
-      I18nBehavior
-    ],
-    PolymerElement);
+    [SiteSettingsBehavior, WebUIListenerBehavior, I18nBehavior],
+    RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 export class SettingsRecentSitePermissionsElement extends

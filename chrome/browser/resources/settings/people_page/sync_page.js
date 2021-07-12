@@ -30,7 +30,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
-import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
 import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
@@ -62,12 +62,11 @@ function getSyncRoutes() {
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsSyncPageElementBase = mixinBehaviors(
-    [WebUIListenerBehavior, RouteObserverBehavior, I18nBehavior],
-    PolymerElement);
+    [WebUIListenerBehavior, I18nBehavior], RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 export class SettingsSyncPageElement extends SettingsSyncPageElementBase {

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './i18n_setup.js';
+
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import './i18n_setup.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
   /**
    * @typedef {{
@@ -354,6 +356,46 @@ import './i18n_setup.js';
     }
   }
 
+  /**
+   * @polymer
+   * @mixinFunction
+   */
+  export const RouteObserverMixin = dedupingMixin(superClass => {
+    /**
+     * @polymer
+     * @mixinClass
+     */
+    class RouteObserverMixin extends superClass {
+      /** @override */
+      connectedCallback() {
+        super.connectedCallback();
+
+        routerInstance.addObserver(this);
+
+        // Emulating Polymer data bindings, the observer is called when the
+        // element starts observing the route.
+        this.currentRouteChanged(routerInstance.currentRoute, undefined);
+      }
+
+      /** @override */
+      disconnectedCallback() {
+        super.disconnectedCallback();
+
+        routerInstance.removeObserver(this);
+      }
+
+      /**
+       * @param {!Route} newRoute
+       * @param {!Route=} opt_oldRoute
+       */
+      currentRouteChanged(newRoute, opt_oldRoute) {
+        assertNotReached();
+      }
+    }
+
+    return RouteObserverMixin;
+  });
+
   /** @polymerBehavior */
   export const RouteObserverBehavior = {
     /** @override */
@@ -387,3 +429,6 @@ import './i18n_setup.js';
      */
     currentRouteChanged(newRoute, opt_oldRoute) {}
   }
+
+  /** @interface */
+  export const RouteObserverMixinInterface = RouteObserverBehaviorInterface;

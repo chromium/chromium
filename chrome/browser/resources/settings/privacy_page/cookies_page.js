@@ -28,7 +28,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
 
 /**
@@ -61,12 +61,11 @@ const NetworkPredictionOptions = {
  * @constructor
  * @extends {PolymerElement}
  * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsCookiesPageElementBase = mixinBehaviors(
-    [PrefsBehavior, RouteObserverBehavior, WebUIListenerBehavior],
-    PolymerElement);
+    [PrefsBehavior, WebUIListenerBehavior], RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {

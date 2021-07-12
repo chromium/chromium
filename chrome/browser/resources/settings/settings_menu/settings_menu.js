@@ -17,19 +17,18 @@ import '../icons.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
-import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  */
-const SettingsMenuElementBase =
-    mixinBehaviors([RouteObserverBehavior], PolymerElement);
+const SettingsMenuElementBase = RouteObserverMixin(PolymerElement);
 
 /** @polymer */
 export class SettingsMenuElement extends SettingsMenuElementBase {

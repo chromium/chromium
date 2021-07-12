@@ -59,7 +59,9 @@ suite('OSSettingsUi', function() {
       return;
     }
 
-    const children = pages.getContentChildren();
+    const children = pages.shadowRoot.querySelector('slot')
+                         .assignedNodes({flatten: true})
+                         .filter(n => n.nodeType === Node.ELEMENT_NODE);
     const stampedChildren = children.filter(function(element) {
       return element.tagName !== 'TEMPLATE';
     });

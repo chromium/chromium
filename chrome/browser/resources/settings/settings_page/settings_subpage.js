@@ -25,7 +25,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {RouteObserverBehavior, Router} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 
 
@@ -36,11 +36,8 @@ import {getSettingIdParameter} from '../setting_id_param_util.js';
  * @implements {FindShortcutBehaviorInterface}
  */
 const SettingsSubpageElementBase = mixinBehaviors(
-    [
-      FindShortcutBehavior, I18nBehavior, IronResizableBehavior,
-      RouteObserverBehavior
-    ],
-    PolymerElement);
+    [FindShortcutBehavior, I18nBehavior, IronResizableBehavior],
+    RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 class SettingsSubpageElement extends SettingsSubpageElementBase {

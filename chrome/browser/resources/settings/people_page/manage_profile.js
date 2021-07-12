@@ -21,7 +21,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
+import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
 import {SyncStatus} from './sync_browser_proxy.js';
@@ -29,11 +29,11 @@ import {SyncStatus} from './sync_browser_proxy.js';
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
-const SettingsManageProfileElementBase = mixinBehaviors(
-    [WebUIListenerBehavior, RouteObserverBehavior], PolymerElement);
+const SettingsManageProfileElementBase =
+    mixinBehaviors([WebUIListenerBehavior], RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 class SettingsManageProfileElement extends SettingsManageProfileElementBase {

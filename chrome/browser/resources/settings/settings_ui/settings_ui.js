@@ -35,7 +35,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility, pageVisibility} from '../page_visibility.js';
 import {SettingsPrefsElement} from '../prefs/prefs.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 
 /**
@@ -43,8 +43,8 @@ import {Route, RouteObserverBehavior, Router} from '../router.js';
  * @extends {PolymerElement}
  */
 const SettingsUiElementBase = mixinBehaviors(
-    [RouteObserverBehavior, CrContainerShadowBehavior, FindShortcutBehavior],
-    PolymerElement);
+    [CrContainerShadowBehavior, FindShortcutBehavior],
+    RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 export class SettingsUiElement extends SettingsUiElementBase {
@@ -313,7 +313,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
    */
   onMenuClose_() {
     if (!this.$.drawer.wasCanceled()) {
-      // If a navigation happened, MainPageBehavior#currentRouteChanged
+      // If a navigation happened, MainPageMixin#currentRouteChanged
       // handles focusing the corresponding section.
       return;
     }

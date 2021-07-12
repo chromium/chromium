@@ -34,12 +34,12 @@ import {loadTimeData} from '../i18n_setup.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
-import {PasswordCheckBehavior, PasswordCheckBehaviorInterface} from './password_check_behavior.js';
+import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_behavior.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
 
@@ -50,16 +50,13 @@ const CheckState = chrome.passwordsPrivate.PasswordCheckState;
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {PasswordCheckBehaviorInterface}
+ * @implements {PasswordCheckMixinInterface}
  * @implements {PrefsBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsPasswordCheckElementBase = mixinBehaviors(
-    [
-      I18nBehavior, PasswordCheckBehavior, PrefsBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
-    ],
-    PolymerElement);
+    [I18nBehavior, PrefsBehavior, WebUIListenerBehavior],
+    RouteObserverMixin(PasswordCheckMixin((PolymerElement))));
 
 /** @polymer */
 class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {

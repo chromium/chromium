@@ -30,7 +30,7 @@ import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, InstalledApp} from './clear_browsing_data_browser_proxy.js';
 
@@ -91,12 +91,11 @@ let UpdateSyncStateEvent;
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
  */
 const SettingsClearBrowsingDataDialogElementBase = mixinBehaviors(
-    [I18nBehavior, WebUIListenerBehavior, RouteObserverBehavior],
-    PolymerElement);
+    [I18nBehavior, WebUIListenerBehavior], RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 class SettingsClearBrowsingDataDialogElement extends
@@ -370,9 +369,8 @@ class SettingsClearBrowsingDataDialogElement extends
   /**
    * Record visits to the CBD dialog.
    *
-   * RouteObserverBehavior
-   * @param {!Route} currentRoute
-   * @protected
+   * RouteObserverMixin
+   * @override
    */
   currentRouteChanged(currentRoute) {
     if (currentRoute === routes.CLEAR_BROWSER_DATA) {

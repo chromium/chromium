@@ -43,7 +43,7 @@ import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {Router} from '../router.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
-import {PasswordCheckBehavior, PasswordCheckBehaviorInterface} from './password_check_behavior.js';
+import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_behavior.js';
 import './password_list_item.js';
 import './passwords_list_handler.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
@@ -76,7 +76,7 @@ function isEditable(element) {
  * @implements {I18nBehaviorInterface}
  * @implements {MergePasswordsStoreCopiesBehaviorInterface}
  * @implements {MergeExceptionsStoreCopiesBehaviorInterface}
- * @implements {PasswordCheckBehaviorInterface}
+ * @implements {PasswordCheckMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PasswordsSectionElementBase = mixinBehaviors(
@@ -85,11 +85,10 @@ const PasswordsSectionElementBase = mixinBehaviors(
       WebUIListenerBehavior,
       MergeExceptionsStoreCopiesBehavior,
       MergePasswordsStoreCopiesBehavior,
-      PasswordCheckBehavior,
       GlobalScrollTargetBehavior,
       PrefsBehavior,
     ],
-    PolymerElement);
+    PasswordCheckMixin(PolymerElement));
 
 /** @polymer */
 class PasswordsSectionElement extends PasswordsSectionElementBase {

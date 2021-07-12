@@ -32,7 +32,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {SiteDetailsPermissionElement} from './site_details_permission.js';
@@ -43,14 +43,12 @@ import {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './website_
  * @constructor
  * @extends {PolymerElement}
  * @implements {SiteSettingsBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SiteDetailsElementBase = mixinBehaviors(
-    [
-      I18nBehavior, SiteSettingsBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
-    ],
-    PolymerElement);
+    [I18nBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
+    RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 class SiteDetailsElement extends SiteDetailsElementBase {
@@ -153,9 +151,8 @@ class SiteDetailsElement extends SiteDetailsElementBase {
   }
 
   /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   * @protected
+   * RouteObserverMixin
+   * @override
    */
   currentRouteChanged(route) {
     if (route !== routes.SITE_SETTINGS_SITE_DETAILS) {

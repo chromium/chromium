@@ -31,7 +31,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
+import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {ChooserType, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
@@ -50,12 +50,12 @@ let BlockAutoplayStatus;
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsPrivacyPageElementBase = mixinBehaviors(
-    [PrefsBehavior, RouteObserverBehavior, I18nBehavior, WebUIListenerBehavior],
-    PolymerElement);
+    [PrefsBehavior, I18nBehavior, WebUIListenerBehavior],
+    RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {

@@ -39,9 +39,9 @@ import {PageVisibility} from '../page_visibility.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 // </if>
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSearchManager, SearchResult} from '../search_settings.js';
-import {MainPageBehavior} from '../settings_page/main_page_behavior.js';
+import {MainPageMixin, MainPageMixinInterface} from '../settings_page/main_page_behavior.js';
 
 // <if expr="chromeos or lacros">
 const OS_BANNER_INTERACTION_METRIC_NAME =
@@ -64,16 +64,17 @@ const CrosSettingsOsBannerInteraction = {
 /**
  * @constructor
  * @extends {PolymerElement}
+ * @implements {MainPageMixinInterface}
+ * @implements {RouteObserverMixinInterface}
  * @implements {PrefsBehaviorInterface}
  */
 const SettingsBasicPageElementBase = mixinBehaviors(
     [
-      MainPageBehavior, RouteObserverBehavior,
       // <if expr="chromeos or lacros">
       PrefsBehavior,
       // </if>
     ],
-    PolymerElement);
+    MainPageMixin(RouteObserverMixin(PolymerElement)));
 
 /** @polymer */
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
@@ -182,10 +183,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
   }
 
-  /**
-   * @param {!Route} newRoute
-   * @param {Route} oldRoute
-   */
+  /** @override */
   currentRouteChanged(newRoute, oldRoute) {
     this.currentRoute_ = newRoute;
 
@@ -203,10 +201,13 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       assert(!this.hasExpandedSection_);
     }
 
-    MainPageBehavior.currentRouteChanged.call(this, newRoute, oldRoute);
+    super.currentRouteChanged(newRoute, oldRoute);
   }
 
-  // Override MainPageBehavior method.
+  /**
+   * Override MainPageMixin method.
+   * @override
+   */
   containsRoute(route) {
     return !route || routes.BASIC.contains(route) ||
         routes.ADVANCED.contains(route);

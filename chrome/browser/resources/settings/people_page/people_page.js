@@ -36,7 +36,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
+import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 // <if expr="chromeos">
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
@@ -48,11 +48,11 @@ import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
-const SettingsPeoplePageElementBase = mixinBehaviors(
-    [RouteObserverBehavior, WebUIListenerBehavior], PolymerElement);
+const SettingsPeoplePageElementBase =
+    mixinBehaviors([WebUIListenerBehavior], RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {

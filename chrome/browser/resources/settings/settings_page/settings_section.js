@@ -34,7 +34,7 @@ export class SettingsSectionElement extends PolymerElement {
     return {
       /**
        * The section name should match a name specified in route.js. The
-       * MainPageBehavior will expand this section if this section name matches
+       * MainPageBeMixin will expand this section if this section name matches
        * currentRoute.section.
        */
       section: String,

@@ -22,7 +22,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {SettingsDisableSafebrowsingDialogElement} from './disable_safebrowsing_dialog.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
@@ -44,10 +44,10 @@ export const SafeBrowsingSetting = {
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteObserverMixinInterface}
  */
 const SettingsSecurityPageElementBase = mixinBehaviors(
-    [I18nBehavior, PrefsBehavior, RouteObserverBehavior], PolymerElement);
+    [I18nBehavior, PrefsBehavior], RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 export class SettingsSecurityPageElement extends
@@ -171,9 +171,8 @@ export class SettingsSecurityPageElement extends
   }
 
   /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   * @protected
+   * RouteObserverMixin
+   * @override
    */
   currentRouteChanged(route) {
     if (route === routes.SECURITY) {

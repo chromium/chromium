@@ -16,11 +16,12 @@ import {assertTrue} from '../chai_assert.js';
 export function getPage(type) {
   const settingsUi = document.querySelector('settings-ui');
   assertTrue(!!settingsUi);
-  const settingsMain = settingsUi.$$('settings-main');
+  const settingsMain = settingsUi.shadowRoot.querySelector('settings-main');
   assertTrue(!!settingsMain);
-  const page = settingsMain.$$(`settings-${type}-page`);
+  const page = settingsMain.shadowRoot.querySelector(`settings-${type}-page`);
 
-  const idleRender = page && page.$$('settings-idle-load');
+  const idleRender =
+      page && page.shadowRoot.querySelector('settings-idle-load');
   if (!idleRender) {
     return Promise.resolve(page);
   }

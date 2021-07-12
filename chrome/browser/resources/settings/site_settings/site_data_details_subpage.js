@@ -15,7 +15,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {CookieDataForDisplay, CookieDetails, getCookieData} from './cookie_info.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
@@ -41,10 +41,11 @@ const categoryLabels = {
 /**
  * @constructor
  * @extends {PolymerElement}
+ * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
-const SiteDataDetailsSubpageElementBase = mixinBehaviors(
-    [RouteObserverBehavior, WebUIListenerBehavior], PolymerElement);
+const SiteDataDetailsSubpageElementBase =
+    mixinBehaviors([WebUIListenerBehavior], RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
@@ -95,9 +96,8 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
   }
 
   /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   * @protected
+   * RouteObserverMixin
+   * @override
    */
   currentRouteChanged(route) {
     if (Router.getInstance().getCurrentRoute() !==
