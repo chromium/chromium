@@ -146,7 +146,8 @@ public class WebApkUpdateManagerUnitTest {
                 boolean shareTargetParamIsMethodPost, boolean shareTargetParamIsEncTypeMultipart,
                 String[] shareTargetParamFileNames, Object[] shareTargetParamAccepts,
                 String[][] shortcuts, String manifestUrl, String webApkPackage, int webApkVersion,
-                boolean isManifestStale, int[] updateReasons, Callback<Boolean> callback) {}
+                boolean isManifestStale, boolean isAppIdentityUpdateSupported, int[] updateReasons,
+                Callback<Boolean> callback) {}
 
         @Override
         public void updateWebApkFromFile(
@@ -220,7 +221,8 @@ public class WebApkUpdateManagerUnitTest {
         @Override
         protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
                 String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
-                List<Integer> updateReasons, Callback<Boolean> callback) {
+                boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
+                Callback<Boolean> callback) {
             mStoreUpdateRequestCallback = callback;
             mUpdateName = info.name();
             writeRandomTextToFile(updateRequestPath);

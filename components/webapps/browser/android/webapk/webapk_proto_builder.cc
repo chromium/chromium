@@ -104,6 +104,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
     bool is_manifest_stale,
+    bool is_app_identity_update_supported,
     std::vector<WebApkUpdateReason> update_reasons) {
   std::unique_ptr<webapk::WebApk> webapk(new webapk::WebApk);
   webapk->set_manifest_url(shortcut_info.manifest_url.spec());
@@ -114,6 +115,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   webapk->set_package_name(package_name);
   webapk->set_version(version);
   webapk->set_stale_manifest(is_manifest_stale);
+  webapk->set_app_identity_update_supported(is_app_identity_update_supported);
   webapk->set_android_version(base::SysInfo::OperatingSystemVersion());
 
   for (auto update_reason : update_reasons)
@@ -272,6 +274,7 @@ bool StoreUpdateRequestToFileInBackground(
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
     bool is_manifest_stale,
+    bool is_app_identity_update_supported,
     std::vector<WebApkUpdateReason> update_reasons) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -279,7 +282,8 @@ bool StoreUpdateRequestToFileInBackground(
   std::unique_ptr<std::string> proto = BuildProtoInBackground(
       shortcut_info, primary_icon, is_primary_icon_maskable, splash_icon,
       package_name, version, std::move(icon_url_to_murmur2_hash),
-      is_manifest_stale, std::move(update_reasons));
+      is_manifest_stale, is_app_identity_update_supported,
+      std::move(update_reasons));
 
   // Create directory if it does not exist.
   base::CreateDirectory(update_request_path.DirName());

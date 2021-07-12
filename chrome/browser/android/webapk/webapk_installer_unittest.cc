@@ -167,7 +167,7 @@ class UpdateRequestStorer {
     WebApkInstaller::StoreUpdateRequestToFile(
         update_request_path, webapps::ShortcutInfo((GURL())), SkBitmap(), false,
         SkBitmap(), "", "",
-        std::map<std::string, webapps::WebApkIconHasher::Icon>(), false,
+        std::map<std::string, webapps::WebApkIconHasher::Icon>(), false, false,
         {webapps::WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS},
         base::BindOnce(&UpdateRequestStorer::OnComplete,
                        base::Unretained(this)));
@@ -211,6 +211,7 @@ class BuildProtoRunner {
                  std::map<std::string, webapps::WebApkIconHasher::Icon>
                      icon_url_to_murmur2_hash,
                  bool is_manifest_stale,
+                 bool is_app_identity_update_supported,
                  const std::vector<GURL>& best_shortcut_icon_urls) {
     webapps::ShortcutInfo info(GURL::EmptyGURL());
     info.best_primary_icon_url = best_primary_icon_url;
@@ -231,6 +232,7 @@ class BuildProtoRunner {
         info, primary_icon, false /* is_primary_icon_maskable */, splash_icon,
         "" /* package_name */, "" /* version */,
         std::move(icon_url_to_murmur2_hash), is_manifest_stale,
+        is_app_identity_update_supported,
         base::BindOnce(&BuildProtoRunner::OnBuiltWebApkProto,
                        base::Unretained(this)));
 
@@ -538,7 +540,8 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoWhenManifestIsObsolete) {
 
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(GURL(), GURL(), std::move(icon_url_to_murmur2_hash),
-                    true /* is_manifest_stale*/, {});
+                    true /* is_manifest_stale */,
+                    true /* is_app_identity_update_supported */, {});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
   ASSERT_NE(nullptr, webapk_request);
 
@@ -586,6 +589,7 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoWhenManifestIsAvailable) {
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(GURL(best_primary_icon_url), GURL(best_splash_icon_url),
                     icon_url_to_murmur2_hash, false /* is_manifest_stale*/,
+                    false /* is_app_identity_update_supported */,
                     {GURL(best_shortcut_icon_url)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
   ASSERT_NE(nullptr, webapk_request);
@@ -638,6 +642,7 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoPrimaryIconAndSplashIconSameUrl) {
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(GURL(best_icon_url), GURL(best_icon_url),
                     icon_url_to_murmur2_hash, false /* is_manifest_stale*/,
+                    false /* is_app_identity_update_supported */,
                     {GURL(best_icon_url)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
   ASSERT_NE(nullptr, webapk_request);
@@ -690,6 +695,7 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoWhenWithMultipleShortcuts) {
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(
       GURL(), GURL(), icon_url_to_murmur2_hash, false /* is_manifest_stale*/,
+      false /* is_app_identity_update_supported */,
       {GURL(best_shortcut_icon_url1), GURL(best_shortcut_icon_url2)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
   ASSERT_NE(nullptr, webapk_request);
@@ -724,6 +730,7 @@ TEST_F(WebApkInstallerTest,
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(
       GURL(), GURL(), icon_url_to_murmur2_hash, false /* is_manifest_stale*/,
+      false /* is_app_identity_update_supported */,
       {GURL(best_shortcut_icon_url), GURL(best_shortcut_icon_url)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
   ASSERT_NE(nullptr, webapk_request);
@@ -758,6 +765,7 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoSplashIconAndShortcutIconSameUrl) {
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(GURL(icon_url_1), GURL(best_icon_url),
                     icon_url_to_murmur2_hash, false /* is_manifest_stale*/,
+                    true /* is_app_identity_update_supported */,
                     {GURL(best_icon_url)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
   ASSERT_NE(nullptr, webapk_request);

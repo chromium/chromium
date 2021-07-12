@@ -118,6 +118,7 @@ class WebApkInstaller {
       std::map<std::string, webapps::WebApkIconHasher::Icon>
           icon_url_to_murmur2_hash,
       bool is_manifest_stale,
+      bool is_app_identity_update_supported,
       base::OnceCallback<void(std::unique_ptr<std::string>)> callback);
 
   // Builds the WebAPK proto for an update or an install request and stores it
@@ -134,6 +135,7 @@ class WebApkInstaller {
       std::map<std::string, webapps::WebApkIconHasher::Icon>
           icon_url_to_murmur2_hash,
       bool is_manifest_stale,
+      bool is_app_identity_update_supported,
       std::vector<webapps::WebApkUpdateReason> update_reasons,
       base::OnceCallback<void(bool)> callback);
 

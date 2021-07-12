@@ -187,13 +187,14 @@ void WebApkInstaller::BuildProto(
     std::map<std::string, webapps::WebApkIconHasher::Icon>
         icon_url_to_murmur2_hash,
     bool is_manifest_stale,
+    bool is_app_identity_update_supported,
     base::OnceCallback<void(std::unique_ptr<std::string>)> callback) {
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
       base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info,
                      primary_icon, is_primary_icon_maskable, splash_icon,
                      package_name, version, std::move(icon_url_to_murmur2_hash),
-                     is_manifest_stale,
+                     is_manifest_stale, is_app_identity_update_supported,
                      std::vector<webapps::WebApkUpdateReason>()),
       std::move(callback));
 }
@@ -210,6 +211,7 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     std::map<std::string, webapps::WebApkIconHasher::Icon>
         icon_url_to_murmur2_hash,
     bool is_manifest_stale,
+    bool is_app_identity_update_supported,
     std::vector<webapps::WebApkUpdateReason> update_reasons,
     base::OnceCallback<void(bool)> callback) {
   base::PostTaskAndReplyWithResult(
@@ -218,7 +220,8 @@ void WebApkInstaller::StoreUpdateRequestToFile(
                      update_request_path, shortcut_info, primary_icon,
                      is_primary_icon_maskable, splash_icon, package_name,
                      version, std::move(icon_url_to_murmur2_hash),
-                     is_manifest_stale, std::move(update_reasons)),
+                     is_manifest_stale, is_app_identity_update_supported,
+                     std::move(update_reasons)),
       std::move(callback));
 }
 
@@ -453,6 +456,7 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
              is_primary_icon_maskable_, SkBitmap() /* splash_icon */,
              "" /* package_name */, "" /* version */, std::move(*hashes),
              false /* is_manifest_stale */,
+             false /* is_app_identity_update_supported */,
              base::BindOnce(&WebApkInstaller::SendRequest,
                             weak_ptr_factory_.GetWeakPtr()));
 }

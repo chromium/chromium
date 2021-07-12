@@ -84,6 +84,9 @@ message WebApk {
   // The Android OS version (e.g '11').
   optional string android_version = 12;
 
+  // Whether this builds supports app identity updates via dialog.
+  optional bool app_identity_update_supported = 13;
+
   reserved 4, 10;
 }
 

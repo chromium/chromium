@@ -80,6 +80,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     const JavaParamRef<jstring>& java_webapk_package,
     jint java_webapk_version,
     jboolean java_is_manifest_stale,
+    jboolean java_is_app_identity_update_supported,
     const JavaParamRef<jintArray>& java_update_reasons,
     const JavaParamRef<jobject>& java_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -212,7 +213,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
       java_is_primary_icon_maskable, splash_icon, webapk_package,
       base::NumberToString(java_webapk_version),
       std::move(icon_url_to_murmur2_hash), java_is_manifest_stale,
-      std::move(update_reasons),
+      java_is_app_identity_update_supported, std::move(update_reasons),
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(java_callback)));
 }

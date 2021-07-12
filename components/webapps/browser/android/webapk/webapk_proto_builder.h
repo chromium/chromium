@@ -32,6 +32,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
     bool is_manifest_stale,
+    bool is_app_identity_update_supported,
     std::vector<WebApkUpdateReason> update_reasons);
 
 // Builds the WebAPK proto for an update request and stores it to
@@ -47,6 +48,7 @@ bool StoreUpdateRequestToFileInBackground(
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
     bool is_manifest_stale,
+    bool is_app_identity_update_supported,
     std::vector<WebApkUpdateReason> update_reasons);
 
 }  // namespace webapps

@@ -225,7 +225,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
         if (mFetchedInfo != null) {
             buildUpdateRequestAndSchedule(mFetchedInfo, mFetchedPrimaryIconUrl,
-                    mFetchedSplashIconUrl, false /* isManifestStale */, mUpdateReasons);
+                    mFetchedSplashIconUrl, false /* isManifestStale */,
+                    iconOrNameUpdateDialogEnabled() /* appIdentityUpdateSupported */,
+                    mUpdateReasons);
             return;
         }
 
@@ -233,7 +235,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         // our Web Manifest data if the server's Web Manifest data is newer. This scenario can
         // occur if the Web Manifest is temporarily unreachable.
         buildUpdateRequestAndSchedule(mInfo, "" /* primaryIconUrl */, "" /* splashIconUrl */,
-                true /* isManifestStale */, mUpdateReasons);
+                true /* isManifestStale */,
+                iconOrNameUpdateDialogEnabled() /* appIdentityUpdateSupported */, mUpdateReasons);
     }
 
     /**
@@ -245,7 +248,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     /** Builds proto to send to the WebAPK server. */
     private void buildUpdateRequestAndSchedule(WebappInfo info, String primaryIconUrl,
-            String splashIconUrl, boolean isManifestStale, List<Integer> updateReasons) {
+            String splashIconUrl, boolean isManifestStale, boolean appIdentityUpdateSupported,
+            List<Integer> updateReasons) {
         Callback<Boolean> callback = (success) -> {
             if (!success) {
                 onFinishedUpdate(mStorage, WebApkInstallResult.FAILURE, false /* relaxUpdates*/);
@@ -255,7 +259,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         };
         String updateRequestPath = mStorage.createAndSetUpdateRequestFilePath(info);
         storeWebApkUpdateRequestToFile(updateRequestPath, info, primaryIconUrl, splashIconUrl,
-                isManifestStale, updateReasons, callback);
+                isManifestStale, appIdentityUpdateSupported, updateReasons, callback);
     }
 
     /** Schedules update for when WebAPK is not running. */
@@ -487,7 +491,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
             String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
-            List<Integer> updateReasons, Callback<Boolean> callback) {
+            boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
+            Callback<Boolean> callback) {
         int versionCode = info.webApkVersionCode();
         int size = info.iconUrlToMurmur2HashMap().size();
         String[] iconUrls = new String[size];
@@ -538,7 +543,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 shareTargetAction, shareTargetParamTitle, shareTargetParamText,
                 shareTargetIsMethodPost, shareTargetIsEncTypeMultipart, shareTargetParamFileNames,
                 shareTargetParamAccepts, shortcuts, info.manifestUrl(), info.webApkPackageName(),
-                versionCode, isManifestStale, updateReasonsArray, callback);
+                versionCode, isManifestStale, isAppIdentityUpdateSupported, updateReasonsArray,
+                callback);
     }
 
     @NativeMethods
@@ -553,7 +559,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 boolean shareTargetParamIsMethodPost, boolean shareTargetParamIsEncTypeMultipart,
                 String[] shareTargetParamFileNames, Object[] shareTargetParamAccepts,
                 String[][] shortcuts, String manifestUrl, String webApkPackage, int webApkVersion,
-                boolean isManifestStale, int[] updateReasons, Callback<Boolean> callback);
+                boolean isManifestStale, boolean isAppIdentityUpdateSupported, int[] updateReasons,
+                Callback<Boolean> callback);
         public void updateWebApkFromFile(String updateRequestPath, WebApkUpdateCallback callback);
     }
 }
