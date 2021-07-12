@@ -295,6 +295,10 @@ void TrustSafetySentimentService::OpenedPasswordManager(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void TrustSafetySentimentService::SavedCard() {
+  TriggerOccurred(FeatureArea::kTransactions, {{"Saved password", false}});
+}
+
 void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
   // Only interested in the primary OTR profile i.e. the one used for incognito

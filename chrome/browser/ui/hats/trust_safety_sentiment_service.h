@@ -60,6 +60,10 @@ class TrustSafetySentimentService : public KeyedService,
   // to allow mocking in tests.
   virtual void OpenedPasswordManager(content::WebContents* web_contents);
 
+  // Called when the user saves a card through the native UI bubble shown after
+  // the user uses a card on a website.
+  virtual void SavedCard();
+
   // Profile Observer:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;

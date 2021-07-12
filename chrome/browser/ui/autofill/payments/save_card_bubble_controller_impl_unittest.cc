@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
+#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -96,6 +98,11 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
             prefs::kAutofillAcceptSaveCreditCardPromptState,
             prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE);
     test_clock_.SetNow(kArbitraryTime);
+    mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
+        TrustSafetySentimentServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile(),
+                base::BindRepeating(&BuildMockTrustSafetySentimentService)));
   }
 
   void SetLegalMessage(
@@ -162,6 +169,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
   TestAutofillClock test_clock_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  MockTrustSafetySentimentService* mock_sentiment_service_;
 
  private:
   static void UploadSaveCardCallback(
@@ -504,6 +512,7 @@ class SaveCardBubbleControllerImplTestWithoutStatusChip
 
 TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
        Local_FirstShow_SaveButton_SigninPromo_Close_Reshow_ManageCards) {
+  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
   ShowLocalBubble();
   ClickSaveButton();
   CloseAndReshowBubble();
@@ -515,6 +524,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
 
 TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
        Metrics_Local_ClickManageCardsDoneButton) {
+  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
   base::HistogramTester histogram_tester;
   ShowLocalBubble();
   ClickSaveButton();
@@ -530,6 +540,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
 
 TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
        Metrics_Local_ClickManageCardsManageCardsButton) {
+  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
   base::HistogramTester histogram_tester;
   ShowLocalBubble();
   ClickSaveButton();
@@ -544,6 +555,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
 TEST_F(
     SaveCardBubbleControllerImplTestWithoutStatusChip,
     Metrics_Local_FirstShow_SaveButton_Close_Reshow_Close_Reshow_ManageCards) {
+  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
   base::HistogramTester histogram_tester;
   ShowLocalBubble();
   ClickSaveButton();
@@ -559,6 +571,7 @@ TEST_F(
 TEST_F(
     SaveCardBubbleControllerImplTestWithoutStatusChip,
     Metrics_Local_FirstShow_SaveButton_SigninPromo_Close_Reshow_ManageCards) {
+  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
   base::HistogramTester histogram_tester;
   ShowLocalBubble();
   ClickSaveButton();
@@ -572,6 +585,7 @@ TEST_F(
 
 TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
        Upload_FirstShow_SaveButton_NoSigninPromo) {
+  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
   ShowUploadBubble();
   ClickSaveButton();
   // Icon should disappear after an upload save,
@@ -582,6 +596,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
 
 TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
        Metrics_Upload_FirstShow_SaveButton_NoSigninPromo) {
+  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
   base::HistogramTester histogram_tester;
   ShowUploadBubble();
   ClickSaveButton();
@@ -593,6 +608,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
 
 TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
        Metrics_Upload_FirstShow_ManageCards) {
+  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
   base::HistogramTester histogram_tester;
   ShowUploadBubble();
   ClickSaveButton();

@@ -36,6 +36,7 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
               OpenedPasswordManager,
               (content::WebContents * web_contents),
               (override));
+  MOCK_METHOD(void, SavedCard, (), (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockTrustSafetySentimentService(
