@@ -18,6 +18,9 @@ class MathMLFractionElement final : public MathMLElement {
 
   void AddMathFractionBarThicknessIfNeeded(ComputedStyle&,
                                            const CSSToLengthConversionData&);
+
+ private:
+  void ParseAttribute(const AttributeModificationParams&) final;
 };
 
 }  // namespace blink

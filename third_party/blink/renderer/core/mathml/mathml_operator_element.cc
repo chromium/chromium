@@ -145,6 +145,8 @@ void MathMLOperatorElement::ParseAttribute(
              param.name == mathml_names::kRspaceAttr) {
     needs_layout = param.new_value != param.old_value;
     if (needs_layout && GetLayoutObject()) {
+      // TODO(crbug.com/1121113): Isn't it enough to set needs style recalc and
+      // let the style system perform proper layout and paint invalidation?
       SetNeedsStyleRecalc(
           kLocalStyleChange,
           StyleChangeReasonForTracing::Create(style_change_reason::kAttribute));

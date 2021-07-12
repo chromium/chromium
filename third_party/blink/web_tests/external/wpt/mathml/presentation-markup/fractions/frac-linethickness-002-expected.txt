@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Positive
-PASS Negative
-PASS Percentage
-PASS Named space
-PASS Calc() expression
-FAIL Dynamic linethickness assert_approx_equals: attach expected 400 +/- 2 but got 99.96875
-Harness: the test ran to completion.
-
