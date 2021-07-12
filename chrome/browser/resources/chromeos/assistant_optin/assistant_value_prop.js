@@ -318,6 +318,12 @@ Polymer({
       return;
     }
 
+    // Clear `consents-container` to prevent setting zippys being added
+    // multiple times.
+    while (this.$['consents-container'].firstElementChild) {
+      this.$['consents-container'].firstElementChild.remove();
+    }
+
     // `zippy_data` contains a list of lists, where each list contains the
     // setting zippys that should be shown on the same screen.
     for (var i in zippy_data) {
