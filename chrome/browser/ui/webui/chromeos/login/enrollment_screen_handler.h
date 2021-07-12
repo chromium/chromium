@@ -68,14 +68,17 @@ class EnrollmentScreenHandler
   void RegisterMessages() override;
 
   // Implements EnrollmentScreenView:
-  void SetEnrollmentConfig(Controller* controller,
-                           const policy::EnrollmentConfig& config) override;
+  void SetEnrollmentConfig(const policy::EnrollmentConfig& config) override;
+  void SetEnrollmentController(Controller* controller) override;
 
   void SetEnterpriseDomainInfo(const std::string& manager,
                                const std::u16string& device_type) override;
+  void SetFlowType(FlowType flow_type) override;
   void Show() override;
   void Hide() override;
   void ShowSigninScreen() override;
+  void ShowUserError(UserErrorType error_type,
+                     const std::string& email) override;
   void ShowActiveDirectoryScreen(const std::string& domain_join_config,
                                  const std::string& machine_name,
                                  const std::string& username,
@@ -117,6 +120,7 @@ class EnrollmentScreenHandler
                              const std::string& user_name,
                              const std::string& password);
   void HandleAdUnlockConfiguration(const std::string& password);
+  void HandleIdentifierEntered(const std::string& email);
   void HandleRetry();
   void HandleFrameLoadingCompleted();
   void HandleDeviceAttributesProvided(const std::string& asset_id,
@@ -167,6 +171,9 @@ class EnrollmentScreenHandler
 
   // The enrollment configuration.
   policy::EnrollmentConfig config_;
+
+  // GAIA flow type parameter that is set to authenticator.
+  FlowType flow_type_;
 
   // Active Directory configuration in the form of encrypted binary data.
   std::string active_directory_domain_join_config_;

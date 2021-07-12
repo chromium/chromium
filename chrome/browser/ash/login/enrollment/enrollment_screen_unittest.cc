@@ -16,10 +16,14 @@
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/policy/enrollment_status.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/tpm/stub_install_attributes.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -54,13 +58,18 @@ class EnrollmentScreenUnitTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    // Initialize the thread manager.
+    RegisterLocalState(pref_service_.registry());
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        &statistics_provider_);
     DBusThreadManager::Initialize();
+    policy::EnrollmentRequisitionManager::Initialize();
   }
 
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
     DBusThreadManager::Shutdown();
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
  protected:
@@ -83,6 +92,10 @@ class EnrollmentScreenUnitTest : public testing::Test {
   base::ScopedMockTimeMessageLoopTaskRunner runner_;
 
   ScopedStubInstallAttributes test_install_attributes_;
+
+  TestingPrefServiceSimple pref_service_;
+
+  chromeos::system::FakeStatisticsProvider statistics_provider_;
 
   // Objects required by the EnrollmentScreen that can be re-used.
   MockEnrollmentScreenView mock_view_;

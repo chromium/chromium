@@ -25,7 +25,11 @@ class PackagedLicenseScreen : public BaseScreen {
     // Show enterprise enrollment screen
     ENROLL,
     // No information about license in the `enrollment_config_`
-    NOT_APPLICABLE
+    NOT_APPLICABLE,
+    // Enterprise license should start from GAIA enrollment screen. This result
+    // is different from Enroll since in this case the screen is skipped and
+    // should not be recorded in metrics.
+    NOT_APPLICABLE_SKIP_TO_ENROLL
   };
 
   static std::string GetResultString(Result result);

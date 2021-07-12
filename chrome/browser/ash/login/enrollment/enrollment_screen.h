@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
+#include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
@@ -74,6 +75,7 @@ class EnrollmentScreen
                                       const std::string& password) override;
   void OnDeviceAttributeProvided(const std::string& asset_id,
                                  const std::string& location) override;
+  void OnIdentifierEntered(const std::string& email) override;
 
   // EnterpriseEnrollmentHelper::EnrollmentStatusConsumer implementation:
   void OnAuthError(const GoogleServiceAuthError& error) override;
@@ -129,8 +131,18 @@ class EnrollmentScreen
     AUTH_OAUTH,
   };
 
+  // Updates view GAIA flow type which is used to modify visual appearance
+  // of GAIA webview,
+  void UpdateFlowType();
+
   // Sets the current config to use for enrollment.
   void SetConfig();
+
+  // Called after account status is fetched.
+  void OnAccountStatusFetched(
+      const std::string& email,
+      bool result,
+      policy::AccountStatusCheckFetcher::AccountStatus status);
 
   // Creates an enrollment helper if needed.
   void CreateEnrollmentHelper();
@@ -203,6 +215,7 @@ class EnrollmentScreen
   int num_retries_ = 0;
   std::unique_ptr<EnterpriseEnrollmentHelper> enrollment_helper_;
   policy::OnDomainJoinedCallback on_joined_callback_;
+  std::unique_ptr<policy::AccountStatusCheckFetcher> status_checker_;
 
   // Helper to call AuthPolicyClient and cancel calls if needed. Used to join
   // Active Directory domain.

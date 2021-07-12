@@ -871,7 +871,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowSkipUpdateEnroll) {
       ->wizard_context_->enrollment_triggered_early = true;
   EXPECT_CALL(*mock_enrollment_screen_view_,
               SetEnrollmentConfig(
-                  mock_enrollment_screen_,
                   EnrollmentModeMatches(policy::EnrollmentConfig::MODE_MANUAL)))
       .Times(1);
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(1);
@@ -918,7 +917,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
   EXPECT_CALL(*mock_enrollment_screen_view_,
               SetEnrollmentConfig(
-                  mock_enrollment_screen_,
                   EnrollmentModeMatches(policy::EnrollmentConfig::MODE_MANUAL)))
       .Times(1);
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
@@ -1308,7 +1306,6 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   EXPECT_CALL(
       *mock_enrollment_screen_view_,
       SetEnrollmentConfig(
-          mock_enrollment_screen_,
           EnrollmentModeMatches(policy::EnrollmentConfig::MODE_SERVER_FORCED)))
       .Times(1);
   mock_auto_enrollment_check_screen_->ExitScreen();
@@ -1391,11 +1388,9 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
     g_browser_process->local_state()->Set(prefs::kServerBackedDeviceState,
                                           device_state);
     EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-    EXPECT_CALL(
-        *mock_enrollment_screen_view_,
-        SetEnrollmentConfig(mock_enrollment_screen_,
-                            EnrollmentModeMatches(
-                                policy::EnrollmentConfig::MODE_SERVER_FORCED)))
+    EXPECT_CALL(*mock_enrollment_screen_view_,
+                SetEnrollmentConfig(EnrollmentModeMatches(
+                    policy::EnrollmentConfig::MODE_SERVER_FORCED)))
         .Times(1);
     fake_auto_enrollment_client->SetState(
         policy::AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
@@ -1502,11 +1497,9 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     g_browser_process->local_state()->Set(prefs::kServerBackedDeviceState,
                                           device_state);
     EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-    EXPECT_CALL(
-        *mock_enrollment_screen_view_,
-        SetEnrollmentConfig(mock_enrollment_screen_,
-                            EnrollmentModeMatches(
-                                policy::EnrollmentConfig::MODE_SERVER_FORCED)))
+    EXPECT_CALL(*mock_enrollment_screen_view_,
+                SetEnrollmentConfig(EnrollmentModeMatches(
+                    policy::EnrollmentConfig::MODE_SERVER_FORCED)))
         .Times(1);
     mock_auto_enrollment_check_screen_->ExitScreen();
 
@@ -1617,7 +1610,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(
       *mock_enrollment_screen_view_,
       SetEnrollmentConfig(
-          mock_enrollment_screen_,
           EnrollmentModeMatches(policy::EnrollmentConfig::MODE_SERVER_FORCED)))
       .Times(1);
   fake_auto_enrollment_client->SetState(
@@ -1838,7 +1830,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(
       *mock_enrollment_screen_view_,
       SetEnrollmentConfig(
-          mock_enrollment_screen_,
           EnrollmentModeMatches(policy::EnrollmentConfig::MODE_SERVER_FORCED)))
       .Times(1);
   mock_auto_enrollment_check_screen_->ExitScreen();
@@ -2056,7 +2047,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
   EXPECT_CALL(
       *mock_enrollment_screen_view_,
       SetEnrollmentConfig(
-          mock_enrollment_screen_,
           EnrollmentModeMatches(policy::EnrollmentConfig::MODE_LOCAL_FORCED)))
       .Times(1);
   CheckCurrentScreen(WelcomeView::kScreenId);
@@ -2102,7 +2092,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
   EXPECT_CALL(
       *mock_enrollment_screen_view_,
       SetEnrollmentConfig(
-          mock_enrollment_screen_,
           EnrollmentModeMatches(policy::EnrollmentConfig::MODE_LOCAL_FORCED)))
       .Times(1);
 
@@ -2715,7 +2704,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeResumeTest,
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_CALL(*mock_enrollment_screen_view_,
               SetEnrollmentConfig(
-                  mock_enrollment_screen_,
                   EnrollmentModeMatches(policy::EnrollmentConfig::MODE_MANUAL)))
       .Times(1);
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);

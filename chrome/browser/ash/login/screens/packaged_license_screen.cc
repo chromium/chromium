@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/browser_process.h"
@@ -27,6 +28,8 @@ std::string PackagedLicenseScreen::GetResultString(Result result) {
       return "Enroll";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
+    case Result::NOT_APPLICABLE_SKIP_TO_ENROLL:
+      return BaseScreen::kNotApplicable;
   }
 }
 
@@ -46,14 +49,19 @@ PackagedLicenseScreen::~PackagedLicenseScreen() {
 }
 
 bool PackagedLicenseScreen::MaybeSkip(WizardContext* context) {
-  policy::EnrollmentConfig enrollment_config =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
-          ->GetPrescribedEnrollmentConfig();
+  policy::EnrollmentConfig config = g_browser_process->platform_part()
+                                        ->browser_policy_connector_chromeos()
+                                        ->GetPrescribedEnrollmentConfig();
   // License screen should be shown when device packed with license and other
   // enrollment flows are not triggered by the device state.
-  if (enrollment_config.is_license_packaged_with_device &&
-      !enrollment_config.should_enroll()) {
+  if (config.is_license_packaged_with_device && !config.should_enroll()) {
+    // Skip to enroll since GAIA form has welcoming text for enterprise license.
+    if (features::IsLicensePackagedOobeFlowEnabled() &&
+        config.license_type ==
+            policy::EnrollmentConfig::LicenseType::kEnterprise) {
+      exit_callback_.Run(Result::NOT_APPLICABLE_SKIP_TO_ENROLL);
+      return true;
+    }
     return false;
   }
   exit_callback_.Run(Result::NOT_APPLICABLE);

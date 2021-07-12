@@ -30,6 +30,7 @@ var ENROLLMENT_STEP = {
   ATTRIBUTE_PROMPT: 'attribute-prompt',
   ERROR: 'error',
   SUCCESS: 'success',
+  CHECKING: 'checking',
 
   /* TODO(dzhioev): define this step on C++ side.
    */
@@ -116,6 +117,14 @@ Polymer({
     deviceLocation_: {
       type: String,
       value: '',
+    },
+
+    /**
+     * Whether account identifier should be sent for check.
+     */
+    hasAccountCheck_: {
+      type: Boolean,
+      value: false,
     },
 
     /**
@@ -224,9 +233,6 @@ Polymer({
       chrome.send(
           'oauthEnrollAdUnlockConfiguration', [e.detail.unlock_password]);
     }.bind(this));
-
-
-
     this.authenticator_.insecureContentBlockedCallback =
         (function(url) {
           this.showError(
@@ -285,6 +291,8 @@ Polymer({
                      data.is_enrollment_enforced : undefined;
     this.isAutoEnroll_ = 'attestationBased' in data ?
                          data.attestationBased : undefined;
+    this.hasAccountCheck_ =
+        'flow' in data ? (data.flow == 'enterpriseLicense') : false;
 
     cr.ui.login.invokePolymerMethod(this.$["step-ad-join"], 'onBeforeShow');
     if (!this.uiStep) {
@@ -321,6 +329,19 @@ Polymer({
   setEnterpriseDomainInfo(manager, device_type) {
     this.domainManager_ = manager;
     this.deviceName_ = device_type;
+  },
+
+  /**
+   * Invoked when identifierEntered message received.
+   * @param {!CustomEvent<!{accountIdentifier: string}>} e Event with payload
+   *     containing: {string} accountIdentifier User identifier.
+   * @private
+   */
+  onIdentifierEnteredMessage_(e) {
+    if (this.hasAccountCheck_) {
+      this.showStep(ENROLLMENT_STEP.CHECKING);
+      chrome.send('enterpriseIdentifierEntered', [e.detail.accountIdentifier]);
+    }
   },
 
   /**

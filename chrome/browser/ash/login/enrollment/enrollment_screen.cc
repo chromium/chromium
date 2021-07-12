@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -21,6 +22,8 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -37,6 +40,7 @@
 namespace ash {
 namespace {
 
+using ::policy::AccountStatusCheckFetcher;
 using ::policy::EnrollmentConfig;
 
 // Do not change the UMA histogram parameters without renaming the histograms!
@@ -164,7 +168,7 @@ void EnrollmentScreen::SetConfig() {
                        ? policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED
                        : policy::EnrollmentConfig::MODE_ATTESTATION;
   }
-  view_->SetEnrollmentConfig(this, config_);
+  view_->SetEnrollmentConfig(config_);
   enrollment_helper_ = nullptr;
 }
 
@@ -213,9 +217,26 @@ bool EnrollmentScreen::MaybeSkip(WizardContext* context) {
   return false;
 }
 
+void EnrollmentScreen::UpdateFlowType() {
+  if (features::IsLicensePackagedOobeFlowEnabled() &&
+      config_.license_type ==
+          policy::EnrollmentConfig::LicenseType::kEnterprise) {
+    view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterpriseLicense);
+    return;
+  }
+  const bool cfm = policy::EnrollmentRequisitionManager::IsRemoraRequisition();
+  if (cfm) {
+    view_->SetFlowType(EnrollmentScreenView::FlowType::kCFM);
+  } else {
+    view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterprise);
+  }
+}
+
 void EnrollmentScreen::ShowImpl() {
   VLOG(1) << "Show enrollment screen";
+  view_->SetEnrollmentController(this);
   UMA(policy::kMetricEnrollmentTriggered);
+  UpdateFlowType();
   switch (current_auth_) {
     case AUTH_OAUTH:
       ShowInteractiveScreen();
@@ -379,6 +400,42 @@ void EnrollmentScreen::OnDeviceEnrolled() {
       ->browser_policy_connector_chromeos()
       ->GetTPMAutoUpdateModePolicyHandler()
       ->UpdateOnEnrollmentIfNeeded();
+}
+void EnrollmentScreen::OnIdentifierEntered(const std::string& email) {
+  auto callback = base::BindOnce(&EnrollmentScreen::OnAccountStatusFetched,
+                                 base::Unretained(this), email);
+  status_checker_.reset();
+  status_checker_ = std::make_unique<policy::AccountStatusCheckFetcher>(email);
+  status_checker_->Fetch(std::move(callback));
+}
+
+void EnrollmentScreen::OnAccountStatusFetched(
+    const std::string& email,
+    bool result,
+    policy::AccountStatusCheckFetcher::AccountStatus status) {
+  if (!view_)
+    return;
+  if (status == AccountStatusCheckFetcher::AccountStatus::kDasher ||
+      status == AccountStatusCheckFetcher::AccountStatus::kUnknown ||
+      result == false) {
+    view_->ShowSigninScreen();
+    return;
+  }
+  if (status ==
+      AccountStatusCheckFetcher::AccountStatus::kConsumerWithConsumerDomain) {
+    view_->ShowUserError(EnrollmentScreenView::UserErrorType::kConsumerDomain,
+                         email);
+    return;
+  }
+  if (status ==
+      AccountStatusCheckFetcher::AccountStatus::kConsumerWithBusinessDomain) {
+    view_->ShowUserError(EnrollmentScreenView::UserErrorType::kBusinessDomain,
+                         email);
+    return;
+  }
+
+  // For all other types just show signin screen.
+  view_->ShowSigninScreen();
 }
 
 void EnrollmentScreen::OnActiveDirectoryCredsProvided(

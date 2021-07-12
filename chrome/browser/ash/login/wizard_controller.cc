@@ -1599,6 +1599,7 @@ void WizardController::OnPackagedLicenseScreenExit(
       ShowLoginScreen();
       break;
     case PackagedLicenseScreen::Result::ENROLL:
+    case PackagedLicenseScreen::Result::NOT_APPLICABLE_SKIP_TO_ENROLL:
       ShowEnrollmentScreen();
       break;
   }

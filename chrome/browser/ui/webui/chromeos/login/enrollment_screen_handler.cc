@@ -171,6 +171,17 @@ authpolicy::KerberosEncryptionTypes TranslateEncryptionTypesString(
   return authpolicy::KerberosEncryptionTypes::ENC_TYPES_STRONG;
 }
 
+std::string GetFlowString(EnrollmentScreenView::FlowType type) {
+  switch (type) {
+    case EnrollmentScreenView::FlowType::kEnterprise:
+      return "enterprise";
+    case EnrollmentScreenView::FlowType::kCFM:
+      return "cfm";
+    case EnrollmentScreenView::FlowType::kEnterpriseLicense:
+      return "enterpriseLicense";
+  }
+}
+
 }  // namespace
 
 // EnrollmentScreenHandler, public ------------------------------
@@ -204,6 +215,8 @@ void EnrollmentScreenHandler::RegisterMessages() {
               &EnrollmentScreenHandler::HandleAdCompleteLogin);
   AddCallback("oauthEnrollAdUnlockConfiguration",
               &EnrollmentScreenHandler::HandleAdUnlockConfiguration);
+  AddCallback("enterpriseIdentifierEntered",
+              &EnrollmentScreenHandler::HandleIdentifierEntered);
   AddCallback("oauthEnrollRetry", &EnrollmentScreenHandler::HandleRetry);
   AddCallback("frameLoadingCompleted",
               &EnrollmentScreenHandler::HandleFrameLoadingCompleted);
@@ -217,11 +230,13 @@ void EnrollmentScreenHandler::RegisterMessages() {
 //      EnrollmentScreenActor implementation -----------------------------------
 
 void EnrollmentScreenHandler::SetEnrollmentConfig(
-    Controller* controller,
     const policy::EnrollmentConfig& config) {
   CHECK(config.should_enroll());
-  controller_ = controller;
   config_ = config;
+}
+
+void EnrollmentScreenHandler::SetEnrollmentController(Controller* controller) {
+  controller_ = controller;
 }
 
 void EnrollmentScreenHandler::Show() {
@@ -236,6 +251,29 @@ void EnrollmentScreenHandler::Hide() {}
 void EnrollmentScreenHandler::ShowSigninScreen() {
   observe_network_failure_ = true;
   ShowStep(kEnrollmentStepSignin);
+}
+
+void EnrollmentScreenHandler::ShowUserError(UserErrorType error_type,
+                                            const std::string& email) {
+  // Reset the state of the GAIA so after error user would retry enrollment and
+  // start from enter your account view.
+  CallJS("login.OAuthEnrollmentScreen.doReload");
+  switch (error_type) {
+    case UserErrorType::kConsumerDomain: {
+      ShowError(
+          IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE,
+          true);
+      break;
+    }
+    case UserErrorType::kBusinessDomain: {
+      ShowErrorMessage(
+          l10n_util::GetStringFUTF8(
+              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_BUSINESS_DOMAIN_WITH_PACKAGED_LICENSE,
+              base::ASCIIToUTF16(gaia::ExtractDomainName(email))),
+          true);
+      break;
+    }
+  }
 }
 
 void EnrollmentScreenHandler::ShowActiveDirectoryScreen(
@@ -348,6 +386,10 @@ void EnrollmentScreenHandler::SetEnterpriseDomainInfo(
     const std::u16string& device_type) {
   CallJS("login.OAuthEnrollmentScreen.setEnterpriseDomainInfo", manager,
          device_type);
+}
+
+void EnrollmentScreenHandler::SetFlowType(FlowType flow_type) {
+  flow_type_ = flow_type;
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentSuccessScreen() {
@@ -566,6 +608,8 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("oauthEnrollScreenTitle",
                IDS_ENTERPRISE_ENROLLMENT_SCREEN_TITLE);
+  builder->Add("enrollmentAccountCheckTitle",
+               IDS_ENTERPRISE_ACCOUNT_CHECK_TITLE);
   builder->Add("oauthEnrollNextBtn", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
   builder->Add("oauthEnrollSkip", IDS_ENTERPRISE_ENROLLMENT_SKIP);
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
@@ -902,6 +946,12 @@ void EnrollmentScreenHandler::HandleAdUnlockConfiguration(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void EnrollmentScreenHandler::HandleIdentifierEntered(
+    const std::string& email) {
+  DCHECK(controller_);
+  controller_->OnIdentifierEntered(email);
+}
+
 void EnrollmentScreenHandler::HandleRetry() {
   DCHECK(controller_);
   controller_->OnRetry();
@@ -978,13 +1028,10 @@ void EnrollmentScreenHandler::DoShowWithPartition(
   screen_data.SetBoolean("is_enrollment_enforced", config_.is_forced());
   screen_data.SetBoolean("attestationBased", config_.is_mode_attestation());
   screen_data.SetString("management_domain", config_.management_domain);
-
+  screen_data.SetString("flow", GetFlowString(flow_type_));
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   if (!app_locale.empty())
     screen_data.SetString("hl", app_locale);
-
-  const bool cfm = policy::EnrollmentRequisitionManager::IsRemoraRequisition();
-  screen_data.SetString("flow", cfm ? "cfm" : "enterprise");
 
   ShowScreenWithData(EnrollmentScreenView::kScreenId, &screen_data);
   if (first_show_) {

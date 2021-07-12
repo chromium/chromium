@@ -43,19 +43,26 @@ class EnrollmentScreenView {
 
     virtual void OnDeviceAttributeProvided(const std::string& asset_id,
                                            const std::string& location) = 0;
+    virtual void OnIdentifierEntered(const std::string& email) = 0;
   };
 
   constexpr static StaticOobeScreenId kScreenId{"enterprise-enrollment"};
 
   virtual ~EnrollmentScreenView() {}
 
+  enum class FlowType { kEnterprise, kCFM, kEnterpriseLicense };
+  enum class UserErrorType { kConsumerDomain, kBusinessDomain };
+
   // Initializes the view with parameters.
-  virtual void SetEnrollmentConfig(Controller* controller,
-                                   const policy::EnrollmentConfig& config) = 0;
+  virtual void SetEnrollmentConfig(const policy::EnrollmentConfig& config) = 0;
+  virtual void SetEnrollmentController(Controller* controller) = 0;
 
   // Sets the enterprise manager and the device type to be shown for the user.
   virtual void SetEnterpriseDomainInfo(const std::string& manager,
                                        const std::u16string& device_type) = 0;
+
+  // Sets which flow should GAIA show.
+  virtual void SetFlowType(FlowType flow_type) = 0;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
@@ -65,6 +72,10 @@ class EnrollmentScreenView {
 
   // Shows the signin screen.
   virtual void ShowSigninScreen() = 0;
+
+  // Shows error related to user account eligibility.
+  virtual void ShowUserError(UserErrorType error_type,
+                             const std::string& email) = 0;
 
   // Shows the Active Directory domain joining screen.
   virtual void ShowActiveDirectoryScreen(const std::string& domain_join_config,

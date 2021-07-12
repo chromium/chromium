@@ -164,8 +164,8 @@ cr.define('cr.login', function() {
                      // If this set to |false|, |confirmPasswordCallback| is
                      // not called before dispatching |authCopleted|.
                      // Default is |true|.
-    'flow',                        // One of 'default', 'enterprise', or
-                                   // 'theftprotection'.
+    'flow',          // One of 'default', 'enterprise', or
+                     // 'cfm' or 'enterpriseLicense'.
     'enterpriseDisplayDomain',     // Current domain name to be displayed.
     'enterpriseDomainManager',     // Manager of the current domain. Can be
                                    // either a domain name (foo.com) or an email
@@ -207,9 +207,7 @@ cr.define('cr.login', function() {
     // can still change it and then proceed.  This is used on desktop when the
     // user disconnects their profile then reconnects, to encourage them to use
     // the same account.
-    'email',
-    'readOnlyEmail',
-    'realm',
+    'email', 'readOnlyEmail', 'realm',
     // If the authentication is done via external IdP, 'startsOnSamlPage'
     // indicates whether the flow should start on the IdP page.
     'startsOnSamlPage',
