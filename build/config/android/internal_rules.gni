@@ -1839,147 +1839,96 @@ if (enable_java_templates) {
     }
   }
 
-  template("process_java_prebuilt") {
+  template("process_java_library") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
-    _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
-    not_needed([ "_rebased_build_config" ])
 
     _deps = invoker.jar_deps
     _previous_output_jar = invoker.input_jar_path
 
-    # Create the .jar in lib.java for use by java_binary.
-    if (defined(invoker.host_jar_path)) {
-      if (defined(invoker.jacoco_instrument) && invoker.jacoco_instrument) {
-        _filter_jar_target_name = "${target_name}_host__filter_jar"
-        _filter_jar_output_jar = "$target_out_dir/$target_name.host_filter.jar"
-      } else {
-        _filter_jar_target_name = "${target_name}_host"
-        _filter_jar_output_jar = invoker.host_jar_path
-      }
-      filter_jar(_filter_jar_target_name) {
-        forward_variables_from(invoker,
-                               [
-                                 "jar_excluded_patterns",
-                                 "jar_included_patterns",
-                               ])
-        deps = _deps
-        input_jar = _previous_output_jar
-        output_jar = _filter_jar_output_jar
-        inputs = []
-        if (defined(invoker.inputs)) {
-          inputs += invoker.inputs
-          deps += invoker.input_deps
+    if (invoker.is_device_jar && invoker.enable_desugar) {
+      _desugar_target = "${target_name}_device__desugar"
+      _desugar_output_jar = "$target_out_dir/$target_name.desugar.jar"
+
+      action_with_pydeps(_desugar_target) {
+        script = "//build/android/gyp/desugar.py"
+        deps = _deps + invoker.classpath_deps
+        depfile = "$target_gen_dir/$target_name.d"
+        _rebased_build_config =
+            rebase_path(invoker.build_config, root_build_dir)
+        _desugar_jar = "//third_party/bazel/desugar/Desugar.jar"
+
+        inputs = [
+          invoker.build_config,
+          _previous_output_jar,
+          _desugar_jar,
+        ]
+        outputs = [ _desugar_output_jar ]
+        args = [
+          "--desugar-jar",
+          rebase_path(_desugar_jar, root_build_dir),
+          "--input-jar",
+          rebase_path(_previous_output_jar, root_build_dir),
+          "--output-jar",
+          rebase_path(_desugar_output_jar, root_build_dir),
+
+          # Temporarily using java_full_interface_classpath until classpath validation of targets
+          # is implemented, see http://crbug.com/885273
+          "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
+          "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_interface_jars)",
+          "--depfile",
+          rebase_path(depfile, root_build_dir),
+        ]
+        if (defined(invoker.desugar_jars_paths)) {
+          _rebased_desugar_jars_paths =
+              rebase_path(invoker.desugar_jars_paths, root_build_dir)
+          args += [ "--classpath=${_rebased_desugar_jars_paths}" ]
+        }
+        if (treat_warnings_as_errors) {
+          args += [ "--warnings-as-errors" ]
         }
       }
 
-      if (defined(invoker.jacoco_instrument) && invoker.jacoco_instrument) {
-        # Jacoco must run after desugar (or else desugar sometimes fails).
-        # It must run after filtering to avoid the same (filtered) class mapping
-        # to multiple .jar files.
-        # We run offline code coverage processing here rather than with a
-        # javaagent as the desired coverage data was not being generated.
-        # See crbug.com/1097815.
-        jacoco_instr("${target_name}_host") {
-          deps = [ ":$_filter_jar_target_name" ] + invoker.jar_deps
-          forward_variables_from(invoker,
-                                 [
-                                   "java_files",
-                                   "java_sources_file",
-                                 ])
-
-          input_jar_path = _filter_jar_output_jar
-          output_jar_path = invoker.host_jar_path
-        }
-      }
+      _deps = []
+      _deps = [ ":$_desugar_target" ]
+      _previous_output_jar = _desugar_output_jar
     }
 
-    if (defined(invoker.device_jar_path)) {
-      if (invoker.enable_desugar) {
-        _desugar_target = "${target_name}_device__desugar"
-        _desugar_output_jar = "$target_out_dir/$target_name.desugar.jar"
+    if (invoker.jacoco_instrument) {
+      _filter_jar_target_name = "${target_name}__filter_jar"
+      _filter_jar_output_jar = "$target_out_dir/$target_name.filter.jar"
+    } else {
+      _filter_jar_target_name = target_name
+      _filter_jar_output_jar = invoker.output_jar_path
+    }
 
-        action_with_pydeps(_desugar_target) {
-          script = "//build/android/gyp/desugar.py"
-          deps = _deps + invoker.classpath_deps
-          depfile = "$target_gen_dir/$target_name.d"
-          _desugar_jar = "//third_party/bazel/desugar/Desugar.jar"
+    filter_jar(_filter_jar_target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "jar_excluded_patterns",
+                               "jar_included_patterns",
+                             ])
+      deps = _deps
+      input_jar = _previous_output_jar
+      output_jar = _filter_jar_output_jar
+    }
 
-          inputs = [
-            invoker.build_config,
-            _previous_output_jar,
-            _desugar_jar,
-          ]
-          outputs = [ _desugar_output_jar ]
-          args = [
-            "--desugar-jar",
-            rebase_path(_desugar_jar, root_build_dir),
-            "--input-jar",
-            rebase_path(_previous_output_jar, root_build_dir),
-            "--output-jar",
-            rebase_path(_desugar_output_jar, root_build_dir),
-
-            # Temporarily using java_full_interface_classpath until classpath validation of targets
-            # is implemented, see http://crbug.com/885273
-            "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
-            "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_interface_jars)",
-            "--depfile",
-            rebase_path(depfile, root_build_dir),
-          ]
-          if (defined(invoker.desugar_jars_paths)) {
-            _rebased_desugar_jars_paths =
-                rebase_path(invoker.desugar_jars_paths, root_build_dir)
-            args += [ "--classpath=${_rebased_desugar_jars_paths}" ]
-          }
-          if (treat_warnings_as_errors) {
-            args += [ "--warnings-as-errors" ]
-          }
-        }
-
-        _deps = []
-        _deps = [ ":$_desugar_target" ]
-        _previous_output_jar = _desugar_output_jar
-      }
-
-      if (invoker.jacoco_instrument) {
-        _filter_jar_target_name = "${target_name}_device__filter_jar"
-        _filter_jar_output_jar =
-            "$target_out_dir/$target_name.device_filter.jar"
-      } else {
-        _filter_jar_target_name = "${target_name}_device"
-        _filter_jar_output_jar = invoker.device_jar_path
-      }
-      filter_jar(_filter_jar_target_name) {
+    if (invoker.jacoco_instrument) {
+      # Jacoco must run after desugar (or else desugar sometimes fails).
+      # It must run after filtering to avoid the same (filtered) class mapping
+      # to multiple .jar files.
+      # We run offline code coverage processing here rather than with a
+      # javaagent as the desired coverage data was not being generated.
+      # See crbug.com/1097815.
+      jacoco_instr(target_name) {
+        deps = [ ":$_filter_jar_target_name" ] + invoker.jar_deps
         forward_variables_from(invoker,
                                [
-                                 "jar_excluded_patterns",
-                                 "jar_included_patterns",
+                                 "java_files",
+                                 "java_sources_file",
                                ])
-        deps = _deps
-        input_jar = _previous_output_jar
-        output_jar = _filter_jar_output_jar
-        inputs = []
-        if (!defined(invoker.host_jar_path) && defined(invoker.inputs)) {
-          inputs += invoker.inputs
-          deps += invoker.input_deps
-        }
-      }
 
-      if (invoker.jacoco_instrument) {
-        # Jacoco must run after desugar (or else desugar sometimes fails).
-        # It must run after filtering to avoid the same (filtered) class mapping
-        # to multiple .jar files.
-        jacoco_instr("${target_name}_device") {
-          deps = [ ":$_filter_jar_target_name" ] + invoker.jar_deps
-          forward_variables_from(invoker,
-                                 [
-                                   "java_files",
-                                   "java_sources_file",
-                                 ])
-
-          input_jar_path = _filter_jar_output_jar
-          output_jar_path = invoker.device_jar_path
-        }
+        input_jar_path = _filter_jar_output_jar
+        output_jar_path = invoker.output_jar_path
       }
     }
   }
@@ -3739,6 +3688,22 @@ if (enable_java_templates) {
 
     _public_deps = []
     _analysis_public_deps = []
+    _analysis_files = []
+
+    if (defined(invoker.proguard_configs)) {
+      assert(_build_host_jar || _build_device_jar)
+
+      # proguard_configs listed on java_library targets need to be marked
+      # as inputs to at least one action so that "gn analyze" will know
+      # about them. Although this target doesn't use them, it's a convenient spot
+      # to list them.
+      # https://crbug.com/827197
+      _analysis_files = invoker.proguard_configs
+      _analysis_public_deps =
+          _non_java_deps + _srcjar_deps  # For the aapt-generated
+                                         # proguard rules.
+    }
+
     if (_has_sources) {
       if (defined(invoker.enable_errorprone)) {
         _enable_errorprone = invoker.enable_errorprone
@@ -3933,51 +3898,6 @@ if (enable_java_templates) {
     }
 
     if (_build_host_jar || _build_device_jar) {
-      _process_prebuilt_target_name = "${target_name}__process"
-      process_java_prebuilt(_process_prebuilt_target_name) {
-        forward_variables_from(invoker,
-                               [
-                                 "jar_excluded_patterns",
-                                 "jar_included_patterns",
-                               ])
-        build_config = _build_config
-        input_jar_path = _unprocessed_jar_path
-        jar_deps = _unprocessed_jar_deps + _full_classpath_deps
-        if (_build_host_jar) {
-          host_jar_path = _host_processed_jar_path
-        }
-        if (_build_device_jar) {
-          device_jar_path = _device_processed_jar_path
-          jacoco_instrument = _jacoco_instrument
-          if (_jacoco_instrument) {
-            java_files = _java_files
-            java_sources_file = _java_sources_file
-          }
-          enable_desugar = _enable_desugar && _use_classic_desugar
-          if (enable_desugar) {
-            classpath_deps = _classpath_deps
-            forward_variables_from(invoker, [ "desugar_jars_paths" ])
-          }
-        }
-
-        # proguard_configs listed on java_library targets need to be marked
-        # as inputs to at least one action so that "gn analyze" will know
-        # about them. Although ijar doesn't use them, it's a convenient spot
-        # to list them.
-        # https://crbug.com/827197
-        if (defined(invoker.proguard_configs)) {
-          inputs = invoker.proguard_configs
-          input_deps = _non_java_deps + _srcjar_deps  # For the aapt-generated
-                                                      # proguard rules.
-        }
-      }
-      if (_build_host_jar) {
-        _public_deps += [ ":${_process_prebuilt_target_name}_host" ]
-      }
-      if (_build_device_jar) {
-        _public_deps += [ ":${_process_prebuilt_target_name}_device" ]
-      }
-
       _enable_bytecode_checks = !defined(invoker.enable_bytecode_checks) ||
                                 invoker.enable_bytecode_checks
       if (_enable_bytecode_checks) {
@@ -3995,37 +3915,83 @@ if (enable_java_templates) {
         }
         _analysis_public_deps += [ ":$_bytecode_checks_target" ]
       }
-    }
 
-    if (_build_device_jar) {
-      dex("${target_name}__dex") {
-        forward_variables_from(invoker,
-                               [
-                                 "desugar_jars_paths",
-                                 "proguard_enable_obfuscation",
-                                 "use_classic_desugar",
-                               ])
-        input_class_jars = [ _device_processed_jar_path ]
-        enable_desugar = _enable_desugar
-        ignore_desugar_missing_deps = !_enable_bytecode_checks
-
-        # There's no value in per-class dexing prebuilts since they never
-        # change just one class at a time.
-        disable_incremental = _is_prebuilt
-        output = _dex_path
-        deps = [ ":${_process_prebuilt_target_name}_device" ]
-
-        if (enable_desugar && !_use_classic_desugar) {
-          # Desugaring with D8 requires full classpath.
-          build_config = _build_config
-          final_ijar_path = _final_ijar_path
-          deps += _classpath_deps + [ ":$_header_target_name" ]
+      if (_build_host_jar) {
+        _process_host_jar_target_name = "${target_name}__process_host"
+        process_java_library(_process_host_jar_target_name) {
+          forward_variables_from(invoker,
+                                 [
+                                   "jar_excluded_patterns",
+                                   "jar_included_patterns",
+                                 ])
+          input_jar_path = _unprocessed_jar_path
+          jar_deps = _unprocessed_jar_deps + _full_classpath_deps
+          is_device_jar = false
+          output_jar_path = _host_processed_jar_path
+          jacoco_instrument = _jacoco_instrument
+          if (_jacoco_instrument) {
+            java_files = _java_files
+            java_sources_file = _java_sources_file
+          }
         }
-
-        enable_multidex = false
-        is_library = true
+        _public_deps += [ ":${_process_host_jar_target_name}" ]
       }
-      _public_deps += [ ":${target_name}__dex" ]
+
+      if (_build_device_jar) {
+        _process_device_jar_target_name = "${target_name}__process_device"
+        process_java_library(_process_device_jar_target_name) {
+          forward_variables_from(invoker,
+                                 [
+                                   "jar_excluded_patterns",
+                                   "jar_included_patterns",
+                                 ])
+          input_jar_path = _unprocessed_jar_path
+          jar_deps = _unprocessed_jar_deps + _full_classpath_deps
+          is_device_jar = true
+          output_jar_path = _device_processed_jar_path
+          jacoco_instrument = _jacoco_instrument
+          if (_jacoco_instrument) {
+            java_files = _java_files
+            java_sources_file = _java_sources_file
+          }
+          enable_desugar = _enable_desugar && _use_classic_desugar
+          if (enable_desugar) {
+            build_config = _build_config
+            classpath_deps = _classpath_deps
+            forward_variables_from(invoker, [ "desugar_jars_paths" ])
+          }
+        }
+        _public_deps += [ ":${_process_device_jar_target_name}" ]
+
+        dex("${target_name}__dex") {
+          forward_variables_from(invoker,
+                                 [
+                                   "desugar_jars_paths",
+                                   "proguard_enable_obfuscation",
+                                   "use_classic_desugar",
+                                 ])
+          input_class_jars = [ _device_processed_jar_path ]
+          enable_desugar = _enable_desugar
+          ignore_desugar_missing_deps = !_enable_bytecode_checks
+
+          # There's no value in per-class dexing prebuilts since they never
+          # change just one class at a time.
+          disable_incremental = _is_prebuilt
+          output = _dex_path
+          deps = [ ":${_process_device_jar_target_name}" ]
+
+          if (enable_desugar && !_use_classic_desugar) {
+            # Desugaring with D8 requires full classpath.
+            build_config = _build_config
+            final_ijar_path = _final_ijar_path
+            deps += _classpath_deps + [ ":$_header_target_name" ]
+          }
+
+          enable_multidex = false
+          is_library = true
+        }
+        _public_deps += [ ":${target_name}__dex" ]
+      }
     }
 
     if (_is_java_binary) {
@@ -4079,12 +4045,14 @@ if (enable_java_templates) {
         public_deps = []
       }
       public_deps += [ ":${target_name}__impl" ]
-      if (defined(_analysis_public_deps)) {
-        if (!defined(data_deps)) {
-          data_deps = []
-        }
-        data_deps += _analysis_public_deps
+      if (!defined(data)) {
+        data = []
       }
+      data += _analysis_files
+      if (!defined(data_deps)) {
+        data_deps = []
+      }
+      data_deps += _analysis_public_deps
     }
   }
 }
