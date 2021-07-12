@@ -31,10 +31,12 @@ interface SettingsController {
   // Retrieve settings. |selector| is a serialized proto of
   // |SettingsUiSelector|, indicating which settings sub-pages should be
   // requested to the server.
-  // On success, the return value is a serialized proto of |SettingsUi|,
-  // containing the requested sub-pages.
+  // On success, the return value is a serialized proto of
+  // |GetSettingsUiResponse| when `include_header` is true; otherwisse, the
+  // return value is a serialized proto of |SettingsUi|, containing the
+  // requested sub-pages.
   // On failure, the return value is the empty string.
-  GetSettings(string selector) => (string result);
+  GetSettings(string selector, bool include_header) => (string result);
 
   // Update settings. |update| is a serialized proto of |SettingsUiUpdate|,
   // indicating the newly updated values.
@@ -49,4 +51,3 @@ struct AuthenticationToken {
   string gaia_id;
   string access_token;
 };
-

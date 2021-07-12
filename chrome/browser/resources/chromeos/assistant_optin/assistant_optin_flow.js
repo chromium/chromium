@@ -136,6 +136,7 @@ Polymer({
     data['flowType'] = this.flowType;
     this.$.valueProp.reloadContent(data);
     this.$.relatedInfo.reloadContent(data);
+    this.$.voiceMatch.reloadContent(data);
     this.$.thirdParty.reloadContent(data);
     this.$.getMore.reloadContent(data);
   },

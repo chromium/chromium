@@ -58,10 +58,15 @@ Polymer({
      */
     isMinorMode_: {
       type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isMinorMode') &&
-            loadTimeData.getBoolean('isMinorMode');
-      }
+      value: false,
+    },
+
+    /**
+     * Indicates whether to use same design for accept/decline buttons.
+     */
+    equalWeightButtons_: {
+      type: Boolean,
+      value: false,
     },
 
     /**
@@ -300,6 +305,7 @@ Polymer({
     this.$['skip-button-text'].textContent = data['valuePropSkipButton'];
     this.$['footer-text'].innerHTML =
         this.sanitizer_.sanitizeHtml(data['valuePropFooter']);
+    this.equalWeightButtons_ = data['equalWeightButtons'];
 
     this.consentStringLoaded_ = true;
     if (this.settingZippyLoaded_) {
@@ -326,6 +332,9 @@ Polymer({
 
     // `zippy_data` contains a list of lists, where each list contains the
     // setting zippys that should be shown on the same screen.
+    // `isMinorMode` is the same for all data in `zippy_data`. We could use the
+    // first one and set `isMinorMode_` flag.
+    this.isMinorMode_ = zippy_data[0][0]['isMinorMode'];
     for (var i in zippy_data) {
       for (var j in zippy_data[i]) {
         var data = zippy_data[i][j];
