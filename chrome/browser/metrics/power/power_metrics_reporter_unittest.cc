@@ -174,7 +174,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       base::TimeDelta::FromSeconds(++fake_value);
   fake_interval_data.time_with_open_webrtc_connection =
       base::TimeDelta::FromSeconds(++fake_value);
-  fake_interval_data.source_id_for_longest_visible_origin = ++fake_value;
+  fake_interval_data.source_id_for_longest_visible_origin =
+      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   fake_interval_data.source_id_for_longest_visible_origin_duration =
       base::TimeDelta::FromSeconds(++fake_value);
   fake_interval_data.time_playing_video_in_visible_tab =
@@ -296,8 +297,10 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
+  const ukm::SourceId kTestSourceId =
+      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   UsageScenarioDataStore::IntervalData fake_interval_data = {};
-  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  fake_interval_data.source_id_for_longest_visible_origin = kTestSourceId;
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.50, true, base::TimeTicks::Now()});
@@ -322,7 +325,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
   EXPECT_EQ(1u, entries.size());
 
-  EXPECT_EQ(entries[0]->source_id, 42);
+  EXPECT_EQ(entries[0]->source_id, kTestSourceId);
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBrowserShuttingDownName, true);
 }
@@ -339,7 +342,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
       1, 1, 1.0, /* on_battery - */ false, base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
-  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  fake_interval_data.source_id_for_longest_visible_origin =
+      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
@@ -368,7 +372,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
       1, 1, 1.0, /* on_battery - */ false, base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
-  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  fake_interval_data.source_id_for_longest_visible_origin =
+      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
@@ -396,7 +401,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
       1, 1, absl::nullopt, true, base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
-  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  fake_interval_data.source_id_for_longest_visible_origin =
+      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
@@ -425,7 +431,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
       0, 0, 1.0, false, base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
-  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  fake_interval_data.source_id_for_longest_visible_origin =
+      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
@@ -456,7 +463,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
       1, 1, 1.0, true, base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
-  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  fake_interval_data.source_id_for_longest_visible_origin =
+      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
