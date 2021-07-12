@@ -1010,19 +1010,18 @@ TEST_F(HistoryBackendDBTest, ConfirmDownloadRowCreateAndDelete) {
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     sql::Statement statement(db.GetUniqueStatement(
         "Select Count(*) from downloads"));
-    EXPECT_TRUE(statement.Step());
+    ASSERT_TRUE(statement.Step());
     EXPECT_EQ(3, statement.ColumnInt(0));
 
     sql::Statement statement1(db.GetUniqueStatement(
         "Select Count(*) from downloads_url_chains"));
-    EXPECT_TRUE(statement1.Step());
+    ASSERT_TRUE(statement1.Step());
     EXPECT_EQ(3, statement1.ColumnInt(0));
 
     sql::Statement statement2(db.GetUniqueStatement(
         "Select Count(*) from downloads_slices"));
-    EXPECT_TRUE(statement2.Step());
+    ASSERT_TRUE(statement2.Step());
     EXPECT_EQ(1, statement2.ColumnInt(0));
-    EXPECT_EQ(0, statement2.ColumnInt(3));
   }
 
   // Delete some rows and make sure the results are still correct.
@@ -1035,17 +1034,17 @@ TEST_F(HistoryBackendDBTest, ConfirmDownloadRowCreateAndDelete) {
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     sql::Statement statement(db.GetUniqueStatement(
         "Select Count(*) from downloads"));
-    EXPECT_TRUE(statement.Step());
+    ASSERT_TRUE(statement.Step());
     EXPECT_EQ(1, statement.ColumnInt(0));
 
     sql::Statement statement1(db.GetUniqueStatement(
         "Select Count(*) from downloads_url_chains"));
-    EXPECT_TRUE(statement1.Step());
+    ASSERT_TRUE(statement1.Step());
     EXPECT_EQ(1, statement1.ColumnInt(0));
 
     sql::Statement statement2(db.GetUniqueStatement(
         "Select Count(*) from downloads_slices"));
-    EXPECT_TRUE(statement2.Step());
+    ASSERT_TRUE(statement2.Step());
     EXPECT_EQ(0, statement2.ColumnInt(0));
   }
 }
@@ -1748,9 +1747,9 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
   {
     sql::Statement s(
         db.GetUniqueStatement("SELECT publicly_routable FROM visits"));
-    EXPECT_TRUE(s.Step());
+    ASSERT_TRUE(s.Step());
 
-    EXPECT_FALSE(s.ColumnBool(1));
+    EXPECT_FALSE(s.ColumnBool(0));
     EXPECT_FALSE(s.Step());
   }
 
