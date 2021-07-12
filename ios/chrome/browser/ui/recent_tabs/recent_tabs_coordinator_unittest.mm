@@ -120,6 +120,10 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
+    test_cbs_builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     test_cbs_builder.AddTestingFactory(

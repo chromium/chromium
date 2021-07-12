@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -220,7 +221,39 @@ class SigninPromoViewMediatorTest : public PlatformTest {
       SigninPromoViewConfigurator* configurator) {
     EXPECT_NE(nil, configurator);
     ExpectSigninWithAccountConfiguration();
-    OCMExpect([close_button_ setHidden:YES]);
+    OCMExpect([close_button_ setHidden:close_button_hidden_]);
+    [configurator configureSigninPromoView:signin_promo_view_];
+    EXPECT_NE(nil, image_view_profile_image_);
+  }
+
+  // Expects the sync promo view to be configured
+  void ExpectSyncPromoConfiguration() {
+    OCMExpect(
+        [signin_promo_view_ setMode:SigninPromoViewModeSyncWithPrimaryAccount]);
+    OCMExpect([signin_promo_view_
+        setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
+          image_view_profile_image_ = value;
+          return YES;
+        }]]);
+    NSString* name = expected_default_identity_.userGivenName.length
+                         ? expected_default_identity_.userGivenName
+                         : expected_default_identity_.userEmail;
+    std::u16string name16 = SysNSStringToUTF16(name);
+    NSString* accessibilityLabel =
+        GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
+    OCMExpect([signin_promo_view_ setAccessibilityLabel:accessibilityLabel]);
+    OCMExpect([primary_button_
+        setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
+        forState:UIControlStateNormal]);
+    image_view_profile_image_ = nil;
+  }
+
+  // Checks a configurator with accounts on the device.
+  void CheckSyncPromoWithAccountConfigurator(
+      SigninPromoViewConfigurator* configurator) {
+    EXPECT_NE(nil, configurator);
+    ExpectSyncPromoConfiguration();
+    OCMExpect([close_button_ setHidden:close_button_hidden_]);
     [configurator configureSigninPromoView:signin_promo_view_];
     EXPECT_NE(nil, image_view_profile_image_);
   }
@@ -442,17 +475,24 @@ TEST_F(SigninPromoViewMediatorTest,
 // Tests that the default identity is the primary account, when the user is
 // signed in.
 TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
+  base::test::ScopedFeatureList consistency_feature_list;
+  consistency_feature_list.InitAndEnableFeature(
+      signin::kMobileIdentityConsistency);
   AddDefaultIdentity();
-  ChromeIdentity* signed_in_identity =
+  expected_default_identity_ =
       [FakeChromeIdentity identityWithEmail:@"johndoe2@example.com"
                                      gaiaID:@"2"
                                        name:@"johndoe2"];
-  GetAuthenticationService()->SignIn(signed_in_identity);
+  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(
+      expected_default_identity_);
+  GetAuthenticationService()->SignIn(expected_default_identity_);
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  OCMStub([consumer_ configureSigninPromoWithConfigurator:[OCMArg any]
-                                          identityChanged:NO]);
+  ExpectConfiguratorNotification(NO /* identity changed */);
   [mediator_ signinPromoViewIsVisible];
-  EXPECT_EQ(signed_in_identity, mediator_.identity);
+  EXPECT_EQ(expected_default_identity_, mediator_.identity);
+  EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
+                  ->WaitForServiceCallbacksToComplete());
+  CheckSyncPromoWithAccountConfigurator(configurator_);
 }
 
 }  // namespace

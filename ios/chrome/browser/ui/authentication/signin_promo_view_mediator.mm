@@ -439,6 +439,22 @@ const char* AlreadySeenSigninViewPreferenceKey(
 - (SigninPromoViewConfigurator*)createConfigurator {
   BOOL hasCloseButton =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint) != nullptr;
+  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    if (!self.identity) {
+      // TODO(crbug.com/1227708): The default identity should already be known
+      // by the mediator. We should not have no identity. This can be reproduced
+      // with EGtests with bots. The identity notification might not have
+      // received yet. Let's update the promo identity.
+      [self identityListChanged];
+    }
+    DCHECK(self.identity);
+    return [[SigninPromoViewConfigurator alloc]
+        initWithSigninPromoViewMode:SigninPromoViewModeSyncWithPrimaryAccount
+                          userEmail:self.identity.userEmail
+                      userGivenName:self.identity.userGivenName
+                          userImage:self.identityAvatar
+                     hasCloseButton:hasCloseButton];
+  }
   if (self.identity) {
     return [[SigninPromoViewConfigurator alloc]
         initWithSigninPromoViewMode:SigninPromoViewModeSigninWithAccount
