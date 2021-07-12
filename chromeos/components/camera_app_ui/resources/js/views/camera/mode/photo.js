@@ -247,22 +247,10 @@ export class Photo extends ModeBase {
 }
 
 /**
- * Factory for creating photo mode capture object.
+ * Base factory for photo related modes.
+ * @abstract
  */
-export class PhotoFactory extends ModeFactory {
-  /**
-   * @param {!PhotoHandler} handler
-   */
-  constructor(handler) {
-    super();
-
-    /**
-     * @const {!PhotoHandler}
-     * @protected
-     */
-    this.handler_ = handler;
-  }
-
+export class PhotoBaseFactory extends ModeFactory {
   /**
    * @override
    */
@@ -276,6 +264,24 @@ export class PhotoFactory extends ModeFactory {
       await deviceOperator.setStillCaptureResolution(
           deviceId, assertInstanceof(this.captureResolution_, Resolution));
     }
+  }
+}
+
+/**
+ * Factory for creating photo mode capture object.
+ */
+export class PhotoFactory extends PhotoBaseFactory {
+  /**
+   * @param {!PhotoHandler} handler
+   */
+  constructor(handler) {
+    super();
+
+    /**
+     * @const {!PhotoHandler}
+     * @protected
+     */
+    this.handler_ = handler;
   }
 
   /**

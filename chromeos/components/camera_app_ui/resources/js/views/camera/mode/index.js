@@ -32,6 +32,10 @@ import {
   PhotoHandler,  // eslint-disable-line no-unused-vars
 } from './photo.js';
 import {PortraitFactory} from './portrait.js';
+import {
+  ScannerFactory,
+  ScannerHandler,  // eslint-disable-line no-unused-vars
+} from './scanner.js';
 import {SquareFactory} from './square.js';
 import {
   VideoFactory,
@@ -39,6 +43,7 @@ import {
 } from './video.js';
 
 export {PhotoHandler, PhotoResult} from './photo.js';
+export {ScannerHandler} from './scanner.js';
 export {setAvc1Parameters, Video, VideoHandler, VideoResult} from './video.js';
 
 /**
@@ -100,7 +105,7 @@ class ModeConfig {
    * @return {!Mode}
    * @abstract
    */
-  get nextMode() {}
+  get fallbackMode() {}
 
   /* eslint-enable getter-return */
 }
@@ -118,10 +123,11 @@ export class Modes {
    * @param {!DoSwitchMode} doSwitchMode
    * @param {!PhotoHandler} photoHandler
    * @param {!VideoHandler} videoHandler
+   * @param {!ScannerHandler} scannerHandler
    */
   constructor(
       defaultMode, photoPreferrer, videoPreferrer, doSwitchMode, photoHandler,
-      videoHandler) {
+      videoHandler, scannerHandler) {
     /**
      * @type {!DoSwitchMode}
      * @private
@@ -191,7 +197,7 @@ export class Modes {
         constraintsPreferrer: videoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, true),
-        nextMode: Mode.PHOTO,
+        fallbackMode: Mode.PHOTO,
       },
       [Mode.PHOTO]: {
         captureFactory: new PhotoFactory(photoHandler),
@@ -200,7 +206,7 @@ export class Modes {
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
-        nextMode: Mode.SQUARE,
+        fallbackMode: Mode.SQUARE,
       },
       [Mode.SQUARE]: {
         captureFactory: new SquareFactory(photoHandler),
@@ -209,7 +215,7 @@ export class Modes {
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
-        nextMode: Mode.PHOTO,
+        fallbackMode: Mode.PHOTO,
       },
       [Mode.PORTRAIT]: {
         captureFactory: new PortraitFactory(photoHandler),
@@ -227,7 +233,17 @@ export class Modes {
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
-        nextMode: Mode.PHOTO,
+        fallbackMode: Mode.PHOTO,
+      },
+      [Mode.SCANNER]: {
+        captureFactory: new ScannerFactory(scannerHandler),
+        isSupported: async (deviceId) =>
+            state.get(state.State.SHOW_SCANNER_MODE),
+        isSupportPTZ: checkSupportPTZForPhotoMode,
+        constraintsPreferrer: photoPreferrer,
+        getConstraintsForFakeCamera:
+            getConstraintsForFakeCamera.bind(this, false),
+        fallbackMode: Mode.PHOTO,
       },
     };
 
@@ -301,7 +317,7 @@ export class Modes {
     while (!tried[mode]) {
       tried[mode] = true;
       results.push(mode);
-      mode = this.allModes_[mode].nextMode;
+      mode = this.allModes_[mode].fallbackMode;
     }
     return results;
   }

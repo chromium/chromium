@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import * as barcodeChip from '../../barcode_chip.js';
 import {assert, assertInstanceof} from '../../chrome_util.js';
 import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
 import {FaceOverlay} from '../../face.js';
-import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
@@ -15,7 +13,6 @@ import {
   ErrorLevel,
   ErrorType,
   Facing,
-  Mode,
   Resolution,
 } from '../../type.js';
 import * as util from '../../util.js';
@@ -79,12 +76,6 @@ export class Preview {
     this.focus_ = null;
 
     /**
-     * @type {?BarcodeScanner}
-     * @private
-     */
-    this.scanner_ = null;
-
-    /**
      * @type {!Facing}
      * @private
      */
@@ -102,9 +93,6 @@ export class Preview {
 
     [state.State.EXPERT, state.State.SHOW_METADATA].forEach((s) => {
       state.addObserver(s, this.updateShowMetadata_.bind(this));
-    });
-    [state.State.EXPERT, state.State.SCAN_BARCODE].forEach((s) => {
-      state.addObserver(s, this.updateScanBarcode_.bind(this));
     });
   }
 
@@ -247,10 +235,6 @@ export class Preview {
         }
       }, 100);
       await this.updateFacing_();
-      this.scanner_ = new BarcodeScanner(this.video_, (value) => {
-        barcodeChip.show(value);
-      });
-      this.updateScanBarcode_();
       this.updateShowMetadata_();
 
       const deviceOperator = await DeviceOperator.getInstance();
@@ -299,27 +283,7 @@ export class Preview {
       }
       this.stream_ = null;
     }
-    if (this.scanner_ !== null) {
-      this.scanner_.stop();
-      this.scanner_ = null;
-    }
     state.set(state.State.STREAMING, false);
-  }
-
-  /**
-   * Checks whether to scan barcode on preview or not.
-   * @private
-   */
-  updateScanBarcode_() {
-    if (this.scanner_ === null) {
-      return;
-    }
-    if (state.get(Mode.PHOTO) && state.get(state.State.SCAN_BARCODE)) {
-      this.scanner_.start();
-    } else {
-      this.scanner_.stop();
-      barcodeChip.dismiss();
-    }
   }
 
   /**

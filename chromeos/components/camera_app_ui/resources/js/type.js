@@ -95,6 +95,7 @@ export const Mode = {
   VIDEO: 'video',
   SQUARE: 'square',
   PORTRAIT: 'portrait',
+  SCANNER: 'scanner',
 };
 
 /**

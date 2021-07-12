@@ -178,12 +178,13 @@ export class App {
         }
       });
       if (element.dataset['state'] !== undefined) {
-        state.addObserver(
-            state.assertState(element.dataset['state']), (value) => {
-              if (value !== element.checked) {
-                util.toggleChecked(element, value);
-              }
-            });
+        const s = state.assertState(element.dataset['state']);
+        state.addObserver(s, (value) => {
+          if (value !== element.checked) {
+            util.toggleChecked(element, value);
+          }
+        });
+        state.set(s, element.checked);
       }
       if (element.dataset['key'] !== undefined) {
         // Restore the previously saved state on startup.

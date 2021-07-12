@@ -532,7 +532,6 @@ body.video.taking #recordvideo {
 }
 
 body:not(.video) #toggle-mic,
-body:not(.photo) #toggle-barcode,
 body:not(.multi-camera) #switch-device {
   visibility: hidden;
 }
@@ -681,16 +680,6 @@ body.timer-10s #toggle-timer:checked {
 
 #toggle-mic {
   background-image: url(/images/camera_button_mic_off.svg);
-}
-
-#toggle-barcode:checked {
-  background: url(/images/barcode_toggle_on.svg) center no-repeat,
-              rgba(var(--blue-300-rgb), 0.3);
-}
-
-#toggle-barcode {
-  background-image: url(/images/barcode_toggle_off.svg);
-  border-radius: 50%;
 }
 
 body:not(.multi-fps) #toggle-fps,
@@ -940,7 +929,6 @@ body:not(.streaming) #open-settings,
 body:not(.streaming) #options-group,
 body:not(.streaming) #preview-focus,
 body:not(.streaming) #preview-grid,
-body:not(.streaming) #toggle-barcode,
 body:not(.streaming) #toggle-mic {
   visibility: hidden;
 }
@@ -1525,224 +1513,6 @@ body.tab-navigation .dialog-buttons button:focus::after {
 
 body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   visibility: visible;
-}
-
-/* The container of scan box for layout and positioning. */
-.barcode-scan-box {
-  --border-distance: 8px;
-  --border-width: 4px;
-  --inner-border-radius: 16px;
-  opacity: 0;
-  /* Use padding-top instead of height to make a responsive square, since the
-   * percentage in padding-top is relative to the width of the containing
-   * block. */
-  padding-top: calc(100% / 2);
-  transition: all var(--exit-easing) var(--moderate1-duration);
-  visibility: hidden;
-  width: calc(100% / 2);
-}
-
-body.photo.scan-barcode .barcode-scan-box {
-  opacity: 1;
-  padding-top: calc(100% / 3);
-  transition: all var(--enter-easing) var(--moderate1-duration);
-  visibility: visible;
-  width: calc(100% / 3);
-}
-
-/* The inner scan box with a translucent overlay. */
-.barcode-scan-box::before {
-  --offset: calc(var(--border-width) + var(--border-distance));
-  border-radius: var(--inner-border-radius);
-  bottom: var(--offset);
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-  content: '';
-  left: var(--offset);
-  position: absolute;
-  right: var(--offset);
-  top: var(--offset);
-  z-index: -1;  /* This need to be lower than the corner borders */
-}
-
-/* The corner borders of the scan box. */
-.barcode-scan-box::after {
-  -webkit-mask: url(/images/barcode_scan_box_border_mask.svg);
-  border: var(--border-width) solid white;
-  border-radius: calc(var(--inner-border-radius) + var(--border-distance));
-  box-sizing: border-box;
-  content: '';
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
-
-/* TODO(b/172879638): Tune the position and layout after we finalized the
- * responsive window design. */
-.barcode-chip-container {
-  --chip-height: 32px;
-  --chip-max-width: 420px;
-  --min-scanbox-distance: 40px;
-  --text-expand-button-height: 40px;
-  --text-line-height: 24px;
-  --text-padding-vertical: 8px;
-  /* Avoid collision with scan-box and preview-box */
-  --top: max(8px, min(10%, 33.33% - var(--text-line-height) -
-      var(--text-expand-button-height) - 2 * var(--text-padding-vertical) -
-      var(--min-scanbox-distance)));
-
-  left: 50%;
-  max-width: min(80%, var(--chip-max-width));
-  opacity: 1;
-  pointer-events: auto;
-  position: absolute;
-  top: var(--top);
-  transform: translateX(-50%);
-  transition: opacity var(--fast2-duration) linear,
-              top var(--fast2-duration) var(--standard-easing);
-  z-index: 50;
-}
-
-.barcode-chip-container.invisible {
-  opacity: 0;
-  top: calc(var(--top) + 2px);
-  transition: opacity var(--fast2-duration) linear,
-              top var(--fast2-duration) var(--standard-easing),
-              visibility 0s var(--fast2-duration);
-}
-
-.barcode-chip-url {
-  align-items: center;
-  background: var(--grey-900);
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
-  box-sizing: border-box;
-  display: flex;
-  font: 400 15px Roboto;
-  height: var(--chip-height);
-  padding: 8px;
-}
-
-.barcode-chip-url::before {
-  background: url(/images/barcode_url.svg) no-repeat;
-  content: '';
-  display: inline-block;
-  flex-shrink: 0;
-  height: 20px;
-  margin-inline-end: 6px;
-  vertical-align: middle;
-  width: 20px;
-}
-
-.barcode-chip-url > a {
-  color: var(--blue-300);
-  overflow: hidden;
-  text-decoration: none;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.barcode-chip-url > a:focus {
-  outline: none;
-}
-
-.barcode-copy-button:hover {
-  /* TODO(b/172879638): Tweak color according to the final UX spec */
-  background: url(/images/barcode_copy.svg) center no-repeat, rgb(50, 51, 54);
-}
-
-.barcode-copy-button {
-  background: url(/images/barcode_copy.svg) center no-repeat, var(--grey-900);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  height: var(--chip-height);
-  inset-inline-start: calc(100% + 8px);
-  position: absolute;
-  top: 0;
-  width: var(--chip-height);
-  z-index: 50;
-}
-
-.barcode-chip-text {
-  align-items: center;
-  background: var(--grey-900);
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  font: 400 15px Roboto;
-  padding: var(--text-padding-vertical) 20px;
-}
-
-#barcode-chip-text-content {
-  color: var(--grey-200);
-  line-height: var(--text-line-height);
-  max-width: 100%;
-  overflow: hidden;
-  text-decoration: none;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.expanded #barcode-chip-text-content {
-  /* TODO(b/172879638): Make this responsive */
-  max-height: calc(var(--text-line-height) * 10);
-  white-space: normal;
-  /* Keep the same width as before to avoid text jumping. */
-  width: var(--chip-max-width);
-}
-
-#barcode-chip-text-expand {
-  background: url(/images/barcode_chevron_down.svg) center no-repeat;
-  height: var(--text-expand-button-height);
-  width: 100%;
-}
-
-.expanded #barcode-chip-text-expand {
-  background: url(/images/barcode_chevron_up.svg) center no-repeat;
-}
-
-.snackbar {
-  align-items: center;
-  background: var(--grey-900);
-  border-radius: 4px;
-  bottom: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
-  box-sizing: border-box;
-  color: var(--grey-200);
-  display: flex;
-  font-family: Roboto;
-  font-size: 13px;
-  height: 48px;
-  left: 4px;
-  opacity: 0;
-  padding: 14px 16px;
-  position: absolute;
-  width: 256px;
-  z-index: 50;
-}
-
-.snackbar.animate {
-  animation: 3s show-snackbar linear;
-}
-
-@keyframes show-snackbar {
-  0% {
-    opacity: 0;
-  }
-  /* 100ms fade-in */
-  3.33% {
-    opacity: 1;
-  }
-  97.33% {
-    opacity: 1;
-  }
-  /* 80ms fade-out */
-  100% {
-    opacity: 0;
-  }
 }
 
 .hidden {

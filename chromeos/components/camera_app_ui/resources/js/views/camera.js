@@ -45,13 +45,15 @@ import {windowController} from '../window_controller.js';
 import {Layout} from './camera/layout.js';
 import {
   Modes,
-  PhotoHandler,  // eslint-disable-line no-unused-vars
+  PhotoHandler,    // eslint-disable-line no-unused-vars
+  ScannerHandler,  // eslint-disable-line no-unused-vars
   setAvc1Parameters,
   Video,
   VideoHandler,  // eslint-disable-line no-unused-vars
 } from './camera/mode/index.js';
 import {Options} from './camera/options.js';
 import {Preview} from './camera/preview.js';
+import {ScannerOptions} from './camera/scanner_options.js';
 import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {PTZPanel} from './ptz_panel.js';
@@ -76,6 +78,7 @@ class CameraSuspendedError extends Error {
  * Camera-view controller.
  * @implements {VideoHandler}
  * @implements {PhotoHandler}
+ * @implements {ScannerHandler}
  */
 export class Camera extends View {
   /**
@@ -124,6 +127,13 @@ export class Camera extends View {
      * @private
      */
     this.layout_ = new Layout();
+
+    /**
+     * @type {!ScannerOptions}
+     * @private
+     */
+    this.scannerOptions_ =
+        new ScannerOptions(this.start.bind(this), this.infoUpdater_);
 
     /**
      * Video preview for the camera.
@@ -183,7 +193,7 @@ export class Camera extends View {
      */
     this.modes_ = new Modes(
         this.defaultMode_, photoPreferrer, videoPreferrer,
-        this.start.bind(this), this, this);
+        this.start.bind(this), this, this, this);
 
     /**
      * @type {!Facing}
@@ -446,7 +456,6 @@ export class Camera extends View {
         state.State.PLATFORM_SUPPORT_SCAN_DOCUMENT,
         await helper.isDocumentModeSupported());
   }
-
 
   /**
    * @param {function(): *} listener
@@ -774,6 +783,7 @@ export class Camera extends View {
           await this.modes_.updateModeSelectionUI(deviceId);
           await this.modes_.updateMode(
               mode, factory, stream, this.facingMode_, deviceId, captureR);
+          await this.scannerOptions_.initialize(this.preview_.video);
           for (const l of this.configureCompleteListener_) {
             l();
           }
@@ -882,5 +892,6 @@ export class Camera extends View {
     // mode before stopping preview to close extra stream first.
     await this.modes_.clear();
     await this.preview_.close();
+    await this.scannerOptions_.uninitialize();
   }
 }

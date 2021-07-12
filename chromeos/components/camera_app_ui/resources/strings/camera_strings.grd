@@ -446,6 +446,18 @@
       <message desc="Label for switch to take portrait (bokeh effect, background blur) photo mode button." name="IDS_LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON">
         Portrait
       </message>
+      <message desc="Label for spoken feedback to read out for switch to scanner mode button." name="IDS_SWITCH_SCANNER_MODE_BUTTON">
+        Switch to scanner mode
+      </message>
+      <message desc="Label for switch to scanner mode button for scanning QR Code or document." name="IDS_LABEL_SWITCH_SCANNER_MODE_BUTTON">
+        Scanner
+      </message>
+      <message desc="Label for scanning QR code option." name="IDS_LABEL_SCAN_QRCODE_OPTION">
+        QR Code
+      </message>
+      <message desc="Label for spoken feedback to read out for scan QR code option." name="IDS_SCAN_QRCODE_OPTION">
+        Scan QR Code
+      </message>
       <message desc="Label for the confirm button to confirm with the reviewed photo or video." name="IDS_CONFIRM_REVIEW_BUTTON">
         Confirm
       </message>

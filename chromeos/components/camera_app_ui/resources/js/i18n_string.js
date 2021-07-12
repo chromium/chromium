@@ -65,7 +65,9 @@ export const I18nString = {
   LABEL_GRID_GOLDEN: 'label_grid_golden',
   LABEL_NEW_CONTROL_TOAST: 'label_new_control_toast',
   LABEL_PHOTO_RESOLUTION: 'label_photo_resolution',
+  LABEL_SCAN_QRCODE_OPTION: 'label_scan_qrcode_option',
   LABEL_SWITCH_RECORD_VIDEO_BUTTON: 'label_switch_record_video_button',
+  LABEL_SWITCH_SCANNER_MODE_BUTTON: 'label_switch_scanner_mode_button',
   LABEL_SWITCH_TAKE_PHOTO_BUTTON: 'label_switch_take_photo_button',
   LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON:
       'label_switch_take_portrait_bokeh_photo_button',
@@ -89,6 +91,7 @@ export const I18nString = {
   RECORD_VIDEO_RESUME_BUTTON: 'record_video_resume_button',
   RECORD_VIDEO_START_BUTTON: 'record_video_start_button',
   RECORD_VIDEO_STOP_BUTTON: 'record_video_stop_button',
+  SCAN_QRCODE_OPTION: 'scan_qrcode_option',
   SETTINGS_BUTTON: 'settings_button',
   SNACKBAR_LINK_COPIED: 'snackbar_link_copied',
   SNACKBAR_TEXT_COPIED: 'snackbar_text_copied',
@@ -98,6 +101,7 @@ export const I18nString = {
   STATUS_MSG_RECORDING_STOPPED: 'status_msg_recording_stopped',
   SWITCH_CAMERA_BUTTON: 'switch_camera_button',
   SWITCH_RECORD_VIDEO_BUTTON: 'switch_record_video_button',
+  SWITCH_SCANNER_MODE_BUTTON: 'switch_scanner_mode_button',
   SWITCH_TAKE_PHOTO_BUTTON: 'switch_take_photo_button',
   SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON:
       'switch_take_portrait_bokeh_photo_button',
