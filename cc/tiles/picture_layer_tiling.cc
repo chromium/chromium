@@ -309,6 +309,8 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
 
 Tile::CreateInfo PictureLayerTiling::CreateInfoForTile(int i, int j) const {
   gfx::Rect tile_rect = tiling_data_.TileBoundsWithBorder(i, j);
+  recordreplay::Assert("PictureLayerTiling::CreateInfoForTile %d %d %d %d %d %d",
+                       i, j, tile_rect.x(), tile_rect.y(), tile_rect.width(), tile_rect.height());
   tile_rect.set_size(tiling_data_.max_texture_size());
   gfx::Rect enclosing_layer_rect =
       EnclosingLayerRectFromContentsRect(tile_rect);
