@@ -4901,7 +4901,7 @@ crbug.com/1207342 http/tests/devtools/console/console-api-on-call-frame.js [ Pas
 crbug.com/1207342 http/tests/devtools/console/worker-eval-contains-stack.js [ Pass Failure ]
 crbug.com/1207342 http/tests/devtools/console/nested-worker-eval-contains-stack.js [ Pass Failure ]
 crbug.com/1207342 http/tests/devtools/console/console-error-on-call-frame.js [ Pass Failure ]
-crbug.com/1207342 http/tests/devtools/console/console-context-selector.js [ Pass Failure ]
+crbug.com/1207342 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Failure Timeout ]
 crbug.com/1207342 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Pass Failure ]
 crbug.com/1207342 http/tests/devtools/compiler-source-mapping-debug.js [ Pass Failure ]
 crbug.com/1207342 http/tests/devtools/network/parse-form-data.js [ Pass Failure ]
