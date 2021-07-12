@@ -804,6 +804,7 @@ class DeviceLocalAccountPolicyProviderTest
   SchemaRegistry schema_registry_;
   std::unique_ptr<DeviceLocalAccountPolicyProvider> provider_;
   MockConfigurationPolicyObserver provider_observer_;
+  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_helper_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyProviderTest);
@@ -821,6 +822,9 @@ void DeviceLocalAccountPolicyProviderTest::SetUp() {
       service_.get(), false /*force_immediate_load*/);
   provider_->Init(&schema_registry_);
   provider_->AddObserver(&provider_observer_);
+  cros_settings_helper_ = std::make_unique<ash::ScopedCrosSettingsTestHelper>(
+      false /*create_service*/);
+  cros_settings_helper_->ReplaceDeviceSettingsProviderWithStub();
 
   // Values implicitly enforced for public accounts.
   expected_policy_map_.Set(
@@ -839,6 +843,7 @@ void DeviceLocalAccountPolicyProviderTest::TearDown() {
   provider_->RemoveObserver(&provider_observer_);
   provider_->Shutdown();
   provider_.reset();
+  cros_settings_helper_.reset();
   DeviceLocalAccountPolicyServiceTestBase::TearDown();
 }
 
@@ -1016,6 +1021,129 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, RefreshPolicies) {
   EXPECT_FALSE(job.IsActive());
   FlushDeviceSettings();
   Mock::VerifyAndClearExpectations(&provider_observer_);
+}
+
+TEST_F(DeviceLocalAccountPolicyProviderTest,
+       RestrictedManagedGuestSessionEnabled) {
+  EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
+      .Times(AtLeast(1));
+  InstallDeviceLocalAccountPolicy(kAccount1);
+  AddDeviceLocalAccountToPolicy(kAccount1);
+  InstallDevicePolicy();
+  Mock::VerifyAndClearExpectations(&provider_observer_);
+  DeviceLocalAccountPolicyBroker* broker =
+      service_->GetBrokerForUser(account_1_user_id_);
+  ASSERT_TRUE(broker);
+
+  // Disabled RestrictedManagedGuestSessionEnabled policy does not
+  // change other policy values.
+  EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
+      .Times(AtLeast(1));
+  cros_settings_helper_->SetBoolean(
+      chromeos::kRestrictedManagedGuestSessionEnabled, false);
+  InstallDeviceLocalAccountPolicy(kAccount1);
+  broker->core()->store()->Load();
+  FlushDeviceSettings();
+  Mock::VerifyAndClearExpectations(&provider_observer_);
+
+  PolicyBundle expected_policy_bundle;
+  expected_policy_bundle.Get(PolicyNamespace(
+      POLICY_DOMAIN_CHROME, std::string())) = expected_policy_map_.Clone();
+  EXPECT_TRUE(expected_policy_bundle.Equals(provider_->policies()));
+
+  // Enabled RestrictedManagedGuestSessionEnabled policy overrides
+  // certain policies.
+  EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
+      .Times(AtLeast(1));
+  cros_settings_helper_->SetBoolean(
+      chromeos::kRestrictedManagedGuestSessionEnabled, true);
+  device_local_account_policy_.payload()
+      .mutable_passwordmanagerenabled()
+      ->set_value(true);
+  device_local_account_policy_.payload()
+      .mutable_allowdeletingbrowserhistory()
+      ->set_value(false);
+  device_local_account_policy_.payload().mutable_arcenabled()->set_value(true);
+  InstallDeviceLocalAccountPolicy(kAccount1);
+  broker->core()->store()->Load();
+  FlushDeviceSettings();
+  Mock::VerifyAndClearExpectations(&provider_observer_);
+
+  PolicyMap expected_policy_map_restricted = expected_policy_map_.Clone();
+  expected_policy_map_restricted.Set(
+      key::kPasswordManagerEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kAllowDeletingBrowserHistory, POLICY_LEVEL_MANDATORY,
+      POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(true), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kArcEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kCrostiniAllowed, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kUserPluginVmAllowed, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kNetworkFileSharesAllowed, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kCACertificateManagementAllowed, POLICY_LEVEL_MANDATORY,
+      POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kClientCertificateManagementAllowed, POLICY_LEVEL_MANDATORY,
+      POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kEnableMediaRouter, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kScreenCaptureAllowed, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kKerberosEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kUserBorealisAllowed, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kDeletePrintJobHistoryAllowed, POLICY_LEVEL_MANDATORY,
+      POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(true), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kLacrosAllowed, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kLacrosSecondaryProfilesAllowed, POLICY_LEVEL_MANDATORY,
+      POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value(false), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kLacrosAvailability, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      base::Value("lacros_disallowed"), nullptr);
+
+  expected_policy_bundle.Get(
+      PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      expected_policy_map_restricted.Clone();
+  EXPECT_TRUE(expected_policy_bundle.Equals(provider_->policies()));
 }
 
 class DeviceLocalAccountPolicyProviderLoadImmediateTest

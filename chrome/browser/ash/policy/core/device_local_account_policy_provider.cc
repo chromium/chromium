@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -157,7 +158,57 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
     }
   }
 
+  bool restricted_managed_guest_session_enabled = false;
+  ash::CrosSettings::Get()->GetBoolean(
+      chromeos::kRestrictedManagedGuestSessionEnabled,
+      &restricted_managed_guest_session_enabled);
+  if (restricted_managed_guest_session_enabled) {
+    ApplyRestrictedManagedGuestSessionOverride(&chrome_policy);
+  }
+
   UpdatePolicy(std::move(bundle));
+}
+
+// Details about the restricted managed guest session and the overridden
+// policies can be found here: go/restricted-managed-guest-session.
+void DeviceLocalAccountPolicyProvider::
+    ApplyRestrictedManagedGuestSessionOverride(PolicyMap* chrome_policy) {
+  const std::pair<std::string, bool> kRestrictedModeBooleanPolicyOverrides[] = {
+      {key::kPasswordManagerEnabled, false},
+      {key::kAllowDeletingBrowserHistory, true},
+      {key::kArcEnabled, false},
+      {key::kCrostiniAllowed, false},
+      {key::kUserPluginVmAllowed, false},
+      {key::kNetworkFileSharesAllowed, false},
+      {key::kCACertificateManagementAllowed, false},
+      {key::kClientCertificateManagementAllowed, false},
+      {key::kEnableMediaRouter, false},
+      {key::kScreenCaptureAllowed, false},
+      {key::kKerberosEnabled, false},
+      {key::kUserBorealisAllowed, false},
+      {key::kDeletePrintJobHistoryAllowed, true},
+      {key::kLacrosAllowed, false},
+      {key::kLacrosSecondaryProfilesAllowed, false}};
+  const std::pair<std::string, std::string>
+      kRestrictedModeStringPolicyOverrides[] = {
+          {key::kLacrosAvailability, "lacros_disallowed"}};
+
+  for (const auto& restricted_mode_boolean_policy_override :
+       kRestrictedModeBooleanPolicyOverrides) {
+    chrome_policy->Set(
+        restricted_mode_boolean_policy_override.first, POLICY_LEVEL_MANDATORY,
+        POLICY_SCOPE_USER,
+        POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+        base::Value(restricted_mode_boolean_policy_override.second), nullptr);
+  }
+  for (const auto& restricted_mode_string_policy_override :
+       kRestrictedModeStringPolicyOverrides) {
+    chrome_policy->Set(
+        restricted_mode_string_policy_override.first, POLICY_LEVEL_MANDATORY,
+        POLICY_SCOPE_USER,
+        POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+        base::Value(restricted_mode_string_policy_override.second), nullptr);
+  }
 }
 
 }  // namespace policy

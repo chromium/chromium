@@ -65,6 +65,10 @@ class DeviceLocalAccountPolicyProvider
   // policy from the broker if available or keeping the current policy.
   void UpdateFromBroker();
 
+  // Applies the policy restrictions related to the restricted managed guest
+  // session override.
+  void ApplyRestrictedManagedGuestSessionOverride(PolicyMap* chrome_policy);
+
   const std::string user_id_;
   scoped_refptr<DeviceLocalAccountExternalDataManager> external_data_manager_;
 
