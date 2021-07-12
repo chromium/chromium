@@ -1434,6 +1434,7 @@ ci.chromium_builder(
         category = "android",
         short_name = "dbg",
     ),
+    execution_timeout = 4 * time.hour,
     cores = 8,
     main_console_view = "main",
     os = os.LINUX_BIONIC_REMOVE,
