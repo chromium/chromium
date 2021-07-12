@@ -17,7 +17,6 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -133,59 +132,6 @@ class DependentIOBuffer : public WrappedIOBuffer {
   ~DependentIOBuffer() override = default;
   scoped_refptr<IOBuffer> buffer_;
 };
-
-void LogCloseCodeForUma(uint16_t code) {
-  // From RFC6455: "The status code is an integer number between 1000 and 4999
-  // (inclusive)". In practice, any 16-bit unsigned integer may be sent. For UMA
-  // purposes, we bucket codes whose meanings are not standardised. This enum is
-  // emitted to UMA, so don't remove entries or renumber it. It's better not to
-  // add new entries at all, since it will make older records incompatible with
-  // newer records.
-  enum class BucketedCloseCode {
-    kNormalClosure = 0,            // 1000
-    kGoingAway = 1,                // 1001
-    kProtocolError = 2,            // 1002
-    kUnsupportedData = 3,          // 1003
-    kReserved = 4,                 // 1004
-    kNoStatusRcvd = 5,             // 1005
-    kAbnormalClosure = 6,          // 1006
-    kInvalidFramePayloadData = 7,  // 1007
-    kPolicyViolation = 8,          // 1008
-    kMessageTooBig = 9,            // 1009
-    kMandatoryExt = 10,            // 1010
-    kInternalError = 11,           // 1011
-    kServiceRestart = 12,          // 1012
-    kTryAgainLater = 13,           // 1013
-    kBadGateway = 14,              // 1014
-    kTlsHandshake = 15,            // 1015
-    kOther1000Range = 16,          // 1016-1999
-    k2000Range = 17,               // 2000-2999
-    k3000Range = 18,               // 3000-3999
-    k4000Range = 19,               // 4000-4999
-    kUnder1000 = 20,               // 0-999
-    k5000AndOver = 21,             // 5000-65535
-    kMaxValue = k5000AndOver
-  };
-
-  BucketedCloseCode bucketed_code;
-  if (code >= 1000 && code <= 1015) {
-    bucketed_code = static_cast<BucketedCloseCode>(code - 1000);
-  } else if (code < 1000) {
-    bucketed_code = BucketedCloseCode::kUnder1000;
-  } else if (code < 2000) {
-    bucketed_code = BucketedCloseCode::kOther1000Range;
-  } else if (code < 3000) {
-    bucketed_code = BucketedCloseCode::k2000Range;
-  } else if (code < 4000) {
-    bucketed_code = BucketedCloseCode::k3000Range;
-  } else if (code < 5000) {
-    bucketed_code = BucketedCloseCode::k4000Range;
-  } else {
-    bucketed_code = BucketedCloseCode::k5000AndOver;
-  }
-
-  base::UmaHistogramEnumeration("Net.WebSocket.CloseCode", bucketed_code);
-}
 
 }  // namespace
 
@@ -1046,7 +992,6 @@ bool WebSocketChannel::ParseClose(base::span<const char> payload,
 void WebSocketChannel::DoDropChannel(bool was_clean,
                                      uint16_t code,
                                      const std::string& reason) {
-  LogCloseCodeForUma(code);
   event_interface_->OnDropChannel(was_clean, code, reason);
 }
 
