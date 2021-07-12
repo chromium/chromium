@@ -716,6 +716,10 @@ const base::Feature kMultilingualTyping{"MultilingualTyping",
 // also making the Nearby Connections WebRTC defaults longer.
 const base::Feature kNearbyKeepAliveFix{"NearbyKeepAliveFix",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                        
+// Controls whether new Lockscreen reauth layout is shown or not.
+const base::Feature kNewLockScreenReauthLayout{
+    "NewLockScreenReauthLayout", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether new OOBE layout is shown or not.
 const base::Feature kNewOobeLayout{"NewOobeLayout",
@@ -1357,6 +1361,10 @@ bool IsNetworkingInDiagnosticsAppEnabled() {
 
 bool IsOAuthIppEnabled() {
   return base::FeatureList::IsEnabled(kEnableOAuthIpp);
+}
+
+bool IsNewLockScreenReauthLayoutEnabled() {
+  return base::FeatureList::IsEnabled(kNewLockScreenReauthLayout);
 }
 
 bool IsNewOobeLayoutEnabled() {
