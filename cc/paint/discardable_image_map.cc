@@ -358,7 +358,7 @@ void DiscardableImageMap::GetDiscardableImagesInRect(
     const gfx::Rect& rect,
     std::vector<const DrawImage*>* images) const {
   recordreplay::Assert("DiscardableImageMap::GetDiscardableImagesInRect %d %d %d %d %d",
-                       recordreplay::PointerId(this),
+                       recordreplay::PointerId((void*)this),
                        rect.x(), rect.y(), rect.width(), rect.height());
   images_rtree_.SearchRefs(rect, images);
   recordreplay::Assert("DiscardableImageMap::GetDiscardableImagesInRect Done %lu",

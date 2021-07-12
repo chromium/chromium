@@ -603,7 +603,7 @@ void SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
     animated_targets_vector.push_back(entry.key);
   }
   std::sort(animated_targets_vector.begin(), animated_targets_vector.end(),
-            recordreplay::CompareByPointerId());
+            recordreplay::CompareMemberByPointerId<Member<SVGElement>>());
 
   bool did_apply_effects = false;
   for (auto& entry : animated_targets_vector) {

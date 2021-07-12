@@ -2500,7 +2500,7 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     const Node& node,
     bool ignore_adjacent_style) const {
   recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked Start %d",
-                       recordreplay::PointerId(node));
+                       recordreplay::PointerId((void*)&node));
 
   if (node.IsShadowRoot()) {
     recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #1");
@@ -2555,7 +2555,7 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
 
 void Document::UpdateStyleAndLayoutTreeForNode(const Node* node) {
   recordreplay::Assert("Document::UpdateStyleAndLayoutTreeForNode Start %d",
-                       recordreplay::PointerId(node));
+                       recordreplay::PointerId((void*)node));
 
   DCHECK(node);
   if (!node->InActiveDocument()) {
