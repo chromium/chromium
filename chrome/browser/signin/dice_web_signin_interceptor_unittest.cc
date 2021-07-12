@@ -176,20 +176,9 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     EXPECT_TRUE(interceptor()->is_interception_in_progress());
   }
 
- protected:
-  virtual void InitFeatures() {
-    InitWithEnabledFeatures({kDiceWebSigninInterceptionFeature});
-  }
-
-  void InitWithEnabledFeatures(
-      const std::vector<base::Feature>& enabled_features) {
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
-
  private:
   // testing::Test:
   void SetUp() override {
-    InitFeatures();
     BrowserWithTestWindowTest::SetUp();
 
     identity_test_env_profile_adaptor_ =
@@ -224,7 +213,6 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     return factories;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
@@ -385,11 +373,12 @@ TEST_F(DiceWebSigninInterceptorTest,
 }
 
 class DiceWebSigninInterceptorReauthTest : public DiceWebSigninInterceptorTest {
- protected:
-  void InitFeatures() override {
-    InitWithEnabledFeatures(
-        {kDiceWebSigninInterceptionFeature, kAccountPoliciesLoadedWithoutSync});
-  }
+ public:
+  DiceWebSigninInterceptorReauthTest()
+      : feature_list_(kAccountPoliciesLoadedWithoutSync) {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(DiceWebSigninInterceptorReauthTest,
@@ -788,110 +777,6 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineSwitchRepeatedly_NoLimit) {
         "Signin.Intercept.HeuristicOutcome",
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch, i + 1);
   }
-}
-
-TEST_F(DiceWebSigninInterceptorTest,
-       DeclineSwitchRepeatedly_LimitedByExperiment) {
-  const int kMaxProfileSwitchDeclinedCount = 3;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kDiceWebSigninInterceptionFeature,
-      {{"max_profile_switch_declined_count",
-        base::NumberToString(kMaxProfileSwitchDeclinedCount)}});
-
-  base::HistogramTester histogram_tester;
-  // Setup for profile switch interception.
-  std::string email = "bob@example.com";
-  AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
-  Profile* profile_2 = CreateTestingProfile("Profile 2");
-  ProfileAttributesEntry* entry =
-      profile_attributes_storage()->GetProfileAttributesWithPath(
-          profile_2->GetPath());
-  ASSERT_NE(entry, nullptr);
-  entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(email),
-                     /*is_consented_primary_account=*/false);
-
-  // Decline the interception kMaxProfileSwitchDeclinedCount times.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
-      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-      account_info, AccountInfo(), SkColor()};
-  for (int i = 0; i < kMaxProfileSwitchDeclinedCount; ++i) {
-    EXPECT_CALL(*mock_delegate(),
-                ShowSigninInterceptionBubble(
-                    web_contents(), MatchBubbleParameters(expected_parameters),
-                    testing::_))
-        .WillOnce(testing::WithArg<2>(testing::Invoke(
-            [](base::OnceCallback<void(SigninInterceptionResult)> callback) {
-              std::move(callback).Run(SigninInterceptionResult::kDeclined);
-              return nullptr;
-            })));
-    MaybeIntercept(account_info.account_id);
-    EXPECT_EQ(interceptor()->is_interception_in_progress(), false);
-    histogram_tester.ExpectUniqueSample(
-        "Signin.Intercept.HeuristicOutcome",
-        SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch, i + 1);
-  }
-
-  // Next time the interception is not shown again.
-  MaybeIntercept(account_info.account_id);
-  EXPECT_EQ(interceptor()->is_interception_in_progress(), false);
-  histogram_tester.ExpectBucketCount(
-      "Signin.Intercept.HeuristicOutcome",
-      SigninInterceptionHeuristicOutcome::kAbortUserDeclinedProfileForAccount,
-      1);
-
-  // Another account can still be intercepted.
-  account_info.email = "oscar@example.com";
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
-  Profile* profile_3 = CreateTestingProfile("Profile 3");
-  ProfileAttributesEntry* entry_2 =
-      profile_attributes_storage()->GetProfileAttributesWithPath(
-          profile_3->GetPath());
-  ASSERT_NE(entry_2, nullptr);
-  entry_2->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(account_info.email),
-                       /*is_consented_primary_account=*/false);
-
-  expected_parameters = {
-      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-      account_info, AccountInfo(), SkColor()};
-  EXPECT_CALL(*mock_delegate(),
-              ShowSigninInterceptionBubble(
-                  web_contents(), MatchBubbleParameters(expected_parameters),
-                  testing::_));
-  MaybeIntercept(account_info.account_id);
-  histogram_tester.ExpectBucketCount(
-      "Signin.Intercept.HeuristicOutcome",
-      SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch,
-      kMaxProfileSwitchDeclinedCount + 1);
-  EXPECT_EQ(interceptor()->is_interception_in_progress(), true);
-}
-
-TEST_F(DiceWebSigninInterceptorTest,
-       DeclineSwitchRepeatedly_DisabledByExperiment) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kDiceWebSigninInterceptionFeature,
-      {{"max_profile_switch_declined_count", "0"}});
-
-  base::HistogramTester histogram_tester;
-  // Setup for profile switch interception.
-  std::string email = "bob@example.com";
-  AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
-  Profile* profile_2 = CreateTestingProfile("Profile 2");
-  ProfileAttributesEntry* entry =
-      profile_attributes_storage()->GetProfileAttributesWithPath(
-          profile_2->GetPath());
-  ASSERT_NE(entry, nullptr);
-  entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(email),
-                     /*is_consented_primary_account=*/false);
-
-  // The interception is not shown even at first attempt.
-  MaybeIntercept(account_info.account_id);
-  EXPECT_EQ(interceptor()->is_interception_in_progress(), false);
-  histogram_tester.ExpectBucketCount(
-      "Signin.Intercept.HeuristicOutcome",
-      SigninInterceptionHeuristicOutcome::kAbortUserDeclinedProfileForAccount,
-      1);
 }
 
 TEST_F(DiceWebSigninInterceptorTest, PersistentHash) {

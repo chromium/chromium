@@ -6521,13 +6521,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPermissionQuietChipDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionQuietChip)},
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"dice-web-signin-interception",
-     flag_descriptions::kDiceWebSigninInterceptionName,
-     flag_descriptions::kDiceWebSigninInterceptionDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(kDiceWebSigninInterceptionFeature)},
-#endif  // ENABLE_DICE_SUPPORT
     {"canvas-2d-layers", flag_descriptions::kCanvas2DLayersName,
      flag_descriptions::kCanvas2DLayersDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableCanvas2DLayers)},

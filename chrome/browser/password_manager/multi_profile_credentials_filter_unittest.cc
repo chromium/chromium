@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -74,7 +72,6 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
  public:
   MultiProfileCredentialsFilterTest()
       : sync_filter_(&test_password_manager_client_, GetSyncServiceCallback()) {
-    feature_list_.InitAndEnableFeature(kDiceWebSigninInterceptionFeature);
   }
 
   password_manager::SyncCredentialsFilter::SyncServiceFactoryFunction
@@ -151,7 +148,6 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
  protected:
   const syncer::SyncService* sync_service() { return &sync_service_; }
 
-  base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestPasswordManagerClient test_password_manager_client_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

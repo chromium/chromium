@@ -224,8 +224,7 @@ void CheckHistograms(const base::HistogramTester& histogram_tester,
 
 class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
  public:
-  DiceWebSigninInterceptorBrowserTest()
-      : feature_list_(kDiceWebSigninInterceptionFeature) {}
+  DiceWebSigninInterceptorBrowserTest() = default;
 
   Profile* profile() { return browser()->profile(); }
 
@@ -252,9 +251,6 @@ class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
         interceptor_delegates_[profile];
     return interceptor_delegate;
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   // InProcessBrowserTest:

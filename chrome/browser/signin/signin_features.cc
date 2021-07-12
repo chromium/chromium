@@ -4,11 +4,6 @@
 
 #include "chrome/browser/signin/signin_features.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-const base::Feature kDiceWebSigninInterceptionFeature{
-    "DiceWebSigninInterception", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // ENABLE_DICE_SUPPORT
-
 // Enables the client-side processing of the HTTP response header
 // Google-Accounts-RemoveLocalAccount.
 const base::Feature kProcessGaiaRemoveLocalAccountHeader{

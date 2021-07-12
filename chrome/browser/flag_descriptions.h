@@ -3091,11 +3091,6 @@ extern const char kEnableJXLName[];
 extern const char kEnableJXLDescription[];
 #endif  // BUILDFLAG(ENABLE_JXL_DECODER)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-extern const char kDiceWebSigninInterceptionName[];
-extern const char kDiceWebSigninInterceptionDescription[];
-#endif  // ENABLE_DICE_SUPPORT
-
 #if BUILDFLAG(ENABLE_NACL)
 extern const char kNaclName[];
 extern const char kNaclDescription[];

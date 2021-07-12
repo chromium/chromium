@@ -322,22 +322,16 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Returns a 8-bit hash of the email that can be persisted.
   static std::string GetPersistentEmailHash(const std::string& email);
 
-  // Should be called when the user declines profile creation or profile switch,
-  // in order to remember their decision. This information is stored in prefs.
-  // Only a hash of the email is saved, as Chrome does not need to store the
-  // actual email, but only need to compare emails. The hash has low entropy to
-  // ensure it cannot be reversed.
+  // Should be called when the user declines profile creation, in order to
+  // remember their decision. This information is stored in prefs. Only a hash
+  // of the email is saved, as Chrome does not need to store the actual email,
+  // but only need to compare emails. The hash has low entropy to ensure it
+  // cannot be reversed.
   void RecordProfileCreationDeclined(const std::string& email);
-  void RecordProfileSwitchDeclined(const std::string& email);
 
   // Checks if the user previously declined 2 times creating a new profile for
   // this account.
   bool HasUserDeclinedProfileCreation(const std::string& email) const;
-
-  // Checks if the user previously declined more than a threshold number of
-  // times switching to a new profile for this account. The limit is set up
-  // via an experiment parameter.
-  bool HasUserDeclinedProfileSwitch(const std::string& email) const;
 
   Profile* const profile_;
   signin::IdentityManager* const identity_manager_;

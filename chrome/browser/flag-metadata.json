@@ -1040,11 +1040,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "dice-web-signin-interception",
-    "owners": [ "droger", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "disable-accelerated-2d-canvas",
     "owners": [ "fserb" ],
     "expiry_milestone": -1

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -63,7 +62,6 @@ class PasswordManagerSigninInterceptTestHelper {
   std::string gaia_id() const;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   const net::test_server::EmbeddedTestServer* https_test_server_;
 };
 

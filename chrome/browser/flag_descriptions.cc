@@ -5310,12 +5310,6 @@ const char kEnableJXLDescription[] =
     "Adds image decoding support for the JPEG XL image format.";
 #endif  // BUILDFLAG(ENABLE_JXL_DECODER)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-const char kDiceWebSigninInterceptionName[] = "Dice Web-Signin Interception";
-const char kDiceWebSigninInterceptionDescription[] =
-    "If enabled, Chrome may promote profile creation after signin on the web.";
-#endif
-
 #if BUILDFLAG(ENABLE_NACL)
 const char kNaclName[] = "Native Client";
 const char kNaclDescription[] =

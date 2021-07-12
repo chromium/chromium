@@ -141,6 +141,7 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sessions/core/session_id_generator.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -619,14 +620,16 @@ const char kHintsFetcherTopHostBlocklistMinimumEngagementScore[] =
 #if defined(OS_MAC)
 const char kPasswordRecovery[] = "password_manager.password_recovery";
 #endif
-
-// Deprecated 07/2021.
 const char kWasSignInPasswordPromoClicked[] =
     "profile.was_sign_in_password_promo_clicked";
 const char kNumberSignInPasswordPromoShown[] =
     "profile.number_sign_in_password_promo_shown";
 const char kSignInPasswordPromoRevive[] =
     "profile.sign_in_password_promo_revive";
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+constexpr char kProfileSwitchInterceptionDeclinedPref[] =
+    "signin.ProfileSwitchInterceptionDeclinedPref";
+#endif
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -800,6 +803,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kWasSignInPasswordPromoClicked, false);
   registry->RegisterIntegerPref(kNumberSignInPasswordPromoShown, 0);
   registry->RegisterBooleanPref(kSignInPasswordPromoRevive, false);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  registry->RegisterDictionaryPref(kProfileSwitchInterceptionDeclinedPref);
+#endif
 }
 
 }  // namespace
@@ -1572,11 +1579,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if defined(OS_MAC)
   profile_prefs->ClearPref(kPasswordRecovery);
 #endif
-
-  // Added 07/2021
   profile_prefs->ClearPref(kWasSignInPasswordPromoClicked);
   profile_prefs->ClearPref(kNumberSignInPasswordPromoShown);
   profile_prefs->ClearPref(kSignInPasswordPromoRevive);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  profile_prefs->ClearPref(kProfileSwitchInterceptionDeclinedPref);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

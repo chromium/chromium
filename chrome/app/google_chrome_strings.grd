@@ -753,14 +753,8 @@ Google Chrome is unable to recover your settings.
 
       <if expr="not chromeos and not is_android">
         <!-- Dice Web Signin Interception Bubble-->
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V1" desc="Title of the web signin interception bubble">
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE" desc="Title of the web signin interception bubble">
           Continue in a new Chrome profile?
-        </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2" desc="Title of the web signin interception bubble">
-          Move account to a new Chrome profile?
-        </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V3" desc="Title of the web signin interception bubble">
-          Separate Chrome profile?
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE" desc="Title for the profile switch interception bubble">
           Switch to existing Chrome profile?

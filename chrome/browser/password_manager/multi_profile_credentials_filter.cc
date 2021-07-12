@@ -4,10 +4,8 @@
 
 #include "chrome/browser/password_manager/multi_profile_credentials_filter.h"
 
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,8 +25,6 @@ bool MultiProfileCredentialsFilter::ShouldSave(
   if (!dice_web_signin_interceptor_)
     return true;  // This happens in incognito.
   if (!password_manager::sync_util::IsGaiaCredentialPage(form.signon_realm))
-    return true;
-  if (!base::FeatureList::IsEnabled(kDiceWebSigninInterceptionFeature))
     return true;
 
   // Note: this function is only called for "Save" bubbles, but not for "Update"

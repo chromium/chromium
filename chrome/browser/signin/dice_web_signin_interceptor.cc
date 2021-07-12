@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -61,8 +60,6 @@ namespace {
 
 constexpr char kProfileCreationInterceptionDeclinedPref[] =
     "signin.ProfileCreationInterceptionDeclinedPref";
-constexpr char kProfileSwitchInterceptionDeclinedPref[] =
-    "signin.ProfileSwitchInterceptionDeclinedPref";
 
 void RecordSigninInterceptionHeuristicOutcome(
     SigninInterceptionHeuristicOutcome outcome) {
@@ -125,14 +122,11 @@ DiceWebSigninInterceptor::~DiceWebSigninInterceptor() = default;
 void DiceWebSigninInterceptor::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kProfileCreationInterceptionDeclinedPref);
-  registry->RegisterDictionaryPref(kProfileSwitchInterceptionDeclinedPref);
   registry->RegisterBooleanPref(prefs::kSigninInterceptionEnabled, true);
-#if !defined(OS_ANDROID)
   registry->RegisterStringPref(prefs::kManagedAccountsSigninRestriction,
                                std::string());
   registry->RegisterBooleanPref(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, false);
-#endif
 }
 
 absl::optional<SigninInterceptionHeuristicOutcome>
@@ -170,10 +164,6 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
       email,
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
   if (switch_to_entry) {
-    if (HasUserDeclinedProfileSwitch(email)) {
-      return SigninInterceptionHeuristicOutcome::
-          kAbortUserDeclinedProfileForAccount;
-    }
     if (entry)
       *entry = switch_to_entry;
     return SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch;
@@ -208,9 +198,6 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     CoreAccountId account_id,
     bool is_new_account,
     bool is_sync_signin) {
-  if (!base::FeatureList::IsEnabled(kDiceWebSigninInterceptionFeature))
-    return;
-
   if (is_interception_in_progress_) {
     // Multiple concurrent interceptions are not supported.
     RecordSigninInterceptionHeuristicOutcome(
@@ -549,8 +536,6 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
     const base::FilePath& profile_path,
     SigninInterceptionResult switch_profile) {
   if (switch_profile != SigninInterceptionResult::kAccepted) {
-    if (switch_profile == SigninInterceptionResult::kDeclined)
-      RecordProfileSwitchDeclined(email);
     Reset();
     return;
   }
@@ -693,32 +678,4 @@ bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
   constexpr int kMaxProfileCreationDeclinedCount = 2;
   return declined_count &&
          declined_count.value() >= kMaxProfileCreationDeclinedCount;
-}
-
-void DiceWebSigninInterceptor::RecordProfileSwitchDeclined(
-    const std::string& email) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              kProfileSwitchInterceptionDeclinedPref);
-  std::string key = GetPersistentEmailHash(email);
-  absl::optional<int> declined_count = update->FindIntKey(key);
-  update->SetIntKey(key, declined_count.value_or(0) + 1);
-}
-
-bool DiceWebSigninInterceptor::HasUserDeclinedProfileSwitch(
-    const std::string& email) const {
-  const base::DictionaryValue* pref_data = profile_->GetPrefs()->GetDictionary(
-      kProfileSwitchInterceptionDeclinedPref);
-  absl::optional<int> declined_count =
-      pref_data->FindIntKey(GetPersistentEmailHash(email));
-
-  // The limit is controlled by an experiment. Zero value completely turns off
-  // the profile switch bubble. Negative values mean there is no limit. By
-  // default, there is no limit.
-  int max_profile_switch_declined_count =
-      base::GetFieldTrialParamByFeatureAsInt(
-          kDiceWebSigninInterceptionFeature,
-          "max_profile_switch_declined_count", -1);
-
-  return max_profile_switch_declined_count >= 0 &&
-         declined_count.value_or(0) >= max_profile_switch_declined_count;
 }
