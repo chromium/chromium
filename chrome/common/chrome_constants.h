@@ -36,7 +36,6 @@ extern const base::FilePath::CharType kStatusTrayWindowClass[];
 
 extern const char kInitialProfile[];
 extern const char kMultiProfileDirPrefix[];
-extern const char kEphemeralGuestProfileDirPrefix[];
 extern const base::FilePath::CharType kGuestProfileDir[];
 extern const base::FilePath::CharType kSystemProfileDir[];
 

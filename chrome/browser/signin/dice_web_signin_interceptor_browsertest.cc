@@ -218,10 +218,6 @@ void CheckHistograms(const base::HistogramTester& histogram_tester,
           ? DiceInterceptedSessionStartupHelper::Result::kReconcilorSuccess
           : DiceInterceptedSessionStartupHelper::Result::kMultiloginSuccess,
       1);
-  histogram_tester.ExpectTotalCount("Profile.Guest.SigninTransferred.Lifetime",
-                                    intercept_to_guest ? 1 : 0);
-  histogram_tester.ExpectBucketCount("Profile.EphemeralGuest.Signin", true,
-                                     intercept_to_guest ? 1 : 0);
 }
 
 }  // namespace

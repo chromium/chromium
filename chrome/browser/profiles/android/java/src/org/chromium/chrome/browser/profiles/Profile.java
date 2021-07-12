@@ -77,7 +77,7 @@ public class Profile implements BrowserContextHandle {
      * Returns the {@link BrowserProfileType} for the corresponding profile.
      *
      * Please note {@link BrowserProfileType} is generated from native so, it also contains other
-     * types of Profile like Guest, System, EphemeralGuest that we don't support in Android.
+     * types of Profile like Guest and System that we don't support in Android.
      */
     public static @BrowserProfileType int getBrowserProfileTypeFromProfile(Profile profile) {
         assert profile != null;

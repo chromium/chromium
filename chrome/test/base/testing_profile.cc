@@ -191,13 +191,6 @@ const char TestingProfile::kTestUserProfileDir[] = "test-user";
 const char TestingProfile::kTestUserProfileDir[] = "Default";
 #endif
 
-// static
-bool TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-    base::test::ScopedFeatureList& scoped_feature_list,
-    bool enabled) {
-  return false;
-}
-
 TestingProfile::TestingProfile() : TestingProfile(base::FilePath()) {}
 
 TestingProfile::TestingProfile(const base::FilePath& path)

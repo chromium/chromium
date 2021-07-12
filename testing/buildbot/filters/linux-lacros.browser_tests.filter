@@ -6,8 +6,6 @@
 -AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
 -AdsPageLoadMetricsObserverBrowserTest.PageAdDensityRecordsPageMax
 -All/DownloadReferrerPolicyTest.SaveLinkAsReferrerPolicy*
-# TODO(https://crbug.com/1125474): Emphemeral guest profile support.
--All/GuestProfileMenuClickTest.ProfileMenuClickTest_*
 -All/HostedAppProcessModelTest.BackgroundPageWithAppCoveringDifferentSites/0
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp
 -All/HostedOrWebAppTest.CtrlClickLink/WebApp

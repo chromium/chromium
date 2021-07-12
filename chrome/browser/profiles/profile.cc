@@ -381,11 +381,6 @@ bool Profile::IsIncognitoProfile() const {
          profile_metrics::BrowserProfileType::kIncognito;
 }
 
-// static
-bool Profile::IsEphemeralGuestProfileEnabled() {
-  return false;
-}
-
 bool Profile::IsGuestSession() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool is_guest_session =
@@ -407,10 +402,6 @@ bool Profile::IsGuestSession() const {
 
 PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
   return nullptr;
-}
-
-bool Profile::IsEphemeralGuestProfile() const {
-  return false;
 }
 
 bool Profile::IsSystemProfile() const {

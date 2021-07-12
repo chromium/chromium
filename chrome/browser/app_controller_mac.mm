@@ -150,7 +150,7 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
 // there are only minimized windows), it will unminimize it.
 Browser* ActivateBrowser(Profile* profile) {
   Browser* browser = chrome::FindLastActiveWithProfile(
-      (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
+      profile->IsGuestSession()
           ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : profile);
   if (browser)
@@ -1449,8 +1449,8 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     // to AppKit as there's nothing that it can do either.
     return NO;
   }
-  if (lastProfile->IsGuestSession() || lastProfile->IsEphemeralGuestProfile() ||
-      IsProfileSignedOut(lastProfile) || lastProfile->IsSystemProfile()) {
+  if (lastProfile->IsGuestSession() || IsProfileSignedOut(lastProfile) ||
+      lastProfile->IsSystemProfile()) {
     ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
   } else if (ProfilePicker::ShouldShowAtLaunch()) {
     ProfilePicker::Show(

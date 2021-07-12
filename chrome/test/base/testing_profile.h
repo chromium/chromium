@@ -88,16 +88,6 @@ class TestingProfile : public Profile {
   // always "Default", because they are runnining without logged-in user.
   static const char kTestUserProfileDir[];
 
-  // Sets the feature list to enable/disable ephemeral Guest profiles.
-  // Returns true if ephemeral Guest profiles are supported on the platform and
-  // feature list is initialized.
-  // NOTE: Ephemeral Guest profiles are deprecated and code support is under
-  // removal. This function always returns false.
-  // TODO(https://crbug.com/1225156): Delete this function.
-  static bool SetScopedFeatureListForEphemeralGuestProfiles(
-      base::test::ScopedFeatureList& scoped_feature_list,
-      bool enabled);
-
   // Default constructor that cannot be used with multi-profiles.
   TestingProfile();
 
