@@ -1389,7 +1389,8 @@ void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
 
 void PrintRenderFrameHelper::OnPrintPreviewDialogClosed() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  print_preview_context_.DispatchAfterPrintEvent();
+  if (!render_frame_gone_)
+    print_preview_context_.DispatchAfterPrintEvent();
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
