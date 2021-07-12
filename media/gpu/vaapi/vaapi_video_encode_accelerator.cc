@@ -372,8 +372,9 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
 
   output_buffer_byte_size_ = encoder_->GetBitstreamBufferSize();
 
-  va_surface_release_cb_ = BindToCurrentLoop(base::BindRepeating(
-      &VaapiVideoEncodeAccelerator::RecycleVASurfaceID, encoder_weak_this_));
+  va_surface_release_cb_ = BindToCurrentLoop(
+      base::BindRepeating(&VaapiVideoEncodeAccelerator::RecycleVASurfaceID,
+                          encoder_weak_this_, &available_va_surface_ids_));
 
   visible_rect_ = gfx::Rect(config.input_visible_size);
   expected_input_coded_size_ = VideoFrame::DetermineAlignedSize(
@@ -447,15 +448,6 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
 }
 
 void VaapiVideoEncodeAccelerator::RecycleVASurfaceID(
-    VASurfaceID va_surface_id) {
-  DVLOGF(4) << "va_surface_id: " << va_surface_id;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-
-  available_va_surface_ids_.push_back(va_surface_id);
-  EncodePendingInputs();
-}
-
-void VaapiVideoEncodeAccelerator::RecycleVPPVASurfaceID(
     std::vector<VASurfaceID>* va_surfaces,
     VASurfaceID va_surface_id) {
   DVLOGF(4) << "va_surface_id: " << va_surface_id;
@@ -598,7 +590,7 @@ VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
 
     vpp_va_surface_release_cb_[encode_size] =
         BindToCurrentLoop(base::BindRepeating(
-            &VaapiVideoEncodeAccelerator::RecycleVPPVASurfaceID,
+            &VaapiVideoEncodeAccelerator::RecycleVASurfaceID,
             encoder_weak_this_, &available_vpp_va_surface_ids_[encode_size]));
   }
 

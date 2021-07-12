@@ -128,13 +128,9 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   void ExecuteEncode(VASurfaceID va_surface_id);
 
   // Callback that returns a no longer used VASurfaceID to
-  // |available_va_surface_ids_| for reuse.
-  void RecycleVASurfaceID(VASurfaceID va_surface_id);
-
-  // Callback that returns a no longer used VASurfaceID to
-  // |available_vpp_va_surface_ids_| for reuse.
-  void RecycleVPPVASurfaceID(std::vector<VASurfaceID>* va_surfaces,
-                             VASurfaceID va_surface_id);
+  // |va_surfaces| for reuse and kicks EncodePendingInputs() again.
+  void RecycleVASurfaceID(std::vector<VASurfaceID>* va_surfaces,
+                          VASurfaceID va_surface_id);
 
   // Returns a bitstream buffer to the client if both a previously executed job
   // awaits to be completed and we have bitstream buffers available to download
