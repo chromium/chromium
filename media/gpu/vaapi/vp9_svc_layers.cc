@@ -30,8 +30,13 @@ enum FrameFlags : uint8_t {
 }  // namespace
 
 struct VP9SVCLayers::FrameConfig {
-  FrameConfig(size_t layer_index, FrameFlags first, FrameFlags second)
-      : layer_index_(layer_index), buffer_flags_{first, second} {}
+  FrameConfig(size_t layer_index,
+              FrameFlags first,
+              FrameFlags second,
+              bool temporal_up_switch)
+      : layer_index_(layer_index),
+        buffer_flags_{first, second},
+        temporal_up_switch_(temporal_up_switch) {}
   FrameConfig() = delete;
 
   // VP9SVCLayers uses 2 reference frame slots for each spatial layer, and
@@ -70,10 +75,12 @@ struct VP9SVCLayers::FrameConfig {
   }
 
   size_t layer_index() const { return layer_index_; }
+  bool temporal_up_switch() const { return temporal_up_switch_; }
 
  private:
   const size_t layer_index_;
   const FrameFlags buffer_flags_[kMaxNumUsedRefFramesEachSpatialLayer];
+  const bool temporal_up_switch_;
 };
 
 namespace {
@@ -87,15 +94,15 @@ std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
       // In this case, the number of spatial layers must great than 1.
       // TL0 references and updates the 'first' buffer.
       // [TL0]---[TL0]
-      return {FrameConfig(0, kReferenceAndUpdate, kNone)};
+      return {FrameConfig(0, kReferenceAndUpdate, kNone, true)};
     case 2:
       // TL0 references and updates the 'first' buffer.
       // TL1 references 'first' buffer.
       //      [TL1]
       //     /
       // [TL0]-----[TL0]
-      return {FrameConfig(0, kReferenceAndUpdate, kNone),
-              FrameConfig(1, kReference, kNone)};
+      return {FrameConfig(0, kReferenceAndUpdate, kNone, true),
+              FrameConfig(1, kReference, kNone, true)};
     case 3:
       // TL0 references and updates the 'first' buffer.
       // TL1 references 'first' and updates 'second'.
@@ -104,10 +111,10 @@ std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
       //    _/   [TL1]--/
       //   /_______/
       // [TL0]--------------[TL0]
-      return {FrameConfig(0, kReferenceAndUpdate, kNone),
-              FrameConfig(2, kReference, kNone),
-              FrameConfig(1, kReference, kUpdate),
-              FrameConfig(2, kNone, kReference)};
+      return {FrameConfig(0, kReferenceAndUpdate, kNone, true),
+              FrameConfig(2, kReference, kNone, true),
+              FrameConfig(1, kReference, kUpdate, true),
+              FrameConfig(2, kNone, kReference, true)};
     default:
       NOTREACHED();
       return {};
@@ -304,6 +311,7 @@ void VP9SVCLayers::FillUsedRefFramesAndMetadata(
     FillVp9MetadataForEncoding(&(*picture->metadata_for_encoding),
                                /*reference_frame_indices=*/{});
     UpdateRefFramesPatternIndex(/*refresh_frame_indices=*/{0, 1});
+    picture->metadata_for_encoding->temporal_up_switch = true;
 
     DVLOGF(4)
         << "Frame num: " << frame_num_
@@ -351,6 +359,8 @@ void VP9SVCLayers::FillUsedRefFramesAndMetadata(
   FillVp9MetadataForEncoding(&(*picture->metadata_for_encoding),
                              reference_frame_indices);
   UpdateRefFramesPatternIndex(refresh_frame_indices);
+  picture->metadata_for_encoding->temporal_up_switch =
+      temporal_layers_config.temporal_up_switch();
   spatial_idx_++;
 }
 
@@ -381,7 +391,6 @@ void VP9SVCLayers::FillVp9MetadataForEncoding(
   // |has_reference| is true if a frame in the same spatial layer is referred.
   if (frame_num_ != 0)
     metadata->has_reference = !reference_frame_indices.empty();
-  metadata->temporal_up_switch = true;
   metadata->reference_lower_spatial_layers =
       frame_num_ == 0 && (spatial_idx_ != 0);
   metadata->temporal_idx = temp_temporal_layers_id;
@@ -399,13 +408,6 @@ void VP9SVCLayers::FillVp9MetadataForEncoding(
         p_diff = temporal_pattern_size_;
       metadata->p_diffs.push_back(p_diff);
     }
-
-    const uint8_t ref_temporal_layers_id =
-        temporal_layers_reference_pattern_
-            [pattern_index_of_ref_frames_slots_[i] % temporal_pattern_size_]
-                .layer_index();
-    metadata->temporal_up_switch &=
-        (ref_temporal_layers_id != temp_temporal_layers_id);
   }
 }
 

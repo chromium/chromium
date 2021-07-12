@@ -417,11 +417,10 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
   }
 
   if (metadata.vp9 && metadata.vp9->temporal_up_switch) {
-    // Temporal up-switch, invalidate any non-base-layer frames with lower
+    // Temporal up-switch, invalidate any buffers containing frames with higher
     // temporal id.
     for (auto& buffer : reference_buffers_) {
-      if (buffer && buffer->temporal_id > 0 &&
-          buffer->temporal_id < new_buffer_state.temporal_id) {
+      if (buffer && buffer->temporal_id > new_buffer_state.temporal_id) {
         buffer.reset();
       }
     }
