@@ -284,6 +284,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     if (accept_ranges.find("bytes") != std::string::npos)
       destination_url_data->set_range_supported();
 
+    recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #2 %d", partial_response);
+
     // If we have verified the partial response and it is correct.
     // It's also possible for a server to support range requests
     // without advertising "Accept-Ranges: bytes".
@@ -567,10 +569,13 @@ int64_t ResourceMultiBufferDataProvider::block_size() const {
 bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
     const WebURLResponse& response,
     const scoped_refptr<UrlData>& url_data) {
+  recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse Start");
+
   int64_t first_byte_position, last_byte_position, instance_size;
   if (!ParseContentRange(response.HttpHeaderField("Content-Range").Utf8(),
                          &first_byte_position, &last_byte_position,
                          &instance_size)) {
+    recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse #1");
     return false;
   }
 
@@ -579,13 +584,16 @@ bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
   }
 
   if (first_byte_position > byte_pos()) {
+    recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse #2");
     return false;
   }
   if (last_byte_position + 1 < byte_pos()) {
+    recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse #3");
     return false;
   }
   bytes_to_discard_ = byte_pos() - first_byte_position;
 
+  recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse Done");
   return true;
 }
 
