@@ -762,6 +762,12 @@ group("telemetry_gpu_integration_test_support") {
     # For isolate contract.
     "//testing/scripts/gpu_integration_test_adapter.py",
     "//testing/scripts/run_gpu_integration_test_as_googletest.py",
+
+    # Not actually needed, but the way Telemetry looks for tests ends up looking
+    # in the unexpected_passes directory, which has a dependency on this.
+    # TODO(crbug.com/1227899): Remove this dependency once this target only
+    # includes the things it needs instead of all of //content/test/gpu/.
+    "//testing/unexpected_passes_common/",
   ]
 
   data_deps = [

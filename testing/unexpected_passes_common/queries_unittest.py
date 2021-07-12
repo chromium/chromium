@@ -15,6 +15,7 @@ if sys.version_info[0] == 2:
 else:
   import unittest.mock as mock
 
+from unexpected_passes_common import builders
 from unexpected_passes_common import data_types
 from unexpected_passes_common import multiprocessing_utils
 from unexpected_passes_common import queries
@@ -80,6 +81,8 @@ class QueryBuilderUnittest(unittest.TestCase):
     self._popen_mock = self._patcher.start()
     self.addCleanup(self._patcher.stop)
 
+    builders.ClearInstance()
+    unittest_utils.RegisterGenericBuildersImplementation()
     self._querier = unittest_utils.CreateGenericQuerier()
 
   def testQueryFailureRaised(self):

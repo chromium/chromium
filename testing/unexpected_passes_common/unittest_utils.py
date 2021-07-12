@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 
+from unexpected_passes_common import builders
 from unexpected_passes_common import data_types
 from unexpected_passes_common import queries
 
@@ -95,3 +96,21 @@ class FakeProcess(object):
   def terminate(self):
     if self.finish:
       raise OSError('Tried to terminate a finished process')
+
+
+class GenericBuilders(builders.Builders):
+  def _BuilderRunsTestOfInterest(self, test_map, suite):
+    return True
+
+  def GetIsolateNames(self):
+    return {}
+
+  def GetFakeCiBuilders(self):
+    return {}
+
+  def GetNonChromiumBuilders(self):
+    return {}
+
+
+def RegisterGenericBuildersImplementation():
+  builders.RegisterInstance(GenericBuilders())

@@ -327,7 +327,7 @@ class BigQueryQuerier(object):
     if not query_results:
       # Don't bother logging if we know this is a fake CI builder.
       if not (builder_type == 'ci'
-              and builder in builders_module.FAKE_CI_BUILDERS):
+              and builder in builders_module.GetInstance().GetFakeCiBuilders()):
         logging.warning(
             'Did not get results for "%s", but this may be because its '
             'results do not apply to any expectations for this suite.', builder)

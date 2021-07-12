@@ -39,6 +39,7 @@ import sys
 CHROMIUM_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
+from unexpected_passes import gpu_builders
 from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
 from unexpected_passes_common import queries
@@ -174,9 +175,13 @@ def SetLoggingVerbosity(verbosity_level):
 
 def main():
   args = ParseArgs()
+
+  builders_instance = gpu_builders.GpuBuilders()
+  builders.RegisterInstance(builders_instance)
+
   test_expectation_map = expectations.CreateTestExpectationMap(
       args.expectation_file, args.tests)
-  ci_builders = builders.GetCiBuilders(
+  ci_builders = builders_instance.GetCiBuilders(
       SUITE_TO_TELEMETRY_SUITE_MAP.get(args.suite, args.suite))
 
   querier = queries.BigQueryQuerier(args.suite, args.project, args.num_samples,
@@ -186,7 +191,7 @@ def main():
   # passing tests or unused expectations.
   unmatched = querier.FillExpectationMapForCiBuilders(test_expectation_map,
                                                       ci_builders)
-  try_builders = builders.GetTryBuilders(ci_builders)
+  try_builders = builders_instance.GetTryBuilders(ci_builders)
   unmatched.update(
       querier.FillExpectationMapForTryBuilders(test_expectation_map,
                                                try_builders))
