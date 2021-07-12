@@ -17999,7 +17999,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="10" label="11.1"/>
   <int value="11" label="12.0"/>
   <int value="12" label="12.1"/>
-  <int value="13" label="12.2"/>
 </enum>
 
 <enum name="D3D11InitializeResult">
@@ -18069,6 +18068,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="D3D_FEATURE_LEVEL_12_1"/>
   <int value="3" label="D3D_FEATURE_LEVEL_11_0"/>
   <int value="4" label="D3D_FEATURE_LEVEL_11_1"/>
+  <int value="5" label="D3D_FEATURE_LEVEL_12_2"/>
 </enum>
 
 <enum name="D3D9InitializeResult">
