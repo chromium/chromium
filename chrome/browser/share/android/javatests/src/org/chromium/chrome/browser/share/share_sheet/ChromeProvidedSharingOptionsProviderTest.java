@@ -40,6 +40,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -77,31 +78,36 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
-    private static final String URL = "http://www.google.com/";
-
     @Mock
     private UserPrefs.Natives mUserPrefsNatives;
+
     @Mock
     private Profile mProfile;
     @Mock
     private PrefService mPrefService;
+
+    private static final String URL = "http://www.google.com/";
+
     @Mock
     private ShareSheetCoordinator mShareSheetCoordinator;
-    @Mock
-    private Supplier<Tab> mTabProvider;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private ShareParams.TargetChosenCallback mTargetChosenCallback;
 
     private Activity mActivity;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
+
+    @Mock
+    private Supplier<Tab> mTabProvider;
+
+    @Mock
+    private Tab mTab;
+
+    @Mock
+    private BottomSheetController mBottomSheetController;
+
+    @Mock
+    private WebContents mWebContents;
+
+    @Mock
+    private Tracker mTracker;
     private UserActionTester mActionTester;
 
     @Before
@@ -340,6 +346,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         @LinkGeneration
         int linkGenerationStatus = LinkGeneration.LINK;
 
+        String detailMetrics = "LinkGeneration.DetailsMetrics";
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/false, linkGenerationStatus);
         List<PropertyModel> propertyModels =
@@ -349,36 +356,17 @@ public class ChromeProvidedSharingOptionsProviderTest {
         assertCorrectMetrics(propertyModels, linkGenerationStatus);
     }
 
-    @Test
-    @MediumTest
-    public void getPropertyModels_onClick_callsOnTargetChosen() {
-        setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, LinkGeneration.LINK);
-
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE), /*isMultiWindow=*/false);
-        View.OnClickListener onClickListener =
-                propertyModels.get(0).get(ShareSheetItemViewProperties.CLICK_LISTENER);
-
-        onClickListener.onClick(null);
-        Mockito.verify(mTargetChosenCallback, Mockito.times(1))
-                .onTargetChosen(ChromeProvidedSharingOptionsProvider
-                                        .CHROME_PROVIDED_FEATURE_COMPONENT_NAME);
-    }
-
     private void setUpChromeProvidedSharingOptionsProviderTest(
             boolean printingEnabled, @LinkGeneration int linkGenerationStatus) {
         Mockito.when(mPrefService.getBoolean(anyString())).thenReturn(printingEnabled);
 
-        ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", /*url=*/"")
-                                          .setCallback(mTargetChosenCallback)
-                                          .build();
+        ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", /*url=*/"").build();
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(mActivity,
                 mTabProvider, mBottomSheetController,
                 new ShareSheetBottomSheetContent(
                         mActivity, null, mShareSheetCoordinator, shareParams),
-                shareParams,
+                new ShareParams.Builder(null, "", "").build(),
+                new ChromeShareExtras.Builder().build(),
                 /*TabPrinterDelegate=*/null,
                 /*settingsLauncher=*/null,
                 /*syncState=*/false,

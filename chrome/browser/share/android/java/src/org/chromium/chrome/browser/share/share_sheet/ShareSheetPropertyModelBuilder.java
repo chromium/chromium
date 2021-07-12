@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.Link
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -151,8 +152,10 @@ public class ShareSheetPropertyModelBuilder {
 
     protected List<PropertyModel> selectThirdPartyApps(ShareSheetBottomSheetContent bottomSheet,
             Set<Integer> contentTypes, ShareParams params, boolean saveLastUsed,
-            long shareStartTime, @LinkGeneration int linkGenerationStatusForMetrics) {
+            WindowAndroid window, long shareStartTime,
+            @LinkGeneration int linkGenerationStatusForMetrics) {
         List<String> thirdPartyActivityNames = getThirdPartyActivityNames();
+        final ShareParams.TargetChosenCallback callback = params.getCallback();
         List<ResolveInfo> resolveInfoList =
                 getCompatibleApps(contentTypes, params.getFileContentType());
         List<ResolveInfo> thirdPartyActivities = new ArrayList<>();
@@ -187,9 +190,11 @@ public class ShareSheetPropertyModelBuilder {
         for (int i = 0; i < MAX_NUM_APPS && i < thirdPartyActivities.size(); ++i) {
             ResolveInfo info = thirdPartyActivities.get(i);
             final int logIndex = i;
-            OnClickListener onClickListener = v
-                    -> onThirdPartyAppSelected(bottomSheet, params, saveLastUsed, info.activityInfo,
-                            logIndex, shareStartTime, linkGenerationStatusForMetrics);
+            OnClickListener onClickListener = v -> {
+                onThirdPartyAppSelected(bottomSheet, params, window, callback, saveLastUsed,
+                        info.activityInfo, logIndex, shareStartTime,
+                        linkGenerationStatusForMetrics);
+            };
             PropertyModel propertyModel =
                     createPropertyModel(ShareHelper.loadIconForResolveInfo(info, mPackageManager),
                             (String) info.loadLabel(mPackageManager), onClickListener,
@@ -201,8 +206,9 @@ public class ShareSheetPropertyModelBuilder {
     }
 
     private void onThirdPartyAppSelected(ShareSheetBottomSheetContent bottomSheet,
-            ShareParams params, boolean saveLastUsed, ActivityInfo ai, int logIndex,
-            long shareStartTime, @LinkGeneration int linkGenerationStatusForMetrics) {
+            ShareParams params, WindowAndroid window, ShareParams.TargetChosenCallback callback,
+            boolean saveLastUsed, ActivityInfo ai, int logIndex, long shareStartTime,
+            @LinkGeneration int linkGenerationStatusForMetrics) {
         // Record all metrics.
         RecordUserAction.record("SharingHubAndroid.ThirdPartyAppSelected");
         RecordHistogram.recordEnumeratedHistogram(
@@ -213,12 +219,8 @@ public class ShareSheetPropertyModelBuilder {
                     linkGenerationStatusForMetrics);
         }
         ComponentName component = new ComponentName(ai.applicationInfo.packageName, ai.name);
-        ShareParams.TargetChosenCallback callback = params.getCallback();
         if (callback != null) {
             callback.onTargetChosen(component);
-            // Reset callback after onTargetChosen() is called to prevent cancel() being called when
-            // the sheet is closed.
-            params.setCallback(null);
         }
         if (saveLastUsed) {
             ShareHelper.setLastShareComponentName(mProfile, component);
