@@ -19,6 +19,8 @@ component("common") {
     "log_buffer.h",
     "logging.cc",
     "logging.h",
+    "pair_failure.cc",
+    "pair_failure.h",
     "protocol.cc",
     "protocol.h",
   ]
