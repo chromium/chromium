@@ -8753,5 +8753,8 @@
         "prefs": { "https_only_mode_enabled": { "default_value": false } }
       }
     ]
+  },
+  "RestrictedManagedGuestSessionEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
   }
 }

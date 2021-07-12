@@ -1956,6 +1956,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                           policies);
     }
   }
+
+  if (policy.has_device_restricted_managed_guest_session_enabled()) {
+    const em::DeviceRestrictedManagedGuestSessionEnabledProto& container(
+        policy.device_restricted_managed_guest_session_enabled());
+    if (container.has_enabled()) {
+      policies->Set(key::kRestrictedManagedGuestSessionEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
 }
 
 }  // namespace

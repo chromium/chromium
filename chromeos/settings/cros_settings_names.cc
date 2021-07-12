@@ -512,4 +512,10 @@ const char kDeviceAllowedBluetoothServices[] =
 
 // A dictionary pref specifying the recurring schedule for device reboot.
 const char kDeviceScheduledReboot[] = "cros.device.device_scheduled_reboot";
+
+// A boolean specifying whether Chrome should operate in restricted managed
+// guest session mode (block features that generate sensitive data and are not
+// taken care of via clean-up mechanism in the managed guest session).
+const char kRestrictedManagedGuestSessionEnabled[] =
+    "cros.device.restricted_managed_guest_session_enabled";
 }  // namespace chromeos

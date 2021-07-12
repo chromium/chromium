@@ -145,6 +145,7 @@ const char* const kKnownSettings[] = {
     kReportOsUpdateStatus,
     kReportRunningKioskApp,
     kReportUploadFrequency,
+    kRestrictedManagedGuestSessionEnabled,
     kSamlLoginAuthenticationType,
     kServiceAccountIdentity,
     kSignedDataRoamingEnabled,
@@ -1088,6 +1089,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
           kDeviceScheduledReboot, policy::key::kDeviceScheduledReboot,
           scheduled_reboot_policy.device_scheduled_reboot_settings(),
           new_values_cache);
+    }
+  }
+
+  if (policy.has_device_restricted_managed_guest_session_enabled()) {
+    const em::DeviceRestrictedManagedGuestSessionEnabledProto& container(
+        policy.device_restricted_managed_guest_session_enabled());
+    if (container.has_enabled()) {
+      new_values_cache->SetValue(kRestrictedManagedGuestSessionEnabled,
+                                 base::Value(container.enabled()));
     }
   }
 }

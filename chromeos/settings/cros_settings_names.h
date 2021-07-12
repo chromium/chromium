@@ -296,6 +296,9 @@ extern const char kDeviceAllowedBluetoothServices[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceScheduledReboot[];
+
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kRestrictedManagedGuestSessionEnabled[];
 }  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove when migrated to ash/components/.
@@ -404,6 +407,7 @@ using ::chromeos::kReportDeviceVpdInfo;
 using ::chromeos::kReportOsUpdateStatus;
 using ::chromeos::kReportRunningKioskApp;
 using ::chromeos::kReportUploadFrequency;
+using ::chromeos::kRestrictedManagedGuestSessionEnabled;
 using ::chromeos::kSamlLoginAuthenticationType;
 using ::chromeos::kServiceAccountIdentity;
 using ::chromeos::kSignedDataRoamingEnabled;

@@ -25855,6 +25855,7 @@ Called by update_document_policy_enum.py.-->
   <int value="869" label="JavaScriptJitBlockedForSites"/>
   <int value="870" label="AllowHttpsOnlyMode"/>
   <int value="871" label="DesktopSharingHubEnabled"/>
+  <int value="872" label="RestrictedManagedGuestSessionEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

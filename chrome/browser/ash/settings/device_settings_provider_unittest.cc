@@ -1311,4 +1311,23 @@ TEST_F(DeviceSettingsProviderTest, DecodeContentProtectionDisable) {
   EXPECT_FALSE(value->GetBool());
 }
 
+TEST_F(DeviceSettingsProviderTest, DeviceRestrictedManagedGuestSessionEnabled) {
+  device_policy_->payload()
+      .mutable_device_restricted_managed_guest_session_enabled()
+      ->set_enabled(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kRestrictedManagedGuestSessionEnabled));
+}
+
+TEST_F(DeviceSettingsProviderTest,
+       DeviceRestrictedManagedGuestSessionDisabled) {
+  device_policy_->payload()
+      .mutable_device_restricted_managed_guest_session_enabled()
+      ->set_enabled(false);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kRestrictedManagedGuestSessionEnabled));
+}
+
 }  // namespace ash

@@ -26429,6 +26429,35 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
        Setting the policy to False removes the sharing icon from the omnibox and the entry from the 3-dot menu.''',
     },
+    {
+      'name': 'RestrictedManagedGuestSessionEnabled',
+      'owners': ['mpetrisor@chromium.org', 'hendrich@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:93-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable restricted managed guest session.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable restricted managed guest session.',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 872,
+      'caption': '''Restricted managed guest sessions''',
+      'tags': [],
+      'desc': '''The policy only applies to managed guest sessions. It has to be enabled for Imprivata's shared workstation mode to allow in-session user switches.
+      Setting the policy to True will forcefully override certain policies for features, which persist sensitive user data and are not handled by the clean-up mechanism used for in-session user switches with Imprivata shared workstation mode.
+      Setting the policy to False or leaving it unset will not override any policies.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -27363,6 +27392,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 871,
+  'highest_id_currently_used': 872,
   'highest_atomic_group_id_currently_used': 40
 }

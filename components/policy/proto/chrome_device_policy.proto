@@ -1796,6 +1796,15 @@ message DeviceScheduledRebootProto {
   optional string device_scheduled_reboot_settings = 1;
 }
 
+// Setting that controls whether restricted managed guest session is enabled on
+// the device.
+message DeviceRestrictedManagedGuestSessionEnabledProto {
+  // If this policy is set to true, it will forcefully override certain
+  // policies. If it's set to false or not set, then no policies will be
+  // overridden.
+  optional bool enabled = 1 [default = false];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1956,4 +1965,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceScheduledRebootProto device_scheduled_reboot = 122;
   optional DevicePciPeripheralDataAccessEnabledProtoV2
       device_pci_peripheral_data_access_enabled_v2 = 123;
+  optional DeviceRestrictedManagedGuestSessionEnabledProto
+      device_restricted_managed_guest_session_enabled = 124;
 }
