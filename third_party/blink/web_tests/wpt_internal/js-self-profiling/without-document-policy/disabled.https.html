@@ -8,7 +8,7 @@
   <script>
     test(t => {
       assert_throws_dom('NotAllowedError', () => {
-        new Profiler({ sampleInterval: 10 });
+        new Profiler({ sampleInterval: 10, maxBufferSize: Number.MAX_SAFE_INTEGER });
       });
     }, 'profiling should throw without passing document policy');
   </script>

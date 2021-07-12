@@ -16,6 +16,7 @@
     promise_test(async t => {
       const profiler = new Profiler({
         sampleInterval: 10,
+        maxBufferSize: Number.MAX_SAFE_INTEGER,
       });
 
       const iframe = frames[0];

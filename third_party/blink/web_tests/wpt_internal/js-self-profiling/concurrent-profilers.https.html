@@ -9,10 +9,12 @@
     promise_test(async t => {
       const profiler_a = new Profiler({
         sampleInterval: 10,
+        maxBufferSize: Number.MAX_SAFE_INTEGER,
       });
 
       const profiler_b = new Profiler({
         sampleInterval: 10,
+        maxBufferSize: Number.MAX_SAFE_INTEGER,
       });
 
       const trace_b = await profiler_b.stop();

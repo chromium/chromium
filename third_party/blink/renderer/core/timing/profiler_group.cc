@@ -170,9 +170,7 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
   String profiler_id = NextProfilerId();
 
   v8::CpuProfilingOptions options(
-      v8::kLeafNodeLineNumbers,
-      init_options.hasMaxBufferSize() ? init_options.maxBufferSize()
-                                      : v8::CpuProfilingOptions::kNoSampleLimit,
+      v8::kLeafNodeLineNumbers, init_options.maxBufferSize(),
       static_cast<int>(sample_interval_us), script_state->GetContext());
 
   v8::CpuProfilingStatus status = cpu_profiler_->StartProfiling(

@@ -9,6 +9,12 @@
 <body>
   <script>
     promise_test(async t => {
+      assert_throws_js(TypeError, () => {
+        new Profiler({ sampleInterval: 10 });
+      });
+    }, 'max buffer size must be defined');
+
+    promise_test(async t => {
       const profiler = new Profiler({
         sampleInterval: 10,
         maxBufferSize: 2,
@@ -25,7 +31,7 @@
 
     promise_test(async t => {
       const pf = [];
-      pf[0] = new Profiler({ sampleInterval: 10 });
+      pf[0] = new Profiler({ sampleInterval: 10,  maxBufferSize: Number.MAX_SAFE_INTEGER });
       pf[1] = new Profiler({ sampleInterval: 10,  maxBufferSize: 1 });
 
       const watcher = new EventWatcher(t, pf[1], ['samplebufferfull']);

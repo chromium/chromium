@@ -10,6 +10,7 @@
   async function profileFunction(func) {
     const profiler = new Profiler({
       sampleInterval: TEST_SAMPLE_INTERVAL,
+      maxBufferSize: Number.MAX_SAFE_INTEGER,
     });
 
     func(() => forceSample());
