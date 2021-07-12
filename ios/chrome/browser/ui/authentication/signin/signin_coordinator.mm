@@ -191,6 +191,11 @@ using signin_metrics::PromoAction;
 }
 
 - (void)stop {
+  // If you are an user of a SigninCoordinator subclass:
+  // The sign-in view is still presented. You should not call |stop|, if you
+  // need to close the view. You need to call -[SigninCoordinator
+  // interruptWithAction:completion:].
+  // If you work on a SigninCoordinator subclass:
   // -[SigninCoordinator runCompletionCallbackWithSigninResult:completionInfo:]
   // has to be called by the subclass before
   // -[SigninCoordinator stop] is called.
