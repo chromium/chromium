@@ -138,6 +138,9 @@ class SyncedNetworkMetricsLogger : public NetworkConnectionObserver,
   // Contains the guids of networks which are currently connecting.
   base::flat_set<std::string> connecting_guids_;
 
+  // The timestamp when the constructor was executed.
+  base::Time initialized_timestamp_;
+
   base::WeakPtrFactory<SyncedNetworkMetricsLogger> weak_ptr_factory_{this};
 };
 
