@@ -10,6 +10,9 @@ mojom("mojom") {
     "cros_network_config.mojom",
   ]
 
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
+
   public_deps = [
     ":network_types",
     "//mojo/public/mojom/base",
@@ -33,4 +36,7 @@ mojom("mojom") {
 
 mojom("network_types") {
   sources = [ "network_types.mojom" ]
+
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
 }

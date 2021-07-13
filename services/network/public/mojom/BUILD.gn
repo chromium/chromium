@@ -19,6 +19,8 @@ mojom("mojom_ip_address") {
     "ip_endpoint.mojom",
   ]
 
+  webui_module_path = "chrome://resources/mojo/services/network/public/mojom"
+
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
 
   shared_cpp_typemaps = [

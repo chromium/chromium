@@ -2,34 +2,15 @@
 
 <link rel="import" href="../../../cr_elements/shared_style_css.html">
 <link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="../network/network_shared_css.html">
 <link rel="import" href="../network/onc_mojo.html">
 <link rel="import" href="network_health_mojo.html">
 
 <dom-module id="network-health-summary">
   <template>
-    <style>
-      .network-attribute-container {
-        align-items: center;
-        display: flex;
-        margin: 5px;
-      }
-
-      .network-attribute-label {
-        flex: 1;
-        padding-inline-start: 10px;
-      }
-
-      .network-attribute-value {
-        flex: 1;
-      }
-
+    <style include="network-shared">
       .open-settings-icon {
         height: 15px;
-      }
-
-      .type-icon {
-        height: 20px;
-        width: 20px;
       }
     </style>
     <template is="dom-repeat" items="[[networkHealthState_.networks]]"

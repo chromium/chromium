@@ -209,6 +209,7 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/quick_unlock/setup_pin_keyboard.m.js",
       "chromeos/smb_shares/add_smb_share_dialog.m.js",
       "chromeos/smb_shares/smb_browser_proxy.m.js",
+      "chromeos/traffic_counters/traffic_counters.js",
     ]
   }
 }

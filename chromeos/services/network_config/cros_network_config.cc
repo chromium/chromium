@@ -2939,9 +2939,10 @@ void CrosNetworkConfig::PopulateTrafficCounters(
       NOTREACHED();
     }
 
-    counters.push_back(mojom::TrafficCounter::New(
-        ConvertToTrafficCounterSourceEnum(source->GetString()), rx_bytes,
-        tx_bytes));
+    counters.push_back(
+        mojom::TrafficCounter::New(ConvertToTrafficCounterSourceEnum(
+                                       base::ToLowerASCII(source->GetString())),
+                                   rx_bytes, tx_bytes));
   }
   std::move(callback).Run(std::move(counters));
 }

@@ -31,3 +31,17 @@ source_set("network_health_resource_provider") {
     "//ui/resources:webui_generated_resources_grd_grit",
   ]
 }
+
+source_set("traffic_counters_resource_provider") {
+  sources = [
+    "traffic_counters_resource_provider.cc",
+    "traffic_counters_resource_provider.h",
+  ]
+
+  deps = [
+    "//chromeos/strings/",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/resources:webui_generated_resources_grd_grit",
+  ]
+}

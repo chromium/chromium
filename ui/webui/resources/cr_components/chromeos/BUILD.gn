@@ -18,6 +18,7 @@ group("closure_compile") {
     "quick_unlock:closure_compile",
     "quick_unlock:closure_compile_module",
     "smb_shares:closure_compile_module",
+    "traffic_counters:closure_compile_module",
   ]
 }
 
@@ -30,5 +31,6 @@ group("polymer3_elements") {
     "network_health:polymer3_elements",
     "quick_unlock:polymer3_elements",
     "smb_shares:polymer3_elements",
+    "traffic_counters:web_components",
   ]
 }

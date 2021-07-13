@@ -31,6 +31,7 @@
 #include "chrome/grit/network_ui_resources_map.h"
 #include "chromeos/components/network_ui/network_diagnostics_resource_provider.h"
 #include "chromeos/components/network_ui/network_health_resource_provider.h"
+#include "chromeos/components/network_ui/traffic_counters_resource_provider.h"
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
@@ -570,6 +571,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   cellular_setup::AddNonStringLoadTimeData(html);
   ui::network_element::AddLocalizedStrings(html);
   ui::network_element::AddOncLocalizedStrings(html);
+  traffic_counters::AddResources(html);
   html->UseStringsJs();
 
   webui::SetupWebUIDataSource(

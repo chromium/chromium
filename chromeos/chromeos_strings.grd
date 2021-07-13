@@ -1538,6 +1538,47 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_FILL" desc="Label for fill cropping option for local images">
         Fill
       </message>
+
+      <!-- Traffic Counters UI -->
+      <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
+        Unknown
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_CHROME" desc="Traffic counters related to Chrome">
+        Chrome
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_USER" desc="Traffic counters related to User">
+        User
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_ARC" desc="Traffic counters related to ARC">
+        ARC
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_CROSVM" desc="Traffic counters related to Crosvm">
+        Crosvm
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_PLUGINVM" desc="Traffic counters related to Pluginvm">
+        Pluginvm
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_UPDATE_ENGINE" desc="Traffic counters related to Update Engine">
+        Update Engine
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_VPN" desc="Traffic counters related to virtual private network (VPN)">
+        VPN
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_SYSTEM" desc="Traffic counters related to System">
+        System
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_GUID" desc="Label for a network service's globally unique identifier (GUID)">
+        GUID
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_NAME" desc="Label for a network service's name">
+        Name
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_REQUEST_TRAFFIC_COUNTERS" desc="Label for button requesting traffic counters">
+        Request Traffic Counters
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_TRAFFIC_COUNTERS" desc="Label for showing traffic counters">
+        Traffic Counters
+      </message>
     </messages>
   </release>
 </grit>
