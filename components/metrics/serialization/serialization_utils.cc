@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -25,6 +26,25 @@
 
 namespace metrics {
 namespace {
+
+// Record number of reads on successful reads. Errors (file can't be opened,
+// file can't be flock'ed) do not generate a sample. (If the file is found to
+// be corrupt partway through, the number of successfully read entries is
+// recorded.)
+void RecordNumberOfReadsMetric(int num_reads) {
+  // 100,000 to match kMaxMessagesPerRead.
+  base::UmaHistogramCounts100000("UMA.ReadAndTruncateMetricsFromFile.ReadCount",
+                                 num_reads);
+}
+
+// Record number of elements discarded because the file is too large. Errors
+// (file can't be opened, file can't be flock'ed) do not generate a sample.
+// (If the file is found to be corrupt partway through, the number of
+// successfully read entries is recorded.)
+void RecordNumberOfDiscardsMetric(int num_discards) {
+  base::UmaHistogramCounts1M(
+      "UMA.ReadAndTruncateMetricsFromFile.DiscardedCount", num_discards);
+}
 
 // Reads the next message from |file_descriptor| into |message|.
 //
@@ -89,6 +109,8 @@ bool ReadMessage(int fd, std::string* message) {
 
 }  // namespace
 
+const int SerializationUtils::kMaxMessagesPerRead = 100000;
+
 std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
     const std::string& sample) {
   if (sample.empty())
@@ -129,14 +151,20 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
 
   result = stat(filename.c_str(), &stat_buf);
   if (result < 0) {
-    if (errno != ENOENT)
+    if (errno == ENOENT) {
+      // File doesn't exist, nothing to collect. This isn't an error, it just
+      // means nothing on the ChromeOS side has written to the file yet.
+      RecordNumberOfReadsMetric(0);
+      RecordNumberOfDiscardsMetric(0);
+    } else {
       DPLOG(ERROR) << "bad metrics file stat: " << filename;
-
-    // Nothing to collect---try later.
+    }
     return;
   }
   if (stat_buf.st_size == 0) {
     // Also nothing to collect.
+    RecordNumberOfReadsMetric(0);
+    RecordNumberOfDiscardsMetric(0);
     return;
   }
   base::ScopedFD fd(open(filename.c_str(), O_RDWR));
@@ -151,17 +179,36 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
   }
 
   // This processes all messages in the log. When all messages are
-  // read and processed, or an error occurs, truncate the file to zero size.
-  for (;;) {
+  // read and processed, or an error occurs, or we've read so many that the
+  // buffer is at risk of overflowing, truncate the file to zero size.
+  bool read_complete = false;
+  while (metrics->size() < kMaxMessagesPerRead) {
     std::string message;
 
-    if (!ReadMessage(fd.get(), &message))
+    if (!ReadMessage(fd.get(), &message)) {
+      read_complete = true;
       break;
+    }
 
     std::unique_ptr<MetricSample> sample = ParseSample(message);
     if (sample)
       metrics->push_back(std::move(sample));
   }
+
+  // If we hit kMaxMessagesPerRead, count the number of discarded messages for
+  // the discard metric, but don't add them to the vector to avoid memory
+  // overflow.
+  int num_discards = 0;
+  while (!read_complete) {
+    std::string message;
+    if (!ReadMessage(fd.get(), &message)) {
+      read_complete = true;
+    } else {
+      ++num_discards;
+    }
+  }
+  RecordNumberOfDiscardsMetric(num_discards);
+  RecordNumberOfReadsMetric(metrics->size());
 
   result = ftruncate(fd.get(), 0);
   if (result < 0)

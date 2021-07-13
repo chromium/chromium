@@ -495,6 +495,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UMA.ReadAndTruncateMetricsFromFile.DiscardedCount"
+    units="samples" expires_after="2021-12-26">
+  <owner>iby@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Number of metric samples discarded on each read from the ChromeOS external
+    metrics file. This should only be greater than 0 if the file had so many
+    samples we couldn't fit them all in memory. Emitted each time
+    ReadAndTruncateMetricsFromFile() is called and successfully processes the
+    external metrics file. No entry is emitted if there was an unexpected error
+    opening the file. If the file is found to be corrupt partway through a read,
+    the number of entries discarded before the corruption is found is recorded.
+  </summary>
+</histogram>
+
+<histogram name="UMA.ReadAndTruncateMetricsFromFile.ReadCount" units="samples"
+    expires_after="2021-12-26">
+  <owner>iby@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Number of metric samples successfully read from the ChromeOS external
+    metrics file on each read. Samples discarded because the file is too large
+    are recorded in UMA.ReadAndTruncateMetricsFromFile.DiscardedCount and not in
+    here. Emitted each time ReadAndTruncateMetricsFromFile() is called and
+    successfully processes the external metrics file. No entry is emitted if
+    there was an unexpected error opening the file. If the file is found to be
+    corrupt partway through a read, the number of entries read before the
+    corruption is found is recorded.
+  </summary>
+</histogram>
+
 <histogram name="UMA.SamplingRatePerMille" units="samples per mille"
     expires_after="2022-01-02">
   <owner>jwd@chromium.org</owner>
