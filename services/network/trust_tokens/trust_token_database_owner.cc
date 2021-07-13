@@ -17,6 +17,7 @@
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/proto_table_manager.h"
 #include "services/network/trust_tokens/proto/storage.pb.h"
+#include "sql/database.h"
 
 namespace network {
 
@@ -79,7 +80,14 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
       table_manager_(base::MakeRefCounted<sqlite_proto::ProtoTableManager>(
           db_task_runner)),
       db_task_runner_(db_task_runner),
-      backing_database_(std::make_unique<sql::Database>()),
+      backing_database_(std::make_unique<sql::Database>(sql::DatabaseOptions{
+          // As they work on deleting the feature (crbug.com/1120969), sql/
+          // owners prefer to see which clients are explicitly okay with using
+          // exclusive locking (the default).
+          .exclusive_locking = true,
+          .page_size = 4096,
+          .cache_size = 500,
+      })),
       issuer_table_(
           std::make_unique<sqlite_proto::KeyValueTable<TrustTokenIssuerConfig>>(
               kIssuerTableName)),
