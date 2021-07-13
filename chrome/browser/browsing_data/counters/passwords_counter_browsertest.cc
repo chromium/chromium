@@ -261,13 +261,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, StoreChanged) {
 
 // Tests that changing the deletion period restarts the counting, and that
 // the result takes login creation dates into account.
-// Test is flaky on Linux, Chrome OS and Win. http://crbug.com/1225877
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
-#define MAYBE_PeriodChanged DISABLED_PeriodChanged
-#else
-#define MAYBE_PeriodChanged PeriodChanged
-#endif
-IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MAYBE_PeriodChanged) {
+IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PeriodChanged) {
   AddLogin("https://www.google.com", "user", false);
   RevertTimeInDays(2);
   AddLogin("https://example.com", "user1", false);
