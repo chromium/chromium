@@ -934,34 +934,43 @@ class _Generator(object):
 
     if (underlying_type.property_type.is_fundamental or
         underlying_type.is_serializable_function):
-      if is_ptr:
-        (c.Append('%(cpp_type)s temp;')
-          .Sblock('if (!%s) {' % cpp_util.GetAsFundamentalValue(
-                      self._type_helper.FollowRef(type_), src_var, '&temp'))
+      is_string_or_function = (
+        underlying_type.property_type == PropertyType.STRING
+        or (underlying_type.property_type == PropertyType.FUNCTION
+          and underlying_type.is_serializable_function))
+      c.Append('auto%s temp = %s;' % (
+        '*' if is_string_or_function else '',
+        cpp_util.GetAsFundamentalValue(underlying_type, src_var)
+      ))
+      if is_string_or_function:
+        (c.Sblock('if (!temp) {')
           .Concat(self._AppendError16(
             'u"\'%%(key)s\': expected ' + '%s, got " + %s' % (
                 type_.name,
                 self._util_cc_helper.GetValueTypeString(
                     '%%(src_var)s', True)))))
-        c.Append('%(dst_var)s.reset();')
-        c.Append('return %(failure_value)s;')
-        (c.Eblock('}')
-          .Append('else')
-          .Append('  %(dst_var)s = std::make_unique<%(cpp_type)s>(temp);')
-        )
       else:
-        (c.Sblock('if (!%s) {' % cpp_util.GetAsFundamentalValue(
-                      self._type_helper.FollowRef(type_),
-                      src_var,
-                      '&%s' % dst_var))
+        (c.Sblock('if (!temp.has_value()) {')
           .Concat(self._AppendError16(
             'u"\'%%(key)s\': expected ' + '%s, got " + %s' % (
                 type_.name,
                 self._util_cc_helper.GetValueTypeString(
-                    '%%(src_var)s', True))))
-          .Append('return %(failure_value)s;')
-          .Eblock('}')
-        )
+                    '%%(src_var)s', True)))))
+      if is_ptr:
+        c.Append('%(dst_var)s.reset();')
+      c.Append('return %(failure_value)s;')
+      (c.Eblock('}'))
+      if is_ptr:
+        if is_string_or_function:
+          c.Append('%(dst_var)s = std::make_unique<%(cpp_type)s>(*temp);')
+        else:
+          c.Append('%(dst_var)s = ' +
+            'std::make_unique<%(cpp_type)s>(temp.value());')
+      else:
+        if is_string_or_function:
+          c.Append('%(dst_var)s = *temp;')
+        else:
+          c.Append('%(dst_var)s = temp.value();')
     elif underlying_type.property_type == PropertyType.OBJECT:
       if is_ptr:
         (c.Append('const base::DictionaryValue* dictionary = nullptr;')

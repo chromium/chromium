@@ -56,27 +56,26 @@ def Classname(s):
     result = '_' + result
   return result
 
-def GetAsFundamentalValue(type_, src, dst):
+def GetAsFundamentalValue(type_, src):
   """Returns the C++ code for retrieving a fundamental type from a
   Value into a variable.
 
   src: Value*
-  dst: Property*
   """
   if type_.property_type == PropertyType.BOOLEAN:
-    s = '%s->GetAsBoolean(%s)'
+    s = '%s->GetIfBool()'
   elif type_.property_type == PropertyType.DOUBLE:
-    s = '%s->GetAsDouble(%s)'
+    s = '%s->GetIfDouble()'
   elif type_.property_type == PropertyType.INTEGER:
-    s = '%s->GetAsInteger(%s)'
+    s = '%s->GetIfInt()'
   elif (type_.property_type == PropertyType.STRING or
       (type_.property_type == PropertyType.FUNCTION and
            type_.is_serializable_function)):
-    s = '%s->GetAsString(%s)'
+    s = '%s->GetIfString()'
   else:
     raise ValueError('Type %s is not a fundamental value' % type_.name)
 
-  return s % (src, dst)
+  return s % src
 
 
 def GetValueType(type_):
