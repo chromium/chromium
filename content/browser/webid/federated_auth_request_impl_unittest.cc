@@ -48,9 +48,10 @@ constexpr char kIdpEndpoint[] = "https://idp.example/webid";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kSigninUrl[] = "https://idp.example/signin";
+constexpr char kClientId[] = "client_id_123";
+constexpr char kNonce[] = "nonce123";
 
 // Values will be added here as token introspection is implemented.
-constexpr char kAuthRequest[] = "";
 constexpr char kToken[] = "[not a real token]";
 constexpr char kEmptyToken[] = "";
 
@@ -65,7 +66,8 @@ static const std::initializer_list<IdentityRequestAccount> kAccounts{{
 // Parameters for a call to RequestIdToken.
 typedef struct {
   const char* provider;
-  const char* request;
+  const char* client_id;
+  const char* nonce;
   RequestMode mode;
 } RequestParameters;
 
@@ -122,7 +124,7 @@ static const MockPermissionConfiguration kPermissionNoop{absl::nullopt, "",
 
 static const AuthRequestTestCase kPermissionTestCases[]{
     {"Successful run with the IdP page loaded",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kSuccess, kToken},
      {kToken,
       UserApproval::kApproved,
@@ -134,7 +136,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kMediatedNoop}},
 
     {"Successful run with a token response from the idp_endpoint",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kSuccess, kToken},
      {kToken,
       UserApproval::kApproved,
@@ -146,31 +148,31 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kMediatedNoop}},
 
     {"Initial user permission denied",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kApprovalDeclined, kEmptyToken},
      {kToken, UserApproval::kDenied, absl::nullopt, "", "", "", kPermissionNoop,
       kMediatedNoop}},
 
     {"Wellknown file not found",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorWebIdNotSupportedByProvider, kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kWebIdNotSupported, "", "",
       "", kPermissionNoop, kMediatedNoop}},
 
     {"Wellknown fetch error",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorFetchingWellKnown, kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kFetchError, "", "", "",
       kPermissionNoop, kMediatedNoop}},
 
     {"Error parsing wellknown for Permission mode",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kInvalidResponseError, "",
       kAccountsEndpoint, kTokenEndpoint, kPermissionNoop, kMediatedNoop}},
 
     {"Error reaching the idpendpoint",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorFetchingSignin, kEmptyToken},
      {kToken,
       UserApproval::kApproved,
@@ -182,7 +184,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kMediatedNoop}},
 
     {"Error parsing the idpendpoint response",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorInvalidSigninResponse, kEmptyToken},
      {kToken,
       UserApproval::kApproved,
@@ -194,7 +196,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kMediatedNoop}},
 
     {"IdP window closed before token provision",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kError, kEmptyToken},
      {kEmptyToken,
       UserApproval::kApproved,
@@ -206,7 +208,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kMediatedNoop}},
 
     {"Token provision declined by user after IdP window closed",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kApprovalDeclined, kEmptyToken},
      {kToken,
       UserApproval::kApproved,
@@ -219,19 +221,19 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 
 static const AuthRequestTestCase kMediatedTestCases[]{
     {"Error parsing wellknown for Mediated mode missing token endpoint",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
      {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, kIdpEndpoint,
       kAccountsEndpoint, "", kPermissionNoop, kMediatedNoop}},
 
     {"Error parsing wellknown for Mediated mode missing accounts endpoint",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
      {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, kIdpEndpoint,
       "", kTokenEndpoint, kPermissionNoop, kMediatedNoop}},
 
     {"Error reaching Accounts endpoint",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
      {RequestIdTokenStatus::kError, kEmptyToken},
      {kEmptyToken,
       absl::nullopt,
@@ -243,7 +245,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       {AccountsResponse::kNetError, kAccounts, absl::nullopt}}},
 
     {"Error parsing Accounts response",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
      {RequestIdTokenStatus::kErrorInvalidAccountsResponse, kEmptyToken},
      {kToken,
       absl::nullopt,
@@ -255,7 +257,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       {AccountsResponse::kInvalidResponseError, kAccounts, absl::nullopt}}},
 
     {"Successful Mediated flow",
-     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
      {RequestIdTokenStatus::kSuccess, kToken},
      {kToken,
       absl::nullopt,
@@ -373,7 +375,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   }
 
   std::pair<RequestIdTokenStatus, absl::optional<std::string>>
-  PerformAuthRequest(const std::string& request,
+  PerformAuthRequest(const std::string& client_id,
+                     const std::string& nonce,
                      blink::mojom::RequestMode mode) {
     auth_request_impl_->SetNetworkManagerForTests(
         std::move(mock_request_manager_));
@@ -381,7 +384,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
         std::move(mock_dialog_controller_));
 
     AuthRequestCallbackHelper auth_helper;
-    request_remote_->RequestIdToken(provider_, request, mode,
+    request_remote_->RequestIdToken(provider_, client_id, nonce, mode,
                                     auth_helper.callback());
     auth_helper.WaitForCallback();
     return std::make_pair(auth_helper.status(), auth_helper.token());
@@ -595,7 +598,8 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequests) {
   CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
   auto auth_response =
-      PerformAuthRequest(test_case.inputs.request, test_case.inputs.mode);
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.mode);
   EXPECT_EQ(auth_response.first, test_case.expected.return_status);
   EXPECT_EQ(auth_response.second, test_case.expected.token);
 }

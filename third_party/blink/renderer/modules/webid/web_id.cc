@@ -134,16 +134,6 @@ WebId::WebId(ExecutionContext& context)
 ScriptPromise WebId::get(ScriptState* script_state,
                          const WebIdRequestOptions* options,
                          ExceptionState& exception_state) {
-  if (!options->hasProvider()) {
-    exception_state.ThrowTypeError("Invalid parameters: provider required.");
-    return ScriptPromise();
-  }
-
-  if (!options->hasRequest()) {
-    exception_state.ThrowTypeError("Invalid parameters: request required.");
-    return ScriptPromise();
-  }
-
   DCHECK(options->hasMode());
 
   // TODO(kenrb): Add some renderer-side validation here, such as validating
@@ -161,8 +151,11 @@ ScriptPromise WebId::get(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  String client_id = options->hasClientId() ? options->clientId() : "";
+  String nonce = options->hasNonce() ? options->nonce() : "";
+
   auth_request_->RequestIdToken(
-      provider, options->request(), ToRequestMode(options->mode()),
+      provider, client_id, nonce, ToRequestMode(options->mode()),
       WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver)));
 
   return promise;

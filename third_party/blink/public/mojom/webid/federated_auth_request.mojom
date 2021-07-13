@@ -40,10 +40,18 @@ enum RequestMode {
 // This interface is called from a renderer process and implemented in the
 // browser process.
 interface FederatedAuthRequest {
-  // Requests an IdToken to be generated, given an IDP URL and an OAuth request.
+  // Requests an IdToken to be generated, given an IDP URL, some request
+  // parameters, and a mode that specifies the UI flow.
+  // |client_id| and |nonce| can be empty strings to omit the fields in the
+  // request sent to the provider.
   // Returns the raw content of the IdToken.
-  RequestIdToken(url.mojom.Url provider, string id_request, RequestMode mode) => (RequestIdTokenStatus status, string? id_token);
+  RequestIdToken(url.mojom.Url provider,
+                 string client_id,
+                 string nonce,
+                 RequestMode mode) =>
+      (RequestIdTokenStatus status, string? id_token);
 
-  // Contact the list of Relying Party logout endpoints to attempt to initiate user logout.
+  // Contact the list of Relying Party logout endpoints to attempt to initiate
+  // user logout.
   Logout(array<string> rp_logout_endpoints) => (LogoutStatus status);
 };

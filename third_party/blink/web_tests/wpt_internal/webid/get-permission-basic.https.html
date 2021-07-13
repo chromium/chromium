@@ -10,7 +10,8 @@
   import {webid_test} from './resources/webid-helper.js';
   const test_options = {
     provider: 'https://idp.test',
-    request: ''
+    client_id: '1',
+    nonce: '2',
   };
 
   webid_test(async (t, mock) => {

@@ -50,7 +50,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // blink::mojom::FederatedAuthRequest:
   void RequestIdToken(const GURL& provider,
-                      const std::string& id_request,
+                      const std::string& client_id,
+                      const std::string& nonce,
                       blink::mojom::RequestMode mode,
                       RequestIdTokenCallback) override;
   void Logout(const std::vector<std::string>& logout_endpoints,
@@ -107,7 +108,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Parameters of auth request.
   GURL provider_;
-  std::string id_request_;
+  std::string client_id_;
+  std::string nonce_;
   blink::mojom::RequestMode mode_;
 
   // Fetched from the IDP well-known configuration.

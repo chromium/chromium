@@ -11,8 +11,8 @@ enum Mode {
 
 dictionary WebIdRequestOptions {
   // URL for the Identity Provider.
-  USVString provider;
-  // Serialized request parameters.
-  USVString request;
+  required USVString provider;
+  USVString client_id;
+  USVString nonce;
   Mode mode = "permission";
 };

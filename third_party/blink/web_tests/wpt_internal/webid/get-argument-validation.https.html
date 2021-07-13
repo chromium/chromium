@@ -7,20 +7,12 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <script>
-  // request
-  promise_test(async t => {
-    assert_implements(navigator.id, 'missing navigator.id.');
-    const result = navigator.id.get({
-      provider: 'https://idp.test',
-    });
-    return promise_rejects_js(t, TypeError, result);
-  }, "Reject when request is missing");
-
   // provider
   promise_test(async t => {
     assert_implements(navigator.id, 'missing navigator.id.');
     const result = navigator.id.get({
-      request: ''
+      client_id: '1',
+      nonce: '2',
     });
     return promise_rejects_js(t, TypeError, result);
   }, "Reject when provider is missing" );
@@ -29,7 +21,8 @@
     assert_implements(navigator.id, 'missing navigator.id.');
     const result = navigator.id.get({
       provider: 'not_a_url',
-      request: '',
+      client_id: '1',
+      nonce: '2',
     });
     return promise_rejects_dom(t, 'SyntaxError', result);
   }, `Reject when provider is an invalid URL`);
@@ -39,7 +32,8 @@
     assert_implements(navigator.id, 'missing navigator.id.');
     const result = navigator.id.get({
       provider: 'https://idp.test',
-      request: '',
+      client_id: '1',
+      nonce: '2',
       mode: 'invalid_mode'
     });
     return promise_rejects_js(t, TypeError, result);

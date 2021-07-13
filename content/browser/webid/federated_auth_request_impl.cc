@@ -13,6 +13,7 @@
 #include "content/public/browser/federated_identity_request_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/common/content_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 using blink::mojom::LogoutStatus;
@@ -21,6 +22,23 @@ using blink::mojom::RequestMode;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 
 namespace content {
+
+namespace {
+std::string FormatRequestParams(const std::string& client_id,
+                                const std::string& nonce) {
+  std::string query;
+  // 'openid' scope is required for IdPs using OpenID Connect. We hope that IdPs
+  // using OAuth will ignore it, although some might return errors.
+  query += "scope=openid profile email";
+  if (client_id.length() > 0) {
+    query += "&client_id=" + client_id;
+  }
+  if (nonce.length() > 0) {
+    query += "&nonce=" + nonce;
+  }
+  return query;
+}
+}  // namespace
 
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     RenderFrameHost* host,
@@ -57,7 +75,8 @@ void FederatedAuthRequestImpl::Create(
 }
 
 void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
-                                              const std::string& id_request,
+                                              const std::string& client_id,
+                                              const std::string& nonce,
                                               RequestMode mode,
                                               RequestIdTokenCallback callback) {
   if (logout_callback_ || auth_request_callback_) {
@@ -67,7 +86,8 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
 
   auth_request_callback_ = std::move(callback);
   provider_ = provider;
-  id_request_ = id_request;
+  client_id_ = client_id;
+  nonce_ = nonce;
   mode_ = mode;
 
   network_manager_ = CreateNetworkManager(provider);
@@ -212,7 +232,7 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
       }
 
       network_manager_->SendSigninRequest(
-          endpoints_.idp, id_request_,
+          endpoints_.idp, FormatRequestParams(client_id_, nonce_),
           base::BindOnce(&FederatedAuthRequestImpl::OnSigninResponseReceived,
                          weak_ptr_factory_.GetWeakPtr()));
       break;
@@ -398,7 +418,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(
   }
 
   network_manager_->SendTokenRequest(
-      endpoints_.token, account_id, id_request_,
+      endpoints_.token, account_id, FormatRequestParams(client_id_, nonce_),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -200,7 +200,8 @@ class WebIdBrowserTest : public ContentBrowserTest {
           var x = (await navigator.id.get({
             provider: ')" +
            BaseIdpUrl() + R"(',
-            request: '[not a real request]',
+            client_id: 'client_id_1',
+            nonce: '12345',
           }));
           return x;
         }) ()
@@ -305,7 +306,8 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
           var x = (await navigator.id.get({
             provider: 'http://idp.example)" +
                        base::NumberToString(https_server().port()) + R"(',
-            request: '[not a real request]',
+            client_id: 'client_id_1',
+            nonce: '12345',
           }));
           return x;
         }) ()
