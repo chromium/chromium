@@ -99,7 +99,6 @@ class FakeIconLoader : public apps::IconLoader {
 class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
 

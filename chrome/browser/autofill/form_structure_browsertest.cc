@@ -200,7 +200,6 @@ FormStructureBrowserTest::~FormStructureBrowserTest() {}
 
 void FormStructureBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  InProcessBrowserTest::SetUpCommandLine(command_line);
   // Suppress most output logs because we can't really control the output for
   // arbitrary test sites.
   command_line->AppendSwitchASCII(switches::kLoggingLevel, "2");

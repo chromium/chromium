@@ -85,8 +85,6 @@ void TabCapturePerformanceTestBase::SetUpCommandLine(
 
   command_line->AppendSwitchASCII(extensions::switches::kAllowlistedExtensionID,
                                   kExtensionId);
-
-  InProcessBrowserTest::SetUpCommandLine(command_line);
 }
 
 void TabCapturePerformanceTestBase::LoadExtension(

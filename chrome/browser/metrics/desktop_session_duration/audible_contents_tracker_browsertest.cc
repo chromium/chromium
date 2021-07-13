@@ -52,7 +52,6 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void TearDown() override {

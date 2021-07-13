@@ -43,7 +43,6 @@ class IdleBrowserTest : public InProcessBrowserTest {
   ~IdleBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "IdleDetection");
     command_line->AppendSwitch(

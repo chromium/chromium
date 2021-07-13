@@ -2808,7 +2808,6 @@ class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     command_line->AppendSwitchPath(switches::kUserDataDir, temp_dir_.GetPath());
     std::string json;
@@ -3098,8 +3097,6 @@ class StartupBrowserCreatorPickerTest
   ~StartupBrowserCreatorPickerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-
     if (GetParam().url_arg) {
       command_line->AppendArg(GetParam().url_arg->spec());
     } else if (GetParam().switch_value_ascii) {
@@ -3176,7 +3173,6 @@ class GuestStartupBrowserCreatorPickerTest
   GuestStartupBrowserCreatorPickerTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kGuest);
   }
 };

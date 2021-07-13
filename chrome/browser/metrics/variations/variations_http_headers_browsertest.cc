@@ -120,8 +120,6 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 

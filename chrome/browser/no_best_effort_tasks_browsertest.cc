@@ -84,7 +84,6 @@ class NoBestEffortTasksTest : public InProcessBrowserTest {
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableBestEffortTasks);
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {

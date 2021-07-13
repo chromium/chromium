@@ -216,7 +216,6 @@ class CapturedSitesPasswordManagerBrowserTest
                               features::kUsernameFirstFlow},
         {});
     command_line->AppendSwitch(autofill::switches::kShowAutofillSignatures);
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(
         command_line);
   }

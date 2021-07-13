@@ -518,7 +518,6 @@ class PrefetchProxyBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    InProcessBrowserTest::SetUpCommandLine(cmd);
     cmd->AppendSwitch("prefetch-proxy-never-send-decoy-requests-for-testing");
     // For the proxy.
     cmd->AppendSwitch("ignore-certificate-errors");

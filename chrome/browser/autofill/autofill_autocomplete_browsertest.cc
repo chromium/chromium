@@ -101,7 +101,6 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   // Necessary to avoid flakiness or failure due to input arriving
   // before the first compositor commit.
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 

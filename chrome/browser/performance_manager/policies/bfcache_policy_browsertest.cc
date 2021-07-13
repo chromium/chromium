@@ -60,7 +60,6 @@ class BFCachePolicyBrowserTest
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features_,
                                                 disabled_features_);
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {

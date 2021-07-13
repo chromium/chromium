@@ -60,7 +60,6 @@ class PermissionsSecurityModelBrowserTest
   ~PermissionsSecurityModelBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         embedder_support::kDisablePopupBlocking);
   }

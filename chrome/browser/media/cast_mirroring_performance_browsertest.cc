@@ -638,8 +638,6 @@ class CastV2PerformanceTest : public InProcessBrowserTest,
     } else {
       command_line->AppendSwitchASCII(switches::kWindowSize, "2000,1500");
     }
-
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   // The key contains the name of the argument and the argument.

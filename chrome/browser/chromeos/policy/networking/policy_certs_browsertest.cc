@@ -521,8 +521,6 @@ class PolicyProvidedCertsRegularUserTest : public InProcessBrowserTest {
   ~PolicyProvidedCertsRegularUserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-
     multi_profile_policy_helper_.SetUpCommandLine(command_line);
   }
 

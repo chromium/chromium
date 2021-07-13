@@ -192,7 +192,6 @@ void WebAppControllerBrowserTest::TearDownInProcessBrowserTestFixture() {
 
 void WebAppControllerBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  InProcessBrowserTest::SetUpCommandLine(command_line);
   // Browser will both run and display insecure content.
   command_line->AppendSwitch(switches::kAllowRunningInsecureContent);
   cert_verifier_.SetUpCommandLine(command_line);

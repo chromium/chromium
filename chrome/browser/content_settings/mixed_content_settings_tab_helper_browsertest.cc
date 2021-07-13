@@ -41,7 +41,6 @@ class MixedContentSettingsTabHelperBrowserTest : public InProcessBrowserTest {
     // For using an HTTPS server.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kIgnoreCertificateErrors);
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   content::test::PrerenderTestHelper* prerender_helper() {

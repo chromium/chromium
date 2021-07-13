@@ -128,7 +128,6 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void LoadTestPage(const GURL& url) {

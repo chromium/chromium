@@ -70,7 +70,6 @@ class HttpsOnlyModeBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override { SetPref(false); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 

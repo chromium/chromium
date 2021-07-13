@@ -137,7 +137,6 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     // Tests in this suite make use of documents with no significant
     // rendered content, and such documents do not accept input for 500ms
     // unless we allow it.
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
@@ -1666,7 +1665,6 @@ class LoadImageBrowserTest : public InProcessBrowserTest {
   // Some platforms are flaky due to slower loading interacting with deferred
   // commits.
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 

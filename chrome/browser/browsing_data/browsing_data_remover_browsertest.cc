@@ -491,7 +491,6 @@ class BrowsingDataRemoverBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     // Testing MediaLicenses requires additional command line parameters as
     // it uses the External Clear Key CDM.

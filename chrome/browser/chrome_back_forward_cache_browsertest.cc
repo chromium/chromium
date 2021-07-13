@@ -104,8 +104,6 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
     DisableFeature(features::kBackForwardCacheMemoryControls);
 
     SetupFeaturesAndParameters();
-
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   content::WebContents* web_contents() const {

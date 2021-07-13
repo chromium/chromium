@@ -119,8 +119,6 @@ class FileSystemAccessBrowserTest : public InProcessBrowserTest {
 
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void TearDown() override {

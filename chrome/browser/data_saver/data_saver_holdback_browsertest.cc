@@ -30,7 +30,6 @@ class DataSaverHoldbackBrowserTest : public InProcessBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    InProcessBrowserTest::SetUpCommandLine(cmd);
     cmd->AppendSwitch(
         data_reduction_proxy::switches::kEnableDataReductionProxy);
   }

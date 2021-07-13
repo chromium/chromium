@@ -265,7 +265,6 @@ class PrefersColorSchemeTest : public testing::WithParamInterface<bool>,
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "MediaQueryPrefersColorScheme");
   }
@@ -383,7 +382,6 @@ class PrefersContrastTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "PrefersContrast");
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,

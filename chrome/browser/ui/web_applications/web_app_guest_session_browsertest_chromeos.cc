@@ -31,7 +31,6 @@ class WebAppGuestSessionBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(
         chromeos::switches::kLoginUser,
         user_manager::GuestAccountId().GetUserEmail());
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 };
 

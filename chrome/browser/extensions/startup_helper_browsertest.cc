@@ -25,7 +25,6 @@ class StartupHelperBrowserTest : public InProcessBrowserTest {
 
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
     test_data_dir_ = test_data_dir_.AppendASCII("extensions");
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
  protected:
