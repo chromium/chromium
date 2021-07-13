@@ -878,12 +878,6 @@ class BASE_EXPORT ListValue : public Value {
   void AppendString(StringPiece in_value);
   void AppendString(const std::u16string& in_value);
 
-  using Value::Insert;
-  // Insert a Value at index.
-  // Returns true if successful, or false if the index was out of range.
-  // DEPRECATED, use `Value::Insert()` instead.
-  bool Insert(size_t index, std::unique_ptr<Value> in_value);
-
   // Swaps contents with the `other` list.
   // DEPRECATED, use `GetList()::swap()` instead.
   void Swap(ListValue* other);

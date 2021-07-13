@@ -1576,15 +1576,6 @@ void ListValue::AppendString(const std::u16string& in_value) {
   list().emplace_back(in_value);
 }
 
-bool ListValue::Insert(size_t index, std::unique_ptr<Value> in_value) {
-  DCHECK(in_value);
-  if (index > list().size())
-    return false;
-
-  list().insert(list().begin() + index, std::move(*in_value));
-  return true;
-}
-
 void ListValue::Swap(ListValue* other) {
   CHECK(other->is_list());
   list().swap(other->list());
