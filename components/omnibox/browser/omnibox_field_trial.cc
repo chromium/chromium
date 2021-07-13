@@ -656,8 +656,13 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
   const base::Feature* feature =
       is_incognito ? &omnibox::kOnDeviceHeadProviderIncognito
                    : &omnibox::kOnDeviceHeadProviderNonIncognito;
-  return base::GetFieldTrialParamValueByFeature(
+  std::string constraint = base::GetFieldTrialParamValueByFeature(
       *feature, kOnDeviceHeadModelLocaleConstraint);
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  if (constraint.empty())
+    constraint = "500000";
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+  return constraint;
 }
 
 int OmniboxFieldTrial::OnDeviceHeadSuggestMaxScoreForNonUrlInput(
