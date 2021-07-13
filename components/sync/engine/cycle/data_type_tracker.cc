@@ -25,6 +25,9 @@ constexpr base::TimeDelta kBigLocalChangeNudgeDelay =
     base::TimeDelta::FromMilliseconds(2000);
 constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
 
+constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSessions =
+    base::TimeDelta::FromSeconds(11);
+
 const size_t kDefaultMaxPayloadsPerType = 10;
 
 base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
@@ -34,9 +37,13 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       // Accompany types rely on nudges from other types, and hence have long
       // nudge delays.
       return kVeryBigLocalChangeNudgeDelay;
+    case SESSIONS:
+      // Sessions is the type that causes the most commit traffic. It gets a
+      // custom nudge delay, tuned for a reasonable trade-off between traffic
+      // and freshness.
+      return kDefaultLocalChangeNudgeDelayForSessions;
     case BOOKMARKS:
     case PREFERENCES:
-    case SESSIONS:
       // Types with sometimes automatic changes get longer delays to allow more
       // coalescing.
       return kBigLocalChangeNudgeDelay;

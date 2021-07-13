@@ -813,17 +813,26 @@ TEST_F(NudgeTrackerTest, NudgeDelayTest) {
   EXPECT_EQ(nudge_tracker_.RecordLocalChange(TYPED_URLS),
             nudge_tracker_.RecordLocalChange(EXTENSIONS));
 
-  // Bookmarks, preferences and sessions have bigger delays.
+  // Bookmarks and preferences sometimes have automatic changes (not directly
+  // caused by a user actions), so they have bigger delays.
   EXPECT_GT(nudge_tracker_.RecordLocalChange(BOOKMARKS),
             nudge_tracker_.RecordLocalChange(TYPED_URLS));
   EXPECT_EQ(nudge_tracker_.RecordLocalChange(BOOKMARKS),
             nudge_tracker_.RecordLocalChange(PREFERENCES));
-  EXPECT_EQ(nudge_tracker_.RecordLocalChange(BOOKMARKS),
-            nudge_tracker_.RecordLocalChange(SESSIONS));
 
-  // Autofill has the longer delay of all.
-  EXPECT_GT(nudge_tracker_.RecordLocalChange(AUTOFILL),
+  // Sessions has an even bigger delay.
+  EXPECT_GT(nudge_tracker_.RecordLocalChange(SESSIONS),
             nudge_tracker_.RecordLocalChange(BOOKMARKS));
+
+  // Autofill and UserEvents are "accompany types" that rely on nudges from
+  // other types. They have the longest delay of all, which really only acts as
+  // a last-resort fallback.
+  EXPECT_GT(nudge_tracker_.RecordLocalChange(AUTOFILL),
+            nudge_tracker_.RecordLocalChange(SESSIONS));
+  EXPECT_GT(nudge_tracker_.RecordLocalChange(AUTOFILL),
+            base::TimeDelta::FromHours(1));
+  EXPECT_EQ(nudge_tracker_.RecordLocalChange(AUTOFILL),
+            nudge_tracker_.RecordLocalChange(USER_EVENTS));
 }
 
 // Test that custom nudge delays are used over the defaults.
