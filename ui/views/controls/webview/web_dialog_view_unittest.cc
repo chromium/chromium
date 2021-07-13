@@ -177,12 +177,6 @@ TEST_F(WebDialogViewUnitTest, ObservableWebViewOnWebDialogViewClosed) {
   EXPECT_FALSE(web_view_delegate());
 
   ResetWebDialogDelegate();
-  // Calling back to web view's ResourceLoadComplete() should not cause crash.
-  content::RenderFrameHost* rfh = web_view()->web_contents()->GetMainFrame();
-  ASSERT_TRUE(rfh);
-  content::GlobalRequestID request_id;
-  blink::mojom::ResourceLoadInfo resource_load_info;
-  web_view()->ResourceLoadComplete(rfh, request_id, resource_load_info);
 }
 
 TEST_F(WebDialogViewUnitTest, MetadataTest) {

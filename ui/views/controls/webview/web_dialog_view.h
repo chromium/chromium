@@ -26,7 +26,6 @@
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
-struct GlobalRequestID;
 }  // namespace content
 
 namespace views {
@@ -45,10 +44,6 @@ class ObservableWebView : public WebView {
   // content::WebContentsObserver
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-  void ResourceLoadComplete(
-      content::RenderFrameHost* render_frame_host,
-      const content::GlobalRequestID& request_id,
-      const blink::mojom::ResourceLoadInfo& resource_load_info) override;
 
   // Resets the delegate. The delegate will no longer receive calls after this
   // point.
