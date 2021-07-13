@@ -89,22 +89,6 @@ PasswordReuseDetector::PasswordReuseDetector() {
 
 PasswordReuseDetector::~PasswordReuseDetector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (profile_store_)
-    profile_store_->RemoveObserver(this);
-  if (account_store_)
-    account_store_->RemoveObserver(this);
-}
-
-void PasswordReuseDetector::Init(
-    scoped_refptr<PasswordStoreInterface> profile_store,
-    scoped_refptr<PasswordStoreInterface> account_store) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_store);
-  profile_store_ = std::move(profile_store);
-  profile_store_->AddObserver(this);
-  account_store_ = std::move(account_store);
-  if (account_store_)
-    account_store_->AddObserver(this);
 }
 
 void PasswordReuseDetector::OnGetPasswordStoreResults(
@@ -112,6 +96,18 @@ void PasswordReuseDetector::OnGetPasswordStoreResults(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& form : results)
     AddPassword(*form);
+}
+
+void PasswordReuseDetector::OnLoginsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& change : changes) {
+    if (change.type() == PasswordStoreChange::ADD ||
+        change.type() == PasswordStoreChange::UPDATE)
+      AddPassword(change.form());
+    if (change.type() == PasswordStoreChange::REMOVE)
+      RemovePassword(change.form());
+  }
 }
 
 void PasswordReuseDetector::ClearCachedAccountStorePasswords() {
@@ -325,23 +321,6 @@ void PasswordReuseDetector::ClearAllNonGmailPasswordHash() {
         return email.find("@gmail.com") == std::string::npos;
       });
 }
-
-void PasswordReuseDetector::OnLoginsChanged(
-    password_manager::PasswordStoreInterface* store,
-    const password_manager::PasswordStoreChangeList& changes) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& change : changes) {
-    if (change.type() == PasswordStoreChange::ADD ||
-        change.type() == PasswordStoreChange::UPDATE)
-      AddPassword(change.form());
-    if (change.type() == PasswordStoreChange::REMOVE)
-      RemovePassword(change.form());
-  }
-}
-
-void PasswordReuseDetector::OnLoginsRetained(
-    PasswordStoreInterface* store,
-    const std::vector<PasswordForm>& retained_passwords) {}
 
 void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

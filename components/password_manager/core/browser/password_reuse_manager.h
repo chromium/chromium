@@ -17,6 +17,7 @@ class PrefService;
 
 namespace password_manager {
 
+class PasswordStoreInterface;
 class PasswordStoreSigninNotifier;
 
 using PasswordHashDataList = absl::optional<std::vector<PasswordHashData>>;

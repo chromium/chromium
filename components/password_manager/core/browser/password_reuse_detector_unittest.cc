@@ -221,8 +221,7 @@ TEST(PasswordReuseDetectorTest, OnLoginsChanged) {
     PasswordReuseDetector reuse_detector;
     PasswordStoreChangeList changes =
         GetChangeList(type, GetForms(GetTestDomainsPasswords()));
-    static_cast<PasswordStoreInterface::Observer*>(&reuse_detector)
-        ->OnLoginsChanged(nullptr, changes);
+    reuse_detector.OnLoginsChanged(changes);
     MockPasswordReuseDetectorConsumer mockConsumer;
 
     if (type == PasswordStoreChange::REMOVE) {
@@ -248,8 +247,7 @@ TEST(PasswordReuseDetectorTest, AddAndRemoveSameLogin) {
   // Add the test domain passwords into the saved passwords map.
   PasswordStoreChangeList add_changes =
       GetChangeList(PasswordStoreChange::ADD, login_credentials);
-  static_cast<PasswordStoreInterface::Observer*>(&reuse_detector)
-      ->OnLoginsChanged(nullptr, add_changes);
+  reuse_detector.OnLoginsChanged(add_changes);
 
   const std::vector<MatchingReusedCredential>
       expected_matching_reused_credentials = {
@@ -276,8 +274,7 @@ TEST(PasswordReuseDetectorTest, AddAndRemoveSameLogin) {
   // Remove the test domain passwords from the saved passwords map.
   PasswordStoreChangeList remove_changes =
       GetChangeList(PasswordStoreChange::REMOVE, login_credentials);
-  static_cast<PasswordStoreInterface::Observer*>(&reuse_detector)
-      ->OnLoginsChanged(nullptr, remove_changes);
+  reuse_detector.OnLoginsChanged(remove_changes);
   EXPECT_CALL(mockConsumer,
               OnReuseCheckDone(/*is_reuse_found=*/false, _, _, _, _));
   // The stored credentials were removed so no reuse should be found.
@@ -298,8 +295,7 @@ TEST(PasswordReuseDetectorTest, AddAndRemoveSameLoginWithMultipleForms) {
   // Add the test domain passwords into the saved passwords map.
   PasswordStoreChangeList add_changes =
       GetChangeList(PasswordStoreChange::ADD, login_credentials);
-  static_cast<PasswordStoreInterface::Observer*>(&reuse_detector)
-      ->OnLoginsChanged(nullptr, add_changes);
+  reuse_detector.OnLoginsChanged(add_changes);
 
   std::vector<MatchingReusedCredential> expected_matching_reused_credentials = {
       {"https://example1.com", u"example1Username",
@@ -326,8 +322,7 @@ TEST(PasswordReuseDetectorTest, AddAndRemoveSameLoginWithMultipleForms) {
   PasswordStoreChangeList remove_changes = GetChangeList(
       PasswordStoreChange::REMOVE,
       GetForms({{"https://example1.com", "example1Username", "secretword"}}));
-  static_cast<PasswordStoreInterface::Observer*>(&reuse_detector)
-      ->OnLoginsChanged(nullptr, remove_changes);
+  reuse_detector.OnLoginsChanged(remove_changes);
   expected_matching_reused_credentials = {{"https://example2.com",
                                            u"example2Username",
                                            PasswordForm::Store::kProfileStore}};
@@ -347,8 +342,7 @@ TEST(PasswordReuseDetectorTest, AddAndRemoveSameLoginWithMultipleForms) {
   remove_changes = GetChangeList(
       PasswordStoreChange::REMOVE,
       GetForms({{"https://example2.com", "example2Username", "secretword"}}));
-  static_cast<PasswordStoreInterface::Observer*>(&reuse_detector)
-      ->OnLoginsChanged(nullptr, remove_changes);
+  reuse_detector.OnLoginsChanged(remove_changes);
   EXPECT_CALL(mockConsumer, OnReuseCheckDone(
                                 /*is_reuse_found=*/false, _, _, _, _));
   reuse_detector.CheckReuse(u"123secretword", "https://evil.com",
@@ -756,8 +750,7 @@ TEST(PasswordReuseDetectorTest, PasswordStoreRespectedOnRemove) {
   PasswordStoreChangeList remove_changes;
   remove_changes.push_back(
       PasswordStoreChange(PasswordStoreChange::REMOVE, account_store_form));
-  static_cast<PasswordStoreInterface::Observer*>(&reuse_detector)
-      ->OnLoginsChanged(nullptr, remove_changes);
+  reuse_detector.OnLoginsChanged(remove_changes);
 
   EXPECT_CALL(
       mockConsumer,

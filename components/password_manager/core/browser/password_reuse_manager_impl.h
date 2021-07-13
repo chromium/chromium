@@ -10,11 +10,13 @@
 #include "base/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
 class PasswordReuseManagerImpl : public PasswordReuseManager,
-                                 public PasswordStoreConsumer {
+                                 public PasswordStoreConsumer,
+                                 public PasswordStoreInterface::Observer {
  public:
   PasswordReuseManagerImpl();
   ~PasswordReuseManagerImpl() override;
@@ -61,6 +63,14 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
+  // Implements PasswordStoreInterface::Observer
+  void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
+      const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(
+      PasswordStoreInterface* store,
+      const std::vector<PasswordForm>& retained_passwords) override;
+
   // Saves |username| and a hash of |password| for password reuse checking.
   // |is_gaia_password| indicates if it is a Gaia account. |event| is used for
   // metric logging. |is_primary_account| is whether account belong to the
@@ -81,6 +91,8 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   PrefService* prefs_ = nullptr;
+
+  scoped_refptr<PasswordStoreInterface> profile_store_;
 
   scoped_refptr<PasswordStoreInterface> account_store_;
 

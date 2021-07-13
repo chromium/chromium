@@ -16,7 +16,6 @@
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_change.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
@@ -45,19 +44,19 @@ struct MatchingReusedCredential {
 // It receives saved passwords through PasswordStoreConsumer interface.
 // It stores passwords in memory and CheckReuse() can be used for finding
 // a password reuse.
-class PasswordReuseDetector : public PasswordStoreInterface::Observer {
+class PasswordReuseDetector {
  public:
   PasswordReuseDetector();
-  ~PasswordReuseDetector() override;
-
-  void Init(scoped_refptr<PasswordStoreInterface> profile_store,
-            scoped_refptr<PasswordStoreInterface> account_store = nullptr);
+  ~PasswordReuseDetector();
 
   PasswordReuseDetector(const PasswordReuseDetector&) = delete;
   PasswordReuseDetector& operator=(const PasswordReuseDetector&) = delete;
 
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results);
+
+  void OnLoginsChanged(
+      const password_manager::PasswordStoreChangeList& changes);
 
   // Clears all the cached passwords which are stored on the account store.
   void ClearCachedAccountStorePasswords();
@@ -100,14 +99,6 @@ class PasswordReuseDetector : public PasswordStoreInterface::Observer {
                ReverseStringLess>;
 
   using passwords_iterator = PasswordsReusedCredentialsMap::const_iterator;
-
-  // PasswordStoreInterface::Observer
-  void OnLoginsChanged(
-      password_manager::PasswordStoreInterface* store,
-      const password_manager::PasswordStoreChangeList& changes) override;
-  void OnLoginsRetained(
-      PasswordStoreInterface* store,
-      const std::vector<PasswordForm>& retained_passwords) override;
 
   // Add password from |form| to |passwords_| and
   // |passwords_with_matching_reused_credentials_|.
@@ -161,12 +152,6 @@ class PasswordReuseDetector : public PasswordStoreInterface::Observer {
   // Ensures that all methods, excluding construction, are called on the same
   // sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  scoped_refptr<PasswordStoreInterface> profile_store_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  scoped_refptr<PasswordStoreInterface> account_store_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Contains all passwords.
   // A key is a password.

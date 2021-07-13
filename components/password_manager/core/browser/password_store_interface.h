@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/observer_list_types.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store_change.h"
@@ -30,7 +31,7 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // An interface used to notify clients (observers) of this object that data in
   // the password store has changed. Register the observer via
   // `PasswordStore::AddObserver`.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Notifies the observer that password data changed (e.g. added or changed).
     // Don't rely on `changes` containing REMOVED entries. Certain stores don't
@@ -48,9 +49,6 @@ class PasswordStoreInterface : public RefcountedKeyedService {
     virtual void OnLoginsRetained(
         PasswordStoreInterface* store,
         const std::vector<PasswordForm>& retained_passwords) = 0;
-
-   protected:
-    virtual ~Observer() = default;
   };
 
   // Returns true iff initialization was successful.

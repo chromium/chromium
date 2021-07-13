@@ -17,7 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/observer_list_threadsafe.h"
+#include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -313,8 +313,7 @@ class PasswordStore : protected PasswordStoreSync,
   GetSyncControllerDelegateOnBackgroundSequence() = 0;
 
   // Called by *Internal() methods once the underlying data-modifying operation
-  // has been performed. Notifies observers that password store data may have
-  // been changed.
+  // has been performed.
   void NotifyLoginsChanged(const PasswordStoreChangeList& changes) override;
 
   // Invokes callback and notifies observers if there was a change to the list
@@ -346,6 +345,10 @@ class PasswordStore : protected PasswordStoreSync,
   // |success| is true if initialization was successful. Sets the
   // |init_status_|.
   void OnInitCompleted(bool success);
+
+  // Notifies observers that password store data may have been changed.
+  void NotifyLoginsChangedOnMainSequence(
+      const PasswordStoreChangeList& changes);
 
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   // Invokes |consumer|->OnGetPasswordStoreResults() on the caller's thread with
@@ -481,7 +484,7 @@ class PasswordStore : protected PasswordStoreSync,
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // The observers.
-  scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 

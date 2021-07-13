@@ -509,6 +509,7 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialAdded) {
   store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
+  store->RemoveObserver(&mock_observer);
   store->ShutdownOnUIThread();
 }
 
@@ -552,6 +553,7 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialRemoved) {
                                    RemoveInsecureCredentialsReason::kRemove);
   WaitForPasswordStore();
 
+  store->RemoveObserver(&mock_observer);
   store->ShutdownOnUIThread();
 }
 
@@ -1163,6 +1165,8 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
                   UnorderedPasswordFormElementsAre(&all_credentials)));
   store->GetAllLogins(&mock_consumer);
   WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
   store->ShutdownOnUIThread();
 }
 

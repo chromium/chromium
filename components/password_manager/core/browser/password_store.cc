@@ -70,8 +70,7 @@ std::vector<PasswordFormDigest> ConvertToForms(
 
 }  // namespace
 
-PasswordStore::PasswordStore()
-    : observers_(new base::ObserverListThreadSafe<Observer>()) {}
+PasswordStore::PasswordStore() = default;
 
 bool PasswordStore::Init(PrefService* prefs,
                          base::RepeatingClosure sync_enabled_or_disabled_cb) {
@@ -324,11 +323,11 @@ void PasswordStore::RemoveFieldInfoByTime(base::Time remove_begin,
 }
 
 void PasswordStore::AddObserver(Observer* observer) {
-  observers_->AddObserver(observer);
+  observers_.AddObserver(observer);
 }
 
 void PasswordStore::RemoveObserver(Observer* observer) {
-  observers_->RemoveObserver(observer);
+  observers_.RemoveObserver(observer);
 }
 
 bool PasswordStore::ScheduleTask(base::OnceClosure task) {
@@ -405,8 +404,10 @@ void PasswordStore::NotifyLoginsChanged(
     const PasswordStoreChangeList& changes) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   if (!changes.empty()) {
-    observers_->Notify(FROM_HERE, &Observer::OnLoginsChanged,
-                       base::RetainedRef(this), changes);
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                       changes));
   }
 }
 
@@ -423,6 +424,18 @@ void PasswordStore::OnInitCompleted(bool success) {
   base::UmaHistogramBoolean("PasswordManager.PasswordStoreInitResult", success);
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "passwords", "PasswordStore::InitOnBackgroundSequence", this);
+}
+
+void PasswordStore::NotifyLoginsChangedOnMainSequence(
+    const PasswordStoreChangeList& changes) {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+
+  if (changes.empty())
+    return;
+
+  for (auto& observer : observers_) {
+    observer.OnLoginsChanged(this, changes);
+  }
 }
 
 void PasswordStore::PostLoginsTaskAndReplyToConsumerWithResult(

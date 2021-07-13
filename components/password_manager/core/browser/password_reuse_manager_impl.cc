@@ -77,6 +77,15 @@ PasswordReuseManagerImpl::PasswordReuseManagerImpl() = default;
 PasswordReuseManagerImpl::~PasswordReuseManagerImpl() = default;
 
 void PasswordReuseManagerImpl::Shutdown() {
+  if (profile_store_) {
+    profile_store_->RemoveObserver(this);
+    profile_store_.reset();
+  }
+  if (account_store_) {
+    account_store_->RemoveObserver(this);
+    profile_store_.reset();
+  }
+
   if (notifier_)
     notifier_->UnsubscribeFromSigninEvents();
 
@@ -103,13 +112,14 @@ void PasswordReuseManagerImpl::Init(PrefService* prefs,
   DCHECK(profile_store);
 
   reuse_detector_ = new PasswordReuseDetector();
-  ScheduleTask(base::BindOnce(
-      &PasswordReuseDetector::Init, base::Unretained(reuse_detector_),
-      base::RetainedRef(profile_store), base::RetainedRef(account_store)));
-  profile_store->GetAutofillableLogins(/*consumer=*/this);
+
+  profile_store_ = profile_store;
+  profile_store_->AddObserver(this);
+  profile_store_->GetAutofillableLogins(/*consumer=*/this);
   if (account_store) {
-    account_store->GetAutofillableLogins(/*consumer=*/this);
     account_store_ = account_store;
+    account_store_->AddObserver(this);
+    account_store_->GetAutofillableLogins(/*consumer=*/this);
   }
 }
 
@@ -333,6 +343,17 @@ void PasswordReuseManagerImpl::OnGetPasswordStoreResults(
                               base::Unretained(reuse_detector_),
                               std::move(results)));
 }
+
+void PasswordReuseManagerImpl::OnLoginsChanged(
+    password_manager::PasswordStoreInterface* store,
+    const password_manager::PasswordStoreChangeList& changes) {
+  ScheduleTask(base::BindOnce(&PasswordReuseDetector::OnLoginsChanged,
+                              base::Unretained(reuse_detector_), changes));
+}
+
+void PasswordReuseManagerImpl::OnLoginsRetained(
+    PasswordStoreInterface* store,
+    const std::vector<PasswordForm>& retained_passwords) {}
 
 bool PasswordReuseManagerImpl::ScheduleTask(base::OnceClosure task) {
   return background_task_runner_ &&
