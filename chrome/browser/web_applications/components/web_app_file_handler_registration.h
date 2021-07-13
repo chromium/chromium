@@ -42,7 +42,7 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   std::unique_ptr<ShortcutInfo> info,
                                   base::OnceCallback<void(bool)> callback);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_LINUX)
 using RegisterMimeTypesOnLinuxCallback =
     base::OnceCallback<bool(base::FilePath profile_path,
                             std::string file_contents)>;
