@@ -231,7 +231,7 @@ void FakeUsbDevice::ControlTransferIn(mojom::UsbControlTransferParamsPtr params,
 
 void FakeUsbDevice::ControlTransferOut(
     mojom::UsbControlTransferParamsPtr params,
-    const std::vector<uint8_t>& data,
+    base::span<const uint8_t> data,
     uint32_t timeout,
     ControlTransferOutCallback callback) {
   // Go on with mock device for testing.
@@ -292,7 +292,7 @@ void FakeUsbDevice::IsochronousTransferIn(
 
 void FakeUsbDevice::IsochronousTransferOut(
     uint8_t endpoint_number,
-    const std::vector<uint8_t>& data,
+    base::span<const uint8_t> data,
     const std::vector<uint32_t>& packet_lengths,
     uint32_t timeout,
     IsochronousTransferOutCallback callback) {

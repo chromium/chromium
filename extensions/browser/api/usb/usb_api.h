@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -74,7 +75,7 @@ class UsbTransferFunction : public UsbConnectionFunction {
   void OnCompleted(device::mojom::UsbTransferStatus status,
                    std::unique_ptr<base::DictionaryValue> transfer_info);
   void OnTransferInCompleted(device::mojom::UsbTransferStatus status,
-                             const std::vector<uint8_t>& data);
+                             base::span<const uint8_t> data);
   void OnTransferOutCompleted(device::mojom::UsbTransferStatus status);
   void OnDisconnect();
 };
@@ -379,7 +380,7 @@ class UsbIsochronousTransferFunction : public UsbTransferFunction {
   ResponseAction Run() override;
 
   void OnTransferInCompleted(
-      const std::vector<uint8_t>& data,
+      base::span<const uint8_t> data,
       std::vector<device::mojom::UsbIsochronousPacketPtr> packets);
   void OnTransferOutCompleted(
       std::vector<device::mojom::UsbIsochronousPacketPtr> packets);

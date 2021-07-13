@@ -124,10 +124,10 @@ class FakeUsbDeviceRemote extends TestBrowserProxy {
     if (!response) {
       return {
         status: UsbTransferStatus.TRANSFER_ERROR,
-        data: [],
+        data: {buffer: []},
       };
     }
-    response.data = response.data.slice(0, length);
+    response.data = {buffer: response.data.slice(0, length)};
     return response;
   }
 

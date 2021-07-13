@@ -304,7 +304,7 @@ void AndroidAccessoryDiscovery::OnReadComplete(
     InterfaceInfo interface_info,
     std::array<uint8_t, kSyncNonceLength> nonce,
     mojom::UsbTransferStatus result,
-    const std::vector<uint8_t>& payload) {
+    base::span<const uint8_t> payload) {
   // BABBLE results if the message from the USB peer was longer than expected.
   // That's fine because we're expecting potentially discard some messages in
   // order to find the sync message.
@@ -362,7 +362,7 @@ void AndroidAccessoryDiscovery::OnOpen(
 void AndroidAccessoryDiscovery::OnVersionReply(
     mojo::Remote<device::mojom::UsbDevice> device,
     device::mojom::UsbTransferStatus status,
-    const std::vector<uint8_t>& payload) {
+    base::span<const uint8_t> payload) {
   if (status != mojom::UsbTransferStatus::COMPLETED || payload.size() != 2) {
     RecordEvent(AOADiscoveryEvent::kVersionFailed);
     FIDO_LOG(DEBUG) << "Android AOA version request failed with status: "

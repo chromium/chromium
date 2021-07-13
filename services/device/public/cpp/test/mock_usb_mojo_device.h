@@ -85,14 +85,14 @@ class MockUsbMojoDevice : public mojom::UsbDevice {
                     ControlTransferInCallback*));
 
   void ControlTransferOut(mojom::UsbControlTransferParamsPtr params,
-                          const std::vector<uint8_t>& data,
+                          base::span<const uint8_t> data,
                           uint32_t timeout,
                           ControlTransferOutCallback callback) override {
     ControlTransferOutInternal(*params, data, timeout, &callback);
   }
   MOCK_METHOD4(ControlTransferOutInternal,
                void(const mojom::UsbControlTransferParams&,
-                    const std::vector<uint8_t>&,
+                    base::span<const uint8_t>,
                     uint32_t,
                     ControlTransferOutCallback*));
 
@@ -128,14 +128,14 @@ class MockUsbMojoDevice : public mojom::UsbDevice {
                                                uint32_t));
 
   void IsochronousTransferOut(uint8_t endpoint_number,
-                              const std::vector<uint8_t>& data,
+                              base::span<const uint8_t> data,
                               const std::vector<uint32_t>& packet_lengths,
                               uint32_t timeout,
                               IsochronousTransferOutCallback callback) override;
   MOCK_METHOD4(
       IsochronousTransferOutInternal,
       std::vector<mojom::UsbIsochronousPacket>(uint8_t,
-                                               const std::vector<uint8_t>&,
+                                               base::span<const uint8_t>,
                                                const std::vector<uint32_t>&,
                                                uint32_t));
 

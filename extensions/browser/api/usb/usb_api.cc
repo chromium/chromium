@@ -490,7 +490,7 @@ void UsbTransferFunction::OnCompleted(
 
 void UsbTransferFunction::OnTransferInCompleted(
     UsbTransferStatus status,
-    const std::vector<uint8_t>& data) {
+    base::span<const uint8_t> data) {
   base::Value transfer_info(base::Value::Type::DICTIONARY);
   transfer_info.SetIntKey(kResultCodeKey, static_cast<int>(status));
   transfer_info.SetKey(kDataKey, base::Value(data));
@@ -1274,7 +1274,7 @@ ExtensionFunction::ResponseAction UsbIsochronousTransferFunction::Run() {
 }
 
 void UsbIsochronousTransferFunction::OnTransferInCompleted(
-    const std::vector<uint8_t>& data,
+    base::span<const uint8_t> data,
     std::vector<UsbIsochronousPacketPtr> packets) {
   size_t length = std::accumulate(packets.begin(), packets.end(), 0,
                                   [](const size_t& a, const auto& packet) {

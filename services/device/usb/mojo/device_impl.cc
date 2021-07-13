@@ -37,15 +37,8 @@ void OnTransferIn(mojom::UsbDevice::GenericTransferInCallback callback,
                   UsbTransferStatus status,
                   scoped_refptr<base::RefCountedBytes> buffer,
                   size_t buffer_size) {
-  std::vector<uint8_t> data;
-  if (buffer) {
-    // TODO(rockot/reillyg): Take advantage of the ability to access the
-    // std::vector<uint8_t> within a base::RefCountedBytes to move instead of
-    // copy.
-    data.resize(buffer_size);
-    std::copy(buffer->front(), buffer->front() + buffer_size, data.begin());
-  }
-
+  auto data = buffer ? base::make_span(buffer->front(), buffer_size)
+                     : base::span<const uint8_t>();
   std::move(callback).Run(mojo::ConvertTo<mojom::UsbTransferStatus>(status),
                           data);
 }
@@ -61,19 +54,13 @@ void OnIsochronousTransferIn(
     mojom::UsbDevice::IsochronousTransferInCallback callback,
     scoped_refptr<base::RefCountedBytes> buffer,
     std::vector<UsbIsochronousPacketPtr> packets) {
-  std::vector<uint8_t> data;
-  if (buffer) {
-    // TODO(rockot/reillyg): Take advantage of the ability to access the
-    // std::vector<uint8_t> within a base::RefCountedBytes to move instead of
-    // copy.
-    uint32_t buffer_size = std::accumulate(
-        packets.begin(), packets.end(), 0u,
-        [](const uint32_t& a, const UsbIsochronousPacketPtr& packet) {
-          return a + packet->length;
-        });
-    data.resize(buffer_size);
-    std::copy(buffer->front(), buffer->front() + buffer_size, data.begin());
-  }
+  uint32_t buffer_size = std::accumulate(
+      packets.begin(), packets.end(), 0u,
+      [](const uint32_t& a, const UsbIsochronousPacketPtr& packet) {
+        return a + packet->length;
+      });
+  auto data = buffer ? base::make_span(buffer->front(), buffer_size)
+                     : base::span<const uint8_t>();
   std::move(callback).Run(data, std::move(packets));
 }
 
@@ -88,7 +75,7 @@ void OnIsochronousTransferOut(
 // configure an Android phone to act as a security key.
 bool IsAndroidSecurityKeyRequest(
     const mojom::UsbControlTransferParamsPtr& params,
-    const std::vector<uint8_t>& data) {
+    base::span<const uint8_t> data) {
   // This matches a request to send an AOA model string:
   // https://source.android.com/devices/accessories/aoa#attempt-to-start-in-accessory-mode
   //
@@ -344,7 +331,7 @@ void DeviceImpl::ControlTransferIn(UsbControlTransferParamsPtr params,
 }
 
 void DeviceImpl::ControlTransferOut(UsbControlTransferParamsPtr params,
-                                    const std::vector<uint8_t>& data,
+                                    base::span<const uint8_t> data,
                                     uint32_t timeout,
                                     ControlTransferOutCallback callback) {
   if (!device_handle_) {
@@ -417,7 +404,7 @@ void DeviceImpl::IsochronousTransferIn(
 
 void DeviceImpl::IsochronousTransferOut(
     uint8_t endpoint_number,
-    const std::vector<uint8_t>& data,
+    base::span<const uint8_t> data,
     const std::vector<uint32_t>& packet_lengths,
     uint32_t timeout,
     IsochronousTransferOutCallback callback) {

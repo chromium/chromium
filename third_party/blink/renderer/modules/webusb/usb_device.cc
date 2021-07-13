@@ -96,28 +96,6 @@ String ConvertTransferStatus(const UsbTransferStatus& status) {
   }
 }
 
-bool ConvertBufferSource(const DOMArrayPiece& buffer_source,
-                         Vector<uint8_t>* vector,
-                         ScriptPromiseResolver* resolver) {
-  DCHECK(!buffer_source.IsNull());
-
-  if (buffer_source.IsDetached()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
-    return false;
-  }
-
-  if (buffer_source.ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, kBufferTooBig));
-    return false;
-  }
-
-  vector->Append(buffer_source.Bytes(),
-                 static_cast<wtf_size_t>(buffer_source.ByteLength()));
-  return true;
-}
-
 }  // namespace
 
 USBDevice::USBDevice(UsbDeviceInfoPtr device_info,
@@ -388,6 +366,8 @@ ScriptPromise USBDevice::controlTransferOut(
     ScriptState* script_state,
     const USBControlTransferParameters* setup,
     const DOMArrayPiece& data) {
+  DCHECK(!data.IsNull());
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!EnsureNoDeviceOrInterfaceChangeInProgress(resolver))
@@ -403,14 +383,23 @@ ScriptPromise USBDevice::controlTransferOut(
   if (!parameters)
     return promise;
 
-  Vector<uint8_t> buffer;
-  if (!ConvertBufferSource(data, &buffer, resolver))
+  if (data.IsDetached()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
     return promise;
+  }
 
-  unsigned transfer_length = buffer.size();
+  if (data.ByteLength() > std::numeric_limits<uint32_t>::max()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, kBufferTooBig));
+    return promise;
+  }
+
+  auto transfer_length = static_cast<uint32_t>(data.ByteLength());
   device_requests_.insert(resolver);
   device_->ControlTransferOut(
-      std::move(parameters), buffer, 0,
+      std::move(parameters), base::make_span(data.Bytes(), data.ByteLength()),
+      0,
       WTF::Bind(&USBDevice::AsyncControlTransferOut, WrapPersistent(this),
                 transfer_length, WrapPersistent(resolver)));
   return promise;
@@ -472,7 +461,7 @@ ScriptPromise USBDevice::transferOut(ScriptState* script_state,
     return promise;
   }
 
-  unsigned transfer_length = static_cast<uint32_t>(data.ByteLength());
+  auto transfer_length = static_cast<uint32_t>(data.ByteLength());
   device_requests_.insert(resolver);
   device_->GenericTransferOut(
       endpoint_number, base::make_span(data.Bytes(), data.ByteLength()), 0,
@@ -502,18 +491,29 @@ ScriptPromise USBDevice::isochronousTransferOut(
     uint8_t endpoint_number,
     const DOMArrayPiece& data,
     Vector<unsigned> packet_lengths) {
+  DCHECK(!data.IsNull());
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!EnsureEndpointAvailable(false /* out */, endpoint_number, resolver))
     return promise;
 
-  Vector<uint8_t> buffer;
-  if (!ConvertBufferSource(data, &buffer, resolver))
+  if (data.IsDetached()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
     return promise;
+  }
+
+  if (data.ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, kBufferTooBig));
+    return promise;
+  }
 
   device_requests_.insert(resolver);
   device_->IsochronousTransferOut(
-      endpoint_number, buffer, packet_lengths, 0,
+      endpoint_number, base::make_span(data.Bytes(), data.ByteLength()),
+      packet_lengths, 0,
       WTF::Bind(&USBDevice::AsyncIsochronousTransferOut, WrapPersistent(this),
                 WrapPersistent(resolver)));
   return promise;
@@ -915,7 +915,7 @@ void USBDevice::AsyncSelectAlternateInterface(wtf_size_t interface_index,
 
 void USBDevice::AsyncControlTransferIn(ScriptPromiseResolver* resolver,
                                        UsbTransferStatus status,
-                                       const Vector<uint8_t>& data) {
+                                       base::span<const uint8_t> data) {
   if (!MarkRequestComplete(resolver))
     return;
 
@@ -928,7 +928,7 @@ void USBDevice::AsyncControlTransferIn(ScriptPromiseResolver* resolver,
   }
 }
 
-void USBDevice::AsyncControlTransferOut(unsigned transfer_length,
+void USBDevice::AsyncControlTransferOut(uint32_t transfer_length,
                                         ScriptPromiseResolver* resolver,
                                         UsbTransferStatus status) {
   if (!MarkRequestComplete(resolver))
@@ -957,7 +957,7 @@ void USBDevice::AsyncClearHalt(ScriptPromiseResolver* resolver, bool success) {
 
 void USBDevice::AsyncTransferIn(ScriptPromiseResolver* resolver,
                                 UsbTransferStatus status,
-                                const Vector<uint8_t>& data) {
+                                base::span<const uint8_t> data) {
   if (!MarkRequestComplete(resolver))
     return;
 
@@ -987,7 +987,7 @@ void USBDevice::AsyncTransferOut(uint32_t transfer_length,
 
 void USBDevice::AsyncIsochronousTransferIn(
     ScriptPromiseResolver* resolver,
-    const Vector<uint8_t>& data,
+    base::span<const uint8_t> data,
     Vector<UsbIsochronousPacketPtr> mojo_packets) {
   if (!MarkRequestComplete(resolver))
     return;

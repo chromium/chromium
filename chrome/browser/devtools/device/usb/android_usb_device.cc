@@ -334,7 +334,7 @@ void AndroidUsbDevice::ReadHeader() {
 }
 
 void AndroidUsbDevice::ParseHeader(UsbTransferStatus status,
-                                   const std::vector<uint8_t>& buffer) {
+                                   base::span<const uint8_t> buffer) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (status == UsbTransferStatus::TIMEOUT) {
@@ -390,7 +390,7 @@ void AndroidUsbDevice::ParseBody(std::unique_ptr<AdbMessage> message,
                                  uint32_t data_length,
                                  uint32_t data_check,
                                  UsbTransferStatus status,
-                                 const std::vector<uint8_t>& buffer) {
+                                 base::span<const uint8_t> buffer) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (status == UsbTransferStatus::TIMEOUT) {

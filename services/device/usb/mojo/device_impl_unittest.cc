@@ -93,7 +93,7 @@ void ExpectTransferInAndThen(mojom::UsbTransferStatus expected_status,
                              const std::vector<uint8_t>& expected_bytes,
                              base::OnceClosure continuation,
                              mojom::UsbTransferStatus actual_status,
-                             const std::vector<uint8_t>& actual_bytes) {
+                             base::span<const uint8_t> actual_bytes) {
   EXPECT_EQ(expected_status, actual_status);
   ASSERT_EQ(expected_bytes.size(), actual_bytes.size());
   for (size_t i = 0; i < actual_bytes.size(); ++i) {
@@ -121,7 +121,7 @@ void ExpectPacketsInAndThen(
     const std::vector<uint8_t>& expected_bytes,
     const std::vector<uint32_t>& expected_packets,
     base::OnceClosure continuation,
-    const std::vector<uint8_t>& actual_bytes,
+    base::span<const uint8_t> actual_bytes,
     std::vector<UsbIsochronousPacketPtr> actual_packets) {
   ASSERT_EQ(expected_packets.size(), actual_packets.size());
   for (size_t i = 0; i < expected_packets.size(); ++i) {

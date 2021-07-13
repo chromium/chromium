@@ -7,6 +7,7 @@
 
 #include <bitset>
 
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/usb_device.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -144,20 +145,20 @@ class USBDevice : public ScriptWrappable,
                                      bool success);
   void AsyncControlTransferIn(ScriptPromiseResolver*,
                               device::mojom::blink::UsbTransferStatus,
-                              const Vector<uint8_t>&);
-  void AsyncControlTransferOut(unsigned,
+                              base::span<const uint8_t> data);
+  void AsyncControlTransferOut(uint32_t transfer_length,
                                ScriptPromiseResolver*,
                                device::mojom::blink::UsbTransferStatus);
   void AsyncClearHalt(ScriptPromiseResolver*, bool success);
   void AsyncTransferIn(ScriptPromiseResolver*,
                        device::mojom::blink::UsbTransferStatus,
-                       const Vector<uint8_t>&);
+                       base::span<const uint8_t> data);
   void AsyncTransferOut(uint32_t transfer_length,
                         ScriptPromiseResolver*,
                         device::mojom::blink::UsbTransferStatus);
   void AsyncIsochronousTransferIn(
       ScriptPromiseResolver*,
-      const Vector<uint8_t>&,
+      base::span<const uint8_t> data,
       Vector<device::mojom::blink::UsbIsochronousPacketPtr>);
   void AsyncIsochronousTransferOut(
       ScriptPromiseResolver*,

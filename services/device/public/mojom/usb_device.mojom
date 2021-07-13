@@ -246,7 +246,7 @@ interface UsbDevice {
   ControlTransferIn(UsbControlTransferParams params,
                     uint32 length,
                     uint32 timeout)
-      => (UsbTransferStatus status, array<uint8> data);
+      => (UsbTransferStatus status, mojo_base.mojom.ReadOnlyBuffer data);
 
   // Initiates an inbound control transfer request. |params| determine the
   // details of the request. Transfers to recipients other than DEVICE require a
@@ -258,7 +258,7 @@ interface UsbDevice {
   // indicates no timeout: the request will remain pending indefinitely until
   // completed or otherwise terminated.
   ControlTransferOut(UsbControlTransferParams params,
-                     array<uint8> data,
+                     mojo_base.mojom.ReadOnlyBuffer data,
                      uint32 timeout)
       => (UsbTransferStatus status);
 
@@ -276,7 +276,7 @@ interface UsbDevice {
   // indicates no timeout: the request will remain pending indefinitely until
   // completed or otherwise terminated.
   GenericTransferIn(uint8 endpoint_number, uint32 length, uint32 timeout)
-      => (UsbTransferStatus status, array<uint8> data);
+      => (UsbTransferStatus status, mojo_base.mojom.ReadOnlyBuffer data);
 
   // Initiates an outbound generic transfer request on a specific endpoint. The
   // interface to which |endpoint_number| belongs must be claimed, and the
@@ -315,7 +315,8 @@ interface UsbDevice {
   IsochronousTransferIn(uint8 endpoint_number,
                         array<uint32> packet_lengths,
                         uint32 timeout)
-      => (array<uint8> data, array<UsbIsochronousPacket> packets);
+      => (mojo_base.mojom.ReadOnlyBuffer data,
+          array<UsbIsochronousPacket> packets);
 
   // Initiates an outbound isochronous transfer request on a specific endpoint.
   // The interface to which |endpoint_number| belongs must be claimed, and the
@@ -334,7 +335,7 @@ interface UsbDevice {
 
   // |packets| contains the status of each packet sent to the device, in order.
   IsochronousTransferOut(uint8 endpoint_number,
-                         array<uint8> data,
+                         mojo_base.mojom.ReadOnlyBuffer data,
                          array<uint32> packet_lengths,
                          uint32 timeout)
       => (array<UsbIsochronousPacket> packets);

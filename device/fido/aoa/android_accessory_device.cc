@@ -74,7 +74,7 @@ void AndroidAccessoryDevice::OnWriteComplete(DeviceCallback callback,
 void AndroidAccessoryDevice::OnReadLengthComplete(
     DeviceCallback callback,
     mojom::UsbTransferStatus result,
-    const std::vector<uint8_t>& payload) {
+    base::span<const uint8_t> payload) {
   if (result != mojom::UsbTransferStatus::COMPLETED ||
       payload.size() != 1 + sizeof(uint32_t)) {
     FIDO_LOG(ERROR) << "Failed to read reply from USB device ("
@@ -113,11 +113,10 @@ void AndroidAccessoryDevice::OnReadLengthComplete(
                      weak_factory_.GetWeakPtr(), std::move(callback), length));
 }
 
-void AndroidAccessoryDevice::OnReadComplete(
-    DeviceCallback callback,
-    const uint32_t length,
-    mojom::UsbTransferStatus result,
-    const std::vector<uint8_t>& payload) {
+void AndroidAccessoryDevice::OnReadComplete(DeviceCallback callback,
+                                            const uint32_t length,
+                                            mojom::UsbTransferStatus result,
+                                            base::span<const uint8_t> payload) {
   if (result != mojom::UsbTransferStatus::COMPLETED ||
       payload.size() + buffer_.size() > length) {
     FIDO_LOG(ERROR) << "Failed to read from USB device ("

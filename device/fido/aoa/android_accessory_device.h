@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_device.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -43,11 +44,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AndroidAccessoryDevice : public FidoDevice {
                        device::mojom::UsbTransferStatus result);
   void OnReadLengthComplete(DeviceCallback callback,
                             device::mojom::UsbTransferStatus result,
-                            const std::vector<uint8_t>& payload);
+                            base::span<const uint8_t> payload);
   void OnReadComplete(DeviceCallback callback,
                       const uint32_t length,
                       device::mojom::UsbTransferStatus result,
-                      const std::vector<uint8_t>& payload);
+                      base::span<const uint8_t> payload);
 
   mojo::Remote<device::mojom::UsbDevice> device_;
   const uint8_t in_endpoint_;

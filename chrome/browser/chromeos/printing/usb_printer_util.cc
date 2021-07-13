@@ -14,6 +14,7 @@
 
 #include "base/big_endian.h"
 #include "base/callback_helpers.h"
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -55,7 +56,7 @@ const int kDefaultConfiguration = 0;
 void OnControlTransfer(mojo::Remote<device::mojom::UsbDevice> device,
                        GetDeviceIdCallback cb,
                        device::mojom::UsbTransferStatus status,
-                       const std::vector<uint8_t>& data) {
+                       base::span<const uint8_t> data) {
   if (status != device::mojom::UsbTransferStatus::COMPLETED || data.empty()) {
     return std::move(cb).Run({});
   }

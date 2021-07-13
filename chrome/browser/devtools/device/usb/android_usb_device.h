@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -110,7 +111,7 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
 
   void ReadHeader();
   void ParseHeader(device::mojom::UsbTransferStatus status,
-                   const std::vector<uint8_t>& buffer);
+                   base::span<const uint8_t> buffer);
 
   void ReadBody(std::unique_ptr<AdbMessage> message,
                 uint32_t data_length,
@@ -119,7 +120,7 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
                  uint32_t data_length,
                  uint32_t data_check,
                  device::mojom::UsbTransferStatus status,
-                 const std::vector<uint8_t>& buffer);
+                 base::span<const uint8_t> buffer);
 
   void HandleIncoming(std::unique_ptr<AdbMessage> message);
 

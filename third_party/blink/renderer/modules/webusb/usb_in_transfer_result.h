@@ -20,7 +20,7 @@ class USBInTransferResult final : public ScriptWrappable {
 
  public:
   static USBInTransferResult* Create(const String& status,
-                                     const Vector<uint8_t>& data) {
+                                     base::span<const uint8_t> data) {
     DOMDataView* data_view = DOMDataView::Create(
         DOMArrayBuffer::Create(data.data(), data.size()), 0, data.size());
     return MakeGarbageCollected<USBInTransferResult>(status, data_view);

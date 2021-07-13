@@ -480,7 +480,7 @@ export class DescriptorPanel {
       checkTransferSuccess(
           response.status, 'Failed to read the device descriptor.',
           this.rootElement_);
-      this.renderStandardDescriptor_(new Uint8Array(response.data));
+      this.renderStandardDescriptor_(new Uint8Array(response.data.buffer));
     } catch (e) {
       showError(e.message, this.rootElement_);
     } finally {
@@ -607,7 +607,8 @@ export class DescriptorPanel {
           'Failed to read the device configuration descriptor to determine ' +
               'the total descriptor length.',
           this.rootElement_);
-      const dataView = new DataView(new Uint8Array(response.data).buffer);
+      const dataView =
+          new DataView(new Uint8Array(response.data.buffer).buffer);
       const length = dataView.getUint16(
           CONFIGURATION_DESCRIPTOR_TOTAL_LENGTH_OFFSET, true);
       // Re-gets the data using the full length.
@@ -617,7 +618,7 @@ export class DescriptorPanel {
           response.status,
           'Failed to read the complete configuration descriptor.',
           this.rootElement_);
-      this.renderStandardDescriptor_(new Uint8Array(response.data));
+      this.renderStandardDescriptor_(new Uint8Array(response.data.buffer));
     } catch (e) {
       showError(e.message, this.rootElement_);
     } finally {
@@ -898,7 +899,7 @@ export class DescriptorPanel {
       await this.usbDeviceProxy_.close();
     }
 
-    const responseData = new Uint8Array(response.data);
+    const responseData = new Uint8Array(response.data.buffer);
     this.languageCodesListElement_.innerText = '';
 
     const optionAllElement = document.createElement('option');
@@ -953,7 +954,7 @@ export class DescriptorPanel {
 
       this.indexInput_.value = index;
       this.renderStandardDescriptor_(
-          new Uint8Array(response.data), languageCode, treeItem);
+          new Uint8Array(response.data.buffer), languageCode, treeItem);
     } catch (e) {
       showError(e.message, this.rootElement_);
     } finally {
@@ -1108,7 +1109,8 @@ export class DescriptorPanel {
           'Failed to read the device BOS descriptor to determine ' +
               'the total descriptor length.',
           this.rootElement_);
-      const dataView = new DataView(new Uint8Array(response.data).buffer);
+      const dataView =
+          new DataView(new Uint8Array(response.data.buffer).buffer);
       const length =
           dataView.getUint16(BOS_DESCRIPTOR_TOTAL_LENGTH_OFFSET, true);
       // Re-gets the data using the full length.
@@ -1117,7 +1119,8 @@ export class DescriptorPanel {
       checkTransferSuccess(
           response.status, 'Failed to read the complete BOS descriptor.',
           this.rootElement_);
-      await this.renderStandardDescriptor_(new Uint8Array(response.data));
+      await this.renderStandardDescriptor_(
+          new Uint8Array(response.data.buffer));
     } catch (e) {
       showError(e.message, this.rootElement_);
     } finally {
@@ -1476,7 +1479,7 @@ export class DescriptorPanel {
       let url;
       // URL Prefixes are defined by Chapter 4.3.1 of the WebUSB
       // specification: http://wicg.github.io/webusb/
-      switch (urlResponse.data[2]) {
+      switch (urlResponse.data.buffer[2]) {
         case 0:
           url = 'http://';
           break;
@@ -1489,7 +1492,7 @@ export class DescriptorPanel {
       }
       // The first three elements of urlResponse.data are length, descriptor
       // type and URL scheme prefix.
-      url += decodeUtf8Array(new Uint8Array(urlResponse.data.slice(3)));
+      url += decodeUtf8Array(new Uint8Array(urlResponse.data.buffer.slice(3)));
 
       const landingPageItem = customTreeItem(url, 'descriptor-url');
       landingPageItem.labelElement.addEventListener(
@@ -1545,7 +1548,7 @@ export class DescriptorPanel {
       await this.usbDeviceProxy_.close();
     }
 
-    return new Uint8Array(response.data);
+    return new Uint8Array(response.data.buffer);
   }
 
   /**
@@ -1572,7 +1575,7 @@ export class DescriptorPanel {
       // command. It doesn't need extra bytes to send the device in the body
       // of the request.
       const response = await this.usbDeviceProxy_.controlTransferOut(
-          usbControlTransferParams, [], CONTROL_TRANSFER_TIMEOUT_MS);
+          usbControlTransferParams, {buffer: []}, CONTROL_TRANSFER_TIMEOUT_MS);
 
       checkTransferSuccess(
           response.status,
@@ -2319,7 +2322,7 @@ export class DescriptorPanel {
             usbControlTransferParams, length, CONTROL_TRANSFER_TIMEOUT_MS);
         checkTransferSuccess(
             response.status, 'Failed to send request.', this.rootElement_);
-        this.renderTestingData_(new Uint8Array(response.data));
+        this.renderTestingData_(new Uint8Array(response.data.buffer));
       } else if (direction === 'Host-to-Device') {
         const dataString = this.rootElement_.querySelector('textarea').value;
 
@@ -2329,7 +2332,8 @@ export class DescriptorPanel {
         }
 
         const response = await this.usbDeviceProxy_.controlTransferOut(
-            usbControlTransferParams, data, CONTROL_TRANSFER_TIMEOUT_MS);
+            usbControlTransferParams, {buffer: data},
+            CONTROL_TRANSFER_TIMEOUT_MS);
         checkTransferSuccess(
             response.status, 'Failed to send request.', this.rootElement_);
       }
