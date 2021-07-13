@@ -406,6 +406,11 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
 
 - (void)consistencyDefaultAccountCoordinatorSkip:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  PrefService* userPrefService = browserState->GetPrefs();
+  const int skipCounter =
+      userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount) + 1;
+  userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, skipCounter);
   [self dismissNavigationViewController];
 }
 

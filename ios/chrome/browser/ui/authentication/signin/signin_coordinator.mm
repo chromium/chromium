@@ -6,6 +6,8 @@
 
 #include "base/notreached.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/account_consistency_method.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
@@ -30,11 +32,23 @@
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
+namespace {
+
+// Parameter for web signin dismissal count.
+// This parameter is releated to kMICEWebSignIn feature.
+const char* kConsecutiveActiveDismissalLimitParam =
+    "consecutive_active_dismissal_limit";
+// Default web sign-in dismissal count.
+constexpr int kDefaultSignInWebSignInDismissalCount = 3;
+
+}  // namespace
+
 @implementation SigninCoordinator
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // ConsistencyPromoSigninCoordinator.
   registry->RegisterIntegerPref(prefs::kSigninBottomSheetShownCount, 0);
+  registry->RegisterIntegerPref(prefs::kSigninWebSignDismissalCount, 0);
 }
 
 + (instancetype)
@@ -163,6 +177,16 @@ using signin_metrics::PromoAction;
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             SUPPRESSED_SIGNIN_NOT_ALLOWED);
+    return nil;
+  }
+  const int maxDismissalCount = base::GetFieldTrialParamByFeatureAsInt(
+      signin::kMICEWebSignIn, kConsecutiveActiveDismissalLimitParam,
+      kDefaultSignInWebSignInDismissalCount);
+  if (userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount) >
+      maxDismissalCount) {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            SUPPRESSED_CONSECUTIVE_DISMISSALS);
     return nil;
   }
   return [[ConsistencyPromoSigninCoordinator alloc]

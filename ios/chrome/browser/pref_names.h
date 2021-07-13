@@ -42,6 +42,7 @@ extern const char kShowMemoryDebuggingTools[];
 extern const char kSigninLastAccounts[];
 extern const char kSigninLastAccountsMigrated[];
 extern const char kSigninShouldPromptForSigninAgain[];
+extern const char kSigninWebSignDismissalCount[];
 extern const char kSigninBottomSheetShownCount[];
 
 extern const char kIosUserZoomMultipliers[];

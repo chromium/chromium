@@ -132,6 +132,11 @@ const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
 const char kSigninShouldPromptForSigninAgain[] =
     "ios.signin.should_prompt_for_signin_again";
 
+// Number of times the user dismissed the web sign-in dialog. This value is
+// reset to zero when the user signs in (using the web sign-in dialog).
+const char kSigninWebSignDismissalCount[] =
+    "ios.signin.web_signin_dismissal_count";
+
 // Integer to count the number of times the MICE web sign-in is displayed.
 const char kSigninBottomSheetShownCount[] =
     "ios.signin.bottom_sheet_shown_count";
