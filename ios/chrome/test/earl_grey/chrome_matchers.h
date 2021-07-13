@@ -597,6 +597,9 @@ id<GREYMatcher> UseSuggestedPasswordMatcher();
 // Returns a matcher for the button to enter the tab grid tab edit mode.
 id<GREYMatcher> TabGridEditButton();
 
+// Returns a matcher for the button to act on the selected tabs.
+id<GREYMatcher> TabGridEditAddToButton();
+
 // Returns a matcher for the button to close the selected tabs.
 id<GREYMatcher> TabGridEditCloseTabsButton();
 

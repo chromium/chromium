@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/activity_services/activity_scenario.h"
-#import "ios/chrome/browser/ui/activity_services/data/url_with_title.h"
+#import "ios/chrome/browser/ui/util/url_with_title.h"
 
 class GURL;
 

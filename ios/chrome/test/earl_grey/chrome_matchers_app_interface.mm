@@ -1136,6 +1136,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)tabGridEditAddToButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditAddToButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)tabGridEditCloseTabsButton {
   return grey_allOf(grey_accessibilityID(kTabGridEditCloseTabsButtonIdentifier),
                     grey_sufficientlyVisible(), nil);

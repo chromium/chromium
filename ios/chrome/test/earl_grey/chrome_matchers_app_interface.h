@@ -589,6 +589,9 @@
 // Returns a matcher for the button to enter the tab grid tab edit mode.
 + (id<GREYMatcher>)tabGridEditButton;
 
+// Returns a matcher for the button to act on the selected tabs.
++ (id<GREYMatcher>)tabGridEditAddToButton;
+
 // Returns a matcher for the button to close the selected tabs.
 + (id<GREYMatcher>)tabGridEditCloseTabsButton;
 
