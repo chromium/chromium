@@ -786,7 +786,18 @@ static std::string NameForDisplay(base::StringPiece raw_name) {
 // PairingFromSyncedDevice extracts the caBLEv2 information from Sync's
 // DeviceInfo (if any) into a caBLEv2 pairing. It may return nullptr.
 static std::unique_ptr<device::cablev2::Pairing> PairingFromSyncedDevice(
-    syncer::DeviceInfo* device) {
+    syncer::DeviceInfo* device,
+    const base::Time& now) {
+  if (device->last_updated_timestamp() < now) {
+    const base::TimeDelta age = now - device->last_updated_timestamp();
+    if (age.InHours() > 24 * 14) {
+      // Entries older than 14 days are dropped. If changing this, consider
+      // updating |cablev2::sync::IDIsValid| too so that the mobile-side is
+      // aligned.
+      return nullptr;
+    }
+  }
+
   const absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>&
       maybe_paask_info = device->paask_info();
   if (!maybe_paask_info) {
@@ -850,9 +861,10 @@ GetCablePairingsFromSyncedDevices(Profile* profile) {
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices =
       tracker->GetAllDeviceInfo();
 
+  const base::Time now = base::Time::Now();
   for (const auto& device : devices) {
     std::unique_ptr<device::cablev2::Pairing> pairing =
-        PairingFromSyncedDevice(device.get());
+        PairingFromSyncedDevice(device.get(), now);
     if (!pairing) {
       continue;
     }

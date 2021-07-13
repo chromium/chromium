@@ -400,8 +400,10 @@ uint32_t IDNow() {
 
 bool IDIsValid(uint32_t candidate) {
   const uint32_t now = IDNow();
-  // Sync secrets are allowed to be, at most, 10 periods (~10 days) old.
-  return candidate <= now && (now - candidate) < 10;
+  // Sync secrets are allowed to be, at most, 21 periods (~21 days) old. This is
+  // because the desktop accepts DeviceInfo records of phones that are 14 days
+  // old and the phone should be slightly laxer than that.
+  return candidate <= now && (now - candidate) < 21;
 }
 
 }  // namespace sync
