@@ -206,7 +206,8 @@ apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
 
 std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
     Profile* profile,
-    const GURL& url) {
+    const GURL& url,
+    bool* found_multiple) {
   const apps::FileHandlers file_handlers =
       GetFileHandlersForAllWebAppsWithOrigin(profile, url);
   std::vector<std::string> associations;
@@ -229,9 +230,12 @@ std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
                  });
 #endif  // defined(OS_LINUX)
 
+  if (found_multiple)
+    *found_multiple = associations.size() > 1;
+
   return base::UTF8ToUTF16(base::JoinString(
-      associations, l10n_util::GetStringUTF8(
-                        IDS_WEB_APP_FILE_HANDLING_EXTENSION_LIST_SEPARATOR)));
+      associations,
+      l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
 }
 
 }  // namespace web_app

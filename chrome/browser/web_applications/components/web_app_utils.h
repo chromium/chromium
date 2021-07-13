@@ -99,10 +99,13 @@ apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
 // associated via MIME types, this will return MIME types like "text/plain,
 // image/png". On all other platforms, where files are associated via file
 // extensions, this will return capitalized file extensions with the period
-// truncated, like "TXT, PNG".
+// truncated, like "TXT, PNG". `found_multiple`, when non-null, will be set to
+// indicate whether the returned string is a list (false indicates it's a single
+// object).
 std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
     Profile* profile,
-    const GURL& url);
+    const GURL& url,
+    bool* found_multiple = nullptr);
 
 }  // namespace web_app
 

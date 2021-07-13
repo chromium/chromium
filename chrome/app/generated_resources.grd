@@ -10622,8 +10622,31 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_TEXT" desc="Permission request shown if the user is opening a file using a PWA with registered file handlers. Follows a prompt: 'This site would like to:'">
         Open <ph name="FILE_EXTENSIONS">$1<ex>.txt, .csv, .md</ex></ph> files
       </message>
-      <message name="IDS_WEB_APP_FILE_HANDLING_EXTENSION_LIST_SEPARATOR" desc="Text/punctuation that separates a list of file types/extensions, such as .txt or .csv." meaning="List separator for file extensions.">
+      <message name="IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR" desc="Text/punctuation that separates items in a lists. For example, this is used in a list of files, such as 'todo_list.txt, shopping_list.txt', and file types/extensions, such as '.txt, .csv.'" meaning="List separator for files.">
          , '''
+      </message>
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_TITLE" desc="Title of permission request dialog that is when the user is opening a file using a PWA.">
+        Open file?
+      </message>
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_TITLE_MULTIPLE" desc="Title of permission request dialog that is shown when the user is opening multiple files using a PWA.">
+        Open files?
+      </message>
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_DESCRIPTION" desc="Descriptive text in permission request dialog that is shown when the user is opening a file using a PWA.">
+        <ph name="APP_ORIGIN">$1<ex>example.com</ex></ph> wants to open this file:
+      </message>
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_DESCRIPTION_MULTIPLE" desc="Descriptive text in permission request dialog that is shown when the user is opening multiple files using a PWA.">
+        <ph name="APP_ORIGIN">$1<ex>example.com</ex></ph> wants to open these files:
+      </message>
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_STICKY_CHOICE" desc="In permission request dialog that is shown when the user is opening files in a PWA: text for a toggle that makes the permission decision permanent (single file format).">
+        Don't ask again when opening this file format in this app:
+<ph name="FILE_FORMAT">$1<ex>TXT</ex></ph>
+      </message>
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_STICKY_CHOICE_MULTIPLE" desc="In permission request dialog that is shown when the user is opening files in a PWA: text for a toggle that makes the permission decision permanent (multiple file formats).">
+        Don't ask again when opening these file formats in this app:
+<ph name="FILE_FORMATS">$1<ex>TXT, CSV, DOC</ex></ph>
+      </message>
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_DONT_ALLOW" desc="In permission request dialog that is shown when the user is opening files in a PWA: text for button that doesn't allow PWA to open the file(s).">
+        Don't allow
       </message>
     </if>
 

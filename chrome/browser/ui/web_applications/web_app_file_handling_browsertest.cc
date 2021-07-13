@@ -558,6 +558,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(origin, origin,
                                    ContentSettingsType::FILE_HANDLING));
+  // Tangentially: make sure the outparam for
+  // `GetFileTypeAssociationsHandledByWebAppsForDisplay` is properly set.
+  bool plural = false;
+  GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
+                                                    GetSecureAppURL(), &plural);
+  EXPECT_TRUE(plural);
 
   // Install a second app, which is on the same origin and asks to handle more
   // file types. The permission should have been set back to ASK.
@@ -583,6 +589,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   EXPECT_EQ(CONTENT_SETTING_ASK,
             map->GetContentSetting(third_app_origin, third_app_origin,
                                    ContentSettingsType::FILE_HANDLING));
+  // Tangentially: make sure the outparam for
+  // `GetFileTypeAssociationsHandledByWebAppsForDisplay` is properly set.
+  GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(), third_app_url,
+                                                    &plural);
+  EXPECT_FALSE(plural);
+
   // Install a fourth app, which is on the same origin but asks for a subset of
   // the file types of the first two. This should have no effect on the
   // permission.
