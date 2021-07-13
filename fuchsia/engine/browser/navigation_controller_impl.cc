@@ -4,9 +4,13 @@
 
 #include "fuchsia/engine/browser/navigation_controller_impl.h"
 
+#include "base/fuchsia/fuchsia_logging.h"
+#include "base/memory/page_size.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/favicon/content/content_favicon_driver.h"
+#include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -14,7 +18,56 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/image/image.h"
+
+namespace {
+
+// Converts a gfx::Image to a fuchsia::web::Favicon.
+fuchsia::web::Favicon GfxImageToFidlFavicon(gfx::Image gfx_image) {
+  fuchsia::web::Favicon favicon;
+
+  if (gfx_image.IsEmpty())
+    return favicon;
+
+  int height = gfx_image.AsBitmap().pixmap().height();
+  int width = gfx_image.AsBitmap().pixmap().width();
+
+  size_t stride = width * SkColorTypeBytesPerPixel(kRGBA_8888_SkColorType);
+
+  // Create VMO.
+  fuchsia::mem::Buffer buffer;
+  buffer.size = stride * height;
+  zx_status_t status = zx::vmo::create(buffer.size, 0, &buffer.vmo);
+  ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create";
+
+  // Map the VMO.
+  uintptr_t addr;
+  size_t mapped_size = base::bits::AlignUp(buffer.size, base::GetPageSize());
+  zx_vm_option_t options = ZX_VM_PERM_READ | ZX_VM_PERM_WRITE;
+  status = zx::vmar::root_self()->map(options, /*vmar_offset=*/0, buffer.vmo,
+                                      /*vmo_offset=*/0, mapped_size, &addr);
+  ZX_CHECK(status == ZX_OK, status) << "zx_vmar_map";
+
+  // Copy the data to the mapped VMO.
+  gfx_image.AsBitmap().readPixels(
+      SkImageInfo::Make(width, height, kRGBA_8888_SkColorType,
+                        kPremul_SkAlphaType),
+      reinterpret_cast<void*>(addr), stride, 0, 0);
+
+  // Unmap the VMO.
+  status = zx::vmar::root_self()->unmap(addr, mapped_size);
+  ZX_DCHECK(status == ZX_OK, status) << "zx_vmar_unmap";
+
+  favicon.set_data(std::move(buffer));
+  favicon.set_height(height);
+  favicon.set_width(width);
+
+  return favicon;
+}
+
+}  // namespace
 
 NavigationControllerImpl::NavigationControllerImpl(
     content::WebContents* web_contents)
@@ -30,7 +83,8 @@ void NavigationControllerImpl::AddBinding(
 }
 
 void NavigationControllerImpl::SetEventListener(
-    fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener) {
+    fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener,
+    fuchsia::web::NavigationEventListenerFlags flags) {
   // Reset the event buffer state.
   waiting_for_navigation_event_ack_ = false;
   previous_navigation_state_ = {};
@@ -42,9 +96,29 @@ void NavigationControllerImpl::SetEventListener(
     return;
   }
 
+  send_favicon_ =
+      (flags & fuchsia::web::NavigationEventListenerFlags::FAVICON) ==
+      fuchsia::web::NavigationEventListenerFlags::FAVICON;
+
+  favicon::ContentFaviconDriver* favicon_driver =
+      favicon::ContentFaviconDriver::FromWebContents(web_contents_);
+  if (send_favicon_) {
+    if (!favicon_driver) {
+      favicon::ContentFaviconDriver::CreateForWebContents(
+          web_contents_,
+          /*favicon_service=*/nullptr);
+      favicon_driver =
+          favicon::ContentFaviconDriver::FromWebContents(web_contents_);
+    }
+    favicon_driver->AddObserver(this);
+  } else {
+    if (favicon_driver)
+      favicon_driver->RemoveObserver(this);
+  }
+
   navigation_listener_.Bind(std::move(listener));
   navigation_listener_.set_error_handler(
-      [this](zx_status_t status) { SetEventListener(nullptr); });
+      [this](zx_status_t status) { SetEventListener(nullptr, {}); });
 
   // Immediately send the current navigation state, even if it is empty.
   if (web_contents_->GetController().GetVisibleEntry() == nullptr) {
@@ -253,6 +327,10 @@ void NavigationControllerImpl::DidStartNavigation(
     return;
   }
 
+  // If favicons are enabled then reset favicon in the pending navigation.
+  if (send_favicon_)
+    pending_navigation_event_.set_favicon({});
+
   uncommitted_load_error_ = false;
   active_navigation_ = navigation_handle;
   is_main_document_loaded_ = false;
@@ -267,6 +345,22 @@ void NavigationControllerImpl::DidFinishNavigation(
   active_navigation_ = nullptr;
   uncommitted_load_error_ = !navigation_handle->HasCommitted() &&
                             navigation_handle->GetNetErrorCode() != net::OK;
+
+  OnNavigationEntryChanged();
+}
+
+void NavigationControllerImpl::OnFaviconUpdated(
+    favicon::FaviconDriver* favicon_driver,
+    NotificationIconType notification_icon_type,
+    const GURL& icon_url,
+    bool icon_url_changed,
+    const gfx::Image& image) {
+  // Currently FaviconDriverImpl loads only 16 DIP images, except on Android and
+  // iOS.
+  DCHECK_EQ(notification_icon_type, FaviconDriverObserver::NON_TOUCH_16_DIP);
+
+  pending_navigation_event_.set_favicon(GfxImageToFidlFavicon(image));
+
   OnNavigationEntryChanged();
 }
 

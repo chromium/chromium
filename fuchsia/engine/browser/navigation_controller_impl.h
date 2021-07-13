@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "fuchsia/engine/web_engine_export.h"
 
@@ -21,7 +22,8 @@ class WebContents;
 
 // Implementation of fuchsia.web.NavigationController for content::WebContents.
 class NavigationControllerImpl : public fuchsia::web::NavigationController,
-                                 public content::WebContentsObserver {
+                                 public content::WebContentsObserver,
+                                 public favicon::FaviconDriverObserver {
  public:
   explicit NavigationControllerImpl(content::WebContents* web_contents);
   ~NavigationControllerImpl() final;
@@ -30,7 +32,8 @@ class NavigationControllerImpl : public fuchsia::web::NavigationController,
       fidl::InterfaceRequest<fuchsia::web::NavigationController> controller);
 
   void SetEventListener(
-      fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener);
+      fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener,
+      fuchsia::web::NavigationEventListenerFlags flags);
 
  private:
   // Returns a NavigationState reflecting the current state of |web_contents_|'s
@@ -66,6 +69,13 @@ class NavigationControllerImpl : public fuchsia::web::NavigationController,
   void DidStartNavigation(content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
 
+  // favicon::FaviconDriverObserver implementation.
+  void OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
+                        NotificationIconType notification_icon_type,
+                        const GURL& icon_url,
+                        bool icon_url_changed,
+                        const gfx::Image& image) override;
+
   content::WebContents* const web_contents_;
 
   // NavigationController client bindings.
@@ -84,6 +94,11 @@ class NavigationControllerImpl : public fuchsia::web::NavigationController,
 
   // True if navigation failed due to an error during page load.
   bool uncommitted_load_error_ = false;
+
+  // Set to true  when NavigationEventListenerFlags::FAVICON flag
+  // was passed to the last SetEventListener() call, i.e. favicon reporting is
+  // enabled.
+  bool send_favicon_ = false;
 
   base::WeakPtrFactory<NavigationControllerImpl> weak_factory_;
 

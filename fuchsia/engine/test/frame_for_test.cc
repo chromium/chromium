@@ -13,7 +13,7 @@ FrameForTest FrameForTest::Create(fuchsia::web::Context* context,
                                   fuchsia::web::CreateFrameParams params) {
   FrameForTest result;
   context->CreateFrameWithParams(std::move(params), result.frame_.NewRequest());
-  result.CreateAndAttachNavigationListener();
+  result.CreateAndAttachNavigationListener({});
   return result;
 }
 
@@ -23,7 +23,7 @@ FrameForTest FrameForTest::Create(fuchsia::web::FrameHost* frame_host,
   FrameForTest result;
   frame_host->CreateFrameWithParams(std::move(params),
                                     result.frame_.NewRequest());
-  result.CreateAndAttachNavigationListener();
+  result.CreateAndAttachNavigationListener({});
   return result;
 }
 
@@ -47,13 +47,14 @@ fuchsia::web::NavigationControllerPtr FrameForTest::GetNavigationController() {
   return controller;
 }
 
-void FrameForTest::CreateAndAttachNavigationListener() {
+void FrameForTest::CreateAndAttachNavigationListener(
+    fuchsia::web::NavigationEventListenerFlags flags) {
   navigation_listener_ = std::make_unique<TestNavigationListener>();
   navigation_listener_binding_ =
       std::make_unique<fidl::Binding<fuchsia::web::NavigationEventListener>>(
           navigation_listener_.get());
-  frame_->SetNavigationEventListener(
-      navigation_listener_binding_->NewBinding());
+  frame_->SetNavigationEventListener2(
+      navigation_listener_binding_->NewBinding(), flags);
 }
 
 }  // namespace cr_fuchsia

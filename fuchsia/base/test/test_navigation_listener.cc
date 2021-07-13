@@ -109,24 +109,27 @@ void TestNavigationListener::SetBeforeAckHook(BeforeAckCallback send_ack_cb) {
 }
 
 void TestNavigationListener::OnNavigationStateChanged(
-    fuchsia::web::NavigationState change,
+    fuchsia::web::NavigationState changes,
     OnNavigationStateChangedCallback callback) {
   DCHECK(before_ack_);
 
   // Update our local cache of the Frame's current state.
-  if (change.has_url())
-    current_state_.set_url(change.url());
-  if (change.has_title())
-    current_state_.set_title(change.title());
-  if (change.has_can_go_back())
-    current_state_.set_can_go_back(change.can_go_back());
-  if (change.has_can_go_forward())
-    current_state_.set_can_go_forward(change.can_go_forward());
-  if (change.has_page_type())
-    current_state_.set_page_type(change.page_type());
-  if (change.has_is_main_document_loaded()) {
+  if (changes.has_url())
+    current_state_.set_url(changes.url());
+  if (changes.has_title())
+    current_state_.set_title(changes.title());
+  if (changes.has_can_go_back())
+    current_state_.set_can_go_back(changes.can_go_back());
+  if (changes.has_can_go_forward())
+    current_state_.set_can_go_forward(changes.can_go_forward());
+  if (changes.has_page_type())
+    current_state_.set_page_type(changes.page_type());
+  if (changes.has_is_main_document_loaded()) {
     current_state_.set_is_main_document_loaded(
-        change.is_main_document_loaded());
+        changes.is_main_document_loaded());
+  }
+  if (changes.has_favicon()) {
+    current_state_.set_favicon(std::move(*changes.mutable_favicon()));
   }
 
   if (VLOG_IS_ON(1)) {
@@ -170,8 +173,10 @@ void TestNavigationListener::OnNavigationStateChanged(
     VLOG(1) << "Navigation state changed: " << state_string;
   }
 
+  last_changes_ = std::move(changes);
+
   // Signal readiness for the next navigation event.
-  before_ack_.Run(change, std::move(callback));
+  before_ack_.Run(last_changes_, std::move(callback));
 }
 
 bool TestNavigationListener::AllFieldsMatch(

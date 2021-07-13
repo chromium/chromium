@@ -198,6 +198,9 @@ class FrameImpl : public fuchsia::web::Frame,
   void SetNavigationEventListener(
       fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener)
       override;
+  void SetNavigationEventListener2(
+      fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener,
+      fuchsia::web::NavigationEventListenerFlags flags) override;
   void SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel level) override;
   void SetConsoleLogSink(fuchsia::logger::LogSinkHandle sink) override;
   void ConfigureInputTypes(fuchsia::web::InputTypes types,

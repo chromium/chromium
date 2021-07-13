@@ -790,7 +790,13 @@ void FrameImpl::PostMessage(std::string origin,
 
 void FrameImpl::SetNavigationEventListener(
     fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener) {
-  navigation_controller_.SetEventListener(std::move(listener));
+  SetNavigationEventListener2(std::move(listener), {});
+}
+
+void FrameImpl::SetNavigationEventListener2(
+    fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener,
+    fuchsia::web::NavigationEventListenerFlags flags) {
+  navigation_controller_.SetEventListener(std::move(listener), flags);
 }
 
 void FrameImpl::SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel level) {
