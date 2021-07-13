@@ -7,30 +7,13 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
 
-#include <string>
-
-#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 class PasswordStoreInterface;
-struct PasswordForm;
 }
 
 class Profile;
-
-// Changes a credential record in password store. If new_password is null it
-// isn't changed, but if it is non-null it can't be empty.
-// |forms_to_change| are the forms in which the usernames and passwords are
-// changed. This function assumes that all conflicts checks have already
-// been performed, prior to calling it.
-void EditSavedPasswords(
-    Profile* profile,
-    base::span<const std::unique_ptr<password_manager::PasswordForm>>
-        forms_to_change,
-    const std::u16string& new_username,
-    const absl::optional<std::u16string>& new_password);
 
 // Returns the password store associated with the currently active profile.
 password_manager::PasswordStoreInterface* GetPasswordStore(
