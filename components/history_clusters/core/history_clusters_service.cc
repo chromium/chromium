@@ -11,10 +11,8 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
-#include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/remote_clustering_backend.h"
@@ -260,11 +258,13 @@ void HistoryClustersService::QueryClusters(
           .Then(base::BindOnce(&ClustersToMojom))
           .Then(std::move(callback)));
 
-  history_service_->GetAnnotatedVisits(
-      kMaxVisitsToCluster.Get(),
+  history_service_->GetRecentClusterIdsAndAnnotatedVisits(
+      base::Time::Min(), kMaxVisitsToCluster.Get(),
       base::BindOnce(
           [](const IncompleteVisitMap& incomplete_visit_context_annotations,
-             std::vector<history::AnnotatedVisit> visits) {
+             history::ClusterIdsAndAnnotatedVisitsResult result) {
+            auto& visits = result.annotated_visits;
+
             // Append incomplete visits to `visits` too, as otherwise they will
             // be mysteriously missing from the Clusters UI. They haven't
             // recorded the page end metrics yet, but that's fine.
@@ -276,14 +276,13 @@ void HistoryClustersService::QueryClusters(
                 continue;
               }
 
-              visits.push_back(history::AnnotatedVisit{
-                  incomplete_visit_context_annotation.url_row,
-                  incomplete_visit_context_annotation.visit_row,
-                  incomplete_visit_context_annotation.context_annotations,
-                  // Content annotations not provided, but it's not provided
-                  // for complete visits either.
-                  {},
-              });
+              visits.push_back(
+                  {incomplete_visit_context_annotation.url_row,
+                   incomplete_visit_context_annotation.visit_row,
+                   incomplete_visit_context_annotation.context_annotations,
+                   // Content annotations not provided, but it's not provided
+                   // for complete visits either.
+                   {}});
             }
 
             return visits;

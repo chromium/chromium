@@ -391,13 +391,15 @@ ClusterRow::ClusterRow(const ClusterRow&) = default;
 ClusterRow& ClusterRow::operator=(const ClusterRow&) = default;
 ClusterRow::~ClusterRow() = default;
 
-ClusterAndAnnotatedVisitsResult::ClusterAndAnnotatedVisitsResult() = default;
-ClusterAndAnnotatedVisitsResult::ClusterAndAnnotatedVisitsResult(
+ClusterIdsAndAnnotatedVisitsResult::ClusterIdsAndAnnotatedVisitsResult() =
+    default;
+ClusterIdsAndAnnotatedVisitsResult::ClusterIdsAndAnnotatedVisitsResult(
     std::vector<int64_t> cluster_ids,
     std::vector<AnnotatedVisit> annotated_visits)
     : cluster_ids(cluster_ids), annotated_visits(annotated_visits) {}
-ClusterAndAnnotatedVisitsResult::ClusterAndAnnotatedVisitsResult(
-    const ClusterAndAnnotatedVisitsResult&) = default;
-ClusterAndAnnotatedVisitsResult::~ClusterAndAnnotatedVisitsResult() = default;
+ClusterIdsAndAnnotatedVisitsResult::ClusterIdsAndAnnotatedVisitsResult(
+    const ClusterIdsAndAnnotatedVisitsResult&) = default;
+ClusterIdsAndAnnotatedVisitsResult::~ClusterIdsAndAnnotatedVisitsResult() =
+    default;
 
 }  // namespace history

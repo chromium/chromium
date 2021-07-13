@@ -423,12 +423,17 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                                     const std::u16string& term);
 
   // Clusters ------------------------------------------------------------------
+  // See `HistoryService`'s comments for details on these functions.
 
   void AddContextAnnotationsForVisit(
       VisitID visit_id,
       const VisitContextAnnotations& visit_context_annotations);
 
-  std::vector<AnnotatedVisit> GetAnnotatedVisits(int max_results);
+  ClusterIdsAndAnnotatedVisitsResult GetRecentClusterIdsAndAnnotatedVisits(
+      base::Time minimum_time,
+      int max_results);
+
+  std::vector<Cluster> GetClusters(int max_results);
 
   // Observers -----------------------------------------------------------------
 
@@ -639,6 +644,13 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void QueryHistoryText(const std::u16string& text_query,
                         const QueryOptions& options,
                         QueryResults* result);
+
+  // Clusters ------------------------------------------------------------------
+
+  // Convert `AnnotatedVisitRow`s to `AnnotatedVisit`s. Drops rows without
+  // associated URL or visit rows, though this shouldn't happen usually.
+  std::vector<AnnotatedVisit> AnnotatedVisitsFromRows(
+      const std::vector<AnnotatedVisitRow>& rows);
 
   // Committing ----------------------------------------------------------------
 

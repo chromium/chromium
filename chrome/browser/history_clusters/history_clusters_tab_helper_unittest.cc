@@ -240,8 +240,8 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith2HistoryVisits) {
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 2u);
-  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://google.com"});
-  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
 }
 
 // For the remaining tests, all navigations will have at least 1 history visit.
@@ -282,10 +282,10 @@ TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfter2ndNavigation) {
   AddBookmark(GURL{"https://github.com"});
   auto visits = GetVisits();
   ASSERT_EQ(visits.size(), 2u);
-  EXPECT_EQ(visits[0].url_row.url(), GURL{"https://github.com"});
-  EXPECT_FALSE(visits[0].context_annotations.is_new_bookmark);
-  EXPECT_EQ(visits[1].url_row.url(), GURL{"https://google.com"});
-  EXPECT_TRUE(visits[1].context_annotations.is_new_bookmark);
+  EXPECT_EQ(visits[0].url_row.url(), GURL{"https://google.com"});
+  EXPECT_TRUE(visits[0].context_annotations.is_new_bookmark);
+  EXPECT_EQ(visits[1].url_row.url(), GURL{"https://github.com"});
+  EXPECT_FALSE(visits[1].context_annotations.is_new_bookmark);
 }
 
 // History -> copy -> history resolve -> history -> history -> copy -> destroy
@@ -318,16 +318,15 @@ TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->OnOmniboxUrlCopied();
   ASSERT_EQ(GetVisits().size(), 2u);
-  // This looks weird, but it's correct because the most recent visit is first.
-  EXPECT_FALSE(GetVisits()[0].context_annotations.omnibox_url_copied);
+  EXPECT_FALSE(GetVisits()[1].context_annotations.omnibox_url_copied);
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 3u);
-  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://gmail.com"});
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_TRUE(GetVisits()[0].context_annotations.omnibox_url_copied);
   EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
   EXPECT_FALSE(GetVisits()[1].context_annotations.omnibox_url_copied);
-  EXPECT_EQ(GetVisits()[2].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[2].url_row.url(), GURL{"https://gmail.com"});
   EXPECT_TRUE(GetVisits()[2].context_annotations.omnibox_url_copied);
 }
 
@@ -475,8 +474,11 @@ TEST_F(HistoryClustersTabHelperTest,
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 2u);
-  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
-  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://google.com"});
+  EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason,
+            page_load_metrics::PageEndReason::END_OTHER);
 }
 
 // Expect History -> Expect UKM 1 -> history -> UKM 1 -> destroy
@@ -509,8 +511,11 @@ TEST_F(HistoryClustersTabHelperTest,
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 2u);
-  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
-  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://google.com"});
+  EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason,
+            page_load_metrics::PageEndReason::END_OTHER);
 }
 
 // Expect History -> Expect UKM 2 -> history -> destroy -> UKM 2
@@ -551,9 +556,11 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 2u);
-  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
-  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason,
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://google.com"});
+  EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason, 0);
 }
 
 }  // namespace

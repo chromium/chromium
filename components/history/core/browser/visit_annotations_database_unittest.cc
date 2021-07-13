@@ -4,6 +4,7 @@
 
 #include "components/history/core/browser/visit_annotations_database.h"
 
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
@@ -11,18 +12,13 @@
 #include "sql/database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "visit_annotations_test_utils.h"
 
 namespace history {
 
 namespace {
 
 using ::testing::ElementsAre;
-
-// Returns a Time that's `seconds` seconds after Windows epoch.
-base::Time IntToTime(int seconds) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(seconds));
-}
 
 }  // namespace
 
@@ -34,12 +30,26 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
   ~VisitAnnotationsDatabaseTest() override = default;
 
  protected:
-  // Convenience wrapper for  `VisitDatabase::AddVisit()`.
-  void AddVisitWithDetails(URLID url_id, base::Time visit_time) {
+  VisitID AddVisitWithTime(base::Time visit_time,
+                           bool add_context_annotation = true) {
     VisitRow visit_row;
-    visit_row.url_id = url_id;
     visit_row.visit_time = visit_time;
-    AddVisit(&visit_row, VisitSource::SOURCE_BROWSED);
+    auto visit_id = AddVisit(&visit_row, VisitSource::SOURCE_BROWSED);
+    if (add_context_annotation)
+      AddContextAnnotationsForVisit(visit_id, {});
+    return visit_id;
+  }
+
+  void AddCluster(const std::vector<VisitID>& visit_ids) {
+    AddClusters({CreateCluster(visit_ids)});
+  }
+
+  void VerifyRecentAnnotatedVisitIds(
+      const std::vector<VisitID>& expected_visit_ids,
+      base::Time time = base::Time::Min(),
+      int max_results = 100) {
+    EXPECT_EQ(GetRecentAnnotatedVisitIds(time, max_results),
+              expected_visit_ids);
   }
 
   void ExpectContextAnnotations(VisitContextAnnotations actual,
@@ -102,45 +112,31 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
       123, got_content_annotations.model_annotations.page_topics_model_version);
 }
 
-TEST_F(VisitAnnotationsDatabaseTest, AddGetAndDeleteContextAnnotations) {
-  AddVisitWithDetails(1, IntToTime(20));
-  AddVisitWithDetails(1, IntToTime(30));
-  AddVisitWithDetails(2, IntToTime(10));
+TEST_F(VisitAnnotationsDatabaseTest,
+       AddContextAnnotationsForVisit_GetAnnotatedVisit) {
+  AddVisitWithTime(IntToTime(20), false);
+  AddVisitWithTime(IntToTime(30), false);
+  AddVisitWithTime(IntToTime(10), false);
 
-  std::vector<VisitContextAnnotations> visit_contest_annotations_list = {
+  const std::vector<VisitContextAnnotations> visit_contest_annotations_list = {
       {true, false, true, true, false, false},
       {false, true, false, false, false, true},
       {false, true, true, false, true, false},
   };
 
-  // Verify `AddContextAnnotationsForVisit()` and `GetAnnotatedVisits()`.
   AddContextAnnotationsForVisit(1, visit_contest_annotations_list[0]);
   AddContextAnnotationsForVisit(2, visit_contest_annotations_list[1]);
   AddContextAnnotationsForVisit(3, visit_contest_annotations_list[2]);
 
-  // Helper to verify `GetAnnotatedVisits()` contains the correct visits and
-  // context annotations.
-  const auto expect_visits = [&](std::vector<AnnotatedVisitRow> rows,
-                                 std::vector<VisitID> expected_visit_ids) {
-    ASSERT_EQ(rows.size(), expected_visit_ids.size());
-    for (size_t i = 0; i < rows.size(); ++i) {
-      EXPECT_EQ(rows[i].visit_id, expected_visit_ids[i]);
-      ExpectContextAnnotations(
-          rows[i].context_annotations,
-          visit_contest_annotations_list[expected_visit_ids[i] - 1]);
-    }
-  };
-
-  expect_visits(GetAnnotatedVisits(10), {2, 1, 3});
-
-  // Verify `max_results` param of `GetAnnotatedVisits()`.
-  expect_visits(GetAnnotatedVisits(2), {2, 1});
-
-  // Verify `DeleteAnnotationsForVisit()`.
-  DeleteAnnotationsForVisit(1);
-  DeleteAnnotationsForVisit(3);
-
-  expect_visits(GetAnnotatedVisits(10), {2});
+  const std::vector<VisitID> expected_visit_ids = {3, 2, 1};
+  EXPECT_EQ(GetRecentAnnotatedVisitIds(base::Time::Min(), 10),
+            expected_visit_ids);
+  ExpectContextAnnotations(GetAnnotatedVisit(1).context_annotations,
+                           visit_contest_annotations_list[0]);
+  ExpectContextAnnotations(GetAnnotatedVisit(2).context_annotations,
+                           visit_contest_annotations_list[1]);
+  ExpectContextAnnotations(GetAnnotatedVisit(3).context_annotations,
+                           visit_contest_annotations_list[2]);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
@@ -173,6 +169,56 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   EXPECT_EQ(123, final.model_annotations.page_topics_model_version);
 }
 
+TEST_F(VisitAnnotationsDatabaseTest,
+       GetRecentAnnotatedVisitIds_GetRecentClusters) {
+  // Shouldn't return old unclustered visits.
+  AddVisitWithTime(IntToTime(10));
+  // Shouldn't return old clustered visits.
+  AddCluster(
+      {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});
+  // Should return recent unclustered visits.
+  AddVisitWithTime(IntToTime(100));
+  // Should return recent clustered visits.
+  AddCluster(
+      {AddVisitWithTime(IntToTime(101)), AddVisitWithTime(IntToTime(102))});
+  // Shouldn't return old visits in recent clusters.
+  AddCluster(
+      {AddVisitWithTime(IntToTime(13)), AddVisitWithTime(IntToTime(103))});
+
+  // Verify `GetRecentAnnotatedVisitIds()`.
+  VerifyRecentAnnotatedVisitIds({8, 6, 5, 4}, IntToTime(100));
+  // Verify `GetRecentAnnotatedVisitIds()` with `time`.
+  VerifyRecentAnnotatedVisitIds({8, 7, 6, 5, 4, 3, 2, 1}, IntToTime(10));
+  VerifyRecentAnnotatedVisitIds({}, IntToTime(104));
+  // Verify `GetRecentAnnotatedVisitIds()` with `max_results`.
+  VerifyRecentAnnotatedVisitIds({8, 7, 6}, IntToTime(10), 3);
+
+  // Verify `GetRecentClusterIds()`.
+  EXPECT_EQ(GetRecentClusterIds(IntToTime(100)), std::vector<int64_t>({3, 2}));
+  EXPECT_EQ(GetRecentClusterIds(IntToTime(10)),
+            std::vector<int64_t>({3, 2, 1}));
+  EXPECT_EQ(GetRecentClusterIds(IntToTime(104)), std::vector<int64_t>({}));
+}
+
+TEST_F(VisitAnnotationsDatabaseTest,
+       GetClusteredAnnotatedVisits_GetVisitsInCluster) {
+  // Add unclustered visits.
+  AddVisitWithTime(IntToTime(0));
+  AddVisitWithTime(IntToTime(2));
+  AddVisitWithTime(IntToTime(4));
+  // Add clustered visits.
+  AddCluster({AddVisitWithTime(IntToTime(1))});
+  AddCluster({AddVisitWithTime(IntToTime(3))});
+  AddCluster({AddVisitWithTime(IntToTime(5)), AddVisitWithTime(IntToTime(7))});
+
+  EXPECT_THAT(GetVisitIds(GetClusteredAnnotatedVisits(10)),
+              ElementsAre(7, 6, 5, 4));
+  EXPECT_THAT(GetVisitIdsInCluster(1, 10), ElementsAre(4));
+  EXPECT_THAT(GetVisitIdsInCluster(2, 0), ElementsAre());
+  EXPECT_THAT(GetVisitIdsInCluster(3, 10), ElementsAre(7, 6));
+  EXPECT_THAT(GetVisitIdsInCluster(3, 1), ElementsAre(7));
+}
+
 TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   // Add content annotations for 1 visit.
   VisitID visit_id = 1;
@@ -193,6 +239,43 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   DeleteAnnotationsForVisit(visit_id);
   EXPECT_FALSE(
       GetContentAnnotationsForVisit(visit_id, &got_content_annotations));
+}
+
+TEST_F(VisitAnnotationsDatabaseTest, AddClusters_GetClusters_DeleteClusters) {
+  const auto verify_clusters =
+      [&](const std::vector<ClusterRow>& actual_clusters,
+          const std::vector<ClusterRow>& expected_clusters) {
+        ASSERT_EQ(actual_clusters.size(), expected_clusters.size());
+        for (size_t i = 0; i < actual_clusters.size(); ++i) {
+          SCOPED_TRACE(i);
+          EXPECT_EQ(actual_clusters[i].cluster_id,
+                    expected_clusters[i].cluster_id);
+          EXPECT_EQ(actual_clusters[i].visit_ids,
+                    expected_clusters[i].visit_ids);
+        }
+      };
+
+  AddClusters(CreateClusters({{3, 2, 5}, {3, 2, 5}, {6}}));
+
+  {
+    SCOPED_TRACE("`GetClusters(10)`");
+    verify_clusters(GetClusters(10),
+                    {CreateClusterRow(1, {5, 3, 2}),
+                     CreateClusterRow(2, {5, 3, 2}), CreateClusterRow(3, {6})});
+  }
+  {
+    SCOPED_TRACE("`GetClusters(5)`");
+    verify_clusters(GetClusters(5), {CreateClusterRow(1, {5, 3, 2}),
+                                     CreateClusterRow(2, {5, 3})});
+  }
+  {
+    SCOPED_TRACE("`GetClusters(3)`");
+    verify_clusters(GetClusters(3), {CreateClusterRow(1, {5, 3, 2})});
+  }
+  {
+    SCOPED_TRACE("`GetClusters(1)`");
+    verify_clusters(GetClusters(1), {CreateClusterRow(1, {5})});
+  }
 }
 
 }  // namespace history

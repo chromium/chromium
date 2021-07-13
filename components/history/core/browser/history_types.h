@@ -773,12 +773,13 @@ struct ClusterRow {
 // Sets of `Cluster` IDs and `AnnotatedVisit`s. This is convenient in that,
 // unlike a vector of `Cluster`s, it contains a flat vector of unique
 // `AnnotatedVisit`s.
-struct ClusterAndAnnotatedVisitsResult {
-  ClusterAndAnnotatedVisitsResult();
-  ClusterAndAnnotatedVisitsResult(std::vector<int64_t> cluster_ids,
-                                  std::vector<AnnotatedVisit> annotated_visits);
-  ClusterAndAnnotatedVisitsResult(const ClusterAndAnnotatedVisitsResult&);
-  ~ClusterAndAnnotatedVisitsResult();
+struct ClusterIdsAndAnnotatedVisitsResult {
+  ClusterIdsAndAnnotatedVisitsResult();
+  ClusterIdsAndAnnotatedVisitsResult(
+      std::vector<int64_t> cluster_ids,
+      std::vector<AnnotatedVisit> annotated_visits);
+  ClusterIdsAndAnnotatedVisitsResult(const ClusterIdsAndAnnotatedVisitsResult&);
+  ~ClusterIdsAndAnnotatedVisitsResult();
 
   std::vector<int64_t> cluster_ids;
   std::vector<AnnotatedVisit> annotated_visits;

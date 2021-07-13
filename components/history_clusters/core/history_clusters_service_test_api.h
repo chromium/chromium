@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -26,19 +27,20 @@ class HistoryClustersServiceTestApi {
 
   // Gets the annotated visits from HistoryService synchronously for testing.
   std::vector<history::AnnotatedVisit> GetVisits() {
-    std::vector<history::AnnotatedVisit> result;
+    std::vector<history::AnnotatedVisit> annotated_visits;
 
     base::CancelableTaskTracker tracker;
-    history_service_->GetAnnotatedVisits(
+    history_service_->GetRecentClusterIdsAndAnnotatedVisits(
+        base::Time::Min(),
         1000,  // Getting 1000 clusters for testing is a reasonable fake value.
         base::BindLambdaForTesting(
-            [&](std::vector<history::AnnotatedVisit> visits) {
-              result = std::move(visits);
+            [&](history::ClusterIdsAndAnnotatedVisitsResult result) {
+              annotated_visits = std::move(result.annotated_visits);
             }),
         &tracker);
     history::BlockUntilHistoryProcessesPendingRequests(history_service_);
 
-    return result;
+    return annotated_visits;
   }
 
   void SetClusteringBackendForTest(std::unique_ptr<ClusteringBackend> backend) {

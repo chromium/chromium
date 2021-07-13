@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace sql {
@@ -32,38 +33,68 @@ class VisitAnnotationsDatabase {
   virtual ~VisitAnnotationsDatabase();
 
   // Adds a line to the content annotations table with the given information.
+  // Ignores failures.
   void AddContentAnnotationsForVisit(
       VisitID visit_id,
       const VisitContentAnnotations& visit_content_annotations);
 
-  // Adds a line to the context annotation table with the given information..
+  // Adds a line to the context annotation table with the given information.
+  // Ignores failures.
   void AddContextAnnotationsForVisit(
       VisitID visit_id,
       const VisitContextAnnotations& visit_context_annotations);
 
   // Updates an existing row. The new information is set on the row, using the
   // VisitID as the key. The content annotations for the visit must exist.
+  // Ignores failures.
   void UpdateContentAnnotationsForVisit(
       VisitID visit_id,
       const VisitContentAnnotations& visit_content_annotations);
 
   // Query for a VisitContentAnnotations given a `VisitID` and returns it if
-  // present. If it's present, `out_content_annotations` will be filled with the
-  // expected data; otherwise, `out_content_annotations` won't be changed.
+  // present. If it's successful, `out_content_annotations` will be filled with
+  // the expected data and will return true; otherwise,
+  // `out_content_annotations` won't be changed and will return false.
   bool GetContentAnnotationsForVisit(
       VisitID visit_id,
       VisitContentAnnotations* out_content_annotations);
 
-  // Get the `max_results` most recent `AnnotatedVisitRow`s.
-  std::vector<AnnotatedVisitRow> GetAnnotatedVisits(int max_results);
+  // Get the `AnnotatedVisitRow` for `visit_id`. Returns an empty row (i.e.
+  // `visit_id` of 0) on failure.
+  AnnotatedVisitRow GetAnnotatedVisit(VisitID visit_id);
+
+  // Get recent `AnnotatedVisit`s' IDs. Does not return visits without
+  // annotations.
+  std::vector<VisitID> GetRecentAnnotatedVisitIds(base::Time minimum_time,
+                                                  int max_results);
+
+  // Get all `AnnotatedVisitRow`s except unclustered visits. Does not return
+  // duplicates if a visit is in multiple `Cluster`s.
+  std::vector<AnnotatedVisitRow> GetClusteredAnnotatedVisits(int max_results);
 
   // Gets all the context annotation rows for testing.
   std::vector<AnnotatedVisitRow> GetAllContextAnnotationsForTesting();
 
   // Deletes the content & context annotations associated with `visit_id`. This
   // will also delete any associated annotations usage data. If no annotations
-  // exist for the `VisitId`, this is a no-op.
+  // exist for the `VisitId`, this is a no-op. Ignores failures; i.e. continues
+  // trying to delete from each remaining table.
   void DeleteAnnotationsForVisit(VisitID visit_id);
+
+  // Add `clusters` to the tables. Ignores failures; i.e. continues trying to
+  // add the remaining `Cluster`s. Does not try to add `clusters_and_visits`
+  // entries for any `Cluster` that it failed to add.
+  void AddClusters(const std::vector<Cluster>& clusters);
+
+  // Get the `max_results` most recent `ClusterRow`s.
+  std::vector<ClusterRow> GetClusters(int max_results);
+
+  // Get recent `Cluster`s' IDs newer than `minimum_time`.
+  std::vector<int64_t> GetRecentClusterIds(base::Time minimum_time);
+
+  // Get the `max_results` newest `VisitID`s in a cluster.
+  std::vector<VisitID> GetVisitIdsInCluster(int64_t cluster_id,
+                                            int max_results);
 
  protected:
   // Returns the database for the functions in this interface.
