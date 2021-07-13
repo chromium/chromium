@@ -1104,7 +1104,8 @@ TEST_P(RemoteTest, SharedRemoteSyncCallWithPendingEventOnSameThread) {
   EXPECT_EQ(0, next_expected_value);
 }
 
-TEST_P(RemoteTest, DisconnectDuringOffThreadSyncWaitWithUnprocessedTasks) {
+// Flaky on all platforms. https://crbug.com/1224768
+TEST_P(RemoteTest, DISABLED_DisconnectDuringOffThreadSyncWaitWithUnprocessedTasks) {
   // Regression test for https://crbug.com/1223628.
   //
   // This tests a fairly obscure edge case where one or more message tasks is
