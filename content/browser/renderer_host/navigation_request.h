@@ -684,6 +684,8 @@ class CONTENT_EXPORT NavigationRequest
   void SetRequiredCSP(network::mojom::ContentSecurityPolicyPtr csp);
   network::mojom::ContentSecurityPolicyPtr TakeRequiredCSP();
 
+  bool anonymous() const { return anonymous_; }
+
   // Returns a pointer to the policies copied from the navigation initiator.
   // Returns nullptr if this navigation had no initiator.
   const PolicyContainerPolicies* GetInitiatorPolicyContainerPolicies() const;
@@ -1779,6 +1781,11 @@ class CONTENT_EXPORT NavigationRequest
   // Holds the required CSP for this navigation. This will be moved into
   // the RenderFrameHost at DidCommitNavigation time.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
+
+  // Whether the document loaded by this navigation will be committed inside an
+  // anonymous iframe. Documents loaded inside anonymous iframes get partitioned
+  // storage and use a transient NetworkIsolationKey.
+  const bool anonymous_;
 
   // Non-nullopt from construction until |TakePolicyContainerHost()| is called.
   absl::optional<PolicyContainerNavigationBundle>

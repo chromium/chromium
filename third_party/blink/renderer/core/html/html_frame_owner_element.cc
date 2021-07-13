@@ -582,8 +582,8 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   if (!child_frame)
     return false;
 
-  // Send 'csp' attribute to the browser.
-  CSPAttributeChanged();
+  // Propagate attributes like 'csp' or 'anonymous' to the browser process.
+  DidChangeAttributes();
 
   WebFrameLoadType child_load_type = WebFrameLoadType::kReplaceCurrentItem;
   // If the frame URL is not about:blank, see if it should do a

@@ -5821,4 +5821,23 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   }
 }
 
+// This test checks that the initial empty document in an anonymous iframe whose
+// parent document is not anonymous is also not anonymous.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       InitialEmptyDocumentInAnonymousIframe) {
+  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* main_rfh = web_contents()->GetMainFrame();
+
+  // Create an empty iframe
+  EXPECT_TRUE(ExecJs(main_rfh,
+                     "let child = document.createElement('iframe');"
+                     "child.anonymous = true;"
+                     "document.body.appendChild(child);"));
+  WaitForLoadStop(web_contents());
+  EXPECT_EQ(1U, main_rfh->child_count());
+  EXPECT_FALSE(main_rfh->child_at(0)->anonymous());
+}
+
 }  // namespace content

@@ -202,9 +202,10 @@ void FakeLocalFrameHost::DidChangeFrameOwnerProperties(
 void FakeLocalFrameHost::DidChangeOpener(
     const absl::optional<LocalFrameToken>& opener_frame) {}
 
-void FakeLocalFrameHost::DidChangeCSPAttribute(
+void FakeLocalFrameHost::DidChangeIframeAttributes(
     const blink::FrameToken& child_frame_token,
-    network::mojom::blink::ContentSecurityPolicyPtr) {}
+    network::mojom::blink::ContentSecurityPolicyPtr,
+    bool anonymous) {}
 
 void FakeLocalFrameHost::DidChangeFramePolicy(
     const blink::FrameToken& child_frame_token,

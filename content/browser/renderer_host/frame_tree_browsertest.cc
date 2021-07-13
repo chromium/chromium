@@ -1425,4 +1425,54 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
             DepictFrameTree(*root));
 }
 
+class FrameTreeAnonymousIframeBrowserTest : public FrameTreeBrowserTest {
+ public:
+  FrameTreeAnonymousIframeBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AnonymousIframe");
+  }
+};
+
+// Tests the mojo propagation of the 'anonymous' attribute to the browser.
+IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
+                       AttributeIsPropagatedToBrowser) {
+  GURL main_url(embedded_test_server()->GetURL("/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  // Not setting the attribute => the iframe is not anonymous.
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('iframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root->child_count());
+  EXPECT_FALSE(root->child_at(0)->anonymous());
+
+  // Setting the attribute on the iframe element makes the iframe anonymous.
+  EXPECT_TRUE(ExecJs(root,
+                     "var d = document.createElement('div');"
+                     "d.innerHTML = '<iframe anonymous></iframe>';"
+                     "document.body.appendChild(d);"));
+  EXPECT_EQ(2U, root->child_count());
+  EXPECT_TRUE(root->child_at(1)->anonymous());
+
+  // Setting the attribute via javascript works.
+  EXPECT_TRUE(ExecJs(root,
+                     "var g = document.createElement('iframe');"
+                     "g.anonymous = true;"
+                     "document.body.appendChild(g);"));
+  EXPECT_EQ(3U, root->child_count());
+  EXPECT_TRUE(root->child_at(2)->anonymous());
+
+  EXPECT_TRUE(ExecJs(root, "g.anonymous = false;"));
+  EXPECT_FALSE(root->child_at(2)->anonymous());
+
+  EXPECT_TRUE(ExecJs(root, "g.anonymous = true;"));
+  EXPECT_TRUE(root->child_at(2)->anonymous());
+}
+
 }  // namespace content

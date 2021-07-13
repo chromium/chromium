@@ -87,7 +87,7 @@ class CORE_EXPORT HTMLIFrameElement final
   // FrameOwner overrides:
   bool AllowFullscreen() const override { return allow_fullscreen_; }
   bool AllowPaymentRequest() const override { return allow_payment_request_; }
-  void CSPAttributeChanged() override;
+  void DidChangeAttributes() override;
 
   AtomicString name_;
   AtomicString required_csp_;
@@ -100,6 +100,7 @@ class CORE_EXPORT HTMLIFrameElement final
   bool allow_fullscreen_;
   bool allow_payment_request_;
   bool collapsed_by_client_;
+  bool anonymous_ = false;
   Member<HTMLIFrameElementSandbox> sandbox_;
   Member<DOMFeaturePolicy> policy_;
 

@@ -285,6 +285,11 @@ class CONTENT_EXPORT FrameTreeNode {
     csp_attribute_ = std::move(parsed_csp_attribute);
   }
 
+  // Reflects the 'anonymous' attribute of the corresponding iframe html
+  // element.
+  bool anonymous() const { return anonymous_; }
+  void set_anonymous(bool anonymous) { anonymous_ = anonymous; }
+
   bool HasSameOrigin(const FrameTreeNode& node) const {
     return replication_state_->origin.IsSameOriginWith(
         node.replication_state_->origin);
@@ -642,6 +647,10 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // Contains the current parsed value of the 'csp' attribute of this frame.
   network::mojom::ContentSecurityPolicyPtr csp_attribute_;
+
+  // Reflects the 'anonymous' attribute of the corresponding iframe html
+  // element.
+  bool anonymous_ = false;
 
   // Owns an ongoing NavigationRequest until it is ready to commit. It will then
   // be reset and a RenderFrameHost will be responsible for the navigation.

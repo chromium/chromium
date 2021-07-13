@@ -1763,6 +1763,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return required_csp_.get();
   }
 
+  bool anonymous() const { return anonymous_; }
+
   PolicyContainerHost* policy_container_host() {
     return policy_container_host_.get();
   }
@@ -2012,9 +2014,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties) override;
   void DidChangeOpener(
       const absl::optional<blink::LocalFrameToken>& opener_frame) override;
-  void DidChangeCSPAttribute(
+  void DidChangeIframeAttributes(
       const blink::FrameToken& child_frame_token,
-      network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute) override;
+      network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute,
+      bool anonymous) override;
   void DidChangeFramePolicy(const blink::FrameToken& child_frame_token,
                             const blink::FramePolicy& frame_policy) override;
   void CapturePaintPreviewOfSubframe(
@@ -3826,6 +3829,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // https://w3c.github.io/webappsec-cspee/#required-csp,
   // stored when the frame commits the navigation.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
+
+  // Whether the current document is loaded inside an anonymous iframe. Updated
+  // on every cross-document navigation.
+  bool anonymous_;
 
   // The PolicyContainerHost for the current document, containing security
   // policies that apply to it. It should never be null if the RenderFrameHost

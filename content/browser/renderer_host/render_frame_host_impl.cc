@@ -1466,7 +1466,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
       document_associated_data_(
           std::make_unique<DocumentAssociatedData>(*this)),
-      lifecycle_state_(lifecycle_state) {
+      lifecycle_state_(lifecycle_state),
+      anonymous_(parent_ ? parent_->anonymous() : false) {
   DCHECK(delegate_);
   DCHECK(lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
          lifecycle_state_ == LifecycleStateImpl::kPrerendering ||
@@ -5988,9 +5989,10 @@ void RenderFrameHostImpl::DidChangeOpener(
                                                       GetSiteInstance());
 }
 
-void RenderFrameHostImpl::DidChangeCSPAttribute(
+void RenderFrameHostImpl::DidChangeIframeAttributes(
     const blink::FrameToken& child_frame_token,
-    network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute) {
+    network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute,
+    bool anonymous) {
   if (parsed_csp_attribute &&
       !ValidateCSPAttribute(parsed_csp_attribute->header->header_value)) {
     bad_message::ReceivedBadMessage(GetProcess(),
@@ -5998,12 +6000,13 @@ void RenderFrameHostImpl::DidChangeCSPAttribute(
     return;
   }
 
-  auto* child =
-      FindAndVerifyChild(child_frame_token, bad_message::RFH_CSP_ATTRIBUTE);
+  auto* child = FindAndVerifyChild(
+      child_frame_token, bad_message::RFH_DID_CHANGE_IFRAME_ATTRIBUTE);
   if (!child)
     return;
 
   child->frame_tree_node()->set_csp_attribute(std::move(parsed_csp_attribute));
+  child->frame_tree_node()->set_anonymous(anonymous);
 }
 
 void RenderFrameHostImpl::DidChangeFramePolicy(
@@ -10140,6 +10143,7 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // Store the required CSP (it will be used by the AncestorThrottle if
   // this frame embeds a subframe when that subframe navigates).
   required_csp_ = navigation_request->TakeRequiredCSP();
+  anonymous_ = navigation_request->anonymous();
 
   coep_reporter_ = navigation_request->TakeCoepReporter();
   if (coep_reporter_) {

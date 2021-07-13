@@ -5691,4 +5691,122 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_Bug1210234) {
   EXPECT_EQ(redirection_url, web_contents()->GetLastCommittedURL());
 }
 
+class NavigationBrowserTestAnonymousIframe : public NavigationBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationBrowserTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AnonymousIframe");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
+                       AnonymousAttributeIsHonoredByNavigation) {
+  GURL main_url = embedded_test_server()->GetURL("/page_with_iframe.html");
+  GURL iframe_url_1 = embedded_test_server()->GetURL("/title1.html");
+  GURL iframe_url_2 = embedded_test_server()->GetURL("/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // The main page has a child iframe with url `iframe_url_1`.
+  EXPECT_EQ(1U, main_frame()->child_count());
+  FrameTreeNode* child = main_frame()->child_at(0);
+  EXPECT_EQ(iframe_url_1, child->current_url());
+  EXPECT_FALSE(child->anonymous());
+  EXPECT_FALSE(child->current_frame_host()->anonymous());
+
+  // Changes to the iframe 'anonymous' attribute are propagated to the
+  // FrameTreeNode. The RenderFrameHost, however, is updated only on navigation.
+  EXPECT_TRUE(
+      ExecJs(main_frame(),
+             "document.getElementById('test_iframe').anonymous = true;"));
+  EXPECT_TRUE(child->anonymous());
+  EXPECT_FALSE(child->current_frame_host()->anonymous());
+
+  // Create a grandchild iframe.
+  EXPECT_TRUE(ExecJs(
+      child, JsReplace("let grandchild = document.createElement('iframe');"
+                       "grandchild.src = $1;"
+                       "document.body.appendChild(grandchild);",
+                       iframe_url_2)));
+  WaitForLoadStop(web_contents());
+  EXPECT_EQ(1U, child->child_count());
+  FrameTreeNode* grandchild = child->child_at(0);
+
+  // The grandchild FrameTreeNode does not set the 'anonymous' attribute. The
+  // grandchild RenderFrameHost is not anonymous, since its parent
+  // RenderFrameHost is not anonymous.
+  EXPECT_FALSE(grandchild->anonymous());
+  EXPECT_FALSE(grandchild->current_frame_host()->anonymous());
+
+  // Navigate the child iframe same-document. This does not change anything.
+  EXPECT_TRUE(ExecJs(main_frame(),
+                     JsReplace("document.getElementById('test_iframe')"
+                               "        .contentWindow.location.href = $1;",
+                               iframe_url_1.Resolve("#here").spec())));
+  WaitForLoadStop(web_contents());
+  EXPECT_TRUE(child->anonymous());
+  EXPECT_FALSE(child->current_frame_host()->anonymous());
+
+  // Now navigate the child iframe cross-document.
+  EXPECT_TRUE(ExecJs(
+      main_frame(), JsReplace("document.getElementById('test_iframe').src = $1",
+                              iframe_url_2)));
+  WaitForLoadStop(web_contents());
+  EXPECT_TRUE(child->anonymous());
+  EXPECT_TRUE(child->current_frame_host()->anonymous());
+
+  // Create a grandchild iframe.
+  EXPECT_TRUE(ExecJs(
+      child, JsReplace("let grandchild = document.createElement('iframe');"
+                       "grandchild.id = 'grandchild_iframe';"
+                       "document.body.appendChild(grandchild);",
+                       iframe_url_1)));
+  EXPECT_EQ(1U, child->child_count());
+  grandchild = child->child_at(0);
+
+  // The grandchild does not set the 'anonymous' attribute, but the grandchild
+  // document is anonymous.
+  EXPECT_FALSE(grandchild->anonymous());
+  EXPECT_TRUE(grandchild->current_frame_host()->anonymous());
+
+  // Now navigate the grandchild iframe.
+  EXPECT_TRUE(ExecJs(
+      child, JsReplace("document.getElementById('grandchild_iframe').src = $1",
+                       iframe_url_2)));
+  WaitForLoadStop(web_contents());
+  EXPECT_TRUE(grandchild->current_frame_host()->anonymous());
+
+  // Remove the 'anonymous' attribute from the iframe. This propagates to the
+  // FrameTreeNode. The RenderFrameHost, however, is updated only on navigation.
+  EXPECT_TRUE(
+      ExecJs(main_frame(),
+             "document.getElementById('test_iframe').anonymous = false;"));
+  EXPECT_FALSE(child->anonymous());
+  EXPECT_TRUE(child->current_frame_host()->anonymous());
+
+  // Create another grandchild iframe. Even if the parent iframe element does
+  // not have the 'anonymous' attribute anymore, the grandchild document is
+  // still loaded inside of an anonymous RenderFrameHost, so it will be
+  // anonymous.
+  EXPECT_TRUE(ExecJs(
+      child, JsReplace("let grandchild2 = document.createElement('iframe');"
+                       "document.body.appendChild(grandchild2);",
+                       iframe_url_1)));
+  EXPECT_EQ(2U, child->child_count());
+  FrameTreeNode* grandchild2 = child->child_at(1);
+  EXPECT_FALSE(grandchild2->anonymous());
+  EXPECT_TRUE(grandchild2->current_frame_host()->anonymous());
+
+  // Navigate the child iframe. Since the iframe element does not set the
+  // 'anonymous' attribute, the resulting RenderFrameHost will not be anonymous.
+  EXPECT_TRUE(
+      ExecJs(main_frame(),
+             JsReplace("document.getElementById('test_iframe').src = $1;",
+                       iframe_url_2)));
+  WaitForLoadStop(web_contents());
+  EXPECT_FALSE(child->anonymous());
+  EXPECT_FALSE(child->current_frame_host()->anonymous());
+}
+
 }  // namespace content

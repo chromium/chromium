@@ -7503,6 +7503,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="246" label="MDDH_INVALID_ALL_ORIGINS_PERMITTED"/>
   <int value="247" label="MDDH_INVALID_PERMITTED_ORIGIN"/>
   <int value="248" label="MDDH_NOT_TOP_LEVEL"/>
+  <int value="249" label="RFH_DID_CHANGE_IFRAME_ATTRIBUTE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

@@ -510,11 +510,12 @@ interface LocalFrameHost {
       blink.mojom.FrameToken child_frame_token,
       blink.mojom.FramePolicy frame_policy);
 
-  // Notifies the browser that the frame changed the 'csp' attribute
-  // of one of its child frames.
-  DidChangeCSPAttribute(
+  // Notifies the browser that one of the iframe attributes tracked by the
+  // browser process changed.
+  DidChangeIframeAttributes(
       blink.mojom.FrameToken child_frame_token,
-      network.mojom.ContentSecurityPolicy? parsed_csp_attribute);
+      network.mojom.ContentSecurityPolicy? parsed_csp_attribute,
+      bool anonymous);
 
   // Sent by the renderer to request a paint preview of a subframe. |clip_rect|
   // is the size of the frame in it's parent. |guid| is an an identifier for

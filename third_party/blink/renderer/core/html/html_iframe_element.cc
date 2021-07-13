@@ -219,8 +219,15 @@ void HTMLIFrameElement::ParseAttribute(
     }
     if (required_csp_ != value) {
       required_csp_ = value;
-      CSPAttributeChanged();
+      DidChangeAttributes();
       UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
+    }
+  } else if (name == html_names::kAnonymousAttr &&
+             RuntimeEnabledFeatures::AnonymousIframeEnabled()) {
+    bool new_value = !value.IsNull();
+    if (anonymous_ != new_value) {
+      anonymous_ = new_value;
+      DidChangeAttributes();
     }
   } else if (name == html_names::kAllowAttr) {
     if (allow_ != value) {
@@ -461,7 +468,7 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
   return parsed_params;
 }
 
-void HTMLIFrameElement::CSPAttributeChanged() {
+void HTMLIFrameElement::DidChangeAttributes() {
   // Don't notify about updates if ContentFrame() is null, for example when
   // the subframe hasn't been created yet; or if we are in the middle of
   // swapping one frame for another, in which case the final state
@@ -482,9 +489,9 @@ void HTMLIFrameElement::CSPAttributeChanged() {
           network::mojom::blink::ContentSecurityPolicySource::kHTTP, KURL());
   DCHECK_LE(csp.size(), 1u);
 
-  GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeCSPAttribute(
+  GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeIframeAttributes(
       ContentFrame()->GetFrameToken(),
-      csp.IsEmpty() ? nullptr : std::move(csp[0]));
+      csp.IsEmpty() ? nullptr : std::move(csp[0]), anonymous_);
 }
 
 }  // namespace blink

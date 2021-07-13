@@ -294,4 +294,31 @@ TEST_F(RenderFrameHostImplTest, FaviconURLsResetWithNavigation) {
   EXPECT_EQ(0u, contents()->GetFaviconURLs().size());
 }
 
+TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
+  EXPECT_FALSE(main_test_rfh()->anonymous());
+
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+  EXPECT_FALSE(child_frame->anonymous());
+
+  child_frame->frame_tree_node()->set_anonymous(true);
+  EXPECT_FALSE(child_frame->anonymous());
+
+  // A navigation in the anonymous iframe commits an anonymous RFH.
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.com/navigation.html"), child_frame);
+  navigation->Commit();
+  child_frame =
+      static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
+  EXPECT_TRUE(child_frame->anonymous());
+
+  // A child of an anonymous RFH is anonymous.
+  auto* grandchild_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(child_frame)
+          ->AppendChild("grandchild"));
+  EXPECT_TRUE(grandchild_frame->anonymous());
+}
+
 }  // namespace content
