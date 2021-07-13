@@ -105,12 +105,14 @@ bool SyncErrorInfoBarDelegate::Accept() {
     [presenter_ showSyncPassphraseSettings];
   } else if (error_state_ ==
              SyncSetupService::kSyncServiceNeedsTrustedVaultKey) {
-    [presenter_ showTrustedVaultReauthForFetchKeysWithTrigger:
-                    syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
+    [presenter_
+        showTrustedVaultReauthForFetchKeysWithTrigger:
+            syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
   } else if (error_state_ ==
              SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded) {
-    [presenter_ showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-                    syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
+    [presenter_
+        showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+            syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
   }
   return false;
 }

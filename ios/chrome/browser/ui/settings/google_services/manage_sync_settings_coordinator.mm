@@ -287,7 +287,7 @@ using signin_metrics::PromoAction;
       showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
                                                    trigger:
                                                        syncer::
-                                                           KeyRetrievalTriggerForUMA::
+                                                           TrustedVaultUserActionTriggerForUMA::
                                                                kSettings];
 }
 
@@ -299,7 +299,7 @@ using signin_metrics::PromoAction;
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
                                                                 trigger:
-                                                                    syncer::KeyRetrievalTriggerForUMA::
+                                                                    syncer::TrustedVaultUserActionTriggerForUMA::
                                                                         kSettings];
 }
 

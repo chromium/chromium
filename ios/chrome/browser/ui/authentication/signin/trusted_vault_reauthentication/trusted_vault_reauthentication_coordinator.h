@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 
 namespace syncer {
-enum class KeyRetrievalTriggerForUMA;
+enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
 
 // Coordinates the Trusted Vault re-authentication dialog. Trusted Valut is
@@ -26,7 +26,8 @@ enum class KeyRetrievalTriggerForUMA;
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                         intent:(SigninTrustedVaultDialogIntent)intent
-                       trigger:(syncer::KeyRetrievalTriggerForUMA)trigger
+                       trigger:
+                           (syncer::TrustedVaultUserActionTriggerForUMA)trigger
     NS_DESIGNATED_INITIALIZER;
 
 @end

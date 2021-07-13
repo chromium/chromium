@@ -13,7 +13,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
-import org.chromium.components.sync.KeyRetrievalTriggerForUMA;
+import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
 /**
  * {@link TrustedVaultKeyRetrievalProxyActivity} has no own UI and just launches real key retrieval
@@ -73,7 +73,8 @@ public class TrustedVaultKeyRetrievalProxyActivity extends AsyncInitializationAc
         super.finishNativeInitialization();
         // Activity might be restored and this shouldn't cause recording the histogram second time.
         if (getSavedInstanceState() == null) {
-            SyncService.get().recordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA.NOTIFICATION);
+            SyncService.get().recordKeyRetrievalTrigger(
+                    TrustedVaultUserActionTriggerForUMA.NOTIFICATION);
         }
     }
 

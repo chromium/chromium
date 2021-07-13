@@ -133,11 +133,11 @@ using signin_metrics::PromoAction;
                                                           browser:
                                                               (Browser*)browser
                                                            intent:
-                                                (SigninTrustedVaultDialogIntent)
+                                                               (SigninTrustedVaultDialogIntent)
                                                                    intent
                                                           trigger:
                                                               (syncer::
-                                                      KeyRetrievalTriggerForUMA)
+                                                                   TrustedVaultUserActionTriggerForUMA)
                                                                   trigger {
   return [[TrustedVaultReauthenticationCoordinator alloc]
       initWithBaseViewController:viewController

@@ -15,7 +15,7 @@ class GURL;
 @class StartVoiceSearchCommand;
 @class UIViewController;
 namespace syncer {
-enum class KeyRetrievalTriggerForUMA;
+enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
 
 // This protocol groups commands that are part of ApplicationCommands, but
@@ -102,7 +102,7 @@ enum class KeyRetrievalTriggerForUMA;
         (UIViewController*)baseViewController
                                                  trigger:
                                                      (syncer::
-                                                          KeyRetrievalTriggerForUMA)
+                                                          TrustedVaultUserActionTriggerForUMA)
                                                          trigger;
 
 // Presents the Trusted Vault degraded recoverability (to enroll additional
@@ -114,7 +114,7 @@ enum class KeyRetrievalTriggerForUMA;
         (UIViewController*)baseViewController
                                                               trigger:
                                                                   (syncer::
-                                                                       KeyRetrievalTriggerForUMA)
+                                                                       TrustedVaultUserActionTriggerForUMA)
                                                                       trigger;
 
 // Starts a voice search on the current BVC.

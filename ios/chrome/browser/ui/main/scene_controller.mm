@@ -1540,7 +1540,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         (UIViewController*)viewController
                                                  trigger:
                                                      (syncer::
-                                                          KeyRetrievalTriggerForUMA)
+                                                          TrustedVaultUserActionTriggerForUMA)
                                                          trigger {
   [self
       showTrustedVaultDialogFromViewController:viewController
@@ -1554,7 +1554,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         (UIViewController*)viewController
                                                               trigger:
                                                                   (syncer::
-                                                                       KeyRetrievalTriggerForUMA)
+                                                                       TrustedVaultUserActionTriggerForUMA)
                                                                       trigger {
   [self
       showTrustedVaultDialogFromViewController:viewController
@@ -2611,8 +2611,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     showTrustedVaultDialogFromViewController:(UIViewController*)viewController
                                       intent:
                                           (SigninTrustedVaultDialogIntent)intent
-                                     trigger:(syncer::KeyRetrievalTriggerForUMA)
-                                                 trigger {
+                                     trigger:
+                                         (syncer::
+                                              TrustedVaultUserActionTriggerForUMA)
+                                             trigger {
   DCHECK(!self.signinCoordinator);
   Browser* mainBrowser = self.mainInterface.browser;
   self.signinCoordinator = [SigninCoordinator

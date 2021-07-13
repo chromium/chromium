@@ -142,7 +142,7 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
 // usually requires a reauth.
 void OpenTabForSyncKeyRetrieval(
     Browser* browser,
-    syncer::KeyRetrievalTriggerForUMA key_retrieval_trigger);
+    syncer::TrustedVaultUserActionTriggerForUMA key_retrieval_trigger);
 
 // Opens a tab for the purpose of improving the recoverability of the trusted
 // vault keys, which usually requires a reauth.

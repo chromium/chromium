@@ -57,8 +57,9 @@ void ShowSyncSetup(Profile* profile) {
 
 void TriggerSyncKeyRetrieval(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  OpenTabForSyncKeyRetrieval(displayer.browser(),
-                             syncer::KeyRetrievalTriggerForUMA::kNotification);
+  OpenTabForSyncKeyRetrieval(
+      displayer.browser(),
+      syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
 }
 
 void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {

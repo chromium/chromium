@@ -439,7 +439,7 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
 
 void OpenTabForSyncKeyRetrieval(
     Browser* browser,
-    syncer::KeyRetrievalTriggerForUMA key_retrieval_trigger) {
+    syncer::TrustedVaultUserActionTriggerForUMA key_retrieval_trigger) {
   RecordKeyRetrievalTrigger(key_retrieval_trigger);
   const GURL continue_url =
       GURL(UIThreadSearchTermsData().GoogleBaseURLValue());

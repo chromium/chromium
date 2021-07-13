@@ -1380,13 +1380,13 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 }
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)trigger {
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [self.handler showTrustedVaultReauthForFetchKeysFromViewController:self
                                                              trigger:trigger];
 }
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)trigger {
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [self.handler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
                                                                 trigger:

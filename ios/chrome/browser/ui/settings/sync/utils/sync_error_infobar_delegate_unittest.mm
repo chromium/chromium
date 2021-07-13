@@ -108,7 +108,7 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceNeedsTrustedVaultKey) {
   id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
   [[presenter expect]
       showTrustedVaultReauthForFetchKeysWithTrigger:
-          syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
+          syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
       new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));
 
@@ -126,7 +126,7 @@ TEST_F(SyncErrorInfobarDelegateTest,
   id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
   [[presenter expect]
       showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-          syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
+          syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
       new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));
 

@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 namespace syncer {
-enum class KeyRetrievalTriggerForUMA;
+enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
 
 // Protocol used to display sync-related UI.
@@ -29,13 +29,13 @@ enum class KeyRetrievalTriggerForUMA;
 // Presents the Trusted Vault reauthentication dialog.
 // |trigger| UI elements where the trusted vault reauth has been triggered.
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)trigger;
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger;
 
 // Presents the Trusted Vault degraded recoverability dialog (to enroll
 // additional recovery factors).
 // |trigger| UI elements where the trusted vault reauth has been triggered.
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)trigger;
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger;
 
 @end
 

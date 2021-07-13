@@ -36,8 +36,8 @@ import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.sync.KeyRetrievalTriggerForUMA;
 import org.chromium.components.sync.StopSource;
+import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -440,7 +440,7 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultKeyRetrievalDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
-        SyncService.get().recordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA.SETTINGS);
+        SyncService.get().recordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA.SETTINGS);
         openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
                 TrustedVaultClient.get().createKeyRetrievalIntent(accountInfo));
     }

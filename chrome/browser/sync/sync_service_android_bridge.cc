@@ -360,7 +360,7 @@ void SyncServiceAndroidBridge::RecordKeyRetrievalTrigger(JNIEnv* env,
                                                          jint trigger) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   syncer::RecordKeyRetrievalTrigger(
-      static_cast<syncer::KeyRetrievalTriggerForUMA>(trigger));
+      static_cast<syncer::TrustedVaultUserActionTriggerForUMA>(trigger));
 }
 
 jboolean SyncServiceAndroidBridge::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {

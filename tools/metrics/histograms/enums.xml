@@ -81444,7 +81444,7 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Second attempt"/>
 </enum>
 
-<enum name="TrustedVaultKeyRetrievalTrigger">
+<enum name="TrustedVaultUserActionTrigger">
   <int value="0" label="Settings page"/>
   <int value="1" label="Profile menu"/>
   <int value="2" label="OS-level notification"/>

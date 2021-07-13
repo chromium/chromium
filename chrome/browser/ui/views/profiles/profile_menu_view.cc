@@ -328,7 +328,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
       OpenTabForSyncKeyRetrieval(
-          browser(), syncer::KeyRetrievalTriggerForUMA::kProfileMenu);
+          browser(), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
     case AvatarSyncErrorType::
         kTrustedVaultRecoverabilityDegradedForEverythingError:

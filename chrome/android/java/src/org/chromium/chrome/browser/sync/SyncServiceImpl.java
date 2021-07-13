@@ -16,9 +16,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.sync.KeyRetrievalTriggerForUMA;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.PassphraseType;
+import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -333,7 +333,8 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public void recordKeyRetrievalTrigger(@KeyRetrievalTriggerForUMA int keyRetrievalTrigger) {
+    public void recordKeyRetrievalTrigger(
+            @TrustedVaultUserActionTriggerForUMA int keyRetrievalTrigger) {
         SyncServiceImplJni.get().recordKeyRetrievalTrigger(
                 mSyncServiceAndroidBridge, keyRetrievalTrigger);
     }

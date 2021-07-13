@@ -5385,14 +5385,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)trigger {
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [self.dispatcher
       showTrustedVaultReauthForFetchKeysFromViewController:self
                                                    trigger:trigger];
 }
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)trigger {
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [self.dispatcher
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
                                                                 trigger:

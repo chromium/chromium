@@ -257,7 +257,7 @@ using signin_metrics::PromoAction;
           self.googleServicesSettingsViewController
                                                    trigger:
                                                        syncer::
-                                                           KeyRetrievalTriggerForUMA::
+                                                           TrustedVaultUserActionTriggerForUMA::
                                                                kSettings];
 }
 
@@ -269,7 +269,7 @@ using signin_metrics::PromoAction;
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
                                                                 trigger:
-                                                                    syncer::KeyRetrievalTriggerForUMA::
+                                                                    syncer::TrustedVaultUserActionTriggerForUMA::
                                                                         kSettings];
 }
 

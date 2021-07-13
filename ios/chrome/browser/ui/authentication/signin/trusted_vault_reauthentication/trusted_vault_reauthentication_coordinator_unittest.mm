@@ -74,8 +74,8 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
 // Opens the trusted vault reauth dialog, and simulate a user cancel.
 TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   // Create sign-in coordinator.
-  syncer::KeyRetrievalTriggerForUMA trigger =
-      syncer::KeyRetrievalTriggerForUMA::kSettings;
+  syncer::TrustedVaultUserActionTriggerForUMA trigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
@@ -110,8 +110,8 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
 // Opens the trusted vault reauth dialog, and simulate a user cancel.
 TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterrupt) {
   // Create sign-in coordinator.
-  syncer::KeyRetrievalTriggerForUMA trigger =
-      syncer::KeyRetrievalTriggerForUMA::kSettings;
+  syncer::TrustedVaultUserActionTriggerForUMA trigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_

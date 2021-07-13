@@ -16,7 +16,7 @@
 class Browser;
 @class ChromeIdentity;
 namespace syncer {
-enum class KeyRetrievalTriggerForUMA;
+enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -115,11 +115,11 @@ class PrefRegistrySyncable;
                                                           browser:
                                                               (Browser*)browser
                                                            intent:
-                                                (SigninTrustedVaultDialogIntent)
+                                                               (SigninTrustedVaultDialogIntent)
                                                                    intent
                                                           trigger:
                                                               (syncer::
-                                                      KeyRetrievalTriggerForUMA)
+                                                                   TrustedVaultUserActionTriggerForUMA)
                                                                   trigger;
 
 // Returns a coordinator to display the account consistency promo with a list
