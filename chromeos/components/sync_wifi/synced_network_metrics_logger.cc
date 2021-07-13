@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -117,8 +116,6 @@ ApplyNetworkFailureReason SyncedNetworkMetricsLogger::ApplyFailureReasonToEnum(
 SyncedNetworkMetricsLogger::SyncedNetworkMetricsLogger(
     NetworkStateHandler* network_state_handler,
     NetworkConnectionHandler* network_connection_handler) {
-  initialized_timestamp_ = base::Time::Now();
-
   if (network_state_handler) {
     network_state_handler_ = network_state_handler;
     network_state_handler_->AddObserver(this, FROM_HERE);
@@ -127,13 +124,6 @@ SyncedNetworkMetricsLogger::SyncedNetworkMetricsLogger(
   if (network_connection_handler) {
     network_connection_handler_ = network_connection_handler;
     network_connection_handler_->AddObserver(this);
-  }
-
-  const NetworkState* active_wifi =
-      NetworkHandler::Get()->network_state_handler()->ConnectedNetworkByType(
-          NetworkTypePattern::WiFi());
-  if (active_wifi && IsEligible(active_wifi)) {
-    base::UmaHistogramBoolean(kConnectionResultAllHistogram, true);
   }
 }
 
@@ -190,14 +180,7 @@ void SyncedNetworkMetricsLogger::NetworkConnectionStateChanged(
     return;
   }
 
-  // Require that the network was previously in the 'connecting' state before
-  // transitioning to 'connected' in order to prevent double-counting a network
-  // if this function is executed multiple times while connected.  This is
-  // skipped when this class was recently created since 'connecting' may have
-  // happened before we were tracking.
-  if (!connecting_guids_.contains(network->guid()) &&
-      (base::Time::Now() - initialized_timestamp_) >
-          base::TimeDelta::FromSeconds(5)) {
+  if (!connecting_guids_.contains(network->guid())) {
     return;
   }
 
