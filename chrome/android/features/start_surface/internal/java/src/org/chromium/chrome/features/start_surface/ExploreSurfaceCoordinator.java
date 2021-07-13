@@ -59,12 +59,6 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
          */
         FeedSurfaceCoordinator createFeedSurfaceCoordinator(boolean isInNightMode,
                 boolean isPlaceholderShown, @NewTabPageLaunchOrigin int launchOrigin);
-
-        /** Shows the Feeds surface. */
-        void showFeedSurface();
-
-        /** Hides the Feeds surface. */
-        void hideFeedSurface();
     }
 
     /**
@@ -106,20 +100,6 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 return internalCreateFeedSurfaceCoordinator(mHasHeader, isInNightMode,
                         isPlaceholderShown, bottomSheetController, scrollableContainerDelegate,
                         launchOrigin, feedLaunchReliabilityLoggingState);
-            }
-
-            @Override
-            public void showFeedSurface() {
-                if (mExploreSurfaceFeedLifecycleManager != null) {
-                    mExploreSurfaceFeedLifecycleManager.showFeedSurface();
-                }
-            }
-
-            @Override
-            public void hideFeedSurface() {
-                if (mExploreSurfaceFeedLifecycleManager != null) {
-                    mExploreSurfaceFeedLifecycleManager.hideFeedSurface();
-                }
             }
         };
     }

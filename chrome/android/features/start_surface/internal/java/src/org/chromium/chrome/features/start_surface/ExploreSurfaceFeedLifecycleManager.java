@@ -55,12 +55,4 @@ class ExploreSurfaceFeedLifecycleManager extends FeedSurfaceLifecycleManager {
         String state = mCoordinator.getSavedInstanceStateString();
         StartSurfaceUserData.getInstance().saveFeedInstanceState(state);
     }
-
-    public void showFeedSurface() {
-        super.show();
-    }
-
-    public void hideFeedSurface() {
-        super.hide();
-    }
 }
