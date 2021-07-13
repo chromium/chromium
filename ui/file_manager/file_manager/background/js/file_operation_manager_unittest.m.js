@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import { assertArrayEquals, assertEquals, assertFalse,assertTrue} from 'chrome://test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
-import { joinPath, MockDirectoryEntry, MockEntry, MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.js';
+import {joinPath, MockDirectoryEntry, MockEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
 import {util} from '../../common/js/util.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -864,6 +864,174 @@ export function testMove(callback) {
   fileOperationManager.paste(
       [fileSystem.entries['/test.txt']],
       /** @type {!DirectoryEntry} */ (fileSystem.entries['/directory']), true);
+}
+
+/**
+ * Tests moving files within My files (Downloads excluded) or within Downloads.
+ * When the source and the destination volumes are the same, the local
+ * implementation of move should be used instead of copy + delete.
+ */
+export async function testMoveSameVolume(done) {
+  // Prepare entries.
+  const fileSystem = createTestFileSystem('downloads', {
+    '/dest': DIRECTORY_SIZE,
+    '/test.txt': 10,
+    '/Downloads': DIRECTORY_SIZE,
+    '/Downloads2': DIRECTORY_SIZE,
+    '/Downloads/dest': DIRECTORY_SIZE,
+    '/Downloads/test.txt': 10,
+    '/dummyEntry.txt': 10,
+  });
+  window.webkitResolveLocalFileSystemURL = (url, success, failure) => {
+    resolveTestFileSystemURL(fileSystem, url, success, failure);
+  };
+
+  /**
+   * Fake implementation of Entry.moveTo.
+   * @param {!DirectoryEntry} destination
+   * @param {string=} destinationName
+   * @param {function(!Entry)=} success_callback
+   * @param {function(!FileError)=} error_callback
+   */
+  const moveToFunc =
+      (destination, destinationName, success_callback, error_callback) => {
+        moveToCount++;
+        // The callback argument is meant to be the entry created by
+        // Entry.moveTo, it has no importance here.
+        success_callback(fileSystem.entries['/dummyEntry.txt']);
+      };
+
+  // Override the moveTo method of the entries to move, as well as
+  // fileManagerPrivate.startCopy. If the same-volume implementation is
+  // used, moveTo is called but not startCopy.
+  let moveToCount = 0;
+  fileSystem.entries['/test.txt'].moveTo = moveToFunc;
+  fileSystem.entries['/Downloads/test.txt'].moveTo = moveToFunc;
+
+  let startCopyCount = 0;
+  mockChrome.fileManagerPrivate.startCopy = () => {
+    startCopyCount++;
+  };
+
+  volumeManager = new FakeVolumeManager();
+  fileOperationManager = new FileOperationManagerImpl();
+
+  const isMove = true;
+
+  // Move /test.txt to /dest.
+  fileOperationManager.paste(
+      [fileSystem.entries['/test.txt']],
+      /** @type {!DirectoryEntry} */ (fileSystem.entries['/dest']), isMove);
+
+  // Wait until fileSystem.entries['/test.txt'].moveTo is called.
+  await waitUntil(() => moveToCount == 1 && !startCopyCount);
+
+  // Move /test.txt to /Downloads2, Downloads2 is not a Downloads location, so a
+  // local move can also be executed.
+  fileOperationManager.paste(
+      [fileSystem.entries['/test.txt']],
+      /** @type {!DirectoryEntry} */ (fileSystem.entries['/Downloads2']),
+      isMove);
+
+  // Wait until fileSystem.entries['/test.txt'].moveTo is called.
+  await waitUntil(() => moveToCount == 2 && !startCopyCount);
+
+  // Move /Downloads/test.txt to /Downloads/dest.
+  fileOperationManager.paste(
+      [fileSystem.entries['/Downloads/test.txt']],
+      /** @type {!DirectoryEntry} */ (fileSystem.entries['/Downloads/dest']),
+      isMove);
+
+  // Wait until fileSystem.entries['/Downloads/test.txt'].moveTo is called.
+  await waitUntil(() => moveToCount == 3 && !startCopyCount);
+
+  done();
+}
+
+/**
+ * Tests moving files between My files and Downloads: Downloads being a bind
+ * mount into My files, the copy + delete implementation of move should be used.
+ */
+export async function testMoveBetweenMyFilesDownloads(done) {
+  // Prepare entries and their resolver.
+  const fileSystem = createTestFileSystem('downloads', {
+    '/Downloads': DIRECTORY_SIZE,
+    '/Downloads/test.txt': 10,
+    '/test.txt': 10,
+  });
+  window.webkitResolveLocalFileSystemURL = (url, success, failure) => {
+    resolveTestFileSystemURL(fileSystem, url, success, failure);
+  };
+
+  /**
+   * Fake implementation of fileManagerPrivate.startCopy.
+   * @param {!Entry} source
+   * @param {!Entry} destination
+   * @param {string} newName
+   * @param {function(number)} callback
+   */
+  const startCopyFunc = (source, destination, newName, callback) => {
+    const makeStatus = type => {
+      return {
+        type: type,
+        sourceUrl: source.toURL(),
+        destinationUrl: destination.toURL()
+      };
+    };
+
+    startCopyCount++;
+
+    // To signal to the background that the copy is finished, we need to
+    // provide its copyId first.
+    callback(copyId);
+
+    const listener = mockChrome.fileManagerPrivate.onCopyProgress.listener_;
+    // The success status is dispatched to the background to indicate that
+    // the copy associated with copyId has terminated.
+    listener(copyId, makeStatus('success'));
+
+    copyId++;
+  };
+
+  // Override the moveTo method of the entries to move, as well as
+  // fileManagerPrivate.startCopy. If the cross-filesystem implementation is
+  // used, startCopy is called (followed by the removal of the source entry) but
+  // not moveTo.
+  let moveToCount = 0;
+  fileSystem.entries['/test.txt'].moveTo = () => {
+    moveToCount++;
+  };
+  fileSystem.entries['/Downloads/test.txt'].moveTo = () => {
+    moveToCount++;
+  };
+
+  let startCopyCount = 0;
+  let copyId = 0;
+  mockChrome.fileManagerPrivate.startCopy = startCopyFunc;
+
+  volumeManager = new FakeVolumeManager();
+  fileOperationManager = new FileOperationManagerImpl();
+
+  const isMove = true;
+
+  // Move /test.txt to /Downloads/.
+  fileOperationManager.paste(
+      [fileSystem.entries['/test.txt']],
+      /** @type {!DirectoryEntry} */ (fileSystem.entries['/Downloads']),
+      isMove);
+
+  // Wait until fileManagerPrivate.startCopy is called
+  await waitUntil(() => startCopyCount == 1 && !moveToCount);
+
+  // Move /Downloads/test.txt to /.
+  fileOperationManager.paste(
+      [fileSystem.entries['/Downloads/test.txt']],
+      /** @type {!DirectoryEntry} */ (fileSystem.entries['/']), isMove);
+
+  // Wait until fileManagerPrivate.startCopy is called a second time.
+  await waitUntil(() => startCopyCount == 2 && !moveToCount);
+
+  done();
 }
 
 /**
