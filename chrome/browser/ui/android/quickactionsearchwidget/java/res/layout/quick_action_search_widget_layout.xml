@@ -4,7 +4,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/quick_action_widget"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/quick_action_search_widget_background"
     android:orientation="vertical">
@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/quick_action_search_widget_search_bar_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/quick_action_search_widget_search_bar_height"
         android:layout_gravity="center"
         android:layout_marginHorizontal="@dimen/quick_action_search_widget_margin"
         android:layout_marginTop="@dimen/quick_action_search_widget_margin"
@@ -42,30 +42,34 @@
 
     <LinearLayout
         android:id="@+id/quick_action_button_container"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="@dimen/quick_action_search_widget_margin"
-        android:gravity="center_vertical"
+        android:layout_margin="@dimen/quick_action_search_widget_button_container_margin"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/incognito_quick_action_button"
+            android:src="@drawable/incognito_simple"
             style="@style/QuickActionSearchWidgetButton"
             android:contentDescription="@string/button_new_incognito_tab" />
 
         <ImageButton
             android:id="@+id/voice_search_quick_action_button"
+            android:src="@drawable/btn_mic"
             style="@style/QuickActionSearchWidgetButton"
             android:contentDescription="@string/accessibility_toolbar_btn_mic" />
 
         <ImageButton
             android:id="@+id/lens_quick_action_button"
+            android:src="@drawable/lens_camera_icon"
             style="@style/QuickActionSearchWidgetButton"
             android:contentDescription="@string/accessibility_btn_lens_camera"/>
 
         <ImageButton
             android:id="@+id/dino_quick_action_button"
+            android:src="@drawable/ic_dino"
             style="@style/QuickActionSearchWidgetButton"
             android:contentDescription="@string/accessibility_quick_action_search_widget_start_dino_game" />
 

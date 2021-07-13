@@ -47,6 +47,7 @@ android_library("javatests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/ic_dino.xml",
     "java/res/drawable/quick_action_search_widget_background.xml",
     "java/res/drawable/quick_action_search_widget_button_background.xml",
     "java/res/drawable/quick_action_search_widget_search_bar_background.xml",
