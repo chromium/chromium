@@ -3565,3 +3565,24 @@ TEST_F('ChromeVoxBackgroundTest', 'NewTabRead', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'NestedMenuHints', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div role="menu" aria-orientation="vertical">
+      <div role="menu" aria-orientation="horizontal">
+        <div tabindex="0" role="menuitem">hello</div>
+        <div tabindex="0" role="menuitem">bro</div>
+      </div>
+    </div>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    mockFeedback
+        .expectSpeech(
+            'Press left or right arrow to navigate; enter to activate')
+        .call(
+            () => assertFalse(mockFeedback.utteranceInQueue(
+                'Press up or down arrow to navigate; enter to activate')))
+        .replay();
+  });
+});

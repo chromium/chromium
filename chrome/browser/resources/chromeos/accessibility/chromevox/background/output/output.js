@@ -2289,7 +2289,10 @@ Output = class {
             /** @type {function(?) : boolean} */ (AutomationPredicate.table))) {
       ret.push({msgId: 'hint_table'});
     }
-    if ((foundAncestor = uniqueAncestors.find(
+
+    // This hint is not based on the role (it uses state), so we need to care
+    // about ordering; prefer deepest ancestor first.
+    if ((foundAncestor = uniqueAncestors.reverse().find(
              /** @type {function(?) : boolean} */ (AutomationPredicate.roles(
                  [RoleType.MENU, RoleType.MENU_BAR]))))) {
       ret.push({
