@@ -21,7 +21,7 @@ import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_behavior.js';
+import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 

@@ -39,7 +39,7 @@ import {Route, RouteObserverMixin, Router} from '../router.js';
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
-import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_behavior.js';
+import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
 

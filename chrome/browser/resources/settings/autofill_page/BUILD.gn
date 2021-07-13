@@ -24,10 +24,10 @@ js_type_check("closure_compile") {
     ":multi_store_id_handler",
     ":multi_store_password_ui_entry",
     ":password_check",
-    ":password_check_behavior",
     ":password_check_edit_dialog",
     ":password_check_edit_disclaimer_dialog",
     ":password_check_list_item",
+    ":password_check_mixin",
     ":password_edit_dialog",
     ":password_list_item",
     ":password_manager_proxy",
@@ -59,7 +59,7 @@ js_library("address_edit_dialog") {
 
 js_library("autofill_page") {
   deps = [
-    ":password_check_behavior",
+    ":password_check_mixin",
     "..:hats_browser_proxy",
     "..:open_window_proxy",
     "..:route",
@@ -126,7 +126,7 @@ js_library("credit_card_list_entry") {
 js_library("password_check") {
   deps = [
     ":blocking_request_manager",
-    ":password_check_behavior",
+    ":password_check_mixin",
     ":password_manager_proxy",
     "..:route",
     "../prefs:prefs_behavior",
@@ -136,7 +136,7 @@ js_library("password_check") {
   ]
 }
 
-js_library("password_check_behavior") {
+js_library("password_check_mixin") {
   deps = [
     ":password_manager_proxy",
     "//ui/webui/resources/js:plural_string_proxy",

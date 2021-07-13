@@ -10,14 +10,14 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
-    ":main_page_behavior",
+    ":main_page_mixin",
     ":settings_animated_pages",
     ":settings_section",
     ":settings_subpage",
   ]
 }
 
-js_library("main_page_behavior") {
+js_library("main_page_mixin") {
   deps = [
     ":settings_section",
     "..:route",

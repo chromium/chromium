@@ -41,7 +41,7 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js'
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSearchManager, SearchResult} from '../search_settings.js';
-import {MainPageMixin, MainPageMixinInterface} from '../settings_page/main_page_behavior.js';
+import {MainPageMixin, MainPageMixinInterface} from '../settings_page/main_page_mixin.js';
 
 // <if expr="chromeos or lacros">
 const OS_BANNER_INTERACTION_METRIC_NAME =
