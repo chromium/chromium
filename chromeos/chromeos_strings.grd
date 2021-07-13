@@ -1576,6 +1576,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_TRAFFIC_COUNTERS_REQUEST_TRAFFIC_COUNTERS" desc="Label for button requesting traffic counters">
         Request Traffic Counters
       </message>
+      <message name="IDS_TRAFFIC_COUNTERS_RESET_TRAFFIC_COUNTERS" desc="Label for button resetting traffic counters">
+        Reset Traffic Counters
+      </message>
       <message name="IDS_TRAFFIC_COUNTERS_TRAFFIC_COUNTERS" desc="Label for showing traffic counters">
         Traffic Counters
       </message>

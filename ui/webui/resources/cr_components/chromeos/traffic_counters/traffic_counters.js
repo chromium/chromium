@@ -118,6 +118,26 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
   }
 
   /**
+   * Handles requests to reset traffic counters.
+   * @param {!Event} event
+   * @private
+   */
+  async onResetTrafficCountersClick_(event) {
+    const network = event.model.network;
+    this.networkConfig_.resetTrafficCounters(network.guid);
+    const trafficCounters =
+        await this.getTrafficCountersForNetwork_(network.guid);
+    const foundIdx = this.networks_.findIndex(n => n.guid === network.guid);
+    if (foundIdx === -1) {
+      return;
+    }
+    this.splice(
+        'networks_', foundIdx, 1,
+        createNetwork(
+            network.guid, network.name, network.type, trafficCounters));
+  }
+
+  /**
    * Requests traffic counters for networks.
    * @private
    */
@@ -140,6 +160,19 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
               networkState.guid, networkState.name, networkState.type,
               trafficCountersObj.trafficCounters));
     }
+  }
+
+  /**
+   * Requests and sets traffic counters for the given network.
+   * @param {string} guid
+   * @return {!Promise<!Array<!Object>>} traff counters for network with guid
+   * @private
+   */
+  async getTrafficCountersForNetwork_(guid) {
+    const trafficCountersObj =
+        await this.networkConfig_.requestTrafficCounters(guid);
+    this.convertSourceEnumToString_(trafficCountersObj.trafficCounters);
+    return trafficCountersObj.trafficCounters;
   }
 
   /**

@@ -29,6 +29,8 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"TrafficCountersTrafficCounters", IDS_TRAFFIC_COUNTERS_TRAFFIC_COUNTERS},
     {"TrafficCountersRequestTrafficCounters",
      IDS_TRAFFIC_COUNTERS_REQUEST_TRAFFIC_COUNTERS},
+    {"TrafficCountersResetTrafficCounters",
+     IDS_TRAFFIC_COUNTERS_RESET_TRAFFIC_COUNTERS},
 };
 
 }  // namespace
