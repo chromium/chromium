@@ -1144,7 +1144,7 @@ void TargetHandler::AddServiceWorkerThrottle(
   if (!agent_host)
     return;
 
-  if (auto_attached_sessions_[agent_host]) {
+  if (auto_attached_sessions_.count(agent_host)) {
     auto_attached_sessions_[agent_host]->SetServiceWorkerThrottle(
         std::move(throttle_handle));
   }
