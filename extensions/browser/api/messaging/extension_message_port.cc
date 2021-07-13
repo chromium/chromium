@@ -170,6 +170,11 @@ ExtensionMessagePort::ExtensionMessagePort(
   CHECK(tab);
   frame_tracker_->TrackTabFrames(tab);
   if (include_child_frames) {
+    // TODO(https://crbug.com/1227787) We don't yet support MParch so make sure
+    // `include_child_frames` is only provided for primary pages. If `rfh`
+    // belongs to a non-primary page, then the ForEachFrame iteration below
+    // would actually correspond to a different page than `rfh`'s page.
+    CHECK(rfh->GetPage().IsPrimary());
     tab->ForEachFrame(base::BindRepeating(&ExtensionMessagePort::RegisterFrame,
                                           base::Unretained(this)));
   } else {
