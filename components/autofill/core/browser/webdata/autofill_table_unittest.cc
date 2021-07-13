@@ -130,7 +130,8 @@ int GetAutofillEntryCount(const std::u16string& name,
       "SELECT count FROM autofill WHERE name = ? AND value = ?"));
   s.BindString16(0, name);
   s.BindString16(1, value);
-  s.Step();
+  if (!s.Step())
+    return 0;
   return s.ColumnInt(0);
 }
 
@@ -1214,7 +1215,7 @@ TEST_F(AutofillTableTest,
   s1.BindString(0, profile.guid());
   ASSERT_TRUE(s1.is_valid());
   ASSERT_TRUE(s1.Step());
-  EXPECT_EQ(0, s1.ColumnInt(1));
+  EXPECT_EQ(1, s1.ColumnInt(0));
 
   // Enable the feature again and load the profile.
   scoped_feature_list_.Reset();
