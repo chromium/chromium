@@ -103,6 +103,7 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
+using ::testing::Mock;
 using ::testing::Return;
 using ::testing::ReturnNull;
 using ::testing::WithArg;
@@ -260,7 +261,9 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
 
     // `existing_user_controller_` has data members that are CrosSettings
     // observers. They need to be destructed before CrosSettings.
+    Mock::VerifyAndClear(mock_login_display_host_.get());
     existing_user_controller_.reset();
+    mock_login_display_host_.reset();
 
     // Test case may be configured with the real user manager but empty user
     // list initially. So network OOBE screen is initialized.
