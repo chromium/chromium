@@ -14,9 +14,6 @@
 // ui/base/device_form_factor.h instead.
 bool IsIPadIdiom();
 
-// Enum for arrays by UI idiom.
-enum InterfaceIdiom { IPHONE_IDIOM, IPAD_IDIOM, INTERFACE_IDIOM_COUNT };
-
 // Returns the height of the screen in the current orientation.
 CGFloat CurrentScreenHeight();
 
