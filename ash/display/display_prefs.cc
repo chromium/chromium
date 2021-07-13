@@ -200,7 +200,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
       GetDisplayManager()->layout_store();
 
   const base::Value* layouts = local_state->Get(prefs::kSecondaryDisplays);
-  for (const auto& it : layouts->DictItems()) {
+  for (const auto it : layouts->DictItems()) {
     std::unique_ptr<display::DisplayLayout> layout(new display::DisplayLayout);
     if (!display::JsonToDisplayLayout(it.second, layout.get())) {
       LOG(WARNING) << "Invalid preference value for " << it.first;
@@ -226,7 +226,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
 
 void LoadDisplayProperties(PrefService* local_state) {
   const base::Value* properties = local_state->Get(prefs::kDisplayProperties);
-  for (const auto& it : properties->DictItems()) {
+  for (const auto it : properties->DictItems()) {
     const base::DictionaryValue* dict_value = nullptr;
     if (!it.second.GetAsDictionary(&dict_value) || dict_value == nullptr)
       continue;
@@ -300,7 +300,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
   DCHECK(properties->is_dict());
 
   display::TouchDeviceManager::TouchAssociationMap touch_associations;
-  for (const auto& item : properties->DictItems()) {
+  for (const auto item : properties->DictItems()) {
     uint32_t identifier_raw;
     if (!base::StringToUint(item.first, &identifier_raw))
       continue;
@@ -309,7 +309,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
         identifier, display::TouchDeviceManager::AssociationInfoMap());
     if (!item.second.is_dict())
       continue;
-    for (const auto& association_info_item : item.second.DictItems()) {
+    for (const auto association_info_item : item.second.DictItems()) {
       display::TouchDeviceManager::TouchAssociationInfo info;
       int64_t display_id;
       if (!base::StringToInt64(association_info_item.first, &display_id))
@@ -337,7 +337,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
   const display::TouchDeviceIdentifier& fallback_identifier =
       display::TouchDeviceIdentifier::GetFallbackTouchDeviceIdentifier();
   properties = local_state->Get(prefs::kDisplayProperties);
-  for (const auto& it : properties->DictItems()) {
+  for (const auto it : properties->DictItems()) {
     const base::DictionaryValue* dict_value = nullptr;
     if (!it.second.GetAsDictionary(&dict_value) || dict_value == nullptr)
       continue;
@@ -366,7 +366,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
   // Retrieve port association information.
   properties = local_state->Get(prefs::kDisplayTouchPortAssociations);
   display::TouchDeviceManager::PortAssociationMap port_associations;
-  for (const auto& item : properties->DictItems()) {
+  for (const auto item : properties->DictItems()) {
     // Retrieve the secondary id that identifies the port.
     uint32_t secondary_id_raw;
     if (!base::StringToUint(item.first, &secondary_id_raw))

@@ -1758,7 +1758,7 @@ void AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref(
   const base::DictionaryValue* key_codes_pref =
       active_user_prefs_->GetDictionary(pref_key);
   std::map<int, std::set<std::string>> key_codes;
-  for (const auto& v : key_codes_pref->DictItems()) {
+  for (const auto v : key_codes_pref->DictItems()) {
     int key_code;
     if (!base::StringToInt(v.first, &key_code)) {
       NOTREACHED();
