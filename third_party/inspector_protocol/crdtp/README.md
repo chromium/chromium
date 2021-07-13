@@ -41,7 +41,7 @@ For output parameters:
 # Building and running the tests.
 
 If you're familiar with
-[Chromium's development process](https://www.chromium.org/developers/contributing-code)
+[Chromium's development process](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/contributing.md)
 and have the depot_tools installed, you may use these commands
 to fetch the package (and dependencies) and build and run the tests:
 
