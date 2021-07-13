@@ -72,6 +72,8 @@ content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
       {"emptyList", IDS_BOOKMARK_MANAGER_EMPTY_LIST},
       {"emptyUnmodifiableList", IDS_BOOKMARK_MANAGER_EMPTY_UNMODIFIABLE_LIST},
       {"folderLabel", IDS_BOOKMARK_MANAGER_FOLDER_LABEL},
+      {"importBegan", IDS_BOOKMARK_MANAGER_MENU_IMPORT_BEGAN},
+      {"importEnded", IDS_BOOKMARK_MANAGER_MENU_IMPORT_ENDED},
       {"itemsSelected", IDS_BOOKMARK_MANAGER_ITEMS_SELECTED},
       {"itemsUnselected", IDS_BOOKMARK_MANAGER_ITEMS_UNSELECTED},
       {"listAxLabel", IDS_BOOKMARK_MANAGER_LIST_AX_LABEL},

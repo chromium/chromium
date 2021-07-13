@@ -118,6 +118,7 @@ function onChildrenReordered(
  */
 function onImportBegan() {
   chrome.bookmarks.onCreated.removeListener(onBookmarkCreated);
+  document.dispatchEvent(new CustomEvent('import-began'));
 }
 
 function onImportEnded() {
@@ -125,6 +126,7 @@ function onImportEnded() {
     dispatch(refreshNodes(normalizeNodes(results[0]!)));
   });
   chrome.bookmarks.onCreated.addListener(onBookmarkCreated);
+  document.dispatchEvent(new CustomEvent('import-ended'));
 }
 
 function onIncognitoAvailabilityChanged(availability: IncognitoAvailability) {

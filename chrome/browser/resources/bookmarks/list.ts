@@ -8,15 +8,15 @@ import './shared_style.js';
 import './strings.m.js';
 import './item.js';
 
+import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,10 +30,10 @@ import {canReorderChildren, getDisplayedList} from './util.js';
 
 const BookmarksListElementBase =
     mixinBehaviors([StoreClient, ListPropertyUpdateBehavior], PolymerElement) as
-{
-  new (): PolymerElement &BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState> & ListPropertyUpdateBehavior
-}
+    {
+      new (): PolymerElement & BookmarksStoreClientInterface &
+      StoreObserver<BookmarksPageState>& ListPropertyUpdateBehavior
+    };
 
 export interface BookmarksListElement {
   $: {
@@ -129,10 +129,10 @@ export class BookmarksListElement extends BookmarksListElementBase {
     this.eventTracker_.add(
         document, 'highlight-items',
         e => this.onHighlightItems_(e as CustomEvent<string[]>));
-
-    afterNextRender(this, function() {
-      IronA11yAnnouncer.requestAvailability();
-    });
+    this.eventTracker_.add(
+        document, 'import-began', () => this.onImportBegan_());
+    this.eventTracker_.add(
+        document, 'import-ended', () => this.onImportEnded_());
   }
 
   disconnectedCallback() {
@@ -175,9 +175,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
         new CustomEvent('iron-resize', {bubbles: true, composed: true}));
     const label = await PluralStringProxyImpl.getInstance().getPluralString(
         'listChanged', this.displayedList_.length);
-    this.dispatchEvent(new CustomEvent(
-        'iron-announce',
-        {bubbles: true, composed: true, detail: {text: label}}));
+    CrA11yAnnouncerElement.getInstance().announce(label);
 
     if (!skipFocus && selectIndex > -1) {
       setTimeout(() => {
@@ -265,6 +263,16 @@ export class BookmarksListElement extends BookmarksListElementBase {
     });
   }
 
+  private onImportBegan_() {
+    CrA11yAnnouncerElement.getInstance().announce(
+        loadTimeData.getString('importBegan'));
+  }
+
+  private onImportEnded_() {
+    CrA11yAnnouncerElement.getInstance().announce(
+        loadTimeData.getString('importEnded'));
+  }
+
   private onItemKeydown_(e: KeyboardEvent) {
     let handled = true;
     const list = this.$.list;
@@ -297,8 +305,8 @@ export class BookmarksListElement extends BookmarksListElementBase {
     }
 
     if (focusMoved) {
-      focusedIndex = Math.min(list.items!.length - 1,
-                              Math.max(0, focusedIndex));
+      focusedIndex =
+          Math.min(list.items!.length - 1, Math.max(0, focusedIndex));
       list.focusItem(focusedIndex);
 
       if (cursorModifier && !e.shiftKey) {

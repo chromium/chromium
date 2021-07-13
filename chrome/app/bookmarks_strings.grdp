@@ -379,6 +379,12 @@
   <message name="IDS_BOOKMARK_MANAGER_MENU_IMPORT" desc="Title of the bookmark toolbar dropdown menu item that imports bookmarks.">
     Import bookmarks
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_IMPORT_BEGAN" desc="Accessibility text for after the user selects bookmarks to import.">
+    Importing bookmarks...
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_IMPORT_ENDED" desc="Accessibility text for after the bookmarks manager has finished importing bookmarks.">
+    Bookmarks imported.
+  </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL" desc="Menu title for opening all urls in a bookmark folder">
     Open all
   </message>
