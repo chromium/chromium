@@ -244,8 +244,9 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
 // SoundContentSettingObserver::ReadyToCommitNavigation() with NavigationHandle
 // URL, it uses a page that has a sub frame to make sure that it's called with
 // the correct URL.
+// Flaky crashes. https://crbug.com/1228609
 IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
-                       AddAutoplayFlagsInPrerendering) {
+                       DISABLED_AddAutoplayFlagsInPrerendering) {
   // Sets up the embedded test server to serve the test javascript file.
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
