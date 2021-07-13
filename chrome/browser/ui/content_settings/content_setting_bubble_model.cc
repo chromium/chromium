@@ -14,6 +14,7 @@
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -1256,6 +1257,11 @@ ContentSettingGeolocationBubbleModel::~ContentSettingGeolocationBubbleModel() =
 void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
   if (show_system_geolocation_bubble_) {
 #if defined(OS_MAC)
+    if (show_system_geolocation_bubble_) {
+      base::RecordAction(UserMetricsAction(
+          "ContentSettings.GeolocationDialog.OpenPreferencesClicked"));
+    }
+
     ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
         GURL(kLocationSettingsURI), web_contents());
     return;

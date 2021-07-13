@@ -11,6 +11,8 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -516,6 +518,8 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
       if (!IsGeolocationAllowedOnASystemLevel()) {
         set_icon(vector_icons::kLocationOnIcon,
                  vector_icons::kBlockedBadgeIcon);
+        base::RecordAction(base::UserMetricsAction(
+            "ContentSettings.Geolocation.BlockedIconShown"));
         set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
         if (content_settings->geolocation_was_just_granted_on_site_level())
           set_should_auto_open_bubble(true);
@@ -568,6 +572,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
   set_tooltip(l10n_util::GetStringUTF16(is_allowed
                                             ? IDS_ALLOWED_GEOLOCATION_MESSAGE
                                             : IDS_BLOCKED_GEOLOCATION_MESSAGE));
+
   return true;
 }
 

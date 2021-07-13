@@ -5138,6 +5138,27 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ContentSettings.Geolocation.BlockedIconShown">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>The geolocation blocked icon is shown.</description>
+</action>
+
+<action name="ContentSettings.GeolocationDialog.Closed">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>The content settings geolocation bubble is closed.</description>
+</action>
+
+<action name="ContentSettings.GeolocationDialog.OpenPreferencesClicked">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user clicked 'open preferences' from the content settings geolocation
+    bubble .
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.CardAction.ClosedContextMenu">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
