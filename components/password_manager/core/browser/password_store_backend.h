@@ -77,9 +77,7 @@ class PasswordStoreBackend {
       OptionalStoreChangeListReply callback,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceClosure completion,
-      base::OnceCallback<void(bool)> sync_completion) = 0;
+      base::Time delete_end) {}
   virtual void RemoveLoginsCreatedBetweenAsync(
       OptionalStoreChangeListReply callback,
       base::Time delete_begin,
