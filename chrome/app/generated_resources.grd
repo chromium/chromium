@@ -2049,6 +2049,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="In the download view, 'Retry' button text to retry downloading a file.">
         Retry
       </message>
+      <message name="IDS_DOWNLOAD_LINK_SHOW_IN_WEB_DRIVE"
+                desc="In the download view, 'Show in web_drive' link text">
+          Show in <ph name="LOCATION">$1<ex>Google Drive</ex></ph>
+      </message>
       <if expr="not is_macosx">
         <message name="IDS_DOWNLOAD_LINK_SHOW"
                  desc="In the download view, 'Show in folder' link text">

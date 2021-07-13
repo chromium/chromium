@@ -124,6 +124,7 @@ BoxUploader::BoxUploader(download::DownloadItem* download_item)
     // upload workflow from scratch.
     DCHECK(!is_completed) << download_item->GetState();
     reroute_info_.set_service_provider(kServiceProvider);
+    reroute_info_.mutable_box();  // Set upload to BoxInfo.
   }
 }
 

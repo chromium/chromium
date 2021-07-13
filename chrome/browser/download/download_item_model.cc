@@ -441,7 +441,7 @@ std::u16string DownloadItemModel::GetWebDriveMessage(bool verbose) const {
       if (supp_msg.empty()) {
         return msg;
       }
-      // <WEB_DRIVE_MESSAGE> (<SUPPORT_INFO>)"
+      // "<WEB_DRIVE_MESSAGE> (<SUPPORT_INFO>)"
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_WEB_DRIVE_ERROR, msg, supp_msg);
     }

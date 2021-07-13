@@ -136,8 +136,8 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
                              IDS_BLOCK_REASON_DEEP_SCANNING);
   source->AddLocalizedString("accountCompromiseDownloadDesc",
                              IDS_BLOCK_REASON_ACCOUNT_COMPROMISE);
-  if (browser_defaults::kDownloadPageHasShowInFolder)
-    source->AddLocalizedString("controlShowInFolder", IDS_DOWNLOAD_LINK_SHOW);
+  source->AddBoolean("hasShowInFolder",
+                     browser_defaults::kDownloadPageHasShowInFolder);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in downloads/downloads.html

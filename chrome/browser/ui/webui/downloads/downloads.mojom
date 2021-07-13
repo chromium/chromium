@@ -28,6 +28,7 @@ struct Data {
   string id;
   string last_reason_text;
   string progress_status_text;
+  string show_in_folder_text;
   string since_string;
   // |state| indicates the current state of the download. A download data entry
   // can be dangerous or mixed content which can be expressed as a state to

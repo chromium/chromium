@@ -91,6 +91,10 @@ class DownloadUIModel {
   // warning.
   std::u16string GetWarningConfirmButtonText() const;
 
+  // Get the text to display for the button to show item in folder on download
+  // history page.
+  std::u16string GetShowInFolderText() const;
+
   // Returns the profile associated with this download.
   virtual Profile* profile() const;
 

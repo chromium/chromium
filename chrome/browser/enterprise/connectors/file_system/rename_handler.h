@@ -81,7 +81,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
       content::BrowserContext* context);
 
   // Helper method used in OpenDownload() and ShowDownloadInContext().
-  void AddTabToShowDownload(GURL url);
+  void AddTabToShowDownload(const GURL& url);
 
   // Called when failure status is returned via callbacks but is not
   // GoogleServiceAuthError::State::REQUEST_CANCELED.

@@ -403,12 +403,24 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
   SetupCompletedDownloadItem();
 
   EXPECT_TRUE(model().GetStatusText().empty());
+#if defined(OS_MAC)
+  EXPECT_EQ("Show in Finder", base::UTF16ToUTF8(model().GetShowInFolderText()));
+#else  // defined(OS_MAC)
+  EXPECT_EQ("Show in folder", base::UTF16ToUTF8(model().GetShowInFolderText()));
+#endif
 
+  // Different texts for file rerouted:
   EXPECT_CALL(item(), GetRerouteInfo())
       .WillRepeatedly(ReturnRef(kTestRerouteInfo));
+  // "Saved to <WEB_DRIVE>".
   std::string expected_status_msg =
       base::StringPrintf("Saved to %s", kTestProviderDisplayName);
   EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
+  // "Show in <WEB_DRIVE>".
+  std::string expected_show_in_folder_text =
+      base::StringPrintf("Show in %s", kTestProviderDisplayName);
+  EXPECT_EQ(expected_show_in_folder_text,
+            base::UTF16ToUTF8(model().GetShowInFolderText()));
 }
 
 TEST_F(DownloadItemModelTest, ShouldShowInShelf) {

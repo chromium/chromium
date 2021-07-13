@@ -792,8 +792,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
       id = IDS_DOWNLOAD_LINK_RESUME;
       break;
     case DownloadCommands::SHOW_IN_FOLDER:
-      id = IDS_DOWNLOAD_LINK_SHOW;
-      break;
+      return item_->GetShowInFolderText();
     case DownloadCommands::DISCARD:
       id = IDS_DISCARD_DOWNLOAD;
       break;

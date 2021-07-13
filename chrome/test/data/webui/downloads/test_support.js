@@ -131,6 +131,7 @@ export function createDownload(config) {
         otr: false,
         percent: 100,
         progressStatusText: '',
+        showInFolderText: '',
         resume: false,
         retry: false,
         return: false,

@@ -343,6 +343,8 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->last_reason_text = base::UTF16ToUTF8(last_reason_text);
   file_value->percent = percent;
   file_value->progress_status_text = base::UTF16ToUTF8(progress_status_text);
+  file_value->show_in_folder_text =
+      base::UTF16ToUTF8(download_model.GetShowInFolderText());
   file_value->retry = retry;
   file_value->state = state;
 

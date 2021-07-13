@@ -167,13 +167,17 @@ void FileSystemRenameHandler::ShowDownloadInContext() {
   AddTabToShowDownload(uploader_->GetDestinationFolderUrl());
 }
 
-void FileSystemRenameHandler::AddTabToShowDownload(GURL url) {
-  content::BrowserContext* context =
-      content::DownloadItemUtils::GetBrowserContext(download_item());
-  Profile* profile = Profile::FromBrowserContext(context);
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  Browser* browser = displayer.browser();
-  chrome::AddTabAt(browser, url, /*index =*/-1, /*foreground =*/true);
+void FileSystemRenameHandler::AddTabToShowDownload(const GURL& url) {
+  if (url.is_valid()) {
+    content::BrowserContext* context =
+        content::DownloadItemUtils::GetBrowserContext(download_item());
+    Profile* profile = Profile::FromBrowserContext(context);
+    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+    Browser* browser = displayer.browser();
+    chrome::AddTabAt(browser, url, /* index = */ -1, /* foreground = */ true);
+  }
+  // The uploaded file or folder url's may not be valid before file upload completes, and we should
+  // avoid just opening a new empty tab. Therefore, a new tab is only opened when the url is valid.
 }
 
 void FileSystemRenameHandler::StartInternal(std::string access_token) {

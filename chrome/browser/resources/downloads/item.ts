@@ -59,6 +59,13 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: true,
       },
 
+      hasShowInFolderLink_: {
+        computed: 'computeHasShowInFolderLink_(' +
+            'data.state, data.fileExternallyRemoved)',
+        type: Boolean,
+        value: true,
+      },
+
       controlledBy_: {
         computed: 'computeControlledBy_(data.byExtId, data.byExtName)',
         type: String,
@@ -208,6 +215,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private computeCompletelyOnDisk_(): boolean {
     return this.data.state === States.COMPLETE &&
         !this.data.fileExternallyRemoved;
+  }
+
+  private computeHasShowInFolderLink_(): boolean {
+    return loadTimeData.getBoolean('hasShowInFolder') &&
+        this.computeCompletelyOnDisk_();
   }
 
   private computeControlledBy_(): string {

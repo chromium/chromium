@@ -322,6 +322,16 @@ std::u16string DownloadUIModel::GetWarningConfirmButtonText() const {
           : IDS_CONFIRM_DOWNLOAD);
 }
 
+std::u16string DownloadUIModel::GetShowInFolderText() const {
+  std::u16string where = GetWebDriveName();
+  if (where.empty()) {
+    // "Show in <folder/Finder>"
+    return l10n_util::GetStringUTF16(IDS_DOWNLOAD_LINK_SHOW);
+  }
+  // "Show in <WEB_DRIVE>"
+  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_LINK_SHOW_IN_WEB_DRIVE, where);
+}
+
 ContentId DownloadUIModel::GetContentId() const {
   NOTREACHED();
   return ContentId();
