@@ -89,7 +89,7 @@ void InitializeDBus() {
   chromeos::SystemSaltGetter::Initialize();
 
   // Initialize DBusThreadManager for the browser.
-  chromeos::DBusThreadManager::Initialize(DBusThreadManager::kAll);
+  chromeos::DBusThreadManager::Initialize();
 
   // Initialize Chrome dbus clients.
   dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();

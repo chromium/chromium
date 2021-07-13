@@ -54,26 +54,11 @@ class VmPluginDispatcherClient;
 class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
     : public DBusThreadManagerBase {
  public:
-  // Processes for which to create and initialize the D-Bus clients.
-  // TODO(jamescook): Move creation of clients into //ash and //chrome/browser.
-  // http://crbug.com/647367
-  enum ClientSet {
-    // Common clients needed by both ash and the browser.
-    kShared,
-
-    // Includes the client in |kShared| as well as the clients used only by
-    // the browser (and not ash).
-    kAll
-  };
   // Sets the global instance. Must be called before any calls to Get().
   // We explicitly initialize and shut down the global object, rather than
   // making it a Singleton, to ensure clean startup and shutdown.
   // This will initialize real or fake DBusClients depending on command-line
   // arguments and whether this process runs in a ChromeOS environment.
-  // Only D-Bus clients specified in |client_set| will be created.
-  static void Initialize(ClientSet client_set);
-
-  // Equivalent to Initialize(kAll).
   static void Initialize();
 
   // Returns a DBusThreadManagerSetter instance that allows tests to replace
@@ -131,8 +116,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   ShillThirdPartyVpnDriverClient* GetShillThirdPartyVpnDriverClient();
 
  private:
-  // Creates dbus clients based on |client_set|.
-  explicit DBusThreadManager(ClientSet client_set);
+  DBusThreadManager();
   DBusThreadManager(const DBusThreadManager&) = delete;
   const DBusThreadManager& operator=(const DBusThreadManager&) = delete;
   ~DBusThreadManager() override;
@@ -141,7 +125,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   // performs additional setup.
   void InitializeClients();
 
-  // Clients used only by the browser process. Null in other processes.
+  // Owns the clients.
   std::unique_ptr<DBusClientsBrowser> clients_browser_;
 };
 

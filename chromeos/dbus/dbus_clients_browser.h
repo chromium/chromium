@@ -38,8 +38,10 @@ class UpdateEngineClient;
 class VirtualFileProviderClient;
 class VmPluginDispatcherClient;
 
-// D-Bus clients used only in the browser process.
-// TODO(jamescook): Move this under //chrome/browser. http://crbug.com/647367
+// Owns D-Bus clients.
+// TODO(jamescook): Rename this class. "Browser" refers to the browser process
+// versus ash process distinction from the mustash project, which was cancelled
+// in 2019.
 class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
  public:
   // Creates real implementations if |use_real_clients| is true and fakes

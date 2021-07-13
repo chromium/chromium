@@ -44,11 +44,9 @@ namespace chromeos {
 static DBusThreadManager* g_dbus_thread_manager = nullptr;
 static DBusThreadManagerSetter* g_setter = nullptr;
 
-DBusThreadManager::DBusThreadManager(ClientSet client_set) {
-  if (client_set == DBusThreadManager::kAll)
-    clients_browser_ = std::make_unique<DBusClientsBrowser>(use_real_clients_);
-  // NOTE: When there are clients only used by ash, create them here.
-}
+DBusThreadManager::DBusThreadManager()
+    : clients_browser_(
+          std::make_unique<DBusClientsBrowser>(use_real_clients_)) {}
 
 DBusThreadManager::~DBusThreadManager() {
   // Delete all D-Bus clients before shutting down the system bus.
@@ -210,15 +208,10 @@ void DBusThreadManager::InitializeClients() {
 }
 
 // static
-void DBusThreadManager::Initialize(ClientSet client_set) {
-  CHECK(!g_dbus_thread_manager);
-  g_dbus_thread_manager = new DBusThreadManager(client_set);
-  g_dbus_thread_manager->InitializeClients();
-}
-
-// static
 void DBusThreadManager::Initialize() {
-  Initialize(kAll);
+  CHECK(!g_dbus_thread_manager);
+  g_dbus_thread_manager = new DBusThreadManager();
+  g_dbus_thread_manager->InitializeClients();
 }
 
 // static
