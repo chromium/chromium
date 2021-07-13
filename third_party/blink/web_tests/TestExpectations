@@ -7249,10 +7249,10 @@ crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Failu
 crbug.com/1197464 [ Mac ] virtual/scroll-unification/plugins/refcount-leaks.html [ Failure Pass ]
 
 # File System Access API tests that depend on mojo interfaces that are only exposed behind a flag.
-crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.window.html [ Skip ]
-crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.window.html [ Pass ]
-crbug.com/1218431 external/wpt/file-system-access/local_FileSystemFileHandle-create-sync-access-handle-dedicated-worker-manual.https.html [ Skip ]
-crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/local_FileSystemFileHandle-create-sync-access-handle-dedicated-worker-manual.https.html [ Pass ]
+crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.tentative.window.html [ Skip ]
+crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.tentative.window.html [ Pass ]
+crbug.com/1218431 external/wpt/file-system-access/local_FileSystemFileHandle-create-sync-access-handle-dedicated-worker-manual.https.tentative.html [ Skip ]
+crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/local_FileSystemFileHandle-create-sync-access-handle-dedicated-worker-manual.https.tentative.html [ Pass ]
 
 # DevTools roll
 crbug.com/1187573 http/tests/devtools/throttling/mobile-throttling.js [ Skip ]
