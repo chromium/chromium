@@ -217,6 +217,9 @@ crbug.com/591099 external/wpt/css/css-position/position-absolute-replaced-no-int
 crbug.com/591099 external/wpt/css/css-position/position-relative-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-relative-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-relative-004.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-relative-011.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-relative-012.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-relative-013.html [ Failure ]
 
 ### external/wpt/css/css-position/static-position/
 crbug.com/591099 external/wpt/css/css-position/static-position/htb-ltr-rtl.tentative.html [ Failure ]

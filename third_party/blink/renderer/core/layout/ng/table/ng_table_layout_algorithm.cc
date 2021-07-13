@@ -810,10 +810,18 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
     NGConstraintSpaceBuilder section_space_builder(
         table_writing_direction.GetWritingMode(), table_writing_direction,
         /* is_new_fc */ true);
-    section_space_builder.SetAvailableSize(
-        {section_available_inline_size, sections[section_index].block_size});
+
+    LogicalSize available_size = {section_available_inline_size,
+                                  kIndefiniteSize};
+
+    // Sections without rows can receive redistributed height from the table.
+    if (constraint_space_data->sections[section_index].rowspan == 0) {
+      section_space_builder.SetIsFixedBlockSize(true);
+      available_size.block_size = sections[section_index].block_size;
+    }
+
+    section_space_builder.SetAvailableSize(available_size);
     section_space_builder.SetIsFixedInlineSize(true);
-    section_space_builder.SetIsFixedBlockSize(true);
     section_space_builder.SetPercentageResolutionSize(
         {section_available_inline_size, kIndefiniteSize});
     section_space_builder.SetTableSectionData(constraint_space_data,
