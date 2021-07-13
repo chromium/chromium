@@ -236,6 +236,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="3371831930909698441">Oversættelse er tilgængelig. Du finder indstillingerne nederst på skærmen.</translation>
 <translation id="3393920035788932672">Pop op-vinduer tilladt</translation>
 <translation id="3399930248910934354">Åbn indstillingerne for Chrome</translation>
+<translation id="3404744938087714423">Synkronisering deaktiveres, når du logger ud</translation>
 <translation id="3425644765244388016">Kortets kaldenavn</translation>
 <translation id="3433057996795775706">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />. Skift din adgangskode på <ph name="WEBSITE" /> for at beskytte den mod andre.</translation>
 <translation id="3443810440409579745">Du har modtaget en fane.</translation>
@@ -268,6 +269,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="3607167657931203000">AutoFyld-data</translation>
 <translation id="3609785682760573515">Synkroniserer…</translation>
 <translation id="3638472932233958418">Forudindlæs websider</translation>
+<translation id="3648013730801605241"><ph name="BEGIN_LINK" />Søgehistorik<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />andre former for aktivitet<ph name="END_LINK" /> gemmes muligvis på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
 <translation id="3661160521073045932">Der er en tilgængelig konfigurationsprofil</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3691593122358196899">Bogmærket er gemt i <ph name="FOLDER_TITLE" /></translation>
@@ -647,6 +649,10 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="734758817008927353">Valgmuligheder for at gemme kort</translation>
 <translation id="7348502496356775519">Tilføj bogmærke</translation>
 <translation id="7353432112255316844">Bekræft din identitet</translation>
+<translation id="7376492662175718683">Du bliver ikke logget ud af din Google-konto. <ph name="BEGIN_LINK" />Andre former for aktivitet<ph name="END_LINK" /> gemmes muligvis på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.
+
+        
+Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="7383797227493018512">Læseliste</translation>
 <translation id="7398893703713203428">Opret link</translation>
 <translation id="739941347996872055">Forrige fane</translation>
@@ -789,6 +795,10 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="8840513115188359703">Du bliver ikke logget ud af din Google-konto.</translation>
+<translation id="8851300969441660830">Du bliver ikke logget ud af din Google-konto. <ph name="BEGIN_LINK" />Andre former for aktivitet<ph name="END_LINK" /> gemmes muligvis på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.
+
+
+Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} fane}one{{count} fane}other{{count} faner}}</translation>
 <translation id="8870413625673593573">Senest lukkede</translation>
 <translation id="8876882697946675716">Bevar synkroniseringen af dine enheder</translation>
@@ -819,7 +829,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9152539721251340337">Opret en QR-kode</translation>
 <translation id="9157836665414082580">Skjul dialogbokse</translation>
-<translation id="9183059292653643328">Denne browser administreres af din organisation</translation>
 <translation id="9188680907066685419">Log ud af den administrerede konto</translation>
 <translation id="9200875785104711666">For <ph name="TIME" /> d. siden</translation>
 <translation id="9203116392574189331">Handoff</translation>

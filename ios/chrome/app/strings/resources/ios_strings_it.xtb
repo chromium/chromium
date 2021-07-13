@@ -236,6 +236,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="3371831930909698441">Traduttore disponibile. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="3393920035788932672">Popup consentiti</translation>
 <translation id="3399930248910934354">Apri Impostazioni di Chrome</translation>
+<translation id="3404744938087714423">Se esci verrà disattivata la sincronizzazione.</translation>
 <translation id="3425644765244388016">Nickname carta</translation>
 <translation id="3433057996795775706">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />. Cambia la password su <ph name="WEBSITE" /> per proteggere il tuo account dagli altri.</translation>
 <translation id="3443810440409579745">Scheda ricevuta.</translation>
@@ -268,6 +269,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="3607167657931203000">Dati della Compilazione automatica</translation>
 <translation id="3609785682760573515">Sincronizzazione in corso...</translation>
 <translation id="3638472932233958418">Precarica pagine web</translation>
+<translation id="3648013730801605241">La <ph name="BEGIN_LINK" />cronologia delle ricerche<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminare queste informazioni in qualsiasi momento.</translation>
 <translation id="3661160521073045932">Profilo di configurazione disponibile</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3691593122358196899">Preferito aggiunto in: <ph name="FOLDER_TITLE" /></translation>
@@ -647,6 +649,10 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="734758817008927353">Opzioni per salvare la carta</translation>
 <translation id="7348502496356775519">Aggiungi ai preferiti</translation>
 <translation id="7353432112255316844">Verifica la tua identità</translation>
+<translation id="7376492662175718683">Non verrà eseguita la disconnessione dal tuo Account Google. <ph name="BEGIN_LINK" />Altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminare queste informazioni in qualsiasi momento.
+
+        
+Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se possibile.</translation>
 <translation id="7383797227493018512">Elenco di lettura</translation>
 <translation id="7398893703713203428">Crea link</translation>
 <translation id="739941347996872055">Scheda precedente</translation>
@@ -789,6 +795,10 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8840513115188359703">Non verrai disconnesso dal tuo Account Google.</translation>
+<translation id="8851300969441660830">Non verrà eseguita la disconnessione dal tuo Account Google. <ph name="BEGIN_LINK" />Altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminare queste informazioni in qualsiasi momento.
+
+
+Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se possibile.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} scheda}other{{count} schede}}</translation>
 <translation id="8870413625673593573">Chiusi di recente</translation>
 <translation id="8876882697946675716">Mantieni sincronizzati i tuoi dispositivi</translation>
@@ -819,7 +829,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9152539721251340337">Crea un codice QR</translation>
 <translation id="9157836665414082580">Elimina finestre di dialogo</translation>
-<translation id="9183059292653643328">Questo browser è gestito dalla tua organizzazione</translation>
 <translation id="9188680907066685419">Esci dall'account gestito</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> g fa</translation>
 <translation id="9203116392574189331">Handoff</translation>

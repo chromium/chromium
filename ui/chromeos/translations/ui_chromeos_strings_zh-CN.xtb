@@ -546,7 +546,6 @@
 <translation id="5833610766403489739">此文件已移至其他位置。请查看您的下载位置设置并重试。</translation>
 <translation id="5838451609423551646">已取消选择所有条目。</translation>
 <translation id="5838825566232597749">美式 Workman 国际</translation>
-<translation id="5851063901794976166">此处没有可显示的内容…</translation>
 <translation id="5864471791310927901">DHCP 查找失败</translation>
 <translation id="5896749729057314184">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，未激活，信号强度 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="5911887972742538906">安装 Linux 应用时出错。</translation>

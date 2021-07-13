@@ -234,6 +234,7 @@
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">가족</translation>
+<translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5752751666635965375">게임 직접 만들기</translation>
 <translation id="5760715441271661976">포털 상태</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
@@ -296,6 +297,7 @@
 <translation id="6911383237894364323">미디어 서버에 연결할 수 없음</translation>
 <translation id="6957231940976260713">서비스 이름</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
+<translation id="6982876849933694860">새 연결을 설정하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
 <translation id="7040230719604914234">운영자</translation>
 <translation id="7059230779847288458">충전 중, 완료까지 <ph name="TIME_VALUE" /> 남음</translation>

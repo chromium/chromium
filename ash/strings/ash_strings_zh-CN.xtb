@@ -207,6 +207,7 @@
 <translation id="2582112259361606227">重启以进行更新</translation>
 <translation id="2595239820337756193">5 公里是多少英里</translation>
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
+<translation id="2607678425161541573">需要在线登录</translation>
 <translation id="2617342710774726426">SIM 卡已被锁定</translation>
 <translation id="2621713457727696555">受保护</translation>
 <translation id="2653019840645008922">窗口截取/录制</translation>
@@ -329,6 +330,7 @@
 <translation id="3595596368722241419">电池已充满</translation>
 <translation id="3604801046548457007">已创建桌面“<ph name="DESK_TITILE" />”</translation>
 <translation id="3606978283550408104">已连接盲文显示屏。</translation>
+<translation id="3615926715408477684">如果您启用移动流量，蓝牙亦会随之开启</translation>
 <translation id="3616883743181209306">菜单已移至屏幕的右上角。</translation>
 <translation id="3621202678540785336">输入</translation>
 <translation id="3621712662352432595">音频设置</translation>
@@ -551,6 +553,7 @@
 <translation id="5283198616748585639">加 1 分钟</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5286194356314741248">正在扫描</translation>
+<translation id="5297423144044956168">找不到任何移动设备</translation>
 <translation id="5297704307811127955">已关闭</translation>
 <translation id="5302048478445481009">语言</translation>
 <translation id="5308380583665731573">连接</translation>

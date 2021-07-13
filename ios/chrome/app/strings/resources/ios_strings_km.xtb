@@ -236,6 +236,7 @@
 <translation id="3371831930909698441">មាន​មុខងារ​បកប្រែ។ ជម្រើសមាននៅជិត​ផ្នែកខាងក្រោមបំផុត​របស់អេក្រង់។</translation>
 <translation id="3393920035788932672">បានអនុញ្ញាតការលេចឡើង</translation>
 <translation id="3399930248910934354">បើក​ការកំណត់ Chrome</translation>
+<translation id="3404744938087714423">ការចេញពីគណនីនឹងបិទសម​កាល​កម្ម។</translation>
 <translation id="3425644765244388016">ឈ្មោះហៅក្រៅរបស់កាត</translation>
 <translation id="3433057996795775706">ការលុបពាក្យសម្ងាត់នេះ​នឹងមិន​លុបគណនីរបស់អ្នក​នៅលើ <ph name="WEBSITE" />​ ទេ។ ប្ដូរពាក្យសម្ងាត់របស់អ្នកនៅលើ <ph name="WEBSITE" /> ដើម្បីរក្សាឱ្យវាមានសុវត្ថិភាពពីអ្នកដទៃ។</translation>
 <translation id="3443810440409579745">បាន​ទទួលផ្ទាំង។</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">ទិន្នន័យបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="3609785682760573515">កំពុងធ្វើសមកម្ម...</translation>
 <translation id="3638472932233958418">ផ្ទុកគេហទំព័រជាមុន</translation>
+<translation id="3648013730801605241"><ph name="BEGIN_LINK" />ប្រវត្តិ​ស្វែងរក<ph name="END_LINK" /> និង<ph name="BEGIN_LINK" />ទម្រង់​ផ្សេងទៀត​នៃសកម្មភាព<ph name="END_LINK" />អាចត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក នៅពេលអ្នក​ចូលគណនី។ អ្នកអាច​លុបវា​បានគ្រប់ពេល​។</translation>
 <translation id="3661160521073045932">មាន​កម្រងព័ត៌មាន​នៃការកំណត់រចនាសម្ព័ន្ធ</translation>
 <translation id="3670030362669914947">លេខ</translation>
 <translation id="3691593122358196899">បានបន្ថែមចំណាំទៅ <ph name="FOLDER_TITLE" /></translation>
@@ -647,6 +649,10 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="734758817008927353">ជម្រើស​សម្រាប់រក្សា​ទុកកាត</translation>
 <translation id="7348502496356775519">ចំណាំ</translation>
 <translation id="7353432112255316844">ផ្ទៀងផ្ទាត់ថា​ជាអ្នក</translation>
+<translation id="7376492662175718683">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។ <ph name="BEGIN_LINK" />ទម្រង់​ផ្សេងទៀត​នៃសកម្មភាព<ph name="END_LINK" />អាចត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក នៅពេលអ្នក​ចូលគណនី។ អ្នកអាច​លុបវា​បានគ្រប់ពេល​។
+
+        
+ម៉ាស៊ីន​ស្វែងរករបស់អ្នកគឺ <ph name="DSE_NAME" />។ មើល​ការណែនាំ​របស់​ម៉ាស៊ីន​ស្វែងរក ដើម្បីដឹង​អំពីរបៀប​លុបប្រវត្តិ​ស្វែងរក​របស់អ្នក ប្រសិនបើអាច។</translation>
 <translation id="7383797227493018512">បញ្ជីអាន</translation>
 <translation id="7398893703713203428">បង្កើត​តំណ</translation>
 <translation id="739941347996872055">ផ្ទាំងមុន</translation>
@@ -789,6 +795,10 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">ចំណាំ</translation>
 <translation id="8840513115188359703">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។</translation>
+<translation id="8851300969441660830">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។ <ph name="BEGIN_LINK" />ទម្រង់​ផ្សេងទៀត​នៃសកម្មភាព<ph name="END_LINK" />អាចត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក នៅពេលអ្នក​ចូលគណនី។ អ្នកអាច​លុបវា​បានគ្រប់ពេល​។
+
+
+មើល​ការណែនាំ​របស់​ម៉ាស៊ីន​ស្វែងរកអ្នក ដើម្បីដឹង​អំពីរបៀប​លុបប្រវត្តិ​ស្វែងរក​របស់អ្នក ប្រសិនបើអាច។</translation>
 <translation id="8868471676553493380">{count,plural, =1{ផ្ទាំង {count}}other{ផ្ទាំង {count}}}</translation>
 <translation id="8870413625673593573">បានបិទកន្លងទៅថ្មីៗ</translation>
 <translation id="8876882697946675716">បន្តឱ្យ​ឧបករណ៍​របស់អ្នក​ធ្វើសមកាលកម្ម</translation>
@@ -819,7 +829,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="9148126808321036104">ចូលម្តងទៀត</translation>
 <translation id="9152539721251340337">បង្កើតកូដ QR</translation>
 <translation id="9157836665414082580">បង្ហាប់ប្រអប់បញ្ចូល</translation>
-<translation id="9183059292653643328">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​នេះ​ស្ថិត​ក្រោម​ការ​គ្រប់គ្រង​របស់ស្ថាប័ន​​អ្នក</translation>
 <translation id="9188680907066685419">ចេញពីគណនីដែលត្រូវបានគ្រប់គ្រង</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ថ្ងៃមុន</translation>
 <translation id="9203116392574189331">Handoff</translation>

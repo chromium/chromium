@@ -236,6 +236,7 @@
 <translation id="3371831930909698441">Доступен перевод. Параметры указаны в нижней части экрана.</translation>
 <translation id="3393920035788932672">Вспл. окна разрешены</translation>
 <translation id="3399930248910934354">Открыть настройки Chrome</translation>
+<translation id="3404744938087714423">Синхронизация будет отключена.</translation>
 <translation id="3425644765244388016">Название карты</translation>
 <translation id="3433057996795775706">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />. Чтобы защитить свои данные на сайте <ph name="WEBSITE" /> от злоумышленников, измените пароль.</translation>
 <translation id="3443810440409579745">Вкладка получена.</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">Данные автозаполнения</translation>
 <translation id="3609785682760573515">Cинхронизация…</translation>
 <translation id="3638472932233958418">Предварительная загрузка</translation>
+<translation id="3648013730801605241"><ph name="BEGIN_LINK" />История поиска<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />другие действия<ph name="END_LINK" /> могут сохраняться в аккаунте Google, если вы в него вошли. Их можно удалить в любой момент.</translation>
 <translation id="3661160521073045932">Доступен профиль конфигурации</translation>
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3691593122358196899">Закладка добавлена в папку "<ph name="FOLDER_TITLE" />"</translation>
@@ -647,6 +649,10 @@
 <translation id="734758817008927353">Параметры сохранения карты</translation>
 <translation id="7348502496356775519">Закладка</translation>
 <translation id="7353432112255316844">Подтвердить личность</translation>
+<translation id="7376492662175718683">Вы останетесь в аккаунте Google. <ph name="BEGIN_LINK" />Другие действия<ph name="END_LINK" /> могут сохраняться в аккаунте Google, если вы в него вошли. Их можно удалить в любой момент.
+
+        
+Ваша поисковая система – <ph name="DSE_NAME" />. Изучите инструкции по удалению истории поиска в справочных материалах указанной поисковой системы.</translation>
 <translation id="7383797227493018512">Список для чтения</translation>
 <translation id="7398893703713203428">Создать ссылку</translation>
 <translation id="739941347996872055">Предыдущая вкладка</translation>
@@ -789,6 +795,10 @@
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8840513115188359703">Вы останетесь в аккаунте Google.</translation>
+<translation id="8851300969441660830">Вы останетесь в аккаунте Google. <ph name="BEGIN_LINK" />Другие действия<ph name="END_LINK" /> могут сохраняться в аккаунте Google, если вы в него вошли. Их можно удалить в любой момент.
+
+
+Изучите инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="8870413625673593573">Недавно закрытые</translation>
 <translation id="8876882697946675716">Синхронизируйте устройства</translation>
@@ -819,7 +829,6 @@
 <translation id="9148126808321036104">Повторите вход</translation>
 <translation id="9152539721251340337">Создать QR-код</translation>
 <translation id="9157836665414082580">Блокировать диалоговые окна</translation>
-<translation id="9183059292653643328">Этим браузером управляет ваша организация.</translation>
 <translation id="9188680907066685419">Выход из управляемого аккаунта</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> дн. назад</translation>
 <translation id="9203116392574189331">Handoff</translation>

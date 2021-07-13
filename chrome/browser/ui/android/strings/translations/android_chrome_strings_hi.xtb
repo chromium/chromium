@@ -1048,7 +1048,7 @@
 <translation id="7704317875155739195">खोजों और यूआरएल को अपने आप पूरा करें</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="7725024127233776428">आप जो पेज बुकमार्क करते हैं वे यहां दिखाई देंगे</translation>
-<translation id="7731260005404856143">जब आप साइन इन होंगे, तब हो सकता है कि <ph name="BEGIN_LINK1" />अन्य तरह की गतिविधि<ph name="END_LINK1" /> आपके Google खाते में सेव हो जाए. आप किसी भी समय इन्हें मिटा सकते हैं.</translation>
+<translation id="7731260005404856143">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />अन्य तरह की गतिविधि<ph name="END_LINK1" /> आपके Google खाते में सेव हो जाए. आप किसी भी समय इन्हें मिटा सकते हैं.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> से टेक्स्ट शेयर किया गया</translation>
 <translation id="7761849928583394409">तारीख और समय चुनें</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
@@ -1239,7 +1239,7 @@
 <translation id="8854223127042600341">ऑफ़लाइन सेव की गई अपनी फ़ाइलें देखें</translation>
 <translation id="8856607253650333758">जानकारी पाएं</translation>
 <translation id="8873817150012960745">शुरू करने के लिए, यहां टैप करें</translation>
-<translation id="8881973373982641723">ब्राउज़िंग इतिहास मिटाता है और इसमें खोज बॉक्स का ब्राउज़िंग इतिहास भी शामिल है.</translation>
+<translation id="8881973373982641723">ब्राउज़िंग का इतिहास मिटाता है और इसमें खोज बॉक्स का ब्राउज़िंग इतिहास भी शामिल है.</translation>
 <translation id="889338405075704026">Chrome की सेटिंग में जाएं</translation>
 <translation id="8898822736010347272">आप जिन पेजों पर जाते हैं उनमें से कुछ के यूआरएल, सिस्टम की सीमित जानकारी, और पेज की कुछ सामग्री को यह Google को भेजता है. ऐसा इसलिए जिससे कि नए खतरों को खोजा जा सके और वेब पर सभी सुरक्षित रहें.</translation>
 <translation id="8909135823018751308">शेयर करें…</translation>
@@ -1293,7 +1293,7 @@
 <translation id="9209888181064652401">कॉल नहीं कर पा रहे</translation>
 <translation id="9212845824145208577">इससे नीचे नहीं जा सकते. पेज पर नीचे से शुरुआत करके देखें.</translation>
 <translation id="9219103736887031265">Images</translation>
-<translation id="923957533152125119">जब आप साइन इन होंगे, तब हो सकता है कि <ph name="BEGIN_LINK1" />खोज इतिहास<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />अन्य तरह की गतिविधि<ph name="END_LINK2" /> आपके Google खाते में सेव हो जाए. आप किसी भी समय इन्हें मिटा सकते हैं.</translation>
+<translation id="923957533152125119">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />खोज इतिहास<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />अन्य तरह की गतिविधि<ph name="END_LINK2" /> आपके Google खाते में सेव हो जाए. आप किसी भी समय इन्हें मिटा सकते हैं.</translation>
 <translation id="926205370408745186">'डिजिटल वेलबीइंग' से अपनी Chrome गतिविधि हटाएं</translation>
 <translation id="927968626442779827">Google Chrome पर लाइट मोड का इस्तेमाल करें</translation>
 <translation id="932327136139879170">होम बटन</translation>
@@ -1302,6 +1302,7 @@
 <translation id="948039501338975565">बुकमार्क फ़ोल्डर वाली सूची</translation>
 <translation id="95817756606698420">चीन में खोज करने के लिए Chrome, <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> का इस्तेमाल कर सकता है. आप इसे <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में बदल सकते हैं.</translation>
 <translation id="962979164594783469">यह ऐप्लिकेशन इंस्टॉल करें</translation>
+<translation id="96681097142096641">क्या आप सरल बनाए गए पेज को देखना चाहते हैं?</translation>
 <translation id="968900484120156207">आप जिन पेजों पर जाएंगे वे यहां दिखाई देंगे</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनट शेष</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>

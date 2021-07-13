@@ -305,7 +305,6 @@
 <translation id="133535873114485416">偏好的輸入模式</translation>
 <translation id="1335929031622236846">註冊您的裝置</translation>
 <translation id="1336902454946927954">無法辨識您的指紋，因此安全密鑰已被鎖定。如要解鎖，請輸入您的 PIN。</translation>
-<translation id="1337692097987160377">共用此分頁</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> 想開啟此應用程式。</translation>
 <translation id="1338950911836659113">刪除中…</translation>
 <translation id="13392265090583506">無障礙設定</translation>
@@ -1406,7 +1405,6 @@
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="2484959914739448251">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />輸入密碼短語<ph name="END_LINK" />。</translation>
-<translation id="2485005079599453134">已在此裝置上儲存密碼</translation>
 <translation id="2485394160472549611">推薦精選</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2487067538648443797">新增書籤</translation>
@@ -1745,7 +1743,6 @@
 <translation id="2836635946302913370">管理員已禁止使用這個使用者名稱登入。</translation>
 <translation id="283669119850230892">如要使用 <ph name="NETWORK_ID" /> 網絡，請先在下方連線至互聯網。</translation>
 <translation id="2838379631617906747">正在安裝</translation>
-<translation id="2838512566364515520">一律不還原</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2841013758207633010">時間</translation>
 <translation id="2841837950101800123">供應商</translation>
@@ -2779,7 +2776,6 @@
 
   是否要開啟「<ph name="CONTROL_PANEL_APPLET_NAME" />」？</translation>
 <translation id="3942420633017001071">診斷</translation>
-<translation id="3943494825379372497">要還原應用程式和網頁嗎？</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3945513714196326460">請縮短名稱</translation>
@@ -3255,7 +3251,6 @@
 <translation id="4510479820467554003">家長帳戶清單</translation>
 <translation id="4510614391273086606">正在將 Linux 檔案和應用程式還原至備份狀態。</translation>
 <translation id="451102079304155829">購物車</translation>
-<translation id="4513275008300099962">停用視窗控制重疊</translation>
 <translation id="4513872120116766993">預測輸入內容</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="451407183922382411">由 <ph name="COMPANY_NAME" /> 提供</translation>
@@ -4479,7 +4474,7 @@
 <translation id="5900302528761731119">Google 個人檔案相片</translation>
 <translation id="590036993063074298">鏡像品質詳情</translation>
 <translation id="5901069264981746702">系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="5901089233978050985">切換至目前擷取的分頁</translation>
+<translation id="5901089233978050985">切換至正在擷取的分頁</translation>
 <translation id="5901494423252125310">打印機的外蓋應關上</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5904614460720589786">設定發生問題，因此無法設定 <ph name="APP_NAME" />。請聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -5321,7 +5316,7 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6833479554815567477">分頁已經由包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組度移除</translation>
 <translation id="683373380308365518">改用智能且安全的瀏覽器</translation>
-<translation id="6834652994408928492">「暗光模式」會在日落時自動開啟</translation>
+<translation id="6834652994408928492">「暗光模式」將會在日落時自動開啟</translation>
 <translation id="683540480453879381">開啟 <ph name="FILE_EXTENSIONS" /> 檔案</translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在網站要求在您的螢幕上開啟並放置視窗時詢問您 (建議)</translation>
@@ -5342,7 +5337,6 @@
 <translation id="6850286078059909152">文字顏色</translation>
 <translation id="6851181413209322061">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式穩定性以及其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="6851497530878285708">已啟用應用程式</translation>
-<translation id="6853142139292753691">要根據預設還原應用程式和網頁嗎？</translation>
 <translation id="6853388645642883916">更新程式休眠中</translation>
 <translation id="68541483639528434">關閉其他分頁</translation>
 <translation id="6855892664589459354">Crostini 備份與還原</translation>
@@ -5746,7 +5740,6 @@
 <translation id="7308643132139167865">網站語言</translation>
 <translation id="7309257895202129721">顯示控制介面(&amp;C)</translation>
 <translation id="7310598146671372464">無法登入。伺服器不支援特定的 Kerberos 加密類型。請聯絡您的管理員。</translation>
-<translation id="7315168816273861089">啟用視窗控制重疊</translation>
 <translation id="7320213904474460808">預設網絡</translation>
 <translation id="7321545336522791733">無法連接伺服器</translation>
 <translation id="7324297612904500502">Chrome 測試版論壇</translation>
@@ -5920,7 +5913,6 @@
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">忘記舊密碼了嗎？</translation>
 <translation id="7497981768003291373">您最近並未擷取 WebRTC 文字記錄。</translation>
-<translation id="7498614236023455416"><ph name="TARGET_NAME" /> 正在要求擷取此分頁內容的權限。</translation>
 <translation id="7503191893372251637">Netscape 憑證類型</translation>
 <translation id="7503985202154027481">您的安全密鑰會保留您瀏覽此網站的記錄。</translation>
 <translation id="750509436279396091">開啟下載檔案資料夾</translation>
@@ -6817,7 +6809,6 @@
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
 <translation id="8439506636278576865">翻譯這個語言的網頁</translation>
 <translation id="8440630305826533614">Linux 應用程式</translation>
-<translation id="8446225304314102060">切換至 <ph name="TAB_ORIGIN" /> 分頁</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8447409163267621480">必須以 Ctrl 或 Alt 鍵開頭</translation>
 <translation id="8448729345478502352">縮小或放大畫面上的項目</translation>
@@ -7012,6 +7003,7 @@
 <translation id="866611985033792019">信任這個用於識別電郵使用者的憑證</translation>
 <translation id="8666584013686199826">在網站要存取 USB 裝置時詢問您</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕，並且停用了滑鼠游標。</translation>
+<translation id="8668052347555487755">色彩模式</translation>
 <translation id="8669284339312441707">暖色調</translation>
 <translation id="8670537393737592796">如要快速返回此處，請按一下安裝按鈕來安裝「<ph name="APP_NAME" />」</translation>
 <translation id="867085395664725367">伺服器暫時發生錯誤。</translation>
@@ -7330,7 +7322,6 @@
 <translation id="8986494364107987395">自動將使用統計資料和當機報告傳送給 Google</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8988879467270412492">係咪要啟動 Chrome 作業系統內置嘅螢幕閱讀器 ChromeVox？係嘅話就請同時㩒住校高同校低音量鍵五秒。</translation>
-<translation id="8989823300731803443">繼續使用上次開啟的應用程式和網頁。</translation>
 <translation id="8990209962746788689">無法建立二維條碼</translation>
 <translation id="8991520179165052608">網站可以使用您的麥克風</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
@@ -7480,7 +7471,7 @@
 <translation id="9148058034647219655">結束</translation>
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9148963623915467028">此網站可存取您的位置。</translation>
-<translation id="9149529198050266366">「暗光模式」會在日出時自動關閉</translation>
+<translation id="9149529198050266366">「暗光模式」將會在日出時自動關閉</translation>
 <translation id="9149866541089851383">編輯…</translation>
 <translation id="9150045010208374699">使用您的相機。</translation>
 <translation id="9150079578948279438">無法移除設定檔。請再試一次，或聯絡您的流動網絡供應商以獲取技術支援。</translation>

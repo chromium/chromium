@@ -5105,11 +5105,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7554382342294940216">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> ürünü, giriş portalı kimlik doğrulaması için proxy'leri atlayabilir. Bu kimlik doğrulama web sayfaları (giriş portalı oturum açma sayfasından itibaren Chrome başarılı bir internet bağlantısı algılayana kadar), geçerli kullanıcıyla ilgili tüm politika ayarları ve kısıtlamalar yok sayılarak ayrı bir pencerede açılır. Bu politika, yalnızca bir proxy yapılandırıldığında (politika veya uzantı aracılığıyla ya da kullanıcı tarafından chrome://settings bölümünden) geçerli olur.
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa giriş portalı kimlik doğrulama sayfaları, geçerli kullanıcının proxy ayarları kullanılarak yeni bir (normal) tarayıcı sekmesinde görüntülenir.</translation>
-<translation id="755951849901630953">Ayarlanmazsa veya Doğru değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ürünündeki tüm bileşenler için bileşen güncellemelerini etkinleştirir.
-
-      Yanlış değerine ayarlanırsa bileşen güncellemeleri devre dışı bırakılır. Ancak, bazı bileşenler bu politikadan muaf tutulur: Yürütülebilir kod içermeyen bileşenlerde yapılan, tarayıcının davranışını önemli ölçüde değiştirmeyen ya da güvenliğinin devre dışı kalmaması için kritik öneme sahip olan güncellemeler.
-      Bu tür bileşenlere örnek olarak sertifika iptal listeleri ve güvenli tarama verileri gösterilebilir.
-      Güvenli Tarama ile ilgili daha fazla bilgi için https://developers.google.com/safe-browsing adresine bakın.</translation>
 <translation id="7566878661979235378">SAML oturum açma kimlik doğrulama türü</translation>
 <translation id="7567373982693549834">Bu politika, güvenilmeyen kaynaklardan (Google Play Store dışında) Android uygulamalarının kullanımını kullanıcı bazında kontrol eder.
 

@@ -78,7 +78,6 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. თქვენი დათვალიერების მონაცემები რომ განაცალკევოთ, Chrome-ს შეუძლია თქვენთვის პერსონალური პროფილის შექმნა.</translation>
 <translation id="2580411288591421699">შეუძლებელია იმავე Google Chrome-ის ვერსიის დაყენება, რომელიც ამჟამად გაშვებულია. დახურეთ Google Chrome და ხელახლა სცადეთ.</translation>
 <translation id="2586406160782125153">ეს მოქმედება წაშლის თქვენს დათვალიერების მონაცემებს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
-<translation id="2588634262982826227">Chrome OS-ს შეუძლია გადატვირთვის შემდეგ თქვენი აპებისა და გვერდების აღდგენა ისე, რომ ყოველ ჯერზე აღარ გკითხოთ.</translation>
 <translation id="2622559029861875898">Chrome ვერ ახერხებს განახლებების შემოწმებას. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="2644798301485385923">Chrome OS სისტემა</translation>
 <translation id="2652691236519827073">ბმულის გახსნა Chrome-ის ახალ ჩა&amp;ნართში</translation>
@@ -230,7 +229,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6679975945624592337">Google Chrome-ისთვის ფონურ რეჟიმში მუშაობის დაშვება</translation>
 <translation id="6739177684496155661">გსურთ ახალ Chrome პროფილში გაგრძელება?</translation>
 <translation id="6750954913813541382">მართლწერის შეცდომების შესასწორებლად Chrome უგზავნის Google-ს თქვენ მიერ ბრაუზერში აკრეფილ ტექსტს</translation>
-<translation id="6755885556185485672">Chrome OS სათანადოდ არ გაითიშა.</translation>
 <translation id="677276454032249905">მაინც გსურთ Chrome-იდან გასვლა?</translation>
 <translation id="683440813066116847">შიდა წესი Google Chrome Canary-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>
 <translation id="6885412569789873916">Chrome Beta აპები</translation>

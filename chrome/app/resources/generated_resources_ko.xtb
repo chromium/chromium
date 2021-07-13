@@ -305,7 +305,6 @@
 <translation id="133535873114485416">선호하는 입력 방식</translation>
 <translation id="1335929031622236846">기기 등록</translation>
 <translation id="1336902454946927954">지문을 인식할 수 없어 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 PIN을 입력하세요.</translation>
-<translation id="1337692097987160377">탭 공유</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" />에서 이 애플리케이션을 열려고 합니다.</translation>
 <translation id="1338950911836659113">삭제 중...</translation>
 <translation id="13392265090583506">접근성</translation>
@@ -1407,7 +1406,6 @@
 <translation id="2482878487686419369">알림</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2484959914739448251">동기화된 모든 기기 및 Google 계정에서 인터넷 사용 기록을 삭제하려면 <ph name="BEGIN_LINK" />암호를 입력<ph name="END_LINK" />하세요.</translation>
-<translation id="2485005079599453134">비밀번호가 기기에 저장됨</translation>
 <translation id="2485394160472549611">추천</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2487067538648443797">새 북마크 추가</translation>
@@ -1746,7 +1744,6 @@
 <translation id="2836635946302913370">해당 사용자 이름 로그인이 관리자에 의해 사용 중지되었습니다.</translation>
 <translation id="283669119850230892">네트워크 <ph name="NETWORK_ID" />을(를) 사용하려면 먼저 아래에서 인터넷 연결을 완료합니다.</translation>
 <translation id="2838379631617906747">설치 중</translation>
-<translation id="2838512566364515520">복원하지 않음</translation>
 <translation id="2839032553903800133">알림 차단됨</translation>
 <translation id="2841013758207633010">시간</translation>
 <translation id="2841837950101800123">발급기관</translation>
@@ -2072,6 +2069,7 @@
 <translation id="3192947282887913208">오디오 파일</translation>
 <translation id="3197453258332670132">마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 선택한 텍스트에 관한 관련 정보가 표시됩니다.</translation>
 <translation id="3199127022143353223">서버</translation>
+<translation id="3200061262156232574">장바구니 항목</translation>
 <translation id="3201422919974259695">사용 가능한 USB 기기가 여기에 표시됩니다.</translation>
 <translation id="3202131003361292969">경로</translation>
 <translation id="3202173864863109533">이 탭의 오디오가 음소거됩니다.</translation>
@@ -2779,7 +2777,6 @@
 
   <ph name="CONTROL_PANEL_APPLET_NAME" />을(를) 시작하시겠습니까?</translation>
 <translation id="3942420633017001071">진단</translation>
-<translation id="3943494825379372497">앱과 페이지를 복원하시겠습니까?</translation>
 <translation id="3943582379552582368">뒤로(&amp;B)</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3945513714196326460">더 짧은 이름을 입력하세요.</translation>
@@ -3002,6 +2999,7 @@
 <translation id="42126664696688958">내보내기</translation>
 <translation id="42137655013211669">서버에서 이 리소스에 대한 액세스를 금지했습니다.</translation>
 <translation id="4217571870635786043">음성기록</translation>
+<translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">활성화 중 오류가 발생했습니다.</translation>
 <translation id="4222772810963087151">빌드 세부정보</translation>
 <translation id="4225020013797061859">"<ph name="ACTION" />" 작업을 할당할 스위치 또는 키를 누르세요.</translation>
@@ -3251,7 +3249,6 @@
 <translation id="4510479820467554003">부모 계정 목록</translation>
 <translation id="4510614391273086606">Linux 파일 및 앱이 백업된 상태로 복원되는 중입니다</translation>
 <translation id="451102079304155829">장바구니</translation>
-<translation id="4513275008300099962">창 컨트롤 오버레이 사용 중지</translation>
 <translation id="4513872120116766993">예측 입력</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> 제공</translation>
@@ -4294,6 +4291,7 @@
 <translation id="5677503058916217575">페이지 언어:</translation>
 <translation id="5677928146339483299">차단</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />에 대한 읽기/쓰기 액세스 권한이 부여되었습니다.</translation>
+<translation id="5678821117681811450"><ph name="WEB_DRIVE" />에 보내는 중</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />에서 데이터 읽기</translation>
 <translation id="5680050361008726776">'<ph name="ESIM_PROFILE_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="5683806393796685434">활성화 코드를 입력하세요.</translation>
@@ -4753,6 +4751,7 @@
 <translation id="6207200176136643843">기본 확대/축소 수준으로 재설정</translation>
 <translation id="6207937957461833379">국가/지역</translation>
 <translation id="6208521041562685716">모바일 데이터가 활성화됨</translation>
+<translation id="6208725777148613371"><ph name="WEB_DRIVE" />에 저장할 수 없음(<ph name="INTERRUPT_REASON" />)</translation>
 <translation id="6209838773933913227">구성요소 업데이트 중</translation>
 <translation id="6209908325007204267">기기에 Chrome Enterprise 업그레이드가 있지만 사용자 이름이 엔터프라이즈 계정에 연결되어 있지 않았습니다. 다른 기기에서 다음 페이지를 방문하여 엔터프라이즈 계정을 만드세요. g.co/ChromeEnterpriseAccount</translation>
 <translation id="6212039847102026977">고급 네트워크 속성 표시</translation>
@@ -5336,7 +5335,6 @@
 <translation id="6850286078059909152">텍스트 색상</translation>
 <translation id="6851181413209322061">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 설정은 소유자가 지정합니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="6851497530878285708">앱 사용 설정됨</translation>
-<translation id="6853142139292753691">기본적으로 앱 및 페이지를 복원하시겠습니까?</translation>
 <translation id="6853388645642883916">업데이터 절전 모드</translation>
 <translation id="68541483639528434">다른 탭 닫기</translation>
 <translation id="6855892664589459354">Crostini 백업 및 복원</translation>
@@ -5740,7 +5738,6 @@
 <translation id="7308643132139167865">웹사이트 언어</translation>
 <translation id="7309257895202129721">컨트롤 표시(&amp;C)</translation>
 <translation id="7310598146671372464">로그인하지 못했습니다. 서버가 지정된 Kerberos 암호화 유형을 지원하지 않습니다. 관리자에게 문의하세요.</translation>
-<translation id="7315168816273861089">창 컨트롤 오버레이 사용 설정</translation>
 <translation id="7320213904474460808">기본 네트워크 설정</translation>
 <translation id="7321545336522791733">서버에 연결할 수 없음</translation>
 <translation id="7324297612904500502">베타 포럼</translation>
@@ -5748,6 +5745,7 @@
 <translation id="7326004502692201767">자녀를 위해 <ph name="DEVICE_TYPE" /> 기기 설정하기</translation>
 <translation id="7326025035243649350">Chrome OS에 기본 제공되는 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" />(으)로 인해 ADB 디버깅이 사용 중지되었습니다. <ph name="DEVICE_TYPE" /> 기기를 다시 시작하면 앱을 사이드로드할 수 없게 됩니다.</translation>
+<translation id="7328119182036084494"><ph name="WEB_DRIVE" />에 저장됨</translation>
 <translation id="7328867076235380839">잘못된 조합입니다</translation>
 <translation id="7329154610228416156">보안되지 않은 URL(<ph name="BLOCKED_URL" />)을 사용하도록 설정되어 있기 때문에 로그인할 수 없습니다. 관리자에게 문의하세요.</translation>
 <translation id="7332053360324989309">전용 작업자: <ph name="SCRIPT_URL" /></translation>
@@ -5913,7 +5911,6 @@
 <translation id="7494694779888133066"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">이전 암호를 잊으셨나요?</translation>
 <translation id="7497981768003291373">최근 캡처한 WebRTC 텍스트 로그가 없습니다.</translation>
-<translation id="7498614236023455416"><ph name="TARGET_NAME" />에서 탭 내용을 캡처할 권한을 요청합니다.</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
 <translation id="7503985202154027481">이 사이트를 방문한 기록이 보안 키에 보관됩니다.</translation>
 <translation id="750509436279396091">다운로드 폴더 열기</translation>
@@ -6637,6 +6634,7 @@
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" />에서 공유한 페이지</translation>
 <translation id="8236911020904880539">종료</translation>
 <translation id="8236917170563564587">이 탭을 대신 공유</translation>
+<translation id="8237471930911823556"><ph name="APP_NAME" /> 앱이 새 브라우저 탭에서 열리도록 설정되어 있습니다. 지원되는 링크도 브라우저에서 열립니다</translation>
 <translation id="8237647586961940482">진한 분홍색 및 빨간색</translation>
 <translation id="8239032431519548577">기업 등록 완료</translation>
 <translation id="8239932336306009582">알림 전송이 허용되지 않음</translation>
@@ -6809,7 +6807,6 @@
 <translation id="8438566539970814960">검색 및 탐색 기능 개선</translation>
 <translation id="8439506636278576865">이 언어로 된 페이지에 대한 번역 옵션 제공</translation>
 <translation id="8440630305826533614">Linux 앱</translation>
-<translation id="8446225304314102060"><ph name="TAB_ORIGIN" /> 탭으로 전환</translation>
 <translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8447409163267621480">Ctrl 또는 Alt 중 하나를 포함해야 합니다</translation>
 <translation id="8448729345478502352">화면에 표시되는 항목을 축소 또는 확대합니다.</translation>
@@ -7004,6 +7001,7 @@
 <translation id="866611985033792019">이메일 사용자를 식별하기 위해 이 인증서 신뢰</translation>
 <translation id="8666584013686199826">사이트에서 USB 기기에 액세스하려고 할 때 확인</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" />이(가) 현재 전체화면으로 전환되었으며 마우스 커서가 사용 중지되었습니다.</translation>
+<translation id="8668052347555487755">색상 모드</translation>
 <translation id="8669284339312441707">따뜻함</translation>
 <translation id="8670537393737592796">이곳으로 빠르게 이동하려면 설치 버튼을 클릭하여 <ph name="APP_NAME" /> 앱을 설치하세요.</translation>
 <translation id="867085395664725367">일시적인 서버 오류가 발생했습니다.</translation>
@@ -7173,6 +7171,7 @@
 <translation id="8835786707922974220">언제든지 저장된 비밀번호에 액세스할 수 있도록 하세요</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" />에서 데이터를 백업하고 1주일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" /></translation>
 <translation id="8836782447513334597">계속</translation>
+<translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" />(<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">불투명</translation>
 <translation id="8838770651474809439">햄버거</translation>
 <translation id="883911313571074303">이미지에 주석 달기</translation>
@@ -7321,7 +7320,6 @@
 <translation id="8986494364107987395">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
 <translation id="8987927404178983737">월</translation>
 <translation id="8988879467270412492">Chrome OS에 기본 제공되는 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 볼륨 키 2개를 5초 동안 길게 누르세요.</translation>
-<translation id="8989823300731803443">이전에 중단한 부분부터 계속하세요.</translation>
 <translation id="8990209962746788689">QR 코드를 만들 수 없음</translation>
 <translation id="8991520179165052608">사이트에서 마이크를 사용할 수 있습니다.</translation>
 <translation id="899384117894244799">제한된 사용자 삭제</translation>

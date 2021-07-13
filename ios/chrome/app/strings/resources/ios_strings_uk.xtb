@@ -236,6 +236,7 @@
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
 <translation id="3393920035788932672">Спливаючі вікна дозволені</translation>
 <translation id="3399930248910934354">Відкрити налаштування Chrome</translation>
+<translation id="3404744938087714423">Якщо вийти з облікового запису, синхронізацію буде вимкнено.</translation>
 <translation id="3425644765244388016">Псевдонім картки</translation>
 <translation id="3433057996795775706">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="WEBSITE" /> залишиться. Змініть пароль на сайті <ph name="WEBSITE" />, щоб захистити свій обліковий запис.</translation>
 <translation id="3443810440409579745">Вкладку отримано.</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">Дані автозаповнення</translation>
 <translation id="3609785682760573515">Синхронізація…</translation>
 <translation id="3638472932233958418">Попер.завантаж.стор.</translation>
+<translation id="3648013730801605241"><ph name="BEGIN_LINK" />Історія пошуку<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />дані про інші дії<ph name="END_LINK" /> можуть зберігатися в обліковому записі Google, коли ви входите в нього. Їх можна будь-коли видалити.</translation>
 <translation id="3661160521073045932">Доступний профіль конфігурації</translation>
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3691593122358196899">Закладку збережено в папці "<ph name="FOLDER_TITLE" />"</translation>
@@ -647,6 +649,10 @@
 <translation id="734758817008927353">Опції збереження картки</translation>
 <translation id="7348502496356775519">Закладка</translation>
 <translation id="7353432112255316844">Підтвердьте свою особу</translation>
+<translation id="7376492662175718683">Ви не вийдете з облікового запису Google. <ph name="BEGIN_LINK" />Дані про інші дії<ph name="END_LINK" /> можуть зберігатися в обліковому записі Google, коли ви входите в нього. Їх можна будь-коли видалити.
+
+        
+Ваша пошукова система – <ph name="DSE_NAME" />. Перегляньте її вказівки щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="7383797227493018512">Список читання</translation>
 <translation id="7398893703713203428">Створити посилання</translation>
 <translation id="739941347996872055">Попередня вкладка</translation>
@@ -789,6 +795,10 @@
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8840513115188359703">Ви не вийдете з облікового запису Google.</translation>
+<translation id="8851300969441660830">Ви не вийдете з облікового запису Google. <ph name="BEGIN_LINK" />Дані про інші дії<ph name="END_LINK" /> можуть зберігатися в обліковому записі Google, коли ви входите в нього. Їх можна будь-коли видалити.
+
+
+Перегляньте вказівки пошукової системи щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="8870413625673593573">Нещодавно закриті</translation>
 <translation id="8876882697946675716">Синхронізуйте свої пристрої</translation>
@@ -819,7 +829,6 @@
 <translation id="9148126808321036104">Увійти знову</translation>
 <translation id="9152539721251340337">Створити QR-код</translation>
 <translation id="9157836665414082580">Заблокувати діалогові вікна</translation>
-<translation id="9183059292653643328">Цим веб-переглядачем керує ваша організація</translation>
 <translation id="9188680907066685419">Вийти з керованого облікового запису</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> дн. тому</translation>
 <translation id="9203116392574189331">Handoff</translation>

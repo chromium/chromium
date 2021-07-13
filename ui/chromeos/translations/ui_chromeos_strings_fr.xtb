@@ -168,7 +168,7 @@
 <translation id="2470939964922472929">Vous avez saisi un code PIN erroné trop de fois. Pour définir un nouveau code PIN, saisissez les 8 chiffres du code PUK fourni par votre opérateur.</translation>
 <translation id="2500392669976258912">Gujarati (phonétique)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2517472476991765520">Rechercher</translation>
+<translation id="2517472476991765520">Scanner</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> éléments supprimés</translation>
 <translation id="2534460670861217804">Proxy HTTP sécurisé</translation>
 <translation id="2541377937973966830">Le contenu de ce dossier est en lecture seule. Certaines opérations ne sont pas possibles.</translation>
@@ -551,7 +551,6 @@
 <translation id="5833610766403489739">Ce fichier s'est égaré. Veuillez vérifier le paramètre correspondant à votre emplacement de téléchargement, puis réessayer.</translation>
 <translation id="5838451609423551646">Tous les éléments sélectionnés ont été supprimés.</translation>
 <translation id="5838825566232597749">Clavier Workman international américain</translation>
-<translation id="5851063901794976166">Le dossier est vide.</translation>
 <translation id="5864471791310927901">Échec de la vérification DHCP</translation>
 <translation id="5896749729057314184">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, désactivé, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="5911887972742538906">Une erreur s'est produite lors de l'installation de votre application Linux.</translation>

@@ -330,6 +330,7 @@
 <translation id="3595596368722241419">電池已充滿</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">已連接點字顯示器。</translation>
+<translation id="3615926715408477684">如果啟用行動數據，藍牙功能也會一併開啟</translation>
 <translation id="3616883743181209306">已將選單移至畫面右上角。</translation>
 <translation id="3621202678540785336">輸入</translation>
 <translation id="3621712662352432595">音訊設定</translation>
@@ -552,6 +553,7 @@
 <translation id="5283198616748585639">增加 1 分鐘</translation>
 <translation id="528468243742722775">結束</translation>
 <translation id="5286194356314741248">掃描中</translation>
+<translation id="5297423144044956168">找不到行動裝置</translation>
 <translation id="5297704307811127955">關閉</translation>
 <translation id="5302048478445481009">語言</translation>
 <translation id="5308380583665731573">連線</translation>

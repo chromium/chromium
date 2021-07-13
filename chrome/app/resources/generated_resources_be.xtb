@@ -306,7 +306,6 @@
 <translation id="133535873114485416">Пажаданы спосаб уводу</translation>
 <translation id="1335929031622236846">Зарэгіструйце прыладу</translation>
 <translation id="1336902454946927954">Ключ бяспекі заблакіраваны, бо ваш адбітак пальца не быў распазнаны. Каб разблакіраваць ключ, увядзіце PIN-код.</translation>
-<translation id="1337692097987160377">Абагуліць гэту ўкладку</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> збіраецца адкрыць гэту праграму.</translation>
 <translation id="1338950911836659113">Ідзе выдаленне...</translation>
 <translation id="13392265090583506">Даступнасць</translation>
@@ -1395,7 +1394,6 @@
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2482895651873876648">Укладка перамешчана ў групу "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2484959914739448251">Каб ачысціць даныя прагляду з усіх сінхранізаваных прылад і Уліковага запісу Google, <ph name="BEGIN_LINK" />увядзіце фразу-пароль<ph name="END_LINK" />.</translation>
-<translation id="2485005079599453134">Пароль захаваны на гэтай прыладзе</translation>
 <translation id="2485394160472549611">Найлепшыя падборкі для вас</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
 <translation id="2487067538648443797">Дадаць новую закладку</translation>
@@ -1733,7 +1731,6 @@
 <translation id="2836635946302913370">Уваход пад гэтым іменем карыстальніка выключаны адміністратарам.</translation>
 <translation id="283669119850230892">Каб выкарыстоўваць сетку <ph name="NETWORK_ID" />, спачатку завяршыце падключэнне да інтэрнэту (гл. ніжэй).</translation>
 <translation id="2838379631617906747">Ідзе ўсталяванне</translation>
-<translation id="2838512566364515520">Ніколі не аднаўляць</translation>
 <translation id="2839032553903800133">Апавяшчэнні заблакіраваны</translation>
 <translation id="2841013758207633010">Час</translation>
 <translation id="2841837950101800123">Пастаўшчык</translation>
@@ -2059,6 +2056,7 @@
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
 <translation id="3197453258332670132">Па націсканні правай кнопкай мышы або доўгім націсканні паказваць звязаную інфармацыю пра вылучаны вамі тэкст</translation>
 <translation id="3199127022143353223">Серверы</translation>
+<translation id="3200061262156232574">У вашым кошыку</translation>
 <translation id="3201422919974259695">Тут з'явяцца даступныя прылады USB.</translation>
 <translation id="3202131003361292969">Шлях</translation>
 <translation id="3202173864863109533">Гук на гэтай укладцы выключаны.</translation>
@@ -2766,7 +2764,6 @@
 
   Запусціць <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Дыягностыка</translation>
-<translation id="3943494825379372497">Аднавіць праграмы і старонкі?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Уставіць</translation>
 <translation id="3945513714196326460">Паспрабуйце ўвесці карацейшую назву</translation>
@@ -2991,6 +2988,7 @@
 <translation id="42126664696688958">Экспартаваць</translation>
 <translation id="42137655013211669">Доступ да рэсурсу быў забаронены серверам.</translation>
 <translation id="4217571870635786043">Галасавы ўвод</translation>
+<translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Падчас актывацыі ўзнікла памылка.</translation>
 <translation id="4222772810963087151">Звесткі пра зборку</translation>
 <translation id="4225020013797061859">Націсніце пераключальнік або клавішу, каб прызначыць іх для дзеяння "<ph name="ACTION" />"</translation>
@@ -3240,7 +3238,6 @@
 <translation id="4510479820467554003">Спіс бацькоўскіх уліковых запісаў</translation>
 <translation id="4510614391273086606">Файлы і праграмы Linux аднаўляюцца з рэзервовай копіі.</translation>
 <translation id="451102079304155829">кошыкі</translation>
-<translation id="4513275008300099962">Адключыць накладанне элементаў кіравання акном</translation>
 <translation id="4513872120116766993">Прагнастычныя падказкі пры напісанні тэксту</translation>
 <translation id="4513946894732546136">Водгук</translation>
 <translation id="451407183922382411">На платформе <ph name="COMPANY_NAME" /></translation>
@@ -4281,6 +4278,7 @@
 <translation id="5677503058916217575">Мова старонкі:</translation>
 <translation id="5677928146339483299">Заблакіравана</translation>
 <translation id="5678550637669481956">Для <ph name="VOLUME_NAME" /> выдадзены дазвол на чытанне і запіс.</translation>
+<translation id="5678821117681811450">Ідзе адпраўка ў сэрвіс "<ph name="WEB_DRIVE" />"</translation>
 <translation id="5678955352098267522">Прагляд вашых даных на <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Выдаліць "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5683806393796685434">Увядзіце код актывацыі</translation>
@@ -4740,6 +4738,7 @@
 <translation id="6207200176136643843">Скінуць маштаб да стандартнага</translation>
 <translation id="6207937957461833379">Краіна або рэгіён</translation>
 <translation id="6208521041562685716">Ідзе актывацыя мабільнай перадачы даных</translation>
+<translation id="6208725777148613371">Не ўдалося захаваць элемент у сэрвісе "<ph name="WEB_DRIVE" />": <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Абнаўленне кампанента</translation>
 <translation id="6209908325007204267">Прылада ўключае ў сябе ліцэнзію Chrome Enterprise, але ваша імя карыстальніка не звязана з карпаратыўным уліковым запісам. Стварыце карпаратыўны ўліковы запіс, наведаўшы старонку g.co/ChromeEnterpriseAccount з іншай прылады.</translation>
 <translation id="6212039847102026977">Паказаць пашыраныя параметры сеткі</translation>
@@ -5320,7 +5319,6 @@
 <translation id="6850286078059909152">Колер тэксту</translation>
 <translation id="6851181413209322061">Адпраўка даных пра выкарыстанне і дыягностыку. Зараз прылада аўтаматычна адпраўляе ў Google даныя дыягностыкі і даныя пра выкарыстанне прылады і праграм. Яны не будуць выкарыстаны для ідэнтыфікацыі асобы дзіцяці, але дапамогуць у паляпшэнні стабільнасці сістэмы і праграм і іншых удасканаленнях. Некаторыя згрупаваныя даныя таксама будуць карысныя для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Гэта налада ўключана ўладальнікам. Калі налада "Дадатковыя дзеянні ў інтэрнэце і праграмах" уключана, адпаведныя даныя могуць захоўвацца ва Уліковым запісе Google дзіцяці.</translation>
 <translation id="6851497530878285708">Праграма ўключана</translation>
-<translation id="6853142139292753691">Ці аднаўляць праграмы і старонкі стандартна?</translation>
 <translation id="6853388645642883916">Сродак абнаўлення ў рэжыме сну</translation>
 <translation id="68541483639528434">Закрыць іншыя ўкладкі</translation>
 <translation id="6855892664589459354">Рэзервовае капіраванне і аднаўленне Crostini</translation>
@@ -5724,7 +5722,6 @@
 <translation id="7308643132139167865">Мовы вэб-сайтаў</translation>
 <translation id="7309257895202129721">Паказаць &amp;элементы кіравання</translation>
 <translation id="7310598146671372464">Не ўдалося ўвайсці. Сервер не падтрымлівае ўказаныя тыпы шыфравання Kerberos. Звярніцеся да адміністратара.</translation>
-<translation id="7315168816273861089">Уключыць накладанне элементаў кіравання акном</translation>
 <translation id="7320213904474460808">Стандартная сетка</translation>
 <translation id="7321545336522791733">Сервер недаступны</translation>
 <translation id="7324297612904500502">Форум бэта-версіі</translation>
@@ -5732,6 +5729,7 @@
 <translation id="7326004502692201767">Наладзьце прыладу "<ph name="DEVICE_TYPE" />" для дзіцяці</translation>
 <translation id="7326025035243649350">Актываваць ChromeVox – убудаваную праграму чытання з экрана для Chrome OS?</translation>
 <translation id="7327989755579928735">Сайт <ph name="MANAGER" /> выключыў адладку ADB. Пасля перазапуску прылады <ph name="DEVICE_TYPE" /> вы не зможаце загружаць праграмы са старонняй крыніцы.</translation>
+<translation id="7328119182036084494">Захавана ў сэрвісе "<ph name="WEB_DRIVE" />"</translation>
 <translation id="7328867076235380839">Няправільнае спалучэнне</translation>
 <translation id="7329154610228416156">Адбыўся збой уваходу з-за выкарыстання небяспечнага URL-адраса (<ph name="BLOCKED_URL" />). Звяжыцеся з адміністратарам.</translation>
 <translation id="7332053360324989309">Вылучаны рабочы працэс: <ph name="SCRIPT_URL" /></translation>
@@ -5897,7 +5895,6 @@
 <translation id="7494694779888133066"><ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Забылі стары пароль?</translation>
 <translation id="7497981768003291373">У вас няма апошніх тэкставых журналаў WebRTC.</translation>
-<translation id="7498614236023455416"><ph name="TARGET_NAME" /> запытвае дазвол зрабіць здымак змесціва гэтай укладкі.</translation>
 <translation id="7503191893372251637">Тып сертыфіката Netscape</translation>
 <translation id="7503985202154027481">На ключы бяспекі будзе пакінуты запіс пра наведванне вамі гэтага вэб-сайта.</translation>
 <translation id="750509436279396091">Адкрыць папку спамповак</translation>
@@ -6619,6 +6616,7 @@
 <translation id="8235418492073272647">Старонка абагулена з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8236911020904880539">выйсці</translation>
 <translation id="8236917170563564587">Абагуліць гэту ўкладку</translation>
+<translation id="8237471930911823556">У адпаведнасці з наладамі праграмы "<ph name="APP_NAME" />" яна будзе адкрывацца ў новай укладцы браўзера. Спасылкі, якія падтрымліваюцца, таксама будуць адкрывацца ў браўзеры.</translation>
 <translation id="8237647586961940482">Цёмна-ружовы і чырвоны</translation>
 <translation id="8239032431519548577">Рэгістрацыя для арганізацый завершана</translation>
 <translation id="8239932336306009582">Не дазволена адпраўляць апавяшчэнні</translation>
@@ -6791,7 +6789,6 @@
 <translation id="8438566539970814960">Паскорыць пошук і прагляд</translation>
 <translation id="8439506636278576865">Прапаноўваць перакладаць старонкі на гэтай мове</translation>
 <translation id="8440630305826533614">Linux-праграмы</translation>
-<translation id="8446225304314102060">Пераключыцца на ўкладку <ph name="TAB_ORIGIN" /></translation>
 <translation id="8446884382197647889">Даведацца больш</translation>
 <translation id="8447409163267621480">Уключыце ў спалучэнне клавішу Ctrl або Alt</translation>
 <translation id="8448729345478502352">Павелічэнне або памяншэнне элементаў на экране</translation>
@@ -6986,6 +6983,7 @@
 <translation id="866611985033792019">Давяраць гэтаму сертыфікату пры ідэнтыфікацыі карыстальнікаў электроннай пошты</translation>
 <translation id="8666584013686199826">Пытацца, калі сайт запытвае доступ да USB-прылад</translation>
 <translation id="8667328578593601900">Сайт <ph name="FULLSCREEN_ORIGIN" /> перайшоў у поўнаэкранны рэжым і выключыў вам курсор мышы.</translation>
+<translation id="8668052347555487755">Рэжым колеру</translation>
 <translation id="8669284339312441707">Цяплей</translation>
 <translation id="8670537393737592796">Каб хутка вяртацца сюды, усталюйце праграму "<ph name="APP_NAME" />", націснуўшы кнопку ўсталявання</translation>
 <translation id="867085395664725367">Узнікла часовая памылка сервера.</translation>
@@ -7158,6 +7156,7 @@
 <translation id="8835786707922974220">Падбайце аб тым, каб не страціць доступ да сваіх захаваных пароляў</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> патрабуе, каб вы стварылі рэзервовую копію сваіх даных і вярнулі прыладу <ph name="DEVICE_TYPE" /> на працягу 1 тыдня. <ph name="LINK_BEGIN" />Больш падрабязна<ph name="LINK_END" /></translation>
 <translation id="8836782447513334597">працягнуць</translation>
+<translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Непразрыста</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
 <translation id="883911313571074303">Дадаць анатацыю да відарыса</translation>
@@ -7306,7 +7305,6 @@
 <translation id="8986494364107987395">Аўтаматычна адпраўляць у Google статыстыку выкарыстання і справаздачы аб збоях</translation>
 <translation id="8987927404178983737">Месяц</translation>
 <translation id="8988879467270412492">Актываваць ChromeVox – убудаваную праграму чытання з экрана для Chrome OS? Для актывацыі націсніце і ўтрымлівайце пяць секунд абедзве клавішы гучнасці.</translation>
-<translation id="8989823300731803443">Працягвайце з месца, на якім спыніліся.</translation>
 <translation id="8990209962746788689">Не ўдалося стварыць QR-код</translation>
 <translation id="8991520179165052608">Сайт можа выкарыстоўваць ваш мікрафон</translation>
 <translation id="899384117894244799">Выдаліць карыстальніка з абмежаваннямі</translation>
