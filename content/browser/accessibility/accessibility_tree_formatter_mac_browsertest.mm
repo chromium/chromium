@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
         SCRIPT}},
       {{"*", "*"}},
       R"~~(text_range={anchor: {:3, 0, down}, focus: {:3, 4, down}}
- textbox.AXTextMarkerRangeForUnorderedTextMarkers([text_range.anchor, text_range.focus])={anchor: {:3, 0, down}, focus: {:3, 4, down}}
+textbox.AXTextMarkerRangeForUnorderedTextMarkers([text_range.anchor, text_range.focus])={anchor: {:3, 0, down}, focus: {:3, 4, down}}
 )~~");
 }
 
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                {{"text:= p.AXChildren[0]", SCRIPT}, {"text.AXRole", SCRIPT}},
                {{"*", "*"}},
                R"~~(text=:3
- text.AXRole='AXStaticText'
+text.AXRole='AXStaticText'
 )~~");
 }
 
