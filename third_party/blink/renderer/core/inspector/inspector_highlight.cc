@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
@@ -1028,6 +1027,59 @@ bool IsHorizontalFlex(LayoutObject* layout_flex) {
          layout_flex->StyleRef().ResolvedIsColumnFlexDirection();
 }
 
+Vector<Vector<std::pair<PhysicalRect, float>>> GetFlexLinesAndItems(
+    LayoutBox* layout_box,
+    bool is_horizontal,
+    bool is_reverse) {
+  Vector<Vector<std::pair<PhysicalRect, float>>> flex_lines;
+
+  // Flex containers can't get fragmented yet, but this may change in the
+  // future.
+  for (const auto& fragment : layout_box->PhysicalFragments()) {
+    LayoutUnit progression;
+
+    for (const auto& child : fragment.Children()) {
+      const NGPhysicalFragment* child_fragment = child.get();
+      if (!child_fragment || child_fragment->IsOutOfFlowPositioned())
+        continue;
+
+      PhysicalSize fragment_size = child_fragment->Size();
+      PhysicalOffset fragment_offset = child.Offset();
+
+      const LayoutObject* object = child_fragment->GetLayoutObject();
+      const auto* box = To<LayoutBox>(object);
+
+      LayoutUnit baseline =
+          NGBoxFragment(box->StyleRef().GetWritingDirection(),
+                        *To<NGPhysicalBoxFragment>(child_fragment))
+              .BaselineOrSynthesize();
+      float adjusted_baseline = AdjustForAbsoluteZoom::AdjustFloat(
+          baseline + box->MarginTop(), box->StyleRef());
+
+      PhysicalRect item_rect =
+          PhysicalRect(fragment_offset.left - box->MarginLeft(),
+                       fragment_offset.top - box->MarginTop(),
+                       fragment_size.width + box->MarginWidth(),
+                       fragment_size.height + box->MarginHeight());
+
+      LayoutUnit item_start = is_horizontal ? item_rect.X() : item_rect.Y();
+      LayoutUnit item_end = is_horizontal ? item_rect.X() + item_rect.Width()
+                                          : item_rect.Y() + item_rect.Height();
+
+      if (flex_lines.IsEmpty() ||
+          (is_reverse ? item_end > progression : item_start < progression)) {
+        flex_lines.emplace_back();
+      }
+
+      flex_lines.back().push_back(std::make_pair(item_rect, adjusted_baseline));
+
+      progression = is_reverse ? item_start : item_end;
+    }
+  }
+
+  return flex_lines;
+}
+
 std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
     Node* node,
     const InspectorFlexContainerHighlightConfig&
@@ -1054,11 +1106,9 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
   FrameQuadToViewport(containing_view, content_quad);
   container_builder.AppendPath(QuadToPath(content_quad), scale);
 
-  DevtoolsFlexInfo flex_info_from_layout =
-      To<LayoutNGFlexibleBox>(layout_object)->LayoutForDevtools();
-
-  Vector<blink::DevtoolsFlexInfo::Line> flex_lines =
-      flex_info_from_layout.lines;
+  // Gather all flex items, sorted by flex line.
+  Vector<Vector<std::pair<PhysicalRect, float>>> flex_lines =
+      GetFlexLinesAndItems(layout_box, is_horizontal, is_reverse);
 
   // We send a list of flex lines, each containing a list of flex items, with
   // their baselines, to the frontend.
@@ -1067,20 +1117,18 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
   for (auto line : flex_lines) {
     std::unique_ptr<protocol::ListValue> items_info =
         protocol::ListValue::create();
-
-    for (auto& item : line.items) {
+    for (auto item_data : line) {
       std::unique_ptr<protocol::DictionaryValue> item_info =
           protocol::DictionaryValue::create();
 
       FloatQuad item_margin_quad =
-          layout_object->LocalRectToAbsoluteQuad(item.rect);
+          layout_object->LocalRectToAbsoluteQuad(item_data.first);
       FrameQuadToViewport(containing_view, item_margin_quad);
       PathBuilder item_builder;
       item_builder.AppendPath(QuadToPath(item_margin_quad), scale);
 
       item_info->setValue("itemBorder", item_builder.Release());
-
-      item_info->setDouble("baseline", item.baseline);
+      item_info->setDouble("baseline", item_data.second);
 
       items_info->pushValue(std::move(item_info));
     }
