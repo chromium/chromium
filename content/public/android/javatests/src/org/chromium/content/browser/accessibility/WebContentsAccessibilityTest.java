@@ -100,7 +100,7 @@ public class WebContentsAccessibilityTest {
             "Conversion of event masks to event types not correct.";
 
     // Constant values for unit tests
-    private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
+    private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
 
     private AccessibilityNodeInfo mNodeInfo;
     private AccessibilityContentShellTestData mTestData;
@@ -343,7 +343,6 @@ public class WebContentsAccessibilityTest {
      * Ensure we throttle TYPE_WINDOW_CONTENT_CHANGED events for large tree updates.
      */
     @Test
-    @FlakyTest(message = "https://crbug.com/1161533")
     @SmallTest
     public void testMaxContentChangedEventsFired_default() throws Throwable {
         // Build a simple web page with complex visibility change.
@@ -358,16 +357,15 @@ public class WebContentsAccessibilityTest {
         // Signal end of test
         mActivityTestRule.sendEndOfTestSignal();
 
-        // Verify number of events processed
+        // Verify number of events processed, allow for multiple atomic updates.
         int eventCount = mTestData.getTypeWindowContentChangedCount();
-        Assert.assertTrue(thresholdError(eventCount, maxEvents), eventCount <= maxEvents);
+        Assert.assertTrue(thresholdError(eventCount, maxEvents), eventCount <= (maxEvents * 3));
     }
 
     /**
      * Ensure we need to throttle TYPE_WINDOW_CONTENT_CHANGED events for some large tree updates.
      */
     @Test
-    @FlakyTest(message = "https://crbug.com/1161533")
     @SmallTest
     public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
         // Build a simple web page with complex visibility change.
