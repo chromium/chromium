@@ -336,8 +336,8 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_AUTOFILL_SAVE_CARD_BADGE_HINT" desc="Accessibility Hint for the Save Card button which presents the current options to Save a Card. This is spoken by VoiceOver.   [Length:Unlimited] [iOS only]">
         Options to Save Card
       </message>
-      <message name="IDS_IOS_AUTOFILL_HONORIFIC_PREFIX" desc="Title of the field of a profile address representing the title that can be auto-filled by Chrome. [iOS only]" meaning="A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi. [Length: 15em]">
-           Title
+      <message name="IDS_IOS_AUTOFILL_HONORIFIC_PREFIX" desc="Title of the field of a profile address representing the title that can be auto-filled by Chrome. A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi. [Length: 15em] [iOS only]" meaning="Honorific">
+        Title
       </message>
       <message name="IDS_IOS_AUTOFILL_FULLNAME" desc="Title of the field of a profile address representing the full name of the addressee. [Length: 15em] [iOS only]">
         Full Name

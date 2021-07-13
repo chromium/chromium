@@ -272,7 +272,7 @@
   <message name="IDS_SETTINGS_AUTOFILL_ADDRESSES_EMAIL" desc="This is the label for the field that lets a user modify the email address that will be used when auto-filling forms on the web.">
     Email
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_ADDRESS_HONORIFIC_LABEL" desc="This is the label for the field that lets the user modify their honorific for an address. A honorific is an optional, title like Mr, Dr, etc, which can accompany one's name.">
+  <message name="IDS_SETTINGS_AUTOFILL_ADDRESS_HONORIFIC_LABEL" desc="This is the label for the field that lets the user modify the title that will be used when auto-filling forms on the web. A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi." meaning="Honorific">
     Title
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_CREDIT_CARD_TYPE_COLUMN_LABEL" desc="Label for the column containing the type of credit card that is saved. The type is in the format: `Visa ****1234`.">
