@@ -4231,6 +4231,8 @@ source_set("unit_tests") {
     "policy/scheduled_task_handler/test/device_scheduled_update_checker_unittest.cc",
     "policy/scheduled_task_handler/test/fake_scheduled_task_executor.cc",
     "policy/scheduled_task_handler/test/fake_scheduled_task_executor.h",
+    "policy/scheduled_task_handler/test/scheduled_task_test_util.cc",
+    "policy/scheduled_task_handler/test/scheduled_task_test_util.h",
     "policy/server_backed_state/device_cloud_state_keys_uploader_unittest.cc",
     "policy/server_backed_state/server_backed_state_keys_broker_unittest.cc",
     "policy/status_collector/activity_storage_unittest.cc",

@@ -19,7 +19,6 @@
 #include "chromeos/settings/timezone_settings.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/icu/source/i18n/unicode/calendar.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {
@@ -115,9 +114,6 @@ constexpr int kMaxStartUpdateCheckTimerRetryIterations = 5;
 // Time to call |StartUpdateCheckTimer| again in case it failed.
 constexpr base::TimeDelta kStartUpdateCheckTimerRetryTime =
     base::TimeDelta::FromMinutes(1);
-
-// Converts an icu::Calendar to base::Time. Assumes |time| is valid.
-base::Time IcuToBaseTime(const icu::Calendar& time);
 
 }  // namespace update_checker_internal
 

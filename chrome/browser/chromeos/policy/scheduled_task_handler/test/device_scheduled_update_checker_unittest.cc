@@ -28,6 +28,7 @@
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/test/fake_scheduled_task_executor.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/test/scheduled_task_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
@@ -57,162 +58,6 @@ constexpr char kISTTimeZoneID[] = "Asia/Kolkata";
 constexpr char kPSTTimeZoneID[] = "America/Los_Angeles";
 
 constexpr char kTaskTimeFieldName[] = "update_check_time";
-
-void DecodeJsonStringAndNormalize(const std::string& json_string,
-                                  base::Value* value) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_EQ(parsed_json.error_message, "");
-  ASSERT_TRUE(parsed_json.value);
-  *value = std::move(*parsed_json.value);
-}
-
-// Creates a JSON policy for daily device scheduled update checks.
-std::string CreateDailyScheduledUpdateCheckPolicyJson(int hour, int minute) {
-  return base::StringPrintf(
-      "{\"update_check_time\": {\"hour\": %d, \"minute\":  %d}, \"frequency\": "
-      "\"DAILY\"}",
-      hour, minute);
-}
-
-// Creates a JSON policy for weekly device scheduled update checks.
-std::string CreateWeeklyScheduledUpdateCheckPolicyJson(
-    int hour,
-    int minute,
-    const std::string& day_of_week) {
-  return base::StringPrintf(
-      "{\"update_check_time\": {\"hour\": %d, \"minute\":  %d}, \"frequency\": "
-      "\"WEEKLY\", \"day_of_week\": \"%s\"}",
-      hour, minute, day_of_week.c_str());
-}
-
-// Creates a JSON policy for monthly device scheduled update checks.
-std::string CreateMonthlyScheduledUpdateCheckPolicyJson(int hour,
-                                                        int minute,
-                                                        int day_of_month) {
-  return base::StringPrintf(
-      "{\"update_check_time\": {\"hour\": %d, \"minute\":  %d}, \"frequency\": "
-      "\"MONTHLY\", \"day_of_month\": %d}",
-      hour, minute, day_of_month);
-}
-
-// Converts day of week from UCalendarDaysOfWeek to string.
-std::string IcuDayOfWeekToStringDayOfWeek(UCalendarDaysOfWeek day_of_week) {
-  switch (day_of_week) {
-    case UCAL_SUNDAY:
-      return "SUNDAY";
-    case UCAL_MONDAY:
-      return "MONDAY";
-    case UCAL_TUESDAY:
-      return "TUESDAY";
-    case UCAL_WEDNESDAY:
-      return "WEDNESDAY";
-    case UCAL_THURSDAY:
-      return "THURSDAY";
-    case UCAL_FRIDAY:
-      return "FRIDAY";
-    case UCAL_SATURDAY:
-      break;
-  }
-  DCHECK_EQ(day_of_week, UCAL_SATURDAY);
-  return "SATURDAY";
-}
-
-// Sets |output|'s time of day to |input|'s. Assume's |input| is valid.
-void SetTimeOfDay(const icu::Calendar& input, icu::Calendar* output) {
-  // Getting each of these properties should succeed if |input| is valid.
-  UErrorCode status = U_ZERO_ERROR;
-  int32_t hour = input.get(UCAL_HOUR_OF_DAY, status);
-  ASSERT_TRUE(U_SUCCESS(status));
-  int32_t minute = input.get(UCAL_MINUTE, status);
-  ASSERT_TRUE(U_SUCCESS(status));
-  int32_t seconds = input.get(UCAL_SECOND, status);
-  ASSERT_TRUE(U_SUCCESS(status));
-  int32_t ms = input.get(UCAL_MILLISECOND, status);
-  ASSERT_TRUE(U_SUCCESS(status));
-
-  output->set(UCAL_HOUR_OF_DAY, hour);
-  output->set(UCAL_MINUTE, minute);
-  output->set(UCAL_SECOND, seconds);
-  output->set(UCAL_MILLISECOND, ms);
-}
-
-// Calculates |cur_time + delay| in |old_tz|. Then gets the same time of day
-// (hours:minutes:seconds:ms) in |new_tz|. Returns the delay between |cur_time|
-// and |new_tz|. |delay| must be non-zero.
-base::TimeDelta CalculateTimerExpirationDelayInDailyPolicyForTimeZone(
-    base::Time cur_time,
-    base::TimeDelta delay,
-    const icu::TimeZone& old_tz,
-    const icu::TimeZone& new_tz) {
-  DCHECK(!delay.is_zero());
-
-  auto cur_time_utc_cal = scheduled_task_internal::ConvertUtcToTzIcuTime(
-      cur_time, *icu::TimeZone::getGMT());
-
-  auto old_tz_timer_expiration_cal =
-      scheduled_task_internal::ConvertUtcToTzIcuTime(cur_time + delay, old_tz);
-
-  auto new_tz_timer_expiration_cal =
-      scheduled_task_internal::ConvertUtcToTzIcuTime(cur_time, new_tz);
-  SetTimeOfDay(*old_tz_timer_expiration_cal, new_tz_timer_expiration_cal.get());
-
-  base::TimeDelta result = scheduled_task_internal::GetDiff(
-      *new_tz_timer_expiration_cal, *cur_time_utc_cal);
-  // If the update check time in the new time zone has already passed then it
-  // will happen on the next day.
-  if (result <= scheduled_task_internal::kInvalidDelay)
-    result += base::TimeDelta::FromDays(1);
-  return result;
-}
-
-// Returns the number of days in |month| in the epoch year i.e. 1970.
-int GetDaysInMonthInEpochYear(UCalendarMonths month) {
-  switch (month) {
-    case UCAL_JANUARY:
-    case UCAL_MARCH:
-    case UCAL_MAY:
-    case UCAL_JULY:
-    case UCAL_AUGUST:
-    case UCAL_OCTOBER:
-    case UCAL_DECEMBER:
-      return 31;
-    case UCAL_FEBRUARY:
-      return 28;
-    case UCAL_APRIL:
-    case UCAL_JUNE:
-    case UCAL_SEPTEMBER:
-    case UCAL_NOVEMBER:
-      return 30;
-    case UCAL_UNDECIMBER:
-      break;
-  }
-  NOTREACHED();
-  return -1;
-}
-
-// Advances the month in time and sets day to min(|day_of_month|, max days in
-// new month). Returns true if |time| is valid after these operations, false
-// otherwise.
-bool AdvanceTimeAndSetDayOfMonth(int day_of_month, icu::Calendar* time) {
-  DCHECK(time);
-  UErrorCode status = U_ZERO_ERROR;
-  time->add(UCAL_DAY_OF_MONTH, 1, status);
-  if (U_FAILURE(status)) {
-    ADD_FAILURE() << "Failed to advance month";
-    return false;
-  }
-
-  // Cap day of month to a valid day in the incremented month.
-  int cur_max_days_in_month = time->getActualMaximum(UCAL_DAY_OF_MONTH, status);
-  if (U_FAILURE(status)) {
-    ADD_FAILURE() << "Failed to get max days in month";
-    return false;
-  }
-  time->set(UCAL_DAY_OF_MONTH, std::min(day_of_month, cur_max_days_in_month));
-  return true;
-}
 
 std::string CreateConnectedWifiConfigurationJsonString(
     const std::string& guid) {
@@ -365,7 +210,10 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     // happen daily at that time.
     base::TimeDelta delay_from_now = base::TimeDelta::FromHours(hours_fom_now);
     auto policy_and_next_update_check_time =
-        CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kDaily);
+        scheduled_task_test_util::CreatePolicy(
+            scheduled_task_executor_->GetTimeZone(),
+            scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+            ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
 
     // Set a new scheduled update setting, fast forward to right before the
     // expected update and then check if an update check is not scheduled.
@@ -418,62 +266,6 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     return true;
   }
 
-  // Creates an update check policy starting at a delay of |delay| from now and
-  // recurring with frequency |frequency|. Returns the policy and the first
-  // update check time.
-  std::pair<base::Value, std::unique_ptr<icu::Calendar>> CreatePolicy(
-      base::TimeDelta delay,
-      ScheduledTaskExecutor::Frequency frequency) {
-    // Calculate time from one hour from now and set the update check policy to
-    // happen daily at that time.
-    base::Time update_check_time =
-        scheduled_task_executor_->GetCurrentTime() + delay;
-    auto update_check_icu_time = scheduled_task_internal::ConvertUtcToTzIcuTime(
-        update_check_time, scheduled_task_executor_->GetTimeZone());
-
-    // Extracting fields from valid ICU time should always succeed.
-    UErrorCode status = U_ZERO_ERROR;
-    int32_t hour = update_check_icu_time->get(UCAL_HOUR_OF_DAY, status);
-    DCHECK(U_SUCCESS(status));
-    int32_t minute = update_check_icu_time->get(UCAL_MINUTE, status);
-    DCHECK(U_SUCCESS(status));
-    int32_t day_of_week = update_check_icu_time->get(UCAL_DAY_OF_WEEK, status);
-    DCHECK(U_SUCCESS(status));
-    int32_t day_of_month =
-        update_check_icu_time->get(UCAL_DAY_OF_MONTH, status);
-    DCHECK(U_SUCCESS(status));
-
-    base::Value scheduled_update_check_value;
-    switch (frequency) {
-      case ScheduledTaskExecutor::Frequency::kDaily: {
-        DecodeJsonStringAndNormalize(
-            CreateDailyScheduledUpdateCheckPolicyJson(hour, minute),
-            &scheduled_update_check_value);
-        break;
-      }
-
-      case ScheduledTaskExecutor::Frequency::kWeekly: {
-        DecodeJsonStringAndNormalize(
-            CreateWeeklyScheduledUpdateCheckPolicyJson(
-                hour, minute,
-                IcuDayOfWeekToStringDayOfWeek(
-                    static_cast<UCalendarDaysOfWeek>(day_of_week))),
-            &scheduled_update_check_value);
-        break;
-      }
-
-      case ScheduledTaskExecutor::Frequency::kMonthly: {
-        DecodeJsonStringAndNormalize(
-            CreateMonthlyScheduledUpdateCheckPolicyJson(hour, minute,
-                                                        day_of_month),
-            &scheduled_update_check_value);
-        break;
-      }
-    }
-    return std::make_pair(std::move(scheduled_update_check_value),
-                          std::move(update_check_icu_time));
-  }
-
   // Checks if a time zone change to |tz_id| recalculates and sets the correct
   // update check timer. Returns false if |tz_id| is the same as the current
   // time zone or on a scheduling error.
@@ -492,7 +284,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     // means that the new timer would expire at 5PM in |new_tz| as well. This
     // delay is the delay between the new time zone's timer expiration time and
     // |cur_time|.
-    base::TimeDelta new_tz_timer_expiration_delay =
+    base::TimeDelta new_tz_timer_expiration_delay = scheduled_task_test_util::
         CalculateTimerExpirationDelayInDailyPolicyForTimeZone(
             cur_time, delay_from_now, cur_tz, *new_tz);
     EXPECT_GT(new_tz_timer_expiration_delay,
@@ -503,7 +295,10 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     int expected_update_check_requests = 0;
     int expected_update_check_completions = 0;
     auto policy_and_next_update_check_time =
-        CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kDaily);
+        scheduled_task_test_util::CreatePolicy(
+            scheduled_task_executor_->GetTimeZone(),
+            scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+            ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
     cros_settings_.device_settings()->Set(
         chromeos::kDeviceScheduledUpdateCheck,
         std::move(policy_and_next_update_check_time.first));
@@ -578,7 +373,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckIfWeeklyUpdateCheckIsScheduled) {
   // days from now) and then weekly after.
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(49);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kWeekly);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kWeekly, kTaskTimeFieldName);
 
   // Set a new scheduled update setting, fast forward to right before the
   // expected update and then check if an update check is not scheduled.
@@ -620,7 +418,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckIfMonthlyUpdateCheckIsScheduled) {
   // days from now) and then monthly after.
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kMonthly);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kMonthly, kTaskTimeFieldName);
   auto scheduled_update_check_data = scheduled_task_util::ParseScheduledTask(
       policy_and_next_update_check_time.first, kTaskTimeFieldName);
   ASSERT_TRUE(scheduled_update_check_data);
@@ -656,11 +457,11 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckIfMonthlyUpdateCheckIsScheduled) {
   expected_update_checks += 1;
   expected_update_check_requests += 1;
   expected_update_check_completions += 1;
-  EXPECT_TRUE(AdvanceTimeAndSetDayOfMonth(
+  EXPECT_TRUE(scheduled_task_test_util::AdvanceTimeAndSetDayOfMonth(
       scheduled_update_check_data->day_of_month.value(),
       first_update_check_icu_time.get()));
   base::Time second_update_check_time =
-      update_checker_internal::IcuToBaseTime(*first_update_check_icu_time);
+      scheduled_task_test_util::IcuToBaseTime(*first_update_check_icu_time);
   base::TimeDelta second_update_check_delay =
       second_update_check_time - scheduled_task_executor_->GetCurrentTime();
   EXPECT_GT(second_update_check_delay, scheduled_task_internal::kInvalidDelay);
@@ -675,13 +476,17 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckMonthlyRolloverLogic) {
   // The default time at the beginning is 31st December, 1969, 19:00:00.000
   // America/New_York. Move it to 31st January, 1970 to test the rollover logic.
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(
-      GetDaysInMonthInEpochYear(static_cast<UCalendarMonths>(UCAL_JANUARY))));
+      scheduled_task_test_util::GetDaysInMonthInEpochYear(
+          static_cast<UCalendarMonths>(UCAL_JANUARY))));
 
   // Set the first update check time to be at 31st January, 1970, 20:00:00.000
   // America/New_York.
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kMonthly);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kMonthly, kTaskTimeFieldName);
   auto scheduled_update_check_data = scheduled_task_util::ParseScheduledTask(
       policy_and_next_update_check_time.first, kTaskTimeFieldName);
   ASSERT_TRUE(scheduled_update_check_data);
@@ -705,11 +510,11 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckMonthlyRolloverLogic) {
 
   // Check that an update check happens at the last day of every month.
   for (int month = UCAL_FEBRUARY; month <= UCAL_DECEMBER; month++) {
-    EXPECT_TRUE(AdvanceTimeAndSetDayOfMonth(
+    EXPECT_TRUE(scheduled_task_test_util::AdvanceTimeAndSetDayOfMonth(
         scheduled_update_check_data->day_of_month.value(),
         update_check_icu_time.get()));
     base::Time expected_next_update_check_time =
-        update_checker_internal::IcuToBaseTime(*update_check_icu_time);
+        scheduled_task_test_util::IcuToBaseTime(*update_check_icu_time);
     base::TimeDelta expected_next_update_check_delay =
         expected_next_update_check_time -
         scheduled_task_executor_->GetCurrentTime();
@@ -746,7 +551,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckRetryLogicEventualSuccess) {
   // happen daily at that time.
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kDaily);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
 
   // Fast forward time by less than (max retries * retry period) and check that
   // no update has occurred due to failure being simulated.
@@ -854,7 +662,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckRetryLogicUpdateCheckFailure) {
   // days from now) and then weekly after.
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kWeekly);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kWeekly, kTaskTimeFieldName);
 
   // Set a new scheduled update setting, fast forward to expected update check
   // time and check if it happpens. Update check completion shouldn't happen as
@@ -914,7 +725,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest,
   // days from now) and then weekly after.
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(49);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kWeekly);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kWeekly, kTaskTimeFieldName);
 
   // Set a new scheduled update setting, fast forward to expected update check
   // time and check if it happpens. Update check completion shouldn't happen as
@@ -965,7 +779,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckNewPolicyWithPendingUpdateCheck) {
   // happen daily at that time.
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kDaily);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
 
   // Set a new scheduled update setting, fast forward to the expected time and
   // and then check if an update check is scheduled.
@@ -983,8 +800,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckNewPolicyWithPendingUpdateCheck) {
   // but will wait for the existing update check to complete and start the timer
   // based on the new policy.
   delay_from_now = base::TimeDelta::FromMinutes(30);
-  policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kDaily);
+  policy_and_next_update_check_time = scheduled_task_test_util::CreatePolicy(
+      scheduled_task_executor_->GetTimeZone(),
+      scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+      ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
   cros_settings_.device_settings()->Set(
       chromeos::kDeviceScheduledUpdateCheck,
       std::move(policy_and_next_update_check_time.first));
@@ -1030,7 +849,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckNoNetworkTimeoutScenario) {
   // Create and set daily policy starting from one hour from now.
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kDaily);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
   cros_settings_.device_settings()->Set(
       chromeos::kDeviceScheduledUpdateCheck,
       std::move(policy_and_next_update_check_time.first));
@@ -1077,7 +899,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckNoNetworkDelayScenario) {
   // Create and set daily policy starting from one hour from now.
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kDaily);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
   cros_settings_.device_settings()->Set(
       chromeos::kDeviceScheduledUpdateCheck,
       std::move(policy_and_next_update_check_time.first));
@@ -1117,7 +942,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckNoNetworkDelayScenario) {
 TEST_F(DeviceScheduledUpdateCheckerTest, CheckWakeLockAcquireAndRelease) {
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kDaily);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
 
   // Fast forward to update check timer expiration. This should result in a wake
   // lock being acquired.
@@ -1155,7 +983,10 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckWakeLockAcquireAndRelease) {
 TEST_F(DeviceScheduledUpdateCheckerTest, CheckUpdateCheckHardTimeout) {
   base::TimeDelta delay_from_now = base::TimeDelta::FromHours(1);
   auto policy_and_next_update_check_time =
-      CreatePolicy(delay_from_now, ScheduledTaskExecutor::Frequency::kDaily);
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
 
   cros_settings_.device_settings()->Set(
       chromeos::kDeviceScheduledUpdateCheck,

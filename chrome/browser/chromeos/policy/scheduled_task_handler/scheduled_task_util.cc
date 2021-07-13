@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_util.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"
 
 namespace policy {

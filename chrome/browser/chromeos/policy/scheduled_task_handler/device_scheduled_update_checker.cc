@@ -23,8 +23,6 @@
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/task_executor_with_retries.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/timezone_settings.h"
-#include "third_party/icu/source/i18n/unicode/gregocal.h"
-#include "third_party/icu/source/i18n/unicode/ucal.h"
 
 namespace policy {
 
@@ -37,21 +35,6 @@ constexpr char kWakeLockReason[] = "DeviceScheduledUpdateChecker";
 constexpr char kTaskTimeFieldName[] = "update_check_time";
 
 }  // namespace
-
-namespace update_checker_internal {
-
-// Converts an icu::Calendar to base::Time. Assumes |time| is a valid time.
-base::Time IcuToBaseTime(const icu::Calendar& time) {
-  UErrorCode status = U_ZERO_ERROR;
-  UDate seconds_from_epoch = time.getTime(status) / 1000;
-  DCHECK(U_SUCCESS(status));
-  base::Time result = base::Time::FromTimeT(seconds_from_epoch);
-  if (result.is_null())
-    result = base::Time::UnixEpoch();
-  return result;
-}
-
-}  // namespace update_checker_internal
 
 // |cros_settings_subscription_| will be destroyed as part of this object
 // guaranteeing to not run |OnScheduledUpdateCheckDataChanged| after its
