@@ -911,6 +911,7 @@
         'ReportDeviceBootMode',
         'ReportDeviceUsers',
         'ReportDeviceActivityTimes',
+        'ReportDeviceAudioStatus',
         'ReportDeviceLocation',
         'ReportDeviceNetworkInterfaces',
         'ReportDeviceHardwareStatus',
@@ -9523,6 +9524,37 @@
       'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report time periods when a user is active on the device.
 
       Setting the policy to Disabled means enrolled devices don't record or report activity times.''',
+      'arc_support': 'This policy has no effect on the logging done by Android.',
+    },
+    {
+      'name': 'ReportDeviceAudioStatus',
+      'owners': ['cros-reporting-team@google.com', 'tylergarrett@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Report audio status',
+        },
+        {
+          'value': False,
+          'caption': 'Do not report audio status',
+        },
+      ],
+      'example_value': False,
+      'default': True,
+      'id': 873,
+      'caption': '''Report device audio status''',
+      'tags': ['admin-sharing'],
+      'desc': '''Setting the policy to enabled or leaving it unset has enrolled devices report device audio volume.
+
+      Setting the policy to Disabled means enrolled devices don't record or report audio status.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -26813,6 +26845,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'SystemTimezone': 'system_timezone.timezone',
     'SystemTimezoneAutomaticDetection': 'system_timezone.timezone_detection_type',
     'ReportDeviceActivityTimes': 'device_reporting.report_activity_times',
+    'ReportDeviceAudioStatus': 'device_reporting.report_audio_status',
     'ReportDeviceBootMode': 'device_reporting.report_boot_mode',
     'ReportDeviceLocation': 'device_reporting.report_location',
     'ReportDeviceNetworkInterfaces': 'device_reporting.report_network_interfaces',
@@ -27272,6 +27305,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'ReportDeviceBootMode',
         'ReportDeviceUsers',
         'ReportDeviceActivityTimes',
+        'ReportDeviceAudioStatus',
         'ReportDeviceLocation',
         'ReportDeviceNetworkInterfaces',
         'ReportDeviceHardwareStatus',
@@ -27384,6 +27418,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 872,
+  'highest_id_currently_used': 873,
   'highest_atomic_group_id_currently_used': 40
 }

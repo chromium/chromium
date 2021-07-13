@@ -25877,6 +25877,7 @@ Called by update_document_policy_enum.py.-->
   <int value="870" label="AllowHttpsOnlyMode"/>
   <int value="871" label="DesktopSharingHubEnabled"/>
   <int value="872" label="RestrictedManagedGuestSessionEnabled"/>
+  <int value="873" label="ReportDeviceAudioStatus"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

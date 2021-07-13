@@ -654,6 +654,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kHeartbeatFrequency
     //   kReleaseChannelDelegated
     //   kReportDeviceActivityTimes
+    //   kReportDeviceAudioStatus
     //   KReportDeviceBacklightInfo
     //   kReportDeviceBluetoothInfo
     //   kReportDeviceBoardStatus

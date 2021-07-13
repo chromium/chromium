@@ -86,6 +86,8 @@ extern const char kReportDeviceVersionInfo[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceActivityTimes[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kReportDeviceAudioStatus[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceBoardStatus[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kReportDeviceBootMode[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kReportDeviceCpuInfo[];
@@ -382,6 +384,7 @@ using ::chromeos::kReleaseChannelDelegated;
 using ::chromeos::kReleaseLtsTag;
 using ::chromeos::kReportDeviceActivityTimes;
 using ::chromeos::kReportDeviceAppInfo;
+using ::chromeos::kReportDeviceAudioStatus;
 using ::chromeos::kReportDeviceBacklightInfo;
 using ::chromeos::kReportDeviceBluetoothInfo;
 using ::chromeos::kReportDeviceBoardStatus;

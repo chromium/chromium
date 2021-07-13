@@ -119,6 +119,7 @@ const char* const kKnownSettings[] = {
     kReleaseLtsTag,
     kDeviceChannelDowngradeBehavior,
     kReportDeviceActivityTimes,
+    kReportDeviceAudioStatus,
     kReportDeviceBluetoothInfo,
     kReportDeviceBoardStatus,
     kReportDeviceBootMode,
@@ -564,6 +565,10 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (reporting_policy.has_report_activity_times()) {
       new_values_cache->SetBoolean(kReportDeviceActivityTimes,
                                    reporting_policy.report_activity_times());
+    }
+    if (reporting_policy.has_report_audio_status()) {
+      new_values_cache->SetBoolean(kReportDeviceAudioStatus,
+                                   reporting_policy.report_audio_status());
     }
     if (reporting_policy.has_report_boot_mode()) {
       new_values_cache->SetBoolean(kReportDeviceBootMode,

@@ -102,6 +102,11 @@ const char kReportDeviceVersionInfo[] =
 const char kReportDeviceActivityTimes[] =
     "cros.device_status.report_activity_times";
 
+// A boolean pref that indicates whether device sound volume should be recorded
+// and reported along with device policy requests.
+const char kReportDeviceAudioStatus[] =
+    "cros.device_status.report_audio_status";
+
 // A boolean pref that determines whether the board status should be
 // included in status reports to the device management server.
 const char kReportDeviceBoardStatus[] =

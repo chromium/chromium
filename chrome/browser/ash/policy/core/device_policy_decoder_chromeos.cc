@@ -697,6 +697,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.report_activity_times()), nullptr);
     }
+    if (container.has_report_audio_status()) {
+      policies->Set(key::kReportDeviceAudioStatus, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.report_audio_status()), nullptr);
+    }
     if (container.has_report_boot_mode()) {
       policies->Set(key::kReportDeviceBootMode, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,

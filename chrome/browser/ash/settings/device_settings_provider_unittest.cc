@@ -91,6 +91,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
         device_policy_->payload().mutable_device_reporting();
     proto->set_report_version_info(enable_reporting);
     proto->set_report_activity_times(enable_reporting);
+    proto->set_report_audio_status(enable_reporting);
     proto->set_report_boot_mode(enable_reporting);
     proto->set_report_location(enable_reporting);
     proto->set_report_network_interfaces(enable_reporting);
@@ -170,6 +171,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     const char* reporting_settings[] = {
         kReportDeviceVersionInfo,
         kReportDeviceActivityTimes,
+        kReportDeviceAudioStatus,
         kReportDeviceBoardStatus,
         kReportDeviceBootMode,
         // Device location reporting is not currently supported.

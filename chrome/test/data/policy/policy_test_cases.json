@@ -5586,6 +5586,10 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 
+  "ReportDeviceAudioStatus": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
+
   "ReportDeviceBootMode": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
