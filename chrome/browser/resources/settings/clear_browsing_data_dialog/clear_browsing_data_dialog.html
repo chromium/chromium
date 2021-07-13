@@ -105,6 +105,7 @@
         background-color: var(--google-grey-50);
         border: 1px solid var(--google-grey-200);
         border-radius: 4px;
+        display: flex;
         margin-top: 12px;
         padding: 12px;
       }
@@ -115,6 +116,16 @@
           background-color: rgba(0, 0, 0, .3);
           border-color: transparent;
         }
+      }
+
+      .search-history-box-icon {
+        --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+            var(--google-grey-refresh-700));
+        display: flex;
+        flex-shrink: 0;
+        padding: 12px 0;
+        padding-inline-end: var(--cr-icon-button-margin-start);
+        width: var(--cr-link-row-icon-width, var(--cr-icon-size));
       }
     </style>
 
@@ -178,15 +189,23 @@
                 sub-label="[[counters_.cache_basic]]"
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
-            <div id="googleSearchHistoryLabel"
-                class="search-history-box"
-                hidden="[[!shouldShowGoogleSearchHistoryLabel_(isSignedIn_)]]"
-                inner-h-t-m-l="[[googleSearchHistoryString_]]">
+            <div class="search-history-box"
+                hidden="[[!shouldShowGoogleSearchHistoryLabel_(isSignedIn_)]]">
+              <iron-icon class="search-history-box-icon" aria-hidden="true"
+                  icon="settings20:safety-check">
+              </iron-icon>
+              <div id="googleSearchHistoryLabel"
+                  inner-h-t-m-l="[[googleSearchHistoryString_]]">
+              </div>
             </div>
-            <div id="nonGoogleSearchHistoryLabel"
-                class="search-history-box"
-                hidden="[[!shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse_)]]"
-                inner-h-t-m-l="[[nonGoogleSearchHistoryString_]]">
+            <div class="search-history-box"
+                hidden="[[!shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse_)]]">
+              <iron-icon class="search-history-box-icon" aria-hidden="true"
+                  icon="settings20:safety-check">
+              </iron-icon>
+              <div id="nonGoogleSearchHistoryLabel"
+                  inner-h-t-m-l="[[nonGoogleSearchHistoryString_]]">
+              </div>
             </div>
           </div>
           <div id="advanced-tab">
