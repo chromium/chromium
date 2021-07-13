@@ -2407,6 +2407,10 @@ void HistoryBackend::NotifyURLsDeleted(DeletionInfo deletion_info) {
   delegate_->NotifyURLsDeleted(std::move(deletion_info));
 }
 
+void HistoryBackend::NotifyVisitDeleted(const VisitRow& visit) {
+  tracker_.RemoveVisitById(visit.visit_id);
+}
+
 // Deleting --------------------------------------------------------------------
 
 void HistoryBackend::DeleteAllHistory() {
@@ -2457,6 +2461,8 @@ void HistoryBackend::DeleteAllHistory() {
   kept_url_rows.clear();
 
   db_->GetStartDate(&first_recorded_time_);
+
+  tracker_.Clear();
 
   // Send out the notification that history is cleared. The in-memory database
   // will pick this up and clear itself.

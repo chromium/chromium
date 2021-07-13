@@ -71,6 +71,11 @@ class VisitRow {
            bool floc_allowed);
   ~VisitRow();
 
+  // Compares two visits based on dates, for sorting.
+  bool operator<(const VisitRow& other) const {
+    return visit_time < other.visit_time;
+  }
+
   // ID of this row (visit ID, used a a referrer for other visits).
   VisitID visit_id = 0;
 
@@ -98,11 +103,6 @@ class VisitRow {
 
   // Records whether the visit incremented the omnibox typed score.
   bool incremented_omnibox_typed_score = false;
-
-  // Compares two visits based on dates, for sorting.
-  bool operator<(const VisitRow& other) const {
-    return visit_time < other.visit_time;
-  }
 
   // We allow the implicit copy constructor and operator=.
 };

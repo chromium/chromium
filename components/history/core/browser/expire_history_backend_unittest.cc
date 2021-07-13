@@ -211,6 +211,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {
     urls_deleted_notifications_.push_back(std::move(deletion_info));
   }
+  void NotifyVisitDeleted(const VisitRow& visit) override {}
 };
 
 // The example data consists of 4 visits. The middle two visits are to the

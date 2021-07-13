@@ -474,6 +474,8 @@ void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
 
     // Delete content & context annotations associated with visit.
     main_db_->DeleteAnnotationsForVisit(visit.visit_id);
+
+    notifier_->NotifyVisitDeleted(visit);
   }
 }
 

@@ -170,6 +170,8 @@ class TestHistoryBackend : public HistoryBackend {
   using HistoryBackend::favicon_backend_;
   using HistoryBackend::recent_redirects_;
 
+  VisitTracker& visit_tracker() { return tracker_; }
+
  private:
   ~TestHistoryBackend() override = default;
 };
@@ -3337,6 +3339,33 @@ TEST_F(HistoryBackendTest, GetRecentClusterIdsAndAnnotatedVisits) {
                   // `max_results` - # of visits added).
                   {3, 2}, {6, 7, 8, 9, 10});
   }
+}
+
+TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
+  ASSERT_TRUE(backend_);
+
+  GURL url("http://www.google.com/");
+  const ContextID context_id = reinterpret_cast<ContextID>(0x1);
+  const int navigation_entry_id = 2;
+  HistoryAddPageArgs request(
+      url, base::Time::Now(), context_id, navigation_entry_id, GURL(), {},
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+  URLRow url_row;
+  ASSERT_TRUE(backend_->GetURL(url, &url_row));
+
+  VisitVector visits;
+  ASSERT_TRUE(backend_->GetVisitsForURL(
+      backend_->db_->GetRowForURL(url, nullptr), &visits));
+  ASSERT_EQ(1u, visits.size());
+
+  const VisitID visit_id = visits[0].visit_id;
+  EXPECT_EQ(visit_id, backend_->visit_tracker().GetLastVisit(
+                          context_id, navigation_entry_id, url));
+
+  backend_->RemoveVisits(visits);
+  EXPECT_EQ(0, backend_->visit_tracker().GetLastVisit(
+                   context_id, navigation_entry_id, url));
 }
 
 }  // namespace history
