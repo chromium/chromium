@@ -40,10 +40,6 @@ const base::Feature kIPHDesktopPwaInstallFeature{
     "IPH_DesktopPwaInstall", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHProfileSwitchFeature{"IPH_ProfileSwitch",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kIPHUpdatedConnectionSecurityIndicatorsFeature{
-    "IPH_UpdatedConnectionSecurityIndicators",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 
@@ -202,5 +198,13 @@ const base::Feature kIPHBadgedTranslateManualTriggerFeature{
 const base::Feature kIPHDiscoverFeedHeaderFeature{
     "IPH_DiscoverFeedHeaderMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_IOS)
+
+#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS) || defined(OS_ANDROID)
+const base::Feature kIPHUpdatedConnectionSecurityIndicatorsFeature{
+    "IPH_UpdatedConnectionSecurityIndicators",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
+        // defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
 }  // namespace feature_engagement

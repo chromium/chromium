@@ -11,8 +11,10 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -20,9 +22,14 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,6 +56,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     private final boolean mIsTablet;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final PageInfoAction mPageInfoAction;
+    private final UserEducationHelper mUserEducationHelper;
     private LocationBarDataProvider mLocationBarDataProvider;
     private boolean mUrlHasFocus;
 
@@ -58,7 +66,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @param isTablet Whether the UI is shown on a tablet.
      * @param statusView The status view, used to supply and manipulate child views.
      * @param urlBarEditingTextStateProvider The url coordinator.
-     * @param incognitoStateProvider Provider of incocognito-ness for the active TabModel.
+     * @param incognitoStateProvider Provider of incognito-ness for the active TabModel.
      * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} used to display a
      *         dialog.
      * @param templateUrlServiceSupplier A supplier for {@link TemplateUrlService} used to query
@@ -66,6 +74,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
      * @param windowAndroid The {@link WindowAndroid} that is used by the owning {@link Activity}.
      * @param pageInfoAction Displays page info popup.
+     * @param userEducationHelper Helper to show in product help UI. Can be null if an in product
+     *         help shouldn't be shown, such as when called from a search activity.
      */
     public StatusCoordinator(boolean isTablet, StatusView statusView,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
@@ -74,12 +84,14 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             LocationBarDataProvider locationBarDataProvider,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SearchEngineLogoUtils searchEngineLogoUtils, Supplier<Profile> profileSupplier,
-            WindowAndroid windowAndroid, PageInfoAction pageInfoAction) {
+            WindowAndroid windowAndroid, PageInfoAction pageInfoAction,
+            UserEducationHelper userEducationHelper) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mLocationBarDataProvider = locationBarDataProvider;
         mPageInfoAction = pageInfoAction;
+        mUserEducationHelper = userEducationHelper;
 
         mModel = new PropertyModel(StatusProperties.ALL_KEYS);
 
@@ -171,6 +183,23 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     public void onSecurityStateChanged() {
         updateStatusIcon();
         updateVerboseStatusVisibility();
+
+        // Show IPH for updated connection security indicators.
+        if (mUserEducationHelper != null && FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
+                && mLocationBarDataProvider.getSecurityLevel() == ConnectionSecurityLevel.SECURE
+                && mLocationBarDataProvider.getTab() != null
+                && UrlConstants.HTTPS_SCHEME.equals(
+                        mLocationBarDataProvider.getTab().getUrl().getScheme())) {
+            mUserEducationHelper.requestShowIPH(
+                    new IPHCommandBuilder(mStatusView.getContext().getResources(),
+                            FeatureConstants.IPH_UPDATED_CONNECTION_SECURITY_INDICATORS_FEATURE,
+                            R.string.iph_updated_connection_security_indicators,
+                            R.string.iph_updated_connection_security_indicators)
+                            .setAnchorView(getSecurityIconView())
+                            .build());
+        }
     }
 
     /** Updates the security icon displayed in the LocationBar. */

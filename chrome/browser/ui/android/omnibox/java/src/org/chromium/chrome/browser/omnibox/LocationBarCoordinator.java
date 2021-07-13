@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -129,7 +130,10 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param tabWindowManagerSupplier Supplier of glue-level TabWindowManager object.
      * @param bookmarkState State of a URL bookmark state.
      * @param isToolbarMicEnabledSupplier Whether toolbar mic is enabled or not.
+     * @param jankTracker Tracks UI jank.
      * @param exploreIconProvider The provider to get explore sites icon.
+     * @param userEducationHelper Helper to show in product help UI. Can be null if an in product
+     *         help shouldn't be shown, such as when called from a search activity.
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
@@ -149,7 +153,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState,
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier, JankTracker jankTracker,
-            @NonNull ExploreIconProvider exploreIconProvider) {
+            @NonNull ExploreIconProvider exploreIconProvider,
+            @Nullable UserEducationHelper userEducationHelper) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -180,7 +185,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,
                 mTemplateUrlServiceSupplier, searchEngineLogoUtils, profileObservableSupplier,
-                windowAndroid, pageInfoAction);
+                windowAndroid, pageInfoAction, userEducationHelper);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 

@@ -567,7 +567,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     (url) -> mBookmarkBridgeSupplier.hasValue()
                             && mBookmarkBridgeSupplier.get().isBookmarked(url),
                     VoiceToolbarButtonController::isToolbarMicEnabled, jankTracker,
-                    exploreIconProvider);
+                    exploreIconProvider,
+                    new UserEducationHelper(mActivity, mHandler));
             // clang-format on
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mLocationBar = locationBarCoordinator;

@@ -5599,7 +5599,8 @@
             "platforms": [
                 "linux",
                 "mac",
-                "windows"
+                "windows",
+                "android"
             ],
             "experiments": [
                 {

@@ -121,6 +121,11 @@ extern const base::Feature kIPHBadgedTranslateManualTriggerFeature;
 extern const base::Feature kIPHDiscoverFeedHeaderFeature;
 #endif  // defined(OS_IOS)
 
+#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS) || defined(OS_ANDROID)
+extern const base::Feature kIPHUpdatedConnectionSecurityIndicatorsFeature;
+#endif
+
 }  // namespace feature_engagement
 
 #endif  // COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_FEATURE_CONSTANTS_H_
