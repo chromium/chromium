@@ -1524,13 +1524,17 @@ int NativeThemeWin::GetWindowsState(Part part,
     case kInnerSpinButton:
       switch (state) {
         case kDisabled:
-          return extra.inner_spin.spin_up ? UPS_DISABLED : DNS_DISABLED;
+          return extra.inner_spin.spin_up ? static_cast<int>(UPS_DISABLED)
+                                          : static_cast<int>(DNS_DISABLED);
         case kHovered:
-          return extra.inner_spin.spin_up ? UPS_HOT : DNS_HOT;
+          return extra.inner_spin.spin_up ? static_cast<int>(UPS_HOT)
+                                          : static_cast<int>(DNS_HOT);
         case kNormal:
-          return extra.inner_spin.spin_up ? UPS_NORMAL : DNS_NORMAL;
+          return extra.inner_spin.spin_up ? static_cast<int>(UPS_NORMAL)
+                                          : static_cast<int>(DNS_NORMAL);
         case kPressed:
-          return extra.inner_spin.spin_up ? UPS_PRESSED : DNS_PRESSED;
+          return extra.inner_spin.spin_up ? static_cast<int>(UPS_PRESSED)
+                                          : static_cast<int>(DNS_PRESSED);
         case kNumStates:
           NOTREACHED();
           return 0;

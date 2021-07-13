@@ -20,8 +20,8 @@ int GetThemePropertyId(OmniboxPart part, OmniboxPartState state) {
   switch (part) {
     case OmniboxPart::LOCATION_BAR_BACKGROUND:
       return state == OmniboxPartState::HOVERED
-                 ? TP::COLOR_OMNIBOX_BACKGROUND_HOVERED
-                 : TP::COLOR_OMNIBOX_BACKGROUND;
+                 ? static_cast<int>(TP::COLOR_OMNIBOX_BACKGROUND_HOVERED)
+                 : static_cast<int>(TP::COLOR_OMNIBOX_BACKGROUND);
     case OmniboxPart::LOCATION_BAR_SELECTED_KEYWORD:
       return TP::COLOR_OMNIBOX_SELECTED_KEYWORD;
     case OmniboxPart::RESULTS_BACKGROUND:
@@ -40,8 +40,9 @@ int GetThemePropertyId(OmniboxPart part, OmniboxPartState state) {
     case OmniboxPart::LOCATION_BAR_TEXT_DEFAULT:
       return TP::COLOR_OMNIBOX_TEXT;
     case OmniboxPart::RESULTS_TEXT_DEFAULT:
-      return selected ? TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED
-                      : TP::COLOR_OMNIBOX_TEXT;
+      return selected
+                 ? static_cast<int>(TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED)
+                 : static_cast<int>(TP::COLOR_OMNIBOX_TEXT);
     case OmniboxPart::LOCATION_BAR_TEXT_DIMMED:
       return TP::COLOR_OMNIBOX_TEXT_DIMMED;
     case OmniboxPart::RESULTS_TEXT_DIMMED:

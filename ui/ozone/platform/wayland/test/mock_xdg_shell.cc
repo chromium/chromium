@@ -24,8 +24,8 @@ void GetXdgSurfaceImpl(wl_client* client,
   auto* surface = GetUserDataAs<MockSurface>(surface_resource);
   if (surface->xdg_surface()) {
     uint32_t xdg_error = implementation == &kMockXdgSurfaceImpl
-                             ? XDG_WM_BASE_ERROR_ROLE
-                             : ZXDG_SHELL_V6_ERROR_ROLE;
+                             ? static_cast<uint32_t>(XDG_WM_BASE_ERROR_ROLE)
+                             : static_cast<uint32_t>(ZXDG_SHELL_V6_ERROR_ROLE);
     wl_resource_post_error(resource, xdg_error, "surface already has a role");
     return;
   }

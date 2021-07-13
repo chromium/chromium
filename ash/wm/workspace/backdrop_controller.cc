@@ -549,9 +549,10 @@ void BackdropController::Show() {
     return;
 
   ScopedWindowVisibilityAnimationTypeResetter resetter{
-      backdrop_window_, WindowState::Get(window_having_backdrop_)->CanMaximize()
-                            ? WINDOW_VISIBILITY_ANIMATION_TYPE_STEP_END
-                            : ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE};
+      backdrop_window_,
+      WindowState::Get(window_having_backdrop_)->CanMaximize()
+          ? static_cast<int>(WINDOW_VISIBILITY_ANIMATION_TYPE_STEP_END)
+          : static_cast<int>(::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE)};
   backdrop_->Show();
 }
 
