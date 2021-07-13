@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sql {
 
@@ -28,9 +30,9 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   MetaTable& operator=(const MetaTable&) = delete;
   ~MetaTable();
 
-  // Values for Get/SetMmapStatus(). |kMmapFailure| indicates that there was at
+  // Values for Get/SetMmapStatus(). `kMmapFailure` indicates that there was at
   // some point a read error and the database should not be memory-mapped, while
-  // |kMmapSuccess| indicates that the entire file was read at some point and
+  // `kMmapSuccess` indicates that the entire file was read at some point and
   // can be memory-mapped without constraint.
   static constexpr int64_t kMmapFailure = -2;
   static constexpr int64_t kMmapSuccess = -1;
@@ -43,32 +45,37 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // table existed).
   static bool DeleteTableForTesting(Database* db);
 
-  // If the current version of the database is less than or equal to
-  // |deprecated_version|, raze the database. Must be called outside of a
-  // transaction.
-  // TODO(shess): At this time the database is razed IFF meta exists and
-  // contains a version row with value <= deprecated_version. It may make sense
-  // to also raze if meta exists but has no version row, or if meta doesn't
-  // exist. In those cases if the database is not already empty, it probably
-  // resulted from a broken initialization.
-  // TODO(shess): Folding this into Init() would allow enforcing
-  // |deprecated_version|<|version|. But Init() is often called in a
-  // transaction.
-  static void RazeIfDeprecated(Database* db, int deprecated_version);
+  // If the current version of the database is less than
+  // `lowest_supported_version`, or the current version is less than the
+  // database's least compatible version, razes the database. To only enforce
+  // the latter, pass `kNoLowestSupportedVersion` for
+  // `lowest_supported_version`.
+  //
+  // TODO(crbug.com/1228463): At this time the database is razed IFF meta exists
+  // and contains a version row with the value not satisfying the constraints.
+  // It may make sense to also raze if meta exists but has no version row, or if
+  // meta doesn't exist. In those cases if the database is not already empty, it
+  // probably resulted from a broken initialization.
+  // TODO(crbug.com/1228463): Folding this into Init() would allow enforcing
+  // the version constraint, but Init() is often called in a transaction.
+  static constexpr int kNoLowestSupportedVersion = 0;
+  static void RazeIfIncompatible(Database* db,
+                                 int lowest_supported_version,
+                                 int current_version);
 
   // Used to tuck some data into the meta table about mmap status. The value
   // represents how much data in bytes has successfully been read from the
-  // database, or |kMmapFailure| or |kMmapSuccess|.
+  // database, or `kMmapFailure` or `kMmapSuccess`.
   static bool GetMmapStatus(Database* db, int64_t* status);
   static bool SetMmapStatus(Database* db, int64_t status);
 
-  // Initializes the MetaTableHelper, providing the |Database| pointer and
+  // Initializes the MetaTableHelper, providing the `Database` pointer and
   // creating the meta table if necessary. Must be called before any other
   // non-static methods. For new tables, it will initialize the version number
-  // to |version| and the compatible version number to |compatible_version|.
+  // to `version` and the compatible version number to `compatible_version`.
   // Versions must be greater than 0 to distinguish missing versions (see
   // GetVersionNumber()). If there was no meta table (proxy for a fresh
-  // database), mmap status is set to |kMmapSuccess|.
+  // database), mmap status is set to `kMmapSuccess`.
   bool Init(Database* db, int version, int compatible_version);
 
   // Resets this MetaTable object, making another call to Init() possible.

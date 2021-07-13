@@ -68,23 +68,31 @@ bool MetaTable::SetMmapStatus(Database* db, int64_t status) {
 }
 
 // static
-void MetaTable::RazeIfDeprecated(Database* db, int deprecated_version) {
-  DCHECK_GT(deprecated_version, 0);
-  DCHECK_EQ(0, db->transaction_nesting());
-
-  if (!DoesTableExist(db))
+void MetaTable::RazeIfIncompatible(Database* db,
+                                   int lowest_supported_version,
+                                   int current_version) {
+  if (!sql::MetaTable::DoesTableExist(db))
     return;
 
-  // TODO(shess): Share sql with PrepareGetStatement().
-  sql::Statement s(db->GetUniqueStatement(
-                       "SELECT value FROM meta WHERE key=?"));
+  // TODO(crbug.com/1228463): Share sql with PrepareGetStatement().
+  sql::Statement s(
+      db->GetUniqueStatement("SELECT value FROM meta WHERE key=?"));
   s.BindCString(0, kVersionKey);
   if (!s.Step())
     return;
+  int on_disk_schema_version = s.ColumnInt(0);
 
-  int version = s.ColumnInt(0);
+  s.Assign(db->GetUniqueStatement("SELECT value FROM meta WHERE key=?"));
+  s.BindCString(0, kCompatibleVersionKey);
+  if (!s.Step())
+    return;
+  int on_disk_compatible_version = s.ColumnInt(0);
+
   s.Clear();  // Clear potential automatic transaction for Raze().
-  if (version <= deprecated_version) {
+
+  if ((lowest_supported_version != kNoLowestSupportedVersion &&
+       lowest_supported_version > on_disk_schema_version) ||
+      (current_version < on_disk_compatible_version)) {
     db->Raze();
     return;
   }
@@ -205,15 +213,15 @@ bool MetaTable::DeleteKey(const char* key) {
 
 void MetaTable::PrepareSetStatement(Statement* statement, const char* key) {
   DCHECK(db_ && statement);
-  statement->Assign(db_->GetCachedStatement(SQL_FROM_HERE,
-      "INSERT OR REPLACE INTO meta (key,value) VALUES (?,?)"));
+  statement->Assign(db_->GetCachedStatement(
+      SQL_FROM_HERE, "INSERT OR REPLACE INTO meta (key,value) VALUES (?,?)"));
   statement->BindCString(0, key);
 }
 
 bool MetaTable::PrepareGetStatement(Statement* statement, const char* key) {
   DCHECK(db_ && statement);
-  statement->Assign(db_->GetCachedStatement(SQL_FROM_HERE,
-      "SELECT value FROM meta WHERE key=?"));
+  statement->Assign(db_->GetCachedStatement(
+      SQL_FROM_HERE, "SELECT value FROM meta WHERE key=?"));
   statement->BindCString(0, key);
   return statement->Step();
 }

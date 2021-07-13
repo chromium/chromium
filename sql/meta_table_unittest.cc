@@ -50,62 +50,97 @@ TEST_F(SQLMetaTableTest, DeleteTableForTesting) {
   EXPECT_FALSE(MetaTable::DoesTableExist(&db_));
 }
 
-TEST_F(SQLMetaTableTest, RazeIfDeprecated) {
-  const int kDeprecatedVersion = 1;
-  const int kVersion = 2;
+TEST_F(SQLMetaTableTest, RazeIfIncompatiblePreservesDatabasesWithoutMetadata) {
+  EXPECT_TRUE(db_.Execute("CREATE TABLE data(id INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db_.DoesTableExist("data"));
+
+  // The table should not have been cleared, since the database does not have a
+  // metadata table.
+  MetaTable::RazeIfIncompatible(&db_, 1,
+                                /*current_version=*/1);
+  EXPECT_TRUE(db_.DoesTableExist("data"));
+}
+
+TEST_F(SQLMetaTableTest, RazeIfIncompatibleRazesIncompatiblyOldTables) {
+  constexpr int kWrittenVersion = 1;
+  constexpr int kCompatibleVersion = 1;
 
   // Setup a current database.
   {
     MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, kVersion, kVersion));
-    EXPECT_TRUE(db_.Execute("CREATE TABLE t(c)"));
-    EXPECT_TRUE(db_.DoesTableExist("t"));
+    EXPECT_TRUE(meta_table.Init(&db_, kWrittenVersion, kCompatibleVersion));
+    EXPECT_TRUE(db_.Execute("CREATE TABLE data(id INTEGER PRIMARY KEY)"));
+    ASSERT_TRUE(db_.DoesTableExist("data"));
   }
 
-  // Table should should still exist if the database version is new enough.
-  MetaTable::RazeIfDeprecated(&db_, kDeprecatedVersion);
-  EXPECT_TRUE(db_.DoesTableExist("t"));
+  // The table should have been cleared, since the least version compatible with
+  // the written database is greater than the current version.
+  MetaTable::RazeIfIncompatible(&db_, kWrittenVersion + 1,
+                                /*current_version=*/kWrittenVersion + 1);
+  EXPECT_FALSE(db_.DoesTableExist("data"));
+}
 
-  // TODO(shess): It may make sense to Raze() if meta isn't present or
-  // version isn't present.  See meta_table.h TODO on RazeIfDeprecated().
+TEST_F(SQLMetaTableTest, RazeIfIncompatibleRazesIncompatiblyNewTables) {
+  constexpr int kCompatibleVersion = 2;
+  constexpr int kWrittenVersion = 3;
 
-  // Table should still exist if the version is not available.
-  EXPECT_TRUE(db_.Execute("DELETE FROM meta WHERE key = 'version'"));
+  // Setup a current database.
   {
     MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, kVersion, kVersion));
-    EXPECT_EQ(0, meta_table.GetVersionNumber());
+    EXPECT_TRUE(meta_table.Init(&db_, kWrittenVersion, kCompatibleVersion));
+    EXPECT_TRUE(db_.Execute("CREATE TABLE data(id INTEGER PRIMARY KEY)"));
+    ASSERT_TRUE(db_.DoesTableExist("data"));
   }
-  MetaTable::RazeIfDeprecated(&db_, kDeprecatedVersion);
-  EXPECT_TRUE(db_.DoesTableExist("t"));
 
-  // Table should still exist if meta table is missing.
-  EXPECT_TRUE(db_.Execute("DROP TABLE meta"));
-  MetaTable::RazeIfDeprecated(&db_, kDeprecatedVersion);
-  EXPECT_TRUE(db_.DoesTableExist("t"));
+  // The table should have been cleared, since the least version compatible with
+  // the written database is greater than the current version.
+  MetaTable::RazeIfIncompatible(&db_, MetaTable::kNoLowestSupportedVersion,
+                                /*current_version=*/kCompatibleVersion - 1);
+  EXPECT_FALSE(db_.DoesTableExist("data"));
+}
 
-  // Setup meta with deprecated version.
+TEST_F(SQLMetaTableTest, RazeIfIncompatibleDoesntRazeWhenItShouldnt) {
+  constexpr int kVersion = 2;
+
   {
     MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, kDeprecatedVersion, kDeprecatedVersion));
+    EXPECT_TRUE(
+        meta_table.Init(&db_, kVersion, /*compatible_version=*/kVersion - 1));
+    EXPECT_TRUE(db_.Execute("CREATE TABLE data(id INTEGER PRIMARY KEY)"));
+    EXPECT_TRUE(db_.DoesTableExist("data"));
   }
 
-  // Deprecation check should remove the table.
-  EXPECT_TRUE(db_.DoesTableExist("t"));
-  MetaTable::RazeIfDeprecated(&db_, kDeprecatedVersion);
-  EXPECT_FALSE(MetaTable::DoesTableExist(&db_));
-  EXPECT_FALSE(db_.DoesTableExist("t"));
+  MetaTable::RazeIfIncompatible(&db_, kVersion,
+                                /*current_version=*/kVersion);
+  EXPECT_TRUE(db_.DoesTableExist("data"))
+      << "Table should still exist if the database version is exactly right.";
+
+  MetaTable::RazeIfIncompatible(&db_, kVersion - 1,
+                                /*current_version=*/kVersion);
+  EXPECT_TRUE(db_.DoesTableExist("data"))
+      << "... or if the lower bound is less than the actual version";
+
+  MetaTable::RazeIfIncompatible(&db_, MetaTable::kNoLowestSupportedVersion,
+                                /*current_version=*/kVersion);
+  EXPECT_TRUE(db_.DoesTableExist("data"))
+      << "... or if the lower bound is not set";
+
+  MetaTable::RazeIfIncompatible(&db_, MetaTable::kNoLowestSupportedVersion,
+                                /*current_version=*/kVersion - 1);
+  EXPECT_TRUE(db_.DoesTableExist("data"))
+      << "... even if the current version exactly matches the written "
+         "database's least compatible version.";
 }
 
 TEST_F(SQLMetaTableTest, VersionNumber) {
   // Compatibility versions one less than the main versions to make
   // sure the values aren't being crossed with each other.
-  const int kVersionFirst = 2;
-  const int kCompatVersionFirst = kVersionFirst - 1;
-  const int kVersionSecond = 4;
-  const int kCompatVersionSecond = kVersionSecond - 1;
-  const int kVersionThird = 6;
-  const int kCompatVersionThird = kVersionThird - 1;
+  constexpr int kVersionFirst = 2;
+  constexpr int kCompatVersionFirst = kVersionFirst - 1;
+  constexpr int kVersionSecond = 4;
+  constexpr int kCompatVersionSecond = kVersionSecond - 1;
+  constexpr int kVersionThird = 6;
+  constexpr int kCompatVersionThird = kVersionThird - 1;
 
   // First Init() sets the version info as expected.
   {
@@ -178,8 +213,8 @@ TEST_F(SQLMetaTableTest, StringValue) {
 
 TEST_F(SQLMetaTableTest, IntValue) {
   static const char kKey[] = "Int Key";
-  const int kFirstValue = 17;
-  const int kSecondValue = 23;
+  constexpr int kFirstValue = 17;
+  constexpr int kSecondValue = 23;
 
   // Initially, the value isn't there until set.
   {
