@@ -1113,9 +1113,7 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       .SetAboveThreshold(smoothness_data.above_threshold)
       .SetWorstCase(smoothness_data.worst_smoothness)
       .SetTimingSinceFCPWorstCase(
-          (smoothness_data.time_max_delta.InMilliseconds() > 5000)
-              ? 5000
-              : smoothness_data.time_max_delta.InMilliseconds());
+          smoothness_data.time_max_delta.InMilliseconds());
   if (smoothness_data.worst_smoothness_after1sec >= 0)
     builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
   if (smoothness_data.worst_smoothness_after2sec >= 0)
@@ -1134,9 +1132,9 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       "Graphics.Smoothness.PerSession.MaxPercentDroppedFrames_1sWindow",
       smoothness_data.worst_smoothness);
   base::UmaHistogramCustomTimes(
-      "Graphics.Smoothness.PerSession.TimeMaxPrecentDroppedFrame_1sWindow",
+      "Graphics.Smoothness.PerSession.TimeMaxPercentDroppedFrames_1sWindow",
       smoothness_data.time_max_delta, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromSeconds(5), 50);
+      base::TimeDelta::FromSeconds(25), 50);
 }
 
 void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
