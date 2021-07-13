@@ -172,12 +172,12 @@ class DataTypeManagerImpl : public DataTypeManager,
   State state_ = DataTypeManager::STOPPED;
 
   // The set of types whose initial download of sync data has completed.
-  // TODO(crbug.com/1170318): This class does not actually handle control types
-  // (i.e. NIGORI) - |controllers_| doesn't contain an entry for NIGORI.
-  // However, we have to pretend that NIGORI is already downloaded (which it
-  // is, but this class doesn't know that) to prevent a re-download on every
-  // browser startup. It would be cleaner to remove all NIGORI/ControlTypes()
-  // handling from this class.
+  // Note: This class mostly doesn't handle control types (i.e. NIGORI) -
+  // |controllers_| doesn't contain an entry for NIGORI, and by the time this
+  // class gets instantiated, NIGORI is already up and running. It still has to
+  // be maintained as part of |downloaded_types_|, however, since in some edge
+  // cases (notably PurgeForMigration()), this class might have to trigger a
+  // re-download of NIGORI data.
   ModelTypeSet downloaded_types_ = ControlTypes();
 
   // Types that requested in current configuration cycle.
