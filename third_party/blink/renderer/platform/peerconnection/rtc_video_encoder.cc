@@ -987,14 +987,6 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
               metadata.vp9->spatial_layer_resolutions;
         }
 
-        // TODO(crbug.com/1186051): Remove manually fills active layer info for
-        // temporal-SVC.
-        // Since we don't actually fills the newly added
-        // |spatial_layer_resolutions| and there is no default value for it, so
-        // currently we tentatively manually fills the active layer info.
-        if (current_spatial_layer_resolutions_.empty())
-          current_spatial_layer_resolutions_ = {input_visible_size_};
-
         const size_t spatial_index = metadata.vp9->spatial_idx;
         if (spatial_index >= current_spatial_layer_resolutions_.size()) {
           LogAndNotifyError(

@@ -247,7 +247,7 @@ class RTCVideoEncoderTest
     for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
       // Assume the number of TLs is three. TL structure is below.
       // TL2:      [#1]     /-[#3]
-      // TL1:     /_____[#2]   /
+      // TL1:     /_____[#2]
       // TL0: [#0]-----------------[#4]
       media::Vp9Metadata vp9;
       vp9.has_reference = frame_num != 0 && !force_keyframe;
@@ -267,7 +267,7 @@ class RTCVideoEncoderTest
           break;
         case 3:
           vp9.temporal_idx = 2;
-          vp9.p_diffs = {1, 3};
+          vp9.p_diffs = {1};
           break;
         case 4:
           vp9.temporal_idx = 0;
