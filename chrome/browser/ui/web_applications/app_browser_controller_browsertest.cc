@@ -92,7 +92,11 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
  public:
   AppBrowserControllerBrowserTest()
       : test_system_web_app_installation_(
-            TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {}
+            TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    WebAppProvider::EnableSystemWebAppsInLacrosForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
   AppBrowserControllerBrowserTest(const AppBrowserControllerBrowserTest&) =
       delete;
   AppBrowserControllerBrowserTest& operator=(

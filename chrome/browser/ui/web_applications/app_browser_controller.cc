@@ -163,20 +163,20 @@ AppBrowserController::AppBrowserController(
       browser_(browser),
       theme_provider_(
           ThemeService::CreateBoundThemeProvider(browser_->profile(), this)),
-      system_app_type_(HasAppId() ? WebAppProvider::Get(browser->profile())
-                                        ->system_web_app_manager()
-                                        .GetSystemAppTypeForAppId(GetAppId())
-                                  : absl::nullopt),
+      system_app_type_(
+          HasAppId()
+              ? GetSystemWebAppTypeForAppId(browser_->profile(), GetAppId())
+              : absl::nullopt),
+      provider_(system_app_type_
+                    ? WebAppProvider::GetForSystemWebApps(browser_->profile())
+                    : WebAppProvider::GetForWebApps(browser_->profile())),
       has_tab_strip_(
-          (system_app_type_.has_value() &&
-           WebAppProvider::Get(browser->profile())
-               ->system_web_app_manager()
-               .ShouldHaveTabStrip(system_app_type_.value())) ||
+          (system_app_type_ &&
+           provider_->system_web_app_manager().ShouldHaveTabStrip(
+               system_app_type_.value())) ||
           (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
            HasAppId() &&
-           WebAppProvider::Get(browser->profile())
-               ->registrar()
-               .IsTabbedWindowModeEnabled(GetAppId()))) {
+           provider_->registrar().IsTabbedWindowModeEnabled(GetAppId()))) {
   browser->tab_strip_model()->AddObserver(this);
 }
 
@@ -332,9 +332,8 @@ bool AppBrowserController::HasReloadButton() const {
   if (!system_app_type_)
     return true;
 
-  return WebAppProvider::Get(browser()->profile())
-      ->system_web_app_manager()
-      .ShouldHaveReloadButtonInMinimalUi(system_app_type_.value());
+  return provider_->system_web_app_manager().ShouldHaveReloadButtonInMinimalUi(
+      system_app_type_.value());
 }
 
 std::u16string AppBrowserController::GetLaunchFlashText() const {
@@ -370,9 +369,8 @@ void AppBrowserController::UpdateCustomTabBarVisibility(bool animate) const {
 
 gfx::Rect AppBrowserController::GetDefaultBounds() const {
   if (system_app_type_.has_value()) {
-    return WebAppProvider::Get(browser()->profile())
-        ->system_web_app_manager()
-        .GetDefaultBounds(system_app_type_.value(), browser());
+    return provider_->system_web_app_manager().GetDefaultBounds(
+        system_app_type_.value(), browser());
   }
 
   return gfx::Rect();
@@ -468,9 +466,7 @@ std::u16string AppBrowserController::GetTitle() const {
     return raw_title;
 
   std::u16string app_name =
-      base::UTF8ToUTF16(WebAppProvider::Get(browser()->profile())
-                            ->registrar()
-                            .GetAppShortName(GetAppId()));
+      base::UTF8ToUTF16(provider_->registrar().GetAppShortName(GetAppId()));
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
   } else if (raw_title.empty()) {

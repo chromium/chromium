@@ -25,7 +25,11 @@ class TabRestoreServiceImplBrowserTest : public InProcessBrowserTest {
   TabRestoreServiceImplBrowserTest()
       : test_system_web_app_installation_(
             web_app::TestSystemWebAppInstallation::
-                SetUpTabbedMultiWindowApp()) {}
+                SetUpTabbedMultiWindowApp()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    web_app::WebAppProvider::EnableSystemWebAppsInLacrosForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
 
  protected:
   std::unique_ptr<web_app::TestSystemWebAppInstallation>
