@@ -458,6 +458,58 @@ this is that 40% cell will end up with 0 if no min width.
   </tr>
 </table>
 
+<h2>Colspan&gt;1 cell's maximum width distribution</h2>
+<li>Only constrained colspans can distribute max-width over fixed columns</li>
+
+<p class="testdesc">Colspan: constrained. Col: constrained
+Constrained colspan redistributes widths over constrained cols.
+</p>
+<table data-expected-width=216>
+  <col style="width:50px">
+  <col style="width:50px">
+  <tr>
+    <td>50</td>
+    <td>50</td>
+  </tr>
+  <tr>
+    <td colspan=2 style="width:200px" data-expected-width=200>200</td>
+  </tr>
+</table>
+<p class="testdesc">Colspan: unconstrained. Col: constrained
+Colspan max-width does not get redistributed.
+</p>
+<table data-expected-width=124>
+  <col style="width:50px">
+  <col style="width:50px">
+  <tr>
+    <td>50</td>
+    <td>50</td>
+  </tr>
+  <tr>
+    <td colspan=2 data-expected-width=108><div style="width:50px">50</div><div style="width:50px">50</div><div style="width:50px">50</div><div style="width:50px">50</div></td>
+  </tr>
+</table>
+
+<p class="testdesc">Colspan: unconstrained, Col: constrained/%
+Colspanned col distributes width over %ge column.
+max-guess is 50px + 200px*50% = 150px
+distributable_size is 50px
+%ge column gets percentage_size + distributable_size = 150px
+Later, this makes table 300px wide.
+</p>
+<p class="error">FF, Legacy, and TablesNG all disagree about the correct widths. FF feels more like the right answer, but I can't figure out the math behind it.</p>
+<table data-expected-width=308>
+  <col style="width:50px">
+  <col style="width:50%">
+  <tr>
+    <td data-expected-width=142>50</td>
+    <td>50</td>
+  </tr>
+  <tr>
+    <td colspan=2 data-expected-width=292><div style="width:50px">50</div><div style="width:50px">50</div><div style="width:50px">50</div><div style="width:50px">50</div></td>
+  </tr>
+</table>
+
 <h2>Merging cell widths into column widths</h2>
 <p>What happens when different types of cells get merged into a single column?</p>
 <p class="testdesc">C0:0 25%/50px C0:1 50%/40px

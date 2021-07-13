@@ -13,11 +13,15 @@ namespace {
 
 // Implements spec distribution algorithm:
 // https://www.w3.org/TR/css-tables-3/#width-distribution-algorithm
+// |treat_target_size_as_constrained| constrained target can grow fixed-width
+// columns. unconstrained target cannot grow fixed-width columns beyond
+// specified size.
 Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     LayoutUnit target_inline_size,
     LayoutUnit inline_border_spacing,
     const NGTableTypes::Column* start_column,
-    const NGTableTypes::Column* end_column) {
+    const NGTableTypes::Column* end_column,
+    const bool treat_target_size_as_constrained) {
   unsigned all_columns_count = 0;
   unsigned percent_columns_count = 0;
   unsigned fixed_columns_count = 0;
@@ -263,7 +267,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
           DCHECK(last_computed_size);
           *last_computed_size += rounding_error_inline_size;
         }
-      } else if (fixed_columns_count > 0) {
+      } else if (fixed_columns_count > 0 && treat_target_size_as_constrained) {
         // Grow fixed columns if available.
         LayoutUnit rounding_error_inline_size = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
@@ -304,9 +308,8 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
         LayoutUnit* computed_size = computed_sizes.begin();
         for (const NGTableTypes::Column* column = start_column;
              column != end_column; ++column, ++computed_size) {
-          if (column->is_mergeable)
+          if (column->is_mergeable || !column->percent)
             continue;
-          DCHECK(column->percent);
           last_computed_size = computed_size;
           LayoutUnit percent_inline_size =
               column->ResolvePercentInlineSize(target_inline_size);
@@ -321,8 +324,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
           rounding_error_inline_size -= delta;
           *computed_size = percent_inline_size + delta;
         }
-        if (rounding_error_inline_size != LayoutUnit()) {
-          DCHECK(last_computed_size);
+        if (rounding_error_inline_size != LayoutUnit() && last_computed_size) {
           *last_computed_size += rounding_error_inline_size;
         }
       }
@@ -661,9 +663,9 @@ void DistributeColspanCellToColumnsAuto(
       column->max_inline_size = LayoutUnit();
   }
   Vector<LayoutUnit> computed_sizes =
-      DistributeInlineSizeToComputedInlineSizeAuto(colspan_cell_min_inline_size,
-                                                   inline_border_spacing,
-                                                   start_column, end_column);
+      DistributeInlineSizeToComputedInlineSizeAuto(
+          colspan_cell_min_inline_size, inline_border_spacing, start_column,
+          end_column, true);
   LayoutUnit* computed_size = computed_sizes.begin();
   for (NGTableTypes::Column* column = start_column; column != end_column;
        ++column, ++computed_size) {
@@ -672,12 +674,14 @@ void DistributeColspanCellToColumnsAuto(
   }
   computed_sizes = DistributeInlineSizeToComputedInlineSizeAuto(
       colspan_cell_max_inline_size, inline_border_spacing, start_column,
-      end_column);
+      end_column, /* treat_target_size_as_constrained */
+      colspan_cell.cell_inline_constraint.is_constrained);
   computed_size = computed_sizes.begin();
   for (NGTableTypes::Column* column = start_column; column != end_column;
        ++column, ++computed_size) {
     column->max_inline_size =
-        std::max(*column->max_inline_size, *computed_size);
+        std::max(std::max(*column->min_inline_size, *column->max_inline_size),
+                 *computed_size);
   }
 }
 
@@ -1042,7 +1046,7 @@ NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
         start_column + column_constraints.data.size();
     return DistributeInlineSizeToComputedInlineSizeAuto(
         assignable_table_inline_size, inline_border_spacing, start_column,
-        end_column);
+        end_column, /* treat_target_size_as_constrained */ true);
   }
 }
 
