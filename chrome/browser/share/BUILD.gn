@@ -9,6 +9,8 @@ import("//chrome/browser/buildflags.gni")
 source_set("share") {
   sources = [
     "bitmap_download_request.cc",
+    "default_ranking.cc",
+    "default_ranking.h",
     "editor_screenshot_task.cc",
     "link_to_text_bridge.cc",
     "qr_code_generation_request.cc",
@@ -18,6 +20,11 @@ source_set("share") {
     "share_ranking.cc",
     "share_ranking.h",
   ]
+
+  if (is_android) {
+    sources += [ "default_ranking_android.cc" ]
+  }
+
   deps = [
     ":jni_headers",
     "//base",

@@ -8,9 +8,11 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/share/default_ranking.h"
 #include "chrome/browser/share/share_history.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/storage_partition.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace sharing {
 
@@ -385,7 +387,7 @@ void ShareRanking::OnRankGetOldRankingDone(
     std::unique_ptr<PendingRankCall> pending,
     absl::optional<Ranking> ranking) {
   if (!ranking)
-    ranking = GetDefaultInitialRanking();
+    ranking = GetDefaultInitialRankingForType(pending->type);
 
   Ranking display, persisted;
   ComputeRanking(BuildHistoryMap(pending->all_history),
@@ -399,10 +401,13 @@ void ShareRanking::OnRankGetOldRankingDone(
   std::move(pending->callback).Run(display);
 }
 
-ShareRanking::Ranking ShareRanking::GetDefaultInitialRanking() {
+ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
+    const std::string& type) {
   // TODO(https://crbug.com/1222156): Use default per-locale ranking values
   // rather than an empty list.
-  return initial_ranking_for_test_.value_or(Ranking{});
+  std::string locale = l10n_util::GetApplicationLocale("", false);
+  return initial_ranking_for_test_.value_or(
+      DefaultRankingForLocaleAndType(locale, type));
 }
 
 }  // namespace sharing
