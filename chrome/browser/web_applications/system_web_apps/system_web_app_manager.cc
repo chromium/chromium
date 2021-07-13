@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -263,7 +262,7 @@ void SystemWebAppManager::Shutdown() {
 
 void SystemWebAppManager::SetSubsystems(
     ExternallyManagedAppManager* externally_managed_app_manager,
-    AppRegistrar* registrar,
+    WebAppRegistrar* registrar,
     AppRegistryController* registry_controller,
     WebAppUiManager* ui_manager,
     OsIntegrationManager* os_integration_manager,

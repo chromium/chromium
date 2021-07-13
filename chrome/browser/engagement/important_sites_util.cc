@@ -372,9 +372,9 @@ void PopulateInfoMapWithInstalledEngagedInTimePeriod(
       service->GetAllDetailsEngagedInTimePeriod(time_period);
   std::set<GURL> content_origins;
 
-  // Check with AppRegistrar to make sure the apps have not yet been
+  // Check with WebAppRegistrar to make sure the apps have not yet been
   // uninstalled.
-  const web_app::AppRegistrar& registrar =
+  const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::Get(profile)->registrar();
   auto app_ids = registrar.GetAppIds();
   std::map<std::string, std::string> installed_origins_map;

@@ -29,7 +29,7 @@ class WebAppProviderUnitTest : public WebAppTest {
 };
 
 TEST_F(WebAppProviderUnitTest, Registrar) {
-  AppRegistrar& registrar = provider()->registrar();
+  WebAppRegistrar& registrar = provider()->registrar();
   EXPECT_FALSE(registrar.IsInstalled("unknown"));
 }
 

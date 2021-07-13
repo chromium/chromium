@@ -639,7 +639,7 @@ void WebAppIntegrationBrowserTestBase::LaunchInternal(
       << "No app installed for scope: " << action_param;
   auto app_id = app_state->id;
   auto* web_app_provider = GetProvider();
-  AppRegistrar& app_registrar = web_app_provider->registrar();
+  WebAppRegistrar& app_registrar = web_app_provider->registrar();
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
   if (display_mode == blink::mojom::DisplayMode::kBrowser) {
     ui_test_utils::UrlLoadObserver url_observer(

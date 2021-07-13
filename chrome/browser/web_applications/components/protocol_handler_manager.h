@@ -19,7 +19,7 @@ namespace web_app {
 // TODO(crbug.com/1225132): Clean this up and include web_app_id.h.
 using AppId = std::string;
 
-class AppRegistrar;
+class WebAppRegistrar;
 
 class ProtocolHandlerManager {
  public:
@@ -29,7 +29,7 @@ class ProtocolHandlerManager {
   virtual ~ProtocolHandlerManager();
 
   // |registrar| is used to observe OnWebAppInstalled/Uninstalled events.
-  void SetSubsystems(AppRegistrar* registrar);
+  void SetSubsystems(WebAppRegistrar* registrar);
   void Start();
 
   // If a protocol handler matching the scheme of |protocol_url| is installed
@@ -67,7 +67,7 @@ class ProtocolHandlerManager {
   void UnregisterOsProtocolHandlers(const AppId& app_id,
                                     base::OnceCallback<void(bool)> callback);
 
-  AppRegistrar* app_registrar_;
+  WebAppRegistrar* app_registrar_;
 
  private:
   Profile* const profile_;

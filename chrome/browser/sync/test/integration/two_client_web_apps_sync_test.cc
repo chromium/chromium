@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -50,7 +51,7 @@ class TwoClientWebAppsSyncTest : public SyncTest {
         OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
-  const AppRegistrar& GetRegistrar(Profile* profile) {
+  const WebAppRegistrar& GetRegistrar(Profile* profile) {
     return WebAppProvider::Get(profile)->registrar();
   }
 
@@ -84,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
 
   EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
-  const AppRegistrar& registrar = GetRegistrar(GetProfile(1));
+  const WebAppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
   EXPECT_EQ(registrar.GetAppScope(app_id), info.scope);
@@ -99,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
 
   EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
-  const AppRegistrar& registrar = GetRegistrar(GetProfile(1));
+  const WebAppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
 
@@ -116,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
             info.theme_color);
 
   EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
-  const AppRegistrar& registrar = GetRegistrar(GetProfile(1));
+  const WebAppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
   EXPECT_EQ(registrar.GetAppThemeColor(app_id), info.theme_color);
@@ -140,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
-  const AppRegistrar& registrar0 = GetRegistrar(GetProfile(0));
-  const AppRegistrar& registrar1 = GetRegistrar(GetProfile(1));
+  const WebAppRegistrar& registrar0 = GetRegistrar(GetProfile(0));
+  const WebAppRegistrar& registrar1 = GetRegistrar(GetProfile(1));
 
   WebApplicationInfo info_a;
   info_a.title = u"Test name A";

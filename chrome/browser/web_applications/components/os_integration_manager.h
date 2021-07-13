@@ -32,7 +32,7 @@ class WebContents;
 
 namespace web_app {
 
-class AppRegistrar;
+class WebAppRegistrar;
 class AppIconManager;
 class TestOsIntegrationManager;
 class WebAppUiManager;
@@ -79,7 +79,7 @@ class OsIntegrationManager {
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
   virtual ~OsIntegrationManager();
 
-  void SetSubsystems(AppRegistrar* registrar,
+  void SetSubsystems(WebAppRegistrar* registrar,
                      WebAppUiManager* ui_manager,
                      AppIconManager* icon_manager);
 
@@ -277,7 +277,7 @@ class OsIntegrationManager {
       std::unique_ptr<ShortcutInfo> info);
 
   Profile* const profile_;
-  AppRegistrar* registrar_ = nullptr;
+  WebAppRegistrar* registrar_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;
 
   std::unique_ptr<AppShortcutManager> shortcut_manager_;

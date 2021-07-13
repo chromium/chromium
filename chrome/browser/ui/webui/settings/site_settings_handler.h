@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -43,7 +42,7 @@ class SiteSettingsHandler
       public CookiesTreeModel::Observer {
  public:
   explicit SiteSettingsHandler(Profile* profile,
-                               web_app::AppRegistrar& web_app_registrar);
+                               web_app::WebAppRegistrar& web_app_registrar);
   ~SiteSettingsHandler() override;
 
   // SettingsPageUIHandler:
@@ -266,7 +265,7 @@ class SiteSettingsHandler
   void SendCookieSettingDescription();
 
   Profile* profile_;
-  web_app::AppRegistrar& app_registrar_;
+  web_app::WebAppRegistrar& app_registrar_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};

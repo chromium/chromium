@@ -30,10 +30,10 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_url_handler_hover_button.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/url_handler_launch_params.h"
 #include "chrome/browser/web_applications/components/url_handler_prefs.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -266,7 +266,7 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
     Profile* profile = g_browser_process->profile_manager()->GetProfileByPath(
         launch_params.profile_path);
     provider = web_app::WebAppProvider::Get(profile);
-    web_app::AppRegistrar& registrar = provider->registrar();
+    web_app::WebAppRegistrar& registrar = provider->registrar();
 
     const std::u16string& profile_name =
         profiles::GetAvatarNameForProfile(launch_params.profile_path);

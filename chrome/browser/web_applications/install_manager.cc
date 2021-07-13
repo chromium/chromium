@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/components/install_manager.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
 
@@ -19,7 +19,7 @@ InstallManager::InstallManager(Profile* profile) : profile_(profile) {}
 
 InstallManager::~InstallManager() = default;
 
-void InstallManager::SetSubsystems(AppRegistrar* registrar,
+void InstallManager::SetSubsystems(WebAppRegistrar* registrar,
                                    OsIntegrationManager* os_integration_manager,
                                    InstallFinalizer* finalizer) {
   registrar_ = registrar;

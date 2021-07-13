@@ -42,7 +42,7 @@ bool HaveProtocolHandlersChanged(
     const std::vector<blink::Manifest::ProtocolHandler>& new_handlers);
 
 class AppIconManager;
-class AppRegistrar;
+class WebAppRegistrar;
 class WebAppUiManager;
 class InstallManager;
 class OsIntegrationManager;
@@ -95,7 +95,7 @@ class ManifestUpdateTask final
                      content::WebContents* web_contents,
                      StoppedCallback stopped_callback,
                      bool hang_for_testing,
-                     const AppRegistrar& registrar,
+                     const WebAppRegistrar& registrar,
                      const AppIconManager& icon_manager,
                      WebAppUiManager* ui_manager,
                      InstallManager* install_manager,
@@ -146,7 +146,7 @@ class ManifestUpdateTask final
       InstallResultCode code);
   void DestroySelf(ManifestUpdateResult result);
 
-  const AppRegistrar& registrar_;
+  const WebAppRegistrar& registrar_;
   const AppIconManager& icon_manager_;
   WebAppUiManager& ui_manager_;
   InstallManager& install_manager_;

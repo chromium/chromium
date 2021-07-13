@@ -10,9 +10,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -73,7 +73,7 @@ class AppBannerManagerDesktop
   friend class content::WebContentsUserData<AppBannerManagerDesktop>;
   friend class FakeAppBannerManagerDesktop;
 
-  web_app::AppRegistrar& registrar();
+  web_app::WebAppRegistrar& registrar();
 
   // AppBannerManager overrides.
   bool ShouldAllowWebAppReplacementInstall() override;
@@ -93,7 +93,8 @@ class AppBannerManagerDesktop
 
   extensions::ExtensionRegistry* extension_registry_;
 
-  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::AppRegistrarObserver>
       registrar_observation_{this};
 
   base::WeakPtrFactory<AppBannerManagerDesktop> weak_factory_{this};

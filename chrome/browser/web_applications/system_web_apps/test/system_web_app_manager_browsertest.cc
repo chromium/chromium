@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -106,7 +105,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, Install) {
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
   Profile* profile = app_browser->profile();
-  AppRegistrar& registrar =
+  WebAppRegistrar& registrar =
       WebAppProviderBase::GetProviderBase(profile)->registrar();
 
   EXPECT_EQ("Test System App", registrar.GetAppShortName(app_id));
@@ -1164,7 +1163,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
   Profile* profile = app_browser->profile();
-  AppRegistrar& registrar =
+  WebAppRegistrar& registrar =
       WebAppProviderBase::GetProviderBase(profile)->registrar();
 
   EXPECT_EQ("Test System App", registrar.GetAppShortName(app_id));

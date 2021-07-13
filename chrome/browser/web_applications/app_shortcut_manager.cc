@@ -15,7 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -49,7 +49,7 @@ AppShortcutManager::AppShortcutManager(Profile* profile) : profile_(profile) {}
 AppShortcutManager::~AppShortcutManager() = default;
 
 void AppShortcutManager::SetSubsystems(AppIconManager* icon_manager,
-                                       AppRegistrar* registrar) {
+                                       WebAppRegistrar* registrar) {
   icon_manager_ = icon_manager;
   registrar_ = registrar;
 }

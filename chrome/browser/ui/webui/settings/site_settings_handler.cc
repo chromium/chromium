@@ -161,7 +161,7 @@ void AddExceptionsGrantedByHostedApps(content::BrowserContext* context,
 
 base::flat_set<std::string> GetInstalledAppOrigins(
     Profile* profile,
-    const web_app::AppRegistrar& registrar) {
+    const web_app::WebAppRegistrar& registrar) {
   base::flat_set<std::string> origins;
   for (const web_app::AppId& app : registrar.GetAppIds())
     origins.insert(registrar.GetAppScope(app).GetOrigin().spec());
@@ -234,7 +234,7 @@ void ConvertSiteGroupMapToListValue(
     const std::set<std::string>& origin_permission_set,
     base::Value* list_value,
     Profile* profile,
-    const web_app::AppRegistrar& registrar) {
+    const web_app::WebAppRegistrar& registrar) {
   DCHECK_EQ(base::Value::Type::LIST, list_value->type());
   DCHECK(profile);
   base::flat_set<std::string> installed_origins =
@@ -390,8 +390,9 @@ std::string GetCookieSettingDescription(Profile* profile) {
 
 }  // namespace
 
-SiteSettingsHandler::SiteSettingsHandler(Profile* profile,
-                                         web_app::AppRegistrar& app_registrar)
+SiteSettingsHandler::SiteSettingsHandler(
+    Profile* profile,
+    web_app::WebAppRegistrar& app_registrar)
     : profile_(profile), app_registrar_(app_registrar) {}
 
 SiteSettingsHandler::~SiteSettingsHandler() {

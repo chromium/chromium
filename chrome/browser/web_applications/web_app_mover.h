@@ -27,7 +27,7 @@ class WebContents;
 
 namespace web_app {
 
-class AppRegistrar;
+class WebAppRegistrar;
 class AppRegistryController;
 class InstallFinalizer;
 
@@ -38,7 +38,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   enum class UninstallMode { kPrefix, kPattern };
   static std::unique_ptr<WebAppMover> CreateIfNeeded(
       Profile* profile,
-      AppRegistrar* registrar,
+      WebAppRegistrar* registrar,
       InstallFinalizer* install_finalizer,
       InstallManager* install_manager,
       AppRegistryController* controller);
@@ -48,7 +48,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   static void SetCompletedCallbackForTesting(base::OnceClosure callback);
 
   WebAppMover(Profile* profile,
-              AppRegistrar* registrar,
+              WebAppRegistrar* registrar,
               InstallFinalizer* install_finalizer,
               InstallManager* install_manager,
               AppRegistryController* controller,
@@ -101,7 +101,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   void RecordResults(WebAppMoverResult result);
 
   Profile* profile_;
-  AppRegistrar* registrar_;
+  WebAppRegistrar* registrar_;
   InstallFinalizer* install_finalizer_;
   InstallManager* install_manager_;
   AppRegistryController* controller_;

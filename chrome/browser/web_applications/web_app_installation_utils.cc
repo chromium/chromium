@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -175,7 +174,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   web_app.SetManifestUrl(web_app_info.manifest_url);
 }
 
-void MaybeDisableOsIntegration(const AppRegistrar* app_registrar,
+void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
                                const AppId& app_id,
                                InstallOsHooksOptions* options) {
 #if !defined(OS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.

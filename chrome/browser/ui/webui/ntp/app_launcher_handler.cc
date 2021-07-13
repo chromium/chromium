@@ -58,6 +58,7 @@
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -148,7 +149,7 @@ bool IsYoutubeExtension(const std::string& extension_id) {
 }
 
 void GetWebAppBasicInfo(const web_app::AppId& app_id,
-                        const web_app::AppRegistrar& app_registrar,
+                        const web_app::WebAppRegistrar& app_registrar,
                         base::DictionaryValue* info) {
   info->SetString(kInfoIdKey, app_id);
   info->SetString(kInfoNameKey, app_registrar.GetAppShortName(app_id));
@@ -610,7 +611,7 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
   PrefService* prefs = profile->GetPrefs();
 
   std::set<web_app::AppId> web_app_ids;
-  web_app::AppRegistrar& registrar = web_app_provider_->registrar();
+  web_app::WebAppRegistrar& registrar = web_app_provider_->registrar();
   for (const web_app::AppId& web_app_id : registrar.GetAppIds()) {
     // The Youtube app is harded to be a 'bookmark app', however it is not, it
     // is a platform app.
@@ -757,7 +758,7 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
   GURL full_launch_url;
   apps::mojom::LaunchContainer launch_container;
 
-  web_app::AppRegistrar& registrar = web_app_provider_->registrar();
+  web_app::WebAppRegistrar& registrar = web_app_provider_->registrar();
   if (registrar.IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
     type = extensions::Manifest::Type::TYPE_HOSTED_APP;

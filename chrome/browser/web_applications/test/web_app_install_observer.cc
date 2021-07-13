@@ -12,11 +12,11 @@
 
 namespace web_app {
 
-WebAppInstallObserver::WebAppInstallObserver(AppRegistrar* registrar) {
+WebAppInstallObserver::WebAppInstallObserver(WebAppRegistrar* registrar) {
   observation_.Observe(registrar);
 }
 WebAppInstallObserver::WebAppInstallObserver(
-    AppRegistrar* registrar,
+    WebAppRegistrar* registrar,
     const std::set<AppId>& listening_for_install_app_ids,
     const std::set<AppId>& listening_for_uninstall_app_ids,
     const std::set<AppId>& listening_for_install_with_os_hooks_app_ids)

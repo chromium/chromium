@@ -27,7 +27,7 @@ namespace web_app {
 
 enum class ExternalInstallSource;
 enum class InstallResultCode;
-class AppRegistrar;
+class WebAppRegistrar;
 class AppRegistryController;
 class WebAppUiManager;
 class OsIntegrationManager;
@@ -108,7 +108,7 @@ class InstallFinalizer {
   virtual void Start() {}
   virtual void Shutdown() {}
 
-  void SetSubsystems(AppRegistrar* registrar,
+  void SetSubsystems(WebAppRegistrar* registrar,
                      WebAppUiManager* ui_manager,
                      AppRegistryController* registry_controller,
                      OsIntegrationManager* os_integration_manager);
@@ -117,7 +117,7 @@ class InstallFinalizer {
 
  protected:
   bool is_legacy_finalizer() const { return registrar_ == nullptr; }
-  AppRegistrar& registrar() const;
+  WebAppRegistrar& registrar() const;
 
   WebAppUiManager& ui_manager() const { return *ui_manager_; }
   AppRegistryController& registry_controller() { return *registry_controller_; }
@@ -128,7 +128,7 @@ class InstallFinalizer {
  private:
   // If these pointers are nullptr then this is legacy install finalizer
   // operating in standalone mode.
-  AppRegistrar* registrar_ = nullptr;
+  WebAppRegistrar* registrar_ = nullptr;
   AppRegistryController* registry_controller_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;

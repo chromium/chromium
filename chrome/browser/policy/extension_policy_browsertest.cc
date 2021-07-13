@@ -35,13 +35,13 @@
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -2523,7 +2523,7 @@ class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
-  const web_app::AppRegistrar& registrar =
+  const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
@@ -2555,7 +2555,7 @@ class WebAppInstallForceListPolicyWithAppFallbackNameManifestTest
 IN_PROC_BROWSER_TEST_F(
     WebAppInstallForceListPolicyWithAppFallbackNameManifestTest,
     StartUpInstallationPWAFallbackName) {
-  const web_app::AppRegistrar& registrar =
+  const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
@@ -2587,7 +2587,7 @@ class WebAppInstallForceListPolicySAATest
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
                        StartUpInstallationSAA) {
-  const web_app::AppRegistrar& registrar =
+  const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
@@ -2616,7 +2616,7 @@ class WebAppInstallForceListPolicyWithAppFallbackNameSAATest
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
                        StartUpInstallationSAAFallbackName) {
-  const web_app::AppRegistrar& registrar =
+  const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
@@ -2649,7 +2649,7 @@ class WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest
 IN_PROC_BROWSER_TEST_F(
     WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest,
     StartUpInstallationPlaceholderFallbackName) {
-  const web_app::AppRegistrar& registrar =
+  const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());

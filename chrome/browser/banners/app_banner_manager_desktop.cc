@@ -148,7 +148,7 @@ bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
       .has_value();
 }
 
-web_app::AppRegistrar& AppBannerManagerDesktop::registrar() {
+web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {
   auto* provider = web_app::WebAppProviderBase::GetProviderBase(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
   DCHECK(provider);

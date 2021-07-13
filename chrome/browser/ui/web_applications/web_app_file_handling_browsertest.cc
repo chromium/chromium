@@ -117,7 +117,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
         .file_handler_manager_for_testing();
   }
 
-  AppRegistrar& registrar() { return provider()->registrar(); }
+  WebAppRegistrar& registrar() { return provider()->registrar(); }
 
   GURL GetSecureAppURL() {
     return https_server()->GetURL("app.com", "/ssl/google.html");

@@ -13,8 +13,8 @@
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
 
@@ -46,7 +46,7 @@ ExternallyManagedAppManager::~ExternallyManagedAppManager() {
 }
 
 void ExternallyManagedAppManager::SetSubsystems(
-    AppRegistrar* registrar,
+    WebAppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
     WebAppUiManager* ui_manager,
     InstallFinalizer* finalizer,

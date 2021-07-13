@@ -10,7 +10,6 @@
 #include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -29,7 +28,7 @@ ManifestUpdateManager::ManifestUpdateManager() = default;
 ManifestUpdateManager::~ManifestUpdateManager() = default;
 
 void ManifestUpdateManager::SetSubsystems(
-    AppRegistrar* registrar,
+    WebAppRegistrar* registrar,
     AppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
     InstallManager* install_manager,

@@ -217,12 +217,13 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   WebAppProvider* GetProviderForProfile(Profile* profile);
 
   // Allow test-driving classes to reset the ScopedObservation of the
-  // AppRegistrar at the end of each test, but before the tear down sequence
+  // WebAppRegistrar at the end of each test, but before the tear down sequence
   // begins.
   void ResetRegistrarObserver();
 
  private:
-  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::AppRegistrarObserver>
       observation_{this};
 
   StateSnapshot ConstructStateSnapshot();

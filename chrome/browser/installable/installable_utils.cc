@@ -11,9 +11,9 @@
 #include "chrome/browser/android/shortcut_helper.h"
 #else
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #endif
@@ -46,7 +46,7 @@ std::set<GURL> GetOriginsWithInstalledWebApps(
   // that WebAppProvider is started.
   if (!provider || !provider->on_registry_ready().is_signaled())
     return std::set<GURL>();
-  const web_app::AppRegistrar& registrar = provider->registrar();
+  const web_app::WebAppRegistrar& registrar = provider->registrar();
   auto app_ids = registrar.GetAppIds();
   std::set<GURL> installed_origins;
   for (auto& app_id : app_ids) {

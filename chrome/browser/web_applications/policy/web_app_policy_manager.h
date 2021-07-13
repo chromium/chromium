@@ -52,7 +52,7 @@ class WebAppPolicyManager {
 
   void SetSubsystems(
       ExternallyManagedAppManager* externally_managed_app_manager,
-      AppRegistrar* app_registrar,
+      WebAppRegistrar* app_registrar,
       AppRegistryController* app_registry_controller,
       SystemWebAppManager* web_app_manager,
       OsIntegrationManager* os_integration_manager);
@@ -128,7 +128,7 @@ class WebAppPolicyManager {
   // Used to install, uninstall, and update apps. Should outlive this class
   // (owned by WebAppProvider).
   ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
-  AppRegistrar* app_registrar_ = nullptr;
+  WebAppRegistrar* app_registrar_ = nullptr;
   AppRegistryController* app_registry_controller_ = nullptr;
   SystemWebAppManager* web_app_manager_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;

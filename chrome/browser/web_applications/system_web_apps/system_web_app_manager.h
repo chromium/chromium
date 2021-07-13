@@ -83,7 +83,7 @@ class SystemWebAppManager {
 
   void SetSubsystems(
       ExternallyManagedAppManager* externally_managed_app_manager,
-      AppRegistrar* registrar,
+      WebAppRegistrar* registrar,
       AppRegistryController* registry_controller,
       WebAppUiManager* ui_manager,
       OsIntegrationManager* os_integration_manager,
@@ -252,7 +252,7 @@ class SystemWebAppManager {
   // Used to install, uninstall, and update apps. Should outlive this class.
   ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
 
-  AppRegistrar* registrar_ = nullptr;
+  WebAppRegistrar* registrar_ = nullptr;
 
   AppRegistryController* registry_controller_ = nullptr;
 

@@ -15,8 +15,8 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -299,7 +299,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   WebAppProvider* const provider_;
 
-  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
+  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>

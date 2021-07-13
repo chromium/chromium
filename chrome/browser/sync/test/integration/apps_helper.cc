@@ -246,7 +246,7 @@ web_app::AppId InstallWebApp(Profile* profile, const WebApplicationInfo& info) {
           }));
   run_loop.Run();
 
-  const web_app::AppRegistrar& registrar = provider->registrar();
+  const web_app::WebAppRegistrar& registrar = provider->registrar();
   DCHECK_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   DCHECK_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
 

@@ -15,9 +15,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class ArcAppListPrefs;
@@ -112,7 +112,8 @@ class ApkWebAppService : public KeyedService,
   ArcAppListPrefs* arc_app_list_prefs_;
   web_app::WebAppProvider* provider_;
 
-  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::AppRegistrarObserver>
       registrar_observer_{this};
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>

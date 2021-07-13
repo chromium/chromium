@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -109,7 +108,7 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
       std::move(finalize_callback));
 
   // Check if we have permission to launch the app directly.
-  web_app::AppRegistrar& registrar = provider->registrar();
+  web_app::WebAppRegistrar& registrar = provider->registrar();
   if (registrar.IsApprovedLaunchProtocol(app_id, protocol_url.scheme())) {
     std::move(launch_callback).Run(true);
   } else {

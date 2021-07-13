@@ -7,9 +7,9 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
 
@@ -25,7 +25,7 @@ class WebAppUninstallWaiter final : public AppRegistrarObserver {
  private:
   AppId app_id_;
   base::RunLoop run_loop_;
-  base::ScopedObservation<AppRegistrar, AppRegistrarObserver> observation_{
+  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver> observation_{
       this};
 };
 

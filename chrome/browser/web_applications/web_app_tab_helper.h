@@ -7,9 +7,9 @@
 
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -90,7 +90,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   bool has_loaded_non_about_blank_page_ = false;
 
-  base::ScopedObservation<AppRegistrar, AppRegistrarObserver> observation_{
+  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver> observation_{
       this};
   WebAppProviderBase* provider_ = nullptr;
 

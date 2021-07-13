@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -22,7 +21,7 @@ class BrowserContext;
 
 namespace web_app {
 
-class AppRegistrar;
+class WebAppRegistrar;
 class OsIntegrationManager;
 class InstallFinalizer;
 class ExternallyManagedAppManager;
@@ -55,7 +54,7 @@ class TestWebAppProvider : public WebAppProvider {
   // if it's a part of TestingProfile (see BuildDefault() method above).
   void SetRunSubsystemStartupTasks(bool run_subsystem_startup_tasks);
 
-  void SetRegistrar(std::unique_ptr<AppRegistrar> registrar);
+  void SetRegistrar(std::unique_ptr<WebAppRegistrar> registrar);
   void SetRegistryController(std::unique_ptr<AppRegistryController> controller);
   void SetOsIntegrationManager(
       std::unique_ptr<OsIntegrationManager> os_integration_manager);

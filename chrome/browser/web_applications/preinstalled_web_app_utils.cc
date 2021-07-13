@@ -85,7 +85,7 @@ constexpr char kLaunchContainerWindow[] = "window";
 // substring of start_url's existing params then it will not be added a second
 // time.
 // Note that substring matches include "param=a" matching in "some_param=abc".
-// Extend the implementation in AppRegistrar::GetAppLaunchUrl() if this edge
+// Extend the implementation in WebAppRegistrar::GetAppLaunchUrl() if this edge
 // case needs to be handled differently.
 constexpr char kLaunchQueryParams[] = "launch_query_params";
 

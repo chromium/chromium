@@ -122,8 +122,8 @@ class PreinstalledWebAppManagerBrowserTest
     return embedded_test_server()->GetURL("/web_apps/basic.html");
   }
 
-  const AppRegistrar& registrar() {
-    return WebAppProvider::Get(profile())->registrar();
+  const WebAppRegistrar& registrar() {
+    return WebAppProvider::Get(browser()->profile())->registrar();
   }
 
   const PreinstalledWebAppManager& manager() {

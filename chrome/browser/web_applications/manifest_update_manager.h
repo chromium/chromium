@@ -11,10 +11,10 @@
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -44,7 +44,7 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
   ManifestUpdateManager();
   ~ManifestUpdateManager() override;
 
-  void SetSubsystems(AppRegistrar* registrar,
+  void SetSubsystems(WebAppRegistrar* registrar,
                      AppIconManager* icon_manager,
                      WebAppUiManager* ui_manager,
                      InstallManager* install_manager,
@@ -85,14 +85,14 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
                     const AppId& app_id,
                     ManifestUpdateResult result);
 
-  AppRegistrar* registrar_ = nullptr;
+  WebAppRegistrar* registrar_ = nullptr;
   AppIconManager* icon_manager_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;
   InstallManager* install_manager_ = nullptr;
   SystemWebAppManager* system_web_app_manager_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
 
-  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
+  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
 
   base::flat_map<AppId, std::unique_ptr<ManifestUpdateTask>> tasks_;

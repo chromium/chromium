@@ -129,7 +129,7 @@ void WebAppProvider::Start() {
   StartImpl();
 }
 
-AppRegistrar& WebAppProvider::registrar() {
+WebAppRegistrar& WebAppProvider::registrar() {
   CheckIsConnected();
   return *registrar_;
 }

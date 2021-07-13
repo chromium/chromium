@@ -253,7 +253,7 @@ void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   web_app::ClearAppPrefsForWebContents(contents);
 }
 
-const AppRegistrar& WebAppBrowserController::registrar() const {
+const WebAppRegistrar& WebAppBrowserController::registrar() const {
   return provider_.registrar();
 }
 

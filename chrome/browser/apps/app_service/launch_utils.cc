@@ -14,9 +14,9 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -58,7 +58,7 @@ bool IsInstalledApp(Profile* profile, const std::string& app_id) {
     DCHECK(extension->is_app());
     return true;
   }
-  web_app::AppRegistrar& registrar =
+  web_app::WebAppRegistrar& registrar =
       web_app::WebAppProviderBase::GetProviderBase(profile)->registrar();
   return registrar.IsInstalled(app_id);
 }
@@ -81,7 +81,7 @@ void SetAppIdForWebContents(Profile* profile,
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionAppById(app_id);
   } else {
-    web_app::AppRegistrar& registrar =
+    web_app::WebAppRegistrar& registrar =
         web_app::WebAppProviderBase::GetProviderBase(profile)->registrar();
     web_app::WebAppTabHelper::FromWebContents(web_contents)
         ->SetAppId(registrar.IsInstalled(app_id) ? app_id : std::string());

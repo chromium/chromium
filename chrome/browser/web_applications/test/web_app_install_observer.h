@@ -10,18 +10,18 @@
 
 #include "base/callback.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
 
-class AppRegistrar;
+class WebAppRegistrar;
 class WebApp;
 
 class WebAppInstallObserver final : public AppRegistrarObserver {
  public:
-  explicit WebAppInstallObserver(AppRegistrar* registrar);
+  explicit WebAppInstallObserver(WebAppRegistrar* registrar);
   explicit WebAppInstallObserver(Profile* profile);
 
   // Restricts this observer to only listen for the given
@@ -125,7 +125,7 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   // |listening_for_install_app_ids| or |listening_for_uninstall_app_ids| are
   // installed or uninstalled (respectively).
   explicit WebAppInstallObserver(
-      AppRegistrar* registrar,
+      WebAppRegistrar* registrar,
       const std::set<AppId>& listening_for_install_app_ids,
       const std::set<AppId>& listening_for_uninstall_app_ids,
       const std::set<AppId>& listening_for_install_with_os_hooks_app_ids);
@@ -148,7 +148,7 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   SingleAppUninstalledDelegate single_app_uninstalled_delegate_;
   WebAppProfileWillBeDeletedDelegate app_profile_will_be_deleted_delegate_;
 
-  base::ScopedObservation<AppRegistrar, AppRegistrarObserver> observation_{
+  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver> observation_{
       this};
 };
 

@@ -33,7 +33,7 @@ namespace web_app {
 
 enum class InstallResultCode;
 class InstallFinalizer;
-class AppRegistrar;
+class WebAppRegistrar;
 class OsIntegrationManager;
 
 // TODO(loyso): Rework this interface. Unify the API and merge similar
@@ -174,7 +174,7 @@ class InstallManager {
   explicit InstallManager(Profile* profile);
   virtual ~InstallManager();
 
-  void SetSubsystems(AppRegistrar* registrar,
+  void SetSubsystems(WebAppRegistrar* registrar,
                      OsIntegrationManager* os_integration_manager,
                      InstallFinalizer* finalizer);
 
@@ -192,7 +192,7 @@ class InstallManager {
 
  protected:
   Profile* profile() { return profile_; }
-  AppRegistrar* registrar() { return registrar_; }
+  WebAppRegistrar* registrar() { return registrar_; }
   OsIntegrationManager* os_integration_manager() {
     return os_integration_manager_;
   }
@@ -206,7 +206,7 @@ class InstallManager {
   Profile* const profile_;
   WebAppUrlLoader url_loader_;
 
-  AppRegistrar* registrar_ = nullptr;
+  WebAppRegistrar* registrar_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
   InstallFinalizer* finalizer_ = nullptr;
 

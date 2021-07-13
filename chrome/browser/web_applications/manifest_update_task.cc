@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -68,7 +67,7 @@ bool HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
 
 // Some apps, such as pre-installed apps, have been vetted and are therefore
 // considered safe and permitted to update their names.
-bool AllowNameUpdating(const AppId& app_id, const AppRegistrar& registrar) {
+bool AllowNameUpdating(const AppId& app_id, const WebAppRegistrar& registrar) {
   const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
   if (!web_app)
     return false;
@@ -78,7 +77,7 @@ bool AllowNameUpdating(const AppId& app_id, const AppRegistrar& registrar) {
 // Some apps, such as pre-installed apps, have been vetted and are therefore
 // considered safe and permitted to update their icon. For others, the feature
 // flag needs to be on.
-bool AllowIconUpdating(const AppId& app_id, const AppRegistrar& registrar) {
+bool AllowIconUpdating(const AppId& app_id, const WebAppRegistrar& registrar) {
   const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
   if (!web_app)
     return false;
@@ -168,7 +167,7 @@ ManifestUpdateTask::ManifestUpdateTask(
     content::WebContents* web_contents,
     StoppedCallback stopped_callback,
     bool hang_for_testing,
-    const AppRegistrar& registrar,
+    const WebAppRegistrar& registrar,
     const AppIconManager& icon_manager,
     WebAppUiManager* ui_manager,
     InstallManager* install_manager,

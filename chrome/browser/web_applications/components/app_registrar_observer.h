@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_APP_REGISTRAR_OBSERVER_H_
 
 #include "base/observer_list_types.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
 namespace base {
@@ -36,12 +37,12 @@ class AppRegistrarObserver : public base::CheckedObserver {
       const std::vector<const WebApp*>& new_apps_state) {}
 
   // Called before a web app is uninstalled, before the uninstallation process
-  // begins. |app_id| is still registered in the AppRegistrar, and OS hooks have
-  // not yet been uninstalled.
+  // begins. |app_id| is still registered in the WebAppRegistrar, and OS hooks
+  // have not yet been uninstalled.
   virtual void OnWebAppWillBeUninstalled(const AppId& app_id) {}
 
   // Called after a web app is uninstalled. |app_id| is no longer registered in
-  // the AppRegistrar, all OS hooks are uninstalled, and icons have been
+  // the WebAppRegistrar, all OS hooks are uninstalled, and icons have been
   // deleted.
   virtual void OnWebAppUninstalled(const AppId& app_id) {}
 

@@ -611,8 +611,8 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
      private:
       base::RunLoop run_loop_;
     } update_awaiter;
-    base::ScopedObservation<AppRegistrar, AppRegistrarObserver> observer_scope(
-        &update_awaiter);
+    base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
+        observer_scope(&update_awaiter);
     observer_scope.Observe(&provider.registrar());
 
     serve_token = false;

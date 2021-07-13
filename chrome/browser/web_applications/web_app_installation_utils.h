@@ -12,7 +12,7 @@ struct WebApplicationInfo;
 namespace web_app {
 
 struct InstallOsHooksOptions;
-class AppRegistrar;
+class WebAppRegistrar;
 class WebApp;
 
 // Updates |web_app| using |web_app_info|
@@ -21,7 +21,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
 
 // Possibly updates |options| to disable OS-integrations based on the
 // configuration of the given app.
-void MaybeDisableOsIntegration(const AppRegistrar* app_registrar,
+void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
                                const AppId& app_id,
                                InstallOsHooksOptions* options);
 

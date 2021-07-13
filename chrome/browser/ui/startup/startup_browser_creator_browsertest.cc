@@ -112,7 +112,6 @@
 #include "components/policy/core/common/policy_types.h"
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -2271,7 +2270,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that we added this protocol to web app's approved_launch_protocols
   // on accept.
-  web_app::AppRegistrar& registrar = provider()->registrar();
+  web_app::WebAppRegistrar& registrar = provider()->registrar();
   EXPECT_TRUE(registrar.IsApprovedLaunchProtocol(app_id, "web+test"));
 
   // Check for new app window.
@@ -2343,7 +2342,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that we added this protocol to web app's approved_launch_protocols
   // on accept.
-  web_app::AppRegistrar& registrar = provider()->registrar();
+  web_app::WebAppRegistrar& registrar = provider()->registrar();
   EXPECT_TRUE(registrar.IsApprovedLaunchProtocol(app_id, "web+test"));
 
   // Check the first app window is created.

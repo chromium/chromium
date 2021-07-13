@@ -9,8 +9,6 @@ source_set("components") {
     "../system_web_apps/system_web_app_types.h",
     "app_icon_manager.cc",
     "app_icon_manager.h",
-    "app_registrar.cc",
-    "app_registrar.h",
     "app_registrar_observer.h",
     "app_registry_controller.cc",
     "app_registry_controller.h",

@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -52,7 +52,7 @@ class ExternallyManagedAppInstallTask {
   explicit ExternallyManagedAppInstallTask(
       Profile* profile,
       WebAppUrlLoader* url_loader,
-      AppRegistrar* registrar,
+      WebAppRegistrar* registrar,
       OsIntegrationManager* os_integration_manager,
       WebAppUiManager* ui_manager,
       InstallFinalizer* install_finalizer,
@@ -110,7 +110,7 @@ class ExternallyManagedAppInstallTask {
 
   Profile* const profile_;
   WebAppUrlLoader* const url_loader_;
-  AppRegistrar* const registrar_;
+  WebAppRegistrar* const registrar_;
   OsIntegrationManager* const os_integration_manager_;
   InstallFinalizer* const install_finalizer_;
   InstallManager* const install_manager_;

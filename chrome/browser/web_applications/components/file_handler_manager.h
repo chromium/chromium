@@ -23,7 +23,7 @@ class WebContents;
 
 namespace web_app {
 
-class AppRegistrar;
+class WebAppRegistrar;
 
 class FileHandlerManager {
  public:
@@ -33,7 +33,7 @@ class FileHandlerManager {
   virtual ~FileHandlerManager();
 
   // |registrar| is used to observe OnWebAppInstalled/Uninstalled events.
-  void SetSubsystems(AppRegistrar* registrar);
+  void SetSubsystems(WebAppRegistrar* registrar);
   void Start();
 
   // Disables OS integrations, such as shortcut creation on Linux or modifying
@@ -108,7 +108,7 @@ class FileHandlerManager {
 
  protected:
   Profile* profile() const { return profile_; }
-  AppRegistrar* registrar() { return registrar_; }
+  WebAppRegistrar* registrar() { return registrar_; }
 
   // Gets all file handlers for |app_id|. |nullptr| if the app has no file
   // handlers or if app_id was uninstalled.
@@ -121,7 +121,7 @@ class FileHandlerManager {
   base::RepeatingCallback<void()> on_file_handling_expiry_updated_for_testing_;
 
   Profile* const profile_;
-  AppRegistrar* registrar_ = nullptr;
+  WebAppRegistrar* registrar_ = nullptr;
 
   void OnOriginTrialExpiryTimeReceived(
       mojo::AssociatedRemote<blink::mojom::FileHandlingExpiry> /*interface*/,

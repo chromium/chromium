@@ -14,10 +14,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -40,7 +40,7 @@ namespace web_app {
 
 std::unique_ptr<WebAppMover> WebAppMover::CreateIfNeeded(
     Profile* profile,
-    AppRegistrar* registrar,
+    WebAppRegistrar* registrar,
     InstallFinalizer* install_finalizer,
     InstallManager* install_manager,
     AppRegistryController* controller) {
@@ -121,7 +121,7 @@ void WebAppMover::SetCompletedCallbackForTesting(base::OnceClosure callback) {
 }
 
 WebAppMover::WebAppMover(Profile* profile,
-                         AppRegistrar* registrar,
+                         WebAppRegistrar* registrar,
                          InstallFinalizer* install_finalizer,
                          InstallManager* install_manager,
                          AppRegistryController* controller,

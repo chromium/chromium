@@ -10,10 +10,10 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -43,7 +43,7 @@ void InstallFinalizer::UninstallExternalWebAppByUrl(
 }
 
 void InstallFinalizer::SetSubsystems(
-    AppRegistrar* registrar,
+    WebAppRegistrar* registrar,
     WebAppUiManager* ui_manager,
     AppRegistryController* registry_controller,
     OsIntegrationManager* os_integration_manager) {
@@ -72,7 +72,7 @@ void InstallFinalizer::ReparentTab(const AppId& app_id,
                                              shortcut_created);
 }
 
-AppRegistrar& InstallFinalizer::registrar() const {
+WebAppRegistrar& InstallFinalizer::registrar() const {
   DCHECK(!is_legacy_finalizer());
   return *registrar_;
 }

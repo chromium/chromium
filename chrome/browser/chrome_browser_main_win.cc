@@ -473,7 +473,7 @@ void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
   auto* provider = web_app::WebAppProvider::Get(profile);
   if (!provider)
     return;
-  web_app::AppRegistrar& registrar = provider->registrar();
+  web_app::WebAppRegistrar& registrar = provider->registrar();
 
   // Create a vector of all PWA-launcher paths in |profile_dir|.
   std::vector<base::FilePath> pwa_launcher_paths;

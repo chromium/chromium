@@ -10,10 +10,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 
 class Profile;
 
@@ -93,7 +93,7 @@ class WebAppProvider : public WebAppProviderBase {
   void Start();
 
   // WebAppProviderBase:
-  AppRegistrar& registrar() override;
+  WebAppRegistrar& registrar() override;
   AppRegistryController& registry_controller() override;
   InstallManager& install_manager() override;
   InstallFinalizer& install_finalizer() override;
@@ -144,7 +144,7 @@ class WebAppProvider : public WebAppProviderBase {
   std::unique_ptr<WebAppMover> web_app_mover_;
 
   // Generalized subsystems:
-  std::unique_ptr<AppRegistrar> registrar_;
+  std::unique_ptr<WebAppRegistrar> registrar_;
   std::unique_ptr<AppRegistryController> registry_controller_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
   std::unique_ptr<AppIconManager> icon_manager_;

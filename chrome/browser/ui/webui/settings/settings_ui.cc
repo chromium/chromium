@@ -59,7 +59,6 @@
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -151,7 +150,7 @@ void SettingsUI::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kImportDialogSearchEngine, true);
 }
 
-web_app::AppRegistrar& GetRegistrarForProfile(Profile* profile) {
+web_app::WebAppRegistrar& GetRegistrarForProfile(Profile* profile) {
   return web_app::WebAppProvider::Get(profile)->registrar();
 }
 

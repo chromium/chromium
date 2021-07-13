@@ -21,12 +21,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_app_uninstallation_via_os_settings_registration.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -102,7 +102,7 @@ OsIntegrationManager::OsIntegrationManager(
 
 OsIntegrationManager::~OsIntegrationManager() = default;
 
-void OsIntegrationManager::SetSubsystems(AppRegistrar* registrar,
+void OsIntegrationManager::SetSubsystems(WebAppRegistrar* registrar,
                                          WebAppUiManager* ui_manager,
                                          AppIconManager* icon_manager) {
   registrar_ = registrar;

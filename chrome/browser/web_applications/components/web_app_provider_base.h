@@ -13,7 +13,7 @@ namespace web_app {
 
 // Forward declarations of generalized interfaces.
 class AppIconManager;
-class AppRegistrar;
+class WebAppRegistrar;
 class AppRegistryController;
 class InstallFinalizer;
 class InstallManager;
@@ -36,7 +36,7 @@ class WebAppProviderBase : public KeyedService {
   ~WebAppProviderBase() override;
 
   // The app registry model.
-  virtual AppRegistrar& registrar() = 0;
+  virtual WebAppRegistrar& registrar() = 0;
   // The app registry controller.
   virtual AppRegistryController& registry_controller() = 0;
   // UIs can use InstallManager for user-initiated Web Apps install.

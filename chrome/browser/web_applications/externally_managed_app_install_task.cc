@@ -40,7 +40,7 @@ void ExternallyManagedAppInstallTask::CreateTabHelpers(
 ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     Profile* profile,
     WebAppUrlLoader* url_loader,
-    AppRegistrar* registrar,
+    WebAppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
     WebAppUiManager* ui_manager,
     InstallFinalizer* install_finalizer,

@@ -22,7 +22,7 @@ class WebAppSyncBridge;
 
 // A unified sync and storage controller.
 //
-// While AppRegistrar is a read-only model, AppRegistryController is a
+// While WebAppRegistrar is a read-only model, AppRegistryController is a
 // controller for that model. AppRegistryController is responsible for:
 // - Registry initialization (reading model from a persistent storage like
 // LevelDb or prefs).
