@@ -41,12 +41,17 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantSettings {
 
   // |selector| is a serialized proto of SettingsUiSelector, indicating which
   // settings sub-pages should be requested to the server.
-  // Return value is a serialized proto of SettingsUi, containing the settings
-  // sub-pages requested.
+  // For `GetSettings`, a serialized proto of SettingsUi containing the settings
+  // sub-pages requested is paased to `GetSettingsCallback`.
+  // For `GetSettingsWithHeader`, a serialized proto of GetSettingsUiResponse
+  // containing the settings and the header information is passed to
+  // `GetSettingsCallback`.
   // Send a request for the settings ui sub-pages indicated by the |selector|.
   using GetSettingsCallback = base::OnceCallback<void(const std::string&)>;
   virtual void GetSettings(const std::string& selector,
                            GetSettingsCallback callback) = 0;
+  virtual void GetSettingsWithHeader(const std::string& selector,
+                                     GetSettingsCallback callback) = 0;
 
   // |update| is a serialized proto of SettingsUiUpdate, indicating what kind
   // of updates should be applied to the settings.

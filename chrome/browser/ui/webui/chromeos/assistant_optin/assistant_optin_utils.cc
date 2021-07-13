@@ -96,7 +96,8 @@ assistant::SettingsUiUpdate GetEmailOptInUpdate(bool opted_in) {
 }
 
 // Helper method to create zippy data.
-base::Value CreateZippyData(const SettingZippyList& zippy_list) {
+base::Value CreateZippyData(const SettingZippyList& zippy_list,
+                            bool is_minor_mode) {
   base::Value zippy_data(base::Value::Type::LIST);
   for (auto& setting_zippy : zippy_list) {
     base::Value data(base::Value::Type::DICTIONARY);
@@ -112,6 +113,7 @@ base::Value CreateZippyData(const SettingZippyList& zippy_list) {
     data.SetKey("iconUri", base::Value(setting_zippy.icon_uri()));
     data.SetKey("popupLink", base::Value(l10n_util::GetStringUTF16(
                                  IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK)));
+    data.SetKey("isMinorMode", base::Value(is_minor_mode));
     zippy_data.Append(std::move(data));
   }
   return zippy_data;
@@ -178,7 +180,8 @@ base::Value CreateGetMoreData(bool email_optin_needed,
 
 // Get string constants for settings ui.
 base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
-                                 bool activity_control_needed) {
+                                 bool activity_control_needed,
+                                 bool equal_weight_buttons) {
   auto consent_ui = settings_ui.consent_flow_ui().consent_ui();
   auto activity_control_ui = consent_ui.activity_control_ui();
   auto third_party_disclosure_ui = consent_ui.third_party_disclosure_ui();
@@ -186,6 +189,7 @@ base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
 
   dictionary.SetKey("activityControlNeeded",
                     base::Value(activity_control_needed));
+  dictionary.SetKey("equalWeightButtons", base::Value(equal_weight_buttons));
 
   // Add activity control string constants.
   if (activity_control_needed) {

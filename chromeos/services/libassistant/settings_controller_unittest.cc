@@ -349,7 +349,7 @@ TEST_F(AssistantSettingsControllerTest,
 
   EXPECT_CALL(callback, Run(std::string{}));
 
-  controller().GetSettings("selector", callback.Get());
+  controller().GetSettings("selector", /*include_header=*/false, callback.Get());
 }
 
 TEST_F(AssistantSettingsControllerTest,
@@ -357,7 +357,7 @@ TEST_F(AssistantSettingsControllerTest,
   CreateAndStartLibassistant();
 
   base::MockCallback<SettingsController::GetSettingsCallback> callback;
-  controller().GetSettings("selector", callback.Get());
+  controller().GetSettings("selector", /*include_header=*/false, callback.Get());
 
   EXPECT_CALL(callback, Run(std::string{}));
   DestroyLibassistant();

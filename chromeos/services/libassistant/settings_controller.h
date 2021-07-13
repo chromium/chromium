@@ -40,6 +40,7 @@ class SettingsController : public AssistantClientObserver,
   void SetSpokenFeedbackEnabled(bool value) override;
   void SetHotwordEnabled(bool value) override;
   void GetSettings(const std::string& selector,
+                   bool include_header,
                    GetSettingsCallback callback) override;
   void UpdateSettings(const std::string& settings,
                       UpdateSettingsCallback callback) override;
