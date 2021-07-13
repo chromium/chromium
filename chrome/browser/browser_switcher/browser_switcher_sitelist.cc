@@ -36,16 +36,35 @@ struct NoCopyUrl {
   base::StringPiece spec_without_port;
 };
 
-// Returns true if |input| contains |token|, ignoring case for ASCII
-// characters.
-bool StringContainsInsensitiveASCII(base::StringPiece input,
-                                    base::StringPiece token) {
-  const char* found =
-      std::search(input.begin(), input.end(), token.begin(), token.end(),
-                  [](char a, char b) {
-                    return base::ToLowerASCII(a) == base::ToLowerASCII(b);
-                  });
-  return found != input.end();
+// Find the position of |token| inside |input|, if present. Ignore case for
+// ASCII characters.
+//
+// If |token| is not in |input|, return a pointer to the null-byte at the end
+// of |input|.
+const char* StringFindInsensitiveASCII(base::StringPiece input,
+                                       base::StringPiece token) {
+  return std::search(input.begin(), input.end(), token.begin(), token.end(),
+                     [](char a, char b) {
+                       return base::ToLowerASCII(a) == base::ToLowerASCII(b);
+                     });
+}
+
+// Find the position of |token| inside |input|, much like StringPiece::find().
+// Search case-sensitively if |case_sensitive_ascii| is true, or
+// case-insensitively otherwise.
+//
+// Returns StringPiece::npos if not found.
+size_t StringFind(base::StringPiece input,
+                  base::StringPiece token,
+                  bool case_sensitive_ascii) {
+  if (case_sensitive_ascii) {
+    return input.find(token);
+  } else {
+    const char* pos = StringFindInsensitiveASCII(input, token);
+    if (pos == input.end())
+      return base::StringPiece::npos;
+    return pos - input.data();
+  }
 }
 
 // Case-insensitively compare the hostname of |host_and_port| with the hostname
@@ -100,15 +119,16 @@ bool UrlMatchesPattern(const NoCopyUrl& url,
     return true;
   }
   if (pattern.find('/') != base::StringPiece::npos) {
-    // Check prefix using the normalized URL. Case sensitive, but with
-    // case-insensitive scheme/hostname.
-    size_t pos = url.spec.find(pattern);
+    // Check that the prefix is valid. The URL's hostname/scheme have already
+    // been case-normalized, so that part of the URL is always case-insensitive.
+    bool case_sensitive = parsing_mode == ParsingMode::kDefault;
+    size_t pos = StringFind(url.spec, pattern, case_sensitive);
     if (pos != base::StringPiece::npos &&
         IsValidPrefix(base::StringPiece(url.spec.data(), pos))) {
       return true;
     }
     if (!url.spec_without_port.empty()) {
-      pos = url.spec_without_port.find(pattern);
+      pos = StringFind(url.spec_without_port, pattern, case_sensitive);
       return pos != base::StringPiece::npos &&
              IsValidPrefix(
                  base::StringPiece(url.spec_without_port.data(), pos));
@@ -118,12 +138,14 @@ bool UrlMatchesPattern(const NoCopyUrl& url,
 
   // Compare hosts and ports, case-insensitive.
   switch (parsing_mode) {
-    case ParsingMode::kStrict:
+    case ParsingMode::kIESiteListMode:
       return MatchesHostNameAtEnd(url.host_and_port, pattern);
 
-    case ParsingMode::kDefault:
+    case ParsingMode::kDefault: {
       // Simple substring search.
-      return StringContainsInsensitiveASCII(url.host_and_port, pattern);
+      const char* it = StringFindInsensitiveASCII(url.host_and_port, pattern);
+      return it != url.host_and_port.end();
+    }
 
     default:
       // This should've been caught in

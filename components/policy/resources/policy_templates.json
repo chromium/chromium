@@ -20810,7 +20810,7 @@
           'caption': '''Default behavior for LBS.''',
         },
         {
-          'name': 'Strict',
+          'name': 'IESiteListMode',
           'value': 1,
           'caption': '''More compatible with Microsoft IE/Edge enterprise mode sitelists.''',
         },
@@ -20826,15 +20826,17 @@
       'tags': [],
       'desc': '''This policy controls how <ph name="PRODUCT_NAME">Google Chrome</ph> interprets sitelist/greylist policies for the Legacy Browser Support feature. It affects the following policies: <ph name="URL_LIST_POLICY_NAME">BrowserSwitcherUrlList</ph>, <ph name="URL_GREYLIST_POLICY_NAME">BrowserSwitcherUrlGreylist</ph>, <ph name="USE_IE_SITELIST_POLICY_NAME">BrowserSwitcherUseIeSitelist</ph>, <ph name="EXTERNAL_SITELIST_POLICY_NAME">BrowserSwitcherExternalSitelistUrl</ph>, and <ph name="EXTERNAL_GREYLIST_POLICY_NAME">BrowserSwitcherExternalGreylistUrl</ph>.
 
-      If 'Default' (0) or unset, URL matching is less strict. Rules that do not contain "/" look for a substring anywhere in the URL's hostname.
+      If 'Default' (0) or unset, URL matching is less strict. Rules that do not contain "/" look for a substring anywhere in the URL's hostname. Matching the path component of a URL is case-sensitive.
 
-      If 'Strict' (1), URL matching is more strict. Rules that do not contain "/" only match at the end of the hostname. They must also be at a domain name boundary. This is more compatible with <ph name="MS_IE_PRODUCT_NAME">Microsoft® Internet Explorer®</ph> and <ph name="MS_EDGE_PRODUCT_NAME">Microsoft® Edge®</ph>.
+      If 'IESiteListMode' (1), URL matching is more strict. Rules that do not contain "/" only match at the end of the hostname. They must also be at a domain name boundary. Matching the path component of a URL is case-insensitive. This is more compatible with <ph name="MS_IE_PRODUCT_NAME">Microsoft® Internet Explorer®</ph> and <ph name="MS_EDGE_PRODUCT_NAME">Microsoft® Edge®</ph>.
 
-      For example, with the rule "example.com":
+      For example, with the rules "example.com" and "acme.com/abc":
 
-      "http://example.com/" and "http://subdomain.example.com/" match regardless of parsing mode.
+      "http://example.com/", "http://subdomain.example.com/" and "http://acme.com/abc" match regardless of parsing mode.
 
-      "http://notexample.com/", "http://example.com.invalid.com/" and "http://example.comabc/" only match in 'Default' mode.''',
+      "http://notexample.com/", "http://example.com.invalid.com/", "http://example.comabc/" only match in 'Default' mode.
+
+      "http://acme.com/ABC" only matches in 'IESiteListMode'.''',
     },
     {
       'id': 519,

@@ -134,7 +134,7 @@ TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectHost) {
 
   // For backwards compatibility, this should also match, even if it's not the
   // same host.
-  EXPECT_EQ(parsing_mode() != ParsingMode::kStrict,
+  EXPECT_EQ(parsing_mode() != ParsingMode::kIESiteListMode,
             ShouldSwitch(GURL("https://notexample.com/")));
 }
 
@@ -159,7 +159,8 @@ TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectPrefix) {
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/foobar?query=param")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("https://example.com/foobar")));
-  EXPECT_FALSE(ShouldSwitch(GURL("HTTP://EXAMPLE.COM/FOOBAR")));
+  EXPECT_EQ(parsing_mode() == ParsingMode::kIESiteListMode,
+            ShouldSwitch(GURL("HTTP://EXAMPLE.COM/FOOBAR")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://subdomain.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
 }
@@ -220,11 +221,11 @@ TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectHostnamePrefix) {
   // A hostname rule (no "/") can match at the beginning of the hostname, not
   // just at the end.
   Initialize({"10.", "subdomain"}, {});
-  EXPECT_EQ(parsing_mode() == ParsingMode::kStrict
+  EXPECT_EQ(parsing_mode() == ParsingMode::kIESiteListMode
                 ? Decision(kStay, kDefault, "")
                 : Decision(kGo, kSitelist, "10."),
             GetDecision(GURL("http://10.0.0.1/")));
-  EXPECT_EQ(parsing_mode() == ParsingMode::kStrict
+  EXPECT_EQ(parsing_mode() == ParsingMode::kIESiteListMode
                 ? Decision(kStay, kDefault, "")
                 : Decision(kGo, kSitelist, "subdomain"),
             GetDecision(GURL("http://subdomain.example.com/")));
@@ -330,7 +331,7 @@ TEST_P(BrowserSwitcherSitelistTest, CheckReason) {
 INSTANTIATE_TEST_SUITE_P(ParsingMode,
                          BrowserSwitcherSitelistTest,
                          testing::Values(ParsingMode::kDefault,
-                                         ParsingMode::kStrict,
+                                         ParsingMode::kIESiteListMode,
                                          // 999 should behave like kDefault
                                          static_cast<ParsingMode>(999)));
 

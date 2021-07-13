@@ -42,8 +42,8 @@ struct RuleSet {
 // values in policy_templates.json.
 enum class ParsingMode {
   kDefault = 0,
-  kStrict = 1,
-  kMaxValue = kStrict,  // Always keep up-to-date.
+  kIESiteListMode = 1,
+  kMaxValue = kIESiteListMode,  // Always keep up-to-date.
 };
 
 // Contains the current state of the prefs related to LBS. For sensitive prefs,
