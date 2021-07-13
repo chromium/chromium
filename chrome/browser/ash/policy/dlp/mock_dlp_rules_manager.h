@@ -18,6 +18,9 @@ class MockDlpRulesManager : public DlpRulesManager {
   MOCK_CONST_METHOD2(IsRestricted,
                      Level(const GURL& source, Restriction restriction));
 
+  MOCK_CONST_METHOD2(IsRestrictedByAnyRule,
+                     Level(const GURL& source, Restriction restriction));
+
   MOCK_CONST_METHOD5(IsRestrictedDestination,
                      Level(const GURL& source,
                            const GURL& destination,

@@ -120,9 +120,10 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
   policy::DlpRulesManager* dlp_rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (dlp_rules_manager) {
-    policy::DlpRulesManager::Level level = dlp_rules_manager->IsRestricted(
-        GURL(request.source_url()),
-        policy::DlpRulesManager::Restriction::kFiles);
+    policy::DlpRulesManager::Level level =
+        dlp_rules_manager->IsRestrictedByAnyRule(
+            GURL(request.source_url()),
+            policy::DlpRulesManager::Restriction::kFiles);
     if (level == policy::DlpRulesManager::Level::kBlock)
       restricted = true;
   }

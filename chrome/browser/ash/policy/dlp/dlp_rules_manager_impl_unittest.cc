@@ -148,6 +148,9 @@ TEST_F(DlpRulesManagerImplTest, BlockPriority) {
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_.IsRestrictedByAnyRule(
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard));
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kDlpPolicyPresentUMA, true, 1);
   histogram_tester_.ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",

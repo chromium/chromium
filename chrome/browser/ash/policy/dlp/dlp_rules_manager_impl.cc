@@ -143,8 +143,8 @@ std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
     const DlpRulesManager::Restriction restriction,
     const std::map<RuleId, T>& selected_rules,
     const std::map<DlpRulesManager::Restriction,
-                   std::map<RuleId, DlpRulesManager::Level>>&
-        restrictions_map) {
+                   std::map<RuleId, DlpRulesManager::Level>>& restrictions_map,
+    const bool ignore_allow = false) {
   auto restriction_it = restrictions_map.find(restriction);
   if (restriction_it == restrictions_map.end())
     return std::make_pair(DlpRulesManager::Level::kAllow, absl::nullopt);
@@ -158,6 +158,10 @@ std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
   for (const auto& rule_pair : selected_rules) {
     const auto& restriction_rule_itr = restriction_rules.find(rule_pair.first);
     if (restriction_rule_itr == restriction_rules.end()) {
+      continue;
+    }
+    if (ignore_allow &&
+        restriction_rule_itr->second == DlpRulesManager::Level::kAllow) {
       continue;
     }
     if (restriction_rule_itr->second > max_level.first) {
@@ -216,6 +220,19 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestricted(
 
   return GetMaxJoinRestrictionLevel(restriction, src_rules_map,
                                     restrictions_map_)
+      .first;
+}
+
+DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedByAnyRule(
+    const GURL& source,
+    Restriction restriction) const {
+  DCHECK(src_url_matcher_);
+
+  const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(
+      source, src_url_matcher_.get(), src_url_rules_mapping_);
+
+  return GetMaxJoinRestrictionLevel(restriction, src_rules_map,
+                                    restrictions_map_, /*ignore_allow=*/true)
       .first;
 }
 
