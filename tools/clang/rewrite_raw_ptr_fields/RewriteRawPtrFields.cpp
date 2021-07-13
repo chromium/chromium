@@ -241,6 +241,7 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
         return true;
 
       case clang::Language::CXX:
+      case clang::Language::OpenCLCXX:
       case clang::Language::ObjCXX:
         return false;
     }
@@ -434,6 +435,12 @@ AST_MATCHER(clang::Decl, isInExternCContext) {
 AST_MATCHER(clang::ClassTemplateSpecializationDecl,
             isImplicitClassTemplateSpecialization) {
   return !Node.isExplicitSpecialization();
+}
+
+// Matches CXXRecordDecls that are classified as trivial:
+// https://en.cppreference.com/w/cpp/named_req/TrivialType
+AST_MATCHER(clang::CXXRecordDecl, isTrivial) {
+  return Node.isTrivial();
 }
 
 // Given:
@@ -1290,13 +1297,15 @@ int main(int argc, const char* argv[]) {
   match_finder.addMatcher(union_field_decl_matcher, &union_field_decl_writer);
 
   // Matches rewritable fields of struct `SomeStruct` if that struct happens to
-  // be a destination type of a `reinterpret_cast<SomeStruct*>` cast.
+  // be a destination type of a `reinterpret_cast<SomeStruct*>` cast and is a
+  // trivial type (otherwise `reinterpret_cast<SomeStruct*>` wouldn't be valid
+  // before the rewrite if it skipped non-trivial constructors).
   auto reinterpret_cast_struct_matcher =
-      cxxReinterpretCastExpr(hasDestinationType(
-          pointerType(pointee(hasUnqualifiedDesugaredType(recordType(
-              hasDeclaration(recordDecl(forEach(field_decl_matcher)))))))));
-  FilteredExprWriter reinterpret_cast_struct_writer(&output_helper,
-                                                    "reinterpret-cast-struct");
+      cxxReinterpretCastExpr(hasDestinationType(pointerType(pointee(
+          hasUnqualifiedDesugaredType(recordType(hasDeclaration(cxxRecordDecl(
+              allOf(forEach(field_decl_matcher), isTrivial())))))))));
+  FilteredExprWriter reinterpret_cast_struct_writer(
+      &output_helper, "reinterpret-cast-trivial-type");
   match_finder.addMatcher(reinterpret_cast_struct_matcher,
                           &reinterpret_cast_struct_writer);
 

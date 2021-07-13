@@ -1,7 +1,7 @@
 ==== BEGIN EDITS ====
 include-user-header:::gen-in-out-arg-actual.cc:::-1:::-1:::base/memory/checked_ptr.h
 r:::gen-in-out-arg-actual.cc:::1090:::3:::CheckedPtr<T> 
-r:::gen-in-out-arg-actual.cc:::2875:::3:::CheckedPtr<T> 
+r:::gen-in-out-arg-actual.cc:::2873:::3:::CheckedPtr<T> 
 r:::gen-in-out-arg-actual.cc:::789:::11:::CheckedPtr<SomeClass> 
 r:::gen-in-out-arg-actual.cc:::813:::11:::CheckedPtr<SomeClass> 
 r:::gen-in-out-arg-actual.cc:::842:::11:::CheckedPtr<SomeClass> 
