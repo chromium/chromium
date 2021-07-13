@@ -74,6 +74,9 @@ input[type=checkbox] {
 
 [tabindex] {
   outline: none; /* Prevent default focus ring style. */
+}
+
+[i18n-text] {
   user-select: none;
 }
 
@@ -242,6 +245,7 @@ body.tablet-landscape .actions-group {
   overflow: auto;
   pointer-events: auto;
   text-align: center;
+  user-select: none;
   white-space: nowrap;
 }
 
