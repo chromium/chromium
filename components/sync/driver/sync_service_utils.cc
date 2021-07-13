@@ -96,6 +96,14 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
     return false;
   }
 
+  const ModelTypeSet encrypted_types =
+      service->GetUserSettings()->GetEncryptedDataTypes();
+  if (Intersection(service->GetActiveDataTypes(), encrypted_types).Empty()) {
+    // No point in offering the user a new encryption method if they are not
+    // syncing any encrypted types.
+    return false;
+  }
+
   switch (service->GetUserSettings()->GetPassphraseType()) {
     case PassphraseType::kImplicitPassphrase:
     case PassphraseType::kFrozenImplicitPassphrase:
