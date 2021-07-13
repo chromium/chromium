@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_com_initializer.h"
+#include "components/crash/core/common/crash_key.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
@@ -87,6 +88,9 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
 
   std::unique_ptr<CdmAuxiliaryHelper> helper_;
   base::FilePath user_data_dir_;
+
+  // CDM origin crash key used in crash reporting.
+  crash_reporter::ScopedCrashKeyString cdm_origin_crash_key_;
 
   // IMFContentDecryptionModule implementations typically require MTA to run.
   base::win::ScopedCOMInitializer com_initializer_{

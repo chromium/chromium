@@ -588,7 +588,7 @@ void ToCdmInputBuffer(const DecoderBuffer& encrypted_buffer,
 
   const DecryptConfig* decrypt_config = encrypted_buffer.decrypt_config();
   if (!decrypt_config) {
-    DVLOG(2) << __func__ << ": Clear buffer.";
+    DVLOG(3) << __func__ << ": Clear buffer.";
     return;
   }
 

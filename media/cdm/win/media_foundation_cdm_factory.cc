@@ -158,12 +158,17 @@ bool IsTypeSupportedInternal(
                                       base::UTF8ToWide(content_type).c_str());
 }
 
+crash_reporter::CrashKeyString<256> g_origin_crash_key("cdm-origin");
+
 }  // namespace
 
 MediaFoundationCdmFactory::MediaFoundationCdmFactory(
     std::unique_ptr<CdmAuxiliaryHelper> helper,
     const base::FilePath& user_data_dir)
-    : helper_(std::move(helper)), user_data_dir_(user_data_dir) {}
+    : helper_(std::move(helper)),
+      user_data_dir_(user_data_dir),
+      cdm_origin_crash_key_(&g_origin_crash_key,
+                            helper_->GetCdmOrigin().Serialize()) {}
 
 MediaFoundationCdmFactory::~MediaFoundationCdmFactory() = default;
 
