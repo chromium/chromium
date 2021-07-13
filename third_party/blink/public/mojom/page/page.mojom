@@ -62,6 +62,9 @@ interface PageBroadcast {
   // Notifies the renderer when audio is started or stopped.
   AudioStateChanged(bool is_audio_playing);
 
+  // Notifies renderers when a prerendered page is activated.
+  ActivatePrerenderedPage();
+
   // Notifies renderers when a portal web contents is activated or if a
   // web contents is adopted as a portal.
   SetInsidePortal(bool is_inside_portal);

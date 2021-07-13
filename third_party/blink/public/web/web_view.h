@@ -98,6 +98,8 @@ class WebView {
   //
   // clients may be null, but should both be null or not together.
   // |is_hidden| defines the initial visibility of the page.
+  // |is_prerendering| defines whether the page is being prerendered by the
+  // Prerender2 feature (see content/browser/prerender/README.md).
   // [is_inside_portal] defines whether the page is inside_portal.
   // |compositing_enabled| dictates whether accelerated compositing should be
   // enabled for the page. It must be false if no clients are provided, or if a
@@ -121,6 +123,7 @@ class WebView {
   BLINK_EXPORT static WebView* Create(
       WebViewClient*,
       bool is_hidden,
+      bool is_prerendering,
       bool is_inside_portal,
       bool compositing_enabled,
       bool widgets_never_composited,

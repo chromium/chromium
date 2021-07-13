@@ -429,6 +429,8 @@ bool RenderViewHostImpl::CreateRenderView(
   params->replication_state =
       frame_tree_node->current_replication_state().Clone();
   params->devtools_main_frame_token = frame_tree_node->devtools_frame_token();
+  DCHECK_EQ(frame_tree_node->frame_tree(), frame_tree_);
+  params->is_prerendering = frame_tree_->is_prerendering();
 
   if (main_rfh) {
     auto local_frame_params = mojom::CreateLocalMainFrameParams::New();
@@ -556,6 +558,15 @@ void RenderViewHostImpl::LeaveBackForwardCache(
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, std::move(page_restore_params));
+}
+
+void RenderViewHostImpl::ActivatePrerenderedPage() {
+  // Null in some unit tests that use TestRenderViewHost.
+  // TODO(falken): Bind this in tests.
+  if (!page_broadcast_)
+    return;
+
+  page_broadcast_->ActivatePrerenderedPage();
 }
 
 void RenderViewHostImpl::SetFrameTreeVisibility(

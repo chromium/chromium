@@ -14086,35 +14086,4 @@ TEST_F(WebFrameTest, LargeScaleRemoteFrameCompositingScaleFactor) {
   EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 5.0f);
 }
 
-TEST_F(WebFrameTest, IsPrerendering) {
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.Initialize();
-  auto params = std::make_unique<WebNavigationParams>();
-  params->url = KURL("about:blank");
-  params->is_prerendering = false;
-  web_view_helper.LocalMainFrame()->CommitNavigation(std::move(params),
-                                                     nullptr);
-  WebViewImpl* web_view = web_view_helper.GetWebView();
-
-  EXPECT_FALSE(web_view->MainFrameImpl()
-                   ->GetFrame()
-                   ->GetDocument()
-                   ->Fetcher()
-                   ->Context()
-                   .IsPrerendering());
-
-  params = std::make_unique<WebNavigationParams>();
-  params->url = KURL("about:blank");
-  params->is_prerendering = true;
-  web_view_helper.LocalMainFrame()->CommitNavigation(std::move(params),
-                                                     nullptr);
-
-  EXPECT_TRUE(web_view->MainFrameImpl()
-                  ->GetFrame()
-                  ->GetDocument()
-                  ->Fetcher()
-                  ->Context()
-                  .IsPrerendering());
-}
-
 }  // namespace blink

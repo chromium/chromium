@@ -14,7 +14,8 @@ namespace content {
 // PrerenderSubframeNavigationThrottle defers cross-origin subframe loading
 // during the main frame is in a prerendered state.
 class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
-                                            public PrerenderHost::Observer {
+                                            public PrerenderHost::Observer,
+                                            public WebContentsObserver {
  public:
   ~PrerenderSubframeNavigationThrottle() override;
 
@@ -35,9 +36,13 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
   void OnActivated() override;
   void OnHostDestroyed() override;
 
+  // WebContentsObserver:
+  void DidFinishNavigation(NavigationHandle* nav_handle) override;
+
   ThrottleCheckResult WillStartOrRedirectRequest();
 
   bool is_deferred_ = false;
+  const int prerender_root_ftn_id_;
   base::ScopedObservation<PrerenderHost, PrerenderHost::Observer> observation_{
       this};
 };

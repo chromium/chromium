@@ -54,8 +54,10 @@ void MockCommitDeferringConditionWrapper::WillCommitNavigationCalled(
     base::OnceClosure resume_closure) {
   did_call_will_commit_navigation_ = true;
   resume_closure_ = std::move(resume_closure);
-  if (invoked_closure_)
-    std::move(invoked_closure_).Run();
+  if (invoked_closure_) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(invoked_closure_));
+  }
 }
 
 MockCommitDeferringCondition::MockCommitDeferringCondition(

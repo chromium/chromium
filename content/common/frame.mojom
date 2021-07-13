@@ -109,6 +109,9 @@ struct CreateViewParams {
   // Whether the RenderView should initially be hidden.
   bool hidden;
 
+  // Prerender2: Whether the RenderView is for a prerendered page.
+  bool is_prerendering;
+
   // When true, all RenderWidgets under this RenderView will never be shown to
   // the user, and thus never composited, and will not need to produce pixels
   // for display. This allows the renderer to optimize and avoid resources used

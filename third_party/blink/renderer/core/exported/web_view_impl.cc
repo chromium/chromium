@@ -446,6 +446,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
 WebView* WebView::Create(
     WebViewClient* client,
     bool is_hidden,
+    bool is_prerendering,
     bool is_inside_portal,
     bool compositing_enabled,
     bool widgets_never_composited,
@@ -459,14 +460,16 @@ WebView* WebView::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
                 : mojom::blink::PageVisibilityState::kVisible,
-      is_inside_portal, compositing_enabled, widgets_never_composited,
-      To<WebViewImpl>(opener), std::move(page_handle), agent_group_scheduler,
-      session_storage_namespace_id, std::move(page_base_background_color));
+      is_prerendering, is_inside_portal, compositing_enabled,
+      widgets_never_composited, To<WebViewImpl>(opener), std::move(page_handle),
+      agent_group_scheduler, session_storage_namespace_id,
+      std::move(page_base_background_color));
 }
 
 WebViewImpl* WebViewImpl::Create(
     WebViewClient* client,
     mojom::blink::PageVisibilityState visibility,
+    bool is_prerendering,
     bool is_inside_portal,
     bool compositing_enabled,
     bool widgets_never_composited,
@@ -477,11 +480,11 @@ WebViewImpl* WebViewImpl::Create(
     absl::optional<SkColor> page_base_background_color) {
   // Take a self-reference for WebViewImpl that is released by calling Close(),
   // then return a raw pointer to the caller.
-  auto web_view = base::AdoptRef(
-      new WebViewImpl(client, visibility, is_inside_portal, compositing_enabled,
-                      widgets_never_composited, opener, std::move(page_handle),
-                      agent_group_scheduler, session_storage_namespace_id,
-                      std::move(page_base_background_color)));
+  auto web_view = base::AdoptRef(new WebViewImpl(
+      client, visibility, is_prerendering, is_inside_portal,
+      compositing_enabled, widgets_never_composited, opener,
+      std::move(page_handle), agent_group_scheduler,
+      session_storage_namespace_id, std::move(page_base_background_color)));
   web_view->AddRef();
   return web_view.get();
 }
@@ -539,6 +542,7 @@ void WebViewImpl::DoDeferredCloseWindowSoon() {
 WebViewImpl::WebViewImpl(
     WebViewClient* client,
     mojom::blink::PageVisibilityState visibility,
+    bool is_prerendering,
     bool is_inside_portal,
     bool does_composite,
     bool widgets_never_composited,
@@ -569,6 +573,7 @@ WebViewImpl::WebViewImpl(
       *page_, session_storage_namespace_id_);
 
   SetVisibilityState(visibility, /*is_initial_state=*/true);
+  page_->SetIsPrerendering(is_prerendering);
 
   // We pass this state to Page, but it's only used by the main frame in the
   // page.
@@ -3137,6 +3142,10 @@ void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
         // !defined(OS_ANDROID)
 #endif  // defined(OS_WIN)
 #endif  // !defined(OS_MAC)
+}
+
+void WebViewImpl::ActivatePrerenderedPage() {
+  GetPage()->SetIsPrerendering(false);
 }
 
 void WebViewImpl::SetInsidePortal(bool inside_portal) {

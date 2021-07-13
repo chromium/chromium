@@ -107,6 +107,7 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
                SetPageLifecycleStateCallback callback),
               (override));
   MOCK_METHOD(void, AudioStateChanged, (bool is_audio_playing), (override));
+  MOCK_METHOD(void, ActivatePrerenderedPage, (), (override));
   MOCK_METHOD(void, SetInsidePortal, (bool is_inside_portal), (override));
   MOCK_METHOD(void,
               UpdateWebPreferences,

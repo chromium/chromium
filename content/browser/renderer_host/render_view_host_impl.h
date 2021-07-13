@@ -240,6 +240,8 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   bool is_in_back_forward_cache() const { return is_in_back_forward_cache_; }
 
+  void ActivatePrerenderedPage();
+
   void SetFrameTreeVisibility(blink::mojom::PageVisibilityState visibility);
 
   void SetIsFrozen(bool frozen);

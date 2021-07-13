@@ -115,7 +115,7 @@ void RenderViewImpl::Initialize(
 
   // The newly created webview_ is owned by this instance.
   webview_ = WebView::Create(
-      this, params->hidden,
+      this, params->hidden, params->is_prerendering,
       params->type == mojom::ViewWidgetType::kPortal ? true : false,
       /*compositing_enabled=*/true, params->never_composited,
       opener_frame ? opener_frame->View() : nullptr,

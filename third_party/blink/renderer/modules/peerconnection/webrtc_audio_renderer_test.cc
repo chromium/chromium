@@ -142,6 +142,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
         web_view_(blink::WebView::Create(
             /*client=*/nullptr,
             /*is_hidden=*/false,
+            /*is_prerendering=*/false,
             /*is_inside_portal=*/false,
             /*compositing_enabled=*/false,
             /*widgets_never_composited=*/false,

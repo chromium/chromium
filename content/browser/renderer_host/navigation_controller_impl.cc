@@ -3518,7 +3518,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           std::string(), /* data_url_as_string */
 #endif
           !params.is_renderer_initiated, /* is_browser_initiated */
-          node->frame_tree()->is_prerendering() /* is_prerendering */,
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,
           ukm::kInvalidSourceId /* document_ukm_source_id */,

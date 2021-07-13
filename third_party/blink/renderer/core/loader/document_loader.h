@@ -581,7 +581,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Whether this load request was initiated by the browser.
   const bool is_browser_initiated_ = false;
 
-  // Whether this loader is working for a prerendering document.
+  // Whether this loader committed a document in a prerendered page that has not
+  // yet been activated. This is only set after commit.
   bool is_prerendering_ = false;
 
   // If true, the navigation loading this document should allow a text fragment

@@ -114,6 +114,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   static WebViewImpl* Create(
       WebViewClient*,
       mojom::blink::PageVisibilityState visibility,
+      bool is_prerendering,
       bool is_inside_portal,
       bool compositing_enabled,
       bool widgets_never_composited,
@@ -278,6 +279,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::PageRestoreParamsPtr page_restore_params,
       SetPageLifecycleStateCallback callback) override;
   void AudioStateChanged(bool is_audio_playing) override;
+  void ActivatePrerenderedPage() override;
   void SetInsidePortal(bool is_inside_portal) override;
   void UpdateWebPreferences(
       const blink::web_pref::WebPreferences& preferences) override;
@@ -638,6 +640,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   WebViewImpl(
       WebViewClient*,
       mojom::blink::PageVisibilityState visibility,
+      bool is_prerendering,
       bool is_inside_portal,
       bool does_composite,
       bool widgets_never_composite,

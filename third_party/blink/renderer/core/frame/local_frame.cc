@@ -2327,16 +2327,18 @@ void LocalFrame::ForceSynchronousDocumentInstall(
     scoped_refptr<const SharedBuffer> data) {
   CHECK(GetDocument()->IsInitialEmptyDocument());
   DCHECK(!Client()->IsLocalFrameClientImpl());
+  DCHECK(GetPage());
 
   // Any Document requires Shutdown() before detach, even the initial empty
   // document.
   GetDocument()->Shutdown();
   DomWindow()->ClearForReuse();
 
-  Document* document =
-      DomWindow()->InstallNewDocument(DocumentInit::Create()
-                                          .WithWindow(DomWindow(), nullptr)
-                                          .WithTypeFrom(mime_type));
+  Document* document = DomWindow()->InstallNewDocument(
+      DocumentInit::Create()
+          .WithWindow(DomWindow(), nullptr)
+          .WithTypeFrom(mime_type)
+          .ForPrerendering(GetPage()->IsPrerendering()));
   DocumentParser* parser = document->OpenForNavigation(
       kForceSynchronousParsing, mime_type, AtomicString("UTF-8"));
   for (const auto& segment : *data)

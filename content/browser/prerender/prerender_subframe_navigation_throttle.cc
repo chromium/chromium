@@ -34,8 +34,13 @@ PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(
 }
 
 PrerenderSubframeNavigationThrottle::PrerenderSubframeNavigationThrottle(
-    NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+    NavigationHandle* nav_handle)
+    : NavigationThrottle(nav_handle),
+      prerender_root_ftn_id_(NavigationRequest::From(nav_handle)
+                                 ->frame_tree_node()
+                                 ->frame_tree()
+                                 ->root()
+                                 ->frame_tree_node_id()) {}
 
 PrerenderSubframeNavigationThrottle::~PrerenderSubframeNavigationThrottle() =
     default;
@@ -79,11 +84,46 @@ void PrerenderSubframeNavigationThrottle::OnActivated() {
               ->frame_tree_node()
               ->frame_tree()
               ->is_prerendering());
-  if (is_deferred_) {
-    is_deferred_ = false;
-    // May delete `this`.
-    Resume();
-  }
+  // OnActivated() is called right before activation navigation commit which is
+  // a little early. We want to resume the subframe navigation after the
+  // PageBroadcast ActivatePrerenderedPage IPC is sent, to
+  // guarantee that the new document starts in the non-prerendered state and
+  // does not get a prerenderingchange event.
+  //
+  // Listen to the WebContents to wait for the activation navigation to finish
+  // before resuming the subframe navigation.
+  Observe(navigation_handle()->GetWebContents());
+}
+
+// Use DidFinishNavigation() rather than PrimaryPageChanged() in order to
+// Resume() after the PageBroadcast Activate IPC is sent, which happens a
+// little after PrimaryPageChanged() and before DidFinishNavigation(). This
+// guarantees the new document starts in non-prerendered state.
+void PrerenderSubframeNavigationThrottle::DidFinishNavigation(
+    NavigationHandle* nav_handle) {
+  // Ignore finished navigations that are not the activation navigation for the
+  // prerendering frame tree that this subframe navigation started in.
+  auto* finished_navigation = NavigationRequest::From(nav_handle);
+  if (finished_navigation->prerender_frame_tree_node_id() !=
+      prerender_root_ftn_id_)
+    return;
+
+  // If the finished navigation did not commit, do not Resume(). We expect that
+  // the prerendered page and therefore the subframe navigation will eventually
+  // be cancelled.
+  if (!finished_navigation->HasCommitted())
+    return;
+
+  // The activation is finished. There is no need to listen to the WebContents
+  // anymore.
+  Observe(nullptr);
+
+  // Resume the subframe navigation.
+  if (!is_deferred_)
+    return;
+  is_deferred_ = false;
+  Resume();
+  // Resume() may have deleted `this`.
 }
 
 void PrerenderSubframeNavigationThrottle::OnHostDestroyed() {
@@ -114,12 +154,12 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
   PrerenderHostRegistry* registry = frame_tree_node->current_frame_host()
                                         ->delegate()
                                         ->GetPrerenderHostRegistry();
-  int id = frame_tree_node->frame_tree()->GetMainFrame()->GetFrameTreeNodeId();
-  PrerenderHost* prerender_host = registry->FindNonReservedHostById(id);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_root_ftn_id_);
   if (!prerender_host) {
     // The host might be reserved already for activation. In either case, we
     // defer until activation for simplicity.
-    prerender_host = registry->FindReservedHostById(id);
+    prerender_host = registry->FindReservedHostById(prerender_root_ftn_id_);
   }
   DCHECK(prerender_host);
 

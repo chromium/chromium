@@ -330,6 +330,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void SetInsidePortal(bool inside_portal);
   bool InsidePortal() const;
 
+  void SetIsPrerendering(bool is_prerendering) {
+    is_prerendering_ = is_prerendering;
+  }
+  bool IsPrerendering() const { return is_prerendering_; }
+
   void SetTextAutosizerPageInfo(
       const mojom::blink::TextAutosizerPageInfo& page_info) {
     web_text_autosizer_page_info_ = page_info;
@@ -492,6 +497,14 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // Accessed by frames to determine whether to expose the PortalHost object.
   bool inside_portal_ = false;
+
+  // Whether the page is being prerendered by the Prerender2
+  // feature. See content/browser/prerender/README.md.
+  //
+  // This is ordinarily initialized by WebViewImpl immediately after creating
+  // this Page. Once initialized, it can only transition from true to false on
+  // prerender activation; it does not go from false to true.
+  bool is_prerendering_ = false;
 
   mojom::blink::TextAutosizerPageInfo web_text_autosizer_page_info_;
 

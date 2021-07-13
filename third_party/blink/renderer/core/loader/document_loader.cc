@@ -401,7 +401,6 @@ DocumentLoader::DocumentLoader(
           params_->had_transient_user_activation),
       had_sticky_activation_(params_->is_user_activated),
       is_browser_initiated_(params_->is_browser_initiated),
-      is_prerendering_(params_->is_prerendering),
       was_discarded_(params_->was_discarded),
       loading_srcdoc_(url_.IsAboutSrcdocURL()),
       loading_url_as_empty_document_(!params_->is_static_data &&
@@ -526,7 +525,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->had_transient_user_activation =
       last_navigation_had_transient_user_activation_;
   params->is_browser_initiated = is_browser_initiated_;
-  params->is_prerendering = is_prerendering_;
   params->was_discarded = was_discarded_;
   params->web_bundle_physical_url = web_bundle_physical_url_;
   params->web_bundle_claimed_url = web_bundle_claimed_url_;
@@ -2255,6 +2253,7 @@ void DocumentLoader::CommitNavigation() {
 
   WillCommitNavigation();
 
+  is_prerendering_ = frame_->GetPage()->IsPrerendering();
   Document* document = frame_->DomWindow()->InstallNewDocument(
       DocumentInit::Create()
           .WithWindow(frame_->DomWindow(), owner_document)

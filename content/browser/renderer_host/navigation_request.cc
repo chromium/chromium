@@ -1009,7 +1009,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*data_url_as_string=*/std::string(),
 #endif
           /*is_browser_initiated=*/false,
-          frame_tree_node->frame_tree()->is_prerendering(),
           /*web_bundle_physical_url=*/GURL(),
           /*base_url_override_for_web_bundle=*/GURL(),
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
@@ -1132,7 +1131,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           std::string() /* data_url_as_string */,
 #endif
           false /* is_browser_initiated */,
-          frame_tree_node->frame_tree()->is_prerendering(),
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,
           ukm::kInvalidSourceId /* document_ukm_source_id */,
@@ -3965,16 +3963,6 @@ void NavigationRequest::CommitErrorPage(
   redirect_chain_.clear();
   redirect_chain_.push_back(GetURL());
 
-  // Set `is_prerendering` here so it's accurate before sending it to the
-  // renderer, as it may be out of sync with the source of truth which is the
-  // frame tree state. The frame tree may have changed if activation happened
-  // while this navigation is occurring in an iframe.
-  // TODO(crbug.com/1189481): With MPArch, the NavigationRequest should be
-  // notified when it transfers frame trees, and commit_params should be updated
-  // then.
-  commit_params_->is_prerendering =
-      frame_tree_node_->frame_tree()->is_prerendering();
-
   ReadyToCommitNavigation(true /* is_error */);
 
   // Use a separate cache shard, and no cookies, for error pages.
@@ -4144,16 +4132,6 @@ void NavigationRequest::CommitNavigation() {
       web_bundle_handle_.reset();
     }
   }
-
-  // Set `is_prerendering` here so it's accurate before sending it to the
-  // renderer, as it may be out of sync with the source of truth which is the
-  // frame tree state. The frame tree may have changed if activation happened
-  // while this navigation is occurring in an iframe.
-  // TODO(crbug.com/1189481): With MPArch, the NavigationRequest should be
-  // notified when it transfers frame trees, and commit_params should be updated
-  // then.
-  commit_params_->is_prerendering =
-      frame_tree_node_->frame_tree()->is_prerendering();
 
   if (!IsSameDocument())
     GetNavigationController()->PopulateAppHistoryEntryVectors(this);

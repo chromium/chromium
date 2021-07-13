@@ -488,6 +488,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   WebViewImpl* web_view = To<WebViewImpl>(
       WebView::Create(&web_view_client,
                       /*is_hidden=*/false,
+                      /*is_prerendering=*/false,
                       /*is_inside_portal=*/false,
                       /*compositing_enabled=*/true,
                       /*widgets_never_composited=*/false,
@@ -2736,7 +2737,8 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
   // Note: this test doesn't use WebViewHelper since WebViewHelper creates an
   // internal WebViewClient on demand if the supplied WebViewClient is null.
   WebViewImpl* web_view = To<WebViewImpl>(WebView::Create(
-      /*client=*/nullptr, /*is_hidden=*/false, /*is_inside_portal=*/false,
+      /*client=*/nullptr, /*is_hidden=*/false, /*is_prerendering=*/false,
+      /*is_inside_portal=*/false,
       /*compositing_enabled=*/false,
       /*widgets_never_composited=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),

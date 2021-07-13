@@ -872,7 +872,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
 #if defined(OS_ANDROID)
           std::string(),
 #endif
-          false /* is_browser_initiated */, false /* is_prerendering */,
+          false /* is_browser_initiated */,
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,
           ukm::kInvalidSourceId /* document_ukm_source_id */, frame_policy,

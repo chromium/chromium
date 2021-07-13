@@ -702,7 +702,8 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
 
   blink::WebView* web_view = blink::WebView::Create(
       /*client=*/nullptr,
-      /*is_hidden=*/false, /*is_inside_portal=*/false,
+      /*is_hidden=*/false, /*is_prerendering=*/false,
+      /*is_inside_portal=*/false,
       /*compositing_enabled=*/false, /*widgets_never_composited=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
       *source_frame.GetAgentGroupScheduler(),
@@ -981,6 +982,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
   blink::WebView* web_view = blink::WebView::Create(
       /*client=*/this,
       /*is_hidden=*/false,
+      /*is_prerendering=*/false,
       /*is_inside_portal=*/false,
       /*compositing_enabled=*/false,
       /*widgets_never_composited=*/false,

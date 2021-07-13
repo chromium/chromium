@@ -269,6 +269,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
   web_view_ =
       WebView::Create(/*client=*/this,
                       /*is_hidden=*/false,
+                      /*is_prerendering=*/false,
                       /*is_inside_portal=*/false,
                       /*compositing_enabled=*/false,
                       /*widgets_never_composited=*/false,
