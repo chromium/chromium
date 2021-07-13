@@ -14,6 +14,8 @@ source_set("scanning") {
     "fast_pair/fast_pair_scanner_impl.h",
     "range_calculations.cc",
     "range_calculations.h",
+    "range_tracker.cc",
+    "range_tracker.h",
     "scanner_broker.h",
     "scanner_broker_impl.cc",
     "scanner_broker_impl.h",
@@ -49,6 +51,7 @@ source_set("unit_tests") {
   sources = [
     "fast_pair/fast_pair_scanner_unittest.cc",
     "range_calculations_unittest.cc",
+    "range_tracker_unittest.cc",
   ]
 
   deps = [
