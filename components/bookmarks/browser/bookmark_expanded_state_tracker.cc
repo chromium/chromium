@@ -42,7 +42,7 @@ BookmarkExpandedStateTracker::GetExpandedNodes() {
   if (!pref_service_)
     return nodes;
 
-  const base::ListValue* value =
+  const base::Value* value =
       pref_service_->GetList(prefs::kBookmarkEditorExpandedNodes);
   if (!value)
     return nodes;

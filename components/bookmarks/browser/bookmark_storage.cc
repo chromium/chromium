@@ -83,15 +83,15 @@ void BookmarkStorage::BookmarkModelDeleted() {
 base::ImportantFileWriter::BackgroundDataProducerCallback
 BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
   BookmarkCodec codec;
-  std::unique_ptr<base::Value> value(
+  base::Value value(
       codec.Encode(model_, model_->client()->EncodeBookmarkSyncMetadata()));
 
   return base::BindOnce(
-      [](std::unique_ptr<base::Value> value, std::string* output) {
+      [](base::Value value, std::string* output) {
         // This runs on the background sequence.
         JSONStringValueSerializer serializer(output);
         serializer.set_pretty_print(true);
-        return serializer.Serialize(*value);
+        return serializer.Serialize(value);
       },
       std::move(value));
 }

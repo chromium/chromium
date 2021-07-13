@@ -141,17 +141,15 @@ class BookmarkCodecTest : public testing::Test {
     *result_value = &child_value;
   }
 
-  std::unique_ptr<base::Value> EncodeHelper(
-      BookmarkModel* model,
-      const std::string& sync_metadata_str,
-      std::string* checksum) {
+  base::Value EncodeHelper(BookmarkModel* model,
+                           const std::string& sync_metadata_str,
+                           std::string* checksum) {
     BookmarkCodec encoder;
     // Computed and stored checksums should be empty.
     EXPECT_EQ("", encoder.computed_checksum());
     EXPECT_EQ("", encoder.stored_checksum());
 
-    std::unique_ptr<base::Value> value(
-        encoder.Encode(model, sync_metadata_str));
+    base::Value value(encoder.Encode(model, sync_metadata_str));
     const std::string& computed_checksum = encoder.computed_checksum();
     const std::string& stored_checksum = encoder.stored_checksum();
 
@@ -234,15 +232,13 @@ class BookmarkCodecTest : public testing::Test {
 TEST_F(BookmarkCodecTest, ChecksumEncodeDecodeTest) {
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
   std::string enc_checksum;
-  std::unique_ptr<base::Value> value =
+  base::Value value =
       EncodeHelper(model_to_encode.get(), /*sync_metadata_str=*/std::string(),
                    &enc_checksum);
 
-  EXPECT_TRUE(value.get() != nullptr);
-
   std::string dec_checksum;
   std::unique_ptr<BookmarkModel> decoded_model =
-      DecodeHelper(*value.get(), enc_checksum, &dec_checksum, false,
+      DecodeHelper(value, enc_checksum, &dec_checksum, false,
                    /*sync_metadata_str=*/nullptr);
 }
 
@@ -251,15 +247,13 @@ TEST_F(BookmarkCodecTest, ChecksumEncodeIdenticalModelsTest) {
   // as the data is the same.
   std::unique_ptr<BookmarkModel> model1(CreateTestModel1());
   std::string enc_checksum1;
-  std::unique_ptr<base::Value> value1 = EncodeHelper(
-      model1.get(), /*sync_metadata_str=*/std::string(), &enc_checksum1);
-  EXPECT_TRUE(value1.get() != nullptr);
+  EncodeHelper(model1.get(), /*sync_metadata_str=*/std::string(),
+               &enc_checksum1);
 
   std::unique_ptr<BookmarkModel> model2(CreateTestModel1());
   std::string enc_checksum2;
-  std::unique_ptr<base::Value> value2 = EncodeHelper(
-      model2.get(), /*sync_metadata_str=*/std::string(), &enc_checksum2);
-  EXPECT_TRUE(value2.get() != nullptr);
+  EncodeHelper(model2.get(), /*sync_metadata_str=*/std::string(),
+               &enc_checksum2);
 
   ASSERT_EQ(enc_checksum1, enc_checksum2);
 }
@@ -267,15 +261,13 @@ TEST_F(BookmarkCodecTest, ChecksumEncodeIdenticalModelsTest) {
 TEST_F(BookmarkCodecTest, ChecksumManualEditTest) {
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
   std::string enc_checksum;
-  std::unique_ptr<base::Value> value =
+  base::Value value =
       EncodeHelper(model_to_encode.get(), /*sync_metadata_str=*/std::string(),
                    &enc_checksum);
 
-  EXPECT_TRUE(value.get() != nullptr);
-
   // Change something in the encoded value before decoding it.
   base::Value* child1_value = nullptr;
-  GetBookmarksBarChildValue(value.get(), 0, &child1_value);
+  GetBookmarksBarChildValue(&value, 0, &child1_value);
   std::string* title = child1_value->FindStringKey(BookmarkCodec::kNameKey);
   ASSERT_TRUE(title);
   std::string original_title = *title;
@@ -283,13 +275,13 @@ TEST_F(BookmarkCodecTest, ChecksumManualEditTest) {
 
   std::string dec_checksum;
   std::unique_ptr<BookmarkModel> decoded_model1 =
-      DecodeHelper(*value.get(), enc_checksum, &dec_checksum, true,
+      DecodeHelper(value, enc_checksum, &dec_checksum, true,
                    /*sync_metadata_str=*/nullptr);
 
   // Undo the change and make sure the checksum is same as original.
   child1_value->SetStringKey(BookmarkCodec::kNameKey, original_title);
   std::unique_ptr<BookmarkModel> decoded_model2 =
-      DecodeHelper(*value.get(), enc_checksum, &dec_checksum, false,
+      DecodeHelper(value, enc_checksum, &dec_checksum, false,
                    /*sync_metadata_str=*/nullptr);
 }
 
@@ -303,16 +295,14 @@ TEST_F(BookmarkCodecTest, ChecksumManualEditIDsTest) {
   ASSERT_GT(bb_child_count, 1u);
 
   std::string enc_checksum;
-  std::unique_ptr<base::Value> value =
+  base::Value value =
       EncodeHelper(model_to_encode.get(), /*sync_metadata_str=*/std::string(),
                    &enc_checksum);
-
-  EXPECT_TRUE(value.get() != nullptr);
 
   // Change IDs for all children of bookmark bar to be 1.
   base::Value* child_value = nullptr;
   for (size_t i = 0; i < bb_child_count; ++i) {
-    GetBookmarksBarChildValue(value.get(), i, &child_value);
+    GetBookmarksBarChildValue(&value, i, &child_value);
     std::string* id = child_value->FindStringKey(BookmarkCodec::kIdKey);
     ASSERT_TRUE(id);
     child_value->SetStringKey(BookmarkCodec::kIdKey, "1");
@@ -320,7 +310,7 @@ TEST_F(BookmarkCodecTest, ChecksumManualEditIDsTest) {
 
   std::string dec_checksum;
   std::unique_ptr<BookmarkModel> decoded_model =
-      DecodeHelper(*value.get(), enc_checksum, &dec_checksum, true,
+      DecodeHelper(value, enc_checksum, &dec_checksum, true,
                    /*sync_metadata_str=*/nullptr);
 
   ExpectIDsUnique(decoded_model.get());
@@ -336,13 +326,12 @@ TEST_F(BookmarkCodecTest, ChecksumManualEditIDsTest) {
 TEST_F(BookmarkCodecTest, PersistIDsTest) {
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel3());
   BookmarkCodec encoder;
-  std::unique_ptr<base::Value> model_value(
-      encoder.Encode(model_to_encode.get(), std::string()));
+  base::Value model_value(encoder.Encode(model_to_encode.get(), std::string()));
 
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, *model_value.get(), decoded_model.get(),
+  ASSERT_TRUE(Decode(&decoder, model_value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
   ASSERT_NO_FATAL_FAILURE(
       AssertModelsEqual(model_to_encode.get(), decoded_model.get()));
@@ -357,13 +346,12 @@ TEST_F(BookmarkCodecTest, PersistIDsTest) {
   decoded_model->AddURL(folder2_node, 0, kUrl4Title, GURL(kUrl4Url));
 
   BookmarkCodec encoder2;
-  std::unique_ptr<base::Value> model_value2(
-      encoder2.Encode(decoded_model.get(), std::string()));
+  base::Value model_value2(encoder2.Encode(decoded_model.get(), std::string()));
 
   std::unique_ptr<BookmarkModel> decoded_model2(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder2;
-  ASSERT_TRUE(Decode(&decoder2, *model_value2.get(), decoded_model2.get(),
+  ASSERT_TRUE(Decode(&decoder2, model_value2, decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
   ASSERT_NO_FATAL_FAILURE(
       AssertModelsEqual(decoded_model.get(), decoded_model2.get()));
@@ -419,12 +407,11 @@ TEST_F(BookmarkCodecTest, EncodeAndDecodeMetaInfo) {
   model->SetNodeMetaInfo(model->bookmark_bar_node()->children().front().get(),
                          "node_info", "value2");
   std::string checksum;
-  std::unique_ptr<base::Value> value =
+  base::Value value =
       EncodeHelper(model.get(), /*sync_metadata_str=*/std::string(), &checksum);
-  ASSERT_TRUE(value.get() != nullptr);
 
   // Decode and check for meta info.
-  model = DecodeHelper(*value, checksum, &checksum, false,
+  model = DecodeHelper(value, checksum, &checksum, false,
                        /*sync_metadata_str=*/nullptr);
   std::string meta_value;
   EXPECT_TRUE(model->root_node()->GetMetaInfo("model_info", &meta_value));
@@ -473,13 +460,11 @@ TEST_F(BookmarkCodecTest, EncodeAndDecodeSyncMetadata) {
   // Since metadata str serialized proto, it could contain no ASCII characters.
   std::string sync_metadata_str("a/2'\"");
   std::string checksum;
-  std::unique_ptr<base::Value> value =
-      EncodeHelper(model.get(), sync_metadata_str, &checksum);
-  ASSERT_TRUE(value.get() != nullptr);
+  base::Value value = EncodeHelper(model.get(), sync_metadata_str, &checksum);
 
   std::string decoded_sync_metadata_str;
   // Decode and verify.
-  DecodeHelper(*value, checksum, &checksum, false, &decoded_sync_metadata_str);
+  DecodeHelper(value, checksum, &checksum, false, &decoded_sync_metadata_str);
   EXPECT_EQ(sync_metadata_str, decoded_sync_metadata_str);
 }
 
@@ -492,13 +477,13 @@ TEST_F(BookmarkCodecTest, EncodeAndDecodeGuid) {
             model->bookmark_bar_node()->children()[1]->guid());
 
   std::string checksum;
-  std::unique_ptr<base::Value> model_value =
+  base::Value model_value =
       EncodeHelper(model.get(), /*sync_metadata_str=*/std::string(), &checksum);
 
   // Decode and check for GUIDs.
-  std::unique_ptr<BookmarkModel> decoded_model = DecodeHelper(
-      *model_value, checksum, &checksum, /*expected_changes=*/false,
-      /*sync_metadata_str=*/nullptr);
+  std::unique_ptr<BookmarkModel> decoded_model =
+      DecodeHelper(model_value, checksum, &checksum, /*expected_changes=*/false,
+                   /*sync_metadata_str=*/nullptr);
 
   ASSERT_NO_FATAL_FAILURE(AssertModelsEqual(model.get(), decoded_model.get()));
 
@@ -512,22 +497,19 @@ TEST_F(BookmarkCodecTest, ReassignEmptyGUID) {
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
 
   BookmarkCodec encoder;
-  std::unique_ptr<base::Value> value(
-      encoder.Encode(model_to_encode.get(), std::string()));
-
-  EXPECT_TRUE(value.get() != nullptr);
+  base::Value value(encoder.Encode(model_to_encode.get(), std::string()));
 
   std::unique_ptr<BookmarkModel> decoded_model1(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder1;
-  ASSERT_TRUE(Decode(&decoder1, *value.get(), decoded_model1.get(),
+  ASSERT_TRUE(Decode(&decoder1, value, decoded_model1.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_FALSE(decoder1.guids_reassigned());
 
   // Change GUID of child to be empty.
   base::Value* child_value = nullptr;
-  GetBookmarksBarChildValue(value.get(), 0, &child_value);
+  GetBookmarksBarChildValue(&value, 0, &child_value);
   std::string* guid_str = child_value->FindStringKey(BookmarkCodec::kGuidKey);
   ASSERT_TRUE(guid_str);
   std::string original_guid_str = *guid_str;
@@ -536,7 +518,7 @@ TEST_F(BookmarkCodecTest, ReassignEmptyGUID) {
   std::unique_ptr<BookmarkModel> decoded_model2(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder2;
-  ASSERT_TRUE(Decode(&decoder2, *value.get(), decoded_model2.get(),
+  ASSERT_TRUE(Decode(&decoder2, value, decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
 
   const base::GUID guid = base::GUID::ParseCaseInsensitive(original_guid_str);
@@ -551,22 +533,19 @@ TEST_F(BookmarkCodecTest, ReassignMissingGUID) {
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
 
   BookmarkCodec encoder;
-  std::unique_ptr<base::Value> value(
-      encoder.Encode(model_to_encode.get(), std::string()));
-
-  EXPECT_TRUE(value.get() != nullptr);
+  base::Value value(encoder.Encode(model_to_encode.get(), std::string()));
 
   std::unique_ptr<BookmarkModel> decoded_model1(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder1;
-  ASSERT_TRUE(Decode(&decoder1, *value.get(), decoded_model1.get(),
+  ASSERT_TRUE(Decode(&decoder1, value, decoded_model1.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_FALSE(decoder1.guids_reassigned());
 
   // Change GUID of child to be missing.
   base::Value* child_value = nullptr;
-  GetBookmarksBarChildValue(value.get(), 0, &child_value);
+  GetBookmarksBarChildValue(&value, 0, &child_value);
   std::string* guid_str = child_value->FindStringKey(BookmarkCodec::kGuidKey);
   ASSERT_TRUE(guid_str);
   std::string original_guid_str = *guid_str;
@@ -575,7 +554,7 @@ TEST_F(BookmarkCodecTest, ReassignMissingGUID) {
   std::unique_ptr<BookmarkModel> decoded_model2(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder2;
-  ASSERT_TRUE(Decode(&decoder2, *value.get(), decoded_model2.get(),
+  ASSERT_TRUE(Decode(&decoder2, value, decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
 
   const base::GUID guid = base::GUID::ParseCaseInsensitive(original_guid_str);
@@ -593,14 +572,11 @@ TEST_F(BookmarkCodecTest, ReassignInvalidGUID) {
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
 
   BookmarkCodec encoder;
-  std::unique_ptr<base::Value> value(
-      encoder.Encode(model_to_encode.get(), std::string()));
-
-  EXPECT_TRUE(value.get() != nullptr);
+  base::Value value(encoder.Encode(model_to_encode.get(), std::string()));
 
   // Change GUID of child to be invalid.
   base::Value* child_value = nullptr;
-  GetBookmarksBarChildValue(value.get(), 0, &child_value);
+  GetBookmarksBarChildValue(&value, 0, &child_value);
   child_value->SetStringKey(BookmarkCodec::kGuidKey, kInvalidGuid);
 
   std::string* guid = child_value->FindStringKey(BookmarkCodec::kGuidKey);
@@ -610,7 +586,7 @@ TEST_F(BookmarkCodecTest, ReassignInvalidGUID) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, *value.get(), decoded_model.get(),
+  ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_TRUE(
@@ -621,20 +597,17 @@ TEST_F(BookmarkCodecTest, ReassignDuplicateGUID) {
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel2());
 
   BookmarkCodec encoder;
-  std::unique_ptr<base::Value> value(
-      encoder.Encode(model_to_encode.get(), std::string()));
-
-  EXPECT_TRUE(value.get() != nullptr);
+  base::Value value(encoder.Encode(model_to_encode.get(), std::string()));
 
   base::Value* child1_value = nullptr;
-  GetBookmarksBarChildValue(value.get(), 0, &child1_value);
+  GetBookmarksBarChildValue(&value, 0, &child1_value);
 
   std::string* child1_guid =
       child1_value->FindStringKey(BookmarkCodec::kGuidKey);
   ASSERT_TRUE(child1_guid);
 
   base::Value* child2_value = nullptr;
-  GetBookmarksBarChildValue(value.get(), 1, &child2_value);
+  GetBookmarksBarChildValue(&value, 1, &child2_value);
 
   // Change GUID of child to be duplicate.
   child2_value->SetStringKey(BookmarkCodec::kGuidKey, *child1_guid);
@@ -647,7 +620,7 @@ TEST_F(BookmarkCodecTest, ReassignDuplicateGUID) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, *value.get(), decoded_model.get(),
+  ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_NE(decoded_model->bookmark_bar_node()->children()[0]->guid(),
@@ -658,13 +631,10 @@ TEST_F(BookmarkCodecTest, ReassignPermanentNodeDuplicateGUID) {
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
 
   BookmarkCodec encoder;
-  std::unique_ptr<base::Value> value(
-      encoder.Encode(model_to_encode.get(), std::string()));
-
-  EXPECT_TRUE(value.get() != nullptr);
+  base::Value value(encoder.Encode(model_to_encode.get(), std::string()));
 
   base::Value* child_value = nullptr;
-  GetBookmarksBarChildValue(value.get(), 0, &child_value);
+  GetBookmarksBarChildValue(&value, 0, &child_value);
 
   // Change GUID of child to be the root node GUID.
   child_value->SetStringKey(BookmarkCodec::kGuidKey,
@@ -677,7 +647,7 @@ TEST_F(BookmarkCodecTest, ReassignPermanentNodeDuplicateGUID) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, *value.get(), decoded_model.get(),
+  ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_NE(base::GUID::ParseLowercase(BookmarkNode::kRootNodeGuid),
@@ -691,19 +661,18 @@ TEST_F(BookmarkCodecTest, CanonicalizeGUID) {
 
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
   BookmarkCodec encoder;
-  std::unique_ptr<base::Value> value(
-      encoder.Encode(model_to_encode.get(), std::string()));
+  base::Value value(encoder.Encode(model_to_encode.get(), std::string()));
 
   // Change a GUID to a capitalized form, which could have been produced by an
   // older version of the browser, before canonicalization was enforced.
   base::Value* child_value = nullptr;
-  GetBookmarksBarChildValue(value.get(), 0, &child_value);
+  GetBookmarksBarChildValue(&value, 0, &child_value);
   child_value->SetStringKey(BookmarkCodec::kGuidKey, kUpperCaseGuid);
 
   std::unique_ptr<BookmarkModel> decoded_model2(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder2;
-  ASSERT_TRUE(Decode(&decoder2, *value.get(), decoded_model2.get(),
+  ASSERT_TRUE(Decode(&decoder2, value, decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_EQ(kGuid, decoded_model2->bookmark_bar_node()->children()[0]->guid());

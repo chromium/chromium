@@ -175,8 +175,8 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettingsNoTitle) {
 
 TEST_F(ManagedBookmarksPolicyHandlerTest, WrongPolicyType) {
   PolicyMap policy;
-  // The expected type is base::ListValue, but this policy sets it as an
-  // unparsed base::Value. Any type other than ListValue should fail.
+  // The expected type is a list base::Value, but this policy sets it as an
+  // unparsed base::Value. Any type other than list should fail.
   policy.Set(kManagedBookmarks, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
              base::Value("["
