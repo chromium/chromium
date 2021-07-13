@@ -23,7 +23,7 @@ using text_utils::FindCurrentSentence;
 using text_utils::FindLastSentence;
 using text_utils::Sentence;
 
-constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromSeconds(2);
 
 void RecordGrammarAction(GrammarActions action) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Actions",
@@ -137,18 +137,27 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
   if (new_to_context_) {
     new_to_context_ = false;
   } else if (text_updated) {
+    ui::IMEInputContextHandlerInterface* input_context =
+        ui::IMEBridge::Get()->GetInputContextHandler();
+    if (!input_context)
+      return;
+
     // Grammar check is cpu consuming, so we only send request to ml service
     // when the user has finished a sentence or stopped typing for some time.
     Sentence last_sentence = FindLastSentence(text, cursor_pos);
     if (last_sentence_ != last_sentence) {
       last_sentence_ = last_sentence;
+      input_context->ClearGrammarFragments(last_sentence.original_range);
       Check(last_sentence);
     }
+
+    Sentence current_sentence = FindCurrentSentence(text, cursor_pos);
+    input_context->ClearGrammarFragments(current_sentence.original_range);
 
     delay_timer_.Start(
         FROM_HERE, kCheckDelay,
         base::BindOnce(&GrammarManager::Check, base::Unretained(this),
-                       FindCurrentSentence(text, cursor_pos)));
+                       current_sentence));
     return;
   }
 
@@ -188,13 +197,6 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
 void GrammarManager::Check(const Sentence& sentence) {
   if (!IsValidSentence(last_text_, sentence))
     return;
-
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return;
-
-  input_context->ClearGrammarFragments(sentence.original_range);
 
   grammar_client_->RequestTextCheck(
       profile_, sentence.text,
