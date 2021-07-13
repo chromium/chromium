@@ -799,6 +799,17 @@ TEST_F(CullRectTest, MultipleClips) {
   EXPECT_EQ(IntRect(0, 0, 100, 2000), cull_rect.Rect());
 }
 
+TEST_F(CullRectTest, ClipWithNonIntegralOffsetAndZeroSize) {
+  ScopedCullRectUpdateForTest cull_rect_update(true);
+
+  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(0.4, 0.6, 0, 0));
+  PropertyTreeState source = PropertyTreeState::Root();
+  PropertyTreeState destination(t0(), *clip, e0());
+  CullRect cull_rect(IntRect(0, 0, 800, 600));
+  cull_rect.ApplyPaintProperties(source, source, destination, absl::nullopt);
+  EXPECT_TRUE(cull_rect.Rect().IsEmpty());
+}
+
 TEST_F(CullRectTest, IntersectsVerticalRange) {
   CullRect cull_rect(IntRect(0, 0, 50, 100));
 

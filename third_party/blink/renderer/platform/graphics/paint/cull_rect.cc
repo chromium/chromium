@@ -126,6 +126,10 @@ bool CullRect::ApplyPaintPropertiesWithoutExpansion(
     const PropertyTreeState& destination) {
   FloatClipRect clip_rect =
       GeometryMapper::LocalToAncestorClipRect(destination, source);
+  if (clip_rect.Rect().IsEmpty()) {
+    rect_ = IntRect();
+    return false;
+  }
   if (!clip_rect.IsInfinite()) {
     rect_.Intersect(EnclosingIntRect(clip_rect.Rect()));
     if (rect_.IsEmpty())
