@@ -1677,27 +1677,21 @@ TEST(ValuesTest, DeepCopy) {
   ASSERT_TRUE(copy_bool);
   ASSERT_NE(copy_bool, bool_weak);
   ASSERT_TRUE(copy_bool->is_bool());
-  bool copy_bool_value = false;
-  ASSERT_TRUE(copy_bool->GetAsBoolean(&copy_bool_value));
-  ASSERT_TRUE(copy_bool_value);
+  ASSERT_TRUE(copy_bool->GetBool());
 
   Value* copy_int = nullptr;
   ASSERT_TRUE(copy_dict->Get("int", &copy_int));
   ASSERT_TRUE(copy_int);
   ASSERT_NE(copy_int, int_weak);
   ASSERT_TRUE(copy_int->is_int());
-  int copy_int_value = 0;
-  ASSERT_TRUE(copy_int->GetAsInteger(&copy_int_value));
-  ASSERT_EQ(42, copy_int_value);
+  ASSERT_EQ(42, copy_int->GetInt());
 
   Value* copy_double = nullptr;
   ASSERT_TRUE(copy_dict->Get("double", &copy_double));
   ASSERT_TRUE(copy_double);
   ASSERT_NE(copy_double, double_weak);
   ASSERT_TRUE(copy_double->is_double());
-  double copy_double_value = 0;
-  ASSERT_TRUE(copy_double->GetAsDouble(&copy_double_value));
-  ASSERT_EQ(3.14, copy_double_value);
+  ASSERT_EQ(3.14, copy_double->GetDouble());
 
   Value* copy_string = nullptr;
   ASSERT_TRUE(copy_dict->Get("string", &copy_string));
@@ -1743,17 +1737,15 @@ TEST(ValuesTest, DeepCopy) {
   ASSERT_TRUE(copy_list->Get(0, &copy_list_element_0));
   ASSERT_TRUE(copy_list_element_0);
   ASSERT_NE(copy_list_element_0, list_element_0_weak);
-  int copy_list_element_0_value;
-  ASSERT_TRUE(copy_list_element_0->GetAsInteger(&copy_list_element_0_value));
-  ASSERT_EQ(0, copy_list_element_0_value);
+  ASSERT_TRUE(copy_list_element_0->is_int());
+  ASSERT_EQ(0, copy_list_element_0->GetInt());
 
   Value* copy_list_element_1;
   ASSERT_TRUE(copy_list->Get(1, &copy_list_element_1));
   ASSERT_TRUE(copy_list_element_1);
   ASSERT_NE(copy_list_element_1, list_element_1_weak);
-  int copy_list_element_1_value;
-  ASSERT_TRUE(copy_list_element_1->GetAsInteger(&copy_list_element_1_value));
-  ASSERT_EQ(1, copy_list_element_1_value);
+  ASSERT_TRUE(copy_list_element_1->is_int());
+  ASSERT_EQ(1, copy_list_element_1->GetInt());
 
   copy_value = nullptr;
   ASSERT_TRUE(copy_dict->Get("dictionary", &copy_value));
