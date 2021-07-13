@@ -550,7 +550,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
 
       if (display::features::IsListAllDisplayModesEnabled()) {
         property_value.SetBoolean("interlaced", mode.is_interlaced());
-        property_value.SetDouble("refresh-rate", mode.refresh_rate());
+        property_value.SetDoubleKey("refresh-rate", mode.refresh_rate());
       }
     }
     if (!info.overscan_insets_in_dip().IsEmpty())
@@ -563,7 +563,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
                        &property_value);
     }
 
-    property_value.SetDouble(kDisplayZoom, info.zoom_factor());
+    property_value.SetDoubleKey(kDisplayZoom, info.zoom_factor());
 
     pref_data->SetKey(base::NumberToString(id), std::move(property_value));
   }

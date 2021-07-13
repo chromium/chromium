@@ -123,7 +123,7 @@ void AudioDevicesPrefHandlerImpl::SetOutputVolumePrefValue(
     std::string old_device_id = GetVersionedDeviceIdString(device, 1);
     device_volume_settings_->RemoveKey(old_device_id);
   }
-  device_volume_settings_->SetDouble(GetDeviceIdString(device), value);
+  device_volume_settings_->SetDoubleKey(GetDeviceIdString(device), value);
 
   SaveDevicesVolumePref();
 }
@@ -143,7 +143,7 @@ void AudioDevicesPrefHandlerImpl::SetInputGainPrefValue(
     SaveDevicesVolumePref();
   }
 
-  device_gain_settings_->SetDouble(device_id, value);
+  device_gain_settings_->SetDoubleKey(device_id, value);
   SaveDevicesGainPref();
 }
 
@@ -389,7 +389,7 @@ void AudioDevicesPrefHandlerImpl::MigrateDeviceVolumeGainSettings(
     // If there was no recorded value for deprecated device ID, use value from
     // global vloume pref.
     double old_volume = local_state_->GetDouble(prefs::kAudioVolumePercent);
-    device_volume_settings_->SetDouble(device_key, old_volume);
+    device_volume_settings_->SetDoubleKey(device_key, old_volume);
   }
   SaveDevicesVolumePref();
 }

@@ -1103,8 +1103,8 @@ class PowerButtonControllerWithPositionTest
       default:
         return;
     }
-    position_info.SetDouble(PowerButtonController::kPositionField,
-                            kPowerButtonPercentage);
+    position_info.SetDoubleKey(PowerButtonController::kPositionField,
+                               kPowerButtonPercentage);
 
     std::string json_position_info;
     base::JSONWriter::Write(position_info, &json_position_info);

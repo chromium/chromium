@@ -121,7 +121,7 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
       DictionaryPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesVolumePercent);
       base::DictionaryValue* pref = update.Get();
-      pref->SetDouble(preset_key, kPresetState.sound_level);
+      pref->SetDoubleKey(preset_key, kPresetState.sound_level);
     }
 
     {
