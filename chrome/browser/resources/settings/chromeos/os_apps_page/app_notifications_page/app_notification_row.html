@@ -1,0 +1,32 @@
+<style include="cr-icons">
+  :host {
+    align-items: center;
+    border-bottom: var(--card-separator);
+    color: var(--cros-text-color-primary);
+    display: flex;
+    flex-direction: row;
+    font-weight: 400;
+    height: 48px;
+  }
+
+  #appTitle {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #appToggle {
+    padding: 0 20px 0 0;
+  }
+
+  #appIcon {
+    height: 32px;
+    margin-inline-end: 20px;
+    margin-inline-start: 24px;
+    width: 32px;
+  }
+</style>
+<img id="appIcon" src="chrome://app-icon/[[app.id]]/64"
+    alt="[[app.title]] app icon." aria-hidden="true">
+<div id="appTitle" aria-hidden="true">[[app.title]]</div>
+<cr-toggle id="appToggle"></cr-toggle>

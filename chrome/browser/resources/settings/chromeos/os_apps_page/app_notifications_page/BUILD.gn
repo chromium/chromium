@@ -8,7 +8,10 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-polymer_element_files = [ "app_notifications_subpage.js" ]
+polymer_element_files = [
+  "app_notifications_subpage.js",
+  "app_notification_row.js",
+]
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -17,6 +20,13 @@ js_type_check("closure_compile") {
 }
 
 js_library("app_notifications_subpage") {
+  deps = [
+    ":app_notification_row",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("app_notification_row") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

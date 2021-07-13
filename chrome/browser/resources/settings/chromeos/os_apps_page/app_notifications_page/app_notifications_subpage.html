@@ -1,1 +1,5 @@
-<div id="testDiv">Notifications</div>
+<div id="appNotificationsList">
+  <template is="dom-repeat" items="[[appList_]]" as="app">
+    <app-notification-row app="[[app]]"></app-notification-row>
+  </template>
+</div>

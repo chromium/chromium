@@ -380,6 +380,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_apps_page/android_apps_browser_proxy.m.js",
     "chromeos/os_apps_page/android_apps_subpage.m.js",
     "chromeos/os_apps_page/app_notifications_page/app_notifications_subpage.js",
+    "chromeos/os_apps_page/app_notifications_page/app_notification_row.js",
     "chromeos/os_apps_page/app_management_page/actions.m.js",
     "chromeos/os_apps_page/app_management_page/api_listener.m.js",
     "chromeos/os_apps_page/app_management_page/app_detail_view.m.js",

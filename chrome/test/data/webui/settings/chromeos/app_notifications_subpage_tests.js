@@ -21,9 +21,12 @@ suite('AppNotificationsSubpageTests', function() {
     flush();
   });
 
-  test('Page is loaded properly', function() {
+  test('Each app-notification-row displays correctly', function() {
     assertTrue(!!page);
     flush();
-    assertEquals('Notifications', page.$.testDiv.textContent.trim());
+    assertEquals(
+        'Chrome',
+        page.$.appNotificationsList.firstElementChild.$.appTitle.textContent
+            .trim());
   });
 });
