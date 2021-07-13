@@ -236,6 +236,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kServiceManagerForDownload,
     &kShareButtonInTopToolbar,
     &kSharedClipboardUI,
+    &kSharingHubLinkToggle,
     &kSingleTouchSelect,
     &kSpannableInlineAutocomplete,
     &kSpecialLocaleWrapper,
@@ -647,6 +648,9 @@ const base::Feature kServiceManagerForDownload{
 
 const base::Feature kShareButtonInTopToolbar{"ShareButtonInTopToolbar",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSharingHubLinkToggle{"SharingHubLinkToggle",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSingleTouchSelect{"SingleTouchSelect",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

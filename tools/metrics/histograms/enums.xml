@@ -46671,6 +46671,7 @@ from previous Chrome versions.
   <int value="-1720653947" label="WebRtcHybridAgc:disabled"/>
   <int value="-1719833926" label="disable-answers-in-suggest"/>
   <int value="-1719699712" label="AudioPlayerJsModules:enabled"/>
+  <int value="-1718644168" label="SharingHubLinkToggle:disabled"/>
   <int value="-1718074215" label="HomepageSettingsUIConversion:enabled"/>
   <int value="-1716654100" label="tab-capture-downscale-quality"/>
   <int value="-1716140224" label="EnableEmbeddedAssistantUI:disabled"/>
@@ -50837,6 +50838,7 @@ from previous Chrome versions.
   <int value="1717788959" label="SlowDCTimerInterruptsWin:disabled"/>
   <int value="1717987538" label="NTPTilesLowerResolutionFavicons:enabled"/>
   <int value="1718341860" label="NTPButton:enabled"/>
+  <int value="1718421370" label="SharingHubLinkToggle:enabled"/>
   <int value="1719189460" label="EnablePasswordSelection:disabled"/>
   <int value="1719958026" label="QueryTiles:enabled"/>
   <int value="1722748383" label="EnableAppReinstallZeroState:disabled"/>
