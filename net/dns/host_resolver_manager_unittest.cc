@@ -8252,6 +8252,32 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery) {
                                        bar_records.begin(), bar_records.end()));
 }
 
+TEST_F(HostResolverManagerDnsTest, TxtQueryRejectsIpLiteral) {
+  MockDnsClientRuleList rules;
+
+  // Entry that would resolve if DNS is mistakenly queried to ensure that does
+  // not happen.
+  rules.emplace_back("8.8.8.8", dns_protocol::kTypeTXT, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         BuildTestDnsTextResponse("8.8.8.8", {{"text"}})),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.dns_query_type = DnsQueryType::TXT;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("8.8.8.8", 108), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_FALSE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
 // Test that TXT records can be extracted from a response that also contains
 // unrecognized record types.
 TEST_F(HostResolverManagerDnsTest, TxtQuery_MixedWithUnrecognizedType) {
@@ -8644,12 +8670,15 @@ TEST_F(HostResolverManagerDnsTest, PtrQuery) {
                   HostPortPair("foo.com", 108), HostPortPair("bar.com", 108))));
 }
 
-TEST_F(HostResolverManagerDnsTest, PtrQuery_Ip) {
+TEST_F(HostResolverManagerDnsTest, PtrQueryRejectsIpLiteral) {
   MockDnsClientRuleList rules;
-  rules.emplace_back("8.8.8.8", dns_protocol::kTypePTR, false /* secure */,
+
+  // Entry that would resolve if DNS is mistakenly queried to ensure that does
+  // not happen.
+  rules.emplace_back("8.8.8.8", dns_protocol::kTypePTR, /*secure=*/false,
                      MockDnsClientRule::Result(BuildTestDnsPointerResponse(
                          "8.8.8.8", {"foo.com", "bar.com"})),
-                     false /* delay */);
+                     /*delay=*/false);
 
   CreateResolver();
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
@@ -8660,6 +8689,31 @@ TEST_F(HostResolverManagerDnsTest, PtrQuery_Ip) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair("8.8.8.8", 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_FALSE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
+TEST_F(HostResolverManagerDnsTest, PtrQueryHandlesReverseIpLookup) {
+  const char kHostname[] = "8.8.8.8.in-addr.arpa";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(kHostname, dns_protocol::kTypePTR, /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsPointerResponse(
+                         kHostname, {"dns.google.test", "foo.test"})),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.dns_query_type = DnsQueryType::PTR;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHostname, 108), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetTextResults());
@@ -8668,7 +8722,8 @@ TEST_F(HostResolverManagerDnsTest, PtrQuery_Ip) {
   // Order between separate records is undefined.
   EXPECT_THAT(response.request()->GetHostnameResults(),
               testing::Optional(testing::UnorderedElementsAre(
-                  HostPortPair("foo.com", 108), HostPortPair("bar.com", 108))));
+                  HostPortPair("dns.google.test", 108),
+                  HostPortPair("foo.test", 108))));
 }
 
 TEST_F(HostResolverManagerDnsTest, PtrQuery_NonexistentDomain) {
@@ -8958,6 +9013,33 @@ TEST_F(HostResolverManagerDnsTest, SrvQuery) {
   EXPECT_THAT(priority5,
               testing::UnorderedElementsAre(HostPortPair("bar.com", 80),
                                             HostPortPair("google.com", 5)));
+}
+
+TEST_F(HostResolverManagerDnsTest, SrvQueryRejectsIpLiteral) {
+  MockDnsClientRuleList rules;
+
+  // Entry that would resolve if DNS is mistakenly queried to ensure that does
+  // not happen.
+  rules.emplace_back("8.8.8.8", dns_protocol::kTypeSRV, /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsServiceResponse(
+                         "8.8.8.8", {{/*priority=*/4, /*weight=*/0, /*port=*/90,
+                                      /*target=*/"google.test"}})),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.dns_query_type = DnsQueryType::SRV;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("8.8.8.8", 108), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_FALSE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
 // 0-weight services are allowed. Ensure that we can handle such records,
@@ -9279,6 +9361,34 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery) {
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
   // Results never saved when overall result not OK.
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
+TEST_F(HostResolverManagerDnsTest, HttpsQueryRejectsIpLiteral) {
+  MockDnsClientRuleList rules;
+
+  // Entry that would resolve if DNS is mistakenly queried to ensure that does
+  // not happen.
+  rules.emplace_back("8.8.8.8", dns_protocol::kTypeHttps, /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         "8.8.8.8", dns_protocol::kTypeHttps,
+                         {BuildTestHttpsAliasRecord("8.8.8.8", "alias.test")})),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.dns_query_type = DnsQueryType::HTTPS;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, "8.8.8.8", 443),
+      NetworkIsolationKey(), NetLogWithSource(), parameters,
+      resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_FALSE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 

@@ -81,6 +81,7 @@
 #include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_mdns_listener_impl.h"
 #include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/host_resolver_proc.h"
@@ -2881,15 +2882,14 @@ HostCache::Entry HostResolverManager::ResolveLocally(
                             HostCache::Entry::SOURCE_UNKNOWN);
   }
 
-  absl::optional<HostCache::Entry> resolved =
-      ResolveAsIP(job_key.query_type, resolve_canonname, ip_address);
-  if (resolved)
-    return resolved.value();
+  if (ip_address.IsValid())
+    return ResolveAsIP(job_key.query_type, resolve_canonname, ip_address);
 
   // Special-case localhost names, as per the recommendations in
   // https://tools.ietf.org/html/draft-west-let-localhost-be-localhost.
-  resolved = ServeLocalhost(GetHostname(job_key.host), job_key.query_type,
-                            default_family_due_to_no_ipv6);
+  absl::optional<HostCache::Entry> resolved =
+      ServeLocalhost(GetHostname(job_key.host), job_key.query_type,
+                     default_family_due_to_no_ipv6);
   if (resolved)
     return resolved.value();
 
@@ -2959,17 +2959,17 @@ void HostResolverManager::CreateAndStartJob(JobKey key,
   }
 }
 
-absl::optional<HostCache::Entry> HostResolverManager::ResolveAsIP(
-    DnsQueryType query_type,
-    bool resolve_canonname,
-    const IPAddress& ip_address) {
-  if (!ip_address.IsValid() || !IsAddressType(query_type))
-    return absl::nullopt;
+HostCache::Entry HostResolverManager::ResolveAsIP(DnsQueryType query_type,
+                                                  bool resolve_canonname,
+                                                  const IPAddress& ip_address) {
+  DCHECK(ip_address.IsValid());
 
+  // IP literals cannot resolve unless the query type is an address query that
+  // allows addresses with the same address family as the literal. E.g., don't
+  // return IPv6 addresses for IPv4 queries or anything for a non-address query.
   AddressFamily family = GetAddressFamily(ip_address);
   if (query_type != DnsQueryType::UNSPECIFIED &&
       query_type != AddressFamilyToDnsQueryType(family)) {
-    // Don't return IPv6 addresses for IPv4 queries, and vice versa.
     return HostCache::Entry(ERR_NAME_NOT_RESOLVED,
                             HostCache::Entry::SOURCE_UNKNOWN);
   }

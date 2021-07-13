@@ -301,11 +301,10 @@ class NET_EXPORT HostResolverManager
                          std::deque<TaskType> tasks,
                          RequestImpl* request);
 
-  // Tries to resolve |key| and its possible IP address representation,
-  // |ip_address|. Returns a results entry iff the input can be resolved.
-  absl::optional<HostCache::Entry> ResolveAsIP(DnsQueryType query_type,
-                                               bool resolve_canonname,
-                                               const IPAddress& ip_address);
+  // Resolves the IP literal hostname represented by `ip_address`.
+  HostCache::Entry ResolveAsIP(DnsQueryType query_type,
+                               bool resolve_canonname,
+                               const IPAddress& ip_address);
 
   // Returns the result iff |cache_usage| permits cache lookups and a positive
   // match is found for |key| in |cache|. |out_stale_info| must be non-null, and
