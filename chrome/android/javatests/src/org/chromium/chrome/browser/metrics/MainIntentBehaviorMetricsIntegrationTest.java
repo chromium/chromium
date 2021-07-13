@@ -68,7 +68,6 @@ public class MainIntentBehaviorMetricsIntegrationTest {
     }
 
     @MediumTest
-    @DisabledTest(message = "crbug.com/1225878")
     @Test
     public void testBackgroundDuration_24hrs() {
         assertBackgroundDurationLogged(
@@ -76,7 +75,6 @@ public class MainIntentBehaviorMetricsIntegrationTest {
     }
 
     @MediumTest
-    @DisabledTest(message = "crbug.com/1225878")
     @Test
     public void testBackgroundDuration_12hrs() {
         assertBackgroundDurationLogged(
@@ -84,7 +82,6 @@ public class MainIntentBehaviorMetricsIntegrationTest {
     }
 
     @MediumTest
-    @DisabledTest(message = "crbug.com/1225878")
     @Test
     public void testBackgroundDuration_6hrs() {
         assertBackgroundDurationLogged(
@@ -92,14 +89,12 @@ public class MainIntentBehaviorMetricsIntegrationTest {
     }
 
     @MediumTest
-    @DisabledTest(message = "crbug.com/1225878")
     @Test
     public void testBackgroundDuration_1hr() {
         assertBackgroundDurationLogged(HOURS_IN_MS, "MobileStartup.MainIntentReceived.After1Hour");
     }
 
     @MediumTest
-    @DisabledTest(message = "crbug.com/1225878")
     @Test
     public void testBackgroundDuration_0hr() {
         assertBackgroundDurationLogged(0, null);
