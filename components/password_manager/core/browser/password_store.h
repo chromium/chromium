@@ -108,9 +108,10 @@ class PasswordStore : protected PasswordStoreSync,
       base::OnceClosure completion,
       base::OnceCallback<void(bool)> sync_completion =
           base::NullCallback()) override;
-  void RemoveLoginsCreatedBetween(base::Time delete_begin,
-                                  base::Time delete_end,
-                                  base::OnceClosure completion) override;
+  void RemoveLoginsCreatedBetween(
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceCallback<void(bool)> completion) override;
   void DisableAutoSignInForOrigins(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
@@ -171,12 +172,6 @@ class PasswordStore : protected PasswordStoreSync,
   void RemoveFieldInfoByTime(base::Time remove_begin,
                              base::Time remove_end,
                              base::OnceClosure completion);
-
-  // Deletes and re-creates the whole PasswordStore, unless it is already empty
-  // anyway. If |completion| is not null, it will be posted to the
-  // |main_task_runner_| once the process is complete. The bool parameter
-  // indicates whether any data was actually cleared.
-  void ClearStore(base::OnceCallback<void(bool)> completion);
 
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   bool ScheduleTask(base::OnceClosure task);
@@ -391,9 +386,10 @@ class PasswordStore : protected PasswordStoreSync,
   void RemoveLoginInternal(const PasswordForm& form);
   void UpdateLoginWithPrimaryKeyInternal(const PasswordForm& new_form,
                                          const PasswordForm& old_primary_key);
-  void RemoveLoginsCreatedBetweenInternal(base::Time delete_begin,
-                                          base::Time delete_end,
-                                          base::OnceClosure completion);
+  void RemoveLoginsCreatedBetweenInternal(
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceCallback<void(bool)> completion);
   void RemoveStatisticsByOriginAndTimeInternal(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
@@ -413,8 +409,6 @@ class PasswordStore : protected PasswordStoreSync,
   void RemoveFieldInfoByTimeInternal(base::Time remove_begin,
                                      base::Time remove_end,
                                      base::OnceClosure completion);
-
-  void ClearStoreInternal(base::OnceCallback<void(bool)> completion);
 
   // Finds all PasswordForms with a signon_realm that is equal to, or is a
   // PSL-match to that of |form|, and takes care of notifying the consumer with

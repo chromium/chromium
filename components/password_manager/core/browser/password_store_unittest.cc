@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -346,9 +347,9 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
 
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(1u)));
   base::RunLoop run_loop;
-  store->RemoveLoginsCreatedBetween(base::Time::FromDoubleT(0),
-                                    base::Time::FromDoubleT(2),
-                                    run_loop.QuitClosure());
+  store->RemoveLoginsCreatedBetween(
+      base::Time::FromDoubleT(0), base::Time::FromDoubleT(2),
+      base::BindLambdaForTesting([&run_loop](bool) { run_loop.Quit(); }));
   run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -384,9 +385,9 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnRemoveLogin) {
 
   MockInsecureCredentialsConsumer consumer;
   base::RunLoop run_loop;
-  store->RemoveLoginsCreatedBetween(base::Time::FromDoubleT(0),
-                                    base::Time::FromDoubleT(2),
-                                    run_loop.QuitClosure());
+  store->RemoveLoginsCreatedBetween(
+      base::Time::FromDoubleT(0), base::Time::FromDoubleT(2),
+      base::BindLambdaForTesting([&run_loop](bool) { run_loop.Quit(); }));
   run_loop.Run();
 
   EXPECT_CALL(consumer, OnGetInsecureCredentials(testing::IsEmpty()));

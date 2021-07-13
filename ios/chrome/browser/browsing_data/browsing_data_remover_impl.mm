@@ -422,8 +422,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
             .get();
 
     if (password_store) {
+      // It doesn't matter whether any logins were removed so bool argument can
+      // be omitted.
       password_store->RemoveLoginsCreatedBetween(
-          delete_begin, delete_end, CreatePendingTaskCompletionClosure());
+          delete_begin, delete_end,
+          IgnoreArgument<bool>(CreatePendingTaskCompletionClosure()));
     }
   }
 

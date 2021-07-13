@@ -89,7 +89,8 @@ void PasswordStoreBridge::GetAllCredentials(
 }
 
 void PasswordStoreBridge::ClearAllPasswords(JNIEnv* env) {
-  password_store_->ClearStore(
+  password_store_->RemoveLoginsCreatedBetween(
+      base::Time(), base::Time::Max(),
       base::BindOnce(&PasswordStoreBridge::OnPasswordStoreCleared,
                      weak_factory_.GetWeakPtr()));
 }

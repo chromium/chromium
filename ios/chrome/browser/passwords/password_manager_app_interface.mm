@@ -97,7 +97,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
           .get();
   // Remove credentials stored during executing the test.
   passwordStore->RemoveLoginsCreatedBetween(base::Time(), base::Time::Now(),
-                                            base::OnceClosure());
+                                            base::DoNothing());
 }
 
 + (int)storedCredentialsCount {

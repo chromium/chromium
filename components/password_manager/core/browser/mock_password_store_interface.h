@@ -32,7 +32,7 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               (override));
   MOCK_METHOD(void,
               RemoveLoginsCreatedBetween,
-              (base::Time, base::Time, base::OnceClosure),
+              (base::Time, base::Time, base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
               DisableAutoSignInForOrigins,

@@ -137,7 +137,7 @@ PasswordForm CreateSampleFormWithIndex(int index) {
 
 bool ClearPasswordStore() {
   GetPasswordStore()->RemoveLoginsCreatedBetween(base::Time(), base::Time(),
-                                                 base::OnceClosure());
+                                                 base::DoNothing());
   FakeStoreConsumer consumer;
   if (!consumer.FetchStoreResults()) {
     return false;

@@ -210,7 +210,8 @@ void PasswordModelTypeController::MaybeClearStore(
   if (features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)) {
     RecordClearedOnStartup(ClearedOnStartup::kOptedInSoNoNeedToClear);
   } else {
-    account_password_store_for_cleanup->ClearStore(
+    account_password_store_for_cleanup->RemoveLoginsCreatedBetween(
+        base::Time(), base::Time::Max(),
         base::BindOnce(&PasswordStoreClearDone));
   }
 }

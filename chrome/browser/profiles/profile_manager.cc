@@ -1924,7 +1924,7 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
             .get();
     if (password_store.get()) {
       password_store->RemoveLoginsCreatedBetween(
-          base::Time(), base::Time::Max(), base::OnceClosure());
+          base::Time(), base::Time::Max(), base::DoNothing());
     }
 
     // The Profile Data doesn't get wiped until Chrome closes. Since we promised

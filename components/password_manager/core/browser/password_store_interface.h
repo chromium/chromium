@@ -91,10 +91,12 @@ class PasswordStoreInterface : public RefcountedKeyedService {
 
   // Removes all logins created in the given date range. If `completion` is not
   // null, it will be run after deletions have been completed and notification
-  // have been sent out.
-  virtual void RemoveLoginsCreatedBetween(base::Time delete_begin,
-                                          base::Time delete_end,
-                                          base::OnceClosure completion) = 0;
+  // have been sent out. If any logins were removed 'true' will be passed to a
+  // completion, 'false' otherwise.
+  virtual void RemoveLoginsCreatedBetween(
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceCallback<void(bool)> completion) = 0;
 
   // Sets the 'skip_zero_click' flag for all credentials that match
   // `origin_filter`. `completion` will be run after these modifications are

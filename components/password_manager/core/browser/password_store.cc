@@ -137,9 +137,10 @@ void PasswordStore::RemoveLoginsByURLAndTime(
       std::move(completion), std::move(sync_completion));
 }
 
-void PasswordStore::RemoveLoginsCreatedBetween(base::Time delete_begin,
-                                               base::Time delete_end,
-                                               base::OnceClosure completion) {
+void PasswordStore::RemoveLoginsCreatedBetween(
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::OnceCallback<void(bool)> completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   ScheduleTask(
       base::BindOnce(&PasswordStore::RemoveLoginsCreatedBetweenInternal, this,
@@ -319,12 +320,6 @@ void PasswordStore::RemoveFieldInfoByTime(base::Time remove_begin,
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   ScheduleTask(base::BindOnce(&PasswordStore::RemoveFieldInfoByTimeInternal,
                               this, remove_begin, remove_end,
-                              std::move(completion)));
-}
-
-void PasswordStore::ClearStore(base::OnceCallback<void(bool)> completion) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::ClearStoreInternal, this,
                               std::move(completion)));
 }
 
@@ -530,7 +525,7 @@ void PasswordStore::UpdateLoginWithPrimaryKeyInternal(
 void PasswordStore::RemoveLoginsCreatedBetweenInternal(
     base::Time delete_begin,
     base::Time delete_end,
-    base::OnceClosure completion) {
+    base::OnceCallback<void(bool)> completion) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("passwords",
                "PasswordStore::RemoveLoginsCreatedBetweenInternal");
@@ -543,8 +538,10 @@ void PasswordStore::RemoveLoginsCreatedBetweenInternal(
   // sync codebase needs to update metadata atomically together with the login
   // data.
   CommitTransaction();
-  if (completion)
-    main_task_runner_->PostTask(FROM_HERE, std::move(completion));
+  if (completion) {
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(completion), !changes.empty()));
+  }
 }
 
 void PasswordStore::RemoveStatisticsByOriginAndTimeInternal(
@@ -594,18 +591,6 @@ void PasswordStore::RemoveFieldInfoByTimeInternal(
   RemoveFieldInfoByTimeImpl(remove_begin, remove_end);
   if (completion)
     main_task_runner_->PostTask(FROM_HERE, std::move(completion));
-}
-
-void PasswordStore::ClearStoreInternal(
-    base::OnceCallback<void(bool)> completion) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  bool should_clear = !IsEmpty();
-  if (should_clear)
-    DeleteAndRecreateDatabaseFile();
-  if (completion) {
-    main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(completion), should_clear));
-  }
 }
 
 std::vector<std::unique_ptr<PasswordForm>> PasswordStore::GetLoginsImpl(
