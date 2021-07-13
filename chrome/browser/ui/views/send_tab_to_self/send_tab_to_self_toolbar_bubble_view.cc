@@ -58,7 +58,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
                                   base::Unretained(this)));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  set_close_on_deactivate(true);
+  set_close_on_deactivate(false);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
