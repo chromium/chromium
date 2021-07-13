@@ -11,9 +11,9 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_observer.h"
+#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/components/sensors/fake_sensor_device.h"
 #include "chromeos/components/sensors/fake_sensor_hal_server.h"
-#include "chromeos/components/sensors/sensor_hal_dispatcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
