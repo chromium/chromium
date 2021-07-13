@@ -521,7 +521,7 @@ TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
   rules_2.Append(dlp_test_util::CreateRule(
       "rule #1", "Block", std::move(src_urls_2), std::move(dst_urls_2),
       /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions_1)));
+      std::move(restrictions_2)));
 
   UpdatePolicyPref(std::move(rules_2));
 
