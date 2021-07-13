@@ -28,6 +28,7 @@ CastMediaSinkService::~CastMediaSinkService() {
     dns_sd_registry_->RemoveObserver(this);
     dns_sd_registry_ = nullptr;
   }
+  local_state_change_registrar_.RemoveAll();
 }
 
 void CastMediaSinkService::Start(
