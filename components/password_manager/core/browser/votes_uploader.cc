@@ -218,7 +218,7 @@ void VotesUploader::SendVotesOnSave(
                          autofill::USERNAME,
                          FormStructure(observed).FormSignatureAsStr());
     }
-    MaybeSendSingleUsernameVote(true /* credentials_saved */);
+    MaybeSendSingleUsernameVote();
   } else {
     SendVoteOnCredentialsReuse(observed, submitted_form, pending_credentials);
   }
@@ -463,7 +463,7 @@ void VotesUploader::SetInitialHashValueOfUsernameField(
   }
 }
 
-void VotesUploader::MaybeSendSingleUsernameVote(bool credentials_saved) {
+void VotesUploader::MaybeSendSingleUsernameVote() {
   if (!single_username_vote_data_)
     return;
 
@@ -497,8 +497,7 @@ void VotesUploader::MaybeSendSingleUsernameVote(bool credentials_saved) {
         // The vote for this field has been already sent. Don't send again.
         return;
       }
-      type = credentials_saved &&
-                     username_change_state_ == UsernameChangeState::kUnchanged
+      type = username_change_state_ == UsernameChangeState::kUnchanged
                  ? autofill::SINGLE_USERNAME
                  : autofill::NOT_USERNAME;
       if (username_change_state_ == UsernameChangeState::kChangedToKnownValue)

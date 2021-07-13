@@ -125,13 +125,11 @@ class VotesUploader {
       autofill::FormStructure* form_structure);
 
   // Sends single a username vote if |single_username_vote_data_| is set.
-  // |credentials_saved| equals true if credentials with a single username form
-  // were saved, false if they were not saved.
   // If |single_username_vote_data| is set, the vote sent is either
   // SINGLE_USERNAME (if the user saved the credential with the username
-  // captured from |single_username_vote_data|) or NOT_USERNAME (if the user did
-  // not save the credential or modified the username).
-  void MaybeSendSingleUsernameVote(bool credentials_saved);
+  // captured from |single_username_vote_data|) or NOT_USERNAME (if the user
+  // modified the username).
+  void MaybeSendSingleUsernameVote();
 
   void set_generation_popup_was_shown(bool generation_popup_was_shown) {
     generation_popup_was_shown_ = generation_popup_was_shown;

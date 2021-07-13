@@ -405,7 +405,7 @@ TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
   EXPECT_CALL(mock_autofill_download_manager_,
               StartUploadRequest(_, _, _, _, _, _))
       .Times(0);
-  votes_uploader.MaybeSendSingleUsernameVote(true /* credentials_saved */);
+  votes_uploader.MaybeSendSingleUsernameVote();
 }
 
 TEST_F(VotesUploaderTest, UploadSingleUsername) {
@@ -440,14 +440,13 @@ TEST_F(VotesUploaderTest, UploadSingleUsername) {
     votes_uploader.set_single_username_vote_data(kUsernameRendererId,
                                                  form_predictions);
 
-    ServerFieldTypeSet expected_types = {credentials_saved ? SINGLE_USERNAME
-                                                           : NOT_USERNAME};
+    ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
     EXPECT_CALL(mock_autofill_download_manager_,
                 StartUploadRequest(SignatureIs(kFormSignature), false,
                                    expected_types, std::string(), true,
                                    /* pref_service= */ nullptr));
 
-    votes_uploader.MaybeSendSingleUsernameVote(credentials_saved);
+    votes_uploader.MaybeSendSingleUsernameVote();
   }
 }
 
@@ -491,7 +490,7 @@ TEST_F(VotesUploaderTest, UploadedVotesDependOnUsernameChangeState) {
                            /*login_form_signature=*/"",
                            /*observed_submission=*/true,
                            /*pref_service=*/nullptr));
-    votes_uploader.MaybeSendSingleUsernameVote(/*credentials_saved=*/true);
+    votes_uploader.MaybeSendSingleUsernameVote();
   }
 }
 
@@ -529,7 +528,7 @@ TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
   EXPECT_CALL(client_, GetFieldInfoManager())
       .WillRepeatedly(Return(&field_info_manager));
 
-  votes_uploader.MaybeSendSingleUsernameVote(true /*  credentials_saved */);
+  votes_uploader.MaybeSendSingleUsernameVote();
   task_environment_.RunUntilIdle();
   store->ShutdownOnUIThread();
 }
@@ -562,7 +561,7 @@ TEST_F(VotesUploaderTest, DontUploadSingleUsernameWhenAlreadyUploaded) {
   // Expect no upload, since the vote has been already uploaded.
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
 
-  votes_uploader.MaybeSendSingleUsernameVote(true /*credentials_saved*/);
+  votes_uploader.MaybeSendSingleUsernameVote();
 }
 
 }  // namespace password_manager

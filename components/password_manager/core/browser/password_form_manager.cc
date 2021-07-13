@@ -377,7 +377,6 @@ void PasswordFormManager::OnNopeUpdateClicked() {
   votes_uploader_.UploadPasswordVote(*parsed_submitted_form_,
                                      *parsed_submitted_form_,
                                      autofill::NOT_NEW_PASSWORD, std::string());
-  votes_uploader_.MaybeSendSingleUsernameVote(false /* credentials_saved */);
 }
 
 void PasswordFormManager::OnNeverClicked() {
@@ -386,8 +385,6 @@ void PasswordFormManager::OnNeverClicked() {
   votes_uploader_.UploadPasswordVote(*parsed_submitted_form_,
                                      *parsed_submitted_form_,
                                      autofill::UNKNOWN_TYPE, std::string());
-
-  votes_uploader_.MaybeSendSingleUsernameVote(false /* credentials_saved */);
   Blocklist();
 }
 
@@ -398,8 +395,6 @@ void PasswordFormManager::OnNoInteraction(bool is_update) {
       *parsed_submitted_form_, *parsed_submitted_form_,
       is_update ? autofill::PROBABLY_NEW_PASSWORD : autofill::UNKNOWN_TYPE,
       std::string());
-
-  votes_uploader_.MaybeSendSingleUsernameVote(false /* credentials_saved */);
 }
 
 void PasswordFormManager::Blocklist() {
