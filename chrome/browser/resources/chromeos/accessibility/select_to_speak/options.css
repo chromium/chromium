@@ -61,14 +61,14 @@ hr {
   width: 646px;
 }
 
-.option.hidden {
+.option.hidden,
+.option-group.hidden {
   display: none;
 }
 
 .sub-option {
   background-color: #fff;
   font-size: 13px;
-  margin-bottom: 16px;
   max-height: 60px;
   opacity: 1;
   overflow: hidden;
@@ -110,7 +110,7 @@ hr {
   line-height: 60px;
   margin: 20px 0;
   min-height: 20px;
-  padding: 0;
+  padding: 0 0 2px 0;
 }
 
 label {
@@ -118,9 +118,33 @@ label {
   vertical-align: middle;
 }
 
+.sub-option input[type='text'] {
+  background-color: #fff;
+  border-width: 0 0 1px 0;
+  height: 25px;
+  margin-top: 20px;
+  width: 300px;
+}
+
+.tall {
+  margin-bottom: 16px;
+}
+
+.short {
+  line-height: 40px;
+  vertical-align: bottom;
+}
+
+.right {
+  float: right;
+}
+
+.wide {
+  min-width: 200px;
+}
+
 .example {
   display: inline-block;
-  float: right;
   font-size: 1em;
   height: 60px;
   line-height: 60px;
@@ -146,7 +170,8 @@ label {
   z-index: 10;
 }
 
-.option button {
+.option button,
+.sub-option button {
   background-color: #fff;
   border-color: rgb(210, 227, 252);
   border-radius: 4px;
@@ -162,11 +187,13 @@ label {
   vertical-align: middle;
 }
 
-.option button:hover {
+.option button:hover,
+.sub-option button:hover {
   background-color: rgba(66, 133, 244, 0.04);
 }
 
-.option button:active {
+.option button:active,
+.sub-option button:active {
   background-color: rgba(66, 133, 244, 0.15);
 }
 
@@ -209,6 +236,10 @@ label {
 
 .subtitle {
   color: rgb(95, 99, 104);
+}
+
+.subtitle a {
+  color: rgb(26, 115, 232);
 }
 
 #navigationControlsOption {

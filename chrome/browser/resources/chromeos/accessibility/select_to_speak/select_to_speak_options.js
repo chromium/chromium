@@ -15,56 +15,90 @@ class SelectToSpeakOptionsPage {
    */
   init_() {
     this.addTranslatedMessagesToDom_();
-    this.populateVoiceList_('voice');
-    window.speechSynthesis.onvoiceschanged = (function() {
-      this.populateVoiceList_('voice');
-    }.bind(this));
-    this.syncSelectControlToPref_('voice', 'voice', 'voiceName');
+    // Depending on whether the enhanced TTS voices are enabled, show either the
+    // enhanced voices settings or the legacy settings.
+    const AccessibilityFeature =
+        chrome.accessibilityPrivate.AccessibilityFeature;
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        AccessibilityFeature.ENHANCED_NETWORK_VOICES, (result) => {
+          const newElem = document.getElementById('naturalVoicesOptions');
+          const legacyElem = document.getElementById('noNaturalVoicesOptions');
+          if (!result) {
+            // Show UI without natural voices
+            this.hideElement(newElem);
+            this.showElement(legacyElem);
+            this.populateVoiceList_('voice');
+            window.speechSynthesis.onvoiceschanged = (function() {
+              this.populateVoiceList_('voice');
+            }.bind(this));
+            this.syncSelectControlToPref_('voice', 'voice', 'voiceName');
+          } else {
+            // Show UI with natural voices
+            this.hideElement(legacyElem);
+            this.showElement(newElem);
+            this.populateVoiceList_('localVoices');
+            window.speechSynthesis.onvoiceschanged = (function() {
+              this.populateVoiceList_('localVoices');
+            }.bind(this));
+            // TODO(crbug.com/1227589): add enhanced voice settings to prefs
+            // and sync the controls for those settings to preferences
+          }
+        });
+
     this.syncCheckboxControlToPref_(
         'wordHighlight', 'wordHighlight', (checked) => {
           const elem = document.getElementById('highlightSubOption');
           const select = document.getElementById('highlightColor');
-          if (checked) {
-            elem.classList.remove('hidden');
-            elem.setAttribute('aria-hidden', false);
-            select.disabled = false;
-          } else {
-            elem.classList.add('hidden');
-            elem.setAttribute('aria-hidden', true);
-            select.disabled = true;
-          }
+          this.setElementVisible(elem, checked);
+          select.disabled = !checked;
         });
     this.syncCheckboxControlToPref_(
         'backgroundShading', 'backgroundShading', (checked) => {
           const elem = document.getElementById('backgroundPreviewContainer');
-          if (checked) {
-            elem.classList.remove('hidden');
-            elem.setAttribute('aria-hidden', false);
-          } else {
-            elem.classList.add('hidden');
-            elem.setAttribute('aria-hidden', true);
-          }
+          this.setElementVisible(elem, checked);
         });
     this.syncCheckboxControlToPref_('navigationControls', 'navigationControls');
     // Hide navigation control setting if feature is not enabled
-    const AccessibilityFeature =
-        chrome.accessibilityPrivate.AccessibilityFeature;
     chrome.accessibilityPrivate.isFeatureEnabled(
         AccessibilityFeature.SELECT_TO_SPEAK_NAVIGATION_CONTROL, (result) => {
           const elem = document.getElementById('navigationControlsOption');
-          if (!result) {
-            elem.classList.add('hidden');
-            elem.setAttribute('aria-hidden', true);
-          } else {
-            elem.classList.remove('hidden');
-            elem.setAttribute('aria-hidden', false);
-          }
+          this.setElementVisible(elem, result);
         });
 
     this.setUpHighlightListener_();
     this.setUpTtsButtonClickListener_();
     chrome.metricsPrivate.recordUserAction(
         'Accessibility.CrosSelectToSpeak.LoadSettings');
+  }
+
+  /**
+   * Shows an element.
+   * @private
+   */
+  showElement(element) {
+    element.classList.remove('hidden');
+    element.setAttribute('aria-hidden', false);
+  }
+
+  /**
+   * Hides an element.
+   * @private
+   */
+  hideElement(element) {
+    element.classList.add('hidden');
+    element.setAttribute('aria-hidden', true);
+  }
+
+  /**
+   * Shows or hides an element.
+   * @private
+   */
+  setElementVisible(element, isVisible) {
+    if (isVisible) {
+      this.showElement(element);
+    } else {
+      this.hideElement(element);
+    }
   }
 
   /**
@@ -84,7 +118,7 @@ class SelectToSpeakOptionsPage {
       }
       var translated = chrome.i18n.getMessage('select_to_speak_' + msgid);
       if (elts[i].tagName === 'INPUT') {
-        elts[i].setAttribute('placeholder', translated);
+        elts[i].setAttribute('value', translated);
       } else {
         elts[i].textContent = translated;
       }

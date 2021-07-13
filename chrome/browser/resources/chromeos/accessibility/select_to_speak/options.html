@@ -15,11 +15,11 @@
     <div class="container">
 
       <h2 class="i18n" msgid="options_speech"></h2>
-      <div class="option-group">
+      <div class="option-group" id="noNaturalVoicesOptions">
         <div class="option">
           <span class="i18n" msgid="options_voices_description"
-                id="voices_description"></span>
-          <select id="voice" aria-labelledby="voices_description">
+                id="voicesDescription"></span>
+          <select id="voice" aria-labelledby="voicesDescription">
           </select>
         </div>
         <hr aria-hidden="true">
@@ -28,6 +28,61 @@
           <button id="ttsSettingsBtn" class="i18n"
               msgid="options_text_to_speech_settings_link">
           </button>
+        </div>
+      </div>
+
+      <div class="option-group hidden" id="naturalVoicesOptions">
+        <div class="option">
+          <label class="i18n" msgid="options_languages_description"
+                id="languagesDescription"></label>
+          <select class="speech-option right wide" id="language"
+                  aria-labelledby="languagesDescription">
+            <option value="0" class="i18n"
+              msgid="options_device_language">
+            </option>
+          </select>
+        </div>
+        <div class="option">
+          <label class="i18n" msgid="options_preferred_voice_description"
+                id="voicesDescription"></label>
+          <select class="speech-option right wide" id="localVoices"
+                  aria-labelledby="voicesDescription">
+          </select>
+        </div>
+        <div class="option" id="naturalVoicesOption">
+          <input id="naturalVoices" type="checkbox" role="switch"
+              class="checkbox" name="naturalVoices"
+              aria-labelledby="naturalVoicesLabel">
+          <label id="naturalVoicesLabel" class="i18n short"
+              msgid="options_use_natural_voices">
+          </label>
+          <div class="subtitle">
+            <span class="i18n" msgid="options_natural_voices_explanation">
+            </span>
+            <!-- TODO(https://crbug.com/1227547): Change to correct link -->
+            <a href="https://support.google.com/chromebook/?p=accessibility">
+              <span class="i18n"
+                    msgid="options_natural_voices_explanation_more">
+              </span>
+            </a>
+          </div>
+        </div>
+        <div class="sub-option" id="naturalVoiceSelection">
+          <label class="i18n" msgid="options_natural_voice"
+                id="naturalVoiceDescription"></label>
+          <select class="speech-option right wide" id="naturalVoice"
+                  aria-labelledby="naturalVoiceDescription">
+          </select>
+        </div>
+        <div class="sub-option" id="naturalVoicePreview">
+          <label class="i18n" msgid="options_natural_voice_preview">
+          </label>
+          <button id="naturalVoicesPlay" class="i18n"
+                msgid="options_play_button">
+          </button>
+          <input id="naturalVoicesExample" name="naturalVoicesExample"
+                 type="text" class="i18n right"
+                 msgid="options_natural_voices_example">
         </div>
       </div>
 
@@ -41,7 +96,7 @@
             class="checkbox" name="wordHighlight"
             aria-labeledby="wordHighlightLabel">
         </div>
-        <div class="sub-option hidden" id="highlightSubOption">
+        <div class="sub-option tall hidden" id="highlightSubOption">
           <span class="i18n" msgid="options_highlight_color_description"
                 id="highlight_color_description"></span>
           <select id="highlightColor"
@@ -62,12 +117,12 @@
                     msgid="options_highlight_color_pink">
             </option>
           </select>
-          <div class="example dark">
+          <div class="example right dark">
             <span class="i18n" msgid="options_highlight_dark"></span>
             <div class="highlight">
             </div>
           </div>
-          <div class="example light">
+          <div class="example right light">
             <span class="i18n" msgid="options_highlight_light"></span>
             <div class="highlight">
             </div>
