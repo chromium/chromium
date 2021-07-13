@@ -4,7 +4,6 @@
 
 package org.chromium.ui.base;
 
-import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -28,7 +27,7 @@ public class LocalizationUtils {
     public static final int RIGHT_TO_LEFT = 1;
     public static final int LEFT_TO_RIGHT = 2;
 
-    private static Boolean sIsLayoutRtl;
+    private static Boolean sIsLayoutRtlForTesting;
 
     private LocalizationUtils() { /* cannot be instantiated */ }
 
@@ -53,19 +52,18 @@ public class LocalizationUtils {
      */
     @CalledByNative
     public static boolean isLayoutRtl() {
-        if (sIsLayoutRtl == null) {
-            Configuration configuration =
-                    ContextUtils.getApplicationContext().getResources().getConfiguration();
-            sIsLayoutRtl = Boolean.valueOf(
-                    configuration.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL);
-        }
+        if (sIsLayoutRtlForTesting != null) return sIsLayoutRtlForTesting;
 
-        return sIsLayoutRtl.booleanValue();
+        return ContextUtils.getApplicationContext()
+                       .getResources()
+                       .getConfiguration()
+                       .getLayoutDirection()
+                == View.LAYOUT_DIRECTION_RTL;
     }
 
     @VisibleForTesting
     public static void setRtlForTesting(boolean shouldBeRtl) {
-        sIsLayoutRtl = shouldBeRtl;
+        sIsLayoutRtlForTesting = shouldBeRtl;
     }
 
     /**
