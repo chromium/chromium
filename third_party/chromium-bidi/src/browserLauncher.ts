@@ -43,10 +43,11 @@ export class BrowserProcess {
   }
 }
 
-export async function launchBrowser(): Promise<BrowserProcess> {
+export async function launchBrowser(
+  browserExecutablePath,
+  headless: boolean
+): Promise<BrowserProcess> {
   const tempDir = await _getTempDir();
-  const browserExecutablePath = process.env.BROWSER_PATH;
-  const headless = process.env.HEADLESS !== 'false';
 
   const processFlags = [
     '--disable-background-networking',
@@ -81,7 +82,9 @@ export async function launchBrowser(): Promise<BrowserProcess> {
   if (headless) processFlags.push('--headless');
 
   const proc = childProcess.spawn(browserExecutablePath, processFlags);
-  return new BrowserProcess(await _waitForWSEndpoint(proc), () => {
+  const wsEndpoint = await _waitForWSEndpoint(proc);
+
+  return new BrowserProcess(wsEndpoint, () => {
     proc.kill();
   });
 }
@@ -92,14 +95,31 @@ async function _getTempDir(): Promise<string> {
 }
 
 async function _waitForWSEndpoint(browserProcess): Promise<string> {
+  // Potential errors during Chrome launch to make error message more sensible.
+  const chromeLaunchErrors = [
+    {
+      // Trying to run headful Chrome in headless Linux terminal.
+      regex: /Unable to open X display/,
+      message: 'Cannot run headful Chrome.',
+    },
+  ];
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({ input: browserProcess.stderr });
     _addEventListener(rl, 'line', onLine);
 
     function onLine(line) {
+      for (const error of chromeLaunchErrors) {
+        const errorMatch = line.match(error.regex);
+        if (errorMatch) {
+          reject(error.message);
+          return;
+        }
+      }
+
       const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);
-      if (!match) return;
-      resolve(match[1]);
+      if (match) {
+        resolve(match[1]);
+      }
     }
   });
 }

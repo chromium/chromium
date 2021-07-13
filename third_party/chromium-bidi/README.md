@@ -10,11 +10,15 @@ This is a Node.js project, so install dependencies as usual:
 
     npm install
 
-Then set the `BROWSER_PATH` environment variable to a Chrome, Edge or Chromium binary to launch. For example, on macOS:
+Then set the `BROWSER_PATH` environment variable or use `--browser` argument to a Chrome, Edge or Chromium binary to launch. For example, on macOS:
 
     export BROWSER_PATH="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
     export BROWSER_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
     export BROWSER_PATH="example/path/to/Chromium.app/Contents/MacOS/Chromium"
+
+    npm run bidi-server -- --browser="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
+    npm run bidi-server -- --browser="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
+    npm run bidi-server -- --browser="example/path/to/Chromium.app/Contents/MacOS/Chromium"
 
 If it's a newly downloaded binary, first run it manually once to ensure the operating system trusts it.
 
@@ -22,18 +26,26 @@ If it's a newly downloaded binary, first run it manually once to ensure the oper
 
     npm run bidi-server
 
-This will run the server on port 8080. Use the `PORT` environment variable to
-run it on another port:
+This will run the server on port 8080. Use the `PORT` environment variable or `--port=...` argument to run it on another port:
 
     PORT=8081 npm run bidi-server
+    npm run bidi-server -- --port=8081
 
 Use the `DEBUG` environment variable to see debug info:
 
     DEBUG=* npm run bidi-server
 
-Use the `HEADLESS=false` environment variable to run browser in headful mode:
+Use the CLI argument `--headless=false` to run browser in headful mode:
 
-    HEADLESS=false npm run bidi-server
+    npm run bidi-server -- --headless=false
+
+### Starting on Linux and Mac
+
+TODO: verify if it works on Windows.
+
+You can alson run the Server by using script `./runBiDiServer.sh`. It will write output to the file `log.txt`:
+
+    ./runBiDiServer.sh --port=8081 --browser="example/path/to/browser" --headless=false
 
 ## Running the Tests
 

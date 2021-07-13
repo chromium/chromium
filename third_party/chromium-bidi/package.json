@@ -6,7 +6,8 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bidi-server": "npm run build && node ./src/.build/index.js",
+    "bidi-server": "npm run build && npm run server --",
+    "server": "node ./src/.build/index.js",
     "build": "npm run prettier && npm run clean && tsc -b src/tsconfig.json",
     "clean": "rimraf ./src/.build",
     "prettier": "npx prettier --write . "
@@ -16,8 +17,8 @@
   "dependencies": {
     "@types/rollup": "^0.54.0",
     "@types/websocket": "^1.0.2",
+    "argparse": "^2.0.1",
     "debug": "^4.3.1",
-    "http": "*",
     "rollup": "^2.47.0",
     "ts-node": "^9.1.1",
     "tslib": "^2.2.0",
