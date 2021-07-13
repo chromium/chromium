@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -197,7 +198,10 @@ FileSystemURL ExternalMountPoints::CreateCrackedFileSystemURL(
     const url::Origin& origin,
     FileSystemType type,
     const base::FilePath& virtual_path) const {
-  return CrackFileSystemURL(FileSystemURL(origin, type, virtual_path));
+  // TODO(https://crbug.com/1221308): function will have StorageKey param in
+  // future CL; conversion from url::Origin is temporary
+  const blink::StorageKey storage_key = blink::StorageKey(origin);
+  return CrackFileSystemURL(FileSystemURL(storage_key, type, virtual_path));
 }
 
 void ExternalMountPoints::AddMountPointInfosTo(
@@ -271,9 +275,10 @@ FileSystemURL ExternalMountPoints::CrackFileSystemURL(
       return FileSystemURL();
 #else
     // On other OS, it is simply a native local path.
-    return FileSystemURL(url.origin(), url.mount_type(), url.virtual_path(),
-                         url.mount_filesystem_id(), kFileSystemTypeLocal,
-                         url.path(), url.filesystem_id(), url.mount_option());
+    return FileSystemURL(url.storage_key(), url.mount_type(),
+                         url.virtual_path(), url.mount_filesystem_id(),
+                         kFileSystemTypeLocal, url.path(), url.filesystem_id(),
+                         url.mount_option());
 #endif
   }
 
@@ -289,7 +294,7 @@ FileSystemURL ExternalMountPoints::CrackFileSystemURL(
   }
 
   return FileSystemURL(
-      url.origin(), url.mount_type(), url.virtual_path(),
+      url.storage_key(), url.mount_type(), url.virtual_path(),
       !url.filesystem_id().empty() ? url.filesystem_id() : mount_name,
       cracked_type, cracked_path, cracked_id.empty() ? mount_name : cracked_id,
       cracked_mount_option);

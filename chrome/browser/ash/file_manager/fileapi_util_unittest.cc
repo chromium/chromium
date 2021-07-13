@@ -23,6 +23,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
@@ -136,8 +137,8 @@ class FileManagerFileAPIUtilTest : public ::testing::Test {
         errors.push_back(base::File::FILE_OK);
       } else {
         fs_url = storage::FileSystemURL::CreateForTest(
-            url::Origin::Create(appURL), storage::kFileSystemTypeExternal,
-            base::FilePath(order.file_name));
+            blink::StorageKey(url::Origin::Create(appURL)),
+            storage::kFileSystemTypeExternal, base::FilePath(order.file_name));
         errors.push_back(base::File::FILE_ERROR_NOT_FOUND);
       }
       file_definitions.push_back({.virtual_path = fs_url.virtual_path()});

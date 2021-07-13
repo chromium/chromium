@@ -25,6 +25,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 using File = arc::FakeFileSystemInstance::File;
@@ -80,8 +81,7 @@ class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
     EXPECT_TRUE(
         mount_point_virtual_path.AppendRelativePath(virtual_path, &path));
     return storage::FileSystemURL::CreateForTest(
-        url::Origin(),  // origin
-        storage::kFileSystemTypeArcContent, path);
+        blink::StorageKey(), storage::kFileSystemTypeArcContent, path);
   }
 
   content::BrowserTaskEnvironment task_environment_;

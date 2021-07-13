@@ -21,6 +21,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/quota/quota_reservation.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using storage::QuotaReservationManager;
@@ -97,7 +98,8 @@ class QuotaReservationTest : public testing::Test {
   storage::FileSystemURL MakeFileSystemURL(
       const base::FilePath::StringType& file_name) {
     return storage::FileSystemURL::CreateForTest(
-        url::Origin::Create(GURL(kOrigin)), kType, MakeFilePath(file_name));
+        blink::StorageKey::CreateFromStringForTesting(kOrigin), kType,
+        MakeFilePath(file_name));
   }
 
   scoped_refptr<QuotaReservation> CreateQuotaReservation(

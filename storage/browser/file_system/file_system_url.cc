@@ -10,6 +10,8 @@
 #include "base/strings/string_util.h"
 #include "net/base/escape.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace storage {
 
@@ -37,14 +39,14 @@ FileSystemURL FileSystemURL::CreateForTest(const GURL& url) {
   return FileSystemURL(url);
 }
 
-FileSystemURL FileSystemURL::CreateForTest(const url::Origin& origin,
+FileSystemURL FileSystemURL::CreateForTest(const blink::StorageKey& storage_key,
                                            FileSystemType mount_type,
                                            const base::FilePath& virtual_path) {
-  return FileSystemURL(origin, mount_type, virtual_path);
+  return FileSystemURL(storage_key, mount_type, virtual_path);
 }
 
 FileSystemURL FileSystemURL::CreateForTest(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType mount_type,
     const base::FilePath& virtual_path,
     const std::string& mount_filesystem_id,
@@ -52,8 +54,9 @@ FileSystemURL FileSystemURL::CreateForTest(
     const base::FilePath& cracked_path,
     const std::string& filesystem_id,
     const FileSystemMountOption& mount_option) {
-  return FileSystemURL(origin, mount_type, virtual_path, mount_filesystem_id,
-                       cracked_type, cracked_path, filesystem_id, mount_option);
+  return FileSystemURL(storage_key, mount_type, virtual_path,
+                       mount_filesystem_id, cracked_type, cracked_path,
+                       filesystem_id, mount_option);
 }
 
 FileSystemURL::FileSystemURL(const GURL& url)
@@ -64,24 +67,26 @@ FileSystemURL::FileSystemURL(const GURL& url)
   GURL origin_url;
   is_valid_ =
       ParseFileSystemSchemeURL(url, &origin_url, &mount_type_, &virtual_path_);
-  origin_ = url::Origin::Create(origin_url);
+  // TODO(https://crbug.com/1221308): function will have StorageKey param in
+  // future CL; conversion from url::Origin is temporary
+  storage_key_ = blink::StorageKey(url::Origin::Create(origin_url));
   path_ = virtual_path_;
   type_ = mount_type_;
 }
 
-FileSystemURL::FileSystemURL(const url::Origin& origin,
+FileSystemURL::FileSystemURL(const blink::StorageKey& storage_key,
                              FileSystemType mount_type,
                              const base::FilePath& virtual_path)
     : is_null_(false),
       is_valid_(true),
-      origin_(origin),
+      storage_key_(storage_key),
       mount_type_(mount_type),
       virtual_path_(virtual_path.NormalizePathSeparators()),
       type_(mount_type),
       path_(virtual_path.NormalizePathSeparators()),
       mount_option_(FlushPolicy::NO_FLUSH_ON_COMPLETION) {}
 
-FileSystemURL::FileSystemURL(const url::Origin& origin,
+FileSystemURL::FileSystemURL(const blink::StorageKey& storage_key,
                              FileSystemType mount_type,
                              const base::FilePath& virtual_path,
                              const std::string& mount_filesystem_id,
@@ -91,7 +96,7 @@ FileSystemURL::FileSystemURL(const url::Origin& origin,
                              const FileSystemMountOption& mount_option)
     : is_null_(false),
       is_valid_(true),
-      origin_(origin),
+      storage_key_(storage_key),
       mount_type_(mount_type),
       virtual_path_(virtual_path.NormalizePathSeparators()),
       mount_filesystem_id_(mount_filesystem_id),
@@ -104,7 +109,8 @@ GURL FileSystemURL::ToGURL() const {
   if (!is_valid_)
     return GURL();
 
-  std::string url = GetFileSystemRootURI(origin_.GetURL(), mount_type_).spec();
+  std::string url =
+      GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_).spec();
   if (url.empty())
     return GURL();
 
@@ -125,7 +131,7 @@ std::string FileSystemURL::DebugString() const {
   if (!is_valid_)
     return "invalid filesystem: URL";
   std::ostringstream ss;
-  ss << GetFileSystemRootURI(origin_.GetURL(), mount_type_);
+  ss << GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_);
 
   // filesystem_id_ will be non empty for (and only for) cracked URLs.
   if (!filesystem_id_.empty()) {
@@ -153,7 +159,7 @@ bool FileSystemURL::operator==(const FileSystemURL& that) const {
   if (is_null_ && that.is_null_) {
     return true;
   } else {
-    return origin_ == that.origin_ && type_ == that.type_ &&
+    return storage_key() == that.storage_key() && type_ == that.type_ &&
            path_ == that.path_ && filesystem_id_ == that.filesystem_id_ &&
            is_valid_ == that.is_valid_;
   }
@@ -162,8 +168,8 @@ bool FileSystemURL::operator==(const FileSystemURL& that) const {
 bool FileSystemURL::Comparator::operator()(const FileSystemURL& lhs,
                                            const FileSystemURL& rhs) const {
   DCHECK(lhs.is_valid_ && rhs.is_valid_);
-  if (lhs.origin_ != rhs.origin_)
-    return lhs.origin_ < rhs.origin_;
+  if (lhs.storage_key() != rhs.storage_key())
+    return lhs.storage_key() < rhs.storage_key();
   if (lhs.type_ != rhs.type_)
     return lhs.type_ < rhs.type_;
   if (lhs.filesystem_id_ != rhs.filesystem_id_)

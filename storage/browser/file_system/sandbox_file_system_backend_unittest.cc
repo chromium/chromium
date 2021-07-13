@@ -27,6 +27,7 @@
 #include "storage/browser/test/test_file_system_options.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -122,8 +123,9 @@ class SandboxFileSystemBackendTest
                    base::FilePath* root_path) {
     base::File::Error error = base::File::FILE_OK;
     backend_->ResolveURL(
-        FileSystemURL::CreateForTest(url::Origin::Create(GURL(origin_url)),
-                                     type, base::FilePath()),
+        FileSystemURL::CreateForTest(
+            blink::StorageKey::CreateFromStringForTesting(origin_url), type,
+            base::FilePath()),
         mode, base::BindOnce(&DidOpenFileSystem, &error));
     base::RunLoop().RunUntilIdle();
     if (error != base::File::FILE_OK)

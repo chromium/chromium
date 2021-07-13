@@ -205,7 +205,8 @@ class CopyOrMoveOperationTestHelper {
     FileSystemBackend* backend =
         file_system_context_->GetFileSystemBackend(src_type_);
     backend->ResolveURL(
-        FileSystemURL::CreateForTest(origin_, src_type_, base::FilePath()),
+        FileSystemURL::CreateForTest(blink::StorageKey(url::Origin(origin_)),
+                                     src_type_, base::FilePath()),
         OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, base::BindOnce(&ExpectOk));
     backend = file_system_context_->GetFileSystemBackend(dest_type_);
     if (dest_type_ == kFileSystemTypeTest) {
@@ -219,7 +220,8 @@ class CopyOrMoveOperationTestHelper {
             std::move(factory));
     }
     backend->ResolveURL(
-        FileSystemURL::CreateForTest(origin_, dest_type_, base::FilePath()),
+        FileSystemURL::CreateForTest(blink::StorageKey(url::Origin(origin_)),
+                                     dest_type_, base::FilePath()),
         OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, base::BindOnce(&ExpectOk));
     task_environment_.RunUntilIdle();
 

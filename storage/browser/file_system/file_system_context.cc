@@ -46,6 +46,7 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/file_system/file_system_info.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -543,7 +544,10 @@ FileSystemURL FileSystemContext::CreateCrackedFileSystemURL(
     const url::Origin& origin,
     FileSystemType type,
     const base::FilePath& path) const {
-  return CrackFileSystemURL(FileSystemURL(origin, type, path));
+  // TODO(https://crbug.com/1221308): function will have StorageKey param in
+  // future CL; conversion from url::Origin is temporary
+  return CrackFileSystemURL(
+      FileSystemURL(blink::StorageKey(origin), type, path));
 }
 
 bool FileSystemContext::CanServeURLRequest(const FileSystemURL& url) const {

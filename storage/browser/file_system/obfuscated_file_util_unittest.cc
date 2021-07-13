@@ -49,6 +49,7 @@
 #include "storage/common/database/database_identifier.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -119,19 +120,19 @@ const OriginEnumerationTestRecord kOriginEnumerationTestRecords[] = {
 
 FileSystemURL FileSystemURLAppend(const FileSystemURL& url,
                                   const base::FilePath::StringType& child) {
-  return FileSystemURL::CreateForTest(url.origin(), url.mount_type(),
+  return FileSystemURL::CreateForTest(url.storage_key(), url.mount_type(),
                                       url.virtual_path().Append(child));
 }
 
 FileSystemURL FileSystemURLAppendUTF8(const FileSystemURL& url,
                                       const std::string& child) {
   return FileSystemURL::CreateForTest(
-      url.origin(), url.mount_type(),
+      url.storage_key(), url.mount_type(),
       url.virtual_path().Append(base::FilePath::FromUTF8Unsafe(child)));
 }
 
 FileSystemURL FileSystemURLDirName(const FileSystemURL& url) {
-  return FileSystemURL::CreateForTest(url.origin(), url.mount_type(),
+  return FileSystemURL::CreateForTest(url.storage_key(), url.mount_type(),
                                       VirtualPath::DirName(url.virtual_path()));
 }
 
@@ -736,7 +737,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
     std::unique_ptr<ObfuscatedFileUtil> file_util =
         CreateObfuscatedFileUtil(/*storage_policy=*/storage_policy_);
     const FileSystemURL url = FileSystemURL::CreateForTest(
-        origin_, kFileSystemTypePersistent, base::FilePath());
+        blink::StorageKey(url::Origin(origin_)), kFileSystemTypePersistent,
+        base::FilePath());
 
     // Create DirectoryDatabase for isolated origin.
     SandboxDirectoryDatabase* db =
@@ -754,7 +756,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
     std::unique_ptr<ObfuscatedFileUtil> file_util =
         CreateObfuscatedFileUtil(storage_policy_);
     const FileSystemURL url = FileSystemURL::CreateForTest(
-        origin_, kFileSystemTypePersistent, base::FilePath());
+        blink::StorageKey(url::Origin(origin_)), kFileSystemTypePersistent,
+        base::FilePath());
 
     // Create DirectoryDatabase for isolated origin.
     SandboxDirectoryDatabase* db =
@@ -2011,12 +2014,12 @@ TEST_P(ObfuscatedFileUtilTest, TestFileEnumeratorTimestamp) {
     context = NewContext(nullptr);
     base::File::Info file_info;
     base::FilePath file_path;
-    EXPECT_EQ(
-        base::File::FILE_OK,
-        ofu()->GetFileInfo(context.get(),
-                           FileSystemURL::CreateForTest(
-                               dir.origin(), dir.mount_type(), file_path_each),
-                           &file_info, &file_path));
+    EXPECT_EQ(base::File::FILE_OK,
+              ofu()->GetFileInfo(
+                  context.get(),
+                  FileSystemURL::CreateForTest(
+                      dir.storage_key(), dir.mount_type(), file_path_each),
+                  &file_info, &file_path));
     EXPECT_EQ(file_info.is_directory, file_enum->IsDirectory());
     EXPECT_EQ(file_info.last_modified, file_enum->LastModifiedTime());
     EXPECT_EQ(file_info.size, file_enum->Size());

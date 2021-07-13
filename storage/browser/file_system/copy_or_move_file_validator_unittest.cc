@@ -32,6 +32,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -78,7 +79,8 @@ class CopyOrMoveFileValidatorTestHelper {
     FileSystemBackend* src_file_system_backend =
         file_system_context_->GetFileSystemBackend(src_type_);
     src_file_system_backend->ResolveURL(
-        FileSystemURL::CreateForTest(origin_, src_type_, base::FilePath()),
+        FileSystemURL::CreateForTest(blink::StorageKey(url::Origin(origin_)),
+                                     src_type_, base::FilePath()),
         OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, base::BindOnce(&ExpectOk));
     base::RunLoop().RunUntilIdle();
     ASSERT_EQ(base::File::FILE_OK, CreateDirectory(SourceURL("")));

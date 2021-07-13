@@ -25,10 +25,9 @@ namespace storage {
 namespace {
 
 FileSystemURL CreateFileSystemURL(const char* path) {
-  const GURL kOrigin("http://foo/");
-  return FileSystemURL::CreateForTest(url::Origin::Create(kOrigin),
-                                      kFileSystemTypeTemporary,
-                                      base::FilePath::FromUTF8Unsafe(path));
+  return FileSystemURL::CreateForTest(
+      blink::StorageKey::CreateFromStringForTesting("http://foo/"),
+      kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe(path));
 }
 
 }  // namespace
@@ -95,8 +94,8 @@ TEST_F(SandboxFileSystemBackendDelegateTest, IsAccessValid) {
 
   // Access from non-allowed scheme should be disallowed.
   EXPECT_FALSE(IsAccessValid(FileSystemURL::CreateForTest(
-      url::Origin::Create(GURL("unknown://bar")), kFileSystemTypeTemporary,
-      base::FilePath::FromUTF8Unsafe("foo"))));
+      blink::StorageKey::CreateFromStringForTesting("unknown://bar"),
+      kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("foo"))));
 
   // Access with restricted name should be disallowed.
   EXPECT_FALSE(IsAccessValid(CreateFileSystemURL(".")));

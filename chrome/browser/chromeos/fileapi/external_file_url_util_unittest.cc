@@ -12,6 +12,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace chromeos {
 
@@ -33,7 +34,7 @@ class ExternalFileURLUtilTest : public testing::Test {
 
   storage::FileSystemURL CreateExpectedURL(const base::FilePath& path) {
     return storage::FileSystemURL::CreateForTest(
-        url::Origin::Create(GURL("chrome-extension://xxx")),
+        blink::StorageKey::CreateFromStringForTesting("chrome-extension://xxx"),
         storage::kFileSystemTypeExternal,
         base::FilePath("arc-documents-provider").Append(path), "",
         storage::kFileSystemTypeArcDocumentsProvider, base::FilePath(), "",

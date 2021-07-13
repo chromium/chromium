@@ -43,6 +43,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using base::FilePath;
@@ -691,7 +692,7 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
 };
 
 FileSystemURL CreateExternalURL(const base::FilePath& path) {
-  return FileSystemURL::CreateForTest(url::Origin(),
+  return FileSystemURL::CreateForTest(blink::StorageKey(),
                                       storage::kFileSystemTypeExternal, path);
 }
 
@@ -798,7 +799,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
   ConvertToContentUrls(
       ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{FileSystemURL::CreateForTest(
-          url::Origin(), storage::kFileSystemTypeTest,
+          blink::StorageKey(), storage::kFileSystemTypeTest,
           base::FilePath::FromUTF8Unsafe("/media/removable/a/b/c"))},
       base::BindOnce(
           [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
@@ -953,7 +954,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
   ConvertToContentUrls(
       ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{FileSystemURL::CreateForTest(
-          url::Origin(), storage::kFileSystemTypeArcDocumentsProvider,
+          blink::StorageKey(), storage::kFileSystemTypeArcDocumentsProvider,
           base::FilePath::FromUTF8Unsafe(
               "/special/arc-documents-provider/"
               "com.android.providers.media.documents/"
@@ -977,7 +978,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
   ConvertToContentUrls(
       ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{FileSystemURL::CreateForTest(
-          url::Origin(), storage::kFileSystemTypeArcDocumentsProvider,
+          blink::StorageKey(), storage::kFileSystemTypeArcDocumentsProvider,
           base::FilePath::FromUTF8Unsafe(
               "/special/arc-documents-provider/"
               "com.android.providers.media.documents/"

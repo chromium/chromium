@@ -9,6 +9,7 @@
 #include "content/public/common/url_constants.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace arc {
@@ -72,9 +73,8 @@ TEST(ArcContentFileSystemUrlUtilTest, FileSystemUrlToArcUrl) {
       base::FilePath(kContentFileSystemMountPointPath)
           .Append(base::FilePath::FromUTF8Unsafe(EscapeArcUrl(arc_url)));
   storage::FileSystemURL file_system_url =
-      storage::FileSystemURL::CreateForTest(url::Origin(),  // origin
-                                            storage::kFileSystemTypeArcContent,
-                                            path);
+      storage::FileSystemURL::CreateForTest(
+          blink::StorageKey(), storage::kFileSystemTypeArcContent, path);
 
   EXPECT_EQ(arc_url, FileSystemUrlToArcUrl(file_system_url));
 }

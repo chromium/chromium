@@ -32,6 +32,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -809,8 +810,8 @@ TEST_F(ChildProcessSecurityPolicyTest, FilePermissionGrantingAndRevoking) {
   base::FilePath file(TEST_PATH("/dir/testfile"));
   file = file.NormalizePathSeparators();
   storage::FileSystemURL url = storage::FileSystemURL::CreateForTest(
-      url::Origin::Create(GURL("http://foo/")), storage::kFileSystemTypeTest,
-      file);
+      blink::StorageKey::CreateFromStringForTesting("http://foo/"),
+      storage::kFileSystemTypeTest, file);
 
   // Test initially having no permissions.
   CheckHasNoFileSystemFilePermission(p, file, url);
