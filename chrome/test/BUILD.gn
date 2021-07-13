@@ -4461,8 +4461,6 @@ test("unit_tests") {
     "../browser/profiles/incognito_mode_policy_handler_unittest.cc",
     "../browser/profiles/profile_attributes_storage_unittest.cc",
     "../browser/profiles/profile_downloader_unittest.cc",
-    "../browser/profiles/profile_info_cache_unittest.cc",
-    "../browser/profiles/profile_info_cache_unittest.h",
     "../browser/profiles/profile_manager_unittest.cc",
     "../browser/profiles/profiles_state_unittest.cc",
     "../browser/profiling_host/chrome_client_connection_manager_unittest.cc",

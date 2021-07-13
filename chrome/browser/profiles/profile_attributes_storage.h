@@ -182,12 +182,11 @@ class ProfileAttributesStorage
   void DisableProfileMetricsForTesting();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ProfileInfoCacheTest, EntriesInAttributesStorage);
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            DownloadHighResAvatarTest);
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            NothingToDownloadHighResAvatarTest);
-  FRIEND_TEST_ALL_PREFIXES(ProfileInfoCacheTest,
+  FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            MigrateLegacyProfileNamesAndRecomputeIfNeeded);
 
   // Starts downloading the high res avatar at index |icon_index| for profile
