@@ -780,16 +780,10 @@ TEST_F(SQLRecoveryTest, RecoverDatabase) {
   ASSERT_TRUE(
       db_.Execute("CREATE VIEW v AS SELECT x.v FROM x, y WHERE x.v = y.v"));
 
-  // When an element is deleted from [x], trigger a delete on [y].  Between the
-  // BEGIN and END, [old] stands for the deleted rows from [x].
-  ASSERT_TRUE(
-      db_.Execute("CREATE TRIGGER t AFTER DELETE ON x "
-                  "BEGIN DELETE FROM y WHERE y.v = old.v; END"));
-
   // Save aside a copy of the original schema, verifying that it has the created
   // items plus the sqlite_sequence table.
   const std::string orig_schema(GetSchema(&db_));
-  ASSERT_EQ(6, std::count(orig_schema.begin(), orig_schema.end(), '\n'));
+  ASSERT_EQ(5, std::count(orig_schema.begin(), orig_schema.end(), '\n'));
 
   static const char kXSql[] = "SELECT * FROM x ORDER BY 1";
   static const char kYSql[] = "SELECT * FROM y ORDER BY 1";
@@ -815,13 +809,6 @@ TEST_F(SQLRecoveryTest, RecoverDatabase) {
   EXPECT_EQ("bob|truck\ndean|trailer\njim|telephone",
             ExecuteWithResults(&db_, kYSql, "|", "\n"));
   EXPECT_EQ("trailer\ntruck", ExecuteWithResults(&db_, kVSql, "|", "\n"));
-
-  // Test that the trigger works.
-  ASSERT_TRUE(db_.Execute("DELETE FROM x WHERE v = 'truck'"));
-  EXPECT_EQ("1|turtle\n3|trailer", ExecuteWithResults(&db_, kXSql, "|", "\n"));
-  EXPECT_EQ("dean|trailer\njim|telephone",
-            ExecuteWithResults(&db_, kYSql, "|", "\n"));
-  EXPECT_EQ("trailer", ExecuteWithResults(&db_, kVSql, "|", "\n"));
 }
 
 // When RecoverDatabase() encounters SQLITE_NOTADB, the database is deleted.

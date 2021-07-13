@@ -393,6 +393,10 @@ to disable SQLite's CHECK constraint support using
 Triggers significantly increase the difficulty of reviewing and maintaining
 Chrome features that use them.
 
+Triggers are not executed on SQLite databases opened with Chrome's
+`sql::Database` infrastructure. This is intended to steer feature developers
+away from the discouraged feature.
+
 After [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we
 plan to disable SQLite's trigger support using
 [SQLITE_OMIT_TRIGGER](https://sqlite.org/compile.html#omit_trigger).

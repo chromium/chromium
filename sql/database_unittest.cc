@@ -1387,6 +1387,27 @@ TEST_P(SQLDatabaseTest, GetMemoryUsage) {
       << "Page cache usage should go down after calling TrimMemory()";
 }
 
+TEST_P(SQLDatabaseTest, TriggersDisabledByDefault) {
+  ASSERT_TRUE(db_->Execute("CREATE TABLE data(id INTEGER)"));
+
+  // sqlite3_db_config() currently only disables running triggers. Schema
+  // operations on triggers are still allowed.
+  EXPECT_TRUE(
+      db_->Execute("CREATE TRIGGER trigger AFTER INSERT ON data "
+                   "BEGIN DELETE FROM data; END"));
+
+  ASSERT_TRUE(db_->Execute("INSERT INTO data(id) VALUES(42)"));
+
+  Statement select(db_->GetUniqueStatement("SELECT id FROM data"));
+  EXPECT_TRUE(select.Step())
+      << "If the trigger did not run, the table should not be empty.";
+  EXPECT_EQ(42, select.ColumnInt64(0));
+
+  // sqlite3_db_config() currently only disables running triggers. Schema
+  // operations on triggers are still allowed.
+  EXPECT_TRUE(db_->Execute("DROP TRIGGER IF EXISTS trigger"));
+}
+
 class SQLDatabaseTestExclusiveMode : public testing::Test,
                                      public testing::WithParamInterface<bool> {
  public:

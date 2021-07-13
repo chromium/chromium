@@ -1497,6 +1497,12 @@ bool Database::OpenInternal(const std::string& file_name,
       return false;
   }
 
+  // The use of triggers is discouraged for Chrome code. Thanks to this
+  // configuration change, triggers are not executed. CREATE TRIGGER and DROP
+  // TRIGGER still succeed.
+  err = sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_TRIGGER, 0, nullptr);
+  DCHECK_EQ(err, SQLITE_OK) << "sqlite3_db_config() should not fail";
+
   // Enable extended result codes to provide more color on I/O errors.
   // Not having extended result codes is not a fatal problem, as
   // Chromium code does not attempt to handle I/O errors anyhow.  The
