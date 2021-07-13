@@ -191,6 +191,11 @@ const base::Feature kBluetoothFixA2dpPacketSize{
 const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables the Chrome OS Bluetooth Revamp, which updates Bluetooth
+// system UI and related infrastructure. See https://crbug.com/1010321.
+const base::Feature kBluetoothRevamp{"BluetoothRevamp",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Bluetooth WBS microphone be selected as default
 // audio input option.
 const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
@@ -1189,6 +1194,10 @@ bool IsBentoBarEnabled() {
 
 bool IsBluetoothAdvertisementMonitoringEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothAdvertisementMonitoring);
+}
+
+bool IsBluetoothRevampEnabled() {
+  return base::FeatureList::IsEnabled(kBluetoothRevamp);
 }
 
 bool IsCaptureModeEnabled() {
