@@ -871,7 +871,8 @@ void Window::SetNativeWindowProperty(const char* key, void* value) {
 }
 
 void* Window::GetNativeWindowProperty(const char* key) const {
-  return reinterpret_cast<void*>(GetPropertyInternal(key, 0));
+  return reinterpret_cast<void*>(GetPropertyInternal(key, 0,
+                                                     /*search_parent=*/false));
 }
 
 void Window::OnDeviceScaleFactorChanged(float old_device_scale_factor,

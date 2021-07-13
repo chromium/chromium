@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/notreached.h"
+
 namespace ui {
 
 PropertyHandler::PropertyHandler() = default;
@@ -28,7 +30,7 @@ int64_t PropertyHandler::SetPropertyInternal(const void* key,
                                              PropertyDeallocator deallocator,
                                              int64_t value,
                                              int64_t default_value) {
-  int64_t old = GetPropertyInternal(key, default_value);
+  int64_t old = GetPropertyInternal(key, default_value, false);
   if (value == default_value) {
     prop_map_.erase(key);
   } else {
@@ -53,12 +55,30 @@ void PropertyHandler::ClearProperties() {
   prop_map_.clear();
 }
 
+PropertyHandler* PropertyHandler::GetParentHandler() const {
+  // If you plan on using cascading properties, you must override this method
+  // to return the "parent" handler. If you want to use cascading properties in
+  // scenarios where there isn't a notion of a parent, just override this method
+  // and return null.
+  NOTREACHED();
+  return nullptr;
+}
+
 int64_t PropertyHandler::GetPropertyInternal(const void* key,
-                                             int64_t default_value) const {
-  auto iter = prop_map_.find(key);
-  if (iter == prop_map_.end())
-    return default_value;
-  return iter->second.value;
+                                             int64_t default_value,
+                                             bool search_parent) const {
+  const PropertyHandler* handler = this;
+  while (handler) {
+    auto iter = handler->prop_map_.find(key);
+    if (iter == handler->prop_map_.end()) {
+      if (!search_parent)
+        break;
+      handler = handler->GetParentHandler();
+      continue;
+    }
+    return iter->second.value;
+  }
+  return default_value;
 }
 
 std::set<const void*> PropertyHandler::GetAllPropertyKeys() const {

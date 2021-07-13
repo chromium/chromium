@@ -22,7 +22,9 @@ namespace {
 
 class TestProperty {
  public:
-  TestProperty() {}
+  TestProperty() = default;
+  TestProperty(const TestProperty&) = delete;
+  TestProperty& operator=(const TestProperty&) = delete;
   ~TestProperty() {
     last_deleted_ = this;
   }
@@ -30,7 +32,18 @@ class TestProperty {
 
  private:
   static void* last_deleted_;
-  DISALLOW_COPY_AND_ASSIGN(TestProperty);
+};
+
+class TestCascadingProperty {
+ public:
+  explicit TestCascadingProperty(ui::PropertyHandler* handler)
+      : handler_(handler) {}
+  ~TestCascadingProperty() = default;
+
+  ui::PropertyHandler* handler() { return handler_; }
+
+ private:
+  ui::PropertyHandler* handler_;
 };
 
 void* TestProperty::last_deleted_ = nullptr;
@@ -66,11 +79,15 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TestProperty, kOwnedKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(AssignableTestProperty,
                                    kAssignableKey,
                                    nullptr)
+DEFINE_CASCADING_OWNED_UI_CLASS_PROPERTY_KEY(TestCascadingProperty,
+                                             kCascadingOwnedKey,
+                                             nullptr)
 
 }  // namespace
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(TestProperty*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(AssignableTestProperty*)
+DEFINE_UI_CLASS_PROPERTY_TYPE(TestCascadingProperty*)
 
 namespace ui {
 namespace test {
@@ -79,15 +96,20 @@ namespace {
 
 class TestPropertyHandler : public PropertyHandler {
  public:
+  TestPropertyHandler() = default;
+  explicit TestPropertyHandler(TestPropertyHandler* parent) : parent_(parent) {}
+  ~TestPropertyHandler() override = default;
   int num_events() const { return num_events_; }
 
  protected:
   void AfterPropertyChange(const void* key, int64_t old_value) override {
     ++num_events_;
   }
+  PropertyHandler* GetParentHandler() const override { return parent_; }
 
  private:
   int num_events_ = 0;
+  TestPropertyHandler* parent_ = nullptr;
 };
 
 const int kDefaultIntValue = -2;
@@ -133,24 +155,23 @@ TEST(PropertyTest, OwnedProperty) {
   {
     PropertyHandler h;
 
-    EXPECT_EQ(NULL, h.GetProperty(kOwnedKey));
+    EXPECT_EQ(nullptr, h.GetProperty(kOwnedKey));
     void* last_deleted = TestProperty::last_deleted();
-    TestProperty* p1 = new TestProperty();
-    h.SetProperty(kOwnedKey, p1);
+    TestProperty* p1 =
+        h.SetProperty(kOwnedKey, std::make_unique<TestProperty>());
     EXPECT_EQ(p1, h.GetProperty(kOwnedKey));
     EXPECT_EQ(last_deleted, TestProperty::last_deleted());
 
-    TestProperty* p2 = new TestProperty();
-    h.SetProperty(kOwnedKey, p2);
+    TestProperty* p2 =
+        h.SetProperty(kOwnedKey, std::make_unique<TestProperty>());
     EXPECT_EQ(p2, h.GetProperty(kOwnedKey));
     EXPECT_EQ(p1, TestProperty::last_deleted());
 
     h.ClearProperty(kOwnedKey);
-    EXPECT_EQ(NULL, h.GetProperty(kOwnedKey));
+    EXPECT_EQ(nullptr, h.GetProperty(kOwnedKey));
     EXPECT_EQ(p2, TestProperty::last_deleted());
 
-    p3 = new TestProperty();
-    h.SetProperty(kOwnedKey, p3);
+    p3 = h.SetProperty(kOwnedKey, std::make_unique<TestProperty>());
     EXPECT_EQ(p3, h.GetProperty(kOwnedKey));
     EXPECT_EQ(p2, TestProperty::last_deleted());
   }
@@ -162,8 +183,8 @@ TEST(PropertyTest, AcquireAllPropertiesFrom) {
   std::unique_ptr<PropertyHandler> src = std::make_unique<PropertyHandler>();
   void* last_deleted = TestProperty::last_deleted();
   EXPECT_FALSE(src->GetProperty(kOwnedKey));
-  TestProperty* p1 = new TestProperty();
-  src->SetProperty(kOwnedKey, p1);
+  TestProperty* p1 =
+      src->SetProperty(kOwnedKey, std::make_unique<TestProperty>());
   src->SetProperty(kIntKey, INT_MAX);
 
   // dest will take ownership of the owned property. Existing properties with
@@ -294,6 +315,22 @@ TEST(PropertyTest, PropertyChangedEvent) {
   // Verify that overwriting a heap-allocated value ticks the event counter.
   h.SetProperty(kAssignableKey, new AssignableTestProperty{5});
   EXPECT_EQ(6, h.num_events());
+}
+
+TEST(PropertyTest, CascadingProperties) {
+  TestPropertyHandler h;
+  TestPropertyHandler h2(&h);
+
+  // Set the property on the parent handler.
+  h.SetProperty(kCascadingOwnedKey,
+                std::make_unique<TestCascadingProperty>(&h));
+
+  // Get the property value from the child handler.
+  auto* value = h2.GetProperty(kCascadingOwnedKey);
+
+  EXPECT_TRUE(value);
+  // The property value should have a reference to |h|.
+  EXPECT_EQ(&h, value->handler());
 }
 
 } // namespace test
