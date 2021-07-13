@@ -28,8 +28,8 @@ mojom("mojom") {
 
 html_to_js("web_components_local") {
   js_files = [
-    "customize_themes.js",
-    "theme_icon.js",
+    "customize_themes.ts",
+    "theme_icon.ts",
   ]
 }
 
@@ -44,10 +44,10 @@ ts_library("build_ts") {
   out_dir = preprocess_folder
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "browser_proxy.js",
-    "customize_themes.js",
+    "browser_proxy.ts",
+    "customize_themes.ts",
     "customize_themes.mojom-webui.js",
-    "theme_icon.js",
+    "theme_icon.ts",
   ]
 
   deps = [
@@ -65,7 +65,7 @@ ts_library("build_ts") {
 preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = preprocess_folder_tmp
-  in_files = [ "browser_proxy.js" ]
+  in_files = [ "browser_proxy.ts" ]
 }
 
 preprocess_if_expr("preprocess_generated") {
@@ -73,8 +73,8 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = preprocess_folder_tmp
   in_files = [
-    "customize_themes.js",
-    "theme_icon.js",
+    "customize_themes.ts",
+    "theme_icon.ts",
   ]
 }
 

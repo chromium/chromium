@@ -5,7 +5,7 @@
 import 'chrome://new-tab-page/strings.m.js';
 import '../mojo_webui_test_support.js';
 
-import {CustomizeThemesBrowserProxy, CustomizeThemesBrowserProxyImpl} from 'chrome://resources/cr_components/customize_themes/browser_proxy.js';
+import {CustomizeThemesBrowserProxyImpl} from 'chrome://resources/cr_components/customize_themes/browser_proxy.js';
 import {CustomizeThemesElement} from 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import {ChromeTheme, CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerInterface, ThemeType} from 'chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js';
 import {ThemeIconElement} from 'chrome://resources/cr_components/customize_themes/theme_icon.js';
@@ -137,7 +137,7 @@ suite('CrComponentsCustomizeThemesTest', () => {
   setup(() => {
     document.innerHTML = '';
     testProxy = new TestCustomizeThemesBrowserProxy();
-    CustomizeThemesBrowserProxyImpl.instance_ = testProxy;
+    CustomizeThemesBrowserProxyImpl.setInstance(testProxy);
   });
 
   test('creating element shows theme tiles', async () => {
