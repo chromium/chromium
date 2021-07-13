@@ -69,7 +69,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   // Preferences about global profile information.
   registry->RegisterStringPref(prefs::kProfileLastUsed, std::string());
   registry->RegisterIntegerPref(prefs::kProfilesNumCreated, 1);
-  registry->RegisterIntegerPref(prefs::kGuestProfilesNumCreated, 1);
   registry->RegisterListPref(prefs::kProfilesLastActive);
   registry->RegisterListPref(prefs::kProfilesDeleted);
 

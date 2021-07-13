@@ -528,7 +528,6 @@ extern const char kManagedSerialAllowUsbDevicesForUrls[];
 extern const char kProfileLastUsed[];
 extern const char kProfilesLastActive[];
 extern const char kProfilesNumCreated[];
-extern const char kGuestProfilesNumCreated[];
 extern const char kProfileAttributes[];
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kLegacyProfileNamesMigrated[];

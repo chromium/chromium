@@ -627,6 +627,7 @@ const char kNumberSignInPasswordPromoShown[] =
     "profile.number_sign_in_password_promo_shown";
 const char kSignInPasswordPromoRevive[] =
     "profile.sign_in_password_promo_revive";
+const char kGuestProfilesNumCreated[] = "profile.guest_profiles_created";
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 constexpr char kProfileSwitchInterceptionDeclinedPref[] =
     "signin.ProfileSwitchInterceptionDeclinedPref";
@@ -804,6 +805,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kWasSignInPasswordPromoClicked, false);
   registry->RegisterIntegerPref(kNumberSignInPasswordPromoShown, 0);
   registry->RegisterBooleanPref(kSignInPasswordPromoRevive, false);
+  registry->RegisterIntegerPref(kGuestProfilesNumCreated, 1);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterDictionaryPref(kProfileSwitchInterceptionDeclinedPref);
@@ -1584,6 +1586,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kWasSignInPasswordPromoClicked);
   profile_prefs->ClearPref(kNumberSignInPasswordPromoShown);
   profile_prefs->ClearPref(kSignInPasswordPromoRevive);
+  profile_prefs->ClearPref(kGuestProfilesNumCreated);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   profile_prefs->ClearPref(kProfileSwitchInterceptionDeclinedPref);
 #endif
