@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/privacy_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -208,7 +208,7 @@ PrivacySection::PrivacySection(Profile* profile,
 
     fingerprint_pref_change_registrar_.Init(pref_service_);
     fingerprint_pref_change_registrar_.Add(
-        ::prefs::kQuickUnlockFingerprintRecord,
+        prefs::kQuickUnlockFingerprintRecord,
         base::BindRepeating(&PrivacySection::UpdateRemoveFingerprintSearchTags,
                             base::Unretained(this)));
     UpdateRemoveFingerprintSearchTags();
@@ -370,7 +370,7 @@ void PrivacySection::UpdateRemoveFingerprintSearchTags() {
   // "Remove fingerprint" search tag should exist only when 1 or more
   // fingerprints are registered.
   int registered_fingerprint_count =
-      pref_service_->GetInteger(::prefs::kQuickUnlockFingerprintRecord);
+      pref_service_->GetInteger(prefs::kQuickUnlockFingerprintRecord);
   if (registered_fingerprint_count > 0) {
     updater.AddSearchTags(GetRemoveFingerprintSearchConcepts());
   }

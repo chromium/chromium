@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/webui/settings/profile_info_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -755,7 +754,7 @@ PeopleSection::PeopleSection(
 
     fingerprint_pref_change_registrar_.Init(pref_service_);
     fingerprint_pref_change_registrar_.Add(
-        ::prefs::kQuickUnlockFingerprintRecord,
+        prefs::kQuickUnlockFingerprintRecord,
         base::BindRepeating(&PeopleSection::UpdateRemoveFingerprintSearchTags,
                             base::Unretained(this)));
     UpdateRemoveFingerprintSearchTags();
@@ -1080,7 +1079,7 @@ void PeopleSection::UpdateRemoveFingerprintSearchTags() {
   // "Remove fingerprint" search tag should exist only when 1 or more
   // fingerprints are registered.
   int registered_fingerprint_count =
-      pref_service_->GetInteger(::prefs::kQuickUnlockFingerprintRecord);
+      pref_service_->GetInteger(prefs::kQuickUnlockFingerprintRecord);
   if (registered_fingerprint_count > 0) {
     updater.AddSearchTags(GetRemoveFingerprintSearchConcepts());
   }

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
 #include "base/macros.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/biod/fake_biod_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

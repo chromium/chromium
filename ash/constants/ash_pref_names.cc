@@ -651,8 +651,37 @@ const char kTapDraggingEnabled[] = "settings.touchpad.enable_tap_dragging";
 const char kTouchpadEnabled[] = "events.touch_pad.enabled";
 const char kTouchscreenEnabled[] = "events.touch_screen.enabled";
 
+// Integer prefs indicating the minimum and maximum lengths of the lock screen
+// pin.
+const char kPinUnlockMaximumLength[] = "pin_unlock_maximum_length";
+const char kPinUnlockMinimumLength[] = "pin_unlock_minimum_length";
+
+// Boolean pref indicating whether users are allowed to set easy pins.
+const char kPinUnlockWeakPinsAllowed[] = "pin_unlock_weak_pins_allowed";
+
+// An integer pref. Indicates the number of fingerprint records registered.
+const char kQuickUnlockFingerprintRecord[] = "quick_unlock.fingerprint.record";
+
+// A list of allowed quick unlock modes. A quick unlock mode can only be used if
+// its type is on this list, or if type all (all quick unlock modes enabled) is
+// on this list. The pref name variable was changed to match the policy, the
+// actual pref name stays the same to preserve the backward compatibility
+const char kQuickUnlockModeAllowlist[] = "quick_unlock_mode_whitelist";
+
 // String pref storing the salt for the pin quick unlock mechanism.
 const char kQuickUnlockPinSalt[] = "quick_unlock.pin.salt";
+
+// The hash for the pin quick unlock mechanism.
+const char kQuickUnlockPinSecret[] = "quick_unlock.pin.secret";
+
+// Enum that specifies how often a user has to enter their password to continue
+// using quick unlock. These values are the same as the ones in
+// chromeos::quick_unlock::PasswordConfirmationFrequency.
+// 0 - six hours. Users will have to enter their password every six hours.
+// 1 - twelve hours. Users will have to enter their password every twelve hours.
+// 2 - two days. Users will have to enter their password every two days.
+// 3 - week. Users will have to enter their password every week.
+const char kQuickUnlockTimeout[] = "quick_unlock_timeout";
 
 // Dictionary prefs in local state that keeps information about detachable
 // bases - for exmaple the last used base per user.

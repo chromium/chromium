@@ -770,12 +770,6 @@ const base::FeatureParam<std::string> kPrivacySandboxSettings2FlocURL{
 const base::Feature kPushMessagingBackgroundMode{
     "PushMessagingBackgroundMode", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables or disables fingerprint quick unlock.
-const base::Feature kQuickUnlockFingerprint{"QuickUnlockFingerprint",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 // Enables using quiet prompts for notification permission requests.
 const base::Feature kQuietNotificationPrompts{"QuietNotificationPrompts",
                                               base::FEATURE_ENABLED_BY_DEFAULT};

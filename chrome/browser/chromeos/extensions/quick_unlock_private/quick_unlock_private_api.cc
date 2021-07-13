@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
@@ -121,9 +120,10 @@ bool IsPinNumeric(const std::string& pin) {
 // - maximum must be at least |min_length|, or 0.
 std::pair<int, int> GetSanitizedPolicyPinMinMaxLength(
     PrefService* pref_service) {
-  int min_length =
-      std::max(pref_service->GetInteger(prefs::kPinUnlockMinimumLength), 1);
-  int max_length = pref_service->GetInteger(prefs::kPinUnlockMaximumLength);
+  int min_length = std::max(
+      pref_service->GetInteger(ash::prefs::kPinUnlockMinimumLength), 1);
+  int max_length =
+      pref_service->GetInteger(ash::prefs::kPinUnlockMaximumLength);
   max_length = max_length > 0 ? std::max(max_length, min_length) : 0;
 
   DCHECK_GE(min_length, 1);
@@ -457,9 +457,10 @@ QuickUnlockPrivateCheckCredentialFunction::Run() {
 
   Profile* profile = GetActiveProfile(browser_context());
   PrefService* pref_service = profile->GetPrefs();
-  bool allow_weak = pref_service->GetBoolean(prefs::kPinUnlockWeakPinsAllowed);
+  bool allow_weak =
+      pref_service->GetBoolean(ash::prefs::kPinUnlockWeakPinsAllowed);
   bool is_allow_weak_pin_pref_set =
-      pref_service->HasPrefPath(prefs::kPinUnlockWeakPinsAllowed);
+      pref_service->HasPrefPath(ash::prefs::kPinUnlockWeakPinsAllowed);
 
   // Check and return the problems.
   std::vector<CredentialProblem>& warnings = result->warnings;
@@ -544,7 +545,8 @@ ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
   }
 
   // Verify every credential is valid based on policies.
-  bool allow_weak = pref_service->GetBoolean(prefs::kPinUnlockWeakPinsAllowed);
+  bool allow_weak =
+      pref_service->GetBoolean(ash::prefs::kPinUnlockWeakPinsAllowed);
   for (size_t i = 0; i < params_->modes.size(); ++i) {
     if (params_->credentials[i].empty())
       continue;

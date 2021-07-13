@@ -781,12 +781,6 @@ const char kPinUnlockFeatureNotificationShown[] =
 const char kFingerprintUnlockFeatureNotificationShown[] =
     "fingerprint_unlock_feature_notification_shown";
 
-// The hash for the pin quick unlock mechanism.
-const char kQuickUnlockPinSecret[] = "quick_unlock.pin.secret";
-
-// An integer pref. Indicates the number of fingerprint records registered.
-const char kQuickUnlockFingerprintRecord[] = "quick_unlock.fingerprint.record";
-
 // Deprecated (crbug/998983) in favor of kEndOfLifeDate.
 // An integer pref. Holds one of several values:
 // 0: Supported. Device is in supported state.
@@ -811,25 +805,6 @@ const char kSecondEolWarningDismissed[] = "second_eol_warning_dismissed";
 // dismissed by the user.
 const char kEolNotificationDismissed[] = "eol_notification_dismissed";
 
-// A list of allowed quick unlock modes. A quick unlock mode can only be used if
-// its type is on this list, or if type all (all quick unlock modes enabled) is
-// on this list. The pref name variable was changed to match the policy, the
-// actual pref name stays the same to preserve the backward compatibility
-const char kQuickUnlockModeAllowlist[] = "quick_unlock_mode_whitelist";
-// Enum that specifies how often a user has to enter their password to continue
-// using quick unlock. These values are the same as the ones in
-// chromeos::QuickUnlockPasswordConfirmationFrequency.
-// 0 - six hours. Users will have to enter their password every six hours.
-// 1 - twelve hours. Users will have to enter their password every twelve hours.
-// 2 - day. Users will have to enter their password every day.
-// 3 - week. Users will have to enter their password every week.
-const char kQuickUnlockTimeout[] = "quick_unlock_timeout";
-// Integer prefs indicating the minimum and maximum lengths of the lock screen
-// pin.
-const char kPinUnlockMinimumLength[] = "pin_unlock_minimum_length";
-const char kPinUnlockMaximumLength[] = "pin_unlock_maximum_length";
-// Boolean pref indicating whether users are allowed to set easy pins.
-const char kPinUnlockWeakPinsAllowed[] = "pin_unlock_weak_pins_allowed";
 // A boolean pref that controls whether the PIN autosubmit feature is enabled.
 // This feature, when enabled, exposes the user's PIN length by showing how many
 // digits are necessary to unlock the device. Can be recommended.

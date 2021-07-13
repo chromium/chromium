@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/biod/fake_biod_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

@@ -302,7 +302,15 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTapDraggingEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchscreenEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPinUnlockMaximumLength[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPinUnlockMinimumLength[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPinUnlockWeakPinsAllowed[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kQuickUnlockFingerprintRecord[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQuickUnlockModeAllowlist[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQuickUnlockPinSalt[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQuickUnlockPinSecret[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQuickUnlockTimeout[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDetachableBaseDevices[];
 

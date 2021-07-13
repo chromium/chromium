@@ -325,6 +325,8 @@ extern const base::Feature kQuickAnswersOnEditableText;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersStandaloneSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kQuickUnlockFingerprint;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickUnlockPinAutosubmit;
 // TODO(crbug.com/1104164) - Remove this once most users have their preferences
 // backfilled.

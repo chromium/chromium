@@ -7,7 +7,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -17,7 +16,7 @@ namespace quick_unlock {
 // static
 void PinStoragePrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(ash::prefs::kQuickUnlockPinSalt, "");
-  registry->RegisterStringPref(::prefs::kQuickUnlockPinSecret, "");
+  registry->RegisterStringPref(prefs::kQuickUnlockPinSecret, "");
 }
 
 PinStoragePrefs::PinStoragePrefs(PrefService* pref_service)
@@ -43,12 +42,12 @@ void PinStoragePrefs::SetPin(const std::string& pin) {
       PinBackend::ComputeSecret(pin, salt, Key::KEY_TYPE_PASSWORD_PLAIN);
 
   pref_service_->SetString(ash::prefs::kQuickUnlockPinSalt, salt);
-  pref_service_->SetString(::prefs::kQuickUnlockPinSecret, secret);
+  pref_service_->SetString(prefs::kQuickUnlockPinSecret, secret);
 }
 
 void PinStoragePrefs::RemovePin() {
   pref_service_->SetString(ash::prefs::kQuickUnlockPinSalt, "");
-  pref_service_->SetString(::prefs::kQuickUnlockPinSecret, "");
+  pref_service_->SetString(prefs::kQuickUnlockPinSecret, "");
 }
 
 std::string PinStoragePrefs::PinSalt() const {
@@ -56,7 +55,7 @@ std::string PinStoragePrefs::PinSalt() const {
 }
 
 std::string PinStoragePrefs::PinSecret() const {
-  return pref_service_->GetString(::prefs::kQuickUnlockPinSecret);
+  return pref_service_->GetString(prefs::kQuickUnlockPinSecret);
 }
 
 bool PinStoragePrefs::IsPinAuthenticationAvailable() const {

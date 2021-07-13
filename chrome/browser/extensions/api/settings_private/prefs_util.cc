@@ -134,7 +134,7 @@ bool IsSettingReadOnly(const std::string& pref_name) {
   // enable_screen_lock and pin_unlock_autosubmit_enabled
   // must be changed through the quickUnlockPrivate API.
   if (pref_name == ash::prefs::kEnableAutoScreenLock ||
-      pref_name == prefs::kPinUnlockAutosubmitEnabled) {
+      pref_name == ::prefs::kPinUnlockAutosubmitEnabled) {
     return true;
   }
 #endif
@@ -460,7 +460,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::prefs::kEnableAutoScreenLock] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   // kPinUnlockAutosubmitEnabled is read-only.
-  (*s_allowlist)[prefs::kPinUnlockAutosubmitEnabled] =
+  (*s_allowlist)[::prefs::kPinUnlockAutosubmitEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kMessageCenterLockScreenMode] =
       settings_api::PrefType::PREF_TYPE_STRING;

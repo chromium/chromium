@@ -1138,16 +1138,16 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kAllowScreenLock,
     base::Value::Type::BOOLEAN },
   { key::kQuickUnlockTimeout,
-    prefs::kQuickUnlockTimeout,
+    ash::prefs::kQuickUnlockTimeout,
     base::Value::Type::INTEGER },
   { key::kPinUnlockMinimumLength,
-    prefs::kPinUnlockMinimumLength,
+    ash::prefs::kPinUnlockMinimumLength,
     base::Value::Type::INTEGER },
   { key::kPinUnlockMaximumLength,
-    prefs::kPinUnlockMaximumLength,
+    ash::prefs::kPinUnlockMaximumLength,
     base::Value::Type::INTEGER },
   { key::kPinUnlockWeakPinsAllowed,
-    prefs::kPinUnlockWeakPinsAllowed,
+    ash::prefs::kPinUnlockWeakPinsAllowed,
     base::Value::Type::BOOLEAN },
   { key::kPinUnlockAutosubmitEnabled,
     prefs::kPinUnlockAutosubmitEnabled,
@@ -1793,7 +1793,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<ScreenLockDelayPolicyHandler>(chrome_schema)));
 
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kQuickUnlockModeAllowlist, prefs::kQuickUnlockModeAllowlist,
+      key::kQuickUnlockModeAllowlist, ash::prefs::kQuickUnlockModeAllowlist,
       base::Value::Type::LIST));
 
   handlers->AddHandler(base::WrapUnique(

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/device_service.h"

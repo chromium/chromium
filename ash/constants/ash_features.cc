@@ -860,6 +860,10 @@ const base::Feature kQuickAnswersTranslationCloudAPI{
 const base::Feature kQuickAnswersV2{"QuickAnswersV2",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables fingerprint quick unlock.
+const base::Feature kQuickUnlockFingerprint{"QuickUnlockFingerprint",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the PIN auto submit feature is enabled.
 const base::Feature kQuickUnlockPinAutosubmit{"QuickUnlockPinAutosubmit",
                                               base::FEATURE_ENABLED_BY_DEFAULT};

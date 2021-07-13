@@ -829,39 +829,39 @@ TEST_P(QuickUnlockPrivateUnitTest, CheckCredentialProblemReporting) {
 
   // Verify that now if the minimum length is set to 3, PINs of length 3 are
   // accepted.
-  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 3);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMinimumLength, 3);
   CheckPin(PIN_WEAK_WARNING, "111");
 
   // Verify setting a nonzero maximum length that is less than the minimum
   // length results in the pin only accepting PINs of length minimum length.
-  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 2);
-  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 4);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMaximumLength, 2);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMinimumLength, 4);
   CheckPin(PIN_GOOD, "1112");
   CheckPin(PIN_TOO_SHORT, "112");
   CheckPin(PIN_TOO_LONG, "11112");
 
   // Verify that now if the maximum length is set to 5, PINs longer than 5 are
   // considered too long and cannot be used.
-  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 5);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMaximumLength, 5);
   CheckPin(PIN_TOO_LONG | PIN_WEAK_WARNING, "111111");
   CheckPin(PIN_TOO_LONG | PIN_WEAK_WARNING, "1111111");
 
   // Verify that if both the minimum length and maximum length is set to 4, only
   // 4 digit PINs can be used.
-  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 4);
-  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 4);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMinimumLength, 4);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMaximumLength, 4);
   CheckPin(PIN_TOO_SHORT, "122");
   CheckPin(PIN_TOO_LONG, "12222");
   CheckPin(PIN_GOOD, "1222");
 
   // Set the PINs minimum/maximum lengths back to their defaults.
-  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 4);
-  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 0);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMinimumLength, 4);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMaximumLength, 0);
 
   // Verify that PINs that are weak are flagged as such. See
   // IsPinDifficultEnough in quick_unlock_private_api.cc for the description of
   // a weak pin.
-  pref_service->SetBoolean(::prefs::kPinUnlockWeakPinsAllowed, false);
+  pref_service->SetBoolean(ash::prefs::kPinUnlockWeakPinsAllowed, false);
   // Good.
   CheckPin(PIN_GOOD, "1112");
   CheckPin(PIN_GOOD, "7890");
@@ -887,19 +887,19 @@ TEST_P(QuickUnlockPrivateUnitTest, GetCredentialRequirements) {
 
   // Verify that trying out PINs under the minimum/maximum lengths will send the
   // minimum/maximum lengths as additional information for display purposes.
-  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 6);
-  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 8);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMinimumLength, 6);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMaximumLength, 8);
   CheckGetCredentialRequirements(6, 8);
 
   // Verify that by setting a maximum length to be nonzero and smaller than the
   // minimum length, the resulting maxium length will be equal to the minimum
   // length pref.
-  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 4);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMaximumLength, 4);
   CheckGetCredentialRequirements(6, 6);
 
   // Verify that the values received from policy are sanitized.
-  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, -3);
-  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, -3);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMinimumLength, -3);
+  pref_service->SetInteger(ash::prefs::kPinUnlockMaximumLength, -3);
   CheckGetCredentialRequirements(1, 0);
 }
 
