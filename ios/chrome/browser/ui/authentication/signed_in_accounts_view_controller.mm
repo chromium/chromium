@@ -13,6 +13,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
@@ -113,12 +115,14 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   NSMutableDictionary<NSString*, CollectionViewItem*>* mutableIdentityMap =
       [[NSMutableDictionary alloc] init];
 
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
+
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browserState);
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
-    ChromeIdentity* identity = ios::GetChromeBrowserProvider()
-                                   .GetChromeIdentityService()
-                                   ->GetIdentityWithGaiaID(account.gaia);
+    ChromeIdentity* identity =
+        accountManagerService->GetIdentityWithGaiaID(account.gaia);
 
     // If the account with a refresh token is invalidated during this operation
     // then |identity| will be nil. Do not process it in this case.
