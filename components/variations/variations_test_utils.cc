@@ -10,6 +10,7 @@
 #include "components/variations/proto/client_variations.pb.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace variations {
 
@@ -23,6 +24,20 @@ const char kUncompressedBase64TestSeedData[] =
 const char kBase64TestSeedSignature[] =
     "MEQCIDD1IVxjzWYncun+9IGzqYjZvqxxujQEayJULTlbTGA/AiAr0oVmEgVUQZBYq5VLOSvy"
     "96JkMYgzTkHPwbv7K/CmgA==";
+
+const char kTestSeedStudyName[] = "UMA-Uniformity-Trial-10-Percent";
+
+std::string GetTestSeedForPrefs() {
+  std::string serialized_seed;
+  base::Base64Decode(kUncompressedBase64TestSeedData, &serialized_seed);
+
+  std::string compressed_seed_data;
+  compression::GzipCompress(serialized_seed, &compressed_seed_data);
+
+  std::string base64_seed_data;
+  base::Base64Encode(compressed_seed_data, &base64_seed_data);
+  return base64_seed_data;
+}
 
 void DisableTestingConfig() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(

@@ -16,9 +16,15 @@ namespace variations {
 
 // The below seed and signature pair were generated using the server's private
 // key.
-// TODO(crbug/1220163): Describe the contents of the test seed.
+//
+// The seed contains one study, "UMA-Uniformity-Trial-10-Percent", and ten
+// equally weighted groups: "default" and "group_01" through "group_09".
 extern const char kUncompressedBase64TestSeedData[];
 extern const char kBase64TestSeedSignature[];
+extern const char kTestSeedStudyName[];
+
+// Returns a base64-encoded compressed serialized form of a VariationsSeed.
+std::string GetTestSeedForPrefs();
 
 // Disables the use of the field trial testing config to exercise
 // VariationsFieldTrialCreator::CreateTrialsFromSeed().
