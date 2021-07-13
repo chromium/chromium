@@ -2819,33 +2819,6 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     return;
   }
 
-  std::vector<GrBackendSemaphore> begin_semaphores;
-
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
-      source_scoped_access = source_shared_image->BeginScopedReadAccess(
-          &begin_semaphores, nullptr);
-
-  if (!begin_semaphores.empty()) {
-    bool result = shared_context_state_->gr_context()->wait(
-        begin_semaphores.size(), begin_semaphores.data(),
-        /*deleteSemaphoresAfterWait=*/false);
-    DCHECK(result);
-  }
-
-  if (!source_scoped_access) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
-                       "Source shared image is not accessible");
-    return;
-  }
-
-  auto sk_image =
-      source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
-  if (!sk_image) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                       "Couldn't create SkImage for reading.");
-    return;
-  }
-
   size_t byte_size = dst_info.computeByteSize(row_bytes);
   if (byte_size > UINT32_MAX) {
     LOCAL_SET_GL_ERROR(
@@ -2868,6 +2841,47 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
   if (!result) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
                        "Failed to retrieve memory for readPixels result");
+    return;
+  }
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+      source_scoped_access = source_shared_image->BeginScopedReadAccess(
+          &begin_semaphores, &end_semaphores);
+
+  if (!source_scoped_access) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
+                       "Source shared image is not accessible");
+    return;
+  }
+
+  if (!begin_semaphores.empty()) {
+    bool wait_result = shared_context_state_->gr_context()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(wait_result);
+  }
+
+  if (!end_semaphores.empty()) {
+    // Ask skia to signal |end_semaphores| here, since we will synchronized
+    // read pixels from the shared image.
+    GrFlushInfo flush_info = {
+        .fNumSemaphores = end_semaphores.size(),
+        .fSignalSemaphores = end_semaphores.data(),
+    };
+    AddVulkanCleanupTaskForSkiaFlush(
+        shared_context_state_->vk_context_provider(), &flush_info);
+    auto flush_result = shared_context_state_->gr_context()->flush(flush_info);
+    DCHECK(flush_result == GrSemaphoresSubmitted::kYes);
+  }
+
+  auto sk_image =
+      source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
+  if (!sk_image) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                       "Couldn't create SkImage for reading.");
     return;
   }
 
