@@ -12,6 +12,7 @@ source_set("quick_pair") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/keyed_service",
+    "//ash/quick_pair/repository",
     "//ash/quick_pair/scanning",
     "//ash/quick_pair/ui",
   ]
