@@ -3539,8 +3539,14 @@
   <message name="IDS_ARC_OOBE_TERMS_HEADING" desc="Heading of the Arc Terms OOBE dialog.">
     Google Play apps and services
   </message>
+  <message name="IDS_ARC_OOBE_TERMS_HEADING_CHILD" desc="Heading of the Arc Terms OOBE dialog, when a child account is in use.">
+    Review Google Play apps and services
+  </message>
   <message name="IDS_ARC_OOBE_TERMS_DESCRIPTION" desc="Description of the Arc Terms OOBE dialog.">
     Use Google Play to install Android apps
+  </message>
+  <message name="IDS_ARC_OOBE_TERMS_DESCRIPTION_CHILD" desc="Description of the Arc Terms OOBE dialog, when a child account is in use.">
+    With your permission, your child can use Google Play to install apps
   </message>
   <message name="IDS_ARC_OOBE_TERMS_LOADING" desc="Loading message of the Arc Terms OOBE dialog.">
     Loading...

@@ -776,5 +776,13 @@ Polymer({
       this.lastFocusedElement_ = null;
     }
   },
+
+  /**
+   * Returns dialog title based on whether the active user is child.
+   */
+  getDialogTitle_(locale, isChild) {
+    return isChild ? this.i18n('arcTermsOfServiceScreenHeadingForChild') :
+                     this.i18n('arcTermsOfServiceScreenHeading');
+  }
 });
 })();
