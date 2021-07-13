@@ -7,7 +7,9 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
+#include "base/pending_task.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/common/task_annotator.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -226,6 +228,11 @@ void WebContentsObserverConsistencyChecker::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   CHECK(!NavigationIsOngoing(navigation_handle));
 
+  // Prerendered page activation should run subsequent navigation events in the
+  // same task.
+  if (navigation_handle->IsPrerenderedPageActivation())
+    task_checker_for_prerendered_page_activation_.BindCurrentTask();
+
   CHECK(!navigation_handle->HasCommitted());
   CHECK(!navigation_handle->IsErrorPage());
   CHECK_EQ(navigation_handle->GetWebContents(), web_contents());
@@ -237,6 +244,10 @@ void WebContentsObserverConsistencyChecker::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
   CHECK(NavigationIsOngoing(navigation_handle));
 
+  // DidRedirectionNavigation() should not be called for page activation.
+  CHECK(!navigation_handle->IsServedFromBackForwardCache());
+  CHECK(!navigation_handle->IsPrerenderedPageActivation());
+
   CHECK(navigation_handle->GetNetErrorCode() == net::OK);
   CHECK(!navigation_handle->HasCommitted());
   CHECK(!navigation_handle->IsErrorPage());
@@ -246,6 +257,11 @@ void WebContentsObserverConsistencyChecker::DidRedirectNavigation(
 void WebContentsObserverConsistencyChecker::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   CHECK(NavigationIsOngoing(navigation_handle));
+
+  // Prerendered page activation should run navigation events in the same task.
+  if (navigation_handle->IsPrerenderedPageActivation()) {
+    CHECK(task_checker_for_prerendered_page_activation_.IsRunningInSameTask());
+  }
 
   CHECK(!navigation_handle->HasCommitted());
   CHECK_EQ(navigation_handle->GetWebContents(), web_contents());
@@ -260,6 +276,11 @@ void WebContentsObserverConsistencyChecker::ReadyToCommitNavigation(
 void WebContentsObserverConsistencyChecker::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   CHECK(NavigationIsOngoing(navigation_handle));
+
+  // Prerendered page activation should run navigation events in the same task.
+  if (navigation_handle->IsPrerenderedPageActivation()) {
+    CHECK(task_checker_for_prerendered_page_activation_.IsRunningInSameTask());
+  }
 
   CHECK(!(navigation_handle->HasCommitted() &&
           !navigation_handle->IsErrorPage()) ||
@@ -520,6 +541,25 @@ void WebContentsObserverConsistencyChecker::RemoveInputEventObserver(
   auto it = input_observer_map_.find(render_frame_host);
   CHECK(it != input_observer_map_.end());
   input_observer_map_.erase(it);
+}
+
+WebContentsObserverConsistencyChecker::TaskChecker::TaskChecker()
+    : sequence_num_(GetSequenceNumberOfCurrentTask()) {}
+
+void WebContentsObserverConsistencyChecker::TaskChecker::BindCurrentTask() {
+  sequence_num_ = GetSequenceNumberOfCurrentTask();
+}
+
+bool WebContentsObserverConsistencyChecker::TaskChecker::IsRunningInSameTask() {
+  return sequence_num_ == GetSequenceNumberOfCurrentTask();
+}
+
+absl::optional<int> WebContentsObserverConsistencyChecker::TaskChecker::
+    GetSequenceNumberOfCurrentTask() {
+  return base::TaskAnnotator::CurrentTaskForThread()
+             ? absl::make_optional(
+                   base::TaskAnnotator::CurrentTaskForThread()->sequence_num)
+             : absl::nullopt;
 }
 
 }  // namespace content

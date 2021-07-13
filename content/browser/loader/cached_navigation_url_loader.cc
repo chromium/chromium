@@ -19,10 +19,12 @@
 namespace content {
 
 CachedNavigationURLLoader::CachedNavigationURLLoader(
+    LoaderType loader_type,
     std::unique_ptr<NavigationRequestInfo> request_info,
     NavigationURLLoaderDelegate* delegate,
     network::mojom::URLResponseHeadPtr cached_response_head)
-    : request_info_(std::move(request_info)),
+    : loader_type_(loader_type),
+      request_info_(std::move(request_info)),
       delegate_(delegate),
       cached_response_head_(std::move(cached_response_head)) {}
 
@@ -41,23 +43,42 @@ CachedNavigationURLLoader::~CachedNavigationURLLoader() {}
 
 // static
 std::unique_ptr<NavigationURLLoader> CachedNavigationURLLoader::Create(
+    LoaderType loader_type,
     std::unique_ptr<NavigationRequestInfo> request_info,
     NavigationURLLoaderDelegate* delegate,
     network::mojom::URLResponseHeadPtr cached_response_head) {
   return std::make_unique<CachedNavigationURLLoader>(
-      std::move(request_info), delegate, std::move(cached_response_head));
+      loader_type, std::move(request_info), delegate,
+      std::move(cached_response_head));
 }
 
 void CachedNavigationURLLoader::Start() {
-  // Respond with a fake response. We use PostTask here to mimic the flow of
-  // a normal navigation.
-  //
-  // Normal navigations never call OnResponseStarted on the same message loop
-  // iteration that the NavigationURLLoader is created, because they have to
-  // make a network request.
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CachedNavigationURLLoader::OnResponseStarted,
-                                weak_factory_.GetWeakPtr()));
+  // Respond with a fake response.
+  switch (loader_type_) {
+    case LoaderType::kRegular:
+      NOTREACHED();
+      break;
+    case LoaderType::kNoopForBackForwardCache:
+      // We use PostTask here to mimic the flow of a normal navigation.
+      //
+      // Normal navigations never call OnResponseStarted on the same message
+      // loop iteration that the NavigationURLLoader is created, because they
+      // have to make a network request.
+      //
+      // TODO(https://crbug.com/1226442): Remove this post task and
+      // synchronously run the loader like kNoopForPrerender.
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&CachedNavigationURLLoader::OnResponseStarted,
+                         weak_factory_.GetWeakPtr()));
+      break;
+    case LoaderType::kNoopForPrerender:
+      // Call OnResponseStarted() synchronously. Prerendered page activation
+      // synchronously runs so that it doesn't have to worry about cases where
+      // cancellation is requested during page activation.
+      OnResponseStarted();
+      break;
+  }
 }
 
 void CachedNavigationURLLoader::FollowRedirect(

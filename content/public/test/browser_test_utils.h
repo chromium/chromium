@@ -1504,15 +1504,25 @@ class FrameDeletedObserver {
 // match. Note that it only keeps track of one navigation at a time.
 // Navigations are paused automatically before hitting the network, and are
 // resumed automatically if a Wait method is called for a future event.
+//
 // Note: This class is one time use only! After it successfully tracks a
 // navigation it will ignore all subsequent navigations. Explicitly create
 // multiple instances of this class if you want to pause multiple navigations.
-// Note2: For page activating navigations (like a prerender activation, or a
-// BFCache restore navigation), the navigation will not run throttles. The
-// manager in this case uses a CommitDeferringCondition for pausing the
-// navigation at the equivalent of WillProcessResponse. However, in these kinds
-// of navigations you cannot use WaitForRequestStart; if you want to yield
+//
+// Note2: For a BFCache restore navigation, the navigation will not run
+// NavigationThrottles. The manager in this case uses a CommitDeferringCondition
+// for pausing the navigation at the equivalent of WillProcessResponse. However,
+// in this navigation you cannot use WaitForRequestStart; if you want to yield
 // before WillProcessResponse, use WaitForFirstYieldAfterDidStartNavigation.
+//
+// Note3: For a prerender activation, this class cannot pause the navigation as
+// the prerender activation doesn't run NavigationThrottles and runs
+// CommitDeferringConditions before StartNavigation() that WebContentsObserver
+// cannot observe.
+// TODO(nhiroki): Provide a way to pause the prerender activation. We could do
+// the similar thing as MockCommitDeferringConditionInstaller does like adding a
+// closure that generates a deferring condition to pause the navigation in
+// CommitDeferringConditionRunner.
 class TestNavigationManager : public WebContentsObserver {
  public:
   // Monitors any frame in WebContents.
@@ -1563,6 +1573,11 @@ class TestNavigationManager : public WebContentsObserver {
 
   // Whether the navigation successfully committed and was not an error page.
   bool was_successful() const { return was_successful_; }
+
+  // Whether the navigation activated a prerendered page.
+  bool was_prerendered_page_activation() const {
+    return was_prerendered_page_activation_.value();
+  }
 
   // Allows nestable tasks when running a message loop in the Wait* functions.
   // This is useful for utilizing this class from within another message loop.
@@ -1616,6 +1631,7 @@ class TestNavigationManager : public WebContentsObserver {
   NavigationState desired_state_ = NavigationState::WILL_START;
   bool was_committed_ = false;
   bool was_successful_ = false;
+  absl::optional<bool> was_prerendered_page_activation_;
   base::OnceClosure quit_closure_;
   base::RunLoop::Type message_loop_type_ = base::RunLoop::Type::kDefault;
 

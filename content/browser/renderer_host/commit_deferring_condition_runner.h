@@ -11,16 +11,16 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/prerender/prerender_commit_deferring_condition.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
-class CommitDeferringCondition;
 class NavigationRequest;
 
 // Helper class used to defer an otherwise fully-prepared navigation (i.e.
 // followed all redirects, passed all NavigationThrottle checks) from
-// preceding until all preconditions are met.
+// proceeding until all preconditions are met.
 //
 // Clients subclass the CommitDeferringCondition class to wait on a commit
 // blocking condition to be resolved and invoke the callback when it's ready.
@@ -45,13 +45,24 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
  public:
   class Delegate {
    public:
-    virtual void OnCommitDeferringConditionChecksComplete() = 0;
+    // Called after all conditions run. `candidate_prerender_frame_tree_node_id`
+    // is used for querying the PrerenderHost that this navigation will try to
+    // activate. See comments on `candidate_prerender_frame_tree_node_id_` for
+    // details.
+    virtual void OnCommitDeferringConditionChecksComplete(
+        CommitDeferringCondition::NavigationType navigation_type,
+        absl::optional<int> candidate_prerender_frame_tree_node_id) = 0;
   };
 
   // Creates the runner and adds all the conditions in
-  // RegisterDeferringConditions.
+  // RegisterDeferringConditions. `candidate_prerender_frame_tree_node_id`
+  // is used for querying the PrerenderHost that this navigation will try to
+  // activate. See comments on `candidate_prerender_frame_tree_node_id_` for
+  // details.
   static std::unique_ptr<CommitDeferringConditionRunner> Create(
-      NavigationRequest& navigation_request);
+      NavigationRequest& navigation_request,
+      CommitDeferringCondition::NavigationType navigation_type,
+      absl::optional<int> candidate_prerender_frame_tree_node_id);
 
   ~CommitDeferringConditionRunner();
 
@@ -62,8 +73,22 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   void ProcessChecks();
 
   // Call to register all deferring conditions. This should be called when
-  // NavigationState >= WILL_START_REQUEST.
+  // NavigationState < WILL_START_NAVIGATION for prerendered page activation, or
+  // NavigationState == WILL_PROCESS_RESPONSE for other navigations.
   void RegisterDeferringConditions(NavigationRequest& navigation_request);
+
+  // Installs a callback to generate a deferring condition. Installed callbacks
+  // are called every time RegisterDeferringConditions() is called. Generated
+  // conditions are added to `conditions_` and run after all regularly
+  // registered conditions. This is typically used for adding a condition before
+  // NavigationRequest is created.
+  using ConditionGenerator =
+      base::RepeatingCallback<std::unique_ptr<CommitDeferringCondition>()>;
+  // Returns a generator id that is used for uninstalling the generator.
+  static int InstallConditionGeneratorForTesting(ConditionGenerator generator);
+  // `generator_id` should be an identifier returned by
+  // InstallConditionGeneratorForTesting().
+  static void UninstallConditionGeneratorForTesting(int generator_id);
 
   // Used in tests to inject mock conditions.
   void AddConditionForTesting(
@@ -76,7 +101,10 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
  private:
   friend class CommitDeferringConditionRunnerTest;
 
-  explicit CommitDeferringConditionRunner(Delegate& delegate);
+  CommitDeferringConditionRunner(
+      Delegate& delegate,
+      CommitDeferringCondition::NavigationType navigation_type,
+      absl::optional<int> candidate_prerender_frame_tree_node_id);
 
   // Called asynchronously to resume iterating through
   // CommitDeferringConditions after one has been deferred. A callback for this
@@ -91,6 +119,19 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   // This class is owned by its delegate (the NavigationRequest) so it's safe
   // to keep a reference to it.
   Delegate& delegate_;
+
+  // Used for distiguishing prerendered page activation from other navigations.
+  // This is needed as IsPageActivation() and IsPrerenderedPageActivation() on
+  // NavigationRequest are not available yet while CommitDeferringCondition is
+  // running.
+  const CommitDeferringCondition::NavigationType navigation_type_;
+
+  // Used for querying PrerenderHost this navigation will try to activate.
+  // This is valid only when `navigation_type_` is kPrerenderedPageActivation.
+  // This is needed as PrerenderHost hasn't been reserved and
+  // prerender_frame_tree_node_id() on NavigationRequest is not available yet
+  // while CommitDeferringCondition is running.
+  absl::optional<int> candidate_prerender_frame_tree_node_id_;
 
   // True when we're blocked waiting on a call to ResumeProcessing.
   bool is_deferred_ = false;

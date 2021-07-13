@@ -79,17 +79,23 @@ MockCommitDeferringCondition::AsWeakPtr() {
 }
 
 MockCommitDeferringConditionInstaller::MockCommitDeferringConditionInstaller(
-    WebContents* web_contents,
     std::unique_ptr<MockCommitDeferringCondition> condition)
-    : WebContentsObserver(web_contents), condition_(std::move(condition)) {}
+    : generator_id_(
+          CommitDeferringConditionRunner::InstallConditionGeneratorForTesting(
+              base::BindRepeating(
+                  &MockCommitDeferringConditionInstaller::Install,
+                  base::Unretained(this)))),
+      condition_(std::move(condition)) {}
 
 MockCommitDeferringConditionInstaller::
-    ~MockCommitDeferringConditionInstaller() = default;
+    ~MockCommitDeferringConditionInstaller() {
+  CommitDeferringConditionRunner::UninstallConditionGeneratorForTesting(
+      generator_id_);
+}
 
-void MockCommitDeferringConditionInstaller::DidStartNavigation(
-    NavigationHandle* handle) {
-  static_cast<NavigationRequest*>(handle)
-      ->RegisterCommitDeferringConditionForTesting(std::move(condition_));
+std::unique_ptr<CommitDeferringCondition>
+MockCommitDeferringConditionInstaller::Install() {
+  return std::move(condition_);
 }
 
 }  //  namespace content

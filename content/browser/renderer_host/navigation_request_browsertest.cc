@@ -2020,8 +2020,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   ReadyToCommitObserver observer(web_contents);
 
   MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/true);
-  MockCommitDeferringConditionInstaller installer(web_contents,
-                                                  condition.PassToDelegate());
+  MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
 
   shell()->LoadURL(simple_url);
   ASSERT_TRUE(manager.WaitForResponse());
@@ -2045,12 +2044,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   WebContents* web_contents = shell()->web_contents();
 
   MockCommitDeferringConditionWrapper condition1(/*is_ready_to_commit=*/false);
-  MockCommitDeferringConditionInstaller installer1(web_contents,
-                                                   condition1.PassToDelegate());
+  MockCommitDeferringConditionInstaller installer1(condition1.PassToDelegate());
 
   MockCommitDeferringConditionWrapper condition2(/*is_ready_to_commit=*/false);
-  MockCommitDeferringConditionInstaller installer2(web_contents,
-                                                   condition2.PassToDelegate());
+  MockCommitDeferringConditionInstaller installer2(condition2.PassToDelegate());
 
   ReadyToCommitObserver observer(web_contents);
 
@@ -2096,14 +2093,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   WebContents* web_contents = shell()->web_contents();
 
   MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
-  MockCommitDeferringConditionInstaller installer(web_contents,
-                                                  condition.PassToDelegate());
+  MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
 
   // We'll cancel the navigation while the first condition is deferred so this
   // is added only to make sure it's never invoked.
   MockCommitDeferringConditionWrapper condition2(/*is_ready_to_commit=*/false);
-  MockCommitDeferringConditionInstaller installer2(web_contents,
-                                                   condition2.PassToDelegate());
+  MockCommitDeferringConditionInstaller installer2(condition2.PassToDelegate());
 
   shell()->LoadURL(simple_url);
   ASSERT_TRUE(manager.WaitForResponse());

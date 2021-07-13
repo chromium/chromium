@@ -1174,9 +1174,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kMainFrameNavigation, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostCancelReasonBeforeActivation",
-      PrerenderHost::FinalStatus::kMainFrameNavigation, 1);
 }
 
 // Regression test for https://crbug.com/1198051
@@ -1917,20 +1914,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     ASSERT_TRUE(ExecJs(shell()->web_contents()->GetMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
-    // Continue the navigation until it reaches WillCommitNavigation where the
-    // navigation is deferred by a commit deferral.
-    EXPECT_TRUE(primary_page_manager.WaitForResponse());
-    primary_page_manager.ResumeNavigation();
+    NavigationRequest* request =
+        web_contents_impl()->GetFrameTree()->root()->navigation_request();
 
-    NavigationRequest* request = static_cast<NavigationRequest*>(
-        primary_page_manager.GetNavigationHandle());
-
-    // The navigation should be deferred.
+    // Wait until the navigation is deferred by CommitDeferringCondition.
+    // TODO(nhiroki): Avoid using base::RunUntilIdle() and instead use some
+    // explicit signal of the running condition.
+    base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
 
-    // The navigation should not have proceeded past WillProcessResponse
-    // because the PrerenderCommitDeferringCondition is deferring it.
-    EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+    // The navigation should not have proceeded past NOT_STARTED because the
+    // PrerenderCommitDeferringCondition is deferring it.
+    EXPECT_EQ(request->state(), NavigationRequest::NOT_STARTED);
 
     // Complete the prerender response and finish ongoing prerender main frame
     // navigation.
@@ -2685,45 +2680,43 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                                             kPrerenderingUrl);
   MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
   {
-    MockCommitDeferringConditionInstaller installer(web_contents(),
-                                                    condition.PassToDelegate());
+    MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
     ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
-    ASSERT_TRUE(activation_observer.WaitForResponse());
-    activation_observer.ResumeNavigation();
-
-    // The prerender host should have been reserved.
-    ASSERT_TRUE(
-        web_contents_impl()->GetPrerenderHostRegistry()->FindReservedHostById(
-            prerender_host_id));
+    // Wait for the condition to pause the activation.
+    condition.WaitUntilInvoked();
+    EXPECT_EQ(web_contents()->GetURL(), kInitialUrl);
   }
-  // Wait for the condition to pause the activation.
-  condition.WaitUntilInvoked();
-  EXPECT_EQ(web_contents()->GetURL(), kInitialUrl);
 
   // Make a navigation in the prerendered page. This navigation should
   // be cancelled by PrerenderNavigationThrottle.
   TestNavigationManager bad_nav_observer(web_contents(), kPrerenderingUrl2);
-  ASSERT_TRUE(
-      ExecJs(prerendered_rfh, JsReplace("location = $1", kPrerenderingUrl2)));
+  NavigatePrerenderedPage(prerender_host_id, kPrerenderingUrl2);
   bad_nav_observer.WaitForNavigationFinished();
   EXPECT_FALSE(bad_nav_observer.was_successful());
-  EXPECT_EQ(prerendered_rfh->GetLastCommittedURL(), kPrerenderingUrl);
 
-  // Finish activation. It should work as normal.
+  // PrerenderNavigationThrottle also cancels the activation and then starts
+  // regular navigation.
   condition.CallResumeClosure();
-  prerender_observer.WaitForActivation();
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetURL(), kInitialUrl);
 
-  // The navigation in the prerendered page actually attempted to cancel
-  // prerendering but it was ignored as cancellation during activation is not
-  // supported yet,
-  // TODO(https://crbug.com/1195751): Update the final status once cancellation
-  // during activation is supported.
+  // The prerender host should have been abandoned.
+  EXPECT_FALSE(
+      web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
+          prerender_host_id));
+  EXPECT_FALSE(
+      web_contents_impl()->GetPrerenderHostRegistry()->FindReservedHostById(
+          prerender_host_id));
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kActivated, 1);
+      PrerenderHost::FinalStatus::kMainFrameNavigation, 1);
+
+  // Wait for completion of the navigation. This shouldn't be the prerendered
+  // page activation.
+  activation_observer.WaitForNavigationFinished();
+  EXPECT_FALSE(activation_observer.was_prerendered_page_activation());
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
 }
 
 // Ensures WebContents::OpenURL to a frame in a currently activating (i.e.
@@ -2761,18 +2754,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                                             kPrerenderingUrl);
   MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
   {
-    MockCommitDeferringConditionInstaller installer(web_contents(),
-                                                    condition.PassToDelegate());
+    MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
     ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
-    ASSERT_TRUE(activation_observer.WaitForResponse());
-    activation_observer.ResumeNavigation();
-
-    // The prerender host should have been reserved.
-    ASSERT_TRUE(
-        web_contents_impl()->GetPrerenderHostRegistry()->FindReservedHostById(
-            prerender_host_id));
+    // Wait for the condition to pause the activation.
+    condition.WaitUntilInvoked();
+    EXPECT_EQ(web_contents()->GetURL(), kInitialUrl);
   }
 
   // Use the OpenURL API to navigate the iframe in the reserved prerendering

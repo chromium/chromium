@@ -391,6 +391,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   bool early_hints_preload_link_header_received_ = false;
 
+  absl::optional<bool> was_prerendered_page_activation_;
+
   // These are used to sanity check the content/public/ API calls emitted as
   // part of the navigation.
   int num_did_start_navigation_called_ = 0;
@@ -419,6 +421,9 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // Closure that is called in OnThrottleChecksComplete if we are waiting on the
   // result. Calling this will quit the nested run loop.
   base::OnceClosure wait_closure_;
+
+  // Closure that is called when DidStartNavigation is called.
+  base::OnceClosure did_start_navigation_closure_;
 
   // This member simply ensures that we do not disconnect the NavigationClient
   // interface, as it would be interpreted as a cancellation coming from the

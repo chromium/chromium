@@ -38,6 +38,16 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
     network::mojom::URLResponseHeadPtr cached_response_head,
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
         initial_interceptors) {
+  // Prioritize CachedNavigationURLLoader over `g_loader_factory` even for tests
+  // as prerendered page activation needs to run synchronously and
+  // CachedNavigationURLLoader serves a fake response synchronously.
+  if (loader_type == LoaderType::kNoopForPrerender) {
+    DCHECK(cached_response_head);
+    return CachedNavigationURLLoader::Create(loader_type,
+                                             std::move(request_info), delegate,
+                                             std::move(cached_response_head));
+  }
+
   if (g_loader_factory) {
     return g_loader_factory->CreateLoader(
         storage_partition, std::move(request_info),
@@ -45,9 +55,12 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
         loader_type);
   }
 
-  if (loader_type == LoaderType::kNoop) {
+  // TODO(https://crbug.com/1226442): Merge this into the kNoopForPrerender path
+  // above.
+  if (loader_type == LoaderType::kNoopForBackForwardCache) {
     DCHECK(cached_response_head);
-    return CachedNavigationURLLoader::Create(std::move(request_info), delegate,
+    return CachedNavigationURLLoader::Create(loader_type,
+                                             std::move(request_info), delegate,
                                              std::move(cached_response_head));
   }
 

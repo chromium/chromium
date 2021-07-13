@@ -103,29 +103,14 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   PrerenderHost* prerender_host =
       prerender_host_registry->FindNonReservedHostById(
           frame_tree_node->frame_tree_node_id());
-  bool activation_started = false;
-  if (!prerender_host) {
-    prerender_host = prerender_host_registry->FindReservedHostById(
-        frame_tree_node->frame_tree_node_id());
-    activation_started = true;
-  }
   DCHECK(prerender_host);
-
-  // `activation_started` determines whether prerendering can be cancelled.
-  // If activation already started, we cannot safely cancel prerendering, but
-  // we still block the navigation to preserve the restrictions that this
-  // throttle is intended to impose.
-  // TODO(https://crbug.com/1198395): Cancel prerendering even after
-  // activation started when support is added to do so.
 
   // Navigations after the initial prerendering navigation are disallowed.
   if (*prerender_host->GetInitialNavigationId() !=
       navigation_request->GetNavigationId()) {
-    if (!activation_started) {
-      prerender_host_registry->CancelHost(
-          frame_tree_node->frame_tree_node_id(),
-          PrerenderHost::FinalStatus::kMainFrameNavigation);
-    }
+    prerender_host_registry->CancelHost(
+        frame_tree_node->frame_tree_node_id(),
+        PrerenderHost::FinalStatus::kMainFrameNavigation);
     return CANCEL;
   }
 
@@ -133,13 +118,10 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // https://jeremyroman.github.io/alternate-loading-modes/#no-bad-navs
   GURL prerendering_url = navigation_handle()->GetURL();
   if (!prerendering_url.SchemeIsHTTPOrHTTPS()) {
-    if (!activation_started) {
-      prerender_host_registry->CancelHost(
-          frame_tree_node->frame_tree_node_id(),
-          is_redirection
-              ? PrerenderHost::FinalStatus::kInvalidSchemeRedirect
-              : PrerenderHost::FinalStatus::kInvalidSchemeNavigation);
-    }
+    prerender_host_registry->CancelHost(
+        frame_tree_node->frame_tree_node_id(),
+        is_redirection ? PrerenderHost::FinalStatus::kInvalidSchemeRedirect
+                       : PrerenderHost::FinalStatus::kInvalidSchemeNavigation);
     return CANCEL;
   }
 
@@ -149,12 +131,10 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch.
   url::Origin prerendering_origin = url::Origin::Create(prerendering_url);
   if (prerendering_origin != prerender_host->initiator_origin()) {
-    if (!activation_started) {
-      prerender_host_registry->CancelHost(
-          frame_tree_node->frame_tree_node_id(),
-          is_redirection ? PrerenderHost::FinalStatus::kCrossOriginRedirect
-                         : PrerenderHost::FinalStatus::kCrossOriginNavigation);
-    }
+    prerender_host_registry->CancelHost(
+        frame_tree_node->frame_tree_node_id(),
+        is_redirection ? PrerenderHost::FinalStatus::kCrossOriginRedirect
+                       : PrerenderHost::FinalStatus::kCrossOriginNavigation);
     return CANCEL;
   }
 

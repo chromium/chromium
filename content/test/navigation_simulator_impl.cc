@@ -388,12 +388,14 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
         request_->GetInitiatorFrameToken().value()));
   }
 
-  // Add a throttle to count NavigationThrottle calls count. Bump
-  // num_did_start_navigation to account for the fact that the navigation handle
-  // has already been created.
-  num_did_start_navigation_called_++;
-  RegisterTestThrottle(request);
-  PrepareCompleteCallbackOnRequest();
+  // Add a throttle to count NavigationThrottle calls count. This should be
+  // skipped if DidStartNavigation() has been called as the same setup is done
+  // there.
+  if (num_did_start_navigation_called_ == 0) {
+    num_did_start_navigation_called_++;
+    RegisterTestThrottle(request);
+    PrepareCompleteCallbackOnRequest();
+  }
 }
 
 void NavigationSimulatorImpl::RegisterTestThrottle(NavigationRequest* request) {
@@ -432,10 +434,8 @@ void NavigationSimulatorImpl::Start() {
   if (blink::IsRendererDebugURL(navigation_url_))
     return;
 
-  if (!NeedsThrottleChecks()) {
-    CHECK_EQ(1, num_did_start_navigation_called_);
+  if (!NeedsThrottleChecks())
     return;
-  }
 
   MaybeWaitForThrottleChecksComplete(base::BindOnce(
       &NavigationSimulatorImpl::StartComplete, weak_factory_.GetWeakPtr()));
@@ -528,7 +528,20 @@ void NavigationSimulatorImpl::ReadyToCommit() {
       InitializeFromStartedRequest(request_);
     } else {
       Start();
-      if (state_ == FAILED)
+
+      // For prerendered page activation, CommitDeferringConditions
+      // asynchronously run before the navigation starts. Wait here until all
+      // the conditions run.
+      if (request_->is_potentially_prerendered_page_activation_for_testing()) {
+        base::RunLoop run_loop;
+        did_start_navigation_closure_ = run_loop.QuitClosure();
+        run_loop.Run();
+        DCHECK(was_prerendered_page_activation_.value());
+      }
+
+      // The navigation has failed or already finished for prerendered page
+      // activation.
+      if (state_ == FAILED || state_ == FINISHED)
         return;
     }
   }
@@ -1072,16 +1085,16 @@ void NavigationSimulatorImpl::BrowserInitiatedStartAndWaitBeforeUnload() {
 void NavigationSimulatorImpl::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   // Check if this navigation is the one we're simulating.
-  if (request_)
-    return;
-
   NavigationRequest* request = NavigationRequest::From(navigation_handle);
-
+  if (request_ && request_ != request)
+    return;
   if (request->frame_tree_node() != frame_tree_node_)
     return;
 
   request_ = request;
   num_did_start_navigation_called_++;
+
+  was_prerendered_page_activation_ = request_->IsPrerenderedPageActivation();
 
   // Some navigation requests are not directly created by the
   // NavigationSimulator, so we should set some parameters manually after the
@@ -1091,6 +1104,9 @@ void NavigationSimulatorImpl::DidStartNavigation(
   // Add a throttle to count NavigationThrottle calls count.
   RegisterTestThrottle(request);
   PrepareCompleteCallbackOnRequest();
+
+  if (did_start_navigation_closure_)
+    std::move(did_start_navigation_closure_).Run();
 }
 
 void NavigationSimulatorImpl::DidRedirectNavigation(
@@ -1110,20 +1126,20 @@ void NavigationSimulatorImpl::DidFinishNavigation(
   NavigationRequest* request = NavigationRequest::From(navigation_handle);
   if (request == request_) {
     num_did_finish_navigation_called_++;
-    if (navigation_handle->IsServedFromBackForwardCache()) {
-      // Back-forward cache navigations commit and finish synchronously, unlike
-      // all other navigations, which wait for a reply from the renderer.
-      // The |state_| is normally updated to 'FINISHED' when we simulate a
-      // renderer reply at the end of the NavigationSimulatorImpl::Commit()
-      // function, but we have not reached this stage yet.
-      // Set |state_| to FINISHED to ensure that we would not try to simulate
-      // navigation commit for the second time.
+    if (request->IsPageActivation()) {
+      // Back-forward cache navigations and prerendered page activations commit
+      // and finish synchronously, unlike all other navigations, which wait for
+      // a reply from the renderer. The |state_| is normally updated to
+      // 'FINISHED' when we simulate a renderer reply at the end of the
+      // NavigationSimulatorImpl::Commit() function, but we have not reached
+      // this stage yet. Set |state_| to FINISHED to ensure that we would not
+      // try to simulate navigation commit for the second time.
       RenderFrameHostImpl* previous_rfh = RenderFrameHostImpl::FromID(
           navigation_handle->GetPreviousRenderFrameHostId());
       CHECK(previous_rfh) << "Previous RenderFrameHost should not be destroyed "
                              "without a Unload_ACK";
 
-      // If the frame is not alive we do not displatch Unload ACK.
+      // If the frame is not alive we do not dispatch Unload ACK.
       // CommitPending() may be called immediately and delete the old
       // RenderFrameHost, so we need to record that now while we can still
       // access the object.
@@ -1257,6 +1273,14 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   // The request failed synchronously.
   if (!request)
     return false;
+
+  // Prerendered page activation can be deferred by CommitDeferringConditions in
+  // BeginNavigation(), and `request_` hasn't been set by DidStartNavigation()
+  // yet. In that case, we set it here.
+  if (request->is_potentially_prerendered_page_activation_for_testing()) {
+    DCHECK(!request_);
+    request_ = request;
+  }
 
   CHECK_EQ(request_, request);
   return true;
@@ -1527,8 +1551,10 @@ bool NavigationSimulatorImpl::NeedsThrottleChecks() const {
   // NavigationThrottles since they were already run when the page was first
   // loaded.
   DCHECK(request_);
-  if (request_->IsPageActivation())
+  if (request_->is_potentially_prerendered_page_activation_for_testing() ||
+      request_->IsPageActivation()) {
     return false;
+  }
 
   return IsURLHandledByNetworkStack(navigation_url_);
 }

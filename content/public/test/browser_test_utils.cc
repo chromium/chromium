@@ -2994,6 +2994,8 @@ void TestNavigationManager::DidStartNavigation(NavigationHandle* handle) {
   if (!ShouldMonitorNavigation(handle))
     return;
 
+  was_prerendered_page_activation_ = handle->IsPrerenderedPageActivation();
+
   request_ = NavigationRequest::From(handle);
   if (request_->IsPageActivation()) {
     // For activating navigations, we have no way of stopping at
@@ -3001,12 +3003,17 @@ void TestNavigationManager::DidStartNavigation(NavigationHandle* handle) {
     // WaitForResponse() or WaitForFirstYieldAfterDidStartNavigation().
     DCHECK_NE(desired_state_, NavigationState::STARTED);
 
-    auto condition = std::make_unique<MockCommitDeferringCondition>(
-        /*is_ready_to_commit=*/false,
-        base::BindOnce(
-            &TestNavigationManager::OnRunningCommitDeferringConditions,
-            weak_factory_.GetWeakPtr()));
-    request_->RegisterCommitDeferringConditionForTesting(std::move(condition));
+    // For prerendered page activation, CommitDeferringConditions has already
+    // been run before starting navigation. Don't run them again.
+    if (!request_->IsPrerenderedPageActivation()) {
+      auto condition = std::make_unique<MockCommitDeferringCondition>(
+          /*is_ready_to_commit=*/false,
+          base::BindOnce(
+              &TestNavigationManager::OnRunningCommitDeferringConditions,
+              weak_factory_.GetWeakPtr()));
+      request_->RegisterCommitDeferringConditionForTesting(
+          std::move(condition));
+    }
   } else {
     auto throttle = std::make_unique<TestNavigationManagerThrottle>(
         request_,
@@ -3037,6 +3044,8 @@ void TestNavigationManager::DidFinishNavigation(NavigationHandle* handle) {
     return;
   was_committed_ = handle->HasCommitted();
   was_successful_ = was_committed_ && !handle->IsErrorPage();
+  DCHECK_EQ(was_prerendered_page_activation_.value(),
+            request_->IsPrerenderedPageActivation());
   current_state_ = NavigationState::FINISHED;
   navigation_paused_ = false;
   request_ = nullptr;

@@ -109,109 +109,76 @@ void PrerenderHostRegistry::CancelHost(
   TRACE_EVENT1("navigation", "PrerenderHostRegistry::CancelHost",
                "frame_tree_node_id", frame_tree_node_id);
 
+  // Cancel must not be requested during activation.
+  // TODO(https://crbug.com/1195751): This is the key assumption of the
+  // synchronous prerender activation, so now this is CHECK. Change this to
+  // DCHECK once the assumption is ensured in the real world.
+  CHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
+                        frame_tree_node_id));
+
   // Look up the id in the non-reserved host map, remove it from the map, and
   // record the cancellation reason.
-  auto iter1 = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  if (iter1 != prerender_host_by_frame_tree_node_id_.end()) {
-    DCHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
-                           frame_tree_node_id));
-
-    // Remove the prerender host from the host maps so that it's not used for
-    // activation during asynchronous deletion.
-    std::unique_ptr<PrerenderHost> prerender_host = std::move(iter1->second);
-    prerender_host_by_frame_tree_node_id_.erase(iter1);
-
-    // Asynchronously delete the prerender host.
-    ScheduleToDeleteAbandonedHost(std::move(prerender_host), final_status);
-
-    base::UmaHistogramEnumeration(
-        "Prerender.Experimental.PrerenderHostCancelReasonBeforeActivation",
-        final_status);
+  auto iter = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  if (iter == prerender_host_by_frame_tree_node_id_.end())
     return;
-  }
 
-  // Look up the id in the reserved host map and record the cancellation reason.
-  // TODO(https://crbug.com/1195751): Remove the host from the map and fallback
-  // ongoing activation to regular network navigation.
-  auto iter2 =
-      reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  if (iter2 != reserved_prerender_host_by_frame_tree_node_id_.end()) {
-    auto* activator_frame_tree_node = FrameTreeNode::GloballyFindByID(
-        iter2->second.activator_frame_tree_node_id);
+  // Remove the prerender host from the host map so that it's not used for
+  // activation during asynchronous deletion.
+  std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
+  prerender_host_by_frame_tree_node_id_.erase(iter);
 
-    // Cancelation must not be requested after ready for activation commit.
-    CHECK_LT(activator_frame_tree_node->navigation_request()->state(),
-             NavigationRequest::NavigationState::READY_TO_COMMIT);
+  // Asynchronously delete the prerender host.
+  ScheduleToDeleteAbandonedHost(std::move(prerender_host), final_status);
+}
 
-    // TODO(https://crbug.com/1195751): Stop the ongoing activation and then
-    // start the fallback navigation.
-    // TODO(https://crbug.com/1195751): Asynchronously delete the prerender
-    // host.
-
-    base::UmaHistogramEnumeration(
-        "Prerender.Experimental.PrerenderHostCancelReasonDuringActivation",
-        final_status);
-    return;
-  }
+int PrerenderHostRegistry::FindPotentialHostToActivate(
+    NavigationRequest& navigation_request) {
+  TRACE_EVENT2(
+      "navigation", "PrerenderHostRegistry::FindPotentialHostToActivate",
+      "navigation_url", navigation_request.GetURL().spec(), "render_frame_host",
+      navigation_request.frame_tree_node()->current_frame_host());
+  return FindHostToActivateInternal(navigation_request);
 }
 
 int PrerenderHostRegistry::ReserveHostToActivate(
-    NavigationRequest& navigation_request) {
+    NavigationRequest& navigation_request,
+    int expected_host_id) {
   RenderFrameHostImpl* render_frame_host =
       navigation_request.frame_tree_node()->current_frame_host();
   TRACE_EVENT2("navigation", "PrerenderHostRegistry::ReserveHostToActivate",
                "navigation_url", navigation_request.GetURL().spec(),
                "render_frame_host", render_frame_host);
 
-  // Disallow activation when the navigation is for a nested browsing context
-  // (e.g., iframes). This is because nested browsing contexts are supposed to
-  // be created in the parent's browsing context group and can script with the
-  // parent, but prerendered pages are created in new browsing context groups.
-  if (!navigation_request.IsInMainFrame())
+  // Find an available host for the navigation request.
+  int host_id = FindHostToActivateInternal(navigation_request);
+  if (host_id == RenderFrameHost::kNoFrameTreeNodeId)
     return RenderFrameHost::kNoFrameTreeNodeId;
 
-  // Disallow activation when the navigation happens in the prerendering frame
-  // tree.
-  if (navigation_request.IsInPrerenderedMainFrame())
+  // Check if the host is what the NavigationRequest expects. The host can be
+  // different when a trigger page removes the existing prerender and then
+  // re-adds a new prerender for the same URL.
+  //
+  // NavigationRequest makes sure that the prerender is ready for activation by
+  // waiting for PrerenderCommitDeferringCondition before this point. Without
+  // this check, if the prerender is changed during the period,
+  // NavigationRequest may attempt to activate the new prerender that is not
+  // ready.
+  if (host_id != expected_host_id)
     return RenderFrameHost::kNoFrameTreeNodeId;
 
-  // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
-  // windows) exist in the same browsing context group. This is because these
-  // browsing contexts should be able to script each other, but prerendered
-  // pages are created in new browsing context groups.
-  SiteInstance* site_instance = render_frame_host->GetSiteInstance();
-  if (site_instance->GetRelatedActiveContentsCount() != 1u)
-    return RenderFrameHost::kNoFrameTreeNodeId;
-
-  // Find an available host for the navigation URL.
-  std::unique_ptr<PrerenderHost> host;
-  for (auto iter = prerender_host_by_frame_tree_node_id_.begin();
-       iter != prerender_host_by_frame_tree_node_id_.end(); ++iter) {
-    if (iter->second->GetInitialUrl() == navigation_request.GetURL()) {
-      host = std::move(iter->second);
-      prerender_host_by_frame_tree_node_id_.erase(iter);
-      break;
-    }
-  }
-  if (!host)
-    return RenderFrameHost::kNoFrameTreeNodeId;
-
-  // Compare navigation params from activation with the navigation params
-  // from the initial prerender navigation. If they don't match, the navigation
-  // should not activate the prerendered page.
-  if (!host->AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
-          navigation_request)) {
-    return RenderFrameHost::kNoFrameTreeNodeId;
-  }
+  // Remove the host from the map of non-reserved hosts.
+  std::unique_ptr<PrerenderHost> host =
+      std::move(prerender_host_by_frame_tree_node_id_[host_id]);
+  prerender_host_by_frame_tree_node_id_.erase(host_id);
+  DCHECK_EQ(host_id, host->frame_tree_node_id());
 
   // Reserve the host for activation.
-  const int prerender_frame_tree_node_id = host->frame_tree_node_id();
   auto result = reserved_prerender_host_by_frame_tree_node_id_.try_emplace(
-      prerender_frame_tree_node_id, std::move(host),
+      host_id, std::move(host),
       navigation_request.frame_tree_node()->frame_tree_node_id());
   DCHECK(result.second);
 
-  return prerender_frame_tree_node_id;
+  return host_id;
 }
 
 RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
@@ -312,6 +279,57 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
 
 base::WeakPtr<PrerenderHostRegistry> PrerenderHostRegistry::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+int PrerenderHostRegistry::FindHostToActivateInternal(
+    NavigationRequest& navigation_request) {
+  RenderFrameHostImpl* render_frame_host =
+      navigation_request.frame_tree_node()->current_frame_host();
+  TRACE_EVENT2("navigation",
+               "PrerenderHostRegistry::FindHostToActivateInternal",
+               "navigation_url", navigation_request.GetURL().spec(),
+               "render_frame_host", render_frame_host);
+
+  // Disallow activation when the navigation is for a nested browsing context
+  // (e.g., iframes). This is because nested browsing contexts are supposed to
+  // be created in the parent's browsing context group and can script with the
+  // parent, but prerendered pages are created in new browsing context groups.
+  if (!navigation_request.IsInMainFrame())
+    return RenderFrameHost::kNoFrameTreeNodeId;
+
+  // Disallow activation when the navigation happens in the prerendering frame
+  // tree.
+  if (navigation_request.IsInPrerenderedMainFrame())
+    return RenderFrameHost::kNoFrameTreeNodeId;
+
+  // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
+  // windows) exist in the same browsing context group. This is because these
+  // browsing contexts should be able to script each other, but prerendered
+  // pages are created in new browsing context groups.
+  SiteInstance* site_instance = render_frame_host->GetSiteInstance();
+  if (site_instance->GetRelatedActiveContentsCount() != 1u)
+    return RenderFrameHost::kNoFrameTreeNodeId;
+
+  // Find an available host for the navigation URL.
+  PrerenderHost* host = nullptr;
+  for (const auto& iter : prerender_host_by_frame_tree_node_id_) {
+    if (iter.second->GetInitialUrl() == navigation_request.GetURL()) {
+      host = iter.second.get();
+      break;
+    }
+  }
+  if (!host)
+    return RenderFrameHost::kNoFrameTreeNodeId;
+
+  // Compare navigation params from activation with the navigation params
+  // from the initial prerender navigation. If they don't match, the navigation
+  // should not activate the prerendered page.
+  if (!host->AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
+          navigation_request)) {
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  return host->frame_tree_node_id();
 }
 
 void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(

@@ -41,8 +41,11 @@ class CONTENT_EXPORT NavigationURLLoader {
     // Creates a regular NavigationURLLoader.
     kRegular,
 
-    // Creates a noop NavigationURLLoader for BackForwardCache and Prerender.
-    kNoop,
+    // Creates a noop NavigationURLLoader for BackForwardCache.
+    kNoopForBackForwardCache,
+
+    // Creates a noop NavigationURLLoader for Prerender.
+    kNoopForPrerender,
   };
 
   // Creates a NavigationURLLoader. The caller is responsible for ensuring that
@@ -75,7 +78,12 @@ class CONTENT_EXPORT NavigationURLLoader {
       std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
           initial_interceptors = {});
 
-  // For testing purposes; sets the factory for use in testing.
+  // For testing purposes; sets the factory for use in testing. The factory is
+  // not used for prerendered page activation as it needs to run a specific
+  // loader to satisfy its unique requirement. See the implementation comment in
+  // NavigationURLLoader::Create() for details.
+  // TODO(https://crbug.com/1226442): Update this comment for restoration from
+  // BackForwardCache when it also starts depending on the requirement.
   static void SetFactoryForTesting(NavigationURLLoaderFactory* factory);
 
   virtual ~NavigationURLLoader() {}

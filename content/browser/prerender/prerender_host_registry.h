@@ -79,13 +79,26 @@ class CONTENT_EXPORT PrerenderHostRegistry {
                   PrerenderHost::FinalStatus final_status);
 
   // For activators.
+  // Finds the host to activate for a navigation for the given
+  // NavigationRequest. Returns the root frame tree node id of the prerendered
+  // page, which can be used as the id of the host. This doesn't reserve the
+  // host so it can be destroyed or activated by another navigation. See also
+  // comments on ReserveHostToActivate().
+  int FindPotentialHostToActivate(NavigationRequest& navigation_request);
+
+  // For activators.
   // Reserves the host to activate for a navigation for the given
   // NavigationRequest. Returns the root frame tree node id of the prerendered
   // page, which can be used as the id of the host. Returns
   // RenderFrameHost::kNoFrameTreeNodeId if it's not found or not ready for
   // activation yet. The caller is responsible for calling
   // OnActivationFinished() with the id to release the reserved host.
-  int ReserveHostToActivate(NavigationRequest& navigation_request);
+  //
+  // TODO(https://crbug.com/1198815): Consider returning the ownership of the
+  // reserved host and letting NavigationRequest own it instead of
+  // PrerenderHostRegistry.
+  int ReserveHostToActivate(NavigationRequest& navigation_request,
+                            int expected_host_id);
 
   // For activators.
   // Activates the host reserved by ReserveHostToActivate() and returns the
@@ -128,6 +141,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
 
  private:
+  int FindHostToActivateInternal(NavigationRequest& navigation_request);
+
   void ScheduleToDeleteAbandonedHost(
       std::unique_ptr<PrerenderHost> prerender_host,
       PrerenderHost::FinalStatus final_status);
@@ -146,6 +161,9 @@ class CONTENT_EXPORT PrerenderHostRegistry {
       prerender_host_by_frame_tree_node_id_;
 
   // Hosts that are reserved for activation.
+  // TODO(https://crbug.com/1195751): Remove ReservationInfo by reverting
+  // https://crrev.com/c/2982683. This is no longer necessary as cancellation
+  // during activation never happens in the current implementation.
   struct ReservationInfo {
     ReservationInfo(std::unique_ptr<PrerenderHost> prerender_host,
                     int activator_frame_tree_node_id);

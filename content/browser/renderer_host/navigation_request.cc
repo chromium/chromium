@@ -1570,6 +1570,88 @@ void NavigationRequest::BeginNavigation() {
   DCHECK(!render_frame_host_);
   ScopedCrashKeys crash_keys(*this);
 
+  if (MaybeStartPrerenderingActivationChecks()) {
+    // BeginNavigationImpl() will be called after the checks.
+    return;
+  }
+
+  BeginNavigationImpl();
+}
+
+bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
+  if (!blink::features::IsPrerender2Enabled())
+    return false;
+
+  // Find an available prerendered page for this request. If it's found, this
+  // request may activate it instead of loading a page via network.
+  int candidate_prerender_frame_tree_node_id =
+      GetPrerenderHostRegistry().FindPotentialHostToActivate(*this);
+  if (candidate_prerender_frame_tree_node_id ==
+      RenderFrameHost::kNoFrameTreeNodeId) {
+    return false;
+  }
+
+  // Run CommitDeferringConditions before activating the prerendered page. See
+  // the comemnt on RunCommitDeferringConditions() for detials.
+  //
+  // The prerendered page can be destroyed while the conditions are running.
+  // In that case, this request gives up activating it and instead falls back to
+  // a regular navigation.
+  commit_deferrer_ = CommitDeferringConditionRunner::Create(
+      *this,
+      CommitDeferringCondition::NavigationType::kPrerenderedPageActivation,
+      candidate_prerender_frame_tree_node_id);
+  is_potentially_prerendered_page_activation_for_testing_ = true;
+
+  // Post a task to run the conditions in case BeginNavigation() is not expected
+  // to run synchronously. OnPrerenderingActivationChecksComplete() will be
+  // called after all the deferring conditions finish.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NavigationRequest::RunCommitDeferringConditions,
+                     weak_factory_.GetWeakPtr()));
+  return true;
+}
+
+void NavigationRequest::OnPrerenderingActivationChecksComplete(
+    CommitDeferringCondition::NavigationType navigation_type,
+    absl::optional<int> candidate_prerender_frame_tree_node_id) {
+  DCHECK(blink::features::IsPrerender2Enabled());
+
+  // Prerendered page activation must run CommitDeferringConditions before
+  // StartRequest().
+  DCHECK_LT(state_, WILL_START_NAVIGATION);
+
+  DCHECK(candidate_prerender_frame_tree_node_id.has_value());
+  DCHECK(!prerender_frame_tree_node_id_.has_value());
+
+  // Attempt to reserve the potential PrerenderHost.
+  //
+  // If it has been requested to cancel prerendered page activation during
+  // CommitDeferringConditions, ReserveHostToActivate() returns
+  // kNoFrameTreeNodeId, and then NavigationRequest continues as regular
+  // navigation.
+  prerender_frame_tree_node_id_ =
+      GetPrerenderHostRegistry().ReserveHostToActivate(
+          *this, candidate_prerender_frame_tree_node_id.value());
+  if (prerender_frame_tree_node_id_.value() !=
+      RenderFrameHost::kNoFrameTreeNodeId) {
+    // The reserved host should match with the potential host. Otherwise the
+    // reserved host may not be ready for activation yet as we haven't run
+    // PrerenderCommitDeferringCondition for the host to finish navigation in
+    // the prerendering main frame.
+    DCHECK_EQ(prerender_frame_tree_node_id_.value(),
+              candidate_prerender_frame_tree_node_id.value());
+  }
+  is_potentially_prerendered_page_activation_for_testing_ = false;
+  commit_deferrer_.reset();
+
+  BeginNavigationImpl();
+  // DO NOT ADD CODE after this. The previous call to BeginNavigationImpl may
+  // cause the destruction of the NavigationRequest.
+}
+
+void NavigationRequest::BeginNavigationImpl() {
   SetState(WILL_START_NAVIGATION);
 
   // if this is a fenced frame with a urn:uuid then convert it to a url before
@@ -1808,19 +1890,12 @@ void NavigationRequest::StartNavigation() {
          is_synchronous_renderer_commit_);
   FrameTreeNode* frame_tree_node = frame_tree_node_;
 
-  if (blink::features::IsPrerender2Enabled()) {
-    // Find an available prerendered page for the request URL. If it's found,
-    // this navigation will activate it instead of loading a page via network.
-    // This is the earliest we can compute this because:
-    // - A NavigationRequest is created before sending the BeforeUnload event
-    //   which may cancel the navigation, reserving the host means we'd have to
-    //   abandon it in that case. BeginNavigation, which calls StartNavigation,
-    //   is the first time when we know the navigation will proceed.
-    // - We do this in StartNavigation rather than BeginNavigation because
-    //   there are some cases like renderer-initiated same document navigations
-    //   that call StartNavigation but not BeginNavigation.
-    prerender_frame_tree_node_id_ =
-        GetPrerenderHostRegistry().ReserveHostToActivate(*this);
+  if (blink::features::IsPrerender2Enabled() &&
+      !prerender_frame_tree_node_id_.has_value()) {
+    // This navigation won't activate a prerendered page. Otherwise,
+    // `prerender_frame_tree_node_id_` should have already been set before this
+    // in OnPrerenderingActivationChecksComplete().
+    prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
   }
 
   // This is needed to get site URLs and assign the expected RenderProcessHost.
@@ -1907,7 +1982,13 @@ void NavigationRequest::StartNavigation() {
   throttle_runner_ =
       base::WrapUnique(new NavigationThrottleRunner(this, navigation_id_));
 
-  commit_deferrer_ = CommitDeferringConditionRunner::Create(*this);
+  // For prerendered page activation, CommitDeferringConditions have already run
+  // at the beginning of the navigation, so we won't run them again.
+  if (!IsPrerenderedPageActivation()) {
+    commit_deferrer_ = CommitDeferringConditionRunner::Create(
+        *this, CommitDeferringCondition::NavigationType::kOther,
+        /*candidate_prerender_frame_tree_node_id=*/absl::nullopt);
+  }
 
 #if defined(OS_ANDROID)
   navigation_handle_proxy_ = std::make_unique<NavigationHandleProxy>(this);
@@ -3491,7 +3572,7 @@ void NavigationRequest::OnStartChecksComplete(
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
   network::mojom::URLResponseHeadPtr cached_response_head = nullptr;
   if (IsServedFromBackForwardCache()) {
-    loader_type = NavigationURLLoader::LoaderType::kNoop;
+    loader_type = NavigationURLLoader::LoaderType::kNoopForBackForwardCache;
     DCHECK(rfh_restored_from_back_forward_cache_);
     const network::mojom::URLResponseHeadPtr& last_response_head =
         rfh_restored_from_back_forward_cache_->last_response_head();
@@ -3500,7 +3581,7 @@ void NavigationRequest::OnStartChecksComplete(
     if (last_response_head)
       cached_response_head = last_response_head->Clone();
   } else if (IsPrerenderedPageActivation()) {
-    loader_type = NavigationURLLoader::LoaderType::kNoop;
+    loader_type = NavigationURLLoader::LoaderType::kNoopForPrerender;
     DCHECK(prerender_frame_tree_node_id_.has_value());
     const network::mojom::URLResponseHeadPtr& last_response_head =
         GetPrerenderHostRegistry()
@@ -3511,7 +3592,9 @@ void NavigationRequest::OnStartChecksComplete(
     if (last_response_head)
       cached_response_head = last_response_head->Clone();
   }
-  if (loader_type == NavigationURLLoader::LoaderType::kNoop &&
+  if ((loader_type ==
+           NavigationURLLoader::LoaderType::kNoopForBackForwardCache ||
+       loader_type == NavigationURLLoader::LoaderType::kNoopForPrerender) &&
       !cached_response_head) {
     cached_response_head = network::mojom::URLResponseHead::New();
     cached_response_head->parsed_headers = network::mojom::ParsedHeaders::New();
@@ -3539,9 +3622,11 @@ void NavigationRequest::OnStartChecksComplete(
               frame_tree_node_->frame_tree_node_id()),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
       std::move(cached_response_head), std::move(interceptor));
-  loader_->Start();
-
   DCHECK(!render_frame_host_);
+  loader_->Start();
+  // DO NOT ADD CODE after this. The previous call to
+  // NavigationURLLoader::Start() could cause the destruction of the
+  // NavigationRequest.
 }
 
 void NavigationRequest::OnServiceWorkerAccessed(
@@ -3794,18 +3879,49 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
 
   DCHECK_EQ(result.action(), NavigationThrottle::PROCEED);
 
-  commit_deferrer_->ProcessChecks();
+  // When this request is for prerender activation, `commit_deferrer_` has
+  // already been processed.
+  if (IsPrerenderedPageActivation()) {
+    DCHECK(!commit_deferrer_);
+    CommitNavigation();
+    // DO NOT ADD CODE after this. The previous call to CommitNavigation
+    // destroyed the NavigationRequest.
+    return;
+  };
 
+  RunCommitDeferringConditions();
+  // DO NOT ADD CODE after this. The previous call to
+  // RunCommitDeferringConditions may have caused the destruction of the
+  // NavigationRequest.
+}
+
+void NavigationRequest::RunCommitDeferringConditions() {
+  // TODO(nhiroki): Make RegisterDeferringConditions() private and have
+  // ProcessChecks() call it for code cleanup.
+  commit_deferrer_->RegisterDeferringConditions(*this);
+  commit_deferrer_->ProcessChecks();
   // DO NOT ADD CODE after this. The previous call to ProcessChecks may have
   // caused the destruction of the NavigationRequest.
 }
 
-void NavigationRequest::OnCommitDeferringConditionChecksComplete() {
-  DCHECK_LT(state_, READY_TO_COMMIT);
-  CommitNavigation();
-
-  // DO NOT ADD CODE after this. The previous call to CommitNavigation
-  // caused the destruction of the NavigationRequest.
+void NavigationRequest::OnCommitDeferringConditionChecksComplete(
+    CommitDeferringCondition::NavigationType navigation_type,
+    absl::optional<int> candidate_prerender_frame_tree_node_id) {
+  switch (navigation_type) {
+    case CommitDeferringCondition::NavigationType::kPrerenderedPageActivation:
+      OnPrerenderingActivationChecksComplete(
+          navigation_type, candidate_prerender_frame_tree_node_id);
+      // DO NOT ADD CODE after this. The previous call to
+      // OnPrerenderingActivationChecksComplete caused the destruction of the
+      // NavigationRequest.
+      return;
+    case CommitDeferringCondition::NavigationType::kOther:
+      DCHECK_LT(state_, READY_TO_COMMIT);
+      CommitNavigation();
+      // DO NOT ADD CODE after this. The previous call to CommitNavigation
+      // caused the destruction of the NavigationRequest.
+      return;
+  }
 }
 
 void NavigationRequest::CommitErrorPage(
@@ -5004,8 +5120,6 @@ void NavigationRequest::WillStartRequest() {
   // won't run them again on activation.
   if (!IsPageActivation())
     throttle_runner_->RegisterNavigationThrottles();
-
-  commit_deferrer_->RegisterDeferringConditions(*this);
 
   // If the content/ embedder did not pass the NavigationUIData at the beginning
   // of the navigation, ask for it now.

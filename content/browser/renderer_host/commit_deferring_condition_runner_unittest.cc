@@ -18,7 +18,9 @@ class CommitDeferringConditionRunnerTest
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    runner_ = base::WrapUnique(new CommitDeferringConditionRunner(*this));
+    runner_ = base::WrapUnique(new CommitDeferringConditionRunner(
+        *this, CommitDeferringCondition::NavigationType::kOther,
+        /*candidate_prerender_frame_tree_node_id=*/absl::nullopt));
   }
 
   // Whether the callback was called.
@@ -30,7 +32,12 @@ class CommitDeferringConditionRunnerTest
 
  private:
   // CommitDeferringConditionRunner::Delegate:
-  void OnCommitDeferringConditionChecksComplete() override {
+  void OnCommitDeferringConditionChecksComplete(
+      CommitDeferringCondition::NavigationType navigation_type,
+      absl::optional<int> candidate_prerender_frame_tree_node_id) override {
+    EXPECT_EQ(navigation_type,
+              CommitDeferringCondition::NavigationType::kOther);
+    EXPECT_FALSE(candidate_prerender_frame_tree_node_id.has_value());
     was_delegate_notified_ = true;
   }
 

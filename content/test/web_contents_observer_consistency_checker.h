@@ -109,6 +109,26 @@ class WebContentsObserverConsistencyChecker
   std::map<RenderFrameHost*, std::unique_ptr<TestInputEventObserver>>
       input_observer_map_;
 
+  // Used for checking if observer calls for navigation run in the same task.
+  class TaskChecker {
+   public:
+    TaskChecker();
+
+    void BindCurrentTask();
+
+    // Returns true if the current task is the same as the task bound by
+    // BindCurrentTask().
+    bool IsRunningInSameTask();
+
+   private:
+    absl::optional<int> GetSequenceNumberOfCurrentTask();
+
+    // In some tests, the current task is not set. In that case, `sequence_num`
+    // is absl::nullopt.
+    absl::optional<int> sequence_num_;
+  };
+  TaskChecker task_checker_for_prerendered_page_activation_;
+
   // Remembers parents to make sure RenderFrameHost::GetParent() never changes.
   std::map<GlobalRoutingID, GlobalRoutingID> parent_ids_;
 

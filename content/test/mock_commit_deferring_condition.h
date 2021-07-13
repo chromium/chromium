@@ -67,18 +67,19 @@ class MockCommitDeferringCondition : public CommitDeferringCondition {
   base::WeakPtrFactory<MockCommitDeferringCondition> weak_factory_{this};
 };
 
-// This class will montior navigations in the given WebContents and register
-// the given CommitDeferringCondition into any starting navigation. The mock
-// condition will be installed to run before real conditions.
-class MockCommitDeferringConditionInstaller : public WebContentsObserver {
+// This class will register the given CommitDeferringCondition into any starting
+// navigation. The mock condition will be installed to run after real
+// conditions.
+class MockCommitDeferringConditionInstaller {
  public:
-  MockCommitDeferringConditionInstaller(
-      WebContents* web_contents,
+  explicit MockCommitDeferringConditionInstaller(
       std::unique_ptr<MockCommitDeferringCondition> condition);
-  ~MockCommitDeferringConditionInstaller() override;
+  ~MockCommitDeferringConditionInstaller();
 
-  void DidStartNavigation(NavigationHandle* handle) override;
+ private:
+  std::unique_ptr<CommitDeferringCondition> Install();
 
+  const int generator_id_;
   std::unique_ptr<MockCommitDeferringCondition> condition_;
 };
 
