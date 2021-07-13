@@ -119,8 +119,9 @@ public class ChromeCachedFlags {
                         add(LensFeature.DISABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_INCOGNITO);
                         add(LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_LOW_END_DEVICE);
                         add(LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET);
-                        add(LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH);
                         add(LensFeature.MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH);
+                        add(LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH);
+                        add(LensFeature.SKIP_AGSA_VERSION_CHECK);
                         add(MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY);
                         add(MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_RATING_BAR);
                         add(MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_SECONDS);

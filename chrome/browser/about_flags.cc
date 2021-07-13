@@ -2022,11 +2022,25 @@ const FeatureEntry::FeatureParam kLensCameraAssistedSearchLensButtonStart[] = {
 const FeatureEntry::FeatureParam kLensCameraAssistedSearchLensButtonEnd[] = {
     {"searchBoxStartVariantForLensCameraAssistedSearch", "false"}};
 
+const FeatureEntry::FeatureParam
+    kLensCameraAssistedSkipAgsaVersionCheckEnabled[] = {
+        {"skipAgsaVersionCheck", "true"}};
+
+const FeatureEntry::FeatureParam
+    kLensCameraAssistedSkipAgsaVersionCheckDisabled[] = {
+        {"skipAgsaVersionCheck", "false"}};
+
 const FeatureEntry::FeatureVariation kLensCameraAssistedSearchVariations[] = {
     {"(Lens then Mic)", kLensCameraAssistedSearchLensButtonStart,
      base::size(kLensCameraAssistedSearchLensButtonStart), nullptr},
     {"(Mic then Lens)", kLensCameraAssistedSearchLensButtonEnd,
-     base::size(kLensCameraAssistedSearchLensButtonEnd), nullptr}};
+     base::size(kLensCameraAssistedSearchLensButtonEnd), nullptr},
+    {"(without AGSA version check)",
+     kLensCameraAssistedSkipAgsaVersionCheckEnabled,
+     base::size(kLensCameraAssistedSkipAgsaVersionCheckEnabled), nullptr},
+    {"(with AGSA version check )",
+     kLensCameraAssistedSkipAgsaVersionCheckDisabled,
+     base::size(kLensCameraAssistedSkipAgsaVersionCheckDisabled), nullptr}};
 
 const FeatureEntry::FeatureParam kLensContextMenuTranslateHideRemoveIcon[] = {
     {"hideChipRemoveIcon", "true"}};

@@ -47,4 +47,9 @@ public class LensFeature {
             ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET = new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
                     ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET_PARAM_NAME, false);
+
+    private static final String SKIP_AGSA_VERSION_CHECK_PARAM_NAME = "skipAgsaVersionCheck";
+    public static final BooleanCachedFieldTrialParameter SKIP_AGSA_VERSION_CHECK =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
+                    SKIP_AGSA_VERSION_CHECK_PARAM_NAME, false);
 }
