@@ -31,7 +31,14 @@ class LinkerJni implements Linker.Natives {
         nativeReserveMemoryForLibrary(libInfo);
     }
 
+    @Override
+    public boolean findRegionReservedByWebViewZygote(@NonNull Linker.LibInfo libInfo) {
+        return nativeFindRegionReservedByWebViewZygote(libInfo);
+    }
+
     private static native void nativeFindMemoryRegionAtRandomAddress(
             @NonNull Linker.LibInfo libInfo, boolean keepReserved);
     private static native void nativeReserveMemoryForLibrary(@NonNull Linker.LibInfo libInfo);
+    private static native boolean nativeFindRegionReservedByWebViewZygote(
+            @NonNull Linker.LibInfo libInfo);
 }

@@ -26,8 +26,8 @@ class LegacyLinker extends Linker {
 
     @Override
     void setApkFilePath(String path) {
+        ensureInitializedImplicitlyAsLastResort();
         synchronized (mLock) {
-            ensureInitializedLocked();
             nativeAddZipArchivePath(path);
         }
     }

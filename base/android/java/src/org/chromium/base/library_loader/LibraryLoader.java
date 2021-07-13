@@ -171,8 +171,11 @@ public class LibraryLoader {
      */
     @ThreadSafe
     public class MultiProcessMediator {
-        @GuardedBy("mLock")
-        private long mLoadAddress;
+        // Currently clients initialize |mLoadAddress| strictly before any other method can get
+        // executed on a different thread. Hence, synchronization is not required, but verification
+        // of correctness is still non-trivial, and over-synchronization is cheap compared to
+        // library loading.
+        private volatile long mLoadAddress;
 
         // Used only for asserts, and only ever switched from false to true.
         private volatile boolean mInitDone;
@@ -182,13 +185,7 @@ public class LibraryLoader {
          * @param bundle The Bundle to extract from.
          */
         public void takeLoadAddressFromBundle(Bundle bundle) {
-            // Currently clients call this method strictly before any other method can get executed
-            // on a different thread. Hence, synchronization is not required, but verification of
-            // correctness is still non-trivial, and over-synchronization is cheap compared to
-            // library loading.
-            synchronized (mLock) {
-                mLoadAddress = Linker.extractLoadAddressFromBundle(bundle);
-            }
+            mLoadAddress = Linker.extractLoadAddressFromBundle(bundle);
         }
 
         /**
@@ -198,7 +195,9 @@ public class LibraryLoader {
         public void ensureInitializedInMainProcess() {
             if (mInitDone) return;
             if (useChromiumLinker()) {
-                getLinker().initAsRelroProducer();
+                // In the main process choose the loading address at random.
+                getLinker().ensureInitialized(/* asRelroProducer= */ true,
+                        Linker.PreferAddress.FIND_RESERVED, /* addressHint= */ 0);
             }
             mInitDone = true;
         }
@@ -220,9 +219,8 @@ public class LibraryLoader {
          */
         public void initInChildProcess() {
             if (useChromiumLinker()) {
-                synchronized (mLock) {
-                    getLinker().initAsRelroConsumer(mLoadAddress);
-                }
+                getLinker().ensureInitialized(/* asRelroProducer= */ false,
+                        Linker.PreferAddress.RESERVE_HINT, mLoadAddress);
             }
             mInitDone = true;
         }
@@ -896,16 +894,15 @@ public class LibraryLoader {
         mInitialized = true;
     }
 
+    // The native methods below are defined in library_loader_hooks.cc.
     @NativeMethods
     interface Natives {
-        // Only methods needed before or during normal JNI registration are during System.OnLoad.
-        // nativeLibraryLoaded is then called to register everything else.  This process is called
-        // "initialization".  This method will be mapped (by generated code) to the LibraryLoaded
-        // definition in base/android/library_loader/library_loader_hooks.cc.
-        //
-        // Return true on success and false on failure.
+        // Performs auxiliary initialization useful right after the native library load. Returns
+        // true on success and false on failure.
         boolean libraryLoaded(@LibraryProcessType int processType);
 
+        // Registers JNI for non-main processes. For details see android_native_libraries.md,
+        // android_dynamic_feature_modules.md and jni_generator/README.md
         void registerNonMainDexJni();
 
         // Records the number of milliseconds it took to load the libraries in the renderer.
