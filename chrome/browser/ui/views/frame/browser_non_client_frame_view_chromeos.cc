@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -425,24 +424,6 @@ bool BrowserNonClientFrameViewChromeOS::DoesIntersectRect(
   return !should_leave_to_top_container;
 }
 
-views::View::Views BrowserNonClientFrameViewChromeOS::GetChildrenInZOrder() {
-  views::View::Views paint_order =
-      BrowserNonClientFrameView::GetChildrenInZOrder();
-  views::ClientView* client_view =
-      GetWidget() ? GetWidget()->client_view() : nullptr;
-
-  // Move the client view in front of the frame animator view added by the frame
-  // header helper, if present. This allows the frame animator view to still be
-  // at the bottom of the z-order while also keeping the rest of the frame
-  // view's children on top of the client view.
-  if (frame()->ShouldDrawFrameHeader() && client_view &&
-      base::Erase(paint_order, client_view)) {
-    paint_order.insert(std::next(paint_order.begin(), 1), client_view);
-  }
-
-  return paint_order;
-}
-
 SkColor BrowserNonClientFrameViewChromeOS::GetTitleColor() {
   return browser_view()->GetRegularOrGuestSession()
              ? kNormalWindowTitleTextColor
@@ -603,20 +584,12 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
 }
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
-  AddChildViewAt(caption_button_container_, 0);
-
-  if (web_app_frame_toolbar()) {
-    views::ClientView* client_view =
-        GetWidget() ? GetWidget()->client_view() : nullptr;
-
-    // Add the web app frame toolbar at the end, but before the client view if
-    // it exists.
-    if (client_view && GetIndexOf(client_view) >= 0) {
-      AddChildViewAt(web_app_frame_toolbar(), GetIndexOf(client_view));
-    } else {
-      AddChildView(web_app_frame_toolbar());
-    }
-  }
+  // Ensure the WebAppFrameToolbarView and FrameCaptionButtonContainerView
+  // receive events before the BrowserView by appending instead of inserting
+  // the child views.
+  if (web_app_frame_toolbar())
+    AddChildView(web_app_frame_toolbar());
+  AddChildView(caption_button_container_);
   Layout();
 }
 
