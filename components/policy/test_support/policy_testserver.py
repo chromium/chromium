@@ -111,8 +111,6 @@ except ImportError:
 # pyopenssl is only reliably available on Chrome OS builds.
 # This is currently OK because policy_testserver.py's support for certificate
 # provisioning is only used in Tast test for now.
-# TODO(https://bugs.chromium.org/p/chromium/issues/detail?id=1101729): Switch
-# to issuing certificates in the test..
 try:
     from OpenSSL import crypto
 except ImportError:
@@ -524,7 +522,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     except (IOError):
       return(400, 'Invalid request')
 
-    # TODO(drcrash): Check the certificate itself.
     if req.certificate_type != dm.CertificateBasedDeviceRegistrationData.\
         ENTERPRISE_ENROLLMENT_CERTIFICATE:
       return(403, 'Invalid certificate type for registration')
@@ -582,7 +579,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     Returns:
       CertificateBasedDeviceRegistrationData
     """
-    # TODO(drcrash): Verify signature.
     rdata = dm.CertificateBasedDeviceRegistrationData()
     rdata.ParseFromString(msg.data[:len(msg.data) - msg.extra_data_bytes])
     return rdata
@@ -1258,8 +1254,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         response.new_public_key = signing_key['public_key']
 
         # Set the verification signature appropriate for the policy domain.
-        # TODO(atwilson): Use the enrollment domain for public accounts when
-        # we add key validation for ChromeOS (http://crbug.com/328038).
         if 'signatures' in signing_key:
           verification_sig = self.GetSignatureForDomain(
               signing_key['signatures'], policy_data.username)
