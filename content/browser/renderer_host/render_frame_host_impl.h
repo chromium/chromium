@@ -361,6 +361,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsInactiveAndDisallowActivation() override;
   size_t GetProxyCount() override;
   bool HasSelection() override;
+  const net::HttpResponseHeaders* GetLastResponseHeaders() override;
   void RequestTextSurroundingSelection(
       blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback callback,
       int max_length) override;
@@ -547,12 +548,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Update this frame's state at the appropriate time when a navigation
   // commits. This is called by Navigator::DidNavigate as a helper, in the
-  // midst of a DidCommitProvisionalLoad call. If |did_create_new_document| is
-  // true the navigation was not same-document and was not served from the
-  // back-forward cache.
+  // midst of a DidCommitProvisionalLoad call. If |was_within_same_document| is
+  // true the navigation was same-document.
   void DidNavigate(const mojom::DidCommitProvisionalLoadParams& params,
                    NavigationRequest* navigation_request,
-                   bool did_create_new_document);
+                   bool was_within_same_document);
 
   RenderViewHostImpl* render_view_host() { return render_view_host_.get(); }
   RenderFrameHostDelegate* delegate() { return delegate_; }

@@ -161,7 +161,8 @@ void SiteEngagementService::Helper::MediaTracker::TrackingStarted() {
   Pause();
 }
 
-void SiteEngagementService::Helper::MediaTracker::PrimaryPageChanged() {
+void SiteEngagementService::Helper::MediaTracker::PrimaryPageChanged(
+    content::Page& page) {
   // Media stops playing on navigation, so clear our state.
   active_media_players_.clear();
 }

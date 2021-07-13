@@ -273,6 +273,11 @@ void WebContentsObserverConsistencyChecker::ReadyToCommitNavigation(
                      navigation_handle->GetRenderFrameHost()));
 }
 
+void WebContentsObserverConsistencyChecker::PrimaryPageChanged(Page& page) {
+  CHECK_EQ(&web_contents()->GetPrimaryPage(), &page)
+      << "PrimaryPageChanged invoked on non-primary page.";
+}
+
 void WebContentsObserverConsistencyChecker::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   CHECK(NavigationIsOngoing(navigation_handle));

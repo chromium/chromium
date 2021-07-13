@@ -8895,16 +8895,17 @@ WebContentsImpl::GetRenderViewHostsIncludingBackForwardCached() {
   return render_view_hosts;
 }
 
-void WebContentsImpl::NotifyPageChanged() {
+void WebContentsImpl::NotifyPageChanged(PageImpl& page) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::PrimaryPageChanged");
+
+  DCHECK_EQ(&page, &GetPrimaryPage());
 
   // Clear |save_package_| since the primary page changed.
   if (save_package_) {
     save_package_->ClearPage();
     save_package_.reset();
   }
-
-  observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged);
+  observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged, page);
 }
 
 void WebContentsImpl::RenderFrameHostStateChanged(

@@ -17,6 +17,7 @@
 namespace content {
 class RenderFrameHost;
 class PrerenderHostRegistry;
+class Page;
 
 // Receiver for speculation rules from the web platform. See
 // third_party/blink/renderer/core/speculation_rules/README.md
@@ -36,7 +37,7 @@ class CONTENT_EXPORT SpeculationHostImpl final
   SpeculationHostImpl& operator=(SpeculationHostImpl&&) = delete;
 
   // WebContentsObserver implementation:
-  void PrimaryPageChanged() override;
+  void PrimaryPageChanged(Page& page) override;
 
  private:
   SpeculationHostImpl(

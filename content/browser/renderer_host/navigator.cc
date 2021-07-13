@@ -464,12 +464,8 @@ void Navigator::DidNavigate(
       frame_tree_node
           ->is_on_initial_empty_document_or_subsequent_empty_documents();
 
-  // Navigations that activate an existing bfcached or prerendered document do
-  // not create a new document.
-  bool did_create_new_document =
-      !navigation_request->IsPageActivation() && !was_within_same_document;
   render_frame_host->DidNavigate(params, navigation_request.get(),
-                                 did_create_new_document);
+                                 was_within_same_document);
 
   int old_entry_count = controller_.GetEntryCount();
   LoadCommittedDetails details;
@@ -517,6 +513,11 @@ void Navigator::DidNavigate(
   // has committed.
   std::vector<blink::mojom::WebFeature> web_features =
       navigation_request->TakeWebFeaturesToLog();
+
+  // Navigations that activate an existing bfcached or prerendered document do
+  // not create a new document.
+  bool did_create_new_document =
+      !navigation_request->IsPageActivation() && !was_within_same_document;
 
   // Send notification about committed provisional loads. This notification is
   // different from the NAV_ENTRY_COMMITTED notification which doesn't include

@@ -7,7 +7,9 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
+#include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 
 namespace embedder_support {
@@ -55,17 +57,17 @@ bool IsTrustedCDN(const GURL& url) {
 const base::Feature kShowTrustedPublisherURL{"ShowTrustedPublisherURL",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-GURL GetPublisherURL(content::NavigationHandle* navigation_handle) {
-  if (!IsTrustedCDN(navigation_handle->GetURL()))
+GURL GetPublisherURL(content::Page& page) {
+  content::RenderFrameHost& rfh = page.GetMainDocument();
+  if (!IsTrustedCDN(rfh.GetLastCommittedURL()))
     return GURL();
 
-  const net::HttpResponseHeaders* headers =
-      navigation_handle->GetResponseHeaders();
+  const net::HttpResponseHeaders* headers = rfh.GetLastResponseHeaders();
   if (!headers) {
     // TODO(https://crbug.com/829323): In some cases other than offline pages
     // we don't have headers.
     LOG(WARNING) << "No headers for navigation to "
-                 << navigation_handle->GetURL();
+                 << rfh.GetLastCommittedURL();
     return GURL();
   }
 

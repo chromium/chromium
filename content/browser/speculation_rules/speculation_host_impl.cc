@@ -73,7 +73,7 @@ SpeculationHostImpl::~SpeculationHostImpl() {
   CancelStartedPrerenders();
 }
 
-void SpeculationHostImpl::PrimaryPageChanged() {
+void SpeculationHostImpl::PrimaryPageChanged(Page& page) {
   // Listen to the change of the primary page. Since only the primary page can
   // trigger speculationrules, the change of the primary page indicates that the
   // trigger associated with this host is destroyed, so the browser should

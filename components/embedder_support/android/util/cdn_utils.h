@@ -10,16 +10,16 @@
 class GURL;
 
 namespace content {
-class NavigationHandle;
+class Page;
 }
 
 namespace embedder_support {
 
 extern const base::Feature kShowTrustedPublisherURL;
 
-// This should be called from content::WebContentsObserver::DidFinishNavigation
+// This should be called from content::WebContentsObserver::PrimaryPageChanged
 // to get a publisher url for the committed navigation, else an empty GURL().
-GURL GetPublisherURL(content::NavigationHandle* navigation_handle);
+GURL GetPublisherURL(content::Page& page);
 
 }  // namespace embedder_support
 

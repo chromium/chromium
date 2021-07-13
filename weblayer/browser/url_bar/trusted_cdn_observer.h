@@ -26,8 +26,7 @@ class TrustedCDNObserver
   explicit TrustedCDNObserver(content::WebContents* web_contents);
 
   // content::WebContentsObserver implementation:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   GURL publisher_url_;
 

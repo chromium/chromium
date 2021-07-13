@@ -52,6 +52,7 @@ class RenderFrameHost;
 class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHost;
+class Page;
 class WebContents;
 struct AXEventNotificationDetails;
 struct AXLocationChangeNotificationDetails;
@@ -109,8 +110,9 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void RenderFrameHostChanged(RenderFrameHost* old_host,
                                       RenderFrameHost* new_host) {}
 
-  // This method is invoked whenever primary page of a WebContents is
-  // changed with another one. This happens in one of the following cases:
+  // This method is invoked whenever primary page of a WebContents
+  // (WebContents::GetPrimaryPage()) changes to `page`. This happens in one of
+  // the following cases:
   // 1) when the current RenderFrameHost in the primary main frame changes after
   //    a navigation.
   // 2) when the current RenderFrameHost in the primary main frame is
@@ -134,7 +136,7 @@ class CONTENT_EXPORT WebContentsObserver {
   // && NavigationHandle::HasCommitted (unless your code has to listen to
   // DidFinishNavigation for some other reason, in which case listening only to
   // DidFinishNavigation is recommended).
-  virtual void PrimaryPageChanged() {}
+  virtual void PrimaryPageChanged(Page& page) {}
 
   // This method is invoked when a frame is destroyed. A subframe is destroyed
   // when its parent detaches it or navigates to a different document. A main

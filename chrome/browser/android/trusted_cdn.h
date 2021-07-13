@@ -9,7 +9,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
-class NavigationHandle;
+class Page;
 }
 
 // Native part of Trusted CDN publisher URL provider. Managed by Java layer.
@@ -28,8 +28,7 @@ class TrustedCdn : public content::WebContentsObserver {
                    const base::android::JavaParamRef<jobject>& obj);
 
   // content::WebContentsObserver
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobj_;
