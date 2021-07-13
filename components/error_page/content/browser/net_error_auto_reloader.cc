@@ -58,10 +58,12 @@ bool ShouldAutoReload(content::NavigationHandle* handle) {
 }
 
 base::TimeDelta GetNextReloadDelay(size_t reload_count) {
-  static const int kDelaysMs[] = {1000,   5000,   30000,  60000,
-                                  300000, 600000, 1800000};
-  return base::TimeDelta::FromMilliseconds(
-      kDelaysMs[std::min(reload_count, base::size(kDelaysMs) - 1)]);
+  static constexpr base::TimeDelta kDelays[] = {
+      base::TimeDelta::FromSeconds(1),  base::TimeDelta::FromSeconds(5),
+      base::TimeDelta::FromSeconds(30), base::TimeDelta::FromMinutes(1),
+      base::TimeDelta::FromMinutes(5),  base::TimeDelta::FromMinutes(10),
+      base::TimeDelta::FromMinutes(30)};
+  return kDelays[std::min(reload_count, base::size(kDelays) - 1)];
 }
 
 // Helper to block a navigation that would result in re-committing the same
