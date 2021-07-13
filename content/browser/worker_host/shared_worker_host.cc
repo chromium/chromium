@@ -350,7 +350,7 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
 
 network::mojom::URLLoaderFactoryParamsPtr
 SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
-  url::Origin origin = instance().storage_key().origin();
+  url::Origin origin = GetStorageKey().origin();
 
   // TODO(https://crbug.com/1060832): Implement COEP reporter for shared
   // workers.
@@ -432,9 +432,9 @@ void SharedWorkerHost::BindCacheStorage(
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
 
-  GetProcessHost()->BindCacheStorage(
-      cross_origin_embedder_policy(), std::move(coep_reporter),
-      instance().storage_key(), std::move(receiver));
+  GetProcessHost()->BindCacheStorage(cross_origin_embedder_policy(),
+                                     std::move(coep_reporter), GetStorageKey(),
+                                     std::move(receiver));
 }
 
 void SharedWorkerHost::CreateCodeCacheHost(
@@ -541,7 +541,11 @@ net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
   // top-level browsing context, which shouldn't be use for SharedWorkers used
   // in iframes.
   return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
-      instance().storage_key().origin());
+      GetStorageKey().origin());
+}
+
+const blink::StorageKey& SharedWorkerHost::GetStorageKey() const {
+  return instance().storage_key();
 }
 
 void SharedWorkerHost::ReportNoBinderForInterface(const std::string& error) {

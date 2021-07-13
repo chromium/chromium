@@ -429,6 +429,25 @@ BindWorkerReceiverForOriginAndFrameId(
       base::Unretained(host), method);
 }
 
+template <typename WorkerHost, typename Interface>
+base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>
+BindWorkerReceiverForStorageKey(
+    void (RenderProcessHostImpl::*method)(const blink::StorageKey&,
+                                          mojo::PendingReceiver<Interface>),
+    WorkerHost* host) {
+  return base::BindRepeating(
+      [](WorkerHost* host,
+         void (RenderProcessHostImpl::*method)(
+             const blink::StorageKey&, mojo::PendingReceiver<Interface>),
+         mojo::PendingReceiver<Interface> receiver) {
+        auto* process_host =
+            static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
+        if (process_host)
+          (process_host->*method)(host->GetStorageKey(), std::move(receiver));
+      },
+      base::Unretained(host), method);
+}
+
 template <typename... Args>
 void RunOrPostTaskToBindServiceWorkerReceiver(
     ServiceWorkerHost* host,
@@ -506,6 +525,27 @@ BindServiceWorkerReceiverForOriginAndFrameId(
       },
       base::Unretained(host), method);
 }
+
+template <typename Interface>
+base::RepeatingCallback<void(const ServiceWorkerVersionBaseInfo&,
+                             mojo::PendingReceiver<Interface>)>
+BindServiceWorkerReceiverForStorageKey(
+    void (RenderProcessHostImpl::*method)(const blink::StorageKey&,
+                                          mojo::PendingReceiver<Interface>),
+    ServiceWorkerHost* host) {
+  return base::BindRepeating(
+      [](ServiceWorkerHost* host,
+         void (RenderProcessHostImpl::*method)(
+             const blink::StorageKey&, mojo::PendingReceiver<Interface>),
+         const ServiceWorkerVersionBaseInfo& info,
+         mojo::PendingReceiver<Interface> receiver) {
+        RunOrPostTaskToBindServiceWorkerReceiver<
+            const blink::StorageKey&, mojo::PendingReceiver<Interface>>(
+            host, method, info.storage_key, std::move(receiver));
+      },
+      base::Unretained(host), method);
+}
+
 template <typename Interface>
 void EmptyBinderForFrame(RenderFrameHost* host,
                          mojo::PendingReceiver<Interface> receiver) {
@@ -1038,6 +1078,9 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   // render process host binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));
+
+  map->Add<blink::mojom::IDBFactory>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindIndexedDB, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1054,8 +1097,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeIOHost, host));
-  map->Add<blink::mojom::IDBFactory>(
-      BindWorkerReceiverForOrigin(&RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
 
@@ -1128,6 +1169,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
   // render process host binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));
+  map->Add<blink::mojom::IDBFactory>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindIndexedDB, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1146,8 +1189,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::WebSocketConnector>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreateWebSocketConnector, host));
-  map->Add<blink::mojom::IDBFactory>(
-      BindWorkerReceiverForOrigin(&RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
 
@@ -1256,10 +1297,12 @@ void PopulateBinderMapWithContext(
       BindServiceWorkerReceiverForOrigin(
           &RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker,
           host));
-  map->Add<blink::mojom::IDBFactory>(BindServiceWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::BucketManagerHost>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
+
+  // render process host binders taking a storage key
+  map->Add<blink::mojom::IDBFactory>(BindServiceWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindIndexedDB, host));
 
   // render process host binders taking a frame id and an origin
   map->Add<blink::mojom::LockManager>(

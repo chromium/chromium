@@ -491,7 +491,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // |render_frame_id| is the frame associated with |receiver|, or
   // MSG_ROUTING_NONE if |receiver| is associated with a worker.
   virtual void BindIndexedDB(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) = 0;
   virtual void BindBucketManagerHost(
       const url::Origin& origin,

@@ -2151,20 +2151,18 @@ void RenderProcessHostImpl::BindCacheStorage(
 }
 
 void RenderProcessHostImpl::BindIndexedDB(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (origin.opaque()) {
+  if (storage_key.origin().opaque()) {
     // Opaque origins aren't valid for IndexedDB access, so we won't bind
     // |receiver| to |indexed_db_factory_|.  Return early here which
     // will cause |receiver| to be freed.  When |receiver| is
     // freed, we expect the pipe on the client will be closed.
     return;
   }
-  // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
-  // function directly.
   storage_partition_impl_->GetIndexedDBControl().BindIndexedDB(
-      blink::StorageKey(origin), std::move(receiver));
+      storage_key, std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindBucketManagerHost(

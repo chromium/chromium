@@ -180,7 +180,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver)
       override {}
   void BindIndexedDB(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void BindBucketManagerHost(
       const url::Origin& origin,

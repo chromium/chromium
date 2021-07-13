@@ -454,7 +454,7 @@ void MockRenderProcessHost::BindCacheStorage(
 }
 
 void MockRenderProcessHost::BindIndexedDB(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   idb_factory_receiver_ = std::move(receiver);
 }

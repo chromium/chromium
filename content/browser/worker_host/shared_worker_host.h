@@ -50,6 +50,7 @@ class GURL;
 namespace blink {
 class MessagePortChannel;
 class PendingURLLoaderFactoryBundle;
+class StorageKey;
 }  // namespace blink
 
 namespace content {
@@ -175,6 +176,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   base::WeakPtr<SharedWorkerHost> AsWeakPtr();
 
   net::NetworkIsolationKey GetNetworkIsolationKey() const;
+
+  const blink::StorageKey& GetStorageKey() const;
 
   const base::UnguessableToken& GetReportingSource() const {
     return reporting_source_;

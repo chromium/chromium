@@ -281,7 +281,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
   void BindIndexedDB(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void BindBucketManagerHost(
       const url::Origin& origin,
