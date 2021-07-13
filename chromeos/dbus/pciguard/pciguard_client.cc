@@ -85,7 +85,10 @@ void PciguardClientImpl::OnSignalConnected(const std::string& interface_name,
   if (!success) {
     LOG(ERROR) << "Pciguard: Failed to connect to signal " << signal_name
                << ".";
+    return;
   }
+  VLOG(1) << "Pciguard: Successfully connected to signal " << signal_name
+          << ".";
 }
 
 void PciguardClientImpl::SendExternalPciDevicesPermissionState(bool permitted) {
