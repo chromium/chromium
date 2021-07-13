@@ -343,7 +343,12 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
 
     @Override
     public void setAutocompleteText(CharSequence userText, CharSequence inlineAutocompleteText) {
+        // Note: this is invoked when the Autocomplete text is supplied by the Autocomplete
+        // subsystem. These changes should be ignored for Autocomplete, specifically should not
+        // be sent back to the Autocomplete subsystem to trigger suggestions fetch.
+        setIgnoreTextChangeFromAutocomplete(true);
         setAutocompleteTextInternal(userText.toString(), inlineAutocompleteText.toString());
+        setIgnoreTextChangeFromAutocomplete(false);
     }
 
     private void setAutocompleteTextInternal(String userText, String autocompleteText) {
