@@ -103,8 +103,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Crash streak is 2. Engage Safe Mode.
         // Safe values are false/true, and are used during this run.
         // Cached values remain true(crashy)/true, but are not used because Safe Mode is engaged.
-        assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
-                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+        // TODO(crbug.com/1217708): Assert CachedFeatureFlags.getSafeModeBehaviorForTesting()) is
+        // Behavior.ENGAGED_WITH_SAFE_VALUES.
         // TODO(crbug.com/1217708): Assert cached flags values are false/true.
         endCleanRun(false, false);
         // Cached values became false/false, cached from native.

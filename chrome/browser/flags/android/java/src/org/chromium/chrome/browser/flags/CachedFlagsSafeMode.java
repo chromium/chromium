@@ -144,27 +144,7 @@ class CachedFlagsSafeMode {
     }
 
     private void writeSafeValues(ValuesReturned safeValuesReturned) {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
-
-        Map<String, Boolean> boolValuesToWrite = prependPrefixToKeys(
-                ChromePreferenceKeys.FLAGS_CACHED_SAFE_VALUES_BOOL, safeValuesReturned.boolMap());
-        prefs.writeBooleans(boolValuesToWrite);
-
-        Map<String, Integer> intValuesToWrite = prependPrefixToKeys(
-                ChromePreferenceKeys.FLAGS_CACHED_SAFE_VALUES_INT, safeValuesReturned.intMap());
-        prefs.writeInts(intValuesToWrite);
-
-        Map<String, Double> doubleValuesToWrite =
-                prependPrefixToKeys(ChromePreferenceKeys.FLAGS_CACHED_SAFE_VALUES_DOUBLE,
-                        safeValuesReturned.doubleMap());
-        prefs.writeDoubles(doubleValuesToWrite);
-
-        Map<String, String> stringValuesToWrite =
-                prependPrefixToKeys(ChromePreferenceKeys.FLAGS_CACHED_SAFE_VALUES_STRING,
-                        safeValuesReturned.stringMap());
-        stringValuesToWrite.put(ChromePreferenceKeys.FLAGS_CACHED_SAFE_VALUES_VERSION,
-                ChromeVersionInfo.getProductVersion());
-        prefs.writeStrings(stringValuesToWrite);
+        // TODO(crbug.com/1217708): Write safe values.
     }
 
     private static <T> Map<String, T> prependPrefixToKeys(KeyPrefix prefix, Map<String, T> map) {
