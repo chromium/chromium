@@ -133,6 +133,7 @@ void DropdownBarHost::Show(bool animate) {
 void DropdownBarHost::Hide(bool animate) {
   if (!IsVisible())
     return;
+
   if (animate && !disable_animations_during_testing_ &&
       !animation_->IsClosing()) {
     animation_->Hide();
@@ -201,6 +202,11 @@ void DropdownBarHost::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void DropdownBarHost::AnimationEnded(const gfx::Animation* animation) {
+  // Ensure the position gets a final update.  This is important when ending the
+  // animation early (e.g. closing a tab with an open find bar), since otherwise
+  // the position will be out of date at the start of the next animation.
+  AnimationProgressed(animation);
+
   if (!animation_->IsShowing()) {
     // Animation has finished closing.
     host_->Hide();
