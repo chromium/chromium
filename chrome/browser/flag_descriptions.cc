@@ -4661,6 +4661,11 @@ const char kFilesArchivemountName[] = "Archivemount in Files App";
 const char kFilesArchivemountDescription[] =
     "Enable mounting various archive formats in File Manager.";
 
+const char kFilesBannerFrameworkName[] =
+    "Updated Banner framework in Files app";
+const char kFilesBannerFrameworkDescription[] =
+    "Enable the updated branner framework in Files app";
+
 const char kFilesSinglePartitionFormatName[] =
     "Enable Partitioning of Removable Disks.";
 const char kFilesSinglePartitionFormatDescription[] =

@@ -189,6 +189,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFamilyLinkOnSchoolDevice;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFastPair;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesArchivemount;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kFilesBannerFramework;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFilesSinglePartitionFormat;

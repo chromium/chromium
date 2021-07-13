@@ -48843,6 +48843,7 @@ from previous Chrome versions.
   <int value="61466986" label="AsyncDns:disabled"/>
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
   <int value="64942701" label="OfflinePagesSvelteConcurrentLoading:disabled"/>
+  <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="66897259" label="ModalPermissionDialogView:enabled"/>
   <int value="67639499" label="stop-loading-in-background:disabled"/>
   <int value="73929836" label="VrBrowsingInCustomTab:enabled"/>
@@ -50597,6 +50598,7 @@ from previous Chrome versions.
   <int value="1515196403" label="fast-user-switching"/>
   <int value="1515334367" label="ToolbarMicIphAndroid:disabled"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
+  <int value="1517988103" label="FilesBannerFramework:disabled"/>
   <int value="1518833340" label="MediaAppDisplayExif:enabled"/>
   <int value="1518946321" label="DisableProcessReuse:disabled"/>
   <int value="1519067750" label="ActionableContentSettings:disabled"/>

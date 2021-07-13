@@ -3011,7 +3011,12 @@
   },
   {
     "name": "files-archivemount",
-    "owners": [ "fdegros", "nigeltao"],
+    "owners": [ "fdegros", "nigeltao" ],
+    "expiry_milestone": 100
+  },
+  {
+    "name": "files-banner-framework",
+    "owners": [ "benreich", "lucmult" ],
     "expiry_milestone": 100
   },
   {
