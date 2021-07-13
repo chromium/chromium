@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 39
+// Next tag: 40
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -79,6 +79,33 @@ message SystemProfileProto {
   // The time when the client was installed, in seconds since the epoch.
   // For privacy, this is rounded to the nearest hour.
   optional int64 install_date = 16;
+
+  // A message about the cloned install detection that helps improve data
+  // quality by identifying potential VMs and bots. This message will be
+  // set in every record after the client has ever been reset due to cloned
+  // install detection. However, the `cloned_from_client_id`
+  // field will only be set in the resetting session because this is not
+  // persisted in the local prefs.
+  // Next tag: 5
+  message ClonedInstallInfo {
+    // The latest timestamp we reset a cloned client’s client id, in seconds
+    // since the epoch. For privacy, this is rounded to the nearest hour.
+    optional int64 last_timestamp = 1;
+
+    // cloned install detector only; any other way of resetting client_id
+    // doesn't touch this field. This field is only reported in the
+    // resetting session.
+    optional fixed64 cloned_from_client_id = 2;
+
+    // The first timestamp when we reset a cloned client’s client id, in seconds
+    // since the epoch. For privacy, this is rounded to the nearest hour.
+    optional int64 first_timestamp = 3;
+
+    // The number of times this client has been reset due to cloned install.
+    // Increment by one per reset happens.
+    optional int32 count = 4;
+  }
+  optional ClonedInstallInfo cloned_install_info = 39;
 
   // The non-identifying low entropy source value. This value seeds the
   // pseudorandom generator which picks experimental groups.
