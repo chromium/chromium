@@ -44,7 +44,6 @@ class WebAppLaunchManager {
   WebAppLaunchManager& operator=(const WebAppLaunchManager&) = delete;
   virtual ~WebAppLaunchManager();
 
-  // apps::LaunchManager:
   content::WebContents* OpenApplication(apps::AppLaunchParams&& params);
 
   // |browser| may be nullptr if the navigation fails.
