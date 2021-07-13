@@ -47,11 +47,14 @@ Polymer({
     },
 
     /**
-     * Indicates whether to use same design for accept/decline buttons.
+     * Indicates whether user is minor mode user (e.g. under age of 18).
      */
-    equalWeightButtons_: {
+    isMinorMode_: {
       type: Boolean,
-      value: false,
+      value() {
+        return loadTimeData.valueExists('isMinorMode') &&
+            loadTimeData.getBoolean('isMinorMode');
+      }
     },
   },
 
@@ -237,8 +240,6 @@ Polymer({
                 'https://www.gstatic.com/images/icons/material/system/2x/' +
                     'info_outline_grey600_24dp.png',
                 this.i18n('assistantScreenContextTitle'))));
-    this.equalWeightButtons_ = data['equalWeightButtons'];
-
     this.consentStringLoaded_ = true;
     if (this.webViewLoaded_) {
       this.onPageLoaded();
