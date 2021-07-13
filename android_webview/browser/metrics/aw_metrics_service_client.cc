@@ -77,7 +77,7 @@ void AwMetricsServiceClient::SetInstance(
 
 AwMetricsServiceClient::AwMetricsServiceClient(
     std::unique_ptr<Delegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    : time_created_(base::Time::Now()), delegate_(std::move(delegate)) {}
 
 AwMetricsServiceClient::~AwMetricsServiceClient() = default;
 
@@ -126,6 +126,10 @@ void AwMetricsServiceClient::SetAppPackageNameLoggingRule(
   local_state->Set(prefs::kMetricsAppPackageNameLoggingRule,
                    record.value().ToDictionary());
   cached_package_name_record_ = record;
+
+  UmaHistogramTimes(
+      "Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay",
+      base::Time::Now() - time_created_);
 }
 
 absl::optional<AppPackageNameLoggingRule>

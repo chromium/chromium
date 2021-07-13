@@ -183,6 +183,7 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
 
  private:
   bool app_in_foreground_ = false;
+  base::Time time_created_;
   std::unique_ptr<Delegate> delegate_;
 
   absl::optional<AppPackageNameLoggingRule> cached_package_name_record_;
