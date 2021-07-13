@@ -351,14 +351,16 @@ PartitionSuperPageToExtent(char* ptr) {
 // present) inside a super page. Elements of a super page are
 // partition-page-aligned, hence the returned size is a multiple of partition
 // page size.
-ALWAYS_INLINE size_t ReservedQuarantineBitmapsSize() {
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+ReservedQuarantineBitmapsSize() {
   return (2 * sizeof(QuarantineBitmap) + PartitionPageSize() - 1) &
          PartitionPageBaseMask();
 }
 
 // Size that should be committed for 2 back-to-back quarantine bitmaps (if
 // present) inside a super page. It is a multiple of system page size.
-ALWAYS_INLINE size_t CommittedQuarantineBitmapsSize() {
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+CommittedQuarantineBitmapsSize() {
   return (2 * sizeof(QuarantineBitmap) + SystemPageSize() - 1) &
          SystemPageBaseMask();
 }
