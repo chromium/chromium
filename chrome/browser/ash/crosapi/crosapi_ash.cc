@@ -11,6 +11,8 @@
 #include "ash/components/account_manager/account_manager_ash.h"
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "base/dcheck_is_on.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
@@ -173,6 +175,14 @@ void CrosapiAsh::BindBrowserServiceHost(
     mojo::PendingReceiver<crosapi::mojom::BrowserServiceHost> receiver) {
   browser_service_host_ash_->BindReceiver(receiver_set_.current_context(),
                                           std::move(receiver));
+}
+
+void CrosapiAsh::BindChromeAppPublisher(
+    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  apps::StandaloneBrowserExtensionApps* chrome_apps =
+      apps::StandaloneBrowserExtensionAppsFactory::GetForProfile(profile);
+  chrome_apps->RegisterChromeAppsCrosapiHost(std::move(receiver));
 }
 
 void CrosapiAsh::BindFileManager(
@@ -355,7 +365,7 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
   video_capture_device_factory_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindAppPublisher(
+void CrosapiAsh::BindWebAppPublisher(
     mojo::PendingReceiver<mojom::AppPublisher> receiver) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   apps::WebAppsCrosapi* web_apps =

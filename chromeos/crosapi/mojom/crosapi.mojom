@@ -66,8 +66,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 38
-// Next method id: 43
+// Next version: 39
+// Next method id: 44
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -102,6 +102,12 @@ interface Crosapi {
   // client applications.
   // Added in M89.
   [MinVersion=7] BindCertDatabase@12(pending_receiver<CertDatabase> receiver);
+
+  // Binds the chrome app publisher service, which allows Lacros to connect its
+  // Chrome apps to the app service.
+  // Added in M93.
+  [MinVersion=38]
+  BindChromeAppPublisher@43(pending_receiver<AppPublisher> receiver);
 
   // Bind the clipboard interface to allow lacros-chrome to interact with the
   // system clipboard.
@@ -271,11 +277,11 @@ interface Crosapi {
   [MinVersion=34]
   BindWebPageInfoFactory@39(pending_receiver<WebPageInfoFactory> receiver);
 
-  // Binds the app publisher service to allow web app publishing from
+  // Binds the web app publisher service to allow web app publishing from
   // lacros-chrome.
   // Added in M92.
   [MinVersion=22]
-  BindAppPublisher@27(pending_receiver<AppPublisher> receiver);
+  BindWebAppPublisher@27(pending_receiver<AppPublisher> receiver);
 
   // Passes generic browser information such as version, etc into ash in
   // |browser_info| during startup.

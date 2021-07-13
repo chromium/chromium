@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_H_
 
+#include "base/memory/weak_ptr.h"
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
@@ -33,7 +35,8 @@ namespace apps {
 // ScopedKeepAlive. We would like to eventually remove this assumption. This
 // requires caching a copy of installed apps in this class.
 class StandaloneBrowserExtensionApps : public KeyedService,
-                                       public apps::PublisherBase {
+                                       public apps::PublisherBase,
+                                       public crosapi::mojom::AppPublisher {
  public:
   explicit StandaloneBrowserExtensionApps(Profile* profile);
   ~StandaloneBrowserExtensionApps() override;
@@ -42,6 +45,11 @@ class StandaloneBrowserExtensionApps : public KeyedService,
       delete;
   StandaloneBrowserExtensionApps& operator=(
       const StandaloneBrowserExtensionApps&) = delete;
+
+  // Register the chrome apps host from lacros-chrome to allow lacros-chrome
+  // to publish chrome apps to the app service in ash-chrome.
+  void RegisterChromeAppsCrosapiHost(
+      mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver);
 
  private:
   // apps::PublisherBase:
@@ -62,7 +70,29 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
 
+  // crosapi::mojom::AppPublisher overrides.
+  void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;
+  void RegisterAppController(
+      mojo::PendingRemote<crosapi::mojom::AppController> controller) override;
+  void OnCapabilityAccesses(
+      std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
+
+  // Called when the crosapi termination is terminated [e.g. Lacros is closed].
+  // The ordering of these two disconnect methods is non-deterministic. When
+  // either is called we close both connections since this class requires both
+  // to be functional.
+  void OnReceiverDisconnected();
+  void OnControllerDisconnected();
+
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
+
+  // Receives chrome app publisher events from Lacros.
+  mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
+
+  // Used to send chrome app publisher actions to Lacros.
+  mojo::Remote<crosapi::mojom::AppController> controller_;
+
+  base::WeakPtrFactory<StandaloneBrowserExtensionApps> weak_factory_{this};
 };
 
 }  // namespace apps

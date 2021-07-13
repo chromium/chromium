@@ -187,8 +187,6 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl()
                      weak_sequenced_state_));
 
   // Note: sorted by the Bind method names in the lexicographical order.
-  ConstructRemote<crosapi::mojom::AppPublisher, &Crosapi::BindAppPublisher,
-                  Crosapi::MethodMinVersions::kBindAppPublisherMinVersion>();
   ConstructRemote<
       crosapi::mojom::AutomationFactory, &Crosapi::BindAutomationFactory,
       Crosapi::MethodMinVersions::kBindAutomationFactoryMinVersion>();
@@ -272,6 +270,8 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl()
   ConstructRemote<crosapi::mojom::UrlHandler,
                   &crosapi::mojom::Crosapi::BindUrlHandler,
                   Crosapi::MethodMinVersions::kBindUrlHandlerMinVersion>();
+  ConstructRemote<crosapi::mojom::AppPublisher, &Crosapi::BindWebAppPublisher,
+                  Crosapi::MethodMinVersions::kBindWebAppPublisherMinVersion>();
   ConstructRemote<
       crosapi::mojom::WebPageInfoFactory,
       &crosapi::mojom::Crosapi::BindWebPageInfoFactory,

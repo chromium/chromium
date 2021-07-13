@@ -73,6 +73,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
   void BindCertDatabase(
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
+  void BindChromeAppPublisher(
+      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindClipboard(mojo::PendingReceiver<mojom::Clipboard> receiver) override;
   void BindClipboardHistory(
       mojo::PendingReceiver<mojom::ClipboardHistory> receiver) override;
@@ -144,7 +146,7 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
-  void BindAppPublisher(
+  void BindWebAppPublisher(
       mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
 
   BrowserServiceHostAsh* browser_service_host_ash() {
