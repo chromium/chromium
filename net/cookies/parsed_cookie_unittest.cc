@@ -80,6 +80,70 @@ TEST(ParsedCookieTest, TestSetEmptyNameValue) {
   EXPECT_TRUE(empty_name.IsValid());
 }
 
+TEST(ParsedCookieTest, ParseValueStrings) {
+  std::string valid_values[] = {
+      "httpONLY", "1%7C1624663551161", "<K0<r<C_<G_<S0",
+      "lastRequest=1624663552846&activeDays=%5B0%2C0", "si=8da88dce-5fee-4835"};
+  for (const auto& value : valid_values) {
+    EXPECT_EQ(ParsedCookie::ParseValueString(value), value);
+    EXPECT_TRUE(ParsedCookie::ValueMatchesParsedValue(value));
+  }
+
+  std::string invalid_values[] = {
+      "\nhttpONLYsecure",            // Newline char at start
+      "httpONLY\nsecure",            // Newline char in middle
+      "httpONLYsecure\n",            // Newline char at end
+      "\r<K0<r<C_<G_<S0",            // Carriage return at start
+      "<K0<r\r<C_<G_<S0",            // Carriage return in middle
+      "<K0<r<C_<G_<S0\r",            // Carriage return at end
+      ";lastRequest=1624663552846",  // Token separator at start
+      "lastRequest=1624663552846; activeDays=%5B0%2C0",  // Token separator in
+                                                         // middle
+      std::string("\0abcdef", 7),                        // 0 byte at start
+      std::string("abc\0def", 7),                        // 0 byte in middle
+      std::string("abcdef\0", 7)};                       // 0 byte at end
+  for (const auto& value : invalid_values) {
+    EXPECT_NE(ParsedCookie::ParseValueString(value), value);
+    EXPECT_FALSE(ParsedCookie::ValueMatchesParsedValue(value));
+  }
+
+  // Strings with leading whitespace should parse OK but
+  // ValueMatchesParsedValue() should fail.
+  std::string leading_whitespace_values[] = {
+      " 1%7C1624663551161",   // Space at start
+      "\t1%7C1624663551161",  // Tab at start
+  };
+  for (const auto& value : leading_whitespace_values) {
+    EXPECT_TRUE(ParsedCookie::ParseValueString(value).length() ==
+                value.length() - 1);
+    EXPECT_FALSE(ParsedCookie::ValueMatchesParsedValue(value));
+  }
+
+  // Strings with trailing whitespace or the separator character should parse OK
+  // but ValueMatchesParsedValue() should fail.
+  std::string valid_values_with_trailing_chars[] = {
+      "lastRequest=1624663552846 ",   // Space at end
+      "lastRequest=1624663552846\t",  // Tab at end
+      "lastRequest=1624663552846;",   // Token separator at end
+  };
+  const size_t valid_value_length =
+      valid_values_with_trailing_chars[0].length() - 1;
+  for (const auto& value : valid_values_with_trailing_chars) {
+    EXPECT_TRUE(ParsedCookie::ParseValueString(value).length() ==
+                valid_value_length);
+    EXPECT_FALSE(ParsedCookie::ValueMatchesParsedValue(value));
+  }
+
+  // A valid value (truncated after the ';') but parses out to a substring.
+  std::string value_with_separator_in_middle(
+      "lastRequest=1624663552846; activeDays=%5B0%2C0");
+  EXPECT_TRUE(
+      ParsedCookie::ParseValueString(value_with_separator_in_middle).length() ==
+      value_with_separator_in_middle.find(';'));
+  EXPECT_FALSE(
+      ParsedCookie::ValueMatchesParsedValue(value_with_separator_in_middle));
+}
+
 TEST(ParsedCookieTest, TestQuoted) {
   // These are some quoting cases which the major browsers all
   // handle differently.  I've tested Internet Explorer 6, Opera 9.6,

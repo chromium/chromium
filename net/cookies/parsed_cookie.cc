@@ -66,7 +66,7 @@ const char kPartitionedTokenName[] = "partitioned";
 const char kTerminator[] = "\n\r\0";
 const int kTerminatorLen = sizeof(kTerminator) - 1;
 const char kWhitespace[] = " \t";
-const char kValueSeparator[] = ";";
+const char kValueSeparator = ';';
 const char kTokenSeparator[] = ";=";
 
 // Returns true if |c| occurs in |chars|
@@ -74,6 +74,17 @@ const char kTokenSeparator[] = ";=";
 inline bool CharIsA(const char c, const char* chars) {
   return strchr(chars, c) != nullptr;
 }
+
+// Seek the iterator to the first occurrence of |character|.
+// Returns true if it hits the end, false otherwise.
+inline bool SeekToCharacter(std::string::const_iterator* it,
+                            const std::string::const_iterator& end,
+                            const char character) {
+  for (; *it != end && **it != character; ++(*it)) {
+  }
+  return *it == end;
+}
+
 // Seek the iterator to the first occurrence of a character in |chars|.
 // Returns true if it hit the end, false otherwise.
 inline bool SeekTo(std::string::const_iterator* it,
@@ -121,6 +132,19 @@ bool IsValidCookieValue(const std::string& value) {
       return false;
   }
   return true;
+}
+
+// Returns the string piece within |value| that is a valid cookie value.
+base::StringPiece ValidStringPieceForValue(const std::string& value) {
+  std::string::const_iterator it = value.begin();
+  std::string::const_iterator end =
+      net::ParsedCookie::FindFirstTerminator(value);
+  std::string::const_iterator value_start;
+  std::string::const_iterator value_end;
+
+  net::ParsedCookie::ParseValue(&it, end, &value_start, &value_end);
+
+  return base::MakeStringPiece(value_start, value_end);
 }
 
 }  // namespace
@@ -309,22 +333,24 @@ void ParsedCookie::ParseValue(std::string::const_iterator* it,
                               std::string::const_iterator* value_end) {
   DCHECK(it && value_start && value_end);
 
-  // Seek past any whitespace that might in-between the token and value.
+  // Seek past any whitespace that might be in-between the token and value.
   SeekPast(it, end, kWhitespace);
   // value_start should point at the first character of the value.
   *value_start = *it;
 
   // Just look for ';' to terminate ('=' allowed).
   // We can hit the end, maybe they didn't terminate.
-  SeekTo(it, end, kValueSeparator);
+  SeekToCharacter(it, end, kValueSeparator);
 
-  // Will be pointed at the ; seperator or the end.
+  // Will point at the ; separator or the end.
   *value_end = *it;
 
   // Ignore any unwanted whitespace after the value.
   if (*value_end != *value_start) {  // Could have an empty value
     --(*value_end);
+    // Skip over any whitespace to the first non-whitespace character.
     SeekBackPast(value_end, *value_start, kWhitespace);
+    // Point after it.
     ++(*value_end);
   }
 }
@@ -342,12 +368,15 @@ std::string ParsedCookie::ParseTokenString(const std::string& token) {
 
 // static
 std::string ParsedCookie::ParseValueString(const std::string& value) {
-  std::string::const_iterator it = value.begin();
-  std::string::const_iterator end = FindFirstTerminator(value);
+  return std::string(ValidStringPieceForValue(value));
+}
 
-  std::string::const_iterator value_start, value_end;
-  ParseValue(&it, end, &value_start, &value_end);
-  return std::string(value_start, value_end);
+// static
+bool ParsedCookie::ValueMatchesParsedValue(const std::string& value) {
+  // ValidStringPieceForValue() returns a valid substring of |value|.
+  // If |value| can be fully parsed the result will have the same length
+  // as |value|.
+  return ValidStringPieceForValue(value).length() == value.length();
 }
 
 // static

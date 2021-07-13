@@ -1194,7 +1194,7 @@ bool CanonicalCookie::IsCanonical() const {
   // Not checking domain or path against ParsedCookie as it may have
   // come purely from the URL.
   if (ParsedCookie::ParseTokenString(name_) != name_ ||
-      ParsedCookie::ParseValueString(value_) != value_ ||
+      !ParsedCookie::ValueMatchesParsedValue(value_) ||
       !ParsedCookie::IsValidCookieAttributeValue(name_) ||
       !ParsedCookie::IsValidCookieAttributeValue(value_)) {
     return false;

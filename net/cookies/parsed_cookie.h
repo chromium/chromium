@@ -116,6 +116,9 @@ class NET_EXPORT ParsedCookie {
   static std::string ParseTokenString(const std::string& token);
   static std::string ParseValueString(const std::string& value);
 
+  // Returns |true| if the parsed version of |value| matches |value|.
+  static bool ValueMatchesParsedValue(const std::string& value);
+
   // Is the string valid as the value of a cookie attribute?
   static bool IsValidCookieAttributeValue(const std::string& value);
 
