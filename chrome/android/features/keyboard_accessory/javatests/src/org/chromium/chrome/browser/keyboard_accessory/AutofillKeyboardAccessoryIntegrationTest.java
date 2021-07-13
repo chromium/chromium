@@ -234,8 +234,12 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
+    // clang-format off
+    @DisableIf.Build(hardware_is = "bullhead", sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1,
+        sdk_is_less_than = VERSION_CODES.N, message = "https://crbug.com/1216008")
     public void testPressingBackButtonHidesAccessoryWithAutofillSuggestions()
             throws TimeoutException, ExecutionException {
+        // clang-format on
         loadTestPage(MultiWindowKeyboard::new);
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
@@ -254,7 +258,11 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
+    // clang-format off
+    @DisableIf.Build(hardware_is = "bullhead", sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1,
+        sdk_is_less_than = VERSION_CODES.N, message = "https://crbug.com/1216008")
     public void testSheetHasMinimumSizeWhenTriggeredBySuggestion() throws TimeoutException {
+        // clang-format on
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         loadTestPage(MultiWindowKeyboard::new);
         mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
