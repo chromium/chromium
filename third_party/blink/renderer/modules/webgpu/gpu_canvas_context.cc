@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_swap_chain_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
@@ -154,6 +155,16 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
 }
 
 // gpu_presentation_context.idl
+V8UnionHTMLCanvasElementOrOffscreenCanvas*
+GPUCanvasContext::getHTMLOrOffscreenCanvas() const {
+  if (Host()->IsOffscreenCanvas()) {
+    return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
+        static_cast<OffscreenCanvas*>(Host()));
+  }
+  return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
+      static_cast<HTMLCanvasElement*>(Host()));
+}
+
 void GPUCanvasContext::configure(const GPUSwapChainDescriptor* descriptor,
                                  ExceptionState& exception_state) {
   ConfigureInternal(descriptor, exception_state);

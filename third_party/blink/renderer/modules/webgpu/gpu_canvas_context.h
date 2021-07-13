@@ -18,6 +18,7 @@ class GPUAdapter;
 class GPUSwapChain;
 class GPUSwapChainDescriptor;
 class GPUTexture;
+class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 
 // A GPUCanvasContext does little by itself and basically just binds a canvas
 // and a GPUSwapChain together and forwards calls from one to the other.
@@ -76,6 +77,8 @@ class GPUCanvasContext : public CanvasRenderingContext {
   }
 
   // gpu_presentation_context.idl
+  V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
+
   void configure(const GPUSwapChainDescriptor* descriptor, ExceptionState&);
   void unconfigure();
   String getPreferredFormat(const GPUAdapter* adapter);

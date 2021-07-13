@@ -8,6 +8,8 @@
     ActiveScriptWrappable,
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUCanvasContext {
+    [ImplementedAs=getHTMLOrOffscreenCanvas] readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
+
     GPUTextureFormat getPreferredFormat(GPUAdapter adapter);
     [RaisesException] void configure(GPUSwapChainDescriptor descriptor);
     void unconfigure();
