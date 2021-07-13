@@ -9,7 +9,7 @@
  */
 
 /** @polymerBehavior */
-const OobeScrollableBehavior = {
+/* #export */ const OobeScrollableBehavior = {
   /**
    * Init observers to keep track of the scrollable element size changes.
    */

@@ -13,7 +13,7 @@
  */
 
 /** @polymerBehavior */
-var OobeDialogHostBehavior = {
+/* #export */ var OobeDialogHostBehavior = {
   properties: {},
 
   /**

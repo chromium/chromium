@@ -13,7 +13,7 @@
  */
 
 /** @polymerBehavior */
-const OobeFocusBehavior = {
+/* #export */ const OobeFocusBehavior = {
   /**
    * @private
    * Focuses the element. As cr-input uses focusInput() instead of focus() due
