@@ -19,6 +19,10 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace storage {
 
 namespace {

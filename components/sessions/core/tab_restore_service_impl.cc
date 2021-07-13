@@ -33,6 +33,8 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
+#undef LoadBitmap
+
 namespace sessions {
 
 namespace {
