@@ -41,8 +41,8 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
   void SetInterestedDataTypesHandler(
       InterestedDataTypesHandler* handler) override;
   absl::optional<ModelTypeSet> GetInterestedDataTypes() const override;
-  void SetInterestedDataTypes(
-      const ModelTypeSet& data_types,
+  void SetInterestedDataTypes(const ModelTypeSet& data_types) override;
+  void SetCommittedAdditionalInterestedDataTypesCallback(
       InterestedDataTypesAppliedCallback callback) override;
 
   // KeyedService overrides.

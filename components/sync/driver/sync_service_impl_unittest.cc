@@ -1182,10 +1182,10 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
   InitializeForNthSync();
 
   EXPECT_CALL(*sync_invalidations_service(),
-              SetInterestedDataTypes(ContainsSessions(), _));
+              SetInterestedDataTypes(ContainsSessions()));
   service()->SetInvalidationsForSessionsEnabled(true);
   EXPECT_CALL(*sync_invalidations_service(),
-              SetInterestedDataTypes(Not(ContainsSessions()), _));
+              SetInterestedDataTypes(Not(ContainsSessions())));
   service()->SetInvalidationsForSessionsEnabled(false);
 }
 

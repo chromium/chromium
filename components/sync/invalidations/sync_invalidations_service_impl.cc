@@ -80,9 +80,15 @@ SyncInvalidationsServiceImpl::GetInterestedDataTypes() const {
 }
 
 void SyncInvalidationsServiceImpl::SetInterestedDataTypes(
-    const ModelTypeSet& data_types,
-    InterestedDataTypesAppliedCallback callback) {
-  data_types_manager_.SetInterestedDataTypes(data_types, std::move(callback));
+    const ModelTypeSet& data_types) {
+  data_types_manager_.SetInterestedDataTypes(data_types);
+}
+
+void SyncInvalidationsServiceImpl::
+    SetCommittedAdditionalInterestedDataTypesCallback(
+        InterestedDataTypesAppliedCallback callback) {
+  data_types_manager_.SetCommittedAdditionalInterestedDataTypesCallback(
+      std::move(callback));
 }
 
 void SyncInvalidationsServiceImpl::Shutdown() {

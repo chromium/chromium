@@ -50,11 +50,18 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
   }
 }
 
-DeviceInfoSyncServiceImpl::~DeviceInfoSyncServiceImpl() {}
+DeviceInfoSyncServiceImpl::~DeviceInfoSyncServiceImpl() = default;
 
 LocalDeviceInfoProvider*
 DeviceInfoSyncServiceImpl::GetLocalDeviceInfoProvider() {
   return bridge_->GetLocalDeviceInfoProvider();
+}
+
+void DeviceInfoSyncServiceImpl::
+    SetCommittedAdditionalInterestedDataTypesCallback(
+        base::RepeatingCallback<void(const ModelTypeSet&)> callback) {
+  bridge_->SetCommittedAdditionalInterestedDataTypesCallback(
+      std::move(callback));
 }
 
 DeviceInfoTracker* DeviceInfoSyncServiceImpl::GetDeviceInfoTracker() {
@@ -66,18 +73,16 @@ DeviceInfoSyncServiceImpl::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }
 
-void DeviceInfoSyncServiceImpl::RefreshLocalDeviceInfo(
-    base::OnceClosure callback) {
-  bridge_->RefreshLocalDeviceInfoIfNeeded(std::move(callback));
+void DeviceInfoSyncServiceImpl::RefreshLocalDeviceInfo() {
+  bridge_->RefreshLocalDeviceInfoIfNeeded();
 }
 
 void DeviceInfoSyncServiceImpl::OnFCMRegistrationTokenChanged() {
   RefreshLocalDeviceInfo();
 }
 
-void DeviceInfoSyncServiceImpl::OnInterestedDataTypesChanged(
-    base::OnceClosure callback) {
-  RefreshLocalDeviceInfo(std::move(callback));
+void DeviceInfoSyncServiceImpl::OnInterestedDataTypesChanged() {
+  RefreshLocalDeviceInfo();
 }
 
 void DeviceInfoSyncServiceImpl::Shutdown() {

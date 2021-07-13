@@ -36,6 +36,7 @@
 #include "components/sync/driver/sync_auth_manager.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_type_preference_provider.h"
+#include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
@@ -221,6 +222,13 @@ void SyncServiceImpl::Initialize() {
         sync_client_->GetSyncInvalidationsService();
     if (sync_invalidations_service) {
       sync_invalidations_service->SetActive(IsSignedIn());
+      // Trigger a refresh when additional data types get enabled for
+      // invalidations. This is needed to get the latest data after subscribing
+      // for the updates.
+      sync_invalidations_service
+          ->SetCommittedAdditionalInterestedDataTypesCallback(
+              base::BindRepeating(&SyncServiceImpl::TriggerRefresh,
+                                  weak_factory_.GetWeakPtr()));
     }
   }
 
@@ -1282,9 +1290,7 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
             switches::kUseSyncInvalidationsForWalletAndOffer))) {
     types.RemoveAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
   }
-  invalidations_service->SetInterestedDataTypes(
-      types, base::BindRepeating(&SyncServiceImpl::TriggerRefresh,
-                                 sync_enabled_weak_factory_.GetWeakPtr()));
+  invalidations_service->SetInterestedDataTypes(types);
 }
 
 SyncCycleSnapshot SyncServiceImpl::GetLastCycleSnapshotForDebugging() const {

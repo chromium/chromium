@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -51,11 +52,17 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   // Refresh local copy of device info in memory, and informs sync of the
   // change. Used when the caller knows a property of local device info has
   // changed (e.g. SharingInfo), and must be sync-ed to other devices as soon as
-  // possible, without waiting for the periodic commits. |callback| will be
-  // called when device info is synced. The device info will be compared with
-  // the local copy. If the data has been updated, then it will be committed.
-  // Otherwise nothing happens and the |callback| will be never called.
-  void RefreshLocalDeviceInfoIfNeeded(base::OnceClosure callback);
+  // possible, without waiting for the periodic commits. The device info will be
+  // compared with the local copy. If the data has been updated, then it will be
+  // committed. Otherwise nothing happens.
+  void RefreshLocalDeviceInfoIfNeeded();
+
+  // The |callback| will be invoked on each successful commit with newly enabled
+  // data types list. This is needed to invoke an additional GetUpdates request
+  // for the data types which have been just enabled and subscribed for new
+  // invalidations.
+  void SetCommittedAdditionalInterestedDataTypesCallback(
+      base::RepeatingCallback<void(const ModelTypeSet&)> callback);
 
   // ModelTypeSyncBridge implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request) override;
@@ -174,6 +181,11 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   base::OneShotTimer pulse_timer_;
 
   std::vector<base::OnceClosure> device_info_synced_callback_list_;
+
+  // Called when a new interested data type list has been committed. Only newly
+  // enabled data types will be passed. May be empty.
+  base::RepeatingCallback<void(const ModelTypeSet&)>
+      new_interested_data_types_callback_;
 
   const std::unique_ptr<DeviceInfoPrefs> device_info_prefs_;
 

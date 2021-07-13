@@ -22,7 +22,7 @@ class FakeDeviceInfoSyncService : public DeviceInfoSyncService {
   FakeLocalDeviceInfoProvider* GetLocalDeviceInfoProvider() override;
   FakeDeviceInfoTracker* GetDeviceInfoTracker() override;
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
-  void RefreshLocalDeviceInfo(base::OnceClosure callback) override;
+  void RefreshLocalDeviceInfo() override;
 
   // Returns number of times RefreshLocalDeviceInfo() has been called.
   int RefreshLocalDeviceInfoCount();

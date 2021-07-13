@@ -567,9 +567,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
   void ForcePulse() { bridge()->ForcePulseForTest(); }
 
-  void RefreshLocalDeviceInfo() {
-    bridge()->RefreshLocalDeviceInfoIfNeeded(base::DoNothing());
-  }
+  void RefreshLocalDeviceInfo() { bridge()->RefreshLocalDeviceInfoIfNeeded(); }
 
   void CommitToStoreAndWait(std::unique_ptr<WriteBatch> batch) {
     base::RunLoop loop;
@@ -1455,37 +1453,43 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldSendInvalidationFields) {
   EnableSyncAndMergeInitialData(SyncMode::kFull);
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, ShouldNotifyWhenDeviceInfoIsSynced) {
-  InitializeAndMergeInitialData(SyncMode::kFull);
+TEST_F(DeviceInfoSyncBridgeTest,
+       ShouldNotifyWhenAdditionalInterestedDataTypesSynced) {
+  InitializeAndPump();
+  local_device()->UpdateInterestedDataTypes({syncer::BOOKMARKS});
+  EnableSyncAndMergeInitialData(SyncMode::kFull);
 
-  base::MockOnceClosure callback;
-  ASSERT_THAT(local_device()->GetLocalDeviceInfo()->fcm_registration_token(),
-              IsEmpty());
-  local_device()->UpdateFCMRegistrationToken(
-      SyncInvalidationsInstanceIdTokenForSuffix(kLocalSuffix));
-  bridge()->RefreshLocalDeviceInfoIfNeeded(callback.Get());
+  base::MockRepeatingCallback<void(const ModelTypeSet&)> callback;
+  bridge()->SetCommittedAdditionalInterestedDataTypesCallback(callback.Get());
+  local_device()->UpdateInterestedDataTypes(
+      {syncer::BOOKMARKS, syncer::SESSIONS});
 
-  std::string guid = local_device()->GetLocalDeviceInfo()->guid();
-  EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(true));
-  EXPECT_CALL(callback, Run()).Times(0);
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityChangeList());
+  bridge()->RefreshLocalDeviceInfoIfNeeded();
 
+  const std::string guid = local_device()->GetLocalDeviceInfo()->guid();
   EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(false));
-  EXPECT_CALL(callback, Run());
+
+  EXPECT_CALL(callback, Run(ModelTypeSet(syncer::SESSIONS)));
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityChangeList());
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, ShouldNotNotifyWhenDeviceInfoIsUnchanged) {
-  InitializeAndMergeInitialData(SyncMode::kFull);
+TEST_F(DeviceInfoSyncBridgeTest,
+       ShouldNotNotifyWithoutAdditionalInterestedDataTypes) {
+  InitializeAndPump();
+  local_device()->UpdateInterestedDataTypes(
+      {syncer::BOOKMARKS, syncer::SESSIONS});
+  EnableSyncAndMergeInitialData(SyncMode::kFull);
 
-  base::MockOnceClosure callback;
-  bridge()->RefreshLocalDeviceInfoIfNeeded(callback.Get());
+  base::MockRepeatingCallback<void(const ModelTypeSet&)> callback;
+  bridge()->SetCommittedAdditionalInterestedDataTypesCallback(callback.Get());
+  local_device()->UpdateInterestedDataTypes({syncer::BOOKMARKS});
+
+  bridge()->RefreshLocalDeviceInfoIfNeeded();
 
   std::string guid = local_device()->GetLocalDeviceInfo()->guid();
   EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(false));
-  EXPECT_CALL(callback, Run()).Times(0);
+  EXPECT_CALL(callback, Run).Times(0);
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityChangeList());
 }

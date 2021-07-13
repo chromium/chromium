@@ -27,7 +27,7 @@ class SyncInvalidationsService : public KeyedService {
   // Data types which are newly marked as interesting will be passed to the
   // callback.
   using InterestedDataTypesAppliedCallback =
-      base::OnceCallback<void(const ModelTypeSet&)>;
+      base::RepeatingCallback<void(const ModelTypeSet&)>;
 
   // Start or stop listening to invalidations.
   virtual void SetActive(bool active) = 0;
@@ -56,8 +56,8 @@ class SyncInvalidationsService : public KeyedService {
   // GetInterestedDataTypes() will return base::nullptr until
   // SetInterestedDataTypes() has been called at least once.
   virtual absl::optional<ModelTypeSet> GetInterestedDataTypes() const = 0;
-  virtual void SetInterestedDataTypes(
-      const ModelTypeSet& data_types,
+  virtual void SetInterestedDataTypes(const ModelTypeSet& data_types) = 0;
+  virtual void SetCommittedAdditionalInterestedDataTypesCallback(
       InterestedDataTypesAppliedCallback callback) = 0;
 };
 

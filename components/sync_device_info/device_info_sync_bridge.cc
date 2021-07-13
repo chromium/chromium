@@ -338,23 +338,19 @@ LocalDeviceInfoProvider* DeviceInfoSyncBridge::GetLocalDeviceInfoProvider() {
   return local_device_info_provider_.get();
 }
 
-void DeviceInfoSyncBridge::RefreshLocalDeviceInfoIfNeeded(
-    base::OnceClosure callback) {
+void DeviceInfoSyncBridge::RefreshLocalDeviceInfoIfNeeded() {
   // Device info cannot be synced if the provider is not initialized. When it
   // gets initialized, local device info will be sent.
   if (!local_device_info_provider_->GetLocalDeviceInfo()) {
-    if (!callback.is_null()) {
-      device_info_synced_callback_list_.push_back(std::move(callback));
-    }
     return;
   }
 
-  if (ReconcileLocalAndStored()) {
-    // The device info has been changed.
-    if (!callback.is_null()) {
-      device_info_synced_callback_list_.push_back(std::move(callback));
-    }
-  }
+  ReconcileLocalAndStored();
+}
+
+void DeviceInfoSyncBridge::SetCommittedAdditionalInterestedDataTypesCallback(
+    base::RepeatingCallback<void(const ModelTypeSet&)> callback) {
+  new_interested_data_types_callback_ = std::move(callback);
 }
 
 void DeviceInfoSyncBridge::OnSyncStarting(
@@ -762,8 +758,9 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
   DCHECK(iter != all_data_.end());
 
   // Convert |iter->second| to a DeviceInfo for comparison.
-  if (StoredDeviceInfoStillAccurate(SpecificsToModel(*iter->second).get(),
-                                    current_info)) {
+  std::unique_ptr<DeviceInfo> previous_device_info =
+      SpecificsToModel(*iter->second);
+  if (StoredDeviceInfoStillAccurate(previous_device_info.get(), current_info)) {
     if (pulse_timer_.IsRunning()) {
       // No need to update the |pulse_timer| since nothing has changed.
       return false;
@@ -777,6 +774,16 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
                                         base::Unretained(this)));
       return false;
     }
+  }
+
+  // Initiate an additional GetUpdates request if there are new data types
+  // enabled (on successful commit).
+  const ModelTypeSet new_data_types =
+      Difference(current_info->interested_data_types(),
+                 previous_device_info->interested_data_types());
+  if (new_interested_data_types_callback_ && !new_data_types.Empty()) {
+    device_info_synced_callback_list_.push_back(
+        base::BindOnce(new_interested_data_types_callback_, new_data_types));
   }
 
   // Either the local data was updated, or it's time for a pulse update.

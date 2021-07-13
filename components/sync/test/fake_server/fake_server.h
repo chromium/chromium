@@ -56,12 +56,15 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called after FakeServer has processed a successful commit. The types
     // updated as part of the commit are passed in |committed_model_types|.
     virtual void OnCommit(const std::string& committer_invalidator_client_id,
-                          syncer::ModelTypeSet committed_model_types) = 0;
+                          syncer::ModelTypeSet committed_model_types) {}
+
+    // Called after FakeServer has processed a successful get updates request.
+    virtual void OnSuccessfulGetUpdates() {}
   };
 
   FakeServer();

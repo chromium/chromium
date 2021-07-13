@@ -37,10 +37,10 @@ class MockSyncInvalidationsService : public SyncInvalidationsService {
               GetInterestedDataTypes,
               (),
               (const));
+  MOCK_METHOD(void, SetInterestedDataTypes, (const ModelTypeSet& data_types));
   MOCK_METHOD(void,
-              SetInterestedDataTypes,
-              (const ModelTypeSet& data_types,
-               InterestedDataTypesAppliedCallback callback));
+              SetCommittedAdditionalInterestedDataTypesCallback,
+              (InterestedDataTypesAppliedCallback callback));
 };
 
 }  // namespace syncer

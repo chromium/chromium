@@ -43,14 +43,15 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   LocalDeviceInfoProvider* GetLocalDeviceInfoProvider() override;
   DeviceInfoTracker* GetDeviceInfoTracker() override;
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
-  void RefreshLocalDeviceInfo(
-      base::OnceClosure callback = base::DoNothing()) override;
+  void RefreshLocalDeviceInfo() override;
 
   // FCMRegistrationTokenObserver implementation.
   void OnFCMRegistrationTokenChanged() override;
 
   // InterestedDataTypesHandler implementation.
-  void OnInterestedDataTypesChanged(base::OnceClosure callback) override;
+  void OnInterestedDataTypesChanged() override;
+  void SetCommittedAdditionalInterestedDataTypesCallback(
+      base::RepeatingCallback<void(const ModelTypeSet&)> callback) override;
 
   // KeyedService overrides.
   void Shutdown() override;

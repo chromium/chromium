@@ -329,6 +329,12 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
       response->error_code() == sync_pb::SyncEnums::SUCCESS) {
     DCHECK(!response->has_client_command());
     *response->mutable_client_command() = client_command_;
+
+    if (message.has_get_updates()) {
+      for (Observer& observer : observers_) {
+        observer.OnSuccessfulGetUpdates();
+      }
+    }
   }
 
   return http_status_code;

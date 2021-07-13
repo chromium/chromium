@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -37,6 +39,12 @@ using testing::NotNull;
 using testing::UnorderedElementsAre;
 
 const char kSyncedBookmarkURL[] = "http://www.mybookmark.com";
+
+MATCHER(HasBeenRecentlyUpdated, "") {
+  return syncer::ProtoTimeToTime(
+             arg.specifics().device_info().last_updated_timestamp()) >
+         base::Time::Now() - base::TimeDelta::FromMinutes(10);
+}
 
 MATCHER_P(HasCacheGuid, expected_cache_guid, "") {
   return arg.specifics().device_info().cache_guid() == expected_cache_guid;
@@ -87,6 +95,51 @@ MATCHER_P(HasInstanceIdToken, expected_token, "") {
              .invalidation_fields()
              .instance_id_token() == expected_token;
 }
+
+// This class helps to count the number of GU_TRIGGER events for the |type|
+// since the object has been created.
+class GetUpdatesTriggeredObserver : public fake_server::FakeServer::Observer {
+ public:
+  GetUpdatesTriggeredObserver(fake_server::FakeServer* fake_server,
+                              syncer::ModelType type)
+      : fake_server_(fake_server), type_(type) {
+    fake_server_->AddObserver(this);
+  }
+
+  ~GetUpdatesTriggeredObserver() override {
+    fake_server_->RemoveObserver(this);
+  }
+
+  void OnSuccessfulGetUpdates() override {
+    sync_pb::ClientToServerMessage message;
+    fake_server_->GetLastGetUpdatesMessage(&message);
+
+    if (message.get_updates().get_updates_origin() !=
+        sync_pb::SyncEnums::GU_TRIGGER) {
+      return;
+    }
+    for (const sync_pb::DataTypeProgressMarker& progress_marker :
+         message.get_updates().from_progress_marker()) {
+      if (progress_marker.data_type_id() !=
+          syncer::GetSpecificsFieldNumberFromModelType(type_)) {
+        continue;
+      }
+      if (progress_marker.get_update_triggers().datatype_refresh_nudges() > 0) {
+        num_nudged_get_updates_for_data_type_++;
+      }
+    }
+  }
+
+  size_t num_nudged_get_updates_for_data_type() const {
+    return num_nudged_get_updates_for_data_type_;
+  }
+
+ private:
+  fake_server::FakeServer* const fake_server_;
+  const syncer::ModelType type_;
+
+  size_t num_nudged_get_updates_for_data_type_ = 0;
+};
 
 sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
     const std::string& cache_guid,
@@ -244,6 +297,65 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   EXPECT_THAT(
       message.commit().config_params().devices_fcm_registration_tokens(),
       ElementsAre(kRemoteFCMRegistrationToken));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       PRE_ShouldNotSendAdditionalGetUpdates) {
+  base::subtle::ScopedTimeClockOverrides time_clock_overrides(
+      []() {
+        const base::TimeDelta time_delta = base::TimeDelta::FromDays(2);
+        return base::subtle::TimeNowIgnoringOverride() - time_delta;
+      },
+      nullptr, nullptr);
+
+  ASSERT_TRUE(SetupSync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       ShouldNotSendAdditionalGetUpdates) {
+  // Verify that DeviceInfo has been updated long time ago.
+  ASSERT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+              ElementsAre(testing::Not(HasBeenRecentlyUpdated())));
+
+  GetUpdatesTriggeredObserver observer(GetFakeServer(),
+                                       syncer::ModelType::AUTOFILL);
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+
+  // Wait until DeviceInfo is updated.
+  ASSERT_TRUE(ServerDeviceInfoMatchChecker(
+                  GetFakeServer(), ElementsAre(HasBeenRecentlyUpdated()))
+                  .Wait());
+
+  // Perform an additional sync cycle to be sure that there will be at least one
+  // more GetUpdates request if it was triggered.
+  const std::string kTitle1 = "Title 1";
+  AddFolder(0, GetBookmarkBarNode(0), 0, kTitle1);
+  ASSERT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
+                                             {{kTitle1, GURL()}},
+                                             /*cryptographer=*/nullptr)
+                  .Wait());
+
+  const std::string kTitle2 = "Title 2";
+  AddFolder(0, GetBookmarkBarNode(0), 0, kTitle2);
+  ASSERT_TRUE(
+      ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
+                                     {{kTitle1, GURL()}, {kTitle2, GURL()}},
+                                     /*cryptographer=*/nullptr)
+          .Wait());
+
+  // There will be one TriggerRefresh request in tests due to
+  // ConfigurationRefresher. There shouldn't be any additional GU_TRIGGER
+  // with nudge DeviceInfo data type.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On ChromeOS tests data types are configured twice and hence there are two
+  // expected TriggerRefresh calls during initialization. It happens due to
+  // SyncArcPackageHelper which eventually triggers reconfiguration.
+  EXPECT_EQ(2u, observer.num_nudged_get_updates_for_data_type());
+#else
+  EXPECT_EQ(1u, observer.num_nudged_get_updates_for_data_type());
+#endif
 }
 
 class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest

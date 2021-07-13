@@ -38,11 +38,8 @@ class DeviceInfoSyncService : public KeyedService {
   // has changed (e.g. SharingInfo), and must be sync-ed to other devices as
   // soon as possible, without waiting for the periodic commits. The device info
   // will be compared to the local copy. If the device info has been actually
-  // changed, then it will be committed and the |callback| will be called when
-  // device info is synced. Otherwise nothing happens and the |callback| will
-  // never be called.
-  virtual void RefreshLocalDeviceInfo(
-      base::OnceClosure callback = base::DoNothing()) = 0;
+  // changed, then it will be committed. Otherwise nothing happens.
+  virtual void RefreshLocalDeviceInfo() = 0;
 };
 
 }  // namespace syncer
