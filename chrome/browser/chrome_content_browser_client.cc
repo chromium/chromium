@@ -281,7 +281,6 @@
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_isolation/pref_names.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
@@ -382,7 +381,6 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
-#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -1228,40 +1226,6 @@ bool IsInHostedApp(WebContents* web_contents) {
 #else
   return false;
 #endif
-}
-
-void MaybeRecordSameSiteCookieEngagementHistogram(
-    content::RenderFrameHost* render_frame_host,
-    blink::mojom::WebFeature feature) {
-  if (feature != blink::mojom::WebFeature::kCookieNoSameSite &&
-      feature != blink::mojom::WebFeature::kCookieInsecureAndSameSiteNone) {
-    return;
-  }
-
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(render_frame_host);
-
-  content::BrowserContext* browser_context =
-      WebContents::FromRenderFrameHost(render_frame_host)->GetBrowserContext();
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto* site_engagement_service =
-      site_engagement::SiteEngagementService::Get(profile);
-  if (!site_engagement_service)
-    return;
-
-  blink::mojom::EngagementLevel engagement_level =
-      site_engagement_service->GetEngagementLevel(
-          render_frame_host->GetLastCommittedURL());
-  if (feature == blink::mojom::WebFeature::kCookieNoSameSite) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Net.SameSiteBlockedCookieSiteEngagement.CookieNoSameSite",
-        engagement_level);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Net.SameSiteBlockedCookieSiteEngagement."
-        "CookieInsecureAndSameSiteNone",
-        engagement_level);
-  }
 }
 
 bool IsErrorPageAutoReloadEnabled() {
@@ -5592,11 +5556,6 @@ void ChromeContentBrowserClient::LogWebFeatureForCurrentPage(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       render_frame_host, feature);
-
-  // For the SameSite-by-default-cookies related features, log
-  // the site engagement score for the site whose cookie was blocked. This is to
-  // gauge the user impact of the cookies being blocked.
-  MaybeRecordSameSiteCookieEngagementHistogram(render_frame_host, feature);
 }
 
 std::string ChromeContentBrowserClient::GetProduct() {

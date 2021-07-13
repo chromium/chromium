@@ -4869,6 +4869,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Net.SameSiteBlockedCookieSiteEngagement.CookieInsecureAndSameSiteNone"
     enum="SiteEngagementLevel" expires_after="2020-12-31">
+  <obsolete>
+    Removed July 2021.
+  </obsolete>
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -4881,6 +4884,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.SameSiteBlockedCookieSiteEngagement.CookieNoSameSite"
     enum="SiteEngagementLevel" expires_after="2021-11-21">
+  <obsolete>
+    Removed July 2021.
+  </obsolete>
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
