@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_FACTORY_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,26 +27,19 @@ class VulkanContextProvider;
 }  // namespace viz
 
 namespace gpu {
-class ExternalVkImageFactory;
 class GpuDriverBugWorkarounds;
 class ImageFactory;
 class MailboxManager;
 class MemoryTracker;
 class SharedContextState;
 class SharedImageBackingFactory;
-class SharedImageBackingFactoryEGL;
-class SharedImageBackingFactoryGLImage;
-class SharedImageBackingFactoryGLTexture;
+class SharedImageBackingFactoryD3D;
 struct GpuFeatureInfo;
 struct GpuPreferences;
 
 #if defined(OS_FUCHSIA)
 class SysmemBufferCollection;
 #endif  // OS_FUCHSIA
-
-namespace raster {
-class WrappedSkImageFactory;
-}  // namespace raster
 
 // TODO(ericrk): Make this a very thin wrapper around SharedImageManager like
 // SharedImageRepresentationFactory.
@@ -173,29 +167,14 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   base::flat_set<std::unique_ptr<SharedImageRepresentationFactoryRef>>
       shared_images_;
 
-  // Used for creating shared image using GLTexture backing
-  std::unique_ptr<SharedImageBackingFactoryGLTexture>
-      gl_texture_backing_factory_;
+  // Array of all the backing factories to choose from for creating shared
+  // images.
+  std::vector<std::unique_ptr<SharedImageBackingFactory>> factories_;
 
-  // Used for creating shared image using GLImage backing
-  std::unique_ptr<SharedImageBackingFactoryGLImage> gl_image_backing_factory_;
-
-  // Used for creating shared image which can be shared between GL, Vulkan and
-  // D3D12.
-  std::unique_ptr<SharedImageBackingFactory> interop_backing_factory_;
-
-#if defined(OS_ANDROID)
-  // Used for creating shared image using EGL Backing
-  std::unique_ptr<SharedImageBackingFactoryEGL> egl_backing_factory_;
-
-  // On android we have two interop factory which is |interop_backing_factory_|
-  // and |external_vk_image_factory_| and we choose one of those
-  // based on the format it supports.
-  std::unique_ptr<ExternalVkImageFactory> external_vk_image_factory_;
+#if defined(OS_WIN)
+  // Used for creating swap chains
+  SharedImageBackingFactoryD3D* d3d_backing_factory_ = nullptr;
 #endif
-
-  // Non-null if compositing with SkiaRenderer.
-  std::unique_ptr<raster::WrappedSkImageFactory> wrapped_sk_image_factory_;
 
 #if defined(OS_FUCHSIA)
   viz::VulkanContextProvider* vulkan_context_provider_;

@@ -132,24 +132,26 @@ SharedImageFactory::SharedImageFactory(
          gr_context_type_ == GrContextType::kMetal);
 #endif
 
+  if (enable_wrapped_sk_image && context_state) {
+    auto wrapped_sk_image_factory =
+        std::make_unique<raster::WrappedSkImageFactory>(context_state);
+    factories_.push_back(std::move(wrapped_sk_image_factory));
+  }
+
   bool use_gl = gl::GetGLImplementation() != gl::kGLImplementationNone;
   if (use_gl) {
-    gl_texture_backing_factory_ =
+    auto gl_texture_backing_factory =
         std::make_unique<SharedImageBackingFactoryGLTexture>(
             gpu_preferences, workarounds, gpu_feature_info,
             shared_context_state_ ? shared_context_state_->progress_reporter()
                                   : nullptr);
-
-    gl_image_backing_factory_ =
-        std::make_unique<SharedImageBackingFactoryGLImage>(
-            gpu_preferences, workarounds, gpu_feature_info, image_factory,
-            shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr);
+    factories_.push_back(std::move(gl_texture_backing_factory));
 
 #if defined(OS_ANDROID)
-    egl_backing_factory_ = std::make_unique<SharedImageBackingFactoryEGL>(
+    auto egl_backing_factory = std::make_unique<SharedImageBackingFactoryEGL>(
         gpu_preferences, workarounds, gpu_feature_info,
         shared_image_manager->batch_access_manager());
+    factories_.push_back(std::move(egl_backing_factory));
 #endif
   }
 
@@ -161,32 +163,37 @@ SharedImageFactory::SharedImageFactory(
     !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST)
     // Desktop Linux, not ChromeOS.
     if (ShouldUseExternalVulkanImageFactory()) {
-      interop_backing_factory_ =
+      auto external_vk_image_factory =
           std::make_unique<ExternalVkImageFactory>(context_state);
+      factories_.push_back(std::move(external_vk_image_factory));
     } else {
       LOG(ERROR) << "ERROR: gr_context_type_ is GrContextType::kVulkan and "
                     "interop_backing_factory_ is not set";
     }
 #elif defined(OS_FUCHSIA) || defined(OS_WIN)
-    interop_backing_factory_ =
+    auto external_vk_image_factory =
         std::make_unique<ExternalVkImageFactory>(context_state);
+    factories_.push_back(std::move(external_vk_image_factory));
 #elif defined(OS_ANDROID)
-    // For Android
-    external_vk_image_factory_ =
-        std::make_unique<ExternalVkImageFactory>(context_state);
     const auto& enabled_extensions = context_state->vk_context_provider()
                                          ->GetDeviceQueue()
                                          ->enabled_extensions();
     if (gfx::HasExtension(
             enabled_extensions,
             VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME)) {
-      interop_backing_factory_ = std::make_unique<SharedImageBackingFactoryAHB>(
+      auto ahb_factory = std::make_unique<SharedImageBackingFactoryAHB>(
           workarounds, gpu_feature_info);
+      factories_.push_back(std::move(ahb_factory));
     }
+    // For Android
+    auto external_vk_image_factory =
+        std::make_unique<ExternalVkImageFactory>(context_state);
+    factories_.push_back(std::move(external_vk_image_factory));
 #endif
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-    interop_backing_factory_ =
+    auto ozone_factory =
         std::make_unique<SharedImageBackingFactoryOzone>(context_state);
+    factories_.push_back(std::move(ozone_factory));
 #else
     // Others
     LOG(ERROR) << "ERROR: gr_context_type_ is GrContextType::kVulkan and "
@@ -196,14 +203,11 @@ SharedImageFactory::SharedImageFactory(
     // gr_context_type_ != GrContextType::kVulkan
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
     if (base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
-      interop_backing_factory_ = std::make_unique<SharedImageBackingFactoryAHB>(
+      auto ahb_factory = std::make_unique<SharedImageBackingFactoryAHB>(
           workarounds, gpu_feature_info);
+      factories_.push_back(std::move(ahb_factory));
     }
 #endif
-  }
-  if (enable_wrapped_sk_image && context_state) {
-    wrapped_sk_image_factory_ =
-        std::make_unique<raster::WrappedSkImageFactory>(context_state);
   }
 
 #if defined(OS_WIN)
@@ -212,9 +216,20 @@ SharedImageFactory::SharedImageFactory(
                          gles2::PassthroughCommandDecoderSupported();
   if (use_passthrough && gr_context_type_ == GrContextType::kGL) {
     // Only supported for passthrough command decoder.
-    interop_backing_factory_ = std::make_unique<SharedImageBackingFactoryD3D>();
+    auto d3d_factory = std::make_unique<SharedImageBackingFactoryD3D>();
+    d3d_backing_factory_ = d3d_factory.get();
+    factories_.push_back(std::move(d3d_factory));
   }
 #endif  // OS_WIN
+
+  if (use_gl) {
+    auto gl_image_backing_factory =
+        std::make_unique<SharedImageBackingFactoryGLImage>(
+            gpu_preferences, workarounds, gpu_feature_info, image_factory,
+            shared_context_state_ ? shared_context_state_->progress_reporter()
+                                  : nullptr);
+    factories_.push_back(std::move(gl_image_backing_factory));
+  }
 
 #if defined(OS_FUCHSIA)
   vulkan_context_provider_ = context_state->vk_context_provider();
@@ -355,11 +370,8 @@ bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   if (!SharedImageBackingFactoryD3D::IsSwapChainSupported())
     return false;
 
-  SharedImageBackingFactoryD3D* d3d_backing_factory =
-      static_cast<SharedImageBackingFactoryD3D*>(
-          interop_backing_factory_.get());
   bool allow_legacy_mailbox = true;
-  auto backings = d3d_backing_factory->CreateSwapChain(
+  auto backings = d3d_backing_factory_->CreateSwapChain(
       front_buffer_mailbox, back_buffer_mailbox, format, size, color_space,
       surface_origin, alpha_type, usage);
   return RegisterBacking(std::move(backings.front_buffer),
@@ -443,10 +455,10 @@ bool SharedImageFactory::CreateSharedImageVideoPlanes(
     gfx::BufferFormat format,
     const gfx::Size& size,
     uint32_t usage) {
-  if (!interop_backing_factory_)
+  if (!d3d_backing_factory_)
     return false;
 
-  auto backings = interop_backing_factory_->CreateSharedImageVideoPlanes(
+  auto backings = d3d_backing_factory_->CreateSharedImageVideoPlanes(
       mailboxes, std::move(handle), format, size, usage);
 
   if (backings.size() != gfx::NumberOfPlanesForLinearBufferFormat(format))
@@ -514,52 +526,12 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     return backing_factory_for_testing_;
 
   bool share_between_threads = IsSharedBetweenThreads(usage);
-
-  if (wrapped_sk_image_factory_ &&
-      wrapped_sk_image_factory_->IsSupported(
-          usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox, is_pixel_used)) {
-    return wrapped_sk_image_factory_.get();
-  }
-
-  if (gl_texture_backing_factory_ &&
-      gl_texture_backing_factory_->IsSupported(
-          usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox, is_pixel_used)) {
-    return gl_texture_backing_factory_.get();
-  }
-
-#if defined(OS_ANDROID)
-  if (egl_backing_factory_ &&
-      egl_backing_factory_->IsSupported(usage, format, share_between_threads,
-                                        gmb_type, gr_context_type_,
-                                        allow_legacy_mailbox, is_pixel_used)) {
-    return egl_backing_factory_.get();
-  }
-#endif  // !defined(OS_ANDROID)
-
-  if (interop_backing_factory_ &&
-      interop_backing_factory_->IsSupported(
-          usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox, is_pixel_used)) {
-    return interop_backing_factory_.get();
-  }
-
-#if defined(OS_ANDROID)
-  // On android, we sometime choose VkImage based backing factory as an
-  // interop if the format is not supported by the AHB backing factory.
-  if (external_vk_image_factory_ &&
-      external_vk_image_factory_->IsSupported(
-          usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox, is_pixel_used))
-    return external_vk_image_factory_.get();
-#endif  // !defined(OS_ANDROID)
-
-  if (gl_image_backing_factory_ &&
-      gl_image_backing_factory_->IsSupported(
-          usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox, is_pixel_used)) {
-    return gl_image_backing_factory_.get();
+  for (auto& factory : factories_) {
+    if (factory->IsSupported(usage, format, share_between_threads, gmb_type,
+                             gr_context_type_, allow_legacy_mailbox,
+                             is_pixel_used)) {
+      return factory.get();
+    }
   }
 
   LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
