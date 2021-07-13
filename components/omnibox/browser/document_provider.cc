@@ -53,6 +53,12 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Inclusive bounds used to restrict which queries request drive suggestions
+// from the backend.
+const size_t kMinQueryLength = 4;
+const size_t kMaxQueryLength = 200;
+
 // TODO(skare): Pull the enum in search_provider.cc into its .h file, and switch
 // this file and zero_suggest_provider.cc to use it.
 enum DocumentRequestsHistogramValue {
@@ -313,10 +319,6 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
   return std::string();
 }
 
-bool WithinBounds(int value, int min, int max) {
-  return value >= min && (value < max || max == -1);
-}
-
 }  // namespace
 
 // static
@@ -399,8 +401,8 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   }
 
   // Experiment: don't issue queries for inputs under some length.
-  if (!WithinBounds(input.text().length(), min_query_length_,
-                    max_query_length_)) {
+  if (input.text().length() < kMinQueryLength ||
+      input.text().length() > kMaxQueryLength) {
     return false;
   }
 
@@ -526,36 +528,6 @@ DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
                                    AutocompleteProviderListener* listener,
                                    size_t cache_size)
     : AutocompleteProvider(AutocompleteProvider::TYPE_DOCUMENT),
-      min_query_length_(
-          static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-              omnibox::kDocumentProvider,
-              "DocumentProviderMinQueryLength",
-              4))),
-      max_query_length_(
-          static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-              omnibox::kDocumentProvider,
-              "DocumentProviderMaxQueryLength",
-              200))),
-      min_query_show_length_(
-          static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-              omnibox::kDocumentProvider,
-              "DocumentProviderMinQueryShowLength",
-              min_query_length_))),
-      max_query_show_length_(
-          static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-              omnibox::kDocumentProvider,
-              "DocumentProviderMaxQueryShowLength",
-              max_query_length_))),
-      min_query_log_length_(
-          static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-              omnibox::kDocumentProvider,
-              "DocumentProviderMinQueryLogLength",
-              min_query_length_))),
-      max_query_log_length_(
-          static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-              omnibox::kDocumentProvider,
-              "DocumentProviderMaxQueryLogLength",
-              max_query_length_))),
       field_trial_triggered_(false),
       field_trial_triggered_in_session_(false),
       backoff_for_session_(false),
@@ -576,7 +548,7 @@ DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
     debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(false, 0);
 }
 
-DocumentProvider::~DocumentProvider() {}
+DocumentProvider::~DocumentProvider() = default;
 
 void DocumentProvider::OnURLLoadComplete(
     const network::SimpleURLLoader* source,
@@ -752,39 +724,6 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   bool boost_owned = base::GetFieldTrialParamByFeatureAsBool(
       omnibox::kDocumentProvider, "DocumentBoostOwned", false);
 
-  // Some users may be in a counterfactual study arm in which we perform all
-  // necessary work but do not forward the autocomplete matches.
-  bool in_counterfactual_group = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kDocumentProvider, "DocumentProviderCounterfactualArm", false);
-
-  // In order to compare groups with different |min_query_length|_ values,
-  // |min_query_show_length_| specifies the min query length for which to show
-  // drive requests. Shorter queries that return drive suggestions will still
-  // log field_trials_triggered. E.g., if |min_query_length_| is 3 and
-  // |min_query_show_length_| is 5, then:
-  // - Inputs of lengths 0 to 2 will not make drive requests.
-  // - Inputs of lengths 3 to 4 will make drive requests; if drive suggestions
-  // are returned, field_trial_triggered will be logged, but the suggestions
-  // will not be shown.
-  // - Inputs of length 5 or more will make drive requests; if drive suggestions
-  // are returned, field_trial_triggered will be logged, and, if not in
-  // counterfactual, the suggestions will be shown.
-  bool show_doc_suggestions =
-      !in_counterfactual_group &&
-      WithinBounds(input_.text().length(), min_query_show_length_,
-                   max_query_show_length_);
-  // In order to compare small slices of input length while excluding noise from
-  // the larger group of all input lengths, |min_query_log_length_| and
-  // |max_query_log_length_| specify the queries that will log
-  // field_trial_triggered. E.g., if |min_query_log_length_| is 50 and
-  // |max_query_log_length_| is -1, only inputs of length 50 or greater which
-  // return a drive suggestions will log field_trial_triggered are returned
-  // while shorter queries will continue to make requests and show suggestions.
-  // This allows an uninterrupted user experience for short queries while
-  // allowing focused analysis of long queries.
-  bool trigger_field_trial = WithinBounds(
-      input_.text().length(), min_query_log_length_, max_query_log_length_);
-
   // Ensure server's suggestions are added with monotonically decreasing scores.
   int previous_score = INT_MAX;
   for (size_t i = 0; i < num_results; i++) {
@@ -859,15 +798,12 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       }
       std::string update_time;
       metadata->GetString("updateTime", &update_time);
-      bool display_owner = base::GetFieldTrialParamByFeatureAsBool(
-          omnibox::kDocumentProvider, "DisplayOwner", true);
       auto owners = ExtractResultList(result, "metadata.owner.personNames",
                                       "displayName");
       if (!owners.empty())
         match.RecordAdditionalInfo("document owner", *owners[0]);
       match.description = GetMatchDescription(
-          update_time, mimetype,
-          display_owner && !owners.empty() ? *owners[0] : "");
+          update_time, mimetype, !owners.empty() ? *owners[0] : "");
       AutocompleteMatch::AddLastClassificationIfNecessary(
           &match.description_class, 0, ACMatchClassification::DIM);
       // Exclude date & owner from description_for_shortcut to avoid showing
@@ -890,12 +826,9 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     const std::string* snippet = result->FindStringPath("snippet.snippet");
     if (snippet)
       match.RecordAdditionalInfo("snippet", *snippet);
-    if (show_doc_suggestions)
-      matches.push_back(match);
-    if (trigger_field_trial) {
-      field_trial_triggered_ = true;
-      field_trial_triggered_in_session_ = true;
-    }
+    matches.push_back(match);
+    field_trial_triggered_ = true;
+    field_trial_triggered_in_session_ = true;
   }
   return matches;
 }

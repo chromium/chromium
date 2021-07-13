@@ -176,27 +176,6 @@ class DocumentProvider : public AutocompleteProvider {
                                             const std::string& mimetype,
                                             const std::string& owner);
 
-  // Don't request doc suggestions for inputs shorter than |min_query_length_|
-  // or longer than |max_query_length_|. A value of -1 indicates no limit. These
-  // help limit the load on backend servers.
-  const size_t min_query_length_;
-  const size_t max_query_length_;
-  // Hide doc suggestions for inputs shorter than |min_query_show_length_| or
-  // longer than |max_query_show_length_|. A value of -1 indicates no limit.
-  // These help analyze experiments by allowing observing the effect of changing
-  // |min(max)_query_length_| while keeping data populations consistent.
-  const size_t min_query_show_length_;
-  const size_t max_query_show_length_;
-  // Don't log doc suggestions for inputs shorter than |min_query_log_length_|
-  // or longer than |max_query_log_length_| (i.e. don't trigger
-  // field_trial_triggered and field_trial_triggered_in_session). A value of -1
-  // indicates no limit. These help analyze experiments by restricting data
-  // populations to avoid noise when only interested in a range of input
-  // lengths. E.g. experimenting with |max_query_show_length_| would affect only
-  // the small subset of long queries.
-  const size_t min_query_log_length_;
-  const size_t max_query_log_length_;
-
   // Whether a field trial has triggered for this query and this session,
   // respectively. Works similarly to BaseSearchProvider, though this class does
   // not inherit from it.

@@ -509,37 +509,10 @@ TEST_F(DocumentProviderTest, MatchDescriptionString) {
   ASSERT_TRUE(response->is_dict());
   provider_->input_.UpdateText(u"input", 0, {});
 
-  // Verify correct formatting when the DisplayOwner feature param is false.
+  // Verify correct formatting when displaying owner.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kDocumentProvider, {
-                                        {"DisplayOwner", "false"},
-                                    });
-    ACMatches matches = provider_->ParseDocumentSearchResults(*response);
-
-    EXPECT_EQ(matches.size(), 5u);
-    EXPECT_EQ(matches[0].description, u"1/12/94 - Google Docs");
-    EXPECT_EQ(matches[1].description, u"1/12/94 - Google Drive");
-    EXPECT_EQ(matches[2].description, u"1/12/94 - Google Sheets");
-    EXPECT_EQ(matches[3].description, u"Google Sheets");
-    EXPECT_EQ(matches[4].description, u"");
-
-    // Also verify description_for_shortcuts does not include dates.
-    EXPECT_EQ(matches[0].description_for_shortcuts, u"Google Docs");
-    EXPECT_EQ(matches[1].description_for_shortcuts, u"Google Drive");
-    EXPECT_EQ(matches[2].description_for_shortcuts, u"Google Sheets");
-    EXPECT_EQ(matches[3].description_for_shortcuts, u"Google Sheets");
-    EXPECT_EQ(matches[4].description_for_shortcuts, u"");
-  }
-
-  // Verify correct formatting when the DisplayOwner feature param is true.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kDocumentProvider, {
-                                        {"DisplayOwner", "true"},
-                                    });
+    feature_list.InitAndEnableFeature(omnibox::kDocumentProvider);
     ACMatches matches = provider_->ParseDocumentSearchResults(*response);
 
     EXPECT_EQ(matches.size(), 5u);

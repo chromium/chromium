@@ -217,10 +217,10 @@ const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
 
 // Feature used to fetch document suggestions.
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      enabled_by_default_desktop_only};
 // Feature to debounce drive requests from the document provider.
-const base::Feature kDebounceDocumentProvider{
-    "OmniboxDebounceDocumentProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDebounceDocumentProvider{"OmniboxDebounceDocumentProvider",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 // Feature to determine a value in the drive request indicating whether the
 // request should be served by the  ASO backend.
 const base::Feature kDocumentProviderAso{"OmniboxDocumentProviderAso",
