@@ -11,15 +11,15 @@ class AccountCapabilitiesTest : public testing::Test {};
 TEST_F(AccountCapabilitiesTest, CanOfferExtendedChromeSyncPromos) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_offer_extended_chrome_sync_promos(),
-            AccountCapabilities::Tribool::kUnknown);
+            signin::Tribool::kUnknown);
 
   capabilities.set_can_offer_extended_chrome_sync_promos(true);
   EXPECT_EQ(capabilities.can_offer_extended_chrome_sync_promos(),
-            AccountCapabilities::Tribool::kTrue);
+            signin::Tribool::kTrue);
 
   capabilities.set_can_offer_extended_chrome_sync_promos(false);
   EXPECT_EQ(capabilities.can_offer_extended_chrome_sync_promos(),
-            AccountCapabilities::Tribool::kFalse);
+            signin::Tribool::kFalse);
 }
 
 TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_Empty) {
@@ -40,7 +40,7 @@ TEST_F(AccountCapabilitiesTest, UpdateWith_UnknownToKnown) {
   other.set_can_offer_extended_chrome_sync_promos(true);
 
   EXPECT_TRUE(capabilities.UpdateWith(other));
-  EXPECT_EQ(AccountCapabilities::Tribool::kTrue,
+  EXPECT_EQ(signin::Tribool::kTrue,
             capabilities.can_offer_extended_chrome_sync_promos());
 }
 
@@ -51,7 +51,7 @@ TEST_F(AccountCapabilitiesTest, UpdateWith_KnownToUnknown) {
   AccountCapabilities other;
 
   EXPECT_FALSE(capabilities.UpdateWith(other));
-  EXPECT_EQ(AccountCapabilities::Tribool::kTrue,
+  EXPECT_EQ(signin::Tribool::kTrue,
             capabilities.can_offer_extended_chrome_sync_promos());
 }
 
@@ -63,6 +63,6 @@ TEST_F(AccountCapabilitiesTest, UpdateWith_OverwriteKnown) {
   other.set_can_offer_extended_chrome_sync_promos(false);
 
   EXPECT_TRUE(capabilities.UpdateWith(other));
-  EXPECT_EQ(AccountCapabilities::Tribool::kFalse,
+  EXPECT_EQ(signin::Tribool::kFalse,
             capabilities.can_offer_extended_chrome_sync_promos());
 }

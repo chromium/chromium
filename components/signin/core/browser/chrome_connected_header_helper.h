@@ -15,6 +15,8 @@ class GURL;
 
 namespace signin {
 
+enum class Tribool;
+
 // Name of the cookie used by Chrome sign-in to inform GAIA that an
 // authenticating user is already signed in to Chrome. Because it is not
 // possible to intercept headers from iOS WKWebView, Chrome requires this cookie
@@ -47,7 +49,7 @@ class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
   std::string BuildRequestHeader(bool is_header_request,
                                  const GURL& url,
                                  const std::string& gaia_id,
-                                 const absl::optional<bool>& is_child_account,
+                                 Tribool is_child_account,
                                  int profile_mode_mask,
                                  const std::string& source,
                                  bool force_account_consistency);

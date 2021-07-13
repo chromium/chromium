@@ -7,6 +7,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -147,12 +148,12 @@ void SigninURLLoaderThrottle::ProcessRequest(
   // be sent in the Mirror request header from WebLayer.
   signin::AppendOrRemoveMirrorRequestHeader(
       &request_adapter, new_url, delegate->GetGaiaId(),
-      absl::nullopt /* is_child_account */,
+      /*is_child_account=*/signin::Tribool::kUnknown,
       signin::AccountConsistencyMethod::kMirror,
       CookieSettingsFactory::GetForBrowserContext(browser_context_).get(),
       signin::PROFILE_MODE_INCOGNITO_DISABLED |
           signin::PROFILE_MODE_ADD_ACCOUNT_DISABLED,
-      kWebLayerMirrorHeaderSource, true /* force_account_consistency */);
+      kWebLayerMirrorHeaderSource, /*force_account_consistency=*/true);
 
   original_headers->MergeFrom(*modified_headers);
   for (const std::string& name : *headers_to_remove)

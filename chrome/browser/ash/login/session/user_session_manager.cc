@@ -143,10 +143,12 @@
 #include "components/quirks/quirks_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -1448,13 +1450,15 @@ void UserSessionManager::InitProfilePreferences(
     DCHECK(is_child ==
            (user_context.GetUserType() == user_manager::USER_TYPE_CHILD));
 
-    absl::optional<bool> is_under_advanced_protection;
+    signin::Tribool is_under_advanced_protection = signin::Tribool::kUnknown;
     if (IsOnlineSignin(user_context)) {
-      is_under_advanced_protection = user_context.IsUnderAdvancedProtection();
+      is_under_advanced_protection = user_context.IsUnderAdvancedProtection()
+                                         ? signin::Tribool::kTrue
+                                         : signin::Tribool::kFalse;
     }
 
     identity_manager->GetAccountsMutator()->UpdateAccountInfo(
-        account_id, /*is_child_account=*/is_child,
+        account_id, is_child ? signin::Tribool::kTrue : signin::Tribool::kFalse,
         is_under_advanced_protection);
 
     if (is_child &&

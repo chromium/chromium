@@ -12,6 +12,7 @@
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,16 +64,17 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
 
 void AccountsMutatorImpl::UpdateAccountInfo(
     const CoreAccountId& account_id,
-    absl::optional<bool> is_child_account,
-    absl::optional<bool> is_under_advanced_protection) {
-  if (is_child_account.has_value()) {
-    account_tracker_service_->SetIsChildAccount(account_id,
-                                                is_child_account.value());
+    Tribool is_child_account,
+    Tribool is_under_advanced_protection) {
+  // kUnknown is used by callers when they do not want to update the value.
+  if (is_child_account != Tribool::kUnknown) {
+    account_tracker_service_->SetIsChildAccount(
+        account_id, is_child_account == Tribool::kTrue);
   }
 
-  if (is_under_advanced_protection.has_value()) {
+  if (is_under_advanced_protection != Tribool::kUnknown) {
     account_tracker_service_->SetIsAdvancedProtectionAccount(
-        account_id, is_under_advanced_protection.value());
+        account_id, is_under_advanced_protection == Tribool::kTrue);
   }
 }
 

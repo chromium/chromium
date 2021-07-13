@@ -25,6 +25,7 @@
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -247,7 +248,8 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
       AddSectionEntry(section_user, "Given name", account.given_name);
       AddSectionEntry(section_user, "Hosted domain", account.hosted_domain);
       AddSectionEntry(section_user, "Locale", account.locale);
-      AddSectionEntry(section_user, "Is child", account.is_child_account);
+      AddSectionEntry(section_user, "Is child",
+                      TriboolToString(account.is_child_account));
       AddSectionEntry(section_user, "Is valid", account.IsValid());
     }
   }

@@ -42,6 +42,16 @@ bool UpdateField(bool* field, bool new_value) {
   return true;
 }
 
+// Updates |field| with |new_value| if true. Returns whether |field| was
+// changed.
+bool UpdateField(signin::Tribool* field, signin::Tribool new_value) {
+  if (*field == new_value || new_value == signin::Tribool::kUnknown)
+    return false;
+
+  *field = new_value;
+  return true;
+}
+
 }  // namespace
 
 // This must be a string which can never be a valid domain.

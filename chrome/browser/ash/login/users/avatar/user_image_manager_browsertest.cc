@@ -273,7 +273,6 @@ class UserImageManagerTestBase : public LoginManagerTest,
     account_info.locale = account_info.email;
     account_info.picture_url =
         embedded_test_server()->GetURL("/avatar.jpg").spec();
-    account_info.is_child_account = false;
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 

@@ -40,10 +40,9 @@ class AccountsMutatorImpl : public AccountsMutator {
       const std::string& refresh_token,
       bool is_under_advanced_protection,
       signin_metrics::SourceForRefreshTokenOperation source) override;
-  void UpdateAccountInfo(
-      const CoreAccountId& account_id,
-      absl::optional<bool> is_child_account,
-      absl::optional<bool> is_under_advanced_protection) override;
+  void UpdateAccountInfo(const CoreAccountId& account_id,
+                         Tribool is_child_account,
+                         Tribool is_under_advanced_protection) override;
   void RemoveAccount(
       const CoreAccountId& account_id,
       signin_metrics::SourceForRefreshTokenOperation source) override;

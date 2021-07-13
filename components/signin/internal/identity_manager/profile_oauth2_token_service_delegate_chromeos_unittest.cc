@@ -257,7 +257,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     account_info.hosted_domain = "example.com";
     account_info.locale = "en";
     account_info.picture_url = "https://example.com";
-    account_info.is_child_account = false;
     account_info.account_id = account_tracker_service_.PickAccountIdForAccount(
         account_info.gaia, account_info.email);
 

@@ -34,6 +34,8 @@ class GURL;
 // handle signin accordingly.
 namespace signin {
 
+enum class Tribool;
+
 // Key for ManageAccountsHeaderReceivedUserData. Exposed for testing.
 extern const void* const kManageAccountsHeaderReceivedUserDataKey;
 
@@ -99,7 +101,7 @@ void FixAccountConsistencyRequestHeader(
     int incognito_availibility,
     AccountConsistencyMethod account_consistency,
     const std::string& gaia_id,
-    const absl::optional<bool>& is_child_account,
+    signin::Tribool is_child_account,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     bool is_secondary_account_addition_allowed,
 #endif

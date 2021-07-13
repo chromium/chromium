@@ -32,6 +32,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "ui/gfx/image/image.h"
 
 #if defined(OS_ANDROID)
@@ -50,9 +51,13 @@ const char kAccountLocalePath[] = "locale";
 const char kAccountPictureURLPath[] = "picture_url";
 const char kLastDownloadedImageURLWithSizePath[] =
     "last_downloaded_image_url_with_size";
-const char kAccountChildAccountStatusPath[] = "is_child_account";
+const char kAccountChildAttributePath[] = "is_supervised_child";
 const char kAdvancedProtectionAccountStatusPath[] =
     "is_under_advanced_protection";
+
+// This key is deprecated since 2021/07 and should be removed after migration.
+// It was replaced by kAccountChildAttributePath.
+const char kDeprecatedChildStatusPath[] = "is_child_account";
 
 // Account folders used for storing account related data at disk.
 const base::FilePath::CharType kAccountsFolder[] =
@@ -104,21 +109,27 @@ void RemoveImage(const base::FilePath& image_path) {
 
 void SetAccountCapabilityPath(base::Value* value,
                               base::StringPiece path,
-                              AccountCapabilities::Tribool state) {
-  if (state == AccountCapabilities::Tribool::kUnknown)
-    value->RemovePath(path);
-  else
-    value->SetBoolPath(path, state == AccountCapabilities::Tribool::kTrue);
+                              signin::Tribool state) {
+  value->SetIntPath(path, static_cast<int>(state));
 }
 
-AccountCapabilities::Tribool FindAccountCapabilityPath(const base::Value& value,
-                                                       base::StringPiece path) {
-  absl::optional<bool> boolean_value = value.FindBoolPath(path);
-  if (!boolean_value.has_value())
-    return AccountCapabilities::Tribool::kUnknown;
-
-  return *boolean_value ? AccountCapabilities::Tribool::kTrue
-                        : AccountCapabilities::Tribool::kFalse;
+signin::Tribool FindAccountCapabilityPath(const base::Value& value,
+                                          base::StringPiece path) {
+  absl::optional<int> capability = value.FindIntPath(path);
+  if (!capability.has_value())
+    return signin::Tribool::kUnknown;
+  switch (capability.value()) {
+    case static_cast<int>(signin::Tribool::kTrue):
+      return signin::Tribool::kTrue;
+    case static_cast<int>(signin::Tribool::kFalse):
+      return signin::Tribool::kFalse;
+    case static_cast<int>(signin::Tribool::kUnknown):
+      return signin::Tribool::kUnknown;
+    default:
+      LOG(ERROR) << "Unexpected capability value (" << capability.value()
+                 << ") for path: " << path;
+      return signin::Tribool::kUnknown;
+  }
 }
 
 }  // namespace
@@ -236,7 +247,6 @@ void AccountTrackerService::StartTrackingAccount(
     DVLOG(1) << "StartTracking " << account_id;
     AccountInfo account_info;
     account_info.account_id = account_id;
-    account_info.is_child_account = false;
     accounts_.insert(std::make_pair(account_id, account_info));
   }
 }
@@ -311,9 +321,11 @@ void AccountTrackerService::SetIsChildAccount(const CoreAccountId& account_id,
                                               bool is_child_account) {
   DCHECK(base::Contains(accounts_, account_id)) << account_id.ToString();
   AccountInfo& account_info = accounts_[account_id];
-  if (account_info.is_child_account == is_child_account)
+  signin::Tribool new_status =
+      is_child_account ? signin::Tribool::kTrue : signin::Tribool::kFalse;
+  if (account_info.is_child_account == new_status)
     return;
-  account_info.is_child_account = is_child_account;
+  account_info.is_child_account = new_status;
   if (!account_info.gaia.empty())
     NotifyAccountUpdated(account_info);
   SaveToPrefs(account_info);
@@ -539,7 +551,7 @@ void AccountTrackerService::LoadFromPrefs() {
   const base::ListValue* list = pref_service_->GetList(prefs::kAccountInfo);
   std::set<CoreAccountId> to_remove;
   for (size_t i = 0; i < list->GetSize(); ++i) {
-    const base::DictionaryValue* dict;
+    const base::DictionaryValue* dict = nullptr;
     if (list->GetDictionary(i, &dict)) {
       std::string value;
       if (dict->GetString(kAccountKeyPath, &value)) {
@@ -571,9 +583,23 @@ void AccountTrackerService::LoadFromPrefs() {
         if (dict->GetString(kLastDownloadedImageURLWithSizePath, &value))
           account_info.last_downloaded_image_url_with_size = value;
 
-        bool is_child_account = false;
-        if (dict->GetBoolean(kAccountChildAccountStatusPath, &is_child_account))
-          account_info.is_child_account = is_child_account;
+        if (absl::optional<bool> is_child_status =
+                dict->FindBoolKey(kDeprecatedChildStatusPath)) {
+          account_info.is_child_account = is_child_status.value()
+                                              ? signin::Tribool::kTrue
+                                              : signin::Tribool::kFalse;
+          // Migrate to kAccountChildAttributePath.
+          ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+          base::DictionaryValue* update_dict = nullptr;
+          update->GetDictionary(i, &update_dict);
+          DCHECK(update_dict);
+          SetAccountCapabilityPath(update_dict, kAccountChildAttributePath,
+                                   account_info.is_child_account);
+          update_dict->RemoveKey(kDeprecatedChildStatusPath);
+        } else {
+          account_info.is_child_account =
+              FindAccountCapabilityPath(*dict, kAccountChildAttributePath);
+        }
 
         bool is_under_advanced_protection = false;
         if (dict->GetBoolean(kAdvancedProtectionAccountStatusPath,
@@ -584,13 +610,13 @@ void AccountTrackerService::LoadFromPrefs() {
 
         switch (FindAccountCapabilityPath(
             *dict, kCanOfferExtendedChromeSyncPromosCapabilityPrefsPath)) {
-          case AccountCapabilities::Tribool::kUnknown:
+          case signin::Tribool::kUnknown:
             break;
-          case AccountCapabilities::Tribool::kTrue:
+          case signin::Tribool::kTrue:
             account_info.capabilities.set_can_offer_extended_chrome_sync_promos(
                 true);
             break;
-          case AccountCapabilities::Tribool::kFalse:
+          case signin::Tribool::kFalse:
             account_info.capabilities.set_can_offer_extended_chrome_sync_promos(
                 false);
             break;
@@ -657,8 +683,8 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   dict->SetString(kAccountGivenNamePath, account_info.given_name);
   dict->SetString(kAccountLocalePath, account_info.locale);
   dict->SetString(kAccountPictureURLPath, account_info.picture_url);
-  dict->SetBoolean(kAccountChildAccountStatusPath,
-                   account_info.is_child_account);
+  SetAccountCapabilityPath(dict, kAccountChildAttributePath,
+                           account_info.is_child_account);
   dict->SetBoolean(kAdvancedProtectionAccountStatusPath,
                    account_info.is_under_advanced_protection);
   // |kLastDownloadedImageURLWithSizePath| should only be set after the GAIA

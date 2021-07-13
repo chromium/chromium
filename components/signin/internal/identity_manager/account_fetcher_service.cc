@@ -34,6 +34,7 @@
 
 #if defined(OS_ANDROID)
 #include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #endif
 
 namespace {
@@ -213,8 +214,14 @@ void AccountFetcherService::StartFetchingChildInfo(
 }
 
 void AccountFetcherService::ResetChildInfo() {
-  if (!child_request_account_id_.empty())
-    SetIsChildAccount(child_request_account_id_, false);
+  if (!child_request_account_id_.empty()) {
+    AccountInfo account_info =
+        account_tracker_service_->GetAccountInfo(child_request_account_id_);
+    // TODO(https://crbug.com/1226501): Reset the status to kUnknown, rather
+    // than kFalse.
+    if (account_info.is_child_account != signin::Tribool::kUnknown)
+      SetIsChildAccount(child_request_account_id_, false);
+  }
   child_request_account_id_ = CoreAccountId();
   child_info_request_.reset();
 }

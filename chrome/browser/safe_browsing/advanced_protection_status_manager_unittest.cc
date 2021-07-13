@@ -11,8 +11,10 @@
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -322,9 +324,10 @@ TEST_F(AdvancedProtectionStatusManagerTest, AccountRemoval) {
   // Simulates account update.
   identity_test_env_.identity_manager()
       ->GetAccountsMutator()
-      ->UpdateAccountInfo(account_id,
-                          /*is_child_account=*/false,
-                          /*is_under_advanced_protection=*/true);
+      ->UpdateAccountInfo(
+          account_id,
+          /*is_child_account=*/signin::Tribool::kUnknown,
+          /*is_under_advanced_protection=*/signin::Tribool::kTrue);
   EXPECT_TRUE(aps_manager.IsUnderAdvancedProtection());
   EXPECT_TRUE(aps_manager.IsRefreshScheduled());
 
