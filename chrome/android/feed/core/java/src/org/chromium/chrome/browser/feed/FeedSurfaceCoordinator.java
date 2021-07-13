@@ -477,6 +477,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             view = (RecyclerView) mHybridListRenderer.bind(mContentManager);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
+            view.setBackgroundColor(mActivity.getResources().getColor(R.color.default_bg_color));
         } else {
             view = null;
         }
