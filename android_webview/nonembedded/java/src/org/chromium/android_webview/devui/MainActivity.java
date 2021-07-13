@@ -45,6 +45,7 @@ public class MainActivity extends FragmentActivity {
     public static final int FRAGMENT_ID_HOME = 0;
     public static final int FRAGMENT_ID_CRASHES = 1;
     public static final int FRAGMENT_ID_FLAGS = 2;
+    public static final int FRAGMENT_ID_COMPONENTS = 3;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -72,7 +73,8 @@ public class MainActivity extends FragmentActivity {
         int HOME_FRAGMENT = 0;
         int CRASHES_LIST_FRAGMENT = 1;
         int FLAGS_FRAGMENT = 2;
-        int COUNT = 3;
+        int COMPONENTS_LIST_FRAGMENT = 3;
+        int COUNT = 4;
     }
 
     /**
@@ -98,6 +100,9 @@ public class MainActivity extends FragmentActivity {
                 break;
             case FRAGMENT_ID_FLAGS:
                 sample = FragmentNavigation.FLAGS_FRAGMENT;
+                break;
+            case FRAGMENT_ID_COMPONENTS:
+                sample = FragmentNavigation.COMPONENTS_LIST_FRAGMENT;
                 break;
         }
         RecordHistogram.recordEnumeratedHistogram(
@@ -166,6 +171,9 @@ public class MainActivity extends FragmentActivity {
                 break;
             case FRAGMENT_ID_FLAGS:
                 fragment = new FlagsFragment();
+                break;
+            case FRAGMENT_ID_COMPONENTS:
+                fragment = new ComponentsListFragment();
                 break;
         }
         assert fragment != null;

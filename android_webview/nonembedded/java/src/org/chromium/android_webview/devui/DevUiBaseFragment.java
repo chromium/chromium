@@ -40,6 +40,8 @@ public abstract class DevUiBaseFragment extends Fragment {
             suffix = "FlagsFragment";
         } else if (this instanceof CrashesListFragment) {
             suffix = "CrashesListFragment";
+        } else if (this instanceof ComponentsListFragment) {
+            suffix = "ComponentsListFragment";
         }
         // Note: keep this if-else ladder synchronized with the AndroidWebViewFragments
         // histogram_suffix
