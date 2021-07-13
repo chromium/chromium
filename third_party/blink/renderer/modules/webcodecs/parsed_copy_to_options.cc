@@ -9,7 +9,6 @@
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_rect.h"
 #include "third_party/blink/renderer/modules/webcodecs/dom_rect_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 

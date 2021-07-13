@@ -62,33 +62,14 @@ class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
   // Returns |close_auditor_| and starts |timer_| if needed.
   scoped_refptr<VideoFrameCloseAuditor> GetCloseAuditor();
 
-  void LogCropDeprecation();
-  void LogPlaneInitSrcDeprecation();
-  void LogPlanesDeprecation();
-  void LogCodedRegionDeprecation();
-  void LogVisibleRegionDeprecation();
-  void LogPlanarConstructionDeprecation();
-
   void Trace(Visitor*) const override;
 
  private:
-  enum class Deprecation : uint32_t {
-    kCrop = 1,
-    kPlaneInitSrc = 2,
-    kPlanes = 4,
-    kCodedRegion = 8,
-    kVisibleRegion = 16,
-    kPlanarConstruction = 32,
-  };
-
   void LogCloseErrors(TimerBase*);
-  void LogDeprecation(Deprecation, const String& message);
 
   base::TimeTicks last_auditor_access_;
   scoped_refptr<VideoFrameCloseAuditor> close_auditor_;
   HeapTaskRunnerTimer<WebCodecsLogger> timer_;
-
-  uint32_t logged_deprecations_ = 0;
 };
 
 }  // namespace blink

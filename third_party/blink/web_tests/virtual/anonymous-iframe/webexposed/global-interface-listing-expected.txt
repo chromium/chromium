@@ -6404,13 +6404,6 @@ interface PictureInPictureWindow : EventTarget
     getter width
     method constructor
     setter onresize
-interface Plane
-    attribute @@toStringTag
-    getter length
-    getter rows
-    getter stride
-    method constructor
-    method readInto
 interface Plugin
     attribute @@toStringTag
     getter description
@@ -9123,21 +9116,14 @@ interface VideoFrame
     attribute @@toStringTag
     getter codedHeight
     getter codedRect
-    getter codedRegion
     getter codedWidth
     getter colorSpace
-    getter cropHeight
-    getter cropLeft
-    getter cropTop
-    getter cropWidth
     getter displayHeight
     getter displayWidth
     getter duration
     getter format
-    getter planes
     getter timestamp
     getter visibleRect
-    getter visibleRegion
     method allocationSize
     method clone
     method close

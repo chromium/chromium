@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_support.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_rect.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"

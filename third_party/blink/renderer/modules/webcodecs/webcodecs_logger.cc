@@ -56,42 +56,6 @@ WebCodecsLogger::GetCloseAuditor() {
   return close_auditor_;
 }
 
-void WebCodecsLogger::LogCropDeprecation() {
-  LogDeprecation(
-      Deprecation::kCrop,
-      "cropTop, cropLeft, cropWidth, and cropHeight are deprecated; please "
-      "use visibleRect.");
-}
-
-void WebCodecsLogger::LogPlaneInitSrcDeprecation() {
-  LogDeprecation(Deprecation::kPlaneInitSrc,
-                 "PlaneInit.src is deprecated, please use PlaneInit.data.");
-}
-
-void WebCodecsLogger::LogPlanesDeprecation() {
-  LogDeprecation(Deprecation::kPlaneInitSrc,
-                 "VideoFrame.planes is deprecated, please use "
-                 "VideoFrame.copyTo().");
-}
-
-void WebCodecsLogger::LogCodedRegionDeprecation() {
-  LogDeprecation(
-      Deprecation::kCodedRegion,
-      "VideoFrame.codedRegion is deprecated; please use VideoFrame.codedRect.");
-}
-
-void WebCodecsLogger::LogVisibleRegionDeprecation() {
-  LogDeprecation(Deprecation::kVisibleRegion,
-                 "visibleRegion is deprecated; please use visibleRect.");
-}
-
-void WebCodecsLogger::LogPlanarConstructionDeprecation() {
-  LogDeprecation(Deprecation::kPlanarConstruction,
-                 "new VideoFrame(sequence<PlaneInit>, VideoFramePlaneInit) is "
-                 "deprecated; please use new VideoFrame(BufferSource, "
-                 "VideoFrameBufferInit).");
-}
-
 void WebCodecsLogger::LogCloseErrors(TimerBase*) {
   // If it's been a while since this class was used and there are not other
   // references to |leak_status_|, stop the timer.
@@ -114,16 +78,6 @@ void WebCodecsLogger::LogCloseErrors(TimerBase*) {
   }
 
   close_auditor_->Clear();
-}
-
-void WebCodecsLogger::LogDeprecation(Deprecation id, const String& message) {
-  uint32_t id_bits = static_cast<uint32_t>(id);
-  if (logged_deprecations_ & id_bits)
-    return;
-  logged_deprecations_ |= id_bits;
-  GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kDeprecation,
-      mojom::blink::ConsoleMessageLevel::kWarning, message));
 }
 
 void WebCodecsLogger::Trace(Visitor* visitor) const {

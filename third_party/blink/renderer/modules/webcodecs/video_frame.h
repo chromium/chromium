@@ -10,13 +10,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_rect.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/plane.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -36,14 +34,12 @@ class CanvasImageSource;
 class DOMRectReadOnly;
 class ExceptionState;
 class ExecutionContext;
-class PlaneInit;
 class ScriptPromise;
 class ScriptState;
 class VideoColorSpace;
 class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
-class VideoFramePlaneInit;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -65,10 +61,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             const VideoFrameInit* init,
                             ExceptionState& exception_state);
   static VideoFrame* Create(ScriptState*,
-                            const HeapVector<Member<PlaneInit>>&,
-                            const VideoFramePlaneInit*,
-                            ExceptionState&);
-  static VideoFrame* Create(ScriptState*,
                             const V8BufferSource*,
                             const VideoFrameBufferInit*,
                             ExceptionState&);
@@ -78,24 +70,11 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   absl::optional<int64_t> timestamp() const;
   absl::optional<uint64_t> duration() const;
 
-  // DEPRECATED.
-  absl::optional<HeapVector<Member<Plane>>> planes(ExecutionContext*);
-
   uint32_t codedWidth() const;
   uint32_t codedHeight() const;
 
   absl::optional<DOMRectReadOnly*> codedRect();
   absl::optional<DOMRectReadOnly*> visibleRect();
-
-  // DEPRECATED.
-  VideoFrameRect* codedRegion(ExecutionContext*) const;
-  VideoFrameRect* visibleRegion(ExecutionContext*) const;
-
-  // DEPRECATED.
-  uint32_t cropLeft(ExecutionContext*) const;
-  uint32_t cropTop(ExecutionContext*) const;
-  uint32_t cropWidth(ExecutionContext*) const;
-  uint32_t cropHeight(ExecutionContext*) const;
 
   uint32_t displayWidth() const;
   uint32_t displayHeight() const;
@@ -150,7 +129,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   scoped_refptr<VideoFrameHandle> handle_;
 
   // Caches
-  HeapVector<Member<Plane>> planes_;
   Member<DOMRectReadOnly> coded_rect_;
   Member<DOMRectReadOnly> visible_rect_;
   Member<VideoColorSpace> color_space_;

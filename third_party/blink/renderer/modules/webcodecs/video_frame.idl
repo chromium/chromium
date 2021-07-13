@@ -13,10 +13,6 @@
   constructor(CanvasImageSource source, optional VideoFrameInit init = {});
 
   [CallWith=ScriptState, RaisesException]
-  constructor(sequence<PlaneInit> planes,
-              VideoFramePlaneInit init);
-
-  [CallWith=ScriptState, RaisesException]
   constructor([AllowShared] BufferSource data, VideoFrameBufferInit init);
 
   readonly attribute VideoPixelFormat? format;
@@ -60,17 +56,4 @@
   [RaisesException] VideoFrame clone();
 
   void close();
-
-  // DEPRECATED: Use copyTo().
-  [CallWith=ExecutionContext] readonly attribute FrozenArray<Plane>? planes;
-
-  // DEPRECATED: Use visibleRect.
-  [CallWith=ExecutionContext] readonly attribute unsigned long cropLeft;
-  [CallWith=ExecutionContext] readonly attribute unsigned long cropTop;
-  [CallWith=ExecutionContext] readonly attribute unsigned long cropWidth;
-  [CallWith=ExecutionContext] readonly attribute unsigned long cropHeight;
-
-  // DEPRECATED: Use codedRect/visibleRect.
-  [CallWith=ExecutionContext] readonly attribute VideoFrameRect codedRegion;
-  [CallWith=ExecutionContext] readonly attribute VideoFrameRect visibleRegion;
 };
