@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -44,8 +45,9 @@ gfx::Size FrameCenterButton::GetMinimumSize() const {
   gfx::Size size = GetPreferredSize();
   // Similar to CalculatePreferredSize(), but allow the text width to be zero.
   size.set_width((sub_icon_image_
-                      ? icon_image().width() / 2 + kMarginBetweenContents +
-                            sub_icon_image_->width() / 2
+                      ? base::ClampCeil(icon_image().width() / 2.0f) +
+                            kMarginBetweenContents +
+                            base::ClampCeil(sub_icon_image_->width() / 2.0f)
                       : 0) +
                  views::kCaptionButtonWidth);
   return size;
@@ -105,9 +107,11 @@ gfx::Size FrameCenterButton::CalculatePreferredSize() const {
   gfx::Size size = views::View::CalculatePreferredSize();
 
   size.set_width(
-      (text_ || sub_icon_image_ ? icon_image().width() / 2 : 0) +
+      (text_ || sub_icon_image_ ? base::ClampCeil(icon_image().width() / 2.0f)
+                                : 0) +
       (text_ ? kMarginBetweenContents + text_->GetStringSize().width() : 0) +
-      (sub_icon_image_ ? kMarginBetweenContents + sub_icon_image_->width() / 2
+      (sub_icon_image_ ? kMarginBetweenContents +
+                             base::ClampCeil(sub_icon_image_->width() / 2.0f)
                        : 0) +
       views::kCaptionButtonWidth);
   return size;
@@ -136,10 +140,11 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
   // The width available is basically the same as width(), but we need to
   // adjust the corner radius on both sides from views::kCaptionButtonWidth to
   // the actual content radius.
-  int available_content_width = width() - views::kCaptionButtonWidth +
-                                icon_image().width() / 2 +
-                                (sub_icon_image_ ? sub_icon_image_->width() / 2
-                                                 : icon_image().width() / 2);
+  int available_content_width =
+      width() - views::kCaptionButtonWidth +
+      base::ClampCeil(icon_image().width() / 2.0f) +
+      (sub_icon_image_ ? base::ClampCeil(sub_icon_image_->width() / 2.0f)
+                       : base::ClampCeil(icon_image().width() / 2.0f));
   int content_width = std::min(full_content_width, available_content_width);
   int current_offset = (width() - content_width) / 2;
 
