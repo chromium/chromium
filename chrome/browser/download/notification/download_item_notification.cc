@@ -1024,7 +1024,9 @@ std::u16string DownloadItemNotification::GetStatusString() const {
     return std::u16string();
 
   if (IsScanning()) {
-    return l10n_util::GetStringUTF16(IDS_PROMPT_DEEP_SCANNING_APP_DOWNLOAD);
+    return l10n_util::GetStringFUTF16(
+        IDS_PROMPT_DEEP_SCANNING_APP_DOWNLOAD,
+        item_->GetFileNameToReportUser().LossyDisplayName());
   }
 
   // The hostname. (E.g.:"example.com" or "127.0.0.1")

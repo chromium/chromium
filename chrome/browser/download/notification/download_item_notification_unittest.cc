@@ -145,6 +145,10 @@ class DownloadItemNotificationTest : public testing::Test {
         *download_item_notification_->notification_, /*metadata=*/nullptr);
   }
 
+  std::u16string GetStatusString() {
+    return download_item_notification_->GetStatusString();
+  }
+
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -324,6 +328,7 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
       )");
   EXPECT_CALL(*download_item_, OpenDownload()).Times(0);
   EXPECT_CALL(*download_item_, SetOpenWhenComplete(true)).Times(1);
+  EXPECT_EQ(u"TITLE.bin is being scanned.", GetStatusString());
   download_item_notification_->Click(absl::nullopt, absl::nullopt);
 
   // Can be opened while scanning.
@@ -337,6 +342,7 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
         }
       )");
   EXPECT_CALL(*download_item_, OpenDownload()).Times(1);
+  EXPECT_EQ(u"TITLE.bin is being scanned.", GetStatusString());
   download_item_notification_->Click(absl::nullopt, absl::nullopt);
 
   // Scanning finished, warning.
