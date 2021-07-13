@@ -19,8 +19,8 @@
 
       #icon {
         height: 20px;
+        opacity: .65;  /* Equivalent to #5a5a5a */
         width: 20px;
-        background: var(--cros-icon-color-primary)
       }
 
       /* Upper-left corner */
@@ -55,41 +55,41 @@
 
       /* Images */
       #icon.ethernet {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/ethernet.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/ethernet.svg);
       }
 
       #icon.vpn {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/vpn.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/vpn.svg);
       }
 
       /* Wi-Fi images */
       #icon.wifi-not-connected {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_0_with_x.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/wifi_0_with_x.svg);
       }
 
       #icon.wifi-no-network,
       #icon.wifi-0 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_0.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/wifi_0.svg);
       }
 
       #icon.wifi-1 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_1.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/wifi_1.svg);
       }
 
       #icon.wifi-2 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_2.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/wifi_2.svg);
       }
 
       #icon.wifi-3 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_3.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/wifi_3.svg);
       }
 
       #icon.wifi-4 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_4.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/wifi_4.svg);
       }
 
       #icon.wifi-off {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_off.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/wifi_off.svg);
       }
 
       #icon.wifi-connecting {
@@ -100,54 +100,54 @@
 
       @keyframes wifi-levels {
         0% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_0.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/wifi_0.svg);
         }
         25% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_1.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/wifi_1.svg);
         }
         50% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_2.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/wifi_2.svg);
         }
         75% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_3.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/wifi_3.svg);
         }
         100% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/wifi_4.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/wifi_4.svg);
         }
       }
 
       /* Cellular images */
       #icon.cellular-not-connected {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_0_with_x.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/cellular_0_with_x.svg);
       }
 
       #icon.cellular-no-network,
       #icon.cellular-0 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_0.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/cellular_0.svg);
       }
 
       #icon.cellular-1 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_1.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/cellular_1.svg);
       }
 
       #icon.cellular-2 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_2.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/cellular_2.svg);
       }
 
       #icon.cellular-3 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_3.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/cellular_3.svg);
       }
 
       #icon.cellular-4 {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_4.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/cellular_4.svg);
       }
 
       #icon.cellular-off {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_off.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/cellular_off.svg);
       }
 
       #icon.cellular-locked {
-        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_locked.svg);
+        background: url(chrome://resources/cr_components/chromeos/network/cellular_locked.svg);
       }
 
       #icon.cellular-connecting {
@@ -158,19 +158,19 @@
 
       @keyframes cellular-levels {
         0% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_0.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/cellular_0.svg);
         }
         25% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_1.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/cellular_1.svg);
         }
         50% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_2.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/cellular_2.svg);
         }
         75% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_3.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/cellular_3.svg);
         }
         100% {
-          -webkit-mask: url(chrome://resources/cr_components/chromeos/network/cellular_4.svg);
+          background: url(chrome://resources/cr_components/chromeos/network/cellular_4.svg);
         }
       }
     </style>
