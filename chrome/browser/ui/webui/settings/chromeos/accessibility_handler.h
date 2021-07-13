@@ -60,6 +60,8 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   void OnSodaError() override;
   void OnSodaLanguagePackError(speech::LanguageCode language_code) override {}
 
+  void MaybeAddDictationLocales();
+
   Profile* profile_;  // Weak pointer.
 
   // Timer to record user changed value for the accessibility setting to turn

@@ -1093,6 +1093,15 @@ and Ctrl+Alt+Brightness down to zoom out.
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR" desc="Description explaining that there was an error with the speech recognition library download.">
     Can't download speech files. Dictation will continue to work by sending your voice to Google.
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_MENU_LABEL" desc="Description of a drop-down menu to select the language to use for Dictation's speech recognition.">
+    Language
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE" desc="Sub-label for a drop-down menu to select the language to use for Dictation. Describes how that language can be processed offline with no network connection.">
+    <ph name="language">$1<ex>English</ex></ph> is processed locally and works offline.
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_NETWORK" desc="Sub-label for a drop-down menu to select the language to use for Dictation. Describes how speech will be sent over the network to Google for processing to create text.">
+    <ph name="language">$1<ex>English</ex></ph> speech is sent to Google for processing.
+  </message>
   <message name="IDS_SETTINGS_ON_SCREEN_KEYBOARD_LABEL" desc="Label for checkbox which enables an on-screen keyboard.">
     Enable on-screen keyboard
   </message>

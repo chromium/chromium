@@ -230,6 +230,35 @@ Polymer({
       value: loadTimeData.getString('dictationDescription'),
     },
 
+    /** @private */
+    dictationLocaleMenuSubtitle_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private */
+    areDictationLocalePrefsAllowed_: {
+      type: String,
+      readOnly: true,
+      value: loadTimeData.getBoolean('areDictationLocalePrefsAllowed'),
+    },
+
+    /** @private */
+    dictationLocaleOptions_: {
+      type: Array,
+      value() {
+        return [];
+      }
+    },
+
+    /** @private */
+    dictationLocalesList_: {
+      type: Array,
+      value() {
+        return [];
+      }
+    },
+
     /**
      * |hasKeyboard_|, |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_|
      * start undefined so observers don't trigger until they have been
@@ -349,6 +378,8 @@ Polymer({
     this.addWebUIListener(
         'dictation-setting-subtitle-changed',
         this.onDictationSettingSubtitleChanged_.bind(this));
+    this.addWebUIListener(
+        'dictation-locales-set', this.onDictationLocalesSet_.bind(this));
     this.manageBrowserProxy_.manageA11yPageReady();
 
     const r = settings.routes;
@@ -583,7 +614,8 @@ Polymer({
   onManageAllyPageReady_(startup_sound_enabled) {
     this.$.startupSoundEnabled.checked = startup_sound_enabled;
   },
-  /*
+
+  /**
    * Whether additional features link should be shown.
    * @param {boolean} isKiosk
    * @param {boolean} isGuest
@@ -601,4 +633,67 @@ Polymer({
   onDictationSettingSubtitleChanged_(subtitle) {
     this.dictationSubtitle_ = subtitle;
   },
+
+
+  /**
+   * Saves a list of locales and updates the UI to reflect the list.
+   * @param {!Array<!Array<string>>} locales
+   * @private
+   */
+  onDictationLocalesSet_(locales) {
+    this.dictationLocalesList_ = locales;
+    this.onDictationLocalesChanged_();
+  },
+
+  /**
+   * Converts an array of locales and their human-readable equivalents to
+   * an array of menu options.
+   * TODO(crbug.com/1195916): Use 'offline' to indicate to the user which
+   * locales work offline with an icon in the select options.
+   * @private
+   */
+  onDictationLocalesChanged_() {
+    const currentLocale =
+        this.get('prefs.settings.a11y.dictation_locale.value');
+    this.dictationLocaleOptions_ =
+        this.dictationLocalesList_
+            .map((localeInfo) => {
+              return {
+                name: localeInfo.name,
+                value: localeInfo.value,
+                offline: localeInfo.offline,
+                recommended: localeInfo.recommended ||
+                    localeInfo.value === currentLocale,
+              };
+            })
+            .sort((first, second) => {
+              // All recommended locales go first.
+              // TODO(crbug.com/1195916): Display recommended languages at the
+              // top of the select options with a horizontal divider before all
+              // languages.
+              if (first.recommended !== second.recommended) {
+                return first.recommended ? -1 : 1;
+              }
+              return first.name.localeCompare(second.name);
+            });
+    this.updateDictationLocaleSubtitle_();
+  },
+
+  /**
+   * Updates the Dictation locale subtitle.
+   * @private
+   */
+  updateDictationLocaleSubtitle_() {
+    const currentLocale =
+        this.get('prefs.settings.a11y.dictation_locale.value');
+    const locale = this.dictationLocaleOptions_.find(
+        (element) => element.value === currentLocale);
+    if (!locale) {
+      return '';
+    }
+    this.dictationLocaleMenuSubtitle_ = this.i18n(
+        locale.offline ? 'dictationLocaleSubLabelOffline' :
+                         'dictationLocaleSubLabelNetwork',
+        locale.name);
+  }
 });

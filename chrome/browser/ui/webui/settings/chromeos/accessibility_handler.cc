@@ -4,20 +4,29 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/accessibility_handler.h"
 
+#include <set>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/dictation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/locale_util.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/chromeos/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
@@ -115,6 +124,7 @@ void AccessibilityHandler::HandleManageA11yPageReady(
       base::Value(AccessibilityManager::Get()->GetStartupSoundEnabled()));
 
   MaybeAddSodaInstallerObserver();
+  MaybeAddDictationLocales();
 }
 
 void AccessibilityHandler::HandleShowChromeVoxTutorial(
@@ -134,6 +144,8 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
 }
 
 void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
+  // TODO(crbug.com/1195916): Don't display SODA status if the Dictation
+  // language is not a downloaded or available SODA language.
   if (features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
     if (speech::SodaInstaller::GetInstance()->IsSodaInstalled())
       OnSodaInstalled();
@@ -164,6 +176,66 @@ void AccessibilityHandler::OnSodaError() {
       "dictation-setting-subtitle-changed",
       base::Value(l10n_util::GetStringUTF16(
           IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR)));
+}
+
+void AccessibilityHandler::MaybeAddDictationLocales() {
+  if (!features::IsExperimentalAccessibilityDictationOfflineEnabled())
+    return;
+
+  base::flat_map<std::string, bool> locales =
+      ash::Dictation::GetAllSupportedLocales();
+
+  // Get application locale.
+  std::string application_locale = g_browser_process->GetApplicationLocale();
+  std::pair<base::StringPiece, base::StringPiece> application_lang_and_locale =
+      language::SplitIntoMainAndTail(application_locale);
+
+  // Get IME locales
+  input_method::InputMethodManager* ime_manager =
+      input_method::InputMethodManager::Get();
+  std::vector<std::string> input_method_ids =
+      ime_manager->GetActiveIMEState()->GetActiveInputMethodIds();
+  std::vector<std::string> ime_languages;
+  ime_manager->GetInputMethodUtil()->GetLanguageCodesFromInputMethodIds(
+      input_method_ids, &ime_languages);
+
+  // Get enabled preferred UI languages.
+  std::string preferred_languages =
+      profile_->GetPrefs()->GetString(language::prefs::kPreferredLanguages);
+  std::vector<base::StringPiece> enabled_languages =
+      base::SplitStringPiece(preferred_languages, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+
+  // Combine these into one set for recommending Dication languages.
+  std::set<base::StringPiece> ui_languages;
+  ui_languages.insert(application_lang_and_locale.first);
+  for (auto& ime_language : ime_languages) {
+    ui_languages.insert(language::SplitIntoMainAndTail(ime_language).first);
+  }
+  for (auto& enabled_language : enabled_languages) {
+    ui_languages.insert(language::SplitIntoMainAndTail(enabled_language).first);
+  }
+
+  base::Value locales_list(base::Value::Type::LIST);
+  for (auto& locale : locales) {
+    base::Value option(base::Value::Type::DICTIONARY);
+    option.SetKey("value", base::Value(locale.first));
+    option.SetKey("name",
+                  base::Value(l10n_util::GetDisplayNameForLocale(
+                      locale.first, application_locale, /*is_for_ui=*/true)));
+    option.SetKey("offline", base::Value(locale.second));
+
+    // We can recommend languages that match the current application
+    // locale, IME languages or enabled preferred languages.
+    std::pair<base::StringPiece, base::StringPiece> lang_and_locale =
+        language::SplitIntoMainAndTail(locale.first);
+    bool is_recommended = base::Contains(ui_languages, lang_and_locale.first);
+
+    option.SetKey("recommended", base::Value(is_recommended));
+    locales_list.Append(std::move(option));
+  }
+
+  FireWebUIListener("dictation-locales-set", locales_list);
 }
 
 }  // namespace settings

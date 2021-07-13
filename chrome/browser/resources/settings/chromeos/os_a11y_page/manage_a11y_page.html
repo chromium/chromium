@@ -220,6 +220,26 @@
         sub-label="[[dictationSubtitle_]]"
         deep-link-focus-id$="[[Setting.kDictation]]">
     </settings-toggle-button>
+    <template is="dom-if" if="[[areDictationLocalePrefsAllowed_]]">
+      <template is="dom-if" if="[[prefs.settings.a11y.dictation.value]]">
+        <div class="settings-box continuation indented">
+          <div class="flex start settings-box-text" id="labelWrapper">
+            <div class="label" aria-hidden="true">
+                $i18n{dictationLocaleMenuLabel}
+            </div>
+            <div class="secondary label">
+                [[dictationLocaleMenuSubtitle_]]
+            </div>
+          </div>
+          <settings-dropdown-menu label="$i18n{dictationLocaleMenuLabel}"
+              pref="{{prefs.settings.a11y.dictation_locale}}"
+              menu-options="[[dictationLocaleOptions_]]"
+              disabled="[[!prefs.settings.a11y.dictation.value]]"
+              on-settings-control-change="onDictationLocalesChanged_">
+          </settings-dropdown-menu>
+        </div>
+      </template>
+    </template>
     <settings-toggle-button
         class="hr"
         pref="{{prefs.settings.a11y.focus_highlight}}"
