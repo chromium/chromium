@@ -156,7 +156,7 @@ Refer to README.md for content description and update process.
  <item id="gcm_unregistration" added_in_milestone="62" hash_code="119542033" type="0" content_hash_code="30144127" os_list="linux,windows" file_path="google_apis/gcm/engine/unregistration_request.cc"/>
  <item id="geo_language_provider" added_in_milestone="65" hash_code="52821843" type="1" second_id="96590038" content_hash_code="65327456" os_list="linux,windows" semantics_fields="1" policy_fields="3,4" file_path="components/language/content/browser/geo_language_provider.cc"/>
  <item id="google_url_tracker" added_in_milestone="62" hash_code="5492492" type="0" deprecated="2019-08-01" content_hash_code="54474899" file_path=""/>
- <item id="gstatic_change_password_override_urls" added_in_milestone="86" hash_code="135799714" type="0" content_hash_code="133151871" os_list="linux,windows" file_path="components/password_manager/core/browser/change_password_url_service_impl.cc"/>
+ <item id="gstatic_change_password_override_urls" added_in_milestone="86" hash_code="135799714" type="0" deprecated="2021-07-12" content_hash_code="133151871" file_path=""/>
  <item id="headless_url_request" added_in_milestone="62" hash_code="29865866" type="0" deprecated="2018-07-10" content_hash_code="76700151" file_path=""/>
  <item id="heartbeat_sender" added_in_milestone="86" hash_code="4883150" type="0" content_hash_code="131927805" os_list="linux,windows" file_path="remoting/host/heartbeat_sender.cc"/>
  <item id="hintsfetcher_gethintsrequest" added_in_milestone="75" hash_code="34557599" type="0" content_hash_code="57003380" os_list="linux,windows" file_path="components/optimization_guide/core/hints_fetcher.cc"/>

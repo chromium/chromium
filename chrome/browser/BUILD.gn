@@ -1020,8 +1020,6 @@ static_library("browser") {
     "password_manager/affiliation_service_factory.h",
     "password_manager/bulk_leak_check_service_factory.cc",
     "password_manager/bulk_leak_check_service_factory.h",
-    "password_manager/change_password_url_service_factory.cc",
-    "password_manager/change_password_url_service_factory.h",
     "password_manager/chrome_biometric_authenticator.h",
     "password_manager/chrome_password_manager_client.cc",
     "password_manager/chrome_password_manager_client.h",
