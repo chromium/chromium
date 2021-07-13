@@ -10,7 +10,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class AuthenticationService;
-@class ContentSuggestionsMetricsRecorder;
 @class DiscoverFeedMetricsRecorder;
 class PrefService;
 
@@ -25,14 +24,9 @@ class DiscoverFeedService : public KeyedService,
                       signin::IdentityManager* identity_manager);
   ~DiscoverFeedService() override;
 
-  // Returns the DiscoverFeedMetricsRecorder to be used by the Discover Feed, a
-  // single instance needs to be used per BrowserState.
+  // Returns the FeedMetricsRecorder to be used by the Feed, a single instance
+  // of DiscoverFeedMetricsRecorder needs to be used per BrowserState.
   DiscoverFeedMetricsRecorder* GetDiscoverFeedMetricsRecorder();
-
-  // Returns the ContentSuggestionsMetricsRecorder to be used by the Zine Feed,
-  // a single instance needs to be used per BrowserState.
-  // TODO(crbug.com/1200303): Remove this when we launch the Discover feed.
-  ContentSuggestionsMetricsRecorder* GetContentSuggestionsMetricsRecorder();
 
   // KeyedService:
   void Shutdown() override;
@@ -49,10 +43,6 @@ class DiscoverFeedService : public KeyedService,
 
   // Metrics recorder for the DiscoverFeed.
   __strong DiscoverFeedMetricsRecorder* discover_feed_metrics_recorder_ = nil;
-
-  // Metrics recorder for the Zine feed.
-  __strong ContentSuggestionsMetricsRecorder*
-      content_suggestions_metrics_recorder_ = nil;
 
   DISALLOW_COPY_AND_ASSIGN(DiscoverFeedService);
 };

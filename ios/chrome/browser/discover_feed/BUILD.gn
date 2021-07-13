@@ -18,7 +18,6 @@ source_set("discover_feed") {
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed",

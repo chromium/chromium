@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -224,23 +223,16 @@
   self.contentSuggestionsCoordinator.bubblePresenter = self.bubblePresenter;
 
   DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
-  ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
-
-  DiscoverFeedService* discoverFeedService =
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
 
   if (IsDiscoverFeedEnabled()) {
+    // Creating the DiscoverFeedService will start the DiscoverFeed.
+    DiscoverFeedService* discoverFeedService =
+        DiscoverFeedServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
     discoverFeedMetricsRecorder =
         discoverFeedService->GetDiscoverFeedMetricsRecorder();
     self.contentSuggestionsCoordinator.discoverFeedMetricsRecorder =
         discoverFeedMetricsRecorder;
-  } else {
-    // TODO(crbug.com/1200303): Remove this when we launch the Discover feed.
-    contentSuggestionsMetricsRecorder =
-        discoverFeedService->GetContentSuggestionsMetricsRecorder();
-    self.contentSuggestionsCoordinator.contentSuggestionsMetricsRecorder =
-        contentSuggestionsMetricsRecorder;
   }
 
   // Requests a Discover feed here if the correct flags and prefs are enabled.

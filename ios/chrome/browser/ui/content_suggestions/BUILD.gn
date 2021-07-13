@@ -7,6 +7,8 @@ source_set("content_suggestions") {
     "content_suggestions_action_handler.h",
     "content_suggestions_alert_factory.h",
     "content_suggestions_alert_factory.mm",
+    "content_suggestions_category_wrapper.h",
+    "content_suggestions_category_wrapper.mm",
     "content_suggestions_consumer.h",
     "content_suggestions_coordinator.h",
     "content_suggestions_coordinator.mm",
@@ -16,6 +18,8 @@ source_set("content_suggestions") {
     "content_suggestions_header_view_controller.mm",
     "content_suggestions_mediator.h",
     "content_suggestions_mediator.mm",
+    "content_suggestions_metrics_recorder.h",
+    "content_suggestions_metrics_recorder.mm",
     "content_suggestions_service_bridge_observer.h",
     "content_suggestions_service_bridge_observer.mm",
     "discover_feed_delegate.h",
@@ -29,7 +33,6 @@ source_set("content_suggestions") {
   ]
   deps = [
     ":constants",
-    ":content_suggestions_util",
     ":feature_flags",
     ":metrics",
     "//base",
@@ -112,18 +115,6 @@ source_set("content_suggestions") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-source_set("content_suggestions_util") {
-  sources = [
-    "content_suggestions_category_wrapper.h",
-    "content_suggestions_category_wrapper.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/ntp_snippets",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
 source_set("constants") {
   sources = [
     "content_suggestions_constants.h",
@@ -155,6 +146,7 @@ source_set("content_suggestions_ui") {
     "content_suggestions_layout.h",
     "content_suggestions_layout.mm",
     "content_suggestions_menu_provider.h",
+    "content_suggestions_metrics_recording.h",
     "content_suggestions_view_controller.h",
     "content_suggestions_view_controller.mm",
     "content_suggestions_view_controller_audience.h",
@@ -210,22 +202,13 @@ source_set("content_suggestions_ui") {
 
 source_set("metrics") {
   sources = [
-    "content_suggestions_metrics_recorder.h",
-    "content_suggestions_metrics_recorder.mm",
-    "content_suggestions_metrics_recording.h",
     "discover_feed_metrics_recorder.h",
     "discover_feed_metrics_recorder.mm",
   ]
   deps = [
-    ":content_suggestions_util",
     ":feature_flags",
     "//base",
     "//components/feed/core/v2/public:common",
-    "//components/ntp_snippets",
-    "//ios/chrome/browser/ui/content_suggestions/cells",
-    "//ios/chrome/browser/ui/content_suggestions/cells:cells_ui",
-    "//ios/chrome/browser/ui/content_suggestions/identifier",
-    "//ui/base",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -282,7 +265,6 @@ source_set("unit_tests") {
     ":content_suggestions",
     ":content_suggestions_ui",
     ":content_suggestions_ui_util",
-    ":content_suggestions_util",
     "//base",
     "//base/test:test_support",
     "//components/ntp_snippets",
