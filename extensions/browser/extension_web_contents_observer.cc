@@ -5,7 +5,6 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 
 #include "base/check.h"
-#include "base/types/pass_key.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -119,6 +118,7 @@ void ExtensionWebContentsObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized_);
   InitializeRenderFrame(render_frame_host);
+  ContentScriptTracker::RenderFrameCreated(PassKey(), render_frame_host);
 
   const Extension* extension = GetExtensionFromFrame(render_frame_host, false);
   if (!extension)
@@ -166,12 +166,12 @@ void ExtensionWebContentsObserver::RenderFrameDeleted(
   ProcessManager::Get(browser_context_)
       ->UnregisterRenderFrameHost(render_frame_host);
   ExtensionApiFrameIdMap::Get()->OnRenderFrameDeleted(render_frame_host);
+  ContentScriptTracker::RenderFrameDeleted(PassKey(), render_frame_host);
 }
 
 void ExtensionWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  ContentScriptTracker::ReadyToCommitNavigation(
-      base::PassKey<ExtensionWebContentsObserver>(), navigation_handle);
+  ContentScriptTracker::ReadyToCommitNavigation(PassKey(), navigation_handle);
 
   const ExtensionRegistry* const registry =
       ExtensionRegistry::Get(browser_context_);

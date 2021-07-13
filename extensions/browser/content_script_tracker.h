@@ -23,6 +23,7 @@ namespace extensions {
 
 class Extension;
 class ExtensionWebContentsObserver;
+class UserScriptLoader;
 class RequestContentScript;
 class ScriptExecutor;
 class WebViewGuest;
@@ -55,12 +56,18 @@ class ContentScriptTracker {
       const content::RenderProcessHost& process,
       const ExtensionId& extension_id);
 
-  // Called before a navigation commits.  This method will inspect all enabled
-  // extensions and consult their manifests to check if they might inject
-  // content scripts into the target of the `navigation`.
+  // The few methods below are called by ExtensionWebContentsObserver to notify
+  // ContentScriptTracker about various events.  The methods correspond directly
+  // to methods of content::WebContentsObserver with the same names.
   static void ReadyToCommitNavigation(
       base::PassKey<ExtensionWebContentsObserver> pass_key,
       content::NavigationHandle* navigation);
+  static void RenderFrameCreated(
+      base::PassKey<ExtensionWebContentsObserver> pass_key,
+      content::RenderFrameHost* frame);
+  static void RenderFrameDeleted(
+      base::PassKey<ExtensionWebContentsObserver> pass_key,
+      content::RenderFrameHost* frame);
 
   // Called before a navigation commits in a GuestView with a non-empty set of
   // content scripts to inject into the guest.
@@ -83,7 +90,14 @@ class ContentScriptTracker {
   // action of the `chrome.declarativeContent` API).
   static void WillExecuteCode(base::PassKey<RequestContentScript> pass_key,
                               content::RenderFrameHost* frame,
-                              const Extension& extension_id);
+                              const Extension& extension);
+
+  // Called before the given renderer `process` is notified about new content
+  // scripts.
+  static void WillUpdateContentScriptsInRenderer(
+      base::PassKey<UserScriptLoader> pass_key,
+      const mojom::HostID& host_id,
+      content::RenderProcessHost& process);
 
  private:
   using PassKey = base::PassKey<ContentScriptTracker>;

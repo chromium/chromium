@@ -277,8 +277,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
       } )";
   dir.WriteManifest(kManifestTemplate);
   dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
-                document.body.innerText = 'content script has run';
-                chrome.test.sendMessage('Hello from content script!'); )");
+          document.body.innerText = 'content script has run';
+          chrome.test.sendMessage('Hello from content script!');
+      )");
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
@@ -325,6 +326,79 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
             content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+}
+
+// Ensure ContentScriptTracker correctly tracks script injections in frames
+// which undergo non-network (i.e. no ReadyToCommitNavigation notification)
+// navigations after an extension is loaded.  For more details about the
+// particular race condition covered by this test please see
+// https://docs.google.com/document/d/1Z0-C3Bstva_-NK_bKhcyj4f2kdWjXv8pscuHre7UlSk/edit?usp=sharing
+IN_PROC_BROWSER_TEST_F(
+    ContentScriptTrackerBrowserTest,
+    AboutBlankNavigationAfterLoadingExtensionMidwayThroughTest) {
+  // Navigate to a test page that *is* covered by `content_scripts.matches`
+  // manifest entry below (the extension is *not* installed at this point yet).
+  GURL injected_url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  ui_test_utils::NavigateToURL(browser(), injected_url);
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create the test extension.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ContentScriptTrackerBrowserTest - Declarative",
+        "version": "1.0",
+        "manifest_version": 2,
+        "permissions": [ "tabs", "<all_urls>" ],
+        "content_scripts": [{
+          "all_frames": true,
+          "match_about_blank": true,
+          "matches": ["*://example.com/*"],
+          "js": ["content_script.js"],
+          "run_at": "document_end"
+        }],
+        "background": {"scripts": ["background_script.js"]}
+      } )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("background_script.js"), "");
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+          document.body.innerText = 'content script has run';
+          chrome.test.sendMessage('Hello from content script!');
+      )");
+
+  // Load the test extension.  Note that the LoadExtension call below will
+  // internally wait for content scripts to be sent to the renderer processes
+  // (see ContentScriptLoadWaiter usage in the WaitForExtensionReady method).
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  std::string extension_id = extension->id();
+
+  // Open a new tab with 'about:blank'.  This may be tricky, because 1) the
+  // initial empty document commits synchronously, without going through
+  // ReadyToCommit step and 2) when this test was being written, the initial
+  // 'about:blank' did not send a DidCommit IPC to the Browser process.
+  ExtensionTestMessageListener listener("Hello from content script!", false);
+  content::WebContentsAddedObserver popup_observer;
+  ExecuteScriptAsync(first_tab, "window.open('about:blank', '_blank')");
+
+  // Verify that the content script has been run.
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  content::WebContents* popup = popup_observer.GetWebContents();
+  EXPECT_EQ("content script has run",
+            content::EvalJs(popup, "document.body.innerText"));
+
+  // Verify that content script didn't run in the opener.  This mostly verifies
+  // the test setup/steps.
+  EXPECT_NE("content script has run",
+            content::EvalJs(first_tab, "document.body.innerText"));
+
+  // Verify that ContentScriptTracker correctly says that a content script has
+  // been run in the `popup`.  This verifies product code - this is the main
+  // verification in this test.
+  EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *popup->GetMainFrame()->GetProcess(), extension_id));
 }
 
 class ContentScriptTrackerMatchOriginAsFallbackBrowserTest

@@ -101,9 +101,14 @@ bool IsValidMessagingSource(RenderProcessHost& process,
       return true;
 
     case MessagingEndpoint::Type::kTab:
-      // TODO(https://crbug.com/1212918: Re-enable the enforcement after
-      // investigating and fixing the root cause of bad message reports coming
-      // from the end users.
+      if (source_endpoint.extension_id.has_value() &&
+          !ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+              process, source_endpoint.extension_id.value())) {
+        // TODO(https://crbug.com/1212918: Re-enable the enforcement after
+        // investigating and fixing the root cause of bad message reports coming
+        // from the end users.
+        LOG(ERROR) << "EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT";
+      }
       return true;
   }
 }

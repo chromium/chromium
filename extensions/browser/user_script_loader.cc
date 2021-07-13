@@ -14,11 +14,13 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/strings/string_util.h"
+#include "base/types/pass_key.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
@@ -435,7 +437,6 @@ void UserScriptLoader::OnScriptsLoaded(
 void UserScriptLoader::SendUpdate(
     content::RenderProcessHost* process,
     const base::ReadOnlySharedMemoryRegion& shared_memory) {
-
   // Make sure we only send user scripts to processes in our browser_context.
   if (!ExtensionsBrowserClient::Get()->IsSameContext(
           browser_context_, process->GetBrowserContext()))
@@ -469,6 +470,9 @@ void UserScriptLoader::SendUpdate(
     if (owner_host != host_id().id)
       return;
   }
+
+  ContentScriptTracker::WillUpdateContentScriptsInRenderer(
+      base::PassKey<UserScriptLoader>(), host_id_, *process);
 
   mojom::Renderer* renderer =
       RendererStartupHelperFactory::GetForBrowserContext(browser_context())

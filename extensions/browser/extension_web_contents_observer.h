@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -119,6 +120,8 @@ class ExtensionWebContentsObserver
       content::RenderFrameHost* render_frame_host) const;
 
  private:
+  using PassKey = base::PassKey<ExtensionWebContentsObserver>;
+
   friend class ExtensionFrameHostBrowserTest;
   // The BrowserContext associated with the WebContents being observed.
   content::BrowserContext* browser_context_;
