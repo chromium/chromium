@@ -48,6 +48,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="User" summary="Installed by user"/>
 </variants>
 
+<variants name="RestoreAction">
+  <variant name="CloseByUser"
+      summary="The full restore notfication is closed by user"/>
+  <variant name="CloseNotByUser"
+      summary="The full restore notfication is not closed by user"/>
+  <variant name="NotRestore" summary="No thanks is clicked"/>
+  <variant name="Restore" summary="Restore is clicked"/>
+</variants>
+
 <histogram name="Apps.ActivatedCount.{AppType}" units="ms"
     expires_after="2021-10-28">
   <owner>dominickn@chromium.org</owner>
@@ -2419,6 +2428,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     on Chrome OS. This is logged every five minutes.
   </summary>
   <token key="AppType" variants="AppType"/>
+</histogram>
+
+<histogram name="Apps.WindowCount.{RestoreAction}" units="unit"
+    expires_after="2021-12-30">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the number of the new created windows when {RestoreAction} in Chrome
+    OS. This is logged when {RestoreAction} on the full restore notfication
+    during the system startup phase.
+  </summary>
+  <token key="RestoreAction" variants="RestoreAction"/>
 </histogram>
 
 </histograms>

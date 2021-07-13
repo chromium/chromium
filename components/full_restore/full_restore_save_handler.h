@@ -144,6 +144,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // nullptr if there is no such RestoreData.
   const RestoreData* GetRestoreData(const base::FilePath& profile_path);
 
+  int window_count() const { return window_count_; }
+
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
   // Since this is a singleton, tests may need to clear it between tests.
@@ -211,6 +213,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   std::set<base::FilePath> save_running_;
 
   std::unique_ptr<ArcSaveHandler> arc_save_handler_;
+
+  // The number of window created. This is used for metrics only.
+  int window_count_ = 0;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
 

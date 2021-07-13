@@ -43,6 +43,12 @@ const char kRestoreForCrashNotificationHistogramName[] =
 const char kRestoreSettingHistogramName[] = "Apps.RestoreSetting";
 const char kRestoreInitSettingHistogramName[] = "Apps.RestoreInitSetting";
 
+constexpr char kWindowCountHistogramPrefix[] = "Apps.WindowCount.";
+constexpr char kRestoreHistogramSuffix[] = "Restore";
+constexpr char kNotRestoreHistogramSuffix[] = "NotRestore";
+constexpr char kCloseByUserHistogramSuffix[] = "CloseByUser";
+constexpr char kCloseNotByUserHistogramSuffix[] = "CloseNotByUser";
+
 // static
 FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
   return static_cast<FullRestoreService*>(
@@ -128,6 +134,8 @@ void FullRestoreService::Close(bool by_user) {
     RecordRestoreAction(
         notification_->id(),
         by_user ? RestoreAction::kCloseByUser : RestoreAction::kCloseNotByUser);
+    RecordWindowCount(by_user ? kCloseByUserHistogramSuffix
+                              : kCloseNotByUserHistogramSuffix);
   }
 }
 void FullRestoreService::Click(const absl::optional<int>& button_index,
@@ -153,7 +161,10 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
 
   if (button_index.value() ==
       static_cast<int>(RestoreNotificationButtonIndex::kRestore)) {
+    RecordWindowCount(kRestoreHistogramSuffix);
     Restore();
+  } else {
+    RecordWindowCount(kNotRestoreHistogramSuffix);
   }
 
   if (!is_shut_down_) {
@@ -252,6 +263,12 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
 bool FullRestoreService::ShouldShowNotification() {
   return app_launch_handler_->HasRestoreData() &&
          !::first_run::IsChromeFirstRun();
+}
+
+void FullRestoreService::RecordWindowCount(const std::string& restore_action) {
+  base::UmaHistogramCounts100(
+      kWindowCountHistogramPrefix + restore_action,
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->window_count());
 }
 
 ScopedRestoreForTesting::ScopedRestoreForTesting() {
