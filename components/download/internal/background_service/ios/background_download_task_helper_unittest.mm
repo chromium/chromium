@@ -11,6 +11,7 @@
 #import "base/files/scoped_temp_dir.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
+#import "base/test/gmock_callback_support.h"
 #import "base/test/task_environment.h"
 #import "components/download/public/background_service/download_params.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -60,7 +61,8 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
           ASSERT_TRUE(base::ReadFileToString(file_path, &content));
           EXPECT_EQ(kDefaultResponseContent, content);
           loop.Quit();
-        }));
+        }),
+        base::DoNothing());
     loop.Run();
     DCHECK(request_sent_);
     auto it = request_sent_->headers.find(net::HttpRequestHeaders::kIfMatch);
@@ -69,6 +71,7 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
   }
 
   const HttpRequest* request_sent() const { return request_sent_.get(); }
+  const base::ScopedTempDir& dir() const { return dir_; }
 
  private:
   std::unique_ptr<HttpResponse> DefaultResponse(const HttpRequest& request) {
@@ -91,6 +94,7 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
 // Verifies download can be finished.
 TEST_F(BackgroundDownloadTaskHelperTest, DownloadComplete) {
   Download("/test");
+  EXPECT_TRUE(base::PathExists(dir().GetPath().AppendASCII(kGuid)));
 }
 
 }  // namespace download

@@ -28,7 +28,9 @@ class BackgroundDownloadTaskHelper {
   // Callback with whether download is succeeded and the file path of the
   // succeeded download.
   using CompletionCallback =
-      base::RepeatingCallback<void(bool, const base::FilePath&)>;
+      base::OnceCallback<void(bool, const base::FilePath&)>;
+  // Callback with number of bytes downloaded.
+  using UpdateCallback = base::RepeatingCallback<void(int64_t)>;
   static std::unique_ptr<BackgroundDownloadTaskHelper> Create(
       const base::FilePath& download_dir);
 
@@ -42,7 +44,8 @@ class BackgroundDownloadTaskHelper {
   virtual void StartDownload(const std::string& guid,
                              const RequestParams& request_params,
                              const SchedulingParams& scheduling_params,
-                             CompletionCallback completion_callback) = 0;
+                             CompletionCallback completion_callback,
+                             UpdateCallback update_callback) = 0;
 };
 
 }  // namespace download

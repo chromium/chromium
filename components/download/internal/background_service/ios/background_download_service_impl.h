@@ -66,6 +66,10 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
                           bool success,
                           const base::FilePath& file_path);
 
+  void OnDownloadUpdated(DownloadClient download_client,
+                         const std::string& guid,
+                         int64_t bytes_downloaded);
+
   std::unique_ptr<Configuration> config_;
   ServiceConfigImpl service_config_;
   // TODO(xingliu): Ping clients for all events.

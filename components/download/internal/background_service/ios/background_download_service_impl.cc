@@ -118,7 +118,16 @@ Logger* BackgroundDownloadServiceImpl::GetLogger() {
 
 void BackgroundDownloadServiceImpl::OnModelReady(bool success) {
   init_success_ = success;
-  // TODO(xingliu): Ping clients for service status.
+  if (!success) {
+    for (const auto& client_it : *clients_.get())
+
+      client_it.second->OnServiceUnavailable();
+    return;
+  }
+
+  // TODO(xingliu): Create list of metadata and call OnServiceInitialized().
+  for (const auto& client_it : *clients_.get())
+    client_it.second->OnServiceUnavailable();
 }
 
 void BackgroundDownloadServiceImpl::OnModelHardRecoverComplete(bool success) {}
@@ -141,7 +150,10 @@ void BackgroundDownloadServiceImpl::OnItemAdded(bool success,
                       std::move(callback));
   download_helper_->StartDownload(
       entry->guid, entry->request_params, entry->scheduling_params,
-      base::BindRepeating(&BackgroundDownloadServiceImpl::OnDownloadFinished,
+      base::BindOnce(&BackgroundDownloadServiceImpl::OnDownloadFinished,
+                     weak_ptr_factory_.GetWeakPtr(), entry->client,
+                     entry->guid),
+      base::BindRepeating(&BackgroundDownloadServiceImpl::OnDownloadUpdated,
                           weak_ptr_factory_.GetWeakPtr(), entry->client,
                           entry->guid));
 }
@@ -176,6 +188,18 @@ void BackgroundDownloadServiceImpl::OnDownloadFinished(
   CompletionInfo completion_info;
   completion_info.path = file_path;
   client->OnDownloadSucceeded(guid, completion_info);
+}
+
+void BackgroundDownloadServiceImpl::OnDownloadUpdated(
+    DownloadClient download_client,
+    const std::string& guid,
+    int64_t bytes_downloaded) {
+  auto it = clients_->find(download_client);
+  if (it == clients_->end())
+    return;
+  download::Client* client = it->second.get();
+  client->OnDownloadUpdated(guid, /*bytes_uploaded*/ 0u,
+                            static_cast<uint64_t>(bytes_downloaded));
 }
 
 }  // namespace download

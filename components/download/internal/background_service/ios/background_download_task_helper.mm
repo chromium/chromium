@@ -22,23 +22,37 @@
 
 using CompletionCallback =
     download::BackgroundDownloadTaskHelper::CompletionCallback;
+using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
 
 @interface BackgroundDownloadDelegate : NSObject <NSURLSessionDownloadDelegate>
 - (instancetype)initWithDownloadDirectory:(base::FilePath)downloadDir
-                        completionHandler:(CompletionCallback)completionHandler;
+                                     guid:(std::string)guid
+                        completionHandler:(CompletionCallback)completionHandler
+                            updateHandler:(UpdateCallback)updateHandler;
 @end
 
 @implementation BackgroundDownloadDelegate {
   base::FilePath _downloadDir;
+  std::string _guid;
   CompletionCallback _completionCallback;
+  UpdateCallback _updateCallback;
 }
 
 - (instancetype)initWithDownloadDirectory:(base::FilePath)downloadDir
-                        completionHandler:
-                            (CompletionCallback)completionHandler {
+                                     guid:(std::string)guid
+                        completionHandler:(CompletionCallback)completionHandler
+                            updateHandler:(UpdateCallback)updateHandler {
   _downloadDir = downloadDir;
-  _completionCallback = completionHandler;
+  _guid = guid;
+  _completionCallback = std::move(completionHandler);
+  _updateCallback = updateHandler;
   return self;
+}
+
+- (void)invokeCompletionHandler:(bool)success
+                       filePath:(base::FilePath)filePath {
+  if (_completionCallback)
+    std::move(_completionCallback).Run(success, filePath);
 }
 
 #pragma mark - NSURLSessionDownloadDelegate
@@ -60,7 +74,8 @@ using CompletionCallback =
   DVLOG(1) << __func__ << ",byte written: " << bytesWritten
            << ", totalBytesWritten:" << totalBytesWritten
            << ", totalBytesExpectedToWrite:" << totalBytesExpectedToWrite;
-  NOTIMPLEMENTED();
+  if (_updateCallback)
+    _updateCallback.Run(totalBytesWritten);
 }
 
 - (void)URLSession:(NSURLSession*)session
@@ -68,14 +83,14 @@ using CompletionCallback =
     didFinishDownloadingToURL:(NSURL*)location {
   DVLOG(1) << __func__;
   if (!location) {
-    _completionCallback.Run(/*success=*/false, base::FilePath());
+    [self invokeCompletionHandler:/*success=*/false filePath:base::FilePath()];
     return;
   }
 
   // Make sure the target directory exists.
   if (!base::CreateDirectory(_downloadDir)) {
     LOG(ERROR) << "Failed to create dir:" << _downloadDir;
-    _completionCallback.Run(/*success=*/false, base::FilePath());
+    [self invokeCompletionHandler:/*success=*/false filePath:base::FilePath()];
     return;
   }
 
@@ -83,16 +98,14 @@ using CompletionCallback =
   // service's target directory.
   const base::FilePath tempPath =
       base::mac::NSStringToFilePath([location path]);
-  // TODO(xingliu): Rename the file to use the guid of the download.
-  base::FilePath newFile = _downloadDir.Append(base::NumberToString(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds()));
+  base::FilePath newFile = _downloadDir.AppendASCII(_guid);
   if (!base::Move(tempPath, newFile)) {
     LOG(ERROR) << "Failed to move file from:" << tempPath
                << ", to:" << _downloadDir;
-    _completionCallback.Run(/*success=*/false, base::FilePath());
+    [self invokeCompletionHandler:/*success=*/false filePath:base::FilePath()];
     return;
   }
-  _completionCallback.Run(/*success=*/true, newFile);
+  [self invokeCompletionHandler:/*success=*/true filePath:newFile];
 }
 
 #pragma mark - NSURLSessionDelegate
@@ -103,7 +116,6 @@ using CompletionCallback =
   VLOG(1) << __func__;
   // TODO(xingliu): Check whether we can resume for a few times if the user
   // terminated the app in multitask window or failed downloads.
-  NOTIMPLEMENTED();
 }
 @end
 
@@ -121,7 +133,8 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
   void StartDownload(const std::string& guid,
                      const RequestParams& request_params,
                      const SchedulingParams& scheduling_params,
-                     CompletionCallback completion_callback) override {
+                     CompletionCallback completion_callback,
+                     UpdateCallback update_callback) override {
     // TODO(xingliu): Implement handleEventsForBackgroundURLSession and invoke
     // the callback passed from it.
     NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
@@ -135,7 +148,9 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
             SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
     BackgroundDownloadDelegate* delegate = [[BackgroundDownloadDelegate alloc]
         initWithDownloadDirectory:download_dir_
-                completionHandler:completion_callback];
+                             guid:guid
+                completionHandler:std::move(completion_callback)
+                    updateHandler:update_callback];
     NSURLSession* session = [NSURLSession sessionWithConfiguration:configuration
                                                           delegate:delegate
                                                      delegateQueue:nil];
