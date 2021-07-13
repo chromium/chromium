@@ -823,10 +823,6 @@ class BASE_EXPORT ListValue : public Value {
   explicit ListValue(span<const Value> in_list);
   explicit ListValue(ListStorage&& in_list) noexcept;
 
-  // Clears the contents of this ListValue
-  // DEPRECATED, use `ClearList()` instead.
-  void Clear();
-
   // Returns the number of Values in this list.
   // DEPRECATED, use `GetList()::size()` instead.
   size_t GetSize() const { return list().size(); }
