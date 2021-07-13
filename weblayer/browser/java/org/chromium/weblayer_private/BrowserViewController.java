@@ -210,6 +210,8 @@ public final class BrowserViewController
                     mModalDialogManager.resumeType(
                             ModalDialogManager.ModalDialogType.TAB, mTabModalToken);
                 }
+                mAppModalToken = TokenHolder.INVALID_TOKEN;
+                mTabModalToken = TokenHolder.INVALID_TOKEN;
             }
         };
         mBottomSheetController.addObserver(mBottomSheetObserver);
