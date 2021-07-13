@@ -373,7 +373,7 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       switches::kWebglMSAASampleCount,
   };
 
-  for (const auto& arg : args->DictItems()) {
+  for (const auto arg : args->DictItems()) {
     if (!base::Contains(kAllowedArgs, arg.first)) {
       // TODO(https://crbug.com/1032439): Increase severity and return false
       // once we have a mechanism for soft transitions of supported arguments.
