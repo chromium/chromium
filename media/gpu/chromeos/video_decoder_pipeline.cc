@@ -224,21 +224,19 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   client_output_cb_ = std::move(output_cb);
   waiting_cb_ = std::move(waiting_cb);
 
-  // Initialize() and correspondingly InitializeTask(), are called both on first
-  // initialization and on subsequent stream |config| changes, e.g. change of
-  // resolution. Subsequent initializations are marked by |decoder_| already
-  // existing.
+  // |decoder_| may be Initialize()d multiple times (e.g. on |config| changes)
+  // but can only be created once.
+  if (!decoder_ && !create_decoder_function_cb_.is_null()) {
+    decoder_ = std::move(create_decoder_function_cb_)
+                   .Run(decoder_task_runner_, decoder_weak_this_);
+  }
+  // Note: |decoder_| might fail to be created, e.g. on V4L2 platforms.
   if (!decoder_) {
-    decoder_ = create_decoder_function_cb_.Run(decoder_task_runner_,
-                                               decoder_weak_this_);
-
-    if (!decoder_) {
-      DVLOGF(2) << "|decoder_| creation failed.";
-      client_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(std::move(init_cb),
-                                    StatusCode::kDecoderFailedCreation));
-      return;
-    }
+    OnError("|decoder_| creation failed.");
+    client_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(init_cb), StatusCode::kDecoderFailedCreation));
+    return;
   }
 
   decoder_->Initialize(

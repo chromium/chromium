@@ -141,7 +141,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
                                               public DecoderInterface::Client {
  public:
   using CreateDecoderFunctionCB =
-      base::RepeatingCallback<std::unique_ptr<DecoderInterface>(
+      base::OnceCallback<std::unique_ptr<DecoderInterface>(
           scoped_refptr<base::SequencedTaskRunner>,
           base::WeakPtr<DecoderInterface::Client>)>;
 

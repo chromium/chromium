@@ -111,7 +111,11 @@ class FakeCdmContextRef : public CdmContextRef {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 struct DecoderPipelineTestParams {
-  VideoDecoderPipeline::CreateDecoderFunctionCB create_decoder_function_cb;
+  // GTest params need to be copyable; hence we need here a RepeatingCallback
+  // version of VideoDecoderPipeline::CreateDecoderFunctionCB.
+  using RepeatingCreateDecoderFunctionCB = base::RepeatingCallback<
+      VideoDecoderPipeline::CreateDecoderFunctionCB::RunType>;
+  RepeatingCreateDecoderFunctionCB create_decoder_function_cb;
   StatusCode status_code;
 };
 
@@ -136,8 +140,8 @@ class VideoDecoderPipelineTest
             std::move(pool_),
             std::move(converter_),
             // This callback needs to be configured in the individual tests.
-            base::BindRepeating(
-                &VideoDecoderPipelineTest::CreateNullMockDecoder))) {}
+            base::BindOnce(&VideoDecoderPipelineTest::CreateNullMockDecoder))) {
+  }
   ~VideoDecoderPipelineTest() override = default;
 
   void TearDown() override {
@@ -161,7 +165,7 @@ class VideoDecoderPipelineTest
       VideoDecoderPipeline::CreateDecoderFunctionCB create_decoder_function_cb,
       StatusCode status_code,
       CdmContext* cdm_context = nullptr) {
-    SetCreateDecoderFunctionCB(create_decoder_function_cb);
+    SetCreateDecoderFunctionCB(std::move(create_decoder_function_cb));
 
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnInit(MatchesStatusCode(status_code)))
@@ -194,7 +198,7 @@ class VideoDecoderPipelineTest
         .WillOnce(
             Return(ByMove(std::make_unique<FakeCdmContextRef>(&cdm_context_))));
     InitializeDecoder(
-        base::BindRepeating(
+        base::BindOnce(
             &VideoDecoderPipelineTest::CreateGoodMockTranscryptDecoder),
         StatusCode::kOk, &cdm_context_);
     testing::Mock::VerifyAndClearExpectations(&chromeos_cdm_context_);
@@ -283,7 +287,7 @@ class VideoDecoderPipelineTest
 
 // Verifies the status code for several typical CreateDecoderFunctionCB cases.
 TEST_P(VideoDecoderPipelineTest, Initialize) {
-  InitializeDecoder(GetParam().create_decoder_function_cb,
+  InitializeDecoder(base::BindOnce(GetParam().create_decoder_function_cb),
                     GetParam().status_code);
 
   EXPECT_EQ(GetParam().status_code == StatusCode::kOk,
@@ -322,7 +326,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Verifies the Reset sequence.
 TEST_F(VideoDecoderPipelineTest, Reset) {
   InitializeDecoder(
-      base::BindRepeating(&VideoDecoderPipelineTest::CreateGoodMockDecoder),
+      base::BindOnce(&VideoDecoderPipelineTest::CreateGoodMockDecoder),
       StatusCode::kOk);
 
   // When we call Reset(), we expect GetUnderlyingDecoder()'s Reset() method to
