@@ -142,7 +142,7 @@ TEST_F(OmahaServiceTest, PingMessageTest) {
       " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\""
       " installage=\"0\">"
       "<updatecheck/>"
-      "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
+      "<ping active=\"1\" ad=\"-1\" rd=\"-1\"/></app></request>";
 
   OmahaService service(false);
   service.StartInternal();
@@ -170,7 +170,7 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
       "<app version=\"[^\"]*\" nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\""
       " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\">"
       "<updatecheck/>"
-      "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
+      "<ping active=\"1\" ad=\"-1\" rd=\"-1\"/></app></request>";
 
   OmahaService service(false);
   service.StartInternal();
@@ -201,6 +201,7 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
       " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\""
       " installage=\"%d\">"
       "<event eventtype=\"%d\" eventresult=\"1\"/>"
+      "<ping active=\"1\" ad=\"-1\" rd=\"-1\"/>"
       "</app></request>";
 
   // First install.
@@ -758,6 +759,7 @@ TEST_F(OmahaServiceTest, ActivePingAfterInstallEventTest) {
       test_application_id() +
       "\" status=\"ok\">"
       "<event status=\"ok\"/>"
+      "<ping status=\"ok\"/>"
       "</app></response>";
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(

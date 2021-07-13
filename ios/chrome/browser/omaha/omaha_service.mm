@@ -410,16 +410,25 @@ void OmahaService::StartInternal() {
   number_of_tries_ = [defaults integerForKey:kNumberTriesKey];
   last_sent_time_ =
       base::Time::FromCFAbsoluteTime([defaults doubleForKey:kLastSentTimeKey]);
-  last_server_date_ = [defaults integerForKey:kLastServerDateKey];
-  if (last_server_date_ == 0) {
-    last_server_date_ = -2;  // -2 indicates "unknown" to the Omaha Server.
-  }
   NSString* lastSentVersion = [defaults stringForKey:kLastSentVersionKey];
   if (lastSentVersion) {
     last_sent_version_ =
         base::Version(base::SysNSStringToUTF8(lastSentVersion));
   } else {
     last_sent_version_ = base::Version(kDefaultLastSentVersion);
+  }
+  last_server_date_ = [defaults integerForKey:kLastServerDateKey];
+  if (last_server_date_ == 0) {
+    if (lastSentVersion) {
+      // If there is a record of the last sent version but no record of the
+      // last server date, this client has upgraded from a version of Chrome
+      // that did not support saving the last server date. Send -2 ("unknown").
+      last_server_date_ = -2;
+    } else {
+      // If there is neither a last server date nor last sent version, this is
+      // a fresh install. Send -1 ("first active").
+      last_server_date_ = -1;
+    }
   }
 
   application_install_date_ =
@@ -586,15 +595,16 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
     // Set up <updatecheck/>
     xml_wrapper.StartElement("updatecheck");
     xml_wrapper.EndElement();
-
-    // Set up <ping active=1/>
-    std::string last_server_date = base::StringPrintf("%d", last_server_date_);
-    xml_wrapper.StartElement("ping");
-    xml_wrapper.WriteAttribute("active", "1");
-    xml_wrapper.WriteAttribute("ad", last_server_date.c_str());
-    xml_wrapper.WriteAttribute("rd", last_server_date.c_str());
-    xml_wrapper.EndElement();
   }
+
+  // Set up <ping ... />
+  const std::string last_server_date =
+      base::StringPrintf("%d", last_server_date_);
+  xml_wrapper.StartElement("ping");
+  xml_wrapper.WriteAttribute("active", "1");
+  xml_wrapper.WriteAttribute("ad", last_server_date.c_str());
+  xml_wrapper.WriteAttribute("rd", last_server_date.c_str());
+  xml_wrapper.EndElement();
 
   // End app.
   xml_wrapper.EndElement();
