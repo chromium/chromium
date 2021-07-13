@@ -54,10 +54,8 @@ void LayoutNGListItem::StyleDidChange(StyleDifference diff,
   list_marker->UpdateMarkerContentIfNeeded(*marker);
 
   if (old_style) {
-    const ListStyleTypeData* old_list_style_type =
-        old_style->GetListStyleType();
-    const ListStyleTypeData* new_list_style_type =
-        StyleRef().GetListStyleType();
+    const ListStyleTypeData* old_list_style_type = old_style->ListStyleType();
+    const ListStyleTypeData* new_list_style_type = StyleRef().ListStyleType();
     if (old_list_style_type != new_list_style_type &&
         (!old_list_style_type || !new_list_style_type ||
          *old_list_style_type != *new_list_style_type))
@@ -66,9 +64,8 @@ void LayoutNGListItem::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutNGListItem::UpdateCounterStyle() {
-  if (!StyleRef().GetListStyleType() ||
-      StyleRef().GetListStyleType()->IsCounterStyleReferenceValid(
-          GetDocument())) {
+  if (!StyleRef().ListStyleType() ||
+      StyleRef().ListStyleType()->IsCounterStyleReferenceValid(GetDocument())) {
     return;
   }
 

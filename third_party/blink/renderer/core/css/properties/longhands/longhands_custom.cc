@@ -4328,15 +4328,15 @@ const CSSValue* ListStyleType::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (!style.GetListStyleType())
+  if (!style.ListStyleType())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
-  if (style.GetListStyleType()->IsString()) {
+  if (style.ListStyleType()->IsString()) {
     return MakeGarbageCollected<CSSStringValue>(
-        style.GetListStyleType()->GetStringValue());
+        style.ListStyleType()->GetStringValue());
   }
   // TODO(crbug.com/687225): Return a scoped CSSValue?
   return MakeGarbageCollected<CSSCustomIdentValue>(
-      style.GetListStyleType()->GetCounterStyleName());
+      style.ListStyleType()->GetCounterStyleName());
 }
 
 void ListStyleType::ApplyInitial(StyleResolverState& state) const {
@@ -4345,7 +4345,7 @@ void ListStyleType::ApplyInitial(StyleResolverState& state) const {
 }
 
 void ListStyleType::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetListStyleType(state.ParentStyle()->GetListStyleType());
+  state.Style()->SetListStyleType(state.ParentStyle()->ListStyleType());
 }
 
 void ListStyleType::ApplyValue(StyleResolverState& state,

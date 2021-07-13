@@ -2517,14 +2517,10 @@ void ComputedStyle::ClearBackgroundImage() {
     curr_child->ClearImage();
 }
 
-ListStyleTypeData* ComputedStyle::GetListStyleType() const {
-  return ListStyleTypeInternal();
-}
-
 const AtomicString& ComputedStyle::ListStyleStringValue() const {
-  if (!GetListStyleType() || !GetListStyleType()->IsString())
+  if (!ListStyleType() || !ListStyleType()->IsString())
     return g_null_atom;
-  return GetListStyleType()->GetStringValue();
+  return ListStyleType()->GetStringValue();
 }
 
 absl::optional<Color> ComputedStyle::AccentColorResolved() const {

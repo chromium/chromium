@@ -280,7 +280,7 @@ bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
         return !pseudo_style->ContentPreventsBoxGeneration();
       const ComputedStyle* parent_style =
           originating_element->GetComputedStyle();
-      return parent_style && (parent_style->GetListStyleType() ||
+      return parent_style && (parent_style->ListStyleType() ||
                               parent_style->GeneratesMarkerImage());
     }
     default:

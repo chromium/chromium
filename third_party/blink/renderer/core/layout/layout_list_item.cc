@@ -61,7 +61,7 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
   LayoutBlockFlow::StyleDidChange(diff, old_style);
 
   StyleImage* current_image = StyleRef().ListStyleImage();
-  if (StyleRef().GetListStyleType() ||
+  if (StyleRef().ListStyleType() ||
       (current_image && !current_image->ErrorOccurred())) {
     NotifyOfSubtreeChange();
   }
@@ -80,10 +80,8 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
     list_marker->UpdateMarkerContentIfNeeded(*marker);
 
   if (old_style) {
-    const ListStyleTypeData* old_list_style_type =
-        old_style->GetListStyleType();
-    const ListStyleTypeData* new_list_style_type =
-        StyleRef().GetListStyleType();
+    const ListStyleTypeData* old_list_style_type = old_style->ListStyleType();
+    const ListStyleTypeData* new_list_style_type = StyleRef().ListStyleType();
     if (old_list_style_type != new_list_style_type &&
         (!old_list_style_type || !new_list_style_type ||
          *old_list_style_type != *new_list_style_type)) {
@@ -98,9 +96,8 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
 void LayoutListItem::UpdateCounterStyle() {
   NOT_DESTROYED();
 
-  if (!StyleRef().GetListStyleType() ||
-      StyleRef().GetListStyleType()->IsCounterStyleReferenceValid(
-          GetDocument())) {
+  if (!StyleRef().ListStyleType() ||
+      StyleRef().ListStyleType()->IsCounterStyleReferenceValid(GetDocument())) {
     return;
   }
 

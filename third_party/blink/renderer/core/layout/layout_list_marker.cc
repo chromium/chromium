@@ -323,7 +323,7 @@ ListMarker::ListStyleCategory LayoutListMarker::GetListStyleCategory() const {
 
 const CounterStyle& LayoutListMarker::GetCounterStyle() const {
   NOT_DESTROYED();
-  const ListStyleTypeData* list_style_data = StyleRef().GetListStyleType();
+  const ListStyleTypeData* list_style_data = StyleRef().ListStyleType();
   DCHECK(list_style_data);
   DCHECK(list_style_data->IsCounterStyle());
   return list_style_data->GetCounterStyle(GetDocument());

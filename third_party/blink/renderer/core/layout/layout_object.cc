@@ -714,7 +714,7 @@ bool LayoutObject::IsListMarkerForSummary() const {
         ListMarker::ListStyleCategory::kSymbol)
       return false;
     const AtomicString& name =
-        StyleRef().GetListStyleType()->GetCounterStyleName();
+        StyleRef().ListStyleType()->GetCounterStyleName();
     return name == "disclosure-open" || name == "disclosure-closed";
   }
   return false;

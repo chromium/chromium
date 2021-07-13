@@ -2657,7 +2657,6 @@
         "simp-chinese-informal", "trad-chinese-formal", "trad-chinese-informal",
         "hiragana", "katakana", "hiragana-iroha", "katakana-iroha", "none"
       ],
-      computed_style_custom_functions: ["getter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       tree_scoped_value: true,
     },

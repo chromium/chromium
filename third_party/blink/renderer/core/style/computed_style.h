@@ -963,11 +963,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   // list-style-type
   const AtomicString& ListStyleStringValue() const;
-  // TODO(crbug.com/687225): Make this function auto-generated.
-  CORE_EXPORT ListStyleTypeData* GetListStyleType() const;
   bool ListStyleTypeDataEquivalent(const ComputedStyle& other) const {
-    return DataEquivalent(ListStyleTypeInternal(),
-                          other.ListStyleTypeInternal());
+    return DataEquivalent(ListStyleType(), other.ListStyleType());
   }
 
   // quotes

@@ -622,7 +622,7 @@ ax::mojom::blink::ListStyle AXLayoutObject::GetListStyle() const {
       return ax::mojom::blink::ListStyle::kNone;
     case ListMarker::ListStyleCategory::kSymbol: {
       const AtomicString& counter_style_name =
-          computed_style->GetListStyleType()->GetCounterStyleName();
+          computed_style->ListStyleType()->GetCounterStyleName();
       if (counter_style_name == "disc")
         return ax::mojom::blink::ListStyle::kDisc;
       if (counter_style_name == "circle")
@@ -633,7 +633,7 @@ ax::mojom::blink::ListStyle AXLayoutObject::GetListStyle() const {
     }
     case ListMarker::ListStyleCategory::kLanguage: {
       const AtomicString& counter_style_name =
-          computed_style->GetListStyleType()->GetCounterStyleName();
+          computed_style->ListStyleType()->GetCounterStyleName();
       if (counter_style_name == "decimal")
         return ax::mojom::blink::ListStyle::kNumeric;
       if (counter_style_name == "decimal-leading-zero") {
