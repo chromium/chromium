@@ -769,7 +769,7 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '8086:0a2e',
-        'os': 'Mac-10.15.5|Mac-10.15.7',
+        'os': 'Mac-10.15.7',
         'display_attached': '1',
       },
     },
@@ -779,7 +779,7 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '8086:0a2e',
-        'os': 'Mac-10.15.5|Mac-10.15.7',
+        'os': 'Mac-10.15.7',
         'display_attached': '1',
       },
     },
@@ -793,7 +793,7 @@
         {
           'cpu': 'x86-64',
           'gpu': '8086:0a2e',
-          'os': 'Mac-10.15.5|Mac-10.15.7',
+          'os': 'Mac-10.15.7',
           'display_attached': '1',
         },
       ],
