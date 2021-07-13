@@ -225,7 +225,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "selectToSpeakNavigationControl" ],
+        "enum": [ "selectToSpeakNavigationControl", "enhancedNetworkVoices" ],
         "description": "Subset of accessibility features."
       },
       {

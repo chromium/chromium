@@ -618,6 +618,10 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
       enabled = ::features::IsSelectToSpeakNavigationControlEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_ENHANCEDNETWORKVOICES:
+      enabled = ::features::IsEnhancedNetworkVoicesEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_NONE:
       return RespondNow(Error("Unrecognized feature"));
   }

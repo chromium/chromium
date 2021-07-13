@@ -251,6 +251,7 @@ chrome.accessibilityPrivate.AcceleratorAction = {
  */
 chrome.accessibilityPrivate.AccessibilityFeature = {
   SELECT_TO_SPEAK_NAVIGATION_CONTROL: 'selectToSpeakNavigationControl',
+  ENHANCED_NETWORK_VOICES: 'enhancedNetworkVoices',
 };
 
 /**
@@ -470,7 +471,8 @@ chrome.accessibilityPrivate.showConfirmationDialog = function(title, description
 /**
  * Gets the DOM key string for the given key code, taking into account the
  * current input method locale, and assuming the key code is for U.S. input. For
- * example, / would return the string ! if the current input method is French.
+ * example, the key code for '/' would return the string '!' if the current
+ * input method is French.
  * @param {number} keyCode
  * @param {function(string): void} callback Called with the resulting Dom key
  *     string.
