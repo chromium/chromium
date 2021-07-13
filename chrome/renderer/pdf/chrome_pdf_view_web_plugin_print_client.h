@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_CHROME_PDF_VIEW_WEB_PLUGIN_PRINT_CLIENT_H_
-#define CHROME_RENDERER_CHROME_PDF_VIEW_WEB_PLUGIN_PRINT_CLIENT_H_
+#ifndef CHROME_RENDERER_PDF_CHROME_PDF_VIEW_WEB_PLUGIN_PRINT_CLIENT_H_
+#define CHROME_RENDERER_PDF_CHROME_PDF_VIEW_WEB_PLUGIN_PRINT_CLIENT_H_
 
 #include "pdf/pdf_view_web_plugin.h"
 
@@ -33,4 +33,4 @@ class ChromePdfViewWebPluginPrintClient
   content::RenderFrame* const render_frame_;
 };
 
-#endif  // CHROME_RENDERER_CHROME_PDF_VIEW_WEB_PLUGIN_PRINT_CLIENT_H_
+#endif  // CHROME_RENDERER_PDF_CHROME_PDF_VIEW_WEB_PLUGIN_PRINT_CLIENT_H_

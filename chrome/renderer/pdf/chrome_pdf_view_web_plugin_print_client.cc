@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/chrome_pdf_view_web_plugin_print_client.h"
+#include "chrome/renderer/pdf/chrome_pdf_view_web_plugin_print_client.h"
 
 #include "base/check.h"
 #include "components/printing/renderer/print_render_frame_helper.h"

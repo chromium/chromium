@@ -214,7 +214,7 @@
 // `chrome_pdf::PdfViewWebPlugin::PrintClient`.
 #include "pdf/pdf_view_web_plugin.h"
 #if BUILDFLAG(ENABLE_PRINTING)
-#include "chrome/renderer/chrome_pdf_view_web_plugin_print_client.h"
+#include "chrome/renderer/pdf/chrome_pdf_view_web_plugin_print_client.h"
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #endif  // BUILDFLAG(ENABLE_PDF)

@@ -366,8 +366,8 @@ static_library("renderer") {
     }
     if (enable_pdf) {
       sources += [
-        "chrome_pdf_view_web_plugin_print_client.cc",
-        "chrome_pdf_view_web_plugin_print_client.h",
+        "pdf/chrome_pdf_view_web_plugin_print_client.cc",
+        "pdf/chrome_pdf_view_web_plugin_print_client.h",
       ]
     }
   }
