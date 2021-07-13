@@ -2782,4 +2782,73 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ScrollContainer) {
       20.0, 0.5);
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, KeyMappings) {
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    document.getElementById('input1').addEventListener('keydown', (e) => {
+      lastKeydownEvent = `${e.key} ${e.keyCode} ${e.which}`;
+    });
+    document.getElementById('input1').addEventListener('keypress', (e) => {
+      lastKeypressEvent = `${e.key} ${e.keyCode} ${e.which}`;
+    });
+    document.getElementById('input1').addEventListener('keyup', (e) => {
+      lastKeyupEvent = `${e.key} ${e.keyCode} ${e.which}`;
+    });
+  )"));
+
+  Selector selector({"#input1"});
+
+  EXPECT_EQ(SendKeyboardInput(selector, UTF8ToUnicode("a")).proto_status(),
+            ACTION_APPLIED);
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeydownEvent").ExtractString(),
+            "a 65 65");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeypressEvent").ExtractString(),
+            "a 97 97");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeyupEvent").ExtractString(),
+            "a 65 65");
+
+  EXPECT_EQ(SendKeyboardInput(selector, UTF8ToUnicode("A")).proto_status(),
+            ACTION_APPLIED);
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeydownEvent").ExtractString(),
+            "A 65 65");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeypressEvent").ExtractString(),
+            "A 65 65");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeyupEvent").ExtractString(),
+            "A 65 65");
+
+  EXPECT_EQ(SendKeyboardInput(selector, UTF8ToUnicode("\b")).proto_status(),
+            ACTION_APPLIED);
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeydownEvent").ExtractString(),
+            "Backspace 8 8");
+  // No keypress for backspace.
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeyupEvent").ExtractString(),
+            "Backspace 8 8");
+
+  EXPECT_EQ(SendKeyboardInput(selector, UTF8ToUnicode("\r")).proto_status(),
+            ACTION_APPLIED);
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeydownEvent").ExtractString(),
+            "Enter 13 13");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeypressEvent").ExtractString(),
+            "Enter 13 13");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeyupEvent").ExtractString(),
+            "Enter 13 13");
+
+  EXPECT_EQ(SendKeyboardInput(selector, UTF8ToUnicode(",")).proto_status(),
+            ACTION_APPLIED);
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeydownEvent").ExtractString(),
+            ", 188 188");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeypressEvent").ExtractString(),
+            ", 44 44");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeyupEvent").ExtractString(),
+            ", 188 188");
+
+  EXPECT_EQ(SendKeyboardInput(selector, UTF8ToUnicode("<")).proto_status(),
+            ACTION_APPLIED);
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeydownEvent").ExtractString(),
+            "< 188 188");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeypressEvent").ExtractString(),
+            "< 60 60");
+  EXPECT_EQ(content::EvalJs(shell(), "lastKeyupEvent").ExtractString(),
+            "< 188 188");
+}
+
 }  // namespace autofill_assistant

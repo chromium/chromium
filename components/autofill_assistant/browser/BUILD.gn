@@ -260,6 +260,8 @@ static_library("browser") {
     "web/element_store.h",
     "web/js_snippets.cc",
     "web/js_snippets.h",
+    "web/keyboard_input_data.cc",
+    "web/keyboard_input_data.h",
     "web/send_keyboard_input_worker.cc",
     "web/send_keyboard_input_worker.h",
     "web/web_controller.cc",
@@ -444,6 +446,7 @@ source_set("unit_tests") {
     "wait_for_document_operation_unittest.cc",
     "web/element_action_util_unittest.cc",
     "web/element_store_unittest.cc",
+    "web/send_keyboard_input_worker_unittest.cc",
     "website_login_manager_impl_unittest.cc",
   ]
 

@@ -28,5 +28,5 @@ include_rules = [
   "+third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h",
   "+third_party/re2",
   "+ui/base/l10n/l10n_util.h",
-  "+ui/events/keycodes/dom",
+  "+ui/events/keycodes",
 ]
