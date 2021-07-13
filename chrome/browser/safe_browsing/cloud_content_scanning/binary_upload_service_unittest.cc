@@ -781,7 +781,7 @@ TEST_F(BinaryUploadServiceTest, RequestQueue) {
 }
 
 TEST_F(BinaryUploadServiceTest, TestMaxParallelRequestsFlag) {
-  EXPECT_EQ(50UL, BinaryUploadService::GetParallelActiveRequestsMax());
+  EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
 
   {
     base::test::ScopedCommandLine scoped_command_line;
@@ -801,21 +801,21 @@ TEST_F(BinaryUploadServiceTest, TestMaxParallelRequestsFlag) {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
         "wp-max-parallel-active-requests", "0");
-    EXPECT_EQ(50UL, BinaryUploadService::GetParallelActiveRequestsMax());
+    EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
   }
 
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
         "wp-max-parallel-active-requests", "foo");
-    EXPECT_EQ(50UL, BinaryUploadService::GetParallelActiveRequestsMax());
+    EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
   }
 
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
         "wp-max-parallel-active-requests", "-1");
-    EXPECT_EQ(50UL, BinaryUploadService::GetParallelActiveRequestsMax());
+    EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
   }
 }
 

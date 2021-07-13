@@ -49,7 +49,7 @@ namespace {
 // requests.
 // TODO(crbug.com/1191061): Tweak this number to an "optimal" value.
 constexpr char kMaxParallelActiveRequests[] = "wp-max-parallel-active-requests";
-constexpr int kDefaultMaxParallelActiveRequests = 50;
+constexpr int kDefaultMaxParallelActiveRequests = 5;
 
 const int kScanningTimeoutSeconds = 5 * 60;  // 5 minutes
 
