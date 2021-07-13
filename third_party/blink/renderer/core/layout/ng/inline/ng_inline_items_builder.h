@@ -105,6 +105,7 @@ class NGInlineItemsBuilderTemplate {
   // Append a unicode "object replacement character" for an atomic inline,
   // signaling the presence of a non-text object to the unicode bidi algorithm.
   void AppendAtomicInline(LayoutObject* layout_object);
+  void AppendBlockInInline(LayoutObject* layout_object);
 
   // Append floats and positioned objects in the same way as atomic inlines.
   // Because these objects need positions, they will be handled in

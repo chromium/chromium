@@ -74,6 +74,13 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
     builder->AppendAtomicInline(layout_block_flow);
   }
 
+  void AppendBlockInInline(NGInlineItemsBuilder* builder) {
+    LayoutBlockFlow* layout_block_flow = LayoutBlockFlow::CreateAnonymous(
+        &GetDocument(), style_, LegacyLayout::kAuto);
+    anonymous_objects_.push_back(layout_block_flow);
+    builder->AppendBlockInInline(layout_block_flow);
+  }
+
   void AppendRubyRun(NGInlineItemsBuilder* builder) {
     LayoutNGRubyRun* ruby_run = new LayoutNGRubyRun();
     ruby_run->SetDocumentForAnonymous(&GetDocument());
@@ -531,6 +538,16 @@ TEST_F(NGInlineItemsBuilderTest, BidiIsolateOverride) {
                    u" World"),
             builder.ToString());
   isolate_override_rtl->Destroy();
+}
+
+TEST_F(NGInlineItemsBuilderTest, BlockInInline) {
+  Vector<NGInlineItem> items;
+  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
+  AppendText("Hello ", &builder);
+  AppendBlockInInline(&builder);
+  AppendText(" World", &builder);
+  // Collapsible spaces before and after block-in-inline should be collapsed.
+  EXPECT_EQ(String(u"Hello\uFFFCWorld"), builder.ToString());
 }
 
 TEST_F(NGInlineItemsBuilderTest, HasRuby) {

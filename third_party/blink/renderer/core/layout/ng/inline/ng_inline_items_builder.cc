@@ -1019,6 +1019,19 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendAtomicInline(
 }
 
 template <typename OffsetMappingBuilder>
+void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBlockInInline(
+    LayoutObject* layout_object) {
+  DCHECK(layout_object);
+  // Before a block-in-inline is like after a forced break.
+  RemoveTrailingCollapsibleSpaceIfExists();
+  NGInlineItem& item = Append(NGInlineItem::kBlockInInline,
+                              kObjectReplacementCharacter, layout_object);
+  // After a block-in-inline is like after a forced break. See
+  // |AppendForcedBreak|.
+  item.SetEndCollapseType(NGInlineItem::kCollapsible, false);
+}
+
+template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendFloating(
     LayoutObject* layout_object) {
   AppendOpaque(NGInlineItem::kFloating, kObjectReplacementCharacter,
@@ -1080,9 +1093,11 @@ void NGInlineItemsBuilderTemplate<
 
   // A forced break pretends that it's a collapsible space, see
   // |AppendForcedBreak()|. It should not be removed.
-  if (item->Type() == NGInlineItem::kControl)
+  if (item->Type() != NGInlineItem::kText) {
+    DCHECK(item->Type() == NGInlineItem::kControl ||
+           item->Type() == NGInlineItem::kBlockInInline);
     return;
-  DCHECK_EQ(item->Type(), NGInlineItem::kText);
+  }
 
   DCHECK_GT(item->EndOffset(), item->StartOffset());
   unsigned space_offset = item->EndOffset() - 1;

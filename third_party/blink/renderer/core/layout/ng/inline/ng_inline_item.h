@@ -32,6 +32,7 @@ class CORE_EXPORT NGInlineItem {
     kText,
     kControl,
     kAtomicInline,
+    kBlockInInline,
     kOpenTag,
     kCloseTag,
     kFloating,
@@ -184,8 +185,14 @@ class CORE_EXPORT NGInlineItem {
     return static_cast<NGCollapseType>(end_collapse_type_);
   }
   void SetEndCollapseType(NGCollapseType type) {
-    DCHECK(Type() == NGInlineItem::kText || type == kOpaqueToCollapsing ||
-           (Type() == NGInlineItem::kControl && type == kCollapsible));
+    // |kText| can set any types.
+    DCHECK(Type() == NGInlineItem::kText ||
+           // |kControl| and |kBlockInInline| are always |kCollapsible|.
+           ((Type() == NGInlineItem::kControl ||
+             Type() == NGInlineItem::kBlockInInline) &&
+            type == kCollapsible) ||
+           // Other types are |kOpaqueToCollapsing|.
+           type == kOpaqueToCollapsing);
     end_collapse_type_ = type;
   }
   bool IsCollapsibleSpaceOnly() const {
