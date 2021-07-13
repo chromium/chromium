@@ -2846,6 +2846,7 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
   ASSERT_FALSE(callback.is_null());
 
   ASSERT_NE(nullptr, item->GetRenameHandler());
+  ASSERT_FALSE(item->GetRerouteInfo().IsInitialized());
 
   TestDownloadItemObserver observer(item);
 
@@ -2854,10 +2855,12 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
   base::FilePath file_name(FILE_PATH_LITERAL("foo.txt"));
   DownloadItemRerouteInfo reroute_info;
   reroute_info.set_service_provider(RerouteProvider::GOOGLE_DRIVE);
+  reroute_info.mutable_box()->set_file_id("12345");
 
   update_callback.Run(ProgressUpdate{file_name, reroute_info});
   EXPECT_EQ(item->GetFileNameToReportUser(), file_name);
   EXPECT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+  // Check that reroute info got updated.
   ASSERT_TRUE(item->GetRerouteInfo().IsInitialized());
   EXPECT_EQ(reroute_info.SerializeAsString(),
             item->GetRerouteInfo().SerializeAsString());
@@ -2869,6 +2872,10 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(item->GetTargetFilePath(), file_name);
   EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
+  // Check that reroute info is intact.
+  ASSERT_TRUE(item->GetRerouteInfo().IsInitialized());
+  EXPECT_EQ(reroute_info.SerializeAsString(),
+            item->GetRerouteInfo().SerializeAsString());
   // Check that observers are updated.
   ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
 

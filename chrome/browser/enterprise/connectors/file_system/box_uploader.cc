@@ -224,9 +224,8 @@ void BoxUploader::OnApiCallFlowDone(InterruptReason reason,
     DCHECK(reroute_info().file_id().empty());
     DCHECK(!file_id.empty());
     reroute_info().set_file_id(file_id);
-    SendProgressUpdate();
   }
-
+  SendProgressUpdate();
   PostDeleteFileTask(reason);
 }
 

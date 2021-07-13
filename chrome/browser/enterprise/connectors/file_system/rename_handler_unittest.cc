@@ -107,6 +107,31 @@ TEST_P(RenameHandlerCreateTest, FeatureFlagTest) {
   ASSERT_EQ(enable_feature_flag(), handler.get() != nullptr);
 }
 
+TEST_P(RenameHandlerCreateTest, Completed_LoadFromRerouteInfo) {
+  DownloadItemForTest test_item_(FILE_PATH_LITERAL("handler_loaded_info.txt"));
+  test_item_.SetState(DownloadItemForTest::DownloadState::COMPLETE);
+
+  DownloadItemRerouteInfo rerouted_info;
+  rerouted_info.set_service_provider(BoxUploader::kServiceProvider);
+  rerouted_info.mutable_box()->set_file_id("12345");
+  test_item_.SetRerouteInfo(rerouted_info);
+
+  // Handler should be created regardless of settings/policies since item upload
+  // was already completed.
+  auto handler = RenameHandler::CreateIfNeeded(&test_item_);
+  ASSERT_TRUE(handler.get());
+}
+
+TEST_P(RenameHandlerCreateTest, Completed_NoRerouteInfo) {
+  DownloadItemForTest test_item_(FILE_PATH_LITERAL("handler_loaded_info.txt"));
+  test_item_.SetState(DownloadItemForTest::DownloadState::COMPLETE);
+
+  // Handler should NOT be created regardless of settings/policies since item
+  // download was already completed without upload previously.
+  auto handler = RenameHandler::CreateIfNeeded(&test_item_);
+  ASSERT_FALSE(handler.get());
+}
+
 INSTANTIATE_TEST_CASE_P(, RenameHandlerCreateTest, testing::Bool());
 
 class RenameHandlerCreateTest_ByUrl : public RenameHandlerCreateTestBase {
@@ -314,17 +339,22 @@ class RenameHandlerTestBase {
     ASSERT_TRUE(base::WriteFile(item_.GetFullPath(), "RenameHandlerTest"))
         << "Failed to create " << item_.GetFullPath();
 
+    handler_ = CreateHandler();
+  }
+
+  virtual std::unique_ptr<RenameHandlerForTest> CreateHandler() {
     ConnectorsService* service = ConnectorsServiceFactory::GetForBrowserContext(
         content::DownloadItemUtils::GetBrowserContext(&item_));
     auto settings = service->GetFileSystemSettings(
         item_.GetURL(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
     settings->service_provider = kBox;
-    handler_ = std::make_unique<RenameHandlerForTest>(
+    auto handler = std::make_unique<RenameHandlerForTest>(
         &item_, std::move(settings.value()));
 
     auto uploader = std::make_unique<MockUploader>(&item_);
     uploader_ = uploader.get();
-    handler_->SetUploaderForTesting(std::move(uploader));
+    handler->SetUploaderForTesting(std::move(uploader));
+    return handler;
   }
 
   void TearDown() {
@@ -356,7 +386,6 @@ class RenameHandlerOAuth2Test : public testing::Test,
   }
 
   void SetUp() override {
-    testing::Test::SetUp();
     OSCryptMocker::SetUp();
     RenameHandlerTestBase::SetUp(profile_);
     EXPECT_CALL(*uploader(), GetDestinationFolderUrl()).Times(0);
@@ -366,7 +395,6 @@ class RenameHandlerOAuth2Test : public testing::Test,
     ASSERT_EQ(download_cb_reason_, uploader()->expected_reason_);
     RenameHandlerTestBase::TearDown();
     OSCryptMocker::TearDown();
-    testing::Test::TearDown();
   }
 
  protected:
@@ -451,7 +479,6 @@ TEST_F(RenameHandlerOAuth2Test, NullPtrs) {
 
   ASSERT_EQ(download_cb_count_, 1);
   ASSERT_FALSE(uploaded_file_url_.is_valid());
-  ASSERT_TRUE(uploaded_file_name_.empty());
 
   // Verify that the tokens stored are not updated.
   std::string atoken, rtoken;
@@ -503,7 +530,6 @@ TEST_F(RenameHandlerOAuth2Test, SignInCancellationSoAbort) {
 
   ASSERT_EQ(download_cb_count_, 1);
   ASSERT_TRUE(uploaded_file_url_.is_empty());
-  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   VerifyBothTokensClear();
 }
 
@@ -535,7 +561,6 @@ TEST_F(RenameHandlerOAuth2Test, SignInFailureSoRetry) {
   ASSERT_EQ(authen_cb, 2);
   ASSERT_EQ(download_cb_count_, 1);
   ASSERT_TRUE(uploaded_file_url_.is_empty());  // Notified failure to terminate.
-  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   VerifyBothTokensClear();
 }
 
@@ -557,7 +582,6 @@ TEST_F(RenameHandlerOAuth2Test, SignInFailureThenClearTokenFailure) {
 
   ASSERT_EQ(download_cb_count_, 1);
   ASSERT_TRUE(uploaded_file_url_.is_empty());  // Notified failure to terminate.
-  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -658,7 +682,6 @@ TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenThenUploaderFailure) {
 
   ASSERT_EQ(download_cb_count_, 1);
   ASSERT_TRUE(uploaded_file_url_.is_empty());
-  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   // Verify that uploader failure did not affect stored credentials.
   VerifyBothTokensSetByFetcher();
 }
@@ -705,7 +728,6 @@ TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenButUploaderOAuth2Error) {
 
   ASSERT_EQ(download_cb_count_, 1);
   ASSERT_TRUE(uploaded_file_url_.is_empty());
-  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   // Verify that access token stored is cleared.
   std::string atoken, rtoken;
   ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs(), kBox, &atoken, &rtoken));
@@ -734,7 +756,6 @@ TEST_F(RenameHandlerOAuth2Test, UploaderOAuth2ErrorThenClearTokenFailure) {
 
   ASSERT_EQ(download_cb_count_, 1);
   ASSERT_TRUE(uploaded_file_url_.is_empty());  // Notified failure to terminate.
-  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
 }
 
 class RenameHandlerOpenDownloadTest : public BrowserWithTestWindowTest,

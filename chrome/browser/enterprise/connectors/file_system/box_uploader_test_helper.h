@@ -86,7 +86,7 @@ class BoxUploaderTestBase : public testing::Test {
   bool upload_success_{false};
   download::DownloadInterruptReason reason_{
       download::DOWNLOAD_INTERRUPT_REASON_NONE};
-  base::FilePath validated_file_name_;
+  base::FilePath file_name_reported_back_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

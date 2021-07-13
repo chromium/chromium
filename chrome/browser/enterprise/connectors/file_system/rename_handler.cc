@@ -88,20 +88,20 @@ absl::optional<FileSystemSettings> FileSystemRenameHandler::IsEnabled(
 
 // static
 std::unique_ptr<download::DownloadItemRenameHandler>
-FileSystemRenameHandler::Create(download::DownloadItem* download_item,
-                                FileSystemSettings settings) {
-  return std::make_unique<FileSystemRenameHandler>(download_item,
-                                                   std::move(settings));
-}
-
-// static
-std::unique_ptr<download::DownloadItemRenameHandler>
 FileSystemRenameHandler::CreateIfNeeded(download::DownloadItem* download_item) {
-  auto settings = IsEnabled(download_item);
-  if (!settings.has_value())
-    return nullptr;
-
-  return Create(download_item, std::move(settings.value()));
+  if (download_item->GetState() == download::DownloadItem::COMPLETE) {
+    return download_item->GetRerouteInfo().IsInitialized()
+               ? std::make_unique<FileSystemRenameHandler>(download_item)
+               : nullptr;
+  }
+  // TODO(https://crbug.com/1213761) Resume upload if state is IN_PROGRESS, and
+  // perhaps also INTERRUPTED and CANCELLED.
+  absl::optional<FileSystemSettings> settings = IsEnabled(download_item);
+  if (settings.has_value()) {
+    return std::make_unique<FileSystemRenameHandler>(
+        download_item, std::move(settings.value()));
+  }
+  return nullptr;
 }
 
 // The only permitted use of |download_item| in this class other than the ctor
@@ -115,6 +115,11 @@ FileSystemRenameHandler::FileSystemRenameHandler(
       uploader_(BoxUploader::Create(download_item)) {
   DCHECK_EQ(settings_.service_provider, kBoxProviderName);
 }
+
+FileSystemRenameHandler::FileSystemRenameHandler(
+    download::DownloadItem* download_item)
+    : download::DownloadItemRenameHandler(download_item),
+      uploader_(BoxUploader::Create(download_item)) {}
 
 FileSystemRenameHandler::~FileSystemRenameHandler() = default;
 

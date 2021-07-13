@@ -33,7 +33,7 @@ message GoogleDriveInfo {}
 // provider.
 message DownloadItemRerouteInfo {
   // Each DownloadItem should only be rerouted to one of the providers.
-  optional FileSystemServiceProvider service_provider = 1;
+  required FileSystemServiceProvider service_provider = 1;
 
   oneof upload {
     BoxInfo box = 100;

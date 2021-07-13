@@ -153,8 +153,7 @@ class BoxUploaderTest : public BoxUploaderTestBase {
     // InterceptedPreUpload(), so file was not deleted.
     EXPECT_EQ(upload_initiated_, base::PathExists(GetFilePath()));
     // Only 1 update in StartUpload() when PreflightCheck succeeds.
-    EXPECT_LE(progress_update_cb_called_, 1);
-    EXPECT_EQ(progress_update_cb_called_, upload_initiated_);
+    EXPECT_EQ(progress_update_cb_called_, 1);
   }
 
   void InterceptedPreUpload() {
@@ -280,6 +279,7 @@ TEST_F(BoxUploaderTest, CreateFolder_TerminateTask) {
 
 class BoxUploader_PreflightCheckTest : public BoxUploaderTest {
  public:
+  using AttemptCount = BoxUploader::UploadAttemptCount;
   void SetUp() override {
     // Assume there is already a folder_id stored in prefs; will skip directly
     // to preflight check.
@@ -300,7 +300,7 @@ TEST_F(BoxUploader_PreflightCheckTest, Success) {
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_EQ(kFileSystemBoxFolderIdInPref, uploader_->GetFolderIdForTesting());
   EXPECT_EQ(kUploadFileName, uploader_->GetUploadFileName().value());
-  EXPECT_EQ(kUploadFileName, validated_file_name_.value());
+  EXPECT_EQ(kUploadFileName, file_name_reported_back_.value());
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -337,9 +337,8 @@ TEST_F(BoxUploader_PreflightCheckTest, ConflictAndSuccessAfterkMaxUniqueTries) {
   // ---------------------------------------------------------------------------
 
   EXPECT_EQ(uploader_->GetUploadFileName().MaybeAsASCII(), expected_name);
-  histogram_tester.ExpectUniqueSample(
-      kUniquifierUmaLabel, BoxUploader::UploadAttemptCount::kTimestampBasedName,
-      1);
+  histogram_tester.ExpectUniqueSample(kUniquifierUmaLabel,
+                                      AttemptCount::kTimestampBasedName, 1);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
 
@@ -358,15 +357,15 @@ TEST_F(BoxUploader_PreflightCheckTest, ConflictEvenWithTimestamp) {
   RunWithQuitClosure();
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
-  EXPECT_TRUE(validated_file_name_.empty()) << validated_file_name_;
   ASSERT_FALSE(upload_initiated_);
 
   // The last tried filename is timestamp based even though it also fails.
-  EXPECT_EQ(uploader_->GetUploadFileName().MaybeAsASCII(),
-            "box_uploader_test.abandoned.txt");
-  histogram_tester.ExpectUniqueSample(
-      kUniquifierUmaLabel, BoxUploader::UploadAttemptCount::kAbandonedUpload,
-      1);
+  const base::FilePath expected_file_name(
+      FILE_PATH_LITERAL("box_uploader_test.abandoned.txt"));
+  EXPECT_EQ(uploader_->GetUploadFileName(), expected_file_name);
+  EXPECT_EQ(file_name_reported_back_, expected_file_name);
+  histogram_tester.ExpectUniqueSample(kUniquifierUmaLabel,
+                                      AttemptCount::kAbandonedUpload, 1);
   EXPECT_TRUE(download_thread_cb_called_)
       << "Conflict, including with timestamp, should terminate flow.";
 }
@@ -424,7 +423,7 @@ TEST_F(BoxUploader_PreflightCheckTest, CachedFolder404_ButFound) {
   EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxFindFolderResponseFolderId);
   EXPECT_EQ(kUploadFileName, uploader_->GetUploadFileName().value());
-  EXPECT_EQ(kUploadFileName, validated_file_name_.value());
+  EXPECT_EQ(kUploadFileName, file_name_reported_back_.value());
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -459,7 +458,7 @@ TEST_F(BoxUploader_PreflightCheckTest, CachedFolder404) {
   EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxCreateFolderResponseFolderId);
   EXPECT_EQ(kUploadFileName, uploader_->GetUploadFileName().value());
-  EXPECT_EQ(kUploadFileName, validated_file_name_.value());
+  EXPECT_EQ(kUploadFileName, file_name_reported_back_.value());
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -492,7 +491,7 @@ TEST_F(BoxUploader_PreflightCheckTest, AuthenticationRetry) {
   ASSERT_EQ(authentication_retry_, 1);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
   EXPECT_EQ(kUploadFileName, uploader_->GetUploadFileName().value());
-  EXPECT_EQ(kUploadFileName, validated_file_name_.value());
+  EXPECT_EQ(kUploadFileName, file_name_reported_back_.value());
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
@@ -559,8 +558,9 @@ class BoxUploaderNetErrorTest : public BoxUploaderTestBase {
     // If upload was not initiated due to some error, file should've been
     // deleted as part of error handling.
     EXPECT_FALSE(base::PathExists(GetFilePath()));
-    // Only 1 update in StartUpload() when PreflightCheck succeeds.
-    EXPECT_LE(progress_update_cb_called_, 1);
+    // 1 update in StartUpload() when PreflightCheck succeeds, and 1 update in
+    // OnApiCallFlowDone().
+    EXPECT_EQ(progress_update_cb_called_, 2);
   }
   std::unique_ptr<BoxUploaderForNetErrorTest> uploader_;
 };
@@ -616,6 +616,7 @@ class BoxUploader_FileDeleteTest : public BoxUploaderTestBase {
 
   void TearDown() override {
     EXPECT_EQ(authentication_retry_, 0);
+    EXPECT_EQ(progress_update_cb_called_ > 0, download_thread_cb_called_);
     EXPECT_FALSE(test_item_.GetFileExternallyRemoved());
   }
 
@@ -630,6 +631,7 @@ TEST_F(BoxUploader_FileDeleteTest, TryTask_DeleteOnApiSuccess) {
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
+  EXPECT_TRUE(progress_update_cb_called_);
   ASSERT_TRUE(upload_success_);
 }
 
@@ -643,6 +645,7 @@ TEST_F(BoxUploader_FileDeleteTest, NoFileToDelete) {
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath())) << "No file should be created.";
+  EXPECT_TRUE(progress_update_cb_called_);
   EXPECT_TRUE(download_thread_cb_called_);
   ASSERT_FALSE(upload_success_);
 }
@@ -656,6 +659,7 @@ TEST_F(BoxUploader_FileDeleteTest, OnApiCallFlowFailure) {
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
+  EXPECT_TRUE(progress_update_cb_called_);
   EXPECT_TRUE(download_thread_cb_called_);
   ASSERT_FALSE(upload_success_);
 }
@@ -668,6 +672,7 @@ TEST_F(BoxUploader_FileDeleteTest, TerminateTask) {
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
+  EXPECT_TRUE(progress_update_cb_called_);
   EXPECT_TRUE(download_thread_cb_called_);
   ASSERT_FALSE(upload_success_);
 }
@@ -696,7 +701,7 @@ TEST_F(BoxUploader_FileDeleteTest, LoadFromReroutedInfo_InProgress) {
 
   ASSERT_FALSE(authentication_retry_);
   EXPECT_TRUE(download_thread_cb_called_);
-  EXPECT_EQ(progress_update_cb_called_, 1);
+  EXPECT_TRUE(progress_update_cb_called_);
   ASSERT_TRUE(upload_success_);
   EXPECT_FALSE(base::PathExists(GetFilePath()));  // File deleted.
 }
@@ -719,7 +724,7 @@ TEST_F(BoxUploader_FileDeleteTest, LoadFromReroutedInfo_Complete) {
 
   ASSERT_FALSE(authentication_retry_);
   EXPECT_FALSE(download_thread_cb_called_);  // No upload call was made.
-  EXPECT_EQ(progress_update_cb_called_, 0);
+  EXPECT_FALSE(progress_update_cb_called_);
   EXPECT_FALSE(base::PathExists(GetFilePath()));  // File not created.
 }
 

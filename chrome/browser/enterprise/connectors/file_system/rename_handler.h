@@ -40,6 +40,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
 
   FileSystemRenameHandler(download::DownloadItem* download_item,
                           FileSystemSettings settings);
+  explicit FileSystemRenameHandler(download::DownloadItem* download_item);
   ~FileSystemRenameHandler() override;
 
  protected:
@@ -71,10 +72,6 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
  private:
   static absl::optional<FileSystemSettings> IsEnabled(
       download::DownloadItem* download_item);
-
-  static std::unique_ptr<download::DownloadItemRenameHandler> Create(
-      download::DownloadItem* download_item,
-      FileSystemSettings settings);
 
   void StartInternal(std::string access_token = std::string());
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(

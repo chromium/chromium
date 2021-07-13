@@ -153,7 +153,7 @@ void BoxUploaderTestBase::AuthenticationRetry() {
 void BoxUploaderTestBase::OnProgressUpdate(
     const download::DownloadItemRenameProgressUpdate& update) {
   ++progress_update_cb_called_;
-  validated_file_name_ = update.target_file_name;
+  file_name_reported_back_ = update.target_file_name;
 }
 
 void BoxUploaderTestBase::OnUploaderFinished(
@@ -164,7 +164,7 @@ void BoxUploaderTestBase::OnUploaderFinished(
   reason_ = reason;
   DLOG(INFO) << reason;
   if (upload_success_)
-    validated_file_name_ = final_name;
+    file_name_reported_back_ = final_name;
   Quit();
 }
 
