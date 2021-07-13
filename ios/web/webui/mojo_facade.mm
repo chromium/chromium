@@ -148,7 +148,7 @@ base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value args) {
   }
 
   std::vector<uint8_t> bytes(buffer->DictSize());
-  for (const auto& item : buffer->DictItems()) {
+  for (const auto item : buffer->DictItems()) {
     size_t index = std::numeric_limits<size_t>::max();
     CHECK(base::StringToSizeT(item.first, &index));
     CHECK(index < bytes.size());
