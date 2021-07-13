@@ -61,8 +61,6 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
   bool IsCounterStyleReferenceValid(Document&) const;
   const CounterStyle& GetCounterStyle(Document&) const;
 
-  EListStyleType ToDeprecatedListStyleTypeEnum() const;
-
  private:
   Type type_;
   AtomicString name_or_string_value_;

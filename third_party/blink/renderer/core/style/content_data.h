@@ -209,8 +209,6 @@ class CounterContentData final : public ContentData {
   const AtomicString& Separator() const { return separator_; }
   const TreeScope* GetTreeScope() const { return tree_scope_; }
 
-  EListStyleType ToDeprecatedListStyleTypeEnum() const;
-
   void Trace(Visitor*) const override;
 
  private:

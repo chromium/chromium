@@ -2521,14 +2521,6 @@ ListStyleTypeData* ComputedStyle::GetListStyleType() const {
   return ListStyleTypeInternal();
 }
 
-EListStyleType ComputedStyle::ListStyleType() const {
-  if (!GetListStyleType())
-    return EListStyleType::kNone;
-  if (GetListStyleType()->IsString())
-    return EListStyleType::kString;
-  return GetListStyleType()->ToDeprecatedListStyleTypeEnum();
-}
-
 const AtomicString& ComputedStyle::ListStyleStringValue() const {
   if (!GetListStyleType() || !GetListStyleType()->IsString())
     return g_null_atom;

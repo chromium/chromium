@@ -962,12 +962,8 @@ class ComputedStyle : public ComputedStyleBase,
   void SetListStyleImage(StyleImage*);
 
   // list-style-type
-  // TODO(crbug.com/687225): These functions are deprecated. Callers should be
-  // migrated to GetListStyleType().
-  CORE_EXPORT EListStyleType ListStyleType() const;
   const AtomicString& ListStyleStringValue() const;
-  // TODO(crbug.com/687225): Get rid of the deprecated functions above so that
-  // the getter can also be auto-generated.
+  // TODO(crbug.com/687225): Make this function auto-generated.
   CORE_EXPORT ListStyleTypeData* GetListStyleType() const;
   bool ListStyleTypeDataEquivalent(const ComputedStyle& other) const {
     return DataEquivalent(ListStyleTypeInternal(),

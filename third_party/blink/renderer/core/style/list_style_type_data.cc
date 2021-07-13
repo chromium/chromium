@@ -9,40 +9,11 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
-#include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
-
-namespace {
-
-using PredefinedCounterStyleNameMap = HashMap<AtomicString, EListStyleType>;
-
-PredefinedCounterStyleNameMap BuildPredefinedCounterStyleNameMap() {
-  PredefinedCounterStyleNameMap map;
-  for (unsigned i = 0; i < static_cast<unsigned>(EListStyleType::kString);
-       ++i) {
-    EListStyleType list_style_type = static_cast<EListStyleType>(i);
-    CSSValueID css_value_id = PlatformEnumToCSSValueID(list_style_type);
-    AtomicString value_name(getValueName(css_value_id));
-    map.Set(value_name, list_style_type);
-  }
-  return map;
-}
-
-EListStyleType CounterStyleNameToDeprecatedEnum(const AtomicString& name) {
-  DEFINE_STATIC_LOCAL(PredefinedCounterStyleNameMap,
-                      predefined_counter_style_name_map,
-                      (BuildPredefinedCounterStyleNameMap()));
-  auto iterator = predefined_counter_style_name_map.find(name);
-  if (iterator != predefined_counter_style_name_map.end())
-    return iterator->value;
-  return EListStyleType::kDecimal;
-}
-
-}  // namespace
 
 void ListStyleTypeData::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
@@ -60,20 +31,6 @@ ListStyleTypeData* ListStyleTypeData::CreateCounterStyle(
     const TreeScope* tree_scope) {
   return MakeGarbageCollected<ListStyleTypeData>(Type::kCounterStyle, name,
                                                  tree_scope);
-}
-
-EListStyleType ListStyleTypeData::ToDeprecatedListStyleTypeEnum() const {
-  if (IsString())
-    return EListStyleType::kString;
-  return CounterStyleNameToDeprecatedEnum(GetCounterStyleName());
-}
-
-// TODO(crbug.com/687225): We temporarily put this function here to share the
-// common logic. Clean it up when @counter-style is shipped.
-EListStyleType CounterContentData::ToDeprecatedListStyleTypeEnum() const {
-  if (ListStyle() == "none")
-    return EListStyleType::kNone;
-  return CounterStyleNameToDeprecatedEnum(ListStyle());
 }
 
 bool ListStyleTypeData::IsCounterStyleReferenceValid(Document& document) const {
