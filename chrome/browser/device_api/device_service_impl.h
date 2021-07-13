@@ -19,6 +19,9 @@ class RenderFrameHost;
 class DeviceServiceImpl final
     : public content::DocumentServiceBase<blink::mojom::DeviceAPIService> {
  public:
+  using DeviceAttributeCallback =
+      base::OnceCallback<void(blink::mojom::DeviceAttributeResultPtr)>;
+
   // Tries to attach this mojo service to |host| for trusted web applications.
   // Will dynamically disconnect if the trustness status is revoked.
   static void Create(
@@ -43,6 +46,10 @@ class DeviceServiceImpl final
   DeviceServiceImpl(
       content::RenderFrameHost* host,
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
+
+  void GetDeviceAttribute(
+      base::OnceCallback<void(DeviceAttributeCallback)> handler,
+      DeviceAttributeCallback callback);
 
   void OnDisposingIfNeeded();
 

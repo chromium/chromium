@@ -22,9 +22,13 @@ namespace {
 
 using Result = blink::mojom::DeviceAttributeResult;
 
+const char kNotAllowedOriginErrorMessage[] =
+    "The current origin cannot use this web API because it is not allowed by "
+    "the DeviceAttributesAllowedForOrigins policy.";
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kNotSupportedPlatformErrorMessage[] =
-    "This restricted web API is not supported on the current platform.";
+    "This web API is not supported on the current platform.";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -45,6 +49,12 @@ void AdaptLacrosResult(
 #endif
 
 }  // namespace
+
+void ReportNotAllowedError(
+    base::OnceCallback<void(DeviceAttributeResultPtr)> callback) {
+  std::move(callback).Run(
+      Result::NewErrorMessage(kNotAllowedOriginErrorMessage));
+}
 
 void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -3221,10 +3221,10 @@ const char kExplicitlyAllowedNetworkPorts[] =
     "net.explicitly_allowed_network_ports";
 
 #if !defined(OS_ANDROID)
-// Pref name for whether force-installed web apps are able to query
+// Pref name for whether force-installed web apps (origins) are able to query
 // device attributes.
-const char kManagedWebAppsAccessToDeviceAttributesAllowed[] =
-    "policy.managed_web_apps_access_to_device_attributes_allowed";
+const char kDeviceAttributesAllowedForOrigins[] =
+    "policy.device_attributes_allowed_for_origins";
 #endif
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)

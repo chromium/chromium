@@ -5,6 +5,9 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
@@ -15,7 +18,63 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#endif
+
 namespace {
+
+// Check whether the target origin is allowed to access to the device
+// attributes.
+bool CanAccessDeviceAttributes(const PrefService* prefs,
+                               const url::Origin& origin) {
+  const base::ListValue* prefs_list =
+      prefs->GetList(prefs::kDeviceAttributesAllowedForOrigins);
+  if (!prefs_list)
+    return false;
+
+  return base::Contains(prefs_list->GetList(), origin, [](const auto& entry) {
+    return url::Origin::Create(GURL(entry.GetString()));
+  });
+}
+
+// Check whether the target origin is the same as the main application running
+// in the Kiosk session.
+// TODO(anqing): After Kiosk is migrated to Lacros, the launch url needs to be
+// stored in the lacros-browser when the app is launched. Then it can be used to
+// compare with |origin|.
+bool IsEqualToKioskOrigin(const url::Origin& origin) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const AccountId& account_id =
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+  const ash::WebKioskAppData* app_data =
+      ash::WebKioskAppManager::Get()->GetAppByAccountId(account_id);
+  return url::Origin::Create(app_data->install_url()) == origin;
+#else
+  return false;
+#endif
+}
+
+// Check whether the target origin is included in the WebAppInstallForceList
+// policy.
+bool IsForceInstalledOrigin(const PrefService* prefs,
+                            const url::Origin& origin) {
+  const base::ListValue* prefs_list =
+      prefs->GetList(prefs::kWebAppInstallForceList);
+  if (!prefs_list)
+    return false;
+
+  return base::Contains(prefs_list->GetList(), origin, [](const auto& entry) {
+    std::string entry_url = entry.FindKey(web_app::kUrlKey)->GetString();
+    return url::Origin::Create(GURL(entry_url));
+  });
+}
+
+const PrefService* GetPrefs(content::RenderFrameHost* host) {
+  return Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs();
+}
 
 bool IsTrustedContext(content::RenderFrameHost* host,
                       const url::Origin& origin) {
@@ -24,23 +83,11 @@ bool IsTrustedContext(content::RenderFrameHost* host,
   if (!base::FeatureList::IsEnabled(features::kEnableRestrictedWebApis))
     return false;
 
-  PrefService* prefs =
-      Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs();
-
-  if (!prefs->GetBoolean(
-          prefs::kManagedWebAppsAccessToDeviceAttributesAllowed)) {
-    return false;
+  if (chrome::IsRunningInAppMode()) {
+    return IsEqualToKioskOrigin(origin);
+  } else {
+    return IsForceInstalledOrigin(GetPrefs(host), origin);
   }
-
-  // TODO(apotapchuk): Implement a more efficient way of checking the trustness
-  // status of the app.
-  for (const base::Value& entry :
-       prefs->GetList(prefs::kWebAppInstallForceList)->GetList()) {
-    if (origin ==
-        url::Origin::Create(GURL(entry.FindKey(web_app::kUrlKey)->GetString())))
-      return true;
-  }
-  return false;
 }
 
 }  // namespace
@@ -52,7 +99,7 @@ DeviceServiceImpl::DeviceServiceImpl(
   pref_change_registrar_.Init(
       Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kManagedWebAppsAccessToDeviceAttributesAllowed,
+      prefs::kDeviceAttributesAllowedForOrigins,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
@@ -82,8 +129,7 @@ void DeviceServiceImpl::Create(
 
 // static
 void DeviceServiceImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kManagedWebAppsAccessToDeviceAttributesAllowed, true);
+  registry->RegisterListPref(prefs::kDeviceAttributesAllowedForOrigins);
 }
 
 void DeviceServiceImpl::OnDisposingIfNeeded() {
@@ -95,23 +141,39 @@ void DeviceServiceImpl::OnDisposingIfNeeded() {
 }
 
 void DeviceServiceImpl::GetDirectoryId(GetDirectoryIdCallback callback) {
-  device_attribute_api::GetDirectoryId(std::move(callback));
+  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetDirectoryId),
+                     std::move(callback));
 }
 
 void DeviceServiceImpl::GetHostname(GetHostnameCallback callback) {
-  device_attribute_api::GetHostname(std::move(callback));
+  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetHostname),
+                     std::move(callback));
 }
 
 void DeviceServiceImpl::GetSerialNumber(GetSerialNumberCallback callback) {
-  device_attribute_api::GetSerialNumber(std::move(callback));
+  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetSerialNumber),
+                     std::move(callback));
 }
 
 void DeviceServiceImpl::GetAnnotatedAssetId(
     GetAnnotatedAssetIdCallback callback) {
-  device_attribute_api::GetAnnotatedAssetId(std::move(callback));
+  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetAnnotatedAssetId),
+                     std::move(callback));
 }
 
 void DeviceServiceImpl::GetAnnotatedLocation(
     GetAnnotatedLocationCallback callback) {
-  device_attribute_api::GetAnnotatedLocation(std::move(callback));
+  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetAnnotatedLocation),
+                     std::move(callback));
+}
+
+void DeviceServiceImpl::GetDeviceAttribute(
+    base::OnceCallback<void(DeviceAttributeCallback)> handler,
+    DeviceAttributeCallback callback) {
+  if (!CanAccessDeviceAttributes(GetPrefs(host_), origin())) {
+    device_attribute_api::ReportNotAllowedError(std::move(callback));
+    return;
+  }
+
+  std::move(handler).Run(std::move(callback));
 }

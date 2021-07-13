@@ -15,13 +15,34 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/command_line.h"
+#include "base/test/scoped_command_line.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif
 
 namespace {
 
-constexpr char kDefaultAppInstallUrl[] = "https://example.com/";
+constexpr char kDefaultAppInstallUrl[] = "https://example.com/install";
 constexpr char kTrustedUrl[] = "https://example.com/sample";
 constexpr char kUntrustedUrl[] = "https://non-example.com/sample";
+constexpr char kKioskAppInstallUrl[] = "https://kiosk.com/install";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kAppEmail[] = "email@example.com";
+constexpr char kKioskAppUrl[] = "https://kiosk.com/sample";
+constexpr char kInvalidKioskAppUrl[] = "https://invalid-kiosk.com/sample";
+#endif
+
+void VerifyErrorMessageResult(blink::mojom::DeviceAttributeResultPtr result) {
+  result->is_error_message();
+}
 
 }  // namespace
 
@@ -30,6 +51,7 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     InstallTrustedApp();
+    SetAllowedOrigin();
   }
 
   void InstallTrustedApp() {
@@ -46,15 +68,28 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
     update->ClearList();
   }
 
-  void TryCreatingService(const GURL& url) {
-    content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+  void SetAllowedOrigin() {
+    base::Value allowed_origins(base::Value::Type::LIST);
+    allowed_origins.Append(base::Value(kTrustedUrl));
+    allowed_origins.Append(base::Value(kKioskAppInstallUrl));
+    profile()->GetPrefs()->Set(prefs::kDeviceAttributesAllowedForOrigins,
+                               allowed_origins);
+  }
+
+  void RemoveAllowedOrigin() {
+    ListPrefUpdate update(profile()->GetPrefs(),
+                          prefs::kDeviceAttributesAllowedForOrigins);
+    update->ClearList();
+  }
+
+  void TryCreatingService(content::WebContents* web_contents, const GURL& url) {
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents,
                                                                url);
     DeviceServiceImpl::Create(main_rfh(), remote_.BindNewPipeAndPassReceiver());
   }
 
-  void SetWebAppDeviceAttributesQueryPref(bool allowed) {
-    profile()->GetPrefs()->SetBoolean(
-        prefs::kManagedWebAppsAccessToDeviceAttributesAllowed, allowed);
+  void TryCreatingService(const GURL& url) {
+    TryCreatingService(web_contents(), url);
   }
 
   mojo::Remote<blink::mojom::DeviceAPIService>* remote() { return &remote_; }
@@ -69,19 +104,104 @@ TEST_F(DeviceAPIServiceTest, EnableServiceByDefault) {
   ASSERT_TRUE(remote()->is_connected());
 }
 
-TEST_F(DeviceAPIServiceTest, EnableServiceByTurnOnPrefs) {
-  SetWebAppDeviceAttributesQueryPref(true);
+TEST_F(DeviceAPIServiceTest, ReportErrorForDisallowedOrigin) {
   TryCreatingService(GURL(kTrustedUrl));
+  RemoveAllowedOrigin();
+
+  remote()->get()->GetDirectoryId(base::BindOnce(VerifyErrorMessageResult));
+  remote()->get()->GetHostname(base::BindOnce(VerifyErrorMessageResult));
+  remote()->get()->GetSerialNumber(base::BindOnce(VerifyErrorMessageResult));
+  remote()->get()->GetAnnotatedAssetId(
+      base::BindOnce(VerifyErrorMessageResult));
+  remote()->get()->GetAnnotatedLocation(
+      base::BindOnce(VerifyErrorMessageResult));
   remote()->FlushForTesting();
   ASSERT_TRUE(remote()->is_connected());
 }
 
-TEST_F(DeviceAPIServiceTest, DisableServiceByTurnOffPrefs) {
-  SetWebAppDeviceAttributesQueryPref(false);
+// The service should be disabled in the Incognito mode.
+TEST_F(DeviceAPIServiceTest, IncognitoProfile) {
+  std::unique_ptr<content::WebContents> incognito_web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr);
+  TryCreatingService(incognito_web_contents.get(), GURL(kTrustedUrl));
+
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceTest {
+ public:
+  DeviceAPIServiceWithKioskUserTest()
+      : fake_user_manager_(new ash::FakeChromeUserManager()),
+        scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
+
+  void SetUp() override {
+    DeviceAPIServiceTest::SetUp();
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kForceAppMode);
+    account_id_ = AccountId::FromUserEmail(kAppEmail);
+    app_manager_ = std::make_unique<ash::WebKioskAppManager>();
+  }
+
+  void TearDown() override {
+    app_manager_.reset();
+    DeviceAPIServiceTest::TearDown();
+  }
+
+  void LoginKioskUser() {
+    app_manager()->AddAppForTesting(account_id(), GURL(kKioskAppInstallUrl));
+    fake_user_manager()->AddWebKioskAppUser(account_id());
+    fake_user_manager()->LoginUser(account_id());
+  }
+
+  ash::FakeChromeUserManager* fake_user_manager() const {
+    return fake_user_manager_;
+  }
+
+  const AccountId& account_id() const { return account_id_; }
+
+  ash::WebKioskAppManager* app_manager() const { return app_manager_.get(); }
+
+ private:
+  ash::FakeChromeUserManager* fake_user_manager_;
+  user_manager::ScopedUserManager scoped_user_manager_;
+  base::test::ScopedCommandLine command_line_;
+  AccountId account_id_;
+  std::unique_ptr<ash::WebKioskAppManager> app_manager_;
+};
+
+// The service should be enabled if the current origin is same as the origin of
+// Kiosk app.
+TEST_F(DeviceAPIServiceWithKioskUserTest, EnableServiceForKioskOrigin) {
+  LoginKioskUser();
+  TryCreatingService(GURL(kKioskAppUrl));
+  remote()->FlushForTesting();
+  ASSERT_TRUE(remote()->is_connected());
+}
+
+// The service should be disabled if the current origin is different from the
+// origin of Kiosk app.
+TEST_F(DeviceAPIServiceWithKioskUserTest, DisableServiceForInvalidOrigin) {
+  LoginKioskUser();
+  TryCreatingService(GURL(kInvalidKioskAppUrl));
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+// The service should be disabled if the current origin is different from the
+// origin of Kiosk app, even if it is trusted (force-installed).
+TEST_F(DeviceAPIServiceWithKioskUserTest,
+       DisableServiceForNonKioskTrustedOrigin) {
+  LoginKioskUser();
   TryCreatingService(GURL(kTrustedUrl));
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
+
+#endif
 
 class DeviceAPIServiceWithFeatureFlagTest : public DeviceAPIServiceTest {
  public:

@@ -1409,9 +1409,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFetchKeepaliveDurationSecondsOnShutdown,
     prefs::kFetchKeepaliveDurationOnShutdown,
     base::Value::Type::INTEGER },
-  { key::kManagedWebAppsAccessToDeviceAttributesAllowed,
-    prefs::kManagedWebAppsAccessToDeviceAttributesAllowed,
-    base::Value::Type::BOOLEAN },
+  { key::kDeviceAttributesAllowedForOrigins,
+    prefs::kDeviceAttributesAllowedForOrigins,
+    base::Value::Type::LIST },
 #endif  // !defined(OS_ANDROID)
 
   { key::kSuppressDifferentOriginSubframeDialogs,

@@ -4818,12 +4818,12 @@
     ]
   },
 
-  "ManagedWebAppsAccessToDeviceAttributesAllowed": {
+  "DeviceAttributesAllowedForOrigins": {
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "ManagedWebAppsAccessToDeviceAttributesAllowed": true },
-        "prefs": { "policy.managed_web_apps_access_to_device_attributes_allowed": {} }
+        "policies": { "DeviceAttributesAllowedForOrigins": ["https://www.google.com"] },
+        "prefs": { "policy.device_attributes_allowed_for_origins": {"value" : ["https://www.google.com"] } }
       }
     ]
   },

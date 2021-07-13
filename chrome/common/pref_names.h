@@ -1148,7 +1148,7 @@ extern const char kPdfAnnotationsEnabled[];
 extern const char kExplicitlyAllowedNetworkPorts[];
 
 #if !defined(OS_ANDROID)
-extern const char kManagedWebAppsAccessToDeviceAttributesAllowed[];
+extern const char kDeviceAttributesAllowedForOrigins[];
 #endif
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)

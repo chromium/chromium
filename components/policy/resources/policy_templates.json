@@ -15083,35 +15083,25 @@
       For detailed information on valid input patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy. This policy only matches based on origin, so any path in the URL pattern is ignored.''',
     },
     {
-      'name': 'ManagedWebAppsAccessToDeviceAttributesAllowed',
+      'name': 'DeviceAttributesAllowedForOrigins',
       'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
-      'type': 'main',
-      'schema': { 'type': 'boolean' },
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
       'supported_on': ['chrome_os:93-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'items': [
-        {
-          'value': True,
-          'caption': 'Allow force-installed web applications to query for device attributes.',
-        },
-        {
-          'value': False,
-          'caption': 'Prevent force-installed web applications from querying for device attributes.',
-        },
-      ],
-      'example_value': True,
-      'default': True,
+      'example_value': ['https://www.google.com', 'https://www.example.com'],
       'id': 865,
-      'caption': '''Allow force-installed web applications to query for device attributes.''',
+      'caption': '''Allow origins to query for device attributes''',
       'tags': [],
-      'desc': '''Setting the policy to allow force-installed web applications to get device attributes (e.g. serial number, hostname) by using Device Attributes web API.
+      'desc': '''Setting the policy to allow some origins of force-installed web applications to get device attributes (e.g. serial number, hostname) by using Device Attributes API.
 
-      If this policy is set to true or not configured, the Device Attributes web API will be allowed to force-installed web applications.
-
-      If this policy is set to false, the Device Attributes web API will be disallowed.''',
+      Device Attributes API is a list of web APIs, please see https://wicg.github.io/WebApiDevice/device_attributes. They are only available to origins which correspond to force-installed web applications via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph> or the one configured in the Kiosk session.'''
     },
     {
       'name': 'QuicAllowed',
