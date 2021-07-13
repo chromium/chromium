@@ -57,7 +57,7 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // Whether the page tried to request a permission regardless of the outcome.
   // TODO(altimin): Track this more accurately depending on the data.
   // See permission.mojom for more details.
-  kRequestedGeolocationPermission = 19,
+  // kRequestedGeolocationPermission = 19,   // No longer blocking.
   kRequestedNotificationsPermission = 20,
   kRequestedMIDIPermission = 21,
   kRequestedAudioCapturePermission = 22,

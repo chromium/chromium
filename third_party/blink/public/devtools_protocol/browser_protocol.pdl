@@ -7754,7 +7754,6 @@ domain Page
       DedicatedWorkerOrWorklet
       OutstandingNetworkRequestOthers
       OutstandingIndexedDBTransaction
-      RequestedGeolocationPermission
       RequestedNotificationsPermission
       RequestedMIDIPermission
       RequestedAudioCapturePermission

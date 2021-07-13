@@ -25,9 +25,6 @@ namespace {
 absl::optional<blink::scheduler::WebSchedulerTrackedFeature>
 PermissionToSchedulingFeature(PermissionType permission_name) {
   switch (permission_name) {
-    case PermissionType::GEOLOCATION:
-      return blink::scheduler::WebSchedulerTrackedFeature::
-          kRequestedGeolocationPermission;
     case PermissionType::NOTIFICATIONS:
       return blink::scheduler::WebSchedulerTrackedFeature::
           kRequestedNotificationsPermission;
@@ -68,6 +65,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::FONT_ACCESS:
     case PermissionType::DISPLAY_CAPTURE:
     case PermissionType::FILE_HANDLING:
+    case PermissionType::GEOLOCATION:
       return absl::nullopt;
   }
 }

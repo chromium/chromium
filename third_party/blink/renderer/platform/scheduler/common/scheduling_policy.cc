@@ -41,7 +41,6 @@ bool SchedulingPolicy::IsFeatureSticky(SchedulingPolicy::Feature feature) {
     case Feature::kResumeEventListener:
     case Feature::kContainsPlugins:
     case Feature::kDocumentLoaded:
-    case Feature::kRequestedGeolocationPermission:
     case Feature::kRequestedNotificationsPermission:
     case Feature::kRequestedMIDIPermission:
     case Feature::kRequestedAudioCapturePermission:

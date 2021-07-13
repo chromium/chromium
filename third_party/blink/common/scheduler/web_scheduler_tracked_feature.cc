@@ -55,9 +55,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
       return {"OutstandingIndexedDBTransaction",
               "outstanding IndexedDB transaction"};
-    case WebSchedulerTrackedFeature::kRequestedGeolocationPermission:
-      return {"RequestedGeolocationPermission",
-              "requested geolocation permission"};
     case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
       return {"RequestedNotificationsPermission",
               "requested notifications permission"};
@@ -178,7 +175,6 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
       WebSchedulerTrackedFeature::kContainsPlugins,
       WebSchedulerTrackedFeature::kDocumentLoaded,
-      WebSchedulerTrackedFeature::kRequestedGeolocationPermission,
       WebSchedulerTrackedFeature::kRequestedNotificationsPermission,
       WebSchedulerTrackedFeature::kRequestedMIDIPermission,
       WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,

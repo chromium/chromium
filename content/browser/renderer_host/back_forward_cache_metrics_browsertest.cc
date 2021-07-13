@@ -629,9 +629,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, Geolocation) {
         resolve.bind(this, "failure"))
       });
   )"));
-  EXPECT_TRUE(main_frame->scheduler_tracked_features().Has(
-      blink::scheduler::WebSchedulerTrackedFeature::
-          kRequestedGeolocationPermission));
 }
 
 class RecordBackForwardCacheMetricsWithoutEnabling

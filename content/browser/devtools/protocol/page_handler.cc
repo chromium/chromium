@@ -1444,9 +1444,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingIndexedDBTransaction;
-    case WebSchedulerTrackedFeature::kRequestedGeolocationPermission:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          RequestedGeolocationPermission;
     case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           RequestedNotificationsPermission;
@@ -1592,7 +1589,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kContainsPlugins:
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
-    case WebSchedulerTrackedFeature::kRequestedGeolocationPermission:
     case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
     case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
