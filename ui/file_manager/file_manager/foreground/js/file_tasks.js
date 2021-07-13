@@ -328,7 +328,7 @@ export class FileTasks {
    */
   static isInternalTask_(descriptor) {
     const {appId, taskType, actionId} = descriptor;
-    if (appId !== chrome.runtime.id || taskType !== 'app') {
+    if (appId !== constants.FILES_APP_EXTENSION_ID || taskType !== 'app') {
       return false;
     }
     switch (actionId) {
@@ -374,7 +374,7 @@ export class FileTasks {
    */
   static annotateTasks_(tasks, entries) {
     const result = [];
-    const id = chrome.runtime.id;
+    const id = constants.FILES_APP_EXTENSION_ID;
     for (const task of tasks) {
       const {appId, taskType, actionId} = task.descriptor;
 
@@ -646,7 +646,7 @@ export class FileTasks {
 
     this.checkAvailability_(() => {
       const descriptor = {
-        appId: chrome.runtime.id,
+        appId: constants.FILES_APP_EXTENSION_ID,
         taskType: 'file',
         actionId: 'view-in-browser'
       };
@@ -1317,7 +1317,7 @@ export class FileTasks {
  * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
 FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
-  appId: chrome.runtime.id,
+  appId: constants.FILES_APP_EXTENSION_ID,
   taskType: 'app',
   actionId: 'install-linux-package'
 };
@@ -1327,7 +1327,7 @@ FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
  * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
 FileTasks.FILES_OPEN_ZIP_TASK_DESCRIPTOR = {
-  appId: chrome.runtime.id,
+  appId: constants.FILES_APP_EXTENSION_ID,
   taskType: 'app',
   actionId: 'open-zip'
 };

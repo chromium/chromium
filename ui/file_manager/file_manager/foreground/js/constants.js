@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * Namespace for common constnats used in Files app.
+ * Namespace for common constants used in Files app.
  * @namespace
  */
-const constants = {};
+export const constants = {};
 
 /**
  * @const {!Array<string>}
@@ -110,4 +110,5 @@ constants.PLUGIN_VM = 'PvmDefault';
  */
 constants.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
 
-export {constants};
+/** @const {string} */
+constants.FILES_APP_EXTENSION_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';

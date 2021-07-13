@@ -18,6 +18,7 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
+import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
@@ -168,9 +169,7 @@ export function setUp() {
         callback();
       },
     },
-    runtime: {
-      id: 'test-extension-id',
-    },
+    runtime: {},
   };
 
   installMockChrome(mockChrome);
@@ -594,7 +593,7 @@ function setUpInstallLinuxPackage() {
   };
   const fileTask = {
     descriptor: {
-      appId: 'test-extension-id',
+      appId: constants.FILES_APP_EXTENSION_ID,
       taskType: 'app',
       actionId: 'install-linux-package'
     },
@@ -651,7 +650,7 @@ export function testToOpenTiniFileOpensImportCrostiniImageDialog(callback) {
             [
               {
                 descriptor: {
-                  appId: 'test-extension-id',
+                  appId: constants.FILES_APP_EXTENSION_ID,
                   taskType: 'app',
                   actionId: 'import-crostini-image'
                 },

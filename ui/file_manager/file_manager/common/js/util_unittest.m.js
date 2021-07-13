@@ -344,3 +344,20 @@ export function testGetFileErrorString() {
   i18nErrorName = util.getFileErrorString('PathExistsError');
   assertEquals(i18nErrorName, 'FILE_ERROR_PATH_EXISTS');
 }
+
+export function testExtractFilePath() {
+  let url = '';
+
+  assertEquals(util.extractFilePath(''), null);
+  assertEquals(util.extractFilePath(null), null);
+  assertEquals(util.extractFilePath(undefined), null);
+
+  // In the Extension:
+  url =
+      'filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/external/Downloads-u/Downloads/f.zip';
+  assertEquals(util.extractFilePath(url), '/Downloads-u/Downloads/f.zip');
+
+  // In the SWA:
+  url = 'filesystem:chrome://file-manager/external/Downloads-u/Downloads/f.zip';
+  assertEquals(util.extractFilePath(url), '/Downloads-u/Downloads/f.zip');
+}

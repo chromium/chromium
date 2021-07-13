@@ -324,12 +324,12 @@ util.applyTransform = (element, transform) => {
 
 /**
  * Extracts path from filesystem: URL.
- * @param {string} url Filesystem URL.
- * @return {?string} The path.
+ * @param {?string=} url Filesystem URL.
+ * @return {?string} The path if it can be parsed, null if it cannot.
  */
 util.extractFilePath = url => {
   const match =
-      /^filesystem:[\w-]*:\/\/[\w]*\/(external|persistent|temporary)(\/.*)$/
+      /^filesystem:[\w-]*:\/\/[\w-]*\/(external|persistent|temporary)(\/.*)$/
           .exec(url);
   const path = match && match[2];
   if (!path) {
