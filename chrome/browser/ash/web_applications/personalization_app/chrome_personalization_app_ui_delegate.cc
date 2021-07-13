@@ -42,11 +42,27 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
 namespace {
-constexpr int kLocalImageThumbnailSizeDip = 128;
+constexpr int kLocalImageThumbnailSizeDip = 256;
+
+const gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image) {
+  // Resize the image maintaining our aspect ratio.
+  float aspect_ratio =
+      static_cast<float>(image.width()) / static_cast<float>(image.height());
+  int height = kLocalImageThumbnailSizeDip;
+  int width = static_cast<int>(aspect_ratio * height);
+  if (width > kLocalImageThumbnailSizeDip) {
+    width = kLocalImageThumbnailSizeDip;
+    height = static_cast<int>(width / aspect_ratio);
+  }
+  return gfx::ImageSkiaOperations::CreateResizedImage(
+      image, skia::ImageOperations::RESIZE_BEST, gfx::Size(width, height));
+}
+
 }  // namespace
 
 namespace mojo {
@@ -193,9 +209,7 @@ void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
   ash::WallpaperInfo info = client->GetActiveUserWallpaperInfo();
   const gfx::ImageSkia& current_wallpaper = controller->GetWallpaperImage();
   const gfx::ImageSkia& current_wallpaper_resized =
-      gfx::ImageSkiaOperations::CreateResizedImage(
-          current_wallpaper, skia::ImageOperations::RESIZE_BEST,
-          gfx::Size(kLocalImageThumbnailSizeDip, kLocalImageThumbnailSizeDip));
+      GetResizedImage(current_wallpaper);
   const GURL& gurl =
       GURL(webui::GetBitmapDataUrl(*current_wallpaper_resized.bitmap()));
   std::vector<std::string> attribution;
