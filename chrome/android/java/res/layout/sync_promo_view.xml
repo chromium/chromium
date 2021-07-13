@@ -7,45 +7,50 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
-    <LinearLayout
+    <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/list_item_default_margin"
         android:layout_marginEnd="@dimen/list_item_default_margin"
-        android:id="@+id/sync_promo_view_layout"
-        android:orientation="vertical"
-        android:padding="@dimen/sync_promo_view_padding"
-        android:background="@drawable/hairline_border_card_background">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:lineSpacingExtra="6sp" />
+        style="@style/MaterialCardStyle">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:gravity="center_vertical"
-            android:orientation="horizontal" >
+            android:orientation="vertical"
+            android:padding="@dimen/sync_promo_view_padding">
 
-            <org.chromium.ui.widget.ButtonCompat
-                android:id="@+id/sign_in"
+            <TextView
+                android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/FilledButton" />
+                android:layout_marginBottom="8dp"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:lineSpacingExtra="6sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <org.chromium.ui.widget.ButtonCompat
+                    android:id="@+id/sign_in"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FilledButton" />
+            </LinearLayout>
+
         </LinearLayout>
 
-    </LinearLayout>
+    </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
 
 </org.chromium.chrome.browser.signin.SyncPromoView>
