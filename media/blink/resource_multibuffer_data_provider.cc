@@ -569,7 +569,8 @@ int64_t ResourceMultiBufferDataProvider::block_size() const {
 bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
     const WebURLResponse& response,
     const scoped_refptr<UrlData>& url_data) {
-  recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse Start");
+  recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse Start %s",
+                       response.HttpHeaderField("Content-Range").Utf8().c_str());
 
   int64_t first_byte_position, last_byte_position, instance_size;
   if (!ParseContentRange(response.HttpHeaderField("Content-Range").Utf8(),
