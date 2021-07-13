@@ -139,76 +139,113 @@ bool Statement::Succeeded() const {
   return is_valid() && succeeded_;
 }
 
-bool Statement::BindNull(int col) {
+bool Statement::BindNull(int param_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
+  if (!is_valid())
+    return false;
 
-  return is_valid() && CheckOk(sqlite3_bind_null(ref_->stmt(), col + 1));
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
+  return sqlite3_bind_null(ref_->stmt(), param_index + 1) == SQLITE_OK;
 }
 
-bool Statement::BindBool(int col, bool val) {
+bool Statement::BindBool(int param_index, bool val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
 
-  return BindInt(col, val ? 1 : 0);
+  return BindInt64(param_index, val ? 1 : 0);
 }
 
-bool Statement::BindInt(int col, int val) {
-#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#endif  // OS_ANDROID
-  DCHECK(!stepped_);
-
-  return is_valid() && CheckOk(sqlite3_bind_int(ref_->stmt(), col + 1, val));
-}
-
-bool Statement::BindInt64(int col, int64_t val) {
+bool Statement::BindInt(int param_index, int val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
+  if (!is_valid())
+    return false;
 
-  return is_valid() && CheckOk(sqlite3_bind_int64(ref_->stmt(), col + 1, val));
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
+  return sqlite3_bind_int(ref_->stmt(), param_index + 1, val) == SQLITE_OK;
 }
 
-bool Statement::BindDouble(int col, double val) {
+bool Statement::BindInt64(int param_index, int64_t val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
+  if (!is_valid())
+    return false;
 
-  return is_valid() && CheckOk(sqlite3_bind_double(ref_->stmt(), col + 1, val));
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
+  return sqlite3_bind_int64(ref_->stmt(), param_index + 1, val) == SQLITE_OK;
 }
 
-bool Statement::BindTime(int col, base::Time val) {
+bool Statement::BindDouble(int param_index, double val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
+  if (!is_valid())
+    return false;
 
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
+  return sqlite3_bind_double(ref_->stmt(), param_index + 1, val) == SQLITE_OK;
+}
+
+bool Statement::BindTime(int param_index, base::Time val) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+  DCHECK(!stepped_);
+  if (!is_valid())
+    return false;
+
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
   int64_t int_value = val.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  return is_valid() &&
-         CheckOk(sqlite3_bind_int64(ref_->stmt(), col + 1, int_value));
+  return sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value) ==
+         SQLITE_OK;
 }
 
-bool Statement::BindCString(int col, const char* val) {
+bool Statement::BindCString(int param_index, const char* val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
+  DCHECK(val);
+  if (!is_valid())
+    return false;
 
-  return is_valid() && CheckOk(sqlite3_bind_text(ref_->stmt(), col + 1, val, -1,
-                                                 SQLITE_TRANSIENT));
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
+  return sqlite3_bind_text(ref_->stmt(), param_index + 1, val, -1,
+                           SQLITE_TRANSIENT) == SQLITE_OK;
 }
 
-bool Statement::BindString(int col, base::StringPiece value) {
+bool Statement::BindString(int param_index, base::StringPiece value) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
+  if (!is_valid())
+    return false;
+
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
 
   // base::StringPiece::data() may return null for empty pieces. In particular,
   // this may happen when the StringPiece is created from the default
@@ -219,24 +256,29 @@ bool Statement::BindString(int col, base::StringPiece value) {
   static constexpr char kEmptyPlaceholder[] = {0x00};
   const char* data = (value.size() > 0) ? value.data() : kEmptyPlaceholder;
 
-  return is_valid() &&
-         CheckOk(sqlite3_bind_text(ref_->stmt(), col + 1, data, value.size(),
-                                   SQLITE_TRANSIENT));
+  return sqlite3_bind_text(ref_->stmt(), param_index + 1, data, value.size(),
+                           SQLITE_TRANSIENT) == SQLITE_OK;
 }
 
-bool Statement::BindString16(int col, base::StringPiece16 value) {
+bool Statement::BindString16(int param_index, base::StringPiece16 value) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
 
-  return BindString(col, base::UTF16ToUTF8(value));
+  return BindString(param_index, base::UTF16ToUTF8(value));
 }
 
-bool Statement::BindBlob(int col, base::span<const uint8_t> value) {
+bool Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
+  if (!is_valid())
+    return false;
+
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
 
   // span::data() may return null for empty spans. In particular, this may
   // happen when the span is created out of a std::vector, because
@@ -251,9 +293,8 @@ bool Statement::BindBlob(int col, base::span<const uint8_t> value) {
   static constexpr uint8_t kEmptyPlaceholder[] = {0x00};
   const uint8_t* data = (value.size() > 0) ? value.data() : kEmptyPlaceholder;
 
-  return is_valid() &&
-         CheckOk(sqlite3_bind_blob(ref_->stmt(), col + 1, data, value.size(),
-                                   SQLITE_TRANSIENT));
+  return sqlite3_bind_blob(ref_->stmt(), param_index + 1, data, value.size(),
+                           SQLITE_TRANSIENT) == SQLITE_OK;
 }
 
 int Statement::ColumnCount() const {
@@ -458,18 +499,6 @@ const char* Statement::GetSQLStatement() {
 #endif  // OS_ANDROID
 
   return sqlite3_sql(ref_->stmt());
-}
-
-bool Statement::CheckOk(int err) const {
-#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#endif  // OS_ANDROID
-
-  // Binding to a non-existent variable is evidence of a serious error.
-  // TODO(gbillock,shess): make this invalidate the statement so it
-  // can't wreak havoc.
-  DCHECK_NE(err, SQLITE_RANGE) << "Bind value out of range";
-  return err == SQLITE_OK;
 }
 
 int Statement::CheckError(int err) {

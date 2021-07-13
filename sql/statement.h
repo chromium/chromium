@@ -117,24 +117,25 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // Binding -------------------------------------------------------------------
 
-  // These all take a 0-based argument index and return true on success. You
+  // These all take a 0-based parameter index and return true on success. You
   // may not always care about the return value (they'll DCHECK if they fail).
   // The main thing you may want to check is when binding large blobs or
   // strings there may be out of memory.
-  bool BindNull(int col);
-  bool BindBool(int col, bool val);
-  bool BindInt(int col, int val);
-  bool BindInt(int col, int64_t val) = delete;  // Call BindInt64() instead.
-  bool BindInt64(int col, int64_t val);
-  bool BindDouble(int col, double val);
-  bool BindCString(int col, const char* val);
-  bool BindString(int col, base::StringPiece val);
-  bool BindString16(int col, base::StringPiece16 value);
-  bool BindBlob(int col, base::span<const uint8_t> value);
+  bool BindNull(int param_index);
+  bool BindBool(int param_index, bool val);
+  bool BindInt(int param_index, int val);
+  bool BindInt(int param_index,
+               int64_t val) = delete;  // Call BindInt64() instead.
+  bool BindInt64(int param_index, int64_t val);
+  bool BindDouble(int param_index, double val);
+  bool BindCString(int param_index, const char* val);
+  bool BindString(int param_index, base::StringPiece val);
+  bool BindString16(int param_index, base::StringPiece16 value);
+  bool BindBlob(int param_index, base::span<const uint8_t> value);
 
   // Overload that makes it easy to pass in std::string values.
-  bool BindBlob(int col, base::span<const char> value) {
-    return BindBlob(col, base::as_bytes(base::make_span(value)));
+  bool BindBlob(int param_index, base::span<const char> value) {
+    return BindBlob(param_index, base::as_bytes(base::make_span(value)));
   }
 
   // Conforms with base::Time serialization recommendations.
@@ -149,7 +150,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   //
   // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
   //                          then remove the migration details above.
-  bool BindTime(int col, base::Time time);
+  bool BindTime(int param_index, base::Time time);
 
   // Retrieving ----------------------------------------------------------------
 
@@ -206,10 +207,6 @@ class COMPONENT_EXPORT(SQL) Statement {
   // code. Currently this function just updates the succeeded flag, but will be
   // enhanced in the future to do the notification.
   int CheckError(int err);
-
-  // Contraction for checking an error code against SQLITE_OK. Does not set the
-  // succeeded flag.
-  bool CheckOk(int err) const;
 
   // Should be called by all mutating methods to check that the statement is
   // valid. Returns true if the statement is valid. DCHECKS and returns false
