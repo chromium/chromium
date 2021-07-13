@@ -117,7 +117,8 @@ config("strip_all") {
 #
 # The symbolic link for $mac_sdk_path is set up by
 # //build/config/apple/sdk_info.py in //build/config/mac/mac_sdk.gni.
-if (use_system_xcode && use_goma && target_os == "mac") {
+if (use_system_xcode && use_goma && target_os == "mac" &&
+    current_toolchain == default_toolchain) {
   action("sdk_inputs") {
     script = "//build/noop.py"
     outputs = [
@@ -128,5 +129,8 @@ if (use_system_xcode && use_goma && target_os == "mac") {
   }
 } else {
   group("sdk_inputs") {
+    if (current_toolchain != default_toolchain) {
+      public_deps = [ ":sdk_inputs($default_toolchain)" ]
+    }
   }
 }
