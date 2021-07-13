@@ -349,7 +349,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.Port.OmniboxURLNavigation.Localhost"
-    enum="InterestingCookiePorts" expires_after="2021-11-04">
+    enum="InterestingCookiePorts" expires_after="2022-01-09">
   <owner>bingler@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
@@ -370,7 +370,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.Port.OmniboxURLNavigation.RemoteHost"
-    enum="InterestingCookiePorts" expires_after="2021-11-04">
+    enum="InterestingCookiePorts" expires_after="2022-01-09">
   <owner>bingler@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
@@ -806,7 +806,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.TimeDatabaseMigrationToV14" units="ms"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>wfh@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>

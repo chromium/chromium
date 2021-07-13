@@ -892,7 +892,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.AudioOutputSampleRate" enum="AudioSampleRate"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>Audio output sample rate for WebRTC (in Hz).</summary>
@@ -1521,7 +1521,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.KeyProtocol"
-    enum="PeerConnectionKeyProtocol" expires_after="2021-11-07">
+    enum="PeerConnectionKeyProtocol" expires_after="2022-01-09">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1532,7 +1532,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.KeyProtocolByMedia"
-    enum="PeerConnectionKeyProtocolByMedia" expires_after="2021-11-07">
+    enum="PeerConnectionKeyProtocolByMedia" expires_after="2022-01-09">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>

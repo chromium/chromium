@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Platform.AnyCrashesDaily" units="count per day"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -34,7 +34,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.AnyCrashesWeekly" units="count per week"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -484,7 +484,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesDaily" units="count per day"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -495,7 +495,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesPerActiveYear" units="count per year"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -528,7 +528,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesWeekly" units="count per week"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -540,7 +540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashInterval" units="seconds"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -561,7 +561,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.LogicalCpuCount" units="units"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-performance@google.com</owner>
   <summary>
@@ -964,7 +964,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.SwapInLong" units="pages/second"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -989,7 +989,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.SwapOutLong" units="pages/second"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -998,7 +998,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.SwapOutShort" units="pages/second"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -1124,7 +1124,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Thermal.Temperature.Cpu.0" units="Celsius"
-    expires_after="2021-10-31">
+    expires_after="2022-01-09">
   <owner>julanhsu@google.com</owner>
   <owner>caiz@google.com</owner>
   <summary>
@@ -1274,7 +1274,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.TPM.VersionFingerprint" enum="TPMVersionFingerprint"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1468,7 +1468,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.ZramCompressionRatioPercent" units="%"
-    expires_after="2021-11-07">
+    expires_after="2022-01-09">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -1566,7 +1566,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PlatformThread.Mac.AttemptedRealtimePeriod"
-    units="microseconds" expires_after="2021-11-07">
+    units="microseconds" expires_after="2022-01-09">
   <owner>olka@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
   <summary>
@@ -1576,7 +1576,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PlatformThread.Mac.SucceededRealtimePeriod"
-    units="microseconds" expires_after="2021-11-07">
+    units="microseconds" expires_after="2022-01-09">
   <owner>olka@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
   <summary>
