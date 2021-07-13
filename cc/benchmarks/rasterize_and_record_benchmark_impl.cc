@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <utility>
 
 #include "base/timer/lap_timer.h"
 #include "base/values.h"
@@ -166,8 +167,8 @@ void RasterizeAndRecordBenchmarkImpl::DidCompleteCommit(
   }
 
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->SetDouble("rasterize_time_ms",
-                    rasterize_results_.total_best_time.InMillisecondsF());
+  result->SetDoubleKey("rasterize_time_ms",
+                       rasterize_results_.total_best_time.InMillisecondsF());
   result->SetInteger("pixels_rasterized", rasterize_results_.pixels_rasterized);
   result->SetInteger("pixels_rasterized_with_non_solid_color",
                      rasterize_results_.pixels_rasterized_with_non_solid_color);

@@ -75,21 +75,24 @@ void RasterizeAndRecordBenchmark::DidUpdateLayers(
                        static_cast<int>(record_results_.paint_op_memory_usage));
   results_->SetInteger("paint_op_count",
                        static_cast<int>(record_results_.paint_op_count));
-  results_->SetDouble("record_time_ms", paint_benchmark_result.record_time_ms);
-  results_->SetDouble("record_time_caching_disabled_ms",
-                      paint_benchmark_result.record_time_caching_disabled_ms);
-  results_->SetDouble(
+  results_->SetDoubleKey("record_time_ms",
+                         paint_benchmark_result.record_time_ms);
+  results_->SetDoubleKey(
+      "record_time_caching_disabled_ms",
+      paint_benchmark_result.record_time_caching_disabled_ms);
+  results_->SetDoubleKey(
       "record_time_subsequence_caching_disabled_ms",
       paint_benchmark_result.record_time_subsequence_caching_disabled_ms);
-  results_->SetDouble(
+  results_->SetDoubleKey(
       "record_time_partial_invalidation_ms",
       paint_benchmark_result.record_time_partial_invalidation_ms);
-  results_->SetDouble("record_time_small_invalidation_ms",
-                      paint_benchmark_result.record_time_small_invalidation_ms);
-  results_->SetDouble(
+  results_->SetDoubleKey(
+      "record_time_small_invalidation_ms",
+      paint_benchmark_result.record_time_small_invalidation_ms);
+  results_->SetDoubleKey(
       "raster_invalidation_and_convert_time_ms",
       paint_benchmark_result.raster_invalidation_and_convert_time_ms);
-  results_->SetDouble(
+  results_->SetDoubleKey(
       "paint_artifact_compositor_update_time_ms",
       paint_benchmark_result.paint_artifact_compositor_update_time_ms);
   results_->SetInteger(
