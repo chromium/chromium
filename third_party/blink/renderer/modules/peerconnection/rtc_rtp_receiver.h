@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_source.h"
 
@@ -89,6 +90,9 @@ class RTCRtpReceiver final : public ScriptWrappable {
   void OnVideoFrameFromDepacketizer(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface>
           encoded_video_frame);
+  void SetAudioUnderlyingSource(
+      RTCEncodedAudioUnderlyingSource* new_underlying_source,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   Member<RTCPeerConnection> pc_;
   std::unique_ptr<RTCRtpReceiverPlatform> receiver_;
@@ -109,10 +113,14 @@ class RTCRtpReceiver final : public ScriptWrappable {
 
   // Insertable Streams support for audio
   bool force_encoded_audio_insertable_streams_;
-  Member<RTCEncodedAudioUnderlyingSource>
-      audio_from_depacketizer_underlying_source_;
+  WTF::Mutex audio_underlying_source_mutex_;
+  CrossThreadPersistent<RTCEncodedAudioUnderlyingSource>
+      audio_from_depacketizer_underlying_source_
+          GUARDED_BY(audio_underlying_source_mutex_);
   Member<RTCEncodedAudioUnderlyingSink> audio_to_decoder_underlying_sink_;
   Member<RTCInsertableStreams> encoded_audio_streams_;
+  scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
+      encoded_audio_transformer_;
 
   // Insertable Streams support for video
   bool force_encoded_video_insertable_streams_;

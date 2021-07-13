@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {
@@ -37,7 +38,8 @@ class RTCEncodedAudioUnderlyingSourceTest : public testing::Test {
   RTCEncodedAudioUnderlyingSource* CreateSource(ScriptState* script_state,
                                                 bool is_receiver = false) {
     return MakeGarbageCollected<RTCEncodedAudioUnderlyingSource>(
-        script_state, WTF::Bind(disconnect_callback_.Get()), is_receiver);
+        script_state, WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+        is_receiver);
   }
 
  protected:

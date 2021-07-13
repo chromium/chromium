@@ -20,7 +20,7 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
  public:
   explicit RTCEncodedAudioUnderlyingSource(
       ScriptState*,
-      base::OnceClosure disconnect_callback,
+      WTF::CrossThreadOnceClosure disconnect_callback,
       bool is_receiver);
 
   // UnderlyingSourceBase
@@ -30,19 +30,27 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
   void OnFrameFromSource(std::unique_ptr<webrtc::TransformableFrameInterface>);
   void Close();
 
+  // Called on any thread to indicate the source is being transferred to an
+  // UnderlyingSource on a different thread to this.
+  void OnSourceTransferStarted();
+
   void Trace(Visitor*) const override;
 
  private:
+  // Implements the handling of this stream being transferred to another
+  // context, called on the thread upon which the instance was created.
+  void OnSourceTransferStartedOnTaskRunner();
+
   FRIEND_TEST_ALL_PREFIXES(RTCEncodedAudioUnderlyingSourceTest,
                            QueuedFramesAreDroppedWhenOverflow);
   static const int kMinQueueDesiredSize;
 
   const Member<ScriptState> script_state_;
-  base::OnceClosure disconnect_callback_;
+  WTF::CrossThreadOnceClosure disconnect_callback_;
   // Indicates if this source is for a receiver. Receiver sources
   // expose CSRCs.
   const bool is_receiver_;
-  THREAD_CHECKER(thread_checker_);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace blink

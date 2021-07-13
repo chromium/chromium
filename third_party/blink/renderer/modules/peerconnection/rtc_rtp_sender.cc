@@ -842,8 +842,8 @@ void RTCRtpSender::RegisterEncodedAudioStreamCallback() {
               ->HasTransformerCallback());
   DCHECK_EQ(kind_, "audio");
   web_sender()->GetEncodedAudioStreamTransformer()->SetTransformerCallback(
-      WTF::BindRepeating(&RTCRtpSender::OnAudioFrameFromEncoder,
-                         WrapWeakPersistent(this)));
+      WTF::CrossThreadBindRepeating(&RTCRtpSender::OnAudioFrameFromEncoder,
+                                    WrapCrossThreadWeakPersistent(this)));
 }
 
 void RTCRtpSender::UnregisterEncodedAudioStreamCallback() {
@@ -864,8 +864,9 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
   audio_from_encoder_underlying_source_ =
       MakeGarbageCollected<RTCEncodedAudioUnderlyingSource>(
           script_state,
-          WTF::Bind(&RTCRtpSender::UnregisterEncodedAudioStreamCallback,
-                    WrapWeakPersistent(this)),
+          WTF::CrossThreadBindOnce(
+              &RTCRtpSender::UnregisterEncodedAudioStreamCallback,
+              WrapCrossThreadWeakPersistent(this)),
           /*is_receiver=*/false);
   // The high water mark for the readable stream is set to 0 so that frames are
   // removed from the queue right away, without introducing any buffering.
