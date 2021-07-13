@@ -143,7 +143,7 @@ void TopSitesImpl::SyncWithHistory() {
 }
 
 bool TopSitesImpl::HasBlockedUrls() const {
-  const base::DictionaryValue* blocked_urls =
+  const base::Value* blocked_urls =
       pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
   return blocked_urls && !blocked_urls->DictEmpty();
 }
@@ -151,12 +151,10 @@ bool TopSitesImpl::HasBlockedUrls() const {
 void TopSitesImpl::AddBlockedUrl(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  auto dummy = std::make_unique<base::Value>();
   {
     DictionaryPrefUpdate update(pref_service_, kBlockedUrlsPrefsKey);
-    base::DictionaryValue* blocked_urls = update.Get();
-    blocked_urls->SetKey(GetURLHash(url),
-                         base::Value::FromUniquePtrValue(std::move(dummy)));
+    base::Value* blocked_urls = update.Get();
+    blocked_urls->SetKey(GetURLHash(url), base::Value());
   }
 
   ResetThreadSafeCache();
@@ -167,7 +165,7 @@ void TopSitesImpl::RemoveBlockedUrl(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
   {
     DictionaryPrefUpdate update(pref_service_, kBlockedUrlsPrefsKey);
-    base::DictionaryValue* blocked_urls = update.Get();
+    base::Value* blocked_urls = update.Get();
     blocked_urls->RemoveKey(GetURLHash(url));
   }
   ResetThreadSafeCache();
@@ -176,17 +174,17 @@ void TopSitesImpl::RemoveBlockedUrl(const GURL& url) {
 
 bool TopSitesImpl::IsBlocked(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const base::DictionaryValue* blocked_urls =
+  const base::Value* blocked_urls =
       pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
-  return blocked_urls && blocked_urls->HasKey(GetURLHash(url));
+  return blocked_urls && blocked_urls->FindKey(GetURLHash(url));
 }
 
 void TopSitesImpl::ClearBlockedUrls() {
   DCHECK(thread_checker_.CalledOnValidThread());
   {
     DictionaryPrefUpdate update(pref_service_, kBlockedUrlsPrefsKey);
-    base::DictionaryValue* blocked_urls = update.Get();
-    blocked_urls->Clear();
+    base::Value* blocked_urls = update.Get();
+    blocked_urls->DictClear();
   }
   ResetThreadSafeCache();
   NotifyTopSitesChanged(TopSitesObserver::ChangeReason::BLOCKED_URLS);
@@ -370,7 +368,7 @@ void TopSitesImpl::SetTopSites(MostVisitedURLList top_sites,
 int TopSitesImpl::num_results_to_request_from_history() const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  const base::DictionaryValue* blocked_urls =
+  const base::Value* blocked_urls =
       pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
   return kTopSitesNumber + (blocked_urls ? blocked_urls->DictSize() : 0);
 }

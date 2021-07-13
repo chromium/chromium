@@ -20,9 +20,10 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace signin {
@@ -79,10 +80,11 @@ class WebHistoryService : public KeyedService {
   };
 
   // Callback with the result of a call to QueryHistory(). Currently, the
-  // DictionaryValue is just the parsed JSON response from the server.
-  // TODO(dubroy): Extract the DictionaryValue into a structured results object.
+  // dictionary Value is just the parsed JSON response from the server.
+  // TODO(dubroy): Extract the dictionary Value into a structured results
+  // object.
   using QueryWebHistoryCallback =
-      base::OnceCallback<void(Request*, const base::DictionaryValue*)>;
+      base::OnceCallback<void(Request*, const base::Value*)>;
 
   using ExpireWebHistoryCallback = base::OnceCallback<void(bool success)>;
 
@@ -170,10 +172,10 @@ class WebHistoryService : public KeyedService {
                                  const net::PartialNetworkTrafficAnnotationTag&
                                      partial_traffic_annotation);
 
-  // Extracts a JSON-encoded HTTP response into a DictionaryValue.
+  // Extracts a JSON-encoded HTTP response into a dictionary Value.
   // If `request`'s HTTP response code indicates failure, or if the response
-  // body is not JSON, a null pointer is returned.
-  static std::unique_ptr<base::DictionaryValue> ReadResponse(Request* request);
+  // body is not JSON, nullopt is returned.
+  static absl::optional<base::Value> ReadResponse(Request* request);
 
   // Called by `request` when a web history query has completed. Unpacks the
   // response and calls `callback`, which is the original callback that was

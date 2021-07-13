@@ -54,7 +54,7 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
 
   void OnGetLocalHistoryCount(history::HistoryCountResult result);
   void OnGetWebHistoryCount(history::WebHistoryService::Request* request,
-                            const base::DictionaryValue* result);
+                            const base::Value* result);
   void OnWebHistoryTimeout();
   void MergeResults();
 

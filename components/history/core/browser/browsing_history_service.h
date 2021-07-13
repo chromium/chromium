@@ -194,7 +194,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   void WebHistoryQueryComplete(scoped_refptr<QueryHistoryState> state,
                                base::Time start_time,
                                WebHistoryService::Request* request,
-                               const base::DictionaryValue* results_value);
+                               const base::Value* results_value);
 
   // Callback telling us whether other forms of browsing history were found
   // on the history server.
