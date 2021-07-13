@@ -8167,7 +8167,6 @@ interface Sanitizer
     method getConfiguration
     method sanitize
     method sanitizeFor
-    method sanitizeToString
 interface Scheduler
     attribute @@toStringTag
     getter currentTaskSignal

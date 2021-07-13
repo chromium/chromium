@@ -38,9 +38,6 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   Sanitizer(ExecutionContext*, const SanitizerConfig*);
   ~Sanitizer() override;
 
-  String sanitizeToString(ScriptState* script_state,
-                          const V8SanitizerInput* input,
-                          ExceptionState& exception_state);
   DocumentFragment* sanitize(ScriptState* script_state,
                              const V8SanitizerInput* input,
                              ExceptionState& exception_state);
@@ -75,9 +72,6 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
                                     const V8SanitizerInput* input,
                                     ExceptionState& exception_state);
   void DoSanitizing(ContainerNode*, LocalDOMWindow*, ExceptionState&);
-  DocumentFragment* SanitizeImpl(ScriptState* script_state,
-                                 const V8SanitizerInput* input,
-                                 ExceptionState& exception_state);
 
   SanitizerConfigImpl config_;
   Member<const SanitizerConfig> config_dictionary_;

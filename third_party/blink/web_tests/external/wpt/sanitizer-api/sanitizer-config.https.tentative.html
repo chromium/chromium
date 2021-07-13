@@ -39,7 +39,11 @@
     // - that a config can't be changed afterwards.
     //   (I.e., that the Sanitizer won't hold on to a reference of the options.)
 
-    const probe = "<div id=\"i\">balabala</div><p>test</p>";
+    // The probe determines whether the Sanitizer modifies the probe string.
+    const probe_string = "<div id=\"i\">balabala</div><p>test</p>";
+    const probe = sanitizer => (probe_string ==
+        sanitizer.sanitizeFor("div", probe_string).innerHTML);
+
     const should_stay_the_same = {
       allowElements: [ "div", "p" ],
       blockElements: [ "test" ],
@@ -54,6 +58,7 @@
       allowAttributes: { "id": ["p"]},
       dropAttributes: { "id": ["div"]},
     };
+
     assert_array_equals(Object.keys(should_stay_the_same), Object.keys(should_modify));
     Object.keys(should_stay_the_same).forEach(option_key => {
       test(t => {
@@ -61,7 +66,7 @@
         options[option_key] = should_stay_the_same[option_key];
         const s = new Sanitizer(options);
         assert_true(s instanceof Sanitizer);
-        assert_equals(s.sanitizeToString(probe), probe);
+        assert_true(probe(s));
       }, `SanitizerAPI: ${option_key} stays is okay.`);
 
       const options = {};
@@ -69,12 +74,12 @@
       const s = new Sanitizer(options);
       test(t => {
         assert_true(s instanceof Sanitizer);
-        assert_not_equals(s.sanitizeToString(probe), probe);
+        assert_false(probe(s));
       }, `SanitizerAPI: ${option_key} modify is okay.`);
 
       options[option_key] = should_stay_the_same[option_key];
       test(t => {
-        assert_not_equals(s.sanitizeToString(probe), probe);
+        assert_false(probe(s));
       }, `SanitizerAPI: ${option_key} config is not kept as reference.`);
     });
 </script>

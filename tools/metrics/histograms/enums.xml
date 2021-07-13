@@ -33836,7 +33836,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3813" label="WebAppManifestCaptureLinks"/>
   <int value="3814" label="SanitizerAPICreated"/>
   <int value="3815" label="SanitizerAPIDefaultConfiguration"/>
-  <int value="3816" label="SanitizerAPIToString"/>
+  <int value="3816" label="OBSOLETE_SanitizerAPIToString"/>
   <int value="3817" label="SanitizerAPIToFragment"/>
   <int value="3818" label="SanitizerAPIActionTaken"/>
   <int value="3819" label="SanitizerAPIFromString"/>

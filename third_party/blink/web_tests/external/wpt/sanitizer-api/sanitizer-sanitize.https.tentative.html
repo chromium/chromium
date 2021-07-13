@@ -35,11 +35,9 @@
     }, "Sanitizer.sanitize() should throw an error.");
 
     test(t => {
-      let s = new Sanitizer({});
-      fragment = s.sanitize(null);
-      assert_true(fragment instanceof DocumentFragment);
-      assert_equals(getString(fragment), "null");
-    }, "SanitizerAPI sanitize function for null.");
+      let s = new Sanitizer();
+      assert_throws_js(TypeError, _ => s.sanitize(null));
+    }, "Sanitizer.sanitize(null).");
 
     const probe_string = `<a href="about:blank">hello</a><script>cons` +
         `ole.log("world!");<` + `/script>`;

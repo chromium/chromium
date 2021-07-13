@@ -7,7 +7,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node_filter.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -107,17 +107,28 @@ Sanitizer* Sanitizer::Create(ExecutionContext* execution_context,
   return MakeGarbageCollected<Sanitizer>(execution_context, config);
 }
 
-String Sanitizer::sanitizeToString(ScriptState* script_state,
-                                   const V8SanitizerInput* input,
-                                   ExceptionState& exception_state) {
-  return CreateMarkup(SanitizeImpl(script_state, input, exception_state),
-                      kChildrenOnly);
-}
-
 DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
                                       const V8SanitizerInput* input,
                                       ExceptionState& exception_state) {
-  return SanitizeImpl(script_state, input, exception_state);
+  V8SanitizerInput* new_input = nullptr;
+  switch (input->GetContentType()) {
+    case V8SanitizerInput::ContentType::kDocument:
+      new_input =
+          MakeGarbageCollected<V8SanitizerInput>(input->GetAsDocument());
+      break;
+    case V8SanitizerInput::ContentType::kDocumentFragment:
+      new_input = MakeGarbageCollected<V8SanitizerInput>(
+          input->GetAsDocumentFragment());
+      break;
+  }
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  DocumentFragment* fragment =
+      PrepareFragment(window, script_state, new_input, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  DoSanitizing(fragment, window, exception_state);
+  return fragment;
 }
 
 Element* Sanitizer::sanitizeFor(ScriptState* script_state,
@@ -183,21 +194,6 @@ DocumentFragment* Sanitizer::PrepareFragment(LocalDOMWindow* window,
       UseCounter::Count(window->GetExecutionContext(),
                         WebFeature::kSanitizerAPIFromFragment);
       return input->GetAsDocumentFragment();
-    case V8SanitizerInput::ContentType::kString: {
-      UseCounter::Count(window->GetExecutionContext(),
-                        WebFeature::kSanitizerAPIFromString);
-      Document* document =
-          window->document()
-              ? window->document()->implementation().createHTMLDocument()
-              : DOMParser::Create(script_state)
-                    ->parseFromString(
-                        "<!DOCTYPE html><html><body></body></html>",
-                        "text/html", ParseFromStringOptions::Create());
-      // TODO(https://crbug.com/1178774): Behavior difference need further
-      // investgate.
-      return document->createRange()->createContextualFragment(
-          input->GetAsString(), exception_state);
-    }
   }
   NOTREACHED();
   return nullptr;
@@ -288,19 +284,6 @@ void Sanitizer::DoSanitizing(ContainerNode* fragment,
         break;
     }
   }
-}
-
-DocumentFragment* Sanitizer::SanitizeImpl(ScriptState* script_state,
-                                          const V8SanitizerInput* input,
-                                          ExceptionState& exception_state) {
-  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  DocumentFragment* fragment =
-      PrepareFragment(window, script_state, input, exception_state);
-  if (exception_state.HadException()) {
-    return nullptr;
-  }
-  DoSanitizing(fragment, window, exception_state);
-  return fragment;
 }
 
 // If the current element needs to be dropped, remove current element entirely

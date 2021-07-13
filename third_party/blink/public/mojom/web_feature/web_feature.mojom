@@ -3124,7 +3124,7 @@ enum WebFeature {
   kWebAppManifestCaptureLinks = 3813,
   kSanitizerAPICreated = 3814,
   kSanitizerAPIDefaultConfiguration = 3815,
-  kSanitizerAPIToString = 3816,
+  kOBSOLETE_SanitizerAPIToString = 3816,
   kSanitizerAPIToFragment = 3817,
   kSanitizerAPIActionTaken = 3818,
   kSanitizerAPIFromString = 3819,
