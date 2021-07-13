@@ -2886,8 +2886,11 @@ class LayerTreeHostTestViewportRectChangeBlockedMainThread
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1223226): Disabled on Chrome OS due to flakiness.
+#if !defined(OS_CHROMEOS)
 SINGLE_AND_MULTI_THREAD_TEST_F(
     LayerTreeHostTestViewportRectChangeBlockedMainThread);
+#endif
 
 class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
  public:
