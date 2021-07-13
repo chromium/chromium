@@ -127,6 +127,13 @@
         padding-inline-end: var(--cr-icon-button-margin-start);
         width: var(--cr-link-row-icon-width, var(--cr-icon-size));
       }
+
+      @media (prefers-color-scheme: dark) {
+        .search-history-box-icon {
+          --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+              var(--google-grey-refresh-500));
+        }
+      }
     </style>
 
     <cr-dialog id="clearBrowsingDataDialog"
@@ -192,7 +199,7 @@
             <div class="search-history-box"
                 hidden="[[!shouldShowGoogleSearchHistoryLabel_(isSignedIn_)]]">
               <iron-icon class="search-history-box-icon" aria-hidden="true"
-                  icon="settings20:safety-check">
+                  icon="settings20:googleg">
               </iron-icon>
               <div id="googleSearchHistoryLabel"
                   inner-h-t-m-l="[[googleSearchHistoryString_]]">
