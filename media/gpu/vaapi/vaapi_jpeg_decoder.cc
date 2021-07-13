@@ -333,8 +333,9 @@ bool VaapiJpegDecoder::MaybeCreateSurface(unsigned int picture_va_rt_format,
   // can report the size that clients should be using to read the contents.
   scoped_va_context_and_surface_.reset(
       vaapi_wrapper_
-          ->CreateContextAndScopedVASurface(picture_va_rt_format,
-                                            new_coded_size, new_visible_size)
+          ->CreateContextAndScopedVASurface(
+              picture_va_rt_format, new_coded_size,
+              {VaapiWrapper::SurfaceUsageHint::kGeneric}, new_visible_size)
           .release());
   if (!scoped_va_context_and_surface_) {
     VLOGF(1) << "CreateContextAndScopedVASurface() failed";

@@ -416,7 +416,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   // native input mode) is the coded size.
   if (!vaapi_wrapper_->CreateContextAndSurfaces(
           kVaSurfaceFormat, encoder_->GetCodedSize(),
-          VaapiWrapper::SurfaceUsageHint::kVideoEncoder,
+          {VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
           (num_frames_in_flight_ + 1) * va_surfaces_per_video_frame_,
           &available_va_surface_ids_)) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed creating VASurfaces");
@@ -582,8 +582,9 @@ VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
 
     if (!vpp_vaapi_wrapper_[encode_size]->CreateContextAndSurfaces(
             kVaSurfaceFormat, encode_size,
-            VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite, num_va_surfaces,
-            &available_vpp_va_surface_ids_[encode_size])) {
+            {VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite,
+             VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
+            num_va_surfaces, &available_vpp_va_surface_ids_[encode_size])) {
       NOTIFY_ERROR(kPlatformFailureError, "Failed creating VASurfaces");
       return nullptr;
     };

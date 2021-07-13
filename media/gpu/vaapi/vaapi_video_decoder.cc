@@ -772,6 +772,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
         std::unique_ptr<ScopedVASurface> surface =
             vaapi_wrapper_->CreateScopedVASurface(
                 base::strict_cast<unsigned int>(va_rt_format), decoder_pic_size,
+                {VaapiWrapper::SurfaceUsageHint::kVideoDecoder},
                 /*visible_size=*/absl::nullopt, va_fourcc);
         if (!surface) {
           while (!decode_surface_pool_for_scaling_.empty())

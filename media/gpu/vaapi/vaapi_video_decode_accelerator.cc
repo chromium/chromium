@@ -790,7 +790,7 @@ void VaapiVideoDecodeAccelerator::AssignPictureBuffers(
     RETURN_AND_NOTIFY_ON_FAILURE(
         vaapi_wrapper_->CreateContextAndSurfaces(
             va_surface_format_, requested_pic_size_,
-            VaapiWrapper::SurfaceUsageHint::kVideoDecoder,
+            {VaapiWrapper::SurfaceUsageHint::kVideoDecoder},
             requested_num_surfaces, &va_surface_ids),
         "Failed creating VA Surfaces", PLATFORM_FAILURE, );
 

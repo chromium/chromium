@@ -112,7 +112,9 @@ VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(
     scoped_va_context_and_surface_.reset();
     scoped_va_context_and_surface_ = ScopedVAContextAndSurface(
         vaapi_wrapper_
-            ->CreateContextAndScopedVASurface(kWebPVARtFormat, new_visible_size)
+            ->CreateContextAndScopedVASurface(
+                kWebPVARtFormat, new_visible_size,
+                {VaapiWrapper::SurfaceUsageHint::kGeneric})
             .release());
     if (!scoped_va_context_and_surface_) {
       VLOGF(1) << "CreateContextAndScopedVASurface() failed";

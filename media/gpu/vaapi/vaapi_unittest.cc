@@ -420,11 +420,15 @@ TEST_P(VaapiVppTest, BlitWithVAAllocatedSurfaces) {
   ASSERT_NE(va_rt_format_out, kInvalidVaRtFormat);
 
   std::unique_ptr<ScopedVASurface> scoped_surface_in =
-      wrapper->CreateScopedVASurface(va_rt_format_in, kInputSize);
+      wrapper->CreateScopedVASurface(
+          va_rt_format_in, kInputSize,
+          {VaapiWrapper::SurfaceUsageHint::kGeneric});
   ASSERT_TRUE(!!scoped_surface_in);
 
   std::unique_ptr<ScopedVASurface> scoped_surface_out =
-      wrapper->CreateScopedVASurface(va_rt_format_out, kOutputSize);
+      wrapper->CreateScopedVASurface(
+          va_rt_format_out, kOutputSize,
+          {VaapiWrapper::SurfaceUsageHint::kGeneric});
   ASSERT_TRUE(!!scoped_surface_out);
 
   scoped_refptr<VASurface> surface_in = base::MakeRefCounted<VASurface>(

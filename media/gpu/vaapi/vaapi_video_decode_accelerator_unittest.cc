@@ -74,7 +74,7 @@ class MockVaapiWrapper : public VaapiWrapper {
   MOCK_METHOD5(CreateContextAndSurfaces,
                bool(unsigned int,
                     const gfx::Size&,
-                    SurfaceUsageHint,
+                    const std::vector<SurfaceUsageHint>&,
                     size_t,
                     std::vector<VASurfaceID>*));
   MOCK_METHOD1(CreateContext, bool(const gfx::Size&));
@@ -305,11 +305,12 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
           vda_.buffer_allocation_mode_,
           VaapiVideoDecodeAccelerator::BufferAllocationMode::kSuperReduced);
       const size_t kNumReferenceFrames = 1 + num_pictures / 2;
-      EXPECT_CALL(
-          *mock_vaapi_wrapper_,
-          CreateContextAndSurfaces(
-              _, picture_size, VaapiWrapper::SurfaceUsageHint::kVideoDecoder,
-              kNumReferenceFrames, _))
+      EXPECT_CALL(*mock_vaapi_wrapper_,
+                  CreateContextAndSurfaces(
+                      _, picture_size,
+                      std::vector<VaapiWrapper::SurfaceUsageHint>{
+                          VaapiWrapper::SurfaceUsageHint::kVideoDecoder},
+                      kNumReferenceFrames, _))
           .WillOnce(DoAll(
               WithArg<4>(Invoke([kNumReferenceFrames](
                                     std::vector<VASurfaceID>* va_surface_ids) {

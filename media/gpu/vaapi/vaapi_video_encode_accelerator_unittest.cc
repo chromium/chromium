@@ -152,7 +152,7 @@ class MockVaapiWrapper : public VaapiWrapper {
   MOCK_METHOD5(CreateContextAndSurfaces,
                bool(unsigned int,
                     const gfx::Size&,
-                    SurfaceUsageHint,
+                    const std::vector<SurfaceUsageHint>&,
                     size_t,
                     std::vector<VASurfaceID>*));
   MOCK_METHOD5(BlitSurface,
@@ -301,7 +301,9 @@ class VaapiVideoEncodeAcceleratorTest
     EXPECT_CALL(*mock_vaapi_wrapper_,
                 CreateContextAndSurfaces(
                     _, kDefaultEncodeSize,
-                    VaapiWrapper::SurfaceUsageHint::kVideoEncoder, _, _))
+                    std::vector<VaapiWrapper::SurfaceUsageHint>{
+                        VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
+                    _, _))
         .WillOnce(WithArgs<3, 4>(
             [&surfaces = this->va_surfaces_](
                 size_t num_surfaces, std::vector<VASurfaceID>* va_surface_ids) {
@@ -473,7 +475,10 @@ class VaapiVideoEncodeAcceleratorTest
               *vpp_svc_mock_vaapi_wrappers_[i],
               CreateContextAndSurfaces(
                   VA_RT_FORMAT_YUV420, layer_size,
-                  VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite, _, _))
+                  std::vector<VaapiWrapper::SurfaceUsageHint>{
+                      VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite,
+                      VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
+                  _, _))
               .WillOnce(
                   WithArgs<3, 4>([&surfaces = this->vpp_svc_va_surfaces_[i]](
                                      size_t num_surfaces,
