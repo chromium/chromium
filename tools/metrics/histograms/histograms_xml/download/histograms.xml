@@ -73,7 +73,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.ContentType.Audio" enum="DownloadAudioType"
-    expires_after="2021-08-22">
+    expires_after="never">
+<!-- expires-never: Monitors download system health. -->
+
   <owner>xingliu@chromium.org</owner>
   <summary>Types of audio files that are downloaded.</summary>
 </histogram>
@@ -87,7 +89,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.ContentType.Text" enum="DownloadTextType"
-    expires_after="2021-09-12">
+    expires_after="never">
+<!-- expires-never: Monitors download system health. -->
+
   <owner>xingliu@chromium.org</owner>
   <summary>Types of text files that are downloaded.</summary>
 </histogram>
