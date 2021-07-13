@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 
 #include <memory>
 
 #include "base/time/time.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "components/page_info/page_info_ui.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"

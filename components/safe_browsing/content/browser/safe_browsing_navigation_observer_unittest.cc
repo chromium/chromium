@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
@@ -24,11 +23,11 @@
 
 namespace safe_browsing {
 
-class SBNavigationObserverTest : public ChromeRenderViewHostTestHarness {
+class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
  public:
   SBNavigationObserverTest() {}
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL("http://foo/0"));
 
     HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
@@ -46,7 +45,7 @@ class SBNavigationObserverTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     delete navigation_observer_;
     settings_map_->ShutdownOnUIThread();
-    ChromeRenderViewHostTestHarness::TearDown();
+    content::RenderViewHostTestHarness::TearDown();
   }
   void VerifyNavigationEvent(
       const GURL& expected_source_url,
@@ -500,8 +499,8 @@ TEST_F(SBNavigationObserverTest, ChainWorksThroughNewTab) {
 
   ASSERT_EQ(1, referrer_chain.size());
 
-  EXPECT_EQ("http://b.com/",referrer_chain[0].url());
-  EXPECT_EQ("http://a.com/",referrer_chain[0].referrer_url());
+  EXPECT_EQ("http://b.com/", referrer_chain[0].url());
+  EXPECT_EQ("http://a.com/", referrer_chain[0].referrer_url());
   EXPECT_TRUE(referrer_chain[0].is_retargeting());
 }
 

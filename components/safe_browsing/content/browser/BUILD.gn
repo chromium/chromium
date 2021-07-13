@@ -77,6 +77,21 @@ source_set("browser") {
     "//net:extras",
     "//services/network/public/mojom",
   ]
+  if (safe_browsing_mode > 0) {
+    sources += [
+      "safe_browsing_navigation_observer.cc",
+      "safe_browsing_navigation_observer.h",
+      "safe_browsing_navigation_observer_manager.cc",
+      "safe_browsing_navigation_observer_manager.h",
+    ]
+
+    deps += [
+      ":safe_browsing_service",
+      "//components/content_settings/core/browser",
+      "//components/page_info",
+      "//components/sessions",
+    ]
+  }
 }
 
 source_set("client_side_model_loader") {
@@ -136,6 +151,17 @@ source_set("unit_tests") {
       "//components/safe_browsing/core/common:safe_browsing_prefs",
     ]
   }
+
+  # TODO(sgurun): enable tests for safe_browsing==2.
+  if (safe_browsing_mode == 1) {
+    sources += [ "safe_browsing_navigation_observer_unittest.cc" ]
+  }
+
+  deps += [
+    "//components/content_settings/core/browser",
+    "//components/sessions",
+    "//components/sync_preferences:test_support",
+  ]
 }
 
 source_set("client_side_detection") {

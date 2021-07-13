@@ -504,6 +504,7 @@ static_library("ui") {
     "//components/reading_list/features:flags",
     "//components/renderer_context_menu",
     "//components/resources",
+    "//components/safe_browsing/content/browser",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/browser/db:database_manager",

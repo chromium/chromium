@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 
 namespace safe_browsing {
 

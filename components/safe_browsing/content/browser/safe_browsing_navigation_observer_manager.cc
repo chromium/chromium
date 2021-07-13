@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 
 #include <memory>
 
@@ -13,8 +13,8 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
