@@ -64,8 +64,8 @@ void TestDataDevice::StartDrag(TestDataSource* source,
                                uint32_t serial) {
   DCHECK(source);
   DCHECK(origin);
-  if (delegate_)
-    delegate_->StartDrag(source, origin, serial);
+  if (drag_delegate_)
+    drag_delegate_->StartDrag(source, origin, serial);
   wl_client_flush(client_);
 }
 

@@ -27,7 +27,7 @@ class WaylandWindow;
 // emulate dnd-related events from the test compositor and can be used in both
 // data and window dragging test cases.
 class WaylandDragDropTest : public WaylandTest,
-                            public wl::TestDataDevice::Delegate {
+                            public wl::TestDataDevice::DragDelegate {
  public:
   WaylandDragDropTest();
   WaylandDragDropTest(const WaylandDragDropTest&) = delete;
@@ -56,7 +56,7 @@ class WaylandDragDropTest : public WaylandTest,
   void SetUp() override;
   void TearDown() override;
 
-  // wl::TestDataDevice::Delegate:
+  // wl::TestDataDevice::DragDelegate:
   void StartDrag(wl::TestDataSource* source,
                  wl::MockSurface* origin,
                  uint32_t serial) override;

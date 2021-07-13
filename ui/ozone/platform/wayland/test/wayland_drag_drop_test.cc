@@ -98,15 +98,15 @@ void WaylandDragDropTest::SetUp() {
   ASSERT_TRUE(data_device_manager_);
 
   data_source_ = nullptr;
-  data_device_manager_->data_device()->set_delegate(this);
+  data_device_manager_->data_device()->set_drag_delegate(this);
 }
 
 void WaylandDragDropTest::TearDown() {
-  data_device_manager_->data_device()->set_delegate(nullptr);
+  data_device_manager_->data_device()->set_drag_delegate(nullptr);
   data_device_manager_ = nullptr;
 }
 
-// wl::TestDataDevice::Delegate:
+// wl::TestDataDevice::DragDelegate:
 void WaylandDragDropTest::StartDrag(wl::TestDataSource* source,
                                     wl::MockSurface* origin,
                                     uint32_t serial) {
