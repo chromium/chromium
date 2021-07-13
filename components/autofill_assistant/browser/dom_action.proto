@@ -158,7 +158,7 @@ message FocusFieldProto {
 // combination with |SendChangeEventProto|. If the element in |option| is
 // not an option of the element in |select|, an |OPTION_VALUE_NOT_FOUND| error
 // is returned. If the element in |select| is not an HTML <select> element, an
-// |OPTION_VALUE_NOT_FOUND| error is returned.
+// |INVALID_TARGET| error is returned.
 message SelectOptionElementProto {
   optional ClientIdProto select_id = 1;
   optional ClientIdProto option_id = 2;
@@ -172,7 +172,7 @@ message CheckElementTagProto {
   repeated string any_of_tag = 2;
 }
 
-// Check whether the element in |option_d| is selected in the element in
+// Check whether the element in |option_id| is selected in the element in
 // |select_id|.
 message CheckOptionElementProto {
   optional ClientIdProto select_id = 1;
