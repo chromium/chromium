@@ -66,20 +66,25 @@ bool PopulateItem(const base::Value& from, double* out) {
 }
 
 bool PopulateItem(const base::Value& from, double* out, std::u16string* error) {
-  if (!from.GetAsDouble(out))
+  if (!from.is_double())
     return ReportError(from, base::Value::Type::DOUBLE, error);
+  *out = from.GetDouble();
   return true;
 }
 
 bool PopulateItem(const base::Value& from, std::string* out) {
-  return from.GetAsString(out);
+  if (!from.is_string())
+    return false;
+  *out = from.GetString();
+  return true;
 }
 
 bool PopulateItem(const base::Value& from,
                   std::string* out,
                   std::u16string* error) {
-  if (!from.GetAsString(out))
+  if (!from.is_string())
     return ReportError(from, base::Value::Type::STRING, error);
+  *out = from.GetString();
   return true;
 }
 
