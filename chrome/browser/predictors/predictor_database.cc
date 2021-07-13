@@ -77,6 +77,8 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
           .exclusive_locking = true,
           .page_size = 4096,
           .cache_size = 500,
+          // TODO(pwnall): Add a meta table and remove this option.
+          .mmap_alt_status_discouraged = true,
       })),
       db_task_runner_(db_task_runner),
       autocomplete_table_(
@@ -84,9 +86,6 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
       resource_prefetch_tables_(
           new ResourcePrefetchPredictorTables(db_task_runner_)) {
   db_->set_histogram_tag("Predictor");
-
-  // This db does not use [meta] table, store mmap status data elsewhere.
-  db_->set_mmap_alt_status();
 
   is_loading_predictor_enabled_ = IsLoadingPredictorEnabled(profile);
 }

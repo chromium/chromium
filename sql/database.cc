@@ -645,9 +645,9 @@ size_t Database::GetAppropriateMmapSize() {
 
   // Progress information is tracked in the [meta] table for databases which use
   // sql::MetaTable, otherwise it is tracked in a special view.
-  // TODO(shess): Move all cases to the view implementation.
+  // TODO(pwnall): Migrate all databases to using a meta table.
   int64_t mmap_ofs = 0;
-  if (mmap_alt_status_) {
+  if (options_.mmap_alt_status_discouraged) {
     if (!GetMmapAltStatus(&mmap_ofs))
       return 0;
   } else {
@@ -725,7 +725,7 @@ size_t Database::GetAppropriateMmapSize() {
         DCHECK(mmap_ofs > 0 || mmap_ofs == MetaTable::kMmapFailure);
       }
 
-      if (mmap_alt_status_) {
+      if (options_.mmap_alt_status_discouraged) {
         if (!SetMmapAltStatus(mmap_ofs))
           return 0;
       } else {

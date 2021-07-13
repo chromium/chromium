@@ -87,6 +87,8 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
           .exclusive_locking = true,
           .page_size = 4096,
           .cache_size = 500,
+          // TODO(pwnall): Add a meta table and remove this option.
+          .mmap_alt_status_discouraged = true,
       })),
       issuer_table_(
           std::make_unique<sqlite_proto::KeyValueTable<TrustTokenIssuerConfig>>(
@@ -119,8 +121,6 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
               flush_delay_for_writes)) {
   // These two lines are boilerplate copied from predictor_database.cc.
   backing_database_->set_histogram_tag("TrustTokens");
-  // We have to call this because the database doesn't have a "meta" table.
-  backing_database_->set_mmap_alt_status();
 
   // Because TrustTokenDatabaseOwners are only constructed through an
   // asynchronous factory method, they are impossible to delete prior to their

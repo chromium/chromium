@@ -39,7 +39,13 @@ static const int kSizeThresholdForFlush = 200;
 
 ActivityDatabase::ActivityDatabase(ActivityDatabase::Delegate* delegate)
     : delegate_(delegate),
-      db_({.exclusive_locking = true, .page_size = 4096, .cache_size = 32}),
+      db_({
+          .exclusive_locking = true,
+          .page_size = 4096,
+          .cache_size = 32,
+          // TODO(pwnall): Add a meta table and remove this option.
+          .mmap_alt_status_discouraged = true,
+      }),
       valid_db_(false),
       batch_mode_(true),
       already_closed_(false),
@@ -66,9 +72,6 @@ void ActivityDatabase::Init(const base::FilePath& db_name) {
   db_.set_histogram_tag("Activity");
   db_.set_error_callback(base::BindRepeating(
       &ActivityDatabase::DatabaseErrorCallback, base::Unretained(this)));
-
-  // This db does not use [meta] table, store mmap status data elsewhere.
-  db_.set_mmap_alt_status();
 
   if (!db_.Open(db_name)) {
     LOG(ERROR) << db_.GetErrorMessage();

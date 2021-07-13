@@ -1257,7 +1257,10 @@ TEST_P(SQLDatabaseTest, MmapInitiallyEnabledAltStatus) {
   // Re-open fresh database with alt-status flag set.
   db_->Close();
   Database::Delete(db_path_);
-  db_->set_mmap_alt_status();
+
+  DatabaseOptions options = GetDBOptions();
+  options.mmap_alt_status_discouraged = true;
+  db_ = std::make_unique<Database>(options);
   ASSERT_TRUE(db_->Open(db_path_));
 
   {
@@ -1339,7 +1342,11 @@ TEST_P(SQLDatabaseTest, GetAppropriateMmapSizeAltStatus) {
   ASSERT_FALSE(db_->DoesViewExist("MmapStatus"));
 
   // Using alt status, everything should be mapped, with state in the view.
-  db_->set_mmap_alt_status();
+  DatabaseOptions options = GetDBOptions();
+  options.mmap_alt_status_discouraged = true;
+  db_ = std::make_unique<Database>(options);
+  ASSERT_TRUE(db_->Open(db_path_));
+
   ASSERT_GT(db_->GetAppropriateMmapSize(), kMmapAlot);
   ASSERT_FALSE(db_->DoesTableExist("meta"));
   ASSERT_TRUE(db_->DoesViewExist("MmapStatus"));
