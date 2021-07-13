@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_UPDATE_PASSWORD_INFOBAR_BANNER_OVERLAY_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_UPDATE_PASSWORD_INFOBAR_BANNER_OVERLAY_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_user_data.h"
 

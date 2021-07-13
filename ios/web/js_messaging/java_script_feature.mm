@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #include "ios/web/js_messaging/page_script_util.h"

@@ -5,11 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_IMPL_H_
 #define IOS_CHROME_BROWSER_MAIN_BROWSER_IMPL_H_
 
-#import "ios/chrome/browser/main/browser.h"
+#include <CoreFoundation/CoreFoundation.h>
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#import "ios/chrome/browser/main/browser.h"
 
 class ChromeBrowserState;
 @class SceneState;

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SCREEN_TIME_SCREEN_TIME_HISTORY_DELETER_FACTORY_H_
 #define IOS_CHROME_BROWSER_SCREEN_TIME_SCREEN_TIME_HISTORY_DELETER_FACTORY_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"

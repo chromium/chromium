@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <memory>
 #include <string>
 

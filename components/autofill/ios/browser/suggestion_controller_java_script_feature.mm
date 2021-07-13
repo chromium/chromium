@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 

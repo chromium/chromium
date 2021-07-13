@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_WEB_WEB_NAVIGATION_NTP_DELEGATE_H_
 #define IOS_CHROME_BROWSER_WEB_WEB_NAVIGATION_NTP_DELEGATE_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 namespace web {
 class WebState;
 }

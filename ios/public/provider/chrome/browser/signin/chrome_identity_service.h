@@ -5,6 +5,8 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_CHROME_IDENTITY_SERVICE_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_CHROME_IDENTITY_SERVICE_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <set>
 #include <string>
 #include <vector>

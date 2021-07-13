@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BROWSER_AGENT_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <string>
 #include <vector>
 

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_SAVE_PASSWORDS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_SAVE_PASSWORDS_CONSUMER_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <memory>
 #include <vector>
 

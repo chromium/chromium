@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"

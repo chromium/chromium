@@ -11,6 +11,7 @@
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #import "components/previous_session_info/previous_session_info_private.h"
 #include "components/version_info/version_info.h"

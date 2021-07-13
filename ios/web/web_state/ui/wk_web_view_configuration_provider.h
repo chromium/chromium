@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_WEB_STATE_UI_WK_WEB_VIEW_CONFIGURATION_PROVIDER_H_
 #define IOS_WEB_WEB_STATE_UI_WK_WEB_VIEW_CONFIGURATION_PROVIDER_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"

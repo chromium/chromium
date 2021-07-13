@@ -11,6 +11,10 @@
 
 #include "url/gurl.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace previous_session_info_constants {
 // - The (Integer) representing UIApplicationState.
 extern NSString* const kPreviousSessionInfoApplicationState;

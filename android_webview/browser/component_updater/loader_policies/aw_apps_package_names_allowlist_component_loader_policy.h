@@ -20,6 +20,7 @@
 
 namespace base {
 class DictionaryValue;
+class Time;
 class Version;
 }  // namespace base
 

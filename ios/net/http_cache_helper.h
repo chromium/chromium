@@ -11,6 +11,7 @@
 
 namespace base {
 class TaskRunner;
+class Time;
 }
 
 namespace net {

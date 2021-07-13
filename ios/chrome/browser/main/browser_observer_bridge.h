@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_OBSERVER_BRIDGE_H_
 #define IOS_CHROME_BROWSER_MAIN_BROWSER_OBSERVER_BRIDGE_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer.h"

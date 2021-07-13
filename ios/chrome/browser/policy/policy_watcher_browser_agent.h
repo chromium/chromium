@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_POLICY_WATCHER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_POLICY_POLICY_WATCHER_BROWSER_AGENT_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <memory>
 
 #include "base/macros.h"
