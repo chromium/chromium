@@ -351,17 +351,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest, EscapingMouseLock) {
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
-// Disabled due to flakiness.
-// TODO(crbug.com/976883): Fix and re-enable this.
 // Tests mouse lock and fullscreen modes can be escaped with ESC key.
-#if defined(OS_WIN)
-#define MAYBE_EscapingMouseLockAndFullscreen EscapingMouseLockAndFullscreen
-#else
-#define MAYBE_EscapingMouseLockAndFullscreen \
-  DISABLED_EscapingMouseLockAndFullscreen
-#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_EscapingMouseLockAndFullscreen) {
+                       EscapingMouseLockAndFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
@@ -492,21 +484,15 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsMouseLocked());
 }
 
+// Tests mouse lock is exited on page navigation.
 #if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_AURA)
-// These are flaky on linux_aura.
-// http://crbug.com/163931
+// https://crbug.com/1191964
 #define MAYBE_TestTabExitsMouseLockOnNavigation \
     DISABLED_TestTabExitsMouseLockOnNavigation
-#define MAYBE_TestTabExitsMouseLockOnGoBack \
-    DISABLED_TestTabExitsMouseLockOnGoBack
 #else
 #define MAYBE_TestTabExitsMouseLockOnNavigation \
     TestTabExitsMouseLockOnNavigation
-#define MAYBE_TestTabExitsMouseLockOnGoBack \
-    TestTabExitsMouseLockOnGoBack
 #endif
-
-// Tests mouse lock is exited on page navigation.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        MAYBE_TestTabExitsMouseLockOnNavigation) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
@@ -526,6 +512,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 // Tests mouse lock is exited when navigating back.
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_AURA)
+// https://crbug.com/1192097
+#define MAYBE_TestTabExitsMouseLockOnGoBack \
+  DISABLED_TestTabExitsMouseLockOnGoBack
+#else
+#define MAYBE_TestTabExitsMouseLockOnGoBack TestTabExitsMouseLockOnGoBack
+#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        MAYBE_TestTabExitsMouseLockOnGoBack) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
@@ -584,17 +577,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 // Tests Mouse Lock and Fullscreen are exited upon reload.
-// http://crbug.com/137486
-// mac: http://crbug.com/103912
-#if defined(OS_WIN)
-#define MAYBE_ReloadExitsMouseLockAndFullscreen \
-  ReloadExitsMouseLockAndFullscreen
-#else
-#define MAYBE_ReloadExitsMouseLockAndFullscreen \
-  DISABLED_ReloadExitsMouseLockAndFullscreen
-#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_ReloadExitsMouseLockAndFullscreen) {
+                       ReloadExitsMouseLockAndFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
