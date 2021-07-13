@@ -24,6 +24,7 @@ Other resources that belong in this file:
       <include name="IDR_DEVTOOLS_PINCH_CURSOR_ICON_2X" file="browser/resources/devtools/devtools_pinch_cursor_2x.png" type="BINDATA" />
       <include name="IDR_DEVTOOLS_TOUCH_CURSOR_ICON" file="browser/resources/devtools/devtools_touch_cursor.png" type="BINDATA" />
       <include name="IDR_DEVTOOLS_TOUCH_CURSOR_ICON_2X" file="browser/resources/devtools/devtools_touch_cursor_2x.png" type="BINDATA" />
+      <include name="IDR_GEOMETRY_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/ui/gfx/geometry/mojom/geometry.mojom-webui.js" resource_path="mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTOGRAMS_INTERNALS_HTML" file="browser/resources/histograms/histograms_internals.html" type="BINDATA" />
       <include name="IDR_HISTOGRAMS_INTERNALS_JS" file="browser/resources/histograms/histograms_internals.js" type="BINDATA" />
       <include name="IDR_HISTOGRAMS_INTERNALS_CSS" file="browser/resources/histograms/histograms_internals.css" type="BINDATA" />

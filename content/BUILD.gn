@@ -120,6 +120,7 @@ grit("content_resources") {
   ]
   deps = [
     "//gpu/ipc/common:vulkan_interface_webui_js",
+    "//ui/gfx/geometry/mojom:mojom_js",
     "//url/mojom:url_mojom_origin_js",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
