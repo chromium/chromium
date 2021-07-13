@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -122,7 +123,7 @@ void WebAppMenuModel::Build() {
 
 // Chrome OS's app list is prominent enough to not need a separate uninstall
 // option in the app menu.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
   DCHECK(browser()->app_controller());
   if (browser()->app_controller()->IsInstalled()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -132,7 +133,7 @@ void WebAppMenuModel::Build() {
                 ui::EscapeMenuLabelAmpersands(
                     browser()->app_controller()->GetAppShortName())));
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !defined(OS_CHROMEOS)
   AddSeparator(ui::LOWER_SEPARATOR);
 
   CreateZoomMenu();
