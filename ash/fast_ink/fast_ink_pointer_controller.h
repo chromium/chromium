@@ -48,6 +48,10 @@ class FastInkPointerController : public ui::EventHandler {
   // Whether the controller is ready to start handling a new gesture.
   virtual bool CanStartNewGesture(ui::LocatedEvent* event);
   // Whether the event should be processed and stop propagation.
+  // Default implementation will catch basic mouse events (e.g. mouse clicking)
+  // and touch events (e.g. touch pressing) and stop them from being further
+  // dispatched, so derived class should override it if the default behavior is
+  // not as expected. See b/191044469 as an example.
   virtual bool ShouldProcessEvent(ui::LocatedEvent* event);
 
   bool IsEnabledForMouseEvent() const;

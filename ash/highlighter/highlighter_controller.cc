@@ -240,6 +240,16 @@ bool HighlighterController::CanStartNewGesture(ui::LocatedEvent* event) {
          FastInkPointerController::CanStartNewGesture(event);
 }
 
+bool HighlighterController::ShouldProcessEvent(ui::LocatedEvent* event) {
+  // Allow mouse clicking when Assistant tool is enabled.
+  if (event->type() == ui::ET_MOUSE_PRESSED ||
+      event->type() == ui::ET_MOUSE_RELEASED) {
+    return false;
+  }
+
+  return FastInkPointerController::ShouldProcessEvent(event);
+}
+
 void HighlighterController::DestroyHighlighterView() {
   highlighter_view_widget_.reset();
   // |interrupted_stroke_timer_| should never be non null when
