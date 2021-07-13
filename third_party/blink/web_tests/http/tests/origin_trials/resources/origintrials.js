@@ -261,6 +261,13 @@ expect_success = () => {
         });
     }, 'Attribute should exist on object and return value');
 
+  test(() => {
+    assert_true('testOriginTrialGlobalAttribute' in self,
+      'Attribute exists on global scope (window)');
+    assert_true(self.testOriginTrialGlobalAttribute,
+      'Atttribute on global scope (window) should return boolean value');
+  }, 'Attribute should exist on global scope (window) and return value');
+
   fetch_tests_from_worker(new Worker('resources/enabled-worker.js'));
 };
 

@@ -430,6 +430,7 @@ source_set("testing") {
     "testing/null_execution_context.h",
     "testing/origin_trials_test.cc",
     "testing/origin_trials_test.h",
+    "testing/origin_trials_test_global.h",
     "testing/origin_trials_test_partial.h",
     "testing/record_test.cc",
     "testing/record_test.h",
