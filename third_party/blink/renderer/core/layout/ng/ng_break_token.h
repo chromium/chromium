@@ -89,7 +89,7 @@ class CORE_EXPORT NGBreakToken : public RefCounted<NGBreakToken> {
   // The following bitfields are only to be used by NGInlineBreakToken (it's
   // defined here to save memory, since that class has no bitfields).
 
-  unsigned flags_ : 3;  // NGInlineBreakTokenFlags
+  unsigned flags_ : 4;  // NGInlineBreakTokenFlags
 
   // The following bitfields are only to be used by NGBlockBreakToken (it's
   // defined here to save memory, since that class has no bitfields).

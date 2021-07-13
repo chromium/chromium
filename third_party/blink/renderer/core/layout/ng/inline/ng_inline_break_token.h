@@ -13,14 +13,17 @@
 
 namespace blink {
 
+class NGBlockBreakToken;
+
 // Represents a break token for an inline node.
 class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
  public:
   enum NGInlineBreakTokenFlags {
     kDefault = 0,
     kIsForcedBreak = 1 << 0,
-    kUseFirstLineStyle = 1 << 1,
-    kHasClonedBoxDecorations = 1 << 2,
+    kHasBlockInInlineToken = 1 << 1,
+    kUseFirstLineStyle = 1 << 2,
+    kHasClonedBoxDecorations = 1 << 3,
     // When adding values, ensure |flags_| has enough storage.
   };
 
@@ -32,11 +35,8 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
       const ComputedStyle* style,
       unsigned item_index,
       unsigned text_offset,
-      unsigned flags /* NGInlineBreakTokenFlags */) {
-    return base::AdoptRef(new NGInlineBreakToken(
-        PassKey(), node, style, item_index, text_offset, flags));
-  }
-
+      unsigned flags /* NGInlineBreakTokenFlags */,
+      const NGBlockBreakToken* block_in_inline_break_token = nullptr);
   ~NGInlineBreakToken() override;
 
   // The style at the end of this break token. The next line should start with
@@ -59,6 +59,9 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
     return flags_ & kIsForcedBreak;
   }
 
+  // The BreakToken when a block-in-inline is block-fragmented.
+  const NGBlockBreakToken* BlockInInlineBreakToken() const;
+
   // True if the current position has open tags that has `box-decoration-break:
   // clone`. They should be cloned to the start of the next line.
   bool HasClonedBoxDecorations() const {
@@ -71,7 +74,8 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
                      const ComputedStyle*,
                      unsigned item_index,
                      unsigned text_offset,
-                     unsigned flags /* NGInlineBreakTokenFlags */);
+                     unsigned flags /* NGInlineBreakTokenFlags */,
+                     const NGBlockBreakToken* block_in_inline_break_token);
 
   explicit NGInlineBreakToken(PassKey, NGLayoutInputNode node);
 
@@ -80,9 +84,14 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
 #endif
 
  private:
+  const NGBlockBreakToken* const* BlockInInlineBreakTokenAddress() const;
+
   scoped_refptr<const ComputedStyle> style_;
   unsigned item_index_;
   unsigned text_offset_;
+
+  // This is an array of one item if |kHasBlockInInlineToken|, or zero.
+  NGBlockBreakToken* block_in_inline_break_token_[];
 };
 
 template <>
