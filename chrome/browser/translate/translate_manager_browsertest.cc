@@ -2073,9 +2073,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 }
 
 // Test that iframes can be translated.
-// TODO(https://crbug.com/1106446) disabled due to flakiness
 IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
-                       DISABLED_TranslateIframe) {
+                       TranslateIframe) {
   base::HistogramTester histograms;
   SetTranslateScript(kTestValidScript);
 
