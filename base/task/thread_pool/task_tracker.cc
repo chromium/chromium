@@ -66,7 +66,7 @@ class TaskTracingInfo : public trace_event::ConvertableToTraceFormat {
 };
 
 void TaskTracingInfo::AppendAsTraceFormat(std::string* out) const {
-  DictionaryValue dict;
+  Value dict(Value::Type::DICTIONARY);
 
   dict.SetStringKey("task_priority",
                     base::TaskPriorityToString(task_traits_.priority()));

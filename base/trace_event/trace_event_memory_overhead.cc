@@ -103,33 +103,28 @@ void TraceEventMemoryOverhead::AddValue(const Value& value) {
       Add(kBaseValue, sizeof(Value));
       break;
 
-    case Value::Type::STRING: {
+    case Value::Type::STRING:
       Add(kBaseValue, sizeof(Value));
       AddString(value.GetString());
-    } break;
+      break;
 
-    case Value::Type::BINARY: {
+    case Value::Type::BINARY:
       Add(kBaseValue, sizeof(Value) + value.GetBlob().size());
-    } break;
+      break;
 
-    case Value::Type::DICTIONARY: {
-      const DictionaryValue* dictionary_value = nullptr;
-      value.GetAsDictionary(&dictionary_value);
-      Add(kBaseValue, sizeof(DictionaryValue));
-      for (DictionaryValue::Iterator it(*dictionary_value); !it.IsAtEnd();
-           it.Advance()) {
-        AddString(it.key());
-        AddValue(it.value());
+    case Value::Type::DICTIONARY:
+      Add(kBaseValue, sizeof(Value));
+      for (const auto& pair : value.DictItems()) {
+        AddString(pair.first);
+        AddValue(pair.second);
       }
-    } break;
+      break;
 
-    case Value::Type::LIST: {
-      const ListValue* list_value = nullptr;
-      value.GetAsList(&list_value);
-      Add(kBaseValue, sizeof(ListValue));
-      for (const auto& v : list_value->GetList())
+    case Value::Type::LIST:
+      Add(kBaseValue, sizeof(Value));
+      for (const auto& v : value.GetList())
         AddValue(v);
-    } break;
+      break;
 
     default:
       NOTREACHED();
