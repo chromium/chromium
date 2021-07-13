@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
-#include "base/profiler/unwinder.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
