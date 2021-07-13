@@ -30,7 +30,6 @@ interface PdfThumbnailer {
   // |params| dictate details (e.g., size) of the thumbnail. |pdf_region|
   // should hold bytes of the PDF for which the thumbnail is generated.
   // |bitmap| contains the generated PDF thumbnail.
-  [EnableIf=is_chromeos_ash]
   GetThumbnail(ThumbParams params,
                mojo_base.mojom.ReadOnlySharedMemoryRegion pdf_region)
       => (skia.mojom.BitmapN32? bitmap);

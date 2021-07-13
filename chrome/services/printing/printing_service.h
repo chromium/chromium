@@ -26,9 +26,11 @@ class PrintingService : public mojom::PrintingService {
       mojo::PendingReceiver<mojom::PdfNupConverter> receiver) override;
   void BindPdfToPwgRasterConverter(
       mojo::PendingReceiver<mojom::PdfToPwgRasterConverter> receiver) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   void BindPdfFlattener(
       mojo::PendingReceiver<mojom::PdfFlattener> receiver) override;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void BindPdfThumbnailer(
       mojo::PendingReceiver<mojom::PdfThumbnailer> receiver) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

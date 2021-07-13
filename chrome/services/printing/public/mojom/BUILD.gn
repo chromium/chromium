@@ -23,11 +23,12 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
+  if (is_chromeos) {
+    sources += [ "pdf_flattener.mojom" ]
+  }
+
   if (is_chromeos_ash) {
-    sources += [
-      "pdf_flattener.mojom",
-      "pdf_thumbnailer.mojom",
-    ]
+    sources += [ "pdf_thumbnailer.mojom" ]
     deps += [ "//skia/public/mojom" ]
   }
 

@@ -40,16 +40,22 @@ source_set("lib") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "pdf_flattener.cc",
       "pdf_flattener.h",
+    ]
+
+    deps += [ "//pdf" ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
       "pdf_thumbnailer.cc",
       "pdf_thumbnailer.h",
     ]
 
     deps += [
-      "//build:chromeos_buildflags",
       "//pdf",
       "//ui/gfx/codec",
     ]
