@@ -100,6 +100,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
@@ -1173,6 +1174,8 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
       gpu_channel_host->gpu_feature_info()
               .status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
           gpu::kGpuFeatureStatusEnabled &&
+      !gpu_channel_host->gpu_feature_info().IsWorkaroundEnabled(
+          gpu::DISABLE_CANVAS_OOP_RASTERIZATION) &&
       base::FeatureList::IsEnabled(features::kCanvasOopRasterization);
   bool support_gles2_interface = false;
   bool support_grcontext = !support_oop_rasterization;

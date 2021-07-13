@@ -3746,6 +3746,18 @@
       "features": [
         "disable_media_foundation_hardware_security"
       ]
+    },
+    {
+      "id": 378,
+      "cr_bugs": [1227033],
+      "description": "Don't use the OOPR Canvas feature on Macs with NVIDIA GPUs",
+      "os": {
+        "type" : "macosx"
+      },
+      "vendor_id": "0x10de",
+      "features": [
+        "disable_canvas_oop_rasterization"
+      ]
     }
   ]
 }

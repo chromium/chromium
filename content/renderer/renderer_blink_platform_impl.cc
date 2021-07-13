@@ -58,6 +58,7 @@
 #include "content/renderer/worker/worker_thread_registry.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -812,6 +813,8 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
       gpu_channel_host->gpu_feature_info()
               .status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
           gpu::kGpuFeatureStatusEnabled &&
+      !gpu_channel_host->gpu_feature_info().IsWorkaroundEnabled(
+          gpu::DISABLE_CANVAS_OOP_RASTERIZATION) &&
       base::FeatureList::IsEnabled(features::kCanvasOopRasterization);
   attributes.enable_gles2_interface = !attributes.enable_oop_rasterization;
 
