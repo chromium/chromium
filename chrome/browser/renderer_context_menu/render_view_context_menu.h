@@ -12,6 +12,8 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/ui/browser.h"
@@ -68,7 +70,8 @@ namespace ui {
 class DataTransferEndpoint;
 }
 
-class RenderViewContextMenu : public RenderViewContextMenuBase {
+class RenderViewContextMenu : public RenderViewContextMenuBase,
+                              public ProtocolHandlerRegistry::Observer {
  public:
   RenderViewContextMenu(content::RenderFrameHost* render_frame_host,
                         const content::ContextMenuParams& params);
@@ -256,6 +259,9 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   // on URL.
   ProtocolHandlerRegistry::ProtocolHandlerList GetHandlersForLinkUrl();
 
+  // ProtocolHandlerRegistry::Observer:
+  void OnProtocolHandlerRegistryChanged() override;
+
   // The destination URL to use if the user tries to search for or navigate to
   // a text selection.
   GURL selection_navigation_url_;
@@ -263,8 +269,19 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   ui::SimpleMenuModel profile_link_submenu_model_;
   std::vector<base::FilePath> profile_link_paths_;
   bool multiple_profiles_open_;
+
+  // Protocol handling:
+  // - The submenu containing the installed protocol handlers.
   ui::SimpleMenuModel protocol_handler_submenu_model_;
+  // - The registry with the protocols.
   ProtocolHandlerRegistry* protocol_handler_registry_;
+  // - The observation of the registry.
+  base::ScopedObservation<ProtocolHandlerRegistry,
+                          ProtocolHandlerRegistry::Observer>
+      protocol_handler_registry_observation_{this};
+  // - Whether or not the registered protocols have changed since the menu was
+  //   built.
+  bool is_protocol_submenu_valid_ = false;
 
   // An observer that handles spelling suggestions, "Add to dictionary", and
   // "Use enhanced spell check" items.
