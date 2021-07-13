@@ -8324,6 +8324,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_ReadingListEntryPoint"
       label="In product help to educate users to click the star icon to add a
              tab to reading list."/>
+  <suffix name="IPH_ReadLaterAppMenuBookmarks"
+      label="In product help for read later app menu.."/>
+  <suffix name="IPH_ReadLaterAppMenuBookmarkThisPage"
+      label="In product help for read later app menu."/>
+  <suffix name="IPH_ReadLaterBottomSheet"
+      label="In product help for read later bottom sheet entry point."/>
+  <suffix name="IPH_ReadLaterContextMenu"
+      label="In product help for read later context menu entry point."/>
   <suffix name="IPH_ReopenTab"
       label="In product help for reopening closed tabs."/>
   <suffix name="IPH_SharedHighlightingBuilder"
