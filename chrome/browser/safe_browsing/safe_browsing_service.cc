@@ -29,6 +29,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
+#include "chrome/browser/safe_browsing/network_context_service.h"
+#include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
@@ -183,10 +185,12 @@ network::mojom::NetworkContext* SafeBrowsingService::GetNetworkContext(
   if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
     return GetNetworkContext();
 
-  return services_delegate_
-      ->GetSafeBrowsingNetworkContext(
-          Profile::FromBrowserContext(browser_context))
-      ->GetNetworkContext();
+  NetworkContextService* service =
+      NetworkContextServiceFactory::GetForBrowserContext(browser_context);
+  if (!service)
+    return nullptr;
+
+  return service->GetNetworkContext();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -195,14 +199,12 @@ SafeBrowsingService::GetURLLoaderFactory(Profile* profile) {
   if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
     return GetURLLoaderFactory();
 
-  safe_browsing::SafeBrowsingNetworkContext* network_context =
-      services_delegate_->GetSafeBrowsingNetworkContext(profile);
-
-  // |network_context| may be null in tests
-  if (!network_context)
+  NetworkContextService* service =
+      NetworkContextServiceFactory::GetForBrowserContext(profile);
+  if (!service)
     return nullptr;
 
-  return network_context->GetURLLoaderFactory();
+  return service->GetURLLoaderFactory();
 }
 
 void SafeBrowsingService::FlushNetworkInterfaceForTesting() {
@@ -404,7 +406,6 @@ void SafeBrowsingService::OnOffTheRecordProfileCreated(
 void SafeBrowsingService::OnProfileWillBeDestroyed(Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
   services_delegate_->RemoveTelemetryService(profile);
-  services_delegate_->RemoveSafeBrowsingNetworkContext(profile);
 
   PrefService* pref_service = profile->GetPrefs();
   DCHECK(pref_service);
@@ -412,7 +413,6 @@ void SafeBrowsingService::OnProfileWillBeDestroyed(Profile* profile) {
 }
 
 void SafeBrowsingService::CreateServicesForProfile(Profile* profile) {
-  services_delegate_->CreateSafeBrowsingNetworkContext(profile);
   services_delegate_->CreateTelemetryService(profile);
   observed_profiles_.AddObservation(profile);
 }

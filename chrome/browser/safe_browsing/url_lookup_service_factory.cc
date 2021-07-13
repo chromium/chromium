@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/user_population.h"
@@ -53,6 +54,7 @@ RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   DependsOn(AdvancedProtectionStatusManagerFactory::GetInstance());
 #endif
+  DependsOn(NetworkContextServiceFactory::GetInstance());
 }
 
 KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
