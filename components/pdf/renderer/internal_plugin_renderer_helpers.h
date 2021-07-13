@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "pdf/pdf_view_web_plugin.h"
-
 namespace blink {
 class WebPlugin;
 struct WebPluginParams;
@@ -20,16 +18,16 @@ class RenderFrame;
 
 namespace pdf {
 
+class PdfInternalPluginDelegate;
+
 // Tries to create an instance of the internal PDF plugin, returning `nullptr`
 // if the caller should create a Pepper plugin instance instead.
-//
-// `print_client` is optional, and may be `nullptr`.
 //
 // Note that `blink::WebPlugin` has a special life cycle, so it's returned as a
 // raw pointer here.
 blink::WebPlugin* MaybeCreateInternalPlugin(
     content::RenderFrame* render_frame,
-    std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient> print_client,
+    std::unique_ptr<PdfInternalPluginDelegate> delegate,
     blink::WebPluginParams& params);
 
 }  // namespace pdf

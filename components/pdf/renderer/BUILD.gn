@@ -13,6 +13,7 @@ static_library("renderer") {
     "internal_plugin_renderer_helpers.h",
     "pdf_accessibility_tree.h",
     "pdf_ax_action_target.h",
+    "pdf_internal_plugin_delegate.h",
     "pepper_pdf_host.h",
   ]
 
@@ -20,6 +21,7 @@ static_library("renderer") {
     "internal_plugin_renderer_helpers.cc",
     "pdf_accessibility_tree.cc",
     "pdf_ax_action_target.cc",
+    "pdf_internal_plugin_delegate.cc",
     "pepper_pdf_host.cc",
   ]
 

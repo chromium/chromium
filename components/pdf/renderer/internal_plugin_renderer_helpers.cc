@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "components/pdf/renderer/pdf_internal_plugin_delegate.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/buildflags.h"
@@ -23,7 +24,7 @@ namespace pdf {
 
 blink::WebPlugin* MaybeCreateInternalPlugin(
     content::RenderFrame* render_frame,
-    std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient> print_client,
+    std::unique_ptr<PdfInternalPluginDelegate> delegate,
     blink::WebPluginParams& params) {
   // For a PDF plugin, `params.url` holds the plugin's stream URL. If `params`
   // contains an 'original-url' attribute, reset `params.url` with its original
@@ -47,8 +48,8 @@ blink::WebPlugin* MaybeCreateInternalPlugin(
   mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote;
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
       pdf_service_remote.BindNewEndpointAndPassReceiver());
-  return new chrome_pdf::PdfViewWebPlugin(std::move(pdf_service_remote),
-                                          std::move(print_client), params);
+  return new chrome_pdf::PdfViewWebPlugin(
+      std::move(pdf_service_remote), delegate->CreatePrintClient(), params);
 #else   // !BUILDFLAG(ENABLE_PDF_UNSEASONED)
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_PDF_UNSEASONED)

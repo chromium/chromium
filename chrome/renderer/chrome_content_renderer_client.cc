@@ -207,16 +207,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "chrome/renderer/pdf/chrome_pdf_internal_plugin_delegate.h"
 #include "components/pdf/common/internal_plugin_helpers.h"
 #include "components/pdf/renderer/internal_plugin_renderer_helpers.h"
-
-// TODO(crbug.com/1218971): Refactor this; only needed for
-// `chrome_pdf::PdfViewWebPlugin::PrintClient`.
-#include "pdf/pdf_view_web_plugin.h"
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "chrome/renderer/pdf/chrome_pdf_view_web_plugin_print_client.h"
-#endif  // BUILDFLAG(ENABLE_PRINTING)
-
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -1044,14 +1037,10 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
 #if BUILDFLAG(ENABLE_PDF)
         if (info.name ==
             ASCIIToUTF16(ChromeContentClient::kPDFInternalPluginName)) {
-          std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient>
-              print_client;
-#if BUILDFLAG(ENABLE_PRINTING)
-          print_client =
-              std::make_unique<ChromePdfViewWebPluginPrintClient>(render_frame);
-#endif  // BUILDFLAG(ENABLE_PRINTING)
           WebPlugin* internal_pdf_plugin = pdf::MaybeCreateInternalPlugin(
-              render_frame, std::move(print_client), params);
+              render_frame,
+              std::make_unique<ChromePdfInternalPluginDelegate>(render_frame),
+              params);
           if (internal_pdf_plugin)
             return internal_pdf_plugin;
         }
