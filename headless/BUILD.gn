@@ -260,12 +260,12 @@ inspector_protocol_generate("protocol_sources") {
   ]
 }
 
-# Code needed in both processes. Only exposed through |headless| and
-# |headless_non_renderer| components.
+# Code needed in both processes. Only exposed through the |headless_renderer|
+# target and the |headless_non_renderer| component.
 source_set("headless_shared_sources") {
   visibility = [
-    ":headless",
     ":headless_non_renderer",
+    ":headless_renderer",
   ]
   defines = []
 
@@ -320,11 +320,6 @@ source_set("headless_shared_sources") {
 
   configs += [ ":inside_headless_component" ]
   configs += [ ":headless_defines_config" ]
-}
-
-# Code that is needed in a renderer process.
-component("headless") {
-  deps = [ ":headless_shared_sources" ]
 }
 
 # Code that is not needed in a renderer process.
@@ -617,7 +612,7 @@ if (!is_component_build) {
     }
 
     deps = [
-      ":headless",
+      ":headless_shared_sources",
       "//build:chromeos_buildflags",
       "//components/crash/core/common",
       "//components/security_state/content",
