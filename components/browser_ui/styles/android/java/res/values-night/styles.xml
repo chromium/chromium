@@ -6,25 +6,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.ColorOverlay" parent="">
         <!-- Attributes that point to the same color/attr in dark and light modes. -->
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
         <item name="android:textColorPrimary">?attr/colorOnBackground</item>
         <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
 
         <!-- Adaptive attributes -->
-        <item name="colorPrimary">@color/modern_blue_300</item>
-        <item name="colorError">@color/google_red_300</item>
-        <item name="android:colorBackground">@color/modern_grey_900</item>
-        <item name="colorSurface">@color/modern_grey_900</item>
-        <item name="colorOnBackground">@color/modern_white</item>
-        <item name="colorOnPrimary">@color/modern_blue_800</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
-        <item name="colorOnSurface">@color/modern_grey_100</item>
-        <item name="colorOnSurfaceVariant">@color/white_alpha_70</item>
-        <item name="colorOnSurfaceInverse">@color/modern_grey_800</item>
-        <item name="elevationOverlayEnabled">true</item>
-        <item name="elevationOverlayColor">@color/modern_grey_200</item>
-        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+        <item name="android:colorBackground">@color/baseline_neutral_900</item>
+        <item name="colorError">@color/baseline_error_200</item>
+        <item name="colorOnBackground">@color/baseline_neutral_100</item>
+        <item name="colorOnPrimary">@color/baseline_primary_800</item>
+        <item name="colorOnSurface">@color/baseline_neutral_100</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_800</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
         <item name="colorOutline">@color/baseline_neutral_variant_400</item>
+        <item name="colorPrimary">@color/baseline_primary_200</item>
+        <item name="colorSurface">@color/baseline_neutral_900</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
+
+        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_200</item>
+        <item name="elevationOverlayEnabled">true</item>
 
         <item name="colorSwitchThumbNormal">?attr/colorOnSurface</item>
         <item name="colorSwitchThumbDisabled">?attr/colorFixedOnSurfaceAlpha38OverSurface</item>
