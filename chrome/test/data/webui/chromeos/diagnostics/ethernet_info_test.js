@@ -6,7 +6,7 @@ import 'chrome://diagnostics/ethernet_info.js';
 import {fakeEthernetNetwork} from 'chrome://diagnostics/fake_data.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import {assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
 
@@ -39,12 +39,10 @@ export function ethernetInfoTestSuite() {
 
   test('EthernetInfoPopulated', () => {
     return initializeEthernetInfo().then(() => {
+      // Element expected on screen but data currently missing in api.
+      // TODO(ashleydp): Update test when link speed data-point value provided.
       assertTextContains(
-          getDataPointValue(ethernetInfoElement, '#name'),
-          fakeEthernetNetwork.name);
-      assertTextContains(
-          getDataPointValue(ethernetInfoElement, '#macAddress'),
-          fakeEthernetNetwork.macAddress);
+          getDataPointValue(ethernetInfoElement, '#linkSpeed'), '');
     });
   });
 }
