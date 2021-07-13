@@ -1856,7 +1856,7 @@ GameOverPanel.prototype = {
     this.canvasCtx.save();
 
     if (IS_RTL) {
-      this.canvasCtx.translate(this.canvas.width / 2, 0);
+      this.canvasCtx.translate(this.canvasDimensions.WIDTH, 0);
       this.canvasCtx.scale(-1, 1);
     }
 
@@ -1916,7 +1916,7 @@ GameOverPanel.prototype = {
     this.canvasCtx.save();
 
     if (IS_RTL) {
-      this.canvasCtx.translate(this.canvas.width / 2, 0);
+      this.canvasCtx.translate(this.canvasDimensions.WIDTH, 0);
       this.canvasCtx.scale(-1, 1);
     }
 
@@ -2908,6 +2908,7 @@ function DistanceMeter(canvas, spritePos, canvasWidth) {
 
   this.config = DistanceMeter.config;
   this.maxScoreUnits = this.config.MAX_DISTANCE_UNITS;
+  this.canvasWidth = canvasWidth;
   this.init(canvasWidth);
 }
 
@@ -3015,12 +3016,12 @@ DistanceMeter.prototype = {
     if (IS_RTL) {
       if (opt_highScore) {
         this.canvasCtx.translate(
-            (this.canvas.width / 2) -
+            this.canvasWidth -
                 (DistanceMeter.dimensions.WIDTH * (this.maxScoreUnits + 3)),
             this.y);
       } else {
         this.canvasCtx.translate(
-            this.canvas.width / 2 - DistanceMeter.dimensions.WIDTH, this.y);
+            this.canvasWidth - DistanceMeter.dimensions.WIDTH, this.y);
       }
       this.canvasCtx.scale(-1, 1);
     } else {
