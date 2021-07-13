@@ -445,11 +445,14 @@ class Profile : public content::BrowserContext {
   bool IsSystemProfile() const;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns `true` if this is the first/initial Profile in Lacros, and - for
-  // regular sessions, if this Profile has the Device Account logged in.
+  // Returns `true` if this is the first/initial Profile path in Lacros, and -
+  // for regular sessions, if this Profile has the Device Account logged in.
   // For non-regular sessions (Guest Sessions, Managed Guest Sessions) which do
   // not have the concept of a Device Account, the latter condition is not
   // checked.
+  static bool IsMainProfilePath(base::FilePath profile_path);
+
+  // Returns true if this is the main profile as defined above.
   virtual bool IsMainProfile() const = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

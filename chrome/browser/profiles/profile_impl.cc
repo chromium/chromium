@@ -903,7 +903,7 @@ bool ProfileImpl::IsMainProfile() const {
   // Profile must be at "Default" path.
   // `IdentityManager' will guarantee that the Chrome OS Device Account is
   // signed into `this' Profile, if it's the Main Profile.
-  return GetBaseName().value() == chrome::kInitialProfile;
+  return Profile::IsMainProfilePath(GetPath());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

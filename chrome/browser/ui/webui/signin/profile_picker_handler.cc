@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -171,22 +172,6 @@ void OpenOnSelectProfileTargetUrl(Browser* browser) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-Profile* FindPrimaryProfile() {
-  const auto profiles =
-      g_browser_process->profile_manager()->GetLoadedProfiles();
-  const auto primary_profile_iter = std::find_if(
-      profiles.cbegin(), profiles.cend(),
-      [](const Profile* const profile) { return profile->IsMainProfile(); });
-
-  if (primary_profile_iter == profiles.cend()) {
-    return nullptr;
-  }
-
-  return *primary_profile_iter;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 base::Value CreateProfileEntry(const ProfileAttributesEntry* entry,
                                int avatar_icon_size) {
   base::Value profile_entry(base::Value::Type::DICTIONARY);
@@ -208,10 +193,8 @@ base::Value CreateProfileEntry(const ProfileAttributesEntry* entry,
   std::string icon_url = webui::GetBitmapDataUrl(icon.AsBitmap());
   profile_entry.SetStringKey("avatarIcon", icon_url);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* primary_profile = FindPrimaryProfile();
-  profile_entry.SetBoolKey(
-      "isPrimaryLacrosProfile",
-      primary_profile && primary_profile->GetPath() == entry->GetPath());
+  profile_entry.SetBoolKey("isPrimaryLacrosProfile",
+                           Profile::IsMainProfilePath(entry->GetPath()));
 #else
   profile_entry.SetBoolKey("isPrimaryLacrosProfile", false);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -390,8 +373,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!profiles::AreSecondaryProfilesAllowed()) {
-    Profile* primary_profile = FindPrimaryProfile();
-    if (primary_profile && primary_profile->GetPath() != *profile_path) {
+    if (Profile::IsMainProfilePath(*profile_path)) {
       LoginUIServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui())->GetOriginalProfile())
           ->SetProfileBlockingErrorMessage();
@@ -661,8 +643,7 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue* args) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros, the primary profile should never be deleted.
-  Profile* primary_profile = FindPrimaryProfile();
-  CHECK(!primary_profile || primary_profile->GetPath() != *profile_path);
+  CHECK(!Profile::IsMainProfilePath(*profile_path));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   RecordProfilePickerAction(ProfilePickerAction::kDeleteProfile);

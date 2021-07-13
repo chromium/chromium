@@ -62,6 +62,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/common/chrome_constants.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
@@ -408,6 +409,14 @@ bool Profile::IsSystemProfile() const {
   return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kSystem;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+bool Profile::IsMainProfilePath(base::FilePath profile_path) {
+  // The main profile is the one with the "Default" path.
+  return profile_path.BaseName().value() == chrome::kInitialProfile;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool Profile::IsPrimaryOTRProfile() const {
   return IsOffTheRecord() && GetOTRProfileID() == OTRProfileID::PrimaryID();
