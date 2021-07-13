@@ -233,36 +233,6 @@ SmartBubbleStatsStore* PasswordStore::GetSmartBubbleStatsStore() {
   return this;
 }
 
-void PasswordStore::AddSiteStats(const InteractionsStats& stats) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::AddSiteStatsImpl, this, stats));
-}
-
-void PasswordStore::RemoveSiteStats(const GURL& origin_domain) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(
-      base::BindOnce(&PasswordStore::RemoveSiteStatsImpl, this, origin_domain));
-}
-
-void PasswordStore::GetSiteStats(const GURL& origin_domain,
-                                 PasswordStoreConsumer* consumer) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  PostStatsTaskAndReplyToConsumerWithResult(
-      consumer,
-      base::BindOnce(&PasswordStore::GetSiteStatsImpl, this, origin_domain));
-}
-
-void PasswordStore::RemoveStatisticsByOriginAndTime(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceClosure completion) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(
-      &PasswordStore::RemoveStatisticsByOriginAndTimeInternal, this,
-      origin_filter, delete_begin, delete_end, std::move(completion)));
-}
-
 void PasswordStore::ReportMetrics(const std::string& sync_username,
                                   bool custom_passphrase_sync_enabled,
                                   bool is_under_advanced_protection) {
@@ -398,6 +368,36 @@ PasswordStore::CreateSyncControllerDelegate() {
 
 PasswordStore::~PasswordStore() {
   DCHECK(shutdown_called_);
+}
+
+void PasswordStore::AddSiteStats(const InteractionsStats& stats) {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  ScheduleTask(base::BindOnce(&PasswordStore::AddSiteStatsImpl, this, stats));
+}
+
+void PasswordStore::RemoveSiteStats(const GURL& origin_domain) {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  ScheduleTask(
+      base::BindOnce(&PasswordStore::RemoveSiteStatsImpl, this, origin_domain));
+}
+
+void PasswordStore::GetSiteStats(const GURL& origin_domain,
+                                 PasswordStoreConsumer* consumer) {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  PostStatsTaskAndReplyToConsumerWithResult(
+      consumer,
+      base::BindOnce(&PasswordStore::GetSiteStatsImpl, this, origin_domain));
+}
+
+void PasswordStore::RemoveStatisticsByOriginAndTime(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::OnceClosure completion) {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  ScheduleTask(base::BindOnce(
+      &PasswordStore::RemoveStatisticsByOriginAndTimeInternal, this,
+      origin_filter, delete_begin, delete_end, std::move(completion)));
 }
 
 scoped_refptr<base::SequencedTaskRunner>

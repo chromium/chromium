@@ -121,7 +121,9 @@ void FormFetcherImpl::Fetch() {
 // processor cycles.
 #if !defined(OS_IOS) && !defined(OS_ANDROID)
   // The statistics is needed for the "Save password?" bubble.
-  password_store->GetSiteStats(form_digest_.url.GetOrigin(), this);
+  password_manager::SmartBubbleStatsStore* stats_store =
+      password_store->GetSmartBubbleStatsStore();
+  stats_store->GetSiteStats(form_digest_.url.GetOrigin(), this);
 
   // The desktop bubble needs this information.
   password_store->GetMatchingInsecureCredentials(form_digest_.signon_realm,

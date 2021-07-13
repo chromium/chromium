@@ -888,9 +888,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             .get();
 
     if (password_store) {
-      password_store->RemoveStatisticsByOriginAndTime(
-          nullable_filter, delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(TracingDataType::kPasswordsStatistics));
+      password_manager::SmartBubbleStatsStore* stats_store =
+          password_store->GetSmartBubbleStatsStore();
+      if (stats_store) {
+        stats_store->RemoveStatisticsByOriginAndTime(
+            nullable_filter, delete_begin_, delete_end_,
+            CreateTaskCompletionClosure(TracingDataType::kPasswordsStatistics));
+      }
       password_store->RemoveFieldInfoByTime(
           delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kFieldInfo));

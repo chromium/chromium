@@ -20,7 +20,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -65,11 +65,14 @@ password_manager::metrics_util::UIDisplayDisposition ComputeDisplayDisposition(
 
 void CleanStatisticsForSite(Profile* profile, const url::Origin& origin) {
   DCHECK(profile);
-  password_manager::PasswordStore* password_store =
+  password_manager::PasswordStoreInterface* password_store =
       PasswordStoreFactory::GetForProfile(profile,
                                           ServiceAccessType::IMPLICIT_ACCESS)
           .get();
-  password_store->RemoveSiteStats(origin.GetURL());
+  password_manager::SmartBubbleStatsStore* stats_store =
+      password_store->GetSmartBubbleStatsStore();
+  if (stats_store)
+    stats_store->RemoveSiteStats(origin.GetURL());
 }
 
 std::vector<password_manager::PasswordForm> DeepCopyForms(
@@ -328,11 +331,14 @@ void SaveUpdateWithAccountStoreBubbleController::ReportInteractions() {
                 interaction_stats_.dismissal_count)>::max())
           interaction_stats_.dismissal_count++;
         interaction_stats_.update_time = clock_->Now();
-        password_manager::PasswordStore* password_store =
+        password_manager::PasswordStoreInterface* password_store =
             PasswordStoreFactory::GetForProfile(
                 profile, ServiceAccessType::IMPLICIT_ACCESS)
                 .get();
-        password_store->AddSiteStats(interaction_stats_);
+        password_manager::SmartBubbleStatsStore* stats_store =
+            password_store->GetSmartBubbleStatsStore();
+        if (stats_store)
+          stats_store->AddSiteStats(interaction_stats_);
       }
     }
   }

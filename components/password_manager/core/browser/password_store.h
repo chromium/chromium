@@ -60,7 +60,7 @@ struct FieldInfo;
 // TODO(crbug.com/1217071): Move PasswordStoreSync to local backend.
 class PasswordStore : protected PasswordStoreSync,
                       public PasswordStoreInterface,
-                      public SmartBubbleStatsStore {
+                      protected SmartBubbleStatsStore {
  public:
   // Used to notify that unsynced credentials are about to be deleted.
   class UnsyncedCredentialsDeletionNotifier {
@@ -128,16 +128,6 @@ class PasswordStore : protected PasswordStoreSync,
   void RemoveObserver(Observer* observer) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
 
-  // SmartBubbleStatsStore:
-  void AddSiteStats(const InteractionsStats& stats) override;
-  void RemoveSiteStats(const GURL& origin_domain) override;
-  void GetSiteStats(const GURL& origin_domain,
-                    PasswordStoreConsumer* consumer) override;
-  void RemoveStatisticsByOriginAndTime(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceClosure completion) override;
 
   // Reports usage metrics for the database. |sync_username|, and
   // |custom_passphrase_sync_enabled|, and |is_under_advanced_protection|
@@ -222,6 +212,17 @@ class PasswordStore : protected PasswordStoreSync,
   };
 
   ~PasswordStore() override;
+
+  // SmartBubbleStatsStore:
+  void AddSiteStats(const InteractionsStats& stats) override;
+  void RemoveSiteStats(const GURL& origin_domain) override;
+  void GetSiteStats(const GURL& origin_domain,
+                    PasswordStoreConsumer* consumer) override;
+  void RemoveStatisticsByOriginAndTime(
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceClosure completion) override;
 
   // Create a TaskRunner to be saved in |background_task_runner_|.
   virtual scoped_refptr<base::SequencedTaskRunner> CreateBackgroundTaskRunner()
