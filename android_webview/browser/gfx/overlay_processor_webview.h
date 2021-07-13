@@ -19,10 +19,6 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 
-namespace gpu {
-class DisplayCompositorMemoryAndTaskControllerOnGpu;
-}
-
 namespace viz {
 class FrameSinkManagerImpl;
 class ResolvedFrameData;
@@ -95,7 +91,6 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
   void ReturnResource(viz::ResourceId resource_id, viz::SurfaceId surface_id);
 
   void CreateManagerOnRT(
-      gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* controller_on_gpu,
       gpu::CommandBufferId command_buffer_id,
       gpu::SequenceId sequence_id,
       base::WaitableEvent* event);

@@ -127,13 +127,10 @@ class OverlayProcessorWebView::Manager
   };
 
  public:
-  Manager(gpu::MemoryTracker* memory_tracker,
-          gpu::CommandBufferId command_buffer_id,
-          gpu::SequenceId sequence_id)
+  Manager(gpu::CommandBufferId command_buffer_id, gpu::SequenceId sequence_id)
       : shared_image_manager_(
             GpuServiceWebView::GetInstance()->shared_image_manager()),
-        memory_tracker_(
-            std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)),
+        memory_tracker_(std::make_unique<gpu::MemoryTypeTracker>(nullptr)),
         sync_point_client_state_(
             CreateSyncPointClientState(command_buffer_id, sequence_id)) {
     DETACH_FROM_THREAD(gpu_thread_checker_);
@@ -616,10 +613,9 @@ OverlayProcessorWebView::OverlayProcessorWebView(
       frame_sink_manager_(frame_sink_manager) {
   base::WaitableEvent event;
   render_thread_sequence_->ScheduleGpuTask(
-      base::BindOnce(
-          &OverlayProcessorWebView::CreateManagerOnRT, base::Unretained(this),
-          display_controller->controller_on_gpu(), command_buffer_id_,
-          render_thread_sequence_->GetSequenceId(), &event),
+      base::BindOnce(&OverlayProcessorWebView::CreateManagerOnRT,
+                     base::Unretained(this), command_buffer_id_,
+                     render_thread_sequence_->GetSequenceId(), &event),
       std::vector<gpu::SyncToken>());
   event.Wait();
 }
@@ -635,12 +631,10 @@ OverlayProcessorWebView::~OverlayProcessorWebView() {
 }
 
 void OverlayProcessorWebView::CreateManagerOnRT(
-    gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* controller_on_gpu,
     gpu::CommandBufferId command_buffer_id,
     gpu::SequenceId sequence_id,
     base::WaitableEvent* event) {
-  manager_ = base::MakeRefCounted<Manager>(controller_on_gpu->memory_tracker(),
-                                           command_buffer_id, sequence_id);
+  manager_ = base::MakeRefCounted<Manager>(command_buffer_id, sequence_id);
   event->Signal();
 }
 
