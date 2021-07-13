@@ -36,15 +36,15 @@
             android:scrollbars="vertical" />
 
 
-        <FrameLayout
-            style="@style/Card"
+        <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
             android:id="@+id/empty_view_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/default_list_row_padding"
             android:layout_marginEnd="@dimen/default_list_row_padding"
-            android:visibility="gone">
+            android:visibility="gone"
+            style="@style/MaterialCardStyle">
 
             <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/empty_view"
@@ -57,7 +57,7 @@
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                 app:leading="@dimen/text_size_medium_leading" />
 
-        </FrameLayout>
+        </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
 
         <org.chromium.ui.widget.LoadingView
             android:id="@+id/loading_view"
