@@ -4643,12 +4643,6 @@ static_library("ui") {
       sources += [
         "views/accessibility/accessibility_focus_highlight.cc",
         "views/accessibility/accessibility_focus_highlight.h",
-        "views/frame/opaque_browser_frame_view.cc",
-        "views/frame/opaque_browser_frame_view.h",
-        "views/frame/opaque_browser_frame_view_layout.cc",
-        "views/frame/opaque_browser_frame_view_layout.h",
-        "views/frame/opaque_browser_frame_view_layout_delegate.cc",
-        "views/frame/opaque_browser_frame_view_layout_delegate.h",
         "views/outdated_upgrade_bubble_view.cc",
         "views/outdated_upgrade_bubble_view.h",
         "views/policy/enterprise_startup_dialog_view.cc",
@@ -4662,6 +4656,17 @@ static_library("ui") {
         "views/relaunch_notification/relaunch_required_dialog_view.cc",
         "views/relaunch_notification/relaunch_required_dialog_view.h",
         "views/screen_capture_notification_ui_views.cc",
+      ]
+    }
+
+    if (!is_chromeos) {
+      sources += [
+        "views/frame/opaque_browser_frame_view.cc",
+        "views/frame/opaque_browser_frame_view.h",
+        "views/frame/opaque_browser_frame_view_layout.cc",
+        "views/frame/opaque_browser_frame_view_layout.h",
+        "views/frame/opaque_browser_frame_view_layout_delegate.cc",
+        "views/frame/opaque_browser_frame_view_layout_delegate.h",
       ]
       deps += [ "//ui/views/window/vector_icons" ]
     }

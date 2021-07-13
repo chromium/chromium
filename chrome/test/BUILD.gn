@@ -7312,7 +7312,7 @@ test("unit_tests") {
       "../browser/ui/views/webid/webid_dialog_views_unittest.cc",
       "../browser/ui/views/window_name_prompt_unittest.cc",
     ]
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       sources += [ "../browser/ui/views/frame/browser_frame_view_layout_linux_native_unittest.cc" ]
     }
     if (enable_plugins) {
@@ -7331,10 +7331,12 @@ test("unit_tests") {
     }
     if (!is_chromeos_ash) {
       sources += [
-        "../browser/ui/views/frame/opaque_browser_frame_view_layout_unittest.cc",
         "../browser/ui/views/sync/one_click_signin_dialog_view_unittest.cc",
         "../browser/ui/views/sync/profile_signin_confirmation_dialog_views_unittest.cc",
       ]
+    }
+    if (!is_chromeos) {
+      sources += [ "../browser/ui/views/frame/opaque_browser_frame_view_layout_unittest.cc" ]
     }
     if (use_aura) {
       sources += [
