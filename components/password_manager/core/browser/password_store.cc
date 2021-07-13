@@ -19,7 +19,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -433,10 +432,6 @@ void PasswordStore::NotifyDeletionsHaveSynced(bool success) {
   // permanently). In either case, run the corresponding callbacks now (on the
   // main task runner).
   DCHECK(!success || !GetMetadataStore()->HasUnsyncedDeletions());
-  if (!deletions_have_synced_callbacks_.empty()) {
-    base::UmaHistogramBoolean(
-        "PasswordManager.PasswordStoreDeletionsHaveSynced", success);
-  }
   for (auto& callback : deletions_have_synced_callbacks_) {
     main_task_runner_->PostTask(FROM_HERE,
                                 base::BindOnce(std::move(callback), success));
@@ -469,7 +464,7 @@ void PasswordStore::OnInitCompleted(bool success) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   init_status_ = success ? InitStatus::kSuccess : InitStatus::kFailure;
 
-  UMA_HISTOGRAM_BOOLEAN("PasswordManager.PasswordStoreInitResult", success);
+  base::UmaHistogramBoolean("PasswordManager.PasswordStoreInitResult", success);
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "passwords", "PasswordStore::InitOnBackgroundSequence", this);
 }
