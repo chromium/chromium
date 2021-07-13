@@ -28,8 +28,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -111,7 +109,7 @@ class TabGridViewBinder {
             tabTitleView.setContentDescription(
                     view.getResources().getString(R.string.accessibility_tabstrip_tab, title));
         } else if (TabProperties.IS_SELECTED == propertyKey) {
-            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
+            if (TabUiThemeProvider.themeRefactorEnabled()) {
                 updateColor(view, model.get(TabProperties.IS_INCOGNITO),
                         model.get(TabProperties.IS_SELECTED));
                 updateThumbnail(view, model);
@@ -152,7 +150,7 @@ class TabGridViewBinder {
             faviconView.setImageDrawable(favicon);
             int padding = favicon == null
                     ? 0
-                    : (int) view.getResources().getDimension(R.dimen.tab_list_card_padding);
+                    : (int) TabUiThemeProvider.getTabCardTopFaviconPadding(view.getContext());
             faviconView.setPadding(padding, padding, padding, padding);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
@@ -417,7 +415,7 @@ class TabGridViewBinder {
         if (thumbnail.getDrawable() == null) {
             thumbnail.setImageResource(
                     TabUiThemeProvider.getThumbnailPlaceHolderColorResource(isIncognito));
-            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
+            if (TabUiThemeProvider.themeRefactorEnabled()) {
                 thumbnail.setImageTintList(
                         ColorStateList.valueOf(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
                                 backgroundView.getContext(), isIncognito, isSelected)));

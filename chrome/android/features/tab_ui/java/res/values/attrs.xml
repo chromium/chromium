@@ -11,5 +11,12 @@
     </declare-styleable>
 
     <!-- Tab grid cards attributes -->
-    <attr name="tabDividerVisible" format="integer" />
+    <attr name="tabGridDividerVisible" format="integer" />
+    <attr name="tabGridBackground" format="reference" />
+    <attr name="tabGridMargin" format="dimension" />
+    <attr name="tabGridHeaderHeight" format="dimension" />
+    <attr name="tabGridTitleFadingLength" format="dimension" />
+    <attr name="tabGridFaviconStyle" format="reference" />
+    <attr name="tabGridThumbnailStyle" format="reference" />
+    <attr name="tabGridActionButtonStyle" format="reference" />
 </resources>

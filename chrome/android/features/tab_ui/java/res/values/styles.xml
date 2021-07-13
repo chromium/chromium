@@ -17,12 +17,66 @@
     <integer name="view_gone">2</integer> <!-- This is GONE -->
 
     <!-- Theme overlay for theme refactor 2021 -->
+    <style name="TabGridCardTopFaviconStyle">
+        <item name="android:minWidth">@dimen/tab_list_card_padding</item>
+        <item name="android:layout_height">?attr/tabGridHeaderHeight</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="TabGridCardTopFaviconStyle.ThemeRefactor">
+        <item name="android:minWidth">@dimen/tab_grid_card_favicon_padding</item>
+    </style>
+
+    <style name="TabGridCardActionButtonStyle">
+        <item name="android:layout_width">@dimen/tab_list_card_action_button_size</item>
+        <item name="android:layout_height">@dimen/tab_list_card_action_button_size</item>
+    </style>
+
+    <style name="TabGridCardActionButtonStyle.ThemeRefactor">
+        <item name="android:layout_width">@dimen/tab_grid_card_header_height</item>
+        <item name="android:layout_height">@dimen/tab_grid_card_header_height</item>
+        <item name="android:layout_margin">@dimen/tab_grid_card_margin</item>
+    </style>
+
+    <style name="TabGridCardThumbnailStyle">
+        <item name="cornerRadiusTopStart">0dp</item>
+        <item name="cornerRadiusTopEnd">0dp</item>
+        <item name="cornerRadiusBottomStart">@dimen/tab_list_card_radius</item>
+        <item name="cornerRadiusBottomEnd">@dimen/tab_list_card_radius</item>
+    </style>
+
+    <style name="TabGridCardThumbnailStyle.ThemeRefactor">
+        <item name="android:layout_marginLeft">@dimen/tab_grid_card_thumbnail_margin</item>
+        <item name="android:layout_marginRight">@dimen/tab_grid_card_thumbnail_margin</item>
+        <item name="android:layout_marginBottom">@dimen/tab_grid_card_thumbnail_margin</item>
+        <item name="cornerRadiusTopStart">@dimen/tab_grid_card_thumbnail_corner_radius_top</item>
+        <item name="cornerRadiusTopEnd">@dimen/tab_grid_card_thumbnail_corner_radius_top</item>
+        <item name="cornerRadiusBottomStart">@dimen/tab_grid_card_thumbnail_corner_radius_bottom</item>
+        <item name="cornerRadiusBottomEnd">@dimen/tab_grid_card_thumbnail_corner_radius_bottom</item>
+    </style>
+
     <style name="ThemeRefactorOverlay.Disabled.TabUi" parent="">
-        <item name="tabDividerVisible">@integer/view_visible</item>
+        <item name="tabGridDividerVisible">@integer/view_visible</item>
+        <item name="tabGridHeaderHeight">@dimen/tab_list_card_title_height</item>
+        <item name="tabGridBackground">@drawable/popup_bg_tinted</item>
+        <item name="tabGridMargin">@dimen/tab_list_card_margin</item>
+        <item name="tabGridTitleFadingLength">@dimen/tab_list_card_title_fading_length</item>
+
+        <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle</item>
+        <item name="tabGridActionButtonStyle">@style/TabGridCardActionButtonStyle</item>
+        <item name="tabGridThumbnailStyle">@style/TabGridCardThumbnailStyle</item>
     </style>
 
     <style name="ThemeRefactorOverlay.Enabled.TabUi" parent="">
-        <item name="tabDividerVisible">@integer/view_gone</item>
+        <item name="tabGridDividerVisible">@integer/view_gone</item>
+        <item name="tabGridHeaderHeight">@dimen/tab_grid_card_header_height</item>
+        <item name="tabGridBackground">@drawable/tab_grid_card_background</item>
+        <item name="tabGridMargin">@dimen/tab_grid_card_margin</item>
+        <item name="tabGridTitleFadingLength">@dimen/tab_grid_card_title_fading_length</item>
+
+        <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle.ThemeRefactor</item>
+        <item name="tabGridActionButtonStyle">@style/TabGridCardActionButtonStyle.ThemeRefactor</item>
+        <item name="tabGridThumbnailStyle">@style/TabGridCardThumbnailStyle.ThemeRefactor</item>
     </style>
 
     <style name="TabThumbnailPlaceHolderStyle">

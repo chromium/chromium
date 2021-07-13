@@ -276,32 +276,13 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                 resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_down_shift),
                 resource.getColor(R.color.modern_grey_800_alpha_38));
 
-        // Initialize Rects for thumbnails.
-        float thumbnailHorizontalPadding = resource.getDimension(R.dimen.tab_list_card_padding);
-        float thumbnailVerticalPadding = thumbnailHorizontalPadding / expectedThumbnailAspectRatio;
-        float thumbnailFaviconPaddingFromBackground =
-                resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_padding_from_frame);
-        float centerX = mThumbnailWidth * 0.5f;
-        float centerY = mThumbnailHeight * 0.5f;
-        float halfThumbnailHorizontalPadding = thumbnailHorizontalPadding / 2;
-        float halfThumbnailVerticalPadding = thumbnailVerticalPadding / 2;
-
-        mThumbnailRects.add(new RectF(thumbnailHorizontalPadding, thumbnailVerticalPadding,
-                centerX - halfThumbnailHorizontalPadding, centerY - halfThumbnailVerticalPadding));
-        mThumbnailRects.add(new RectF(centerX + halfThumbnailHorizontalPadding,
-                thumbnailVerticalPadding, mThumbnailWidth - thumbnailHorizontalPadding,
-                centerY - halfThumbnailVerticalPadding));
-        mThumbnailRects.add(new RectF(thumbnailHorizontalPadding,
-                centerY + halfThumbnailVerticalPadding, centerX - halfThumbnailHorizontalPadding,
-                mThumbnailHeight - thumbnailVerticalPadding));
-        mThumbnailRects.add(new RectF(centerX + halfThumbnailHorizontalPadding,
-                centerY + halfThumbnailVerticalPadding,
-                mThumbnailWidth - thumbnailHorizontalPadding,
-                mThumbnailHeight - thumbnailVerticalPadding));
+        initializedThumbnailRects(resource, expectedThumbnailAspectRatio);
 
         // Initialize Rects for favicons and favicon frame.
         final float halfFaviconFrameSize =
                 resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_size) / 2f;
+        float thumbnailFaviconPaddingFromBackground =
+                resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_padding_from_frame);
         for (int i = 0; i < 4; i++) {
             RectF thumbnailRect = mThumbnailRects.get(i);
 
@@ -355,6 +336,43 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
      */
     public void destroy() {
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+    }
+
+    /**
+     * Initialize rects used for thumbnails. Depending on whether thene refacotr is enabled, the
+     * padding around the thumbnail is different.
+     */
+    private void initializedThumbnailRects(Resources resource, float expectedThumbnailAspectRatio) {
+        boolean themeRefactorEnabled = TabUiThemeProvider.themeRefactorEnabled();
+
+        float thumbnailHorizontalPadding = themeRefactorEnabled
+                ? resource.getDimension(R.dimen.tab_grid_card_thumbnail_margin)
+                : resource.getDimension(R.dimen.tab_list_card_padding);
+        float thumbnailVerticalPadding = themeRefactorEnabled
+                ? thumbnailHorizontalPadding
+                : thumbnailHorizontalPadding / expectedThumbnailAspectRatio;
+        float multiThumbnailHorizontalPadding =
+                themeRefactorEnabled ? 0 : thumbnailHorizontalPadding;
+        float multiThumbnailVerticalPadding = themeRefactorEnabled ? 0 : thumbnailVerticalPadding;
+
+        float centerX = mThumbnailWidth * 0.5f;
+        float centerY = mThumbnailHeight * 0.5f;
+        float halfThumbnailHorizontalPadding = thumbnailHorizontalPadding / 2;
+        float halfThumbnailVerticalPadding = thumbnailVerticalPadding / 2;
+
+        mThumbnailRects.add(new RectF(multiThumbnailHorizontalPadding,
+                multiThumbnailVerticalPadding, centerX - halfThumbnailHorizontalPadding,
+                centerY - halfThumbnailVerticalPadding));
+        mThumbnailRects.add(new RectF(centerX + halfThumbnailHorizontalPadding,
+                multiThumbnailVerticalPadding, mThumbnailWidth - multiThumbnailHorizontalPadding,
+                centerY - halfThumbnailVerticalPadding));
+        mThumbnailRects.add(new RectF(multiThumbnailHorizontalPadding,
+                centerY + halfThumbnailVerticalPadding, centerX - halfThumbnailHorizontalPadding,
+                mThumbnailHeight - multiThumbnailVerticalPadding));
+        mThumbnailRects.add(new RectF(centerX + halfThumbnailHorizontalPadding,
+                centerY + halfThumbnailVerticalPadding,
+                mThumbnailWidth - multiThumbnailHorizontalPadding,
+                mThumbnailHeight - multiThumbnailVerticalPadding));
     }
 
     @Override

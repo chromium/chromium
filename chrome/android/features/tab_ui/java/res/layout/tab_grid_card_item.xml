@@ -29,16 +29,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:background="@drawable/popup_bg_tinted"
-            android:layout_margin="2dp">
+            android:background="?attr/tabGridBackground"
+            android:layout_margin="?attr/tabGridMargin">
             <ImageView
                 android:id="@+id/tab_favicon"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/tab_list_card_title_height"
-                android:minWidth="8dp"
                 android:adjustViewBounds="true"
                 android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_globe_24dp"/>
+                app:srcCompat="@drawable/ic_globe_24dp"
+                style="?attr/tabGridFaviconStyle"/>
             <TextView
                 android:id="@+id/tab_title"
                 android:layout_width="match_parent"
@@ -46,7 +44,7 @@
                 android:layout_toEndOf="@id/tab_favicon"
                 android:layout_marginEnd="32dp"
                 android:gravity="center_vertical"
-                android:minHeight="@dimen/tab_list_card_title_height"
+                android:minHeight="?attr/tabGridHeaderHeight"
                 android:requiresFadingEdge="horizontal"
                 android:fadingEdgeLength="24dp"
                 android:ellipsize="none"
@@ -62,8 +60,7 @@
                 android:scaleType="fitCenter"
                 android:importantForAccessibility="no"
                 android:src="@color/thumbnail_placeholder_on_primary_bg"
-                app:cornerRadiusBottomStart="@dimen/tab_list_card_radius"
-                app:cornerRadiusBottomEnd="@dimen/tab_list_card_radius"/>
+                style="?attr/tabGridThumbnailStyle"/>
             <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
                 android:id="@+id/price_info_box_outer"
                 android:layout_below="@id/tab_title"
@@ -83,7 +80,7 @@
                 android:id="@+id/divider_view"
                 style="@style/HorizontalDivider"
                 android:layout_below="@id/tab_title"
-                android:visibility="?attr/tabDividerVisible"
+                android:visibility="?attr/tabGridDividerVisible"
                 android:background="@color/divider_line_bg_color"/>
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/create_group_button"
@@ -110,10 +107,9 @@
         </RelativeLayout>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/action_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
             android:scaleType="center"
             android:layout_gravity="end"
-            android:tint="@color/default_icon_color"/>
+            android:tint="@color/default_icon_color"
+            style="?attr/tabGridActionButtonStyle"/>
     </FrameLayout>
 </merge>

@@ -341,6 +341,17 @@ public class TabUiThemeProvider {
     }
 
     /**
+     * Return the padding around favicon if it is visible.
+     * @param context {@link Context} used to retrieve dimension.
+     * @return The padding space around favicon.
+     */
+    public static float getTabCardTopFaviconPadding(Context context) {
+        return context.getResources().getDimension(themeRefactorEnabled()
+                        ? R.dimen.tab_grid_card_favicon_padding
+                        : R.dimen.tab_list_card_padding);
+    }
+
+    /**
      * Returns the style resource Id that requires for Tab UI.
      *
      * @return The resource Id for the theme overlay used for tab UI.
@@ -351,7 +362,8 @@ public class TabUiThemeProvider {
                                       : R.style.ThemeRefactorOverlay_Disabled_TabUi;
     }
 
-    private static boolean themeRefactorEnabled() {
+    /** Return if theme refactor is enabled. **/
+    static boolean themeRefactorEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID);
     }
 }
