@@ -254,8 +254,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             return new ArrayList<>();
         }
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(activity,
-                mTabProvider, mBottomSheetController, mBottomSheet, shareParams, chromeShareExtras,
-                mPrintTabCallback, mSettingsLauncher, mIsSyncEnabled, mShareStartTime, this,
+                mTabProvider, mBottomSheetController, mBottomSheet, shareParams, mPrintTabCallback,
+                mSettingsLauncher, mIsSyncEnabled, mShareStartTime, this,
                 mImageEditorModuleProvider, mFeatureEngagementTracker,
                 getUrlToShare(shareParams, chromeShareExtras,
                         mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec()
@@ -287,9 +287,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(null));
             return;
         }
-        List<PropertyModel> models = mPropertyModelBuilder.selectThirdPartyApps(mBottomSheet,
-                contentTypes, params, saveLastUsed, params.getWindow(), mShareStartTime,
-                mLinkGenerationStatusForMetrics);
+        List<PropertyModel> models =
+                mPropertyModelBuilder.selectThirdPartyApps(mBottomSheet, contentTypes, params,
+                        saveLastUsed, mShareStartTime, mLinkGenerationStatusForMetrics);
         // More...
         PropertyModel morePropertyModel = ShareSheetPropertyModelBuilder.createPropertyModel(
                 AppCompatResources.getDrawable(activity, R.drawable.sharing_more),
@@ -308,6 +308,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                         profile = Profile.fromWebContents(mTabProvider.get().getWebContents());
                     }
                     ShareHelper.showDefaultShareUi(params, profile, saveLastUsed);
+                    // Reset callback to prevent cancel() being called when the custom sheet is
+                    // closed. The callback will be called by ShareHelper on actions from the
+                    // default share UI.
+                    params.setCallback(null);
                 },
                 /*displayNew*/ false);
         models.add(morePropertyModel);

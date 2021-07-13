@@ -13,7 +13,6 @@ share_test_java_sources = [
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfCoordinatorTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ChromeProvidedSharingOptionsProviderTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetBottomSheetContentTest.java",
-  "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetCoordinatorTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilderTest.java",
 ]
 
@@ -28,6 +27,7 @@ share_junit_test_java_sources = [
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/screenshot/ScreenshotShareSheetMediatorUnitTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationSharedPrefManagerTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridgeTest.java",
+  "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetCoordinatorTest.java",
 ]
 
 share_junit_test_java_deps = [

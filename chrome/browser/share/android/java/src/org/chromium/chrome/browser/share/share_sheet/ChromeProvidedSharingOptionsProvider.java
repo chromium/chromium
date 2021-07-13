@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share.share_sheet;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -23,7 +24,6 @@ import org.chromium.chrome.browser.content_creation.notes.NoteCreationCoordinato
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
@@ -58,7 +58,11 @@ import java.util.Set;
 /**
  * Provides {@code PropertyModel}s of Chrome-provided sharing options.
  */
-class ChromeProvidedSharingOptionsProvider {
+public class ChromeProvidedSharingOptionsProvider {
+    // ComponentName used for Chrome share options in ShareParams.TargetChosenCallback
+    public static final ComponentName CHROME_PROVIDED_FEATURE_COMPONENT_NAME =
+            new ComponentName("CHROME", "CHROME_FEATURE");
+
     private final Activity mActivity;
     private final Supplier<Tab> mTabProvider;
     private final BottomSheetController mBottomSheetController;
@@ -70,11 +74,11 @@ class ChromeProvidedSharingOptionsProvider {
     private final long mShareStartTime;
     private final List<FirstPartyOption> mOrderedFirstPartyOptions;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
-    private ScreenshotCoordinator mScreenshotCoordinator;
     private final String mUrl;
     private final ImageEditorModuleProvider mImageEditorModuleProvider;
     private final Tracker mFeatureEngagementTracker;
-    private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
+    private final @LinkGeneration int mLinkGenerationStatusForMetrics;
+    private ScreenshotCoordinator mScreenshotCoordinator;
 
     /**
      * Constructs a new {@link ChromeProvidedSharingOptionsProvider}.
@@ -85,7 +89,6 @@ class ChromeProvidedSharingOptionsProvider {
      * @param bottomSheetContent The {@link ShareSheetBottomSheetContent} for the current
      * activity.
      * @param shareParams The {@link ShareParams} for the current share.
-     * @param chromeShareExtras The {@link ChromeShareExtras} for the current share.
      * @param printTab A {@link Callback} that will print a given Tab.
      * @param shareStartTime The start time of the current share.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
@@ -93,16 +96,14 @@ class ChromeProvidedSharingOptionsProvider {
      * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
      * @param featureEngagementTracker feature engagement tracker.
      * @param url Url to share.
-     * @param shareDetailsForMetrics User action of sharing text from failed link-to-text
-     *         generation,
-     * sharing text from successful link-to-text generation, or sharing link-to-text.
+     * @param linkGenerationStatusForMetrics User action of sharing text from failed link-to-text
+     * generation, sharing text from successful link-to-text generation, or sharing link-to-text.
      */
     ChromeProvidedSharingOptionsProvider(Activity activity, Supplier<Tab> tabProvider,
             BottomSheetController bottomSheetController,
             ShareSheetBottomSheetContent bottomSheetContent, ShareParams shareParams,
-            ChromeShareExtras chromeShareExtras, Callback<Tab> printTab,
-            SettingsLauncher settingsLauncher, boolean isSyncEnabled, long shareStartTime,
-            ChromeOptionShareCallback chromeOptionShareCallback,
+            Callback<Tab> printTab, SettingsLauncher settingsLauncher, boolean isSyncEnabled,
+            long shareStartTime, ChromeOptionShareCallback chromeOptionShareCallback,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
             String url, @LinkGeneration int linkGenerationStatusForMetrics) {
         mActivity = activity;
@@ -203,6 +204,7 @@ class ChromeProvidedSharingOptionsProvider {
                         recordTimeToShare(mShareStartTime);
                         mBottomSheetController.hideContent(mBottomSheetContent, true);
                         mOnClickCallback.onResult(view);
+                        callTargetChosenCallback();
                     }, /*showNewBadge*/ false);
             return new FirstPartyOption(model, Arrays.asList(mContentTypesInBuilder),
                     Arrays.asList(mContentTypesToDisableFor), mDisableForMultiWindow);
@@ -297,6 +299,7 @@ class ChromeProvidedSharingOptionsProvider {
                     // observer will then remove itself.
                     mBottomSheetController.addObserver(mSheetObserver);
                     mBottomSheetController.hideContent(mBottomSheetContent, true);
+                    callTargetChosenCallback();
                 }, showNewBadge);
 
         return new FirstPartyOption(propertyModel,
@@ -319,6 +322,7 @@ class ChromeProvidedSharingOptionsProvider {
                     // observer will then remove itself.
                     mBottomSheetController.addObserver(mSheetObserver);
                     mBottomSheetController.hideContent(mBottomSheetContent, true);
+                    callTargetChosenCallback();
                 }, /*showNewBadge*/ false);
         return new FirstPartyOption(propertyModel,
                 Arrays.asList(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
@@ -449,6 +453,16 @@ class ChromeProvidedSharingOptionsProvider {
                     coordinator.showDialog();
                 })
                 .build();
+    }
+
+    private void callTargetChosenCallback() {
+        ShareParams.TargetChosenCallback callback = mShareParams.getCallback();
+        if (callback != null) {
+            callback.onTargetChosen(CHROME_PROVIDED_FEATURE_COMPONENT_NAME);
+            // Reset callback after onTargetChosen() is called to prevent cancel() being called when
+            // the sheet is closed.
+            mShareParams.setCallback(null);
+        }
     }
 
     static void recordTimeToShare(long shareStartTime) {
