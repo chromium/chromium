@@ -69,14 +69,26 @@ public class LanguageSettings extends PreferenceFragmentCompat
         getActivity().setTitle(R.string.language_settings);
         mPrefChangeRegistrar = new PrefChangeRegistrar();
 
-        // Show the detailed language settings if DETAILED_LANGUAGE_SETTINGS feature is enabled.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
+        // Create the correct version of language settings.
+        if (shouldShowDetailedPreferences()) {
             createDetailedPreferences(savedInstanceState, rootKey);
         } else {
             createBasicPreferences(savedInstanceState, rootKey);
         }
 
         LanguagesManager.recordImpression(LanguagesManager.LanguageSettingsPageType.PAGE_MAIN);
+    }
+
+    /**
+     * The detailed language preferences should be shown if the flag to enable them or the app
+     * language prompt is enabled. If neither flag is enabled, but an override language is set the
+     * detailed language preferences should still be shown.
+     * @return Whether or not to show the detailed language preferences.
+     */
+    private boolean shouldShowDetailedPreferences() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)
+                || GlobalAppLocaleController.getInstance().isOverridden();
     }
 
     /**
