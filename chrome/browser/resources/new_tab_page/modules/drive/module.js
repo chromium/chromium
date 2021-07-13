@@ -32,7 +32,7 @@ class DriveModuleElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @type {Array<!drive.mojom.File>} */
+      /** @type {!Array<!drive.mojom.File>} */
       files: Array,
     };
   }

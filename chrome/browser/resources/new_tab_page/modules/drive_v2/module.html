@@ -1,0 +1,31 @@
+<style>
+  :host {
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+
+  #files {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .file-title {
+    size: 13px;
+  }
+
+  .file-description {
+    color: var(--cr-secondary-text-color);
+    size: 12px;
+  }
+</style>
+<div id="files">
+  <template id="fileRepeat" is="dom-repeat" items="[[files]]">
+    <a class="file">
+      <div class="file-info">
+        <div class="file-title">[[item.title]]</div>
+        <div class="file-description">[[item.justificationText]]</div>
+      </div>
+    </a>
+  </template>
+</div>

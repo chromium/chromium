@@ -8,6 +8,7 @@ import("//tools/polymer/html_to_js.gni")
 js_library("module") {
   deps = [
     "..:module_descriptor",
+    "//chrome/browser/resources/new_tab_page/modules/drive:drive_module_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
