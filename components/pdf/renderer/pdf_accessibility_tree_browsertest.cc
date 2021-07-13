@@ -14,6 +14,7 @@
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/public/test/fake_pepper_plugin_instance.h"
 #include "content/public/test/render_view_test.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -23,6 +24,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace pdf {
 
@@ -174,8 +176,8 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
 
     viewport_info_.zoom = 1.0;
     viewport_info_.scale = 1.0;
-    viewport_info_.scroll = {0, 0};
-    viewport_info_.offset = {0, 0};
+    viewport_info_.scroll = gfx::Point(0, 0);
+    viewport_info_.offset = gfx::Point(0, 0);
     viewport_info_.selection_start_page_index = 0;
     viewport_info_.selection_start_char_index = 0;
     viewport_info_.selection_end_page_index = 0;
@@ -188,7 +190,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   }
 
  protected:
-  PP_PrivateAccessibilityViewportInfo viewport_info_;
+  chrome_pdf::AccessibilityViewportInfo viewport_info_;
   PP_PrivateAccessibilityDocInfo doc_info_;
   PP_PrivateAccessibilityPageInfo page_info_;
   std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs_;
@@ -2005,8 +2007,8 @@ TEST_F(PdfAccessibilityTreeTest, TestZoomAndScaleChanges) {
 
   viewport_info_.zoom = 1.0;
   viewport_info_.scale = 1.0;
-  viewport_info_.scroll = {0, -56};
-  viewport_info_.offset = {57, 0};
+  viewport_info_.scroll = gfx::Point(0, -56);
+  viewport_info_.offset = gfx::Point(57, 0);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();

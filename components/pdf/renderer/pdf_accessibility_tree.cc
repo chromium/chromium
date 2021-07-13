@@ -19,11 +19,13 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/null_ax_action_target.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/transform.h"
 
@@ -53,10 +55,6 @@ gfx::RectF PpFloatRectToGfxRectF(const PP_FloatRect& r) {
 
 gfx::RectF PPRectToGfxRectF(const PP_Rect& r) {
   return gfx::RectF(r.point.x, r.point.y, r.size.width, r.size.height);
-}
-
-gfx::Vector2dF PpPointToVector2dF(const PP_Point& p) {
-  return gfx::Vector2dF(p.x, p.y);
 }
 
 // This class is used as part of our heuristic to determine which text runs live
@@ -1273,13 +1271,13 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
 }
 
 void PdfAccessibilityTree::SetAccessibilityViewportInfo(
-    const PP_PrivateAccessibilityViewportInfo& viewport_info) {
+    const chrome_pdf::AccessibilityViewportInfo& viewport_info) {
   zoom_ = viewport_info.zoom;
   scale_ = viewport_info.scale;
   CHECK_GT(zoom_, 0);
   CHECK_GT(scale_, 0);
-  scroll_ = PpPointToVector2dF(viewport_info.scroll);
-  offset_ = PpPointToVector2dF(viewport_info.offset);
+  scroll_ = gfx::PointF(viewport_info.scroll).OffsetFromOrigin();
+  offset_ = gfx::PointF(viewport_info.offset).OffsetFromOrigin();
 
   selection_start_page_index_ = viewport_info.selection_start_page_index;
   selection_start_char_index_ = viewport_info.selection_start_char_index;

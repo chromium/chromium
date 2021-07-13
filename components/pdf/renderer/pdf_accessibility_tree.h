@@ -26,6 +26,10 @@ class RenderAccessibility;
 class RendererPpapiHost;
 }
 
+namespace chrome_pdf {
+struct AccessibilityViewportInfo;
+}  // namespace chrome_pdf
+
 namespace gfx {
 class Transform;
 }
@@ -54,7 +58,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
   };
 
   void SetAccessibilityViewportInfo(
-      const PP_PrivateAccessibilityViewportInfo& viewport_info);
+      const chrome_pdf::AccessibilityViewportInfo& viewport_info);
   void SetAccessibilityDocInfo(
       const PP_PrivateAccessibilityDocInfo& doc_info);
   void SetAccessibilityPageInfo(

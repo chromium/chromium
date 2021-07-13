@@ -31,6 +31,7 @@ static_library("renderer") {
     "//content/public/common",
     "//gin",
     "//ipc",
+    "//pdf:accessibility_structs",
     "//pdf:buildflags",
     "//pdf:features",
     "//pdf:pdf_view_web_plugin",

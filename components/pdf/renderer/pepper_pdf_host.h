@@ -115,7 +115,7 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
                                       const std::string& url);
   int32_t OnHostMsgSetAccessibilityViewportInfo(
       ppapi::host::HostMessageContext* context,
-      const PP_PrivateAccessibilityViewportInfo& viewport_info);
+      const PP_PrivateAccessibilityViewportInfo& pp_viewport_info);
   int32_t OnHostMsgSetAccessibilityDocInfo(
       ppapi::host::HostMessageContext* context,
       const PP_PrivateAccessibilityDocInfo& doc_info);

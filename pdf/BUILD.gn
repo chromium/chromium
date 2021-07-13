@@ -242,7 +242,11 @@ if (enable_pdf) {
   }
 
   source_set("accessibility_structs") {
-    visibility = [ ":*" ]
+    visibility = [
+      ":*",
+      "//components:components_browsertests",
+      "//components/pdf/renderer",
+    ]
 
     sources = [
       "accessibility_helper.cc",
