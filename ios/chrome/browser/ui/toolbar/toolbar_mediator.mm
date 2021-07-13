@@ -41,9 +41,6 @@
 // The current web state associated with the toolbar.
 @property(nonatomic, assign) web::WebState* webState;
 
-// Whether the associated toolbar is in dark mode.
-@property(nonatomic, assign) BOOL toolbarDarkMode;
-
 // Whether an overlay is currently presented over the web content area.
 @property(nonatomic, assign, getter=isWebContentAreaShowingOverlay)
     BOOL webContentAreaShowingOverlay;
