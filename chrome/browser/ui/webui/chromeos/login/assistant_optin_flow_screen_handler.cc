@@ -83,6 +83,8 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
                IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_TITLE);
   builder->Add("assistantRelatedInfoReturnedUserMessage",
                IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE);
+  builder->Add("assistantRelatedInfoExample",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE);
   builder->Add("assistantScreenContextTitle",
                IDS_ASSISTANT_SCREEN_CONTEXT_TITLE);
   builder->Add("assistantScreenContextDesc", IDS_ASSISTANT_SCREEN_CONTEXT_DESC);

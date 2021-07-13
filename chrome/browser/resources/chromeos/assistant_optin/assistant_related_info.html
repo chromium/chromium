@@ -20,6 +20,15 @@
       padding-bottom: 16px;
     }
 
+    .example-text {
+      color: var(--google-grey-900);
+      font-family: var(--oobe-header-font-family);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 22px;
+      max-width: 330px;
+    }
+
     #relatedInfoImg {
       height: 288px;
     }
@@ -61,6 +70,9 @@
     </div>
     <div slot="content" class="flex layout vertical center center-justified"
         hidden$="[[skipActivityControl_]]">
+      <div class="example-text">
+        [[i18nDynamic(locale, 'assistantRelatedInfoExample')]]
+      </div>
       <img id="relatedInfoImg" class="oobe-illustration" aria-hidden="true"
           src="assistant_related_info.svg">
     </div>

@@ -71,5 +71,5 @@ cr-expand-button {
 }
 
 #container[cardStyle] .icon {
-  margin: auto 0;
+  margin-top: 4px;
 }
