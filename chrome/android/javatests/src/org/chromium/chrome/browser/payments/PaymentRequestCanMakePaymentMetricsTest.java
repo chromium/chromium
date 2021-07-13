@@ -272,6 +272,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @FlakyTest(message = "https://crbug.com/1222944")
     @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testNoQuery_UserAbort() throws TimeoutException {
         // Initiate a payment request.
