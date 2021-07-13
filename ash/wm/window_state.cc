@@ -76,10 +76,15 @@ bool IsToplevelContainer(aura::Window* window) {
 }
 
 // ARC windows will not be in a top level container until they are associated
-// with a task. We still want a WindowState created for these windows as they
-// will be moved to a top level container soon.
+// with a task. We still want a WindowState created for these windows and their
+// transient children as they will be moved to a top level container soon.
 bool IsTemporarilyHiddenForFullrestore(aura::Window* window) {
-  return window->GetProperty(full_restore::kParentToHiddenContainerKey);
+  if (window->GetProperty(full_restore::kParentToHiddenContainerKey))
+    return true;
+
+  auto* transient_parent = ::wm::GetTransientParent(window);
+  return transient_parent && transient_parent->GetProperty(
+                                 full_restore::kParentToHiddenContainerKey);
 }
 
 // A tentative class to set the bounds on the window.
