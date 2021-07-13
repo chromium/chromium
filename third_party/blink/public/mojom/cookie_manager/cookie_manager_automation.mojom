@@ -1,0 +1,12 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.test.mojom;
+
+// Provides a way for tests to modify all cookies where needed.
+interface CookieManagerAutomation {
+  // Delete all cookies for the url of the calling frame.
+  // See https://w3c.github.io/webdriver/#delete-all-cookies
+  DeleteAllCookies() => ();
+};

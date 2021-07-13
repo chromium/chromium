@@ -47,6 +47,7 @@
 #include "content/web_test/browser/web_test_browser_context.h"
 #include "content/web_test/browser/web_test_browser_main_parts.h"
 #include "content/web_test/browser/web_test_control_host.h"
+#include "content/web_test/browser/web_test_cookie_manager.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
 #include "content/web_test/browser/web_test_storage_access_manager.h"
 #include "content/web_test/browser/web_test_tts_platform.h"
@@ -484,6 +485,9 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
                           base::Unretained(this)));
   map->Add<blink::mojom::BadgeService>(base::BindRepeating(
       &WebTestContentBrowserClient::BindBadgeService, base::Unretained(this)));
+  map->Add<blink::test::mojom::CookieManagerAutomation>(base::BindRepeating(
+      &WebTestContentBrowserClient::BindCookieManagerAutomation,
+      base::Unretained(this)));
 }
 
 bool WebTestContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
@@ -534,6 +538,18 @@ void WebTestContentBrowserClient::BindBadgeService(
   if (!mock_badge_service_)
     mock_badge_service_ = std::make_unique<MockBadgeService>();
   mock_badge_service_->Bind(std::move(receiver));
+}
+
+void WebTestContentBrowserClient::BindCookieManagerAutomation(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::test::mojom::CookieManagerAutomation>
+        receiver) {
+  cookie_managers_.Add(std::make_unique<WebTestCookieManager>(
+                           GetWebTestBrowserContext()
+                               ->GetDefaultStoragePartition()
+                               ->GetCookieManagerForBrowserProcess(),
+                           render_frame_host->GetLastCommittedURL()),
+                       std::move(receiver));
 }
 
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(

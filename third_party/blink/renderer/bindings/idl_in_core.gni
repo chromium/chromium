@@ -734,6 +734,7 @@ static_idl_files_in_core_for_testing = get_path_info(
           "//third_party/blink/renderer/core/testing/internal_dictionary_derived_derived.idl",
           "//third_party/blink/renderer/core/testing/internal_settings.idl",
           "//third_party/blink/renderer/core/testing/internals.idl",
+          "//third_party/blink/renderer/core/testing/internals_delete_all_cookies.idl",
           "//third_party/blink/renderer/core/testing/origin_trials_test.idl",
           "//third_party/blink/renderer/core/testing/origin_trials_test_dictionary.idl",
           "//third_party/blink/renderer/core/testing/origin_trials_test_partial.idl",

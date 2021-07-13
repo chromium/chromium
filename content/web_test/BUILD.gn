@@ -116,6 +116,8 @@ static_library("web_test_browser") {
     "browser/web_test_content_browser_client.h",
     "browser/web_test_control_host.cc",
     "browser/web_test_control_host.h",
+    "browser/web_test_cookie_manager.cc",
+    "browser/web_test_cookie_manager.h",
     "browser/web_test_devtools_bindings.cc",
     "browser/web_test_devtools_bindings.h",
     "browser/web_test_download_manager_delegate.cc",
