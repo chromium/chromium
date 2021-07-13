@@ -18,7 +18,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"
@@ -30,6 +29,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/backend/print_backend.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/printed_document.h"
 #include "printing/printing_utils.h"
@@ -45,10 +45,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "printing/printed_page_win.h"
 #include "printing/printing_features.h"
-#endif
-
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_CUPS)
-#include "printing/mojom/print.mojom.h"
 #endif
 
 using content::BrowserThread;
@@ -196,7 +192,7 @@ void PrintJobWorker::SetSettings(base::Value new_settings,
                                 std::move(callback)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void PrintJobWorker::SetSettingsFromPOD(
     std::unique_ptr<PrintSettings> new_settings,
     SettingsCallback callback) {
@@ -254,7 +250,7 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
   GetSettingsDone(std::move(callback), result);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void PrintJobWorker::UpdatePrintSettingsFromPOD(
     std::unique_ptr<PrintSettings> new_settings,
     SettingsCallback callback) {

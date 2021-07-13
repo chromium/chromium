@@ -13,7 +13,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -127,7 +126,7 @@ void PrinterQuery::SetSettings(base::Value new_settings,
                          base::Unretained(this), std::move(callback))));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void PrinterQuery::SetSettingsFromPOD(
     std::unique_ptr<printing::PrintSettings> new_settings,
     base::OnceClosure callback) {
