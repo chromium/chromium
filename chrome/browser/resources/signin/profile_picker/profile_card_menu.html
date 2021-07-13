@@ -146,7 +146,11 @@
     <iron-icon icon="profiles:create" aria-hidden="true"></iron-icon>
     $i18n{profileMenuCustomizeText}
   </button>
-  <button class="dropdown-item" on-click="onRemoveButtonClicked_">
+  <button class="dropdown-item" on-click="onRemoveButtonClicked_"
+  <if expr="lacros">
+          disabled="[[profileState.isPrimaryLacrosProfile]]"
+  </if>
+  >
     <iron-icon icon="cr:delete" aria-hidden="true"></iron-icon>
     $i18n{profileMenuRemoveText}
   </button>

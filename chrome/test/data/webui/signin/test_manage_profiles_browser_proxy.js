@@ -49,6 +49,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy {
       userName: 'Alice@gmail.com',
       isManaged: false,
       avatarIcon: 'url',
+      isPrimaryLacrosProfile: false,
     };
 
     /**

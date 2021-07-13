@@ -16,6 +16,7 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
  *   userName: string,
  *   isManaged: boolean,
  *   avatarIcon: string,
+ *   isPrimaryLacrosProfile: boolean,
  * }}
  */
 export let ProfileState;

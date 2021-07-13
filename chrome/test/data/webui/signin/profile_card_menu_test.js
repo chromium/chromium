@@ -43,6 +43,7 @@ suite('ProfileCardMenuTest', function() {
       userName: `User@gmail.com`,
       isManaged: false,
       avatarIcon: `AvatarUrl`,
+      isPrimaryLacrosProfile: false,
     });
     profileCardMenuElement.profileState = testProfileState;
     return waitBeforeNextRender(profileCardMenuElement);
@@ -197,3 +198,89 @@ suite('ProfileCardMenuTest', function() {
         '1');
   });
 });
+
+// <if expr="lacros">
+suite('ProfileCardMenuLacrosTest', function() {
+  /** @type {!ProfileCardMenuElement} */
+  let primaryProfileCardMenuElement;
+
+  /** @type {!ProfileCardMenuElement} */
+  let secondaryProfileCardMenuElement;
+
+  /** @type {!TestManageProfilesBrowserProxy} */
+  let browserProxy;
+
+  /** @enum {number} */
+  const menuButtonIndex = {
+    CUSTOMIZE: 0,
+    DELETE: 1,
+  };
+
+  setup(function() {
+    browserProxy = new TestManageProfilesBrowserProxy();
+    ManageProfilesBrowserProxyImpl.instance_ = browserProxy;
+    document.body.innerHTML = '';
+    primaryProfileCardMenuElement = /** @type {!ProfileCardMenuElement} */ (
+        document.createElement('profile-card-menu'));
+    document.body.appendChild(primaryProfileCardMenuElement);
+    const testPrimaryProfileState = /** @type {!ProfileState} */ ({
+      profilePath: `primaryProfilePath`,
+      localProfileName: `profile`,
+      isSyncing: true,
+      needsSignin: false,
+      gaiaName: `User`,
+      userName: `User@gmail.com`,
+      isManaged: true,
+      avatarIcon: `AvatarUrl`,
+      isPrimaryLacrosProfile: true,
+    });
+    primaryProfileCardMenuElement.profileState = testPrimaryProfileState;
+    waitBeforeNextRender(primaryProfileCardMenuElement);
+    secondaryProfileCardMenuElement = /** @type {!ProfileCardMenuElement} */ (
+        document.createElement('profile-card-menu'));
+    document.body.appendChild(secondaryProfileCardMenuElement);
+    const testSecondaryProfileState = /** @type {!ProfileState} */ ({
+      profilePath: `secondaryProfilePath`,
+      localProfileName: `profile`,
+      isSyncing: true,
+      needsSignin: false,
+      gaiaName: `User2`,
+      userName: `User2@gmail.com`,
+      isManaged: false,
+      avatarIcon: `AvatarUrl`,
+      isPrimaryLacrosProfile: false,
+    });
+    secondaryProfileCardMenuElement.profileState = testSecondaryProfileState;
+    return waitBeforeNextRender(secondaryProfileCardMenuElement);
+  });
+
+  // The primary profile cannot be deleted in Lacros. The delete button should
+  // be disabled.
+  test('PrimaryProfileCannotBeDeleted', async function() {
+    primaryProfileCardMenuElement.shadowRoot.querySelector('#moreActionsButton')
+        .click();
+    const menuButtons =
+        primaryProfileCardMenuElement.shadowRoot.querySelectorAll(
+            '#actionMenu > .dropdown-item');
+    assertTrue(menuButtons[menuButtonIndex.DELETE].disabled);
+  });
+
+  // All other profiles can be deleted as normal.
+  test('SecondaryProfileCanBeDeleted', async function() {
+    secondaryProfileCardMenuElement.shadowRoot
+        .querySelector('#moreActionsButton')
+        .click();
+    const menuButtons =
+        secondaryProfileCardMenuElement.shadowRoot.querySelectorAll(
+            '#actionMenu > .dropdown-item');
+    assertFalse(menuButtons[menuButtonIndex.DELETE].disabled);
+    menuButtons[menuButtonIndex.DELETE].click();
+    assertFalse(
+        secondaryProfileCardMenuElement.shadowRoot.querySelector('#actionMenu')
+            .open);
+    assertTrue(secondaryProfileCardMenuElement.shadowRoot
+                   .querySelector('#removeConfirmationDialog')
+                   .open);
+  });
+});
+// </if>
