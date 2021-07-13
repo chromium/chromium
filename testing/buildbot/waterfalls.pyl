@@ -3183,6 +3183,17 @@
           'gtest_tests': 'linux_example_builder_gtests',
         },
       },
+      'linux-exp-code-coverage': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
+          'scripts': 'chromium_linux_scripts',
+        },
+      },
       'linux-fieldtrial-rel': {
         'mixins': [
           'linux-bionic',
