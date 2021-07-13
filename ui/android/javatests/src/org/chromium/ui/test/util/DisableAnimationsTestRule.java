@@ -11,6 +11,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
@@ -23,7 +24,7 @@ import java.util.Arrays;
 
 /**
  * {@link TestRule} to disable animations for UI testing, or enable animation with new
- * DisableAnimationsTestRule(true).
+ * DisableAnimationsTestRule(true). Does not work on Android S, see https://crbug.com/1225707.
  */
 public class DisableAnimationsTestRule implements TestRule {
     /**
@@ -67,7 +68,14 @@ public class DisableAnimationsTestRule implements TestRule {
             IBinder windowManagerBinder = (IBinder) getService.invoke(null, "window");
             mWindowManagerObject = asInterface.invoke(null, windowManagerBinder);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to access animation methods", e);
+            // TODO(https://crbug.com/1225707): Always throw once this works on Android S. The above
+            // API is no longer accessible and will crash regardless of filter rules so just warn
+            // instead.
+            if (BuildInfo.isAtLeastS()) {
+                Log.w(TAG, "Failed to access animation methods", e);
+            } else {
+                throw new RuntimeException("Failed to access animation methods", e);
+            }
         }
     }
 
