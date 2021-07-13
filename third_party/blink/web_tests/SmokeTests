@@ -962,7 +962,7 @@ virtual/stable/fast/css3-text/css3-text-decoration/stable/getComputedStyle-text-
 virtual/stable/http/tests/navigation/location-assign-adds-history-item.html
 virtual/stable/http/tests/navigation/replacestate-base-legal.html
 virtual/stable/http/tests/navigation/useragent.php
-virtual/stable/http/tests/webexposed/internal-properties-should-not-be-exposed.html
+virtual/stable/webexposed/internal-properties-should-not-be-exposed.html
 virtual/threaded-no-composited-antialiasing/animations/stability/pseudo-element-animation-with-marker-crash.html
 virtual/threaded/printing/page-and-element-geometry-match.html
 webaudio/AudioParam/audioparam-setValueCurve-duration.html
@@ -979,9 +979,9 @@ webaudio/PeriodicWave/periodicwave-exceptions.html
 webaudio/ScriptProcessor/scriptprocessornode-0-output-channels.html
 webaudio/ScriptProcessor/scriptprocessornode-downmix8-2channel-input.html
 webaudio/WaveShaper/waveshaper-364379.html
-http/tests/webexposed/internal-properties-should-not-be-exposed.html
-http/tests/webexposed/permissions-attribute.html
-http/tests/webexposed/web-animations-api.html
+webexposed/internal-properties-should-not-be-exposed.html
+webexposed/permissions-attribute.html
+webexposed/web-animations-api.html
 wpt_internal/geolocation-api/enabled.html
 wpt_internal/presentation/presentationconnectionavailableevent-ctor-mock.html
 wpt_internal/webmidi/permission.html

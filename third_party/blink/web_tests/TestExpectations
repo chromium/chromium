@@ -1884,7 +1884,7 @@ crbug.com/770028 external/wpt/pointerevents/pointerevent_predicted_events_attrib
 
 # crbug.com/1218729 These tests fail when InterestCohortAPIOriginTrial is enabled.
 crbug.com/1218729 http/tests/origin_trials/webexposed/interest-cohort-origin-trial-interfaces.html [ Failure ]
-crbug.com/1218729 virtual/stable/http/tests/webexposed/feature-policy-features.html [ Failure ]
+crbug.com/1218729 virtual/stable/webexposed/feature-policy-features.html [ Failure ]
 
 # This test relies on racy should_send_resource_timing_info_to_parent() flag being sent between processes.
 crbug.com/957181 external/wpt/resource-timing/nested-context-navigations-iframe.html [ Failure Pass ]

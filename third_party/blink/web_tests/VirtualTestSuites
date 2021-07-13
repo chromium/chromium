@@ -114,9 +114,9 @@
               "http/tests/navigation",
               "http/tests/sendbeacon",
               "http/tests/serviceworker/webexposed",
-              "http/tests/webexposed",
               "inspector-protocol/dom-snapshot",
               "media/stable",
+              "webexposed",
               "compositing/filters"
               ],
     "args": ["--stable-release-mode",
@@ -1134,8 +1134,8 @@
   },
   {
     "prefix": "anonymous-iframe",
-    "bases": ["http/tests/webexposed/element-instance-property-listing.html",
-              "http/tests/webexposed/global-interface-listing.php"],
+    "bases": ["webexposed/element-instance-property-listing.html",
+              "webexposed/global-interface-listing.html"],
     "args": ["--enable-blink-features=AnonymousIframe"]
   },
   {

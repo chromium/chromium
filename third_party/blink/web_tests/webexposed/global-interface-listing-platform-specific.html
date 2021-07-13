@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script>
+// Save the list of property names of the global object just after page load.
+var propertyNamesInGlobal = Object.getOwnPropertyNames(this);
+</script>
+<script src="../resources/js-test.js"></script>
+<script src="../resources/global-interface-listing.js"></script>
+<script>
+description("This test documents all interface attributes and methods on the global window object and element instances.");
+globalInterfaceListing(this, propertyNamesInGlobal, true, debug);
+</script>

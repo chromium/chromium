@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script src="../resources/js-test.js"></script>
+<script>
+debug("This test (crudely) documents Blink's web-exposed CSS properties.  All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features");
+debug("");
+getAllPropertyNames(document.createElement("foo").style).sort().forEach(function(property) {
+	debug(property);
+});
+</script>

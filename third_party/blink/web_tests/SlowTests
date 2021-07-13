@@ -155,7 +155,7 @@ crbug.com/647192 [ Debug Win ] fast/css3-text/css3-word-break/word-break-all-asc
 crbug.com/948670 [ Debug Mac10.13 ] fast/css3-text/css3-word-break/word-break-all-ascii.html [ Slow ]
 
 # Slow on many platforms.
-crbug.com/866165 http/tests/webexposed/global-interface-listing.php [ Slow ]
+crbug.com/866165 webexposed/global-interface-listing.html [ Slow ]
 
 crbug.com/1074122 http/tests/serviceworker/webexposed/global-interface-listing-service-worker.html [ Slow ]
 
@@ -225,7 +225,7 @@ crbug.com/865262 [ Mac ] media/controls/text-track-menu-pointer-selection.html [
 
 crbug.com/942951 media/controls/controls-layout-in-different-size.html [ Slow ]
 
-crbug.com/910627 http/tests/webexposed/global-interface-listing-shared-worker.php [ Slow ]
+crbug.com/910627 webexposed/global-interface-listing-shared-worker.html [ Slow ]
 
 ### virtual/gpu/fast/canvas/ blending layout tests are slow
 crbug.com/866850 virtual/gpu/fast/canvas/canvas-blend-image.html [ Slow ]
@@ -653,8 +653,8 @@ crbug.com/1043785 [ Release ] http/tests/devtools/elements/edit/switch-panels-wh
 crbug.com/1043792 [ Release Win ] http/tests/devtools/template-content-inspect-crash.js [ Slow ]
 crbug.com/1043792 [ Mac Release ] http/tests/devtools/template-content-inspect-crash.js [ Slow ]
 crbug.com/1043796 [ Release ] http/tests/devtools/coverage/gutter-html.js [ Slow ]
-crbug.com/1043893 [ Debug Mac10.13 ] http/tests/webexposed/global-interface-listing-dedicated-worker.php [ Slow ]
-crbug.com/1043893 [ Release ] http/tests/webexposed/global-interface-listing-dedicated-worker.php [ Slow ]
+crbug.com/1043893 [ Debug Mac10.13 ] webexposed/global-interface-listing-dedicated-worker.html [ Slow ]
+crbug.com/1043893 [ Release ] webexposed/global-interface-listing-dedicated-worker.html [ Slow ]
 crbug.com/1043920 [ Release Win ] http/tests/devtools/stylesheet-source-mapping.js [ Slow ]
 crbug.com/1043920 [ Mac Release ] http/tests/devtools/stylesheet-source-mapping.js [ Slow ]
 crbug.com/1044350 [ Release ] http/tests/devtools/network/network-xhr-replay.js [ Slow ]

@@ -1,0 +1,14 @@
+This test documents all interface attributes and methods on DedicatedWorkerGlobalScope.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Starting worker: resources/global-interface-listing-worker.js
+[Worker] [INTERFACES]
+[Worker] interface Notification : EventTarget
+[Worker]     getter image
+[Worker] [NAMESPACES]
+[Worker] [GLOBAL OBJECT]
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

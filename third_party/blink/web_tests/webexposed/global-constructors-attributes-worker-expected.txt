@@ -1,0 +1,44 @@
+[Worker] Test to ensure that global constructors in workers environment have the right attributes
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Starting worker: resources/global-constructors-attributes-worker.js
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'DataView').value is DataView
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'DataView').hasOwnProperty('get') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'DataView').hasOwnProperty('set') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'DataView').enumerable is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'DataView').configurable is true
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'EventSource').value is EventSource
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'EventSource').hasOwnProperty('get') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'EventSource').hasOwnProperty('set') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'EventSource').enumerable is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'EventSource').configurable is true
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'FileReaderSync').value is FileReaderSync
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'FileReaderSync').hasOwnProperty('get') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'FileReaderSync').hasOwnProperty('set') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'FileReaderSync').enumerable is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'FileReaderSync').configurable is true
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'Float64Array').value is Float64Array
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'Float64Array').hasOwnProperty('get') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'Float64Array').hasOwnProperty('set') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'Float64Array').enumerable is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'Float64Array').configurable is true
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'MessageChannel').value is MessageChannel
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'MessageChannel').hasOwnProperty('get') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'MessageChannel').hasOwnProperty('set') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'MessageChannel').enumerable is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'MessageChannel').configurable is true
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'WorkerLocation').value is WorkerLocation
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'WorkerLocation').hasOwnProperty('get') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'WorkerLocation').hasOwnProperty('set') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'WorkerLocation').enumerable is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'WorkerLocation').configurable is true
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').value is XMLHttpRequest
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').hasOwnProperty('get') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').hasOwnProperty('set') is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').enumerable is false
+PASS [Worker] Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').configurable is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

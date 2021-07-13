@@ -1,0 +1,20 @@
+<html>
+<head>
+<script src="../resources/js-test.js"></script>
+</head>
+<body>
+<script>
+description("Check that interfaces inherit from EventTarget");
+
+eventTargets = ['EventSource', 'FileReader', 'MediaSource', 'MessagePort',
+    'Node', 'Performance', 'SharedWorker', 'WebSocket', 'Worker'];
+
+for (var i = 0; i < eventTargets.length; i++) {
+    if (eventTargets[i] in window)
+        shouldBe(eventTargets[i] + ".prototype.__proto__", "EventTarget.prototype");
+}
+shouldBe("Window.prototype.__proto__.__proto__", "EventTarget.prototype");
+
+</script>
+</body>
+</html>

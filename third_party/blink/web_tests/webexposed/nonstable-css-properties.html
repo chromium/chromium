@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id='el'></div>
+
+<script src="../resources/js-test.js"></script>
+<script>
+
+description("Test getting and setting nonstable css properties to non-default values");
+
+function testStyle(property, value) {
+    var el = document.getElementById('el');
+    var test = function(toEval, logResult) {
+        var result = eval(toEval);
+        debug(toEval + (logResult ? " is " + result : ""));
+    }
+    test("el.style.setProperty('" + property + "', '" + value + "')", false);
+    test("el.style.getPropertyValue('" + property + "')", true);
+    test("getComputedStyle(el).getPropertyValue('" + property + "')", true);
+    debug("");
+}
+
+var properties = [
+['shape-margin', '10px'],
+['shape-outside', 'circle(10px at 10px 10px)'],
+
+['grid-auto-columns', 'auto'],
+['grid-auto-rows', 'auto'],
+['grid-template-columns', 'min-content'],
+['grid-template-rows', 'max-content'],
+['grid-column-start', 'auto'],
+['grid-column-end', '2'],
+['grid-row-start', '1'],
+['grid-column', 'auto'],
+['grid-row', '1'],
+['grid-area', '2'],
+['grid-auto-flow', 'column'],
+['grid-template-areas', '"test"'],
+
+['text-justify', 'distribute'],
+
+['text-underline-position', 'left'],
+['text-underline-position', 'right'],
+['text-underline-position', 'under left'],
+['text-underline-position', 'right under'],
+
+['clear', 'inline-start'],
+['clear', 'inline-end'],
+['float', 'inline-start'],
+['float', 'inline-end'],
+['resize', 'block'],
+['resize', 'inline'],
+];
+
+properties.forEach(function(args) {
+    testStyle(args[0], args[1]);
+});
+
+</script>
+</body>
+</html>

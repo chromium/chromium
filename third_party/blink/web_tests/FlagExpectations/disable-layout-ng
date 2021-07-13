@@ -831,7 +831,7 @@ crbug.com/840659 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/* [ Skip ]
 # MathML depends on LayoutNG.
 crbug.com/6606 external/wpt/mathml/* [ Skip ]
 
-crbug.com/1034944 http/tests/webexposed/global-interface-listing.php [ Skip ]
+crbug.com/1034944 webexposed/global-interface-listing.html [ Skip ]
 
 # TODO(iopopesc) these need to be rebaselined for focus ring changes.
 crbug.com/1035582 fast/css/focus-ring-detached.html [ Failure ]

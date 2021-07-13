@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+test(function() {
+    assert_true('animate' in Element.prototype);
+}, 'Element.animate() should be exposed.');
+
+test(function() {
+    assert_true('getAnimations' in Element.prototype);
+}, 'Element.getAnimations() should be exposed.')
+
+test(function() {
+    assert_true('AnimationTimeline' in window);
+},'Timeline should be exposed.');
+
+test(function() {
+    assert_true('timeline' in document);
+},'document.timeline should be exposed.');
+</script>

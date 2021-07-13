@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<body>
+<script src="../resources/js-test.js"></script>
+<script>
+debug("This test checks that -internal-* properties are not exposed to JS.")
+debug("");
+debug("");
+
+// This contains the properties along with an accepted value to ensure that we can't
+// set it from JavaScript.
+var internalProperties = { "-internal-marquee-direction": "alternate" };
+for (var property in internalProperties) {
+    debug("Testing " + property);
+    element = document.createElement("foo");
+    document.body.appendChild(element);
+    shouldBeEqualToString("window.getComputedStyle(element).getPropertyValue(property)", "");
+    shouldBeUndefined("element.style[property]");
+
+    debug("Value after setting " + property + " to " + internalProperties[property]);
+    element.style.setProperty(property, internalProperties[property]);
+    shouldBeUndefined("element.style[property]")
+
+    document.body.removeChild(element);
+    debug("");
+}
+</script>
+</body>
