@@ -231,7 +231,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return interest_groups;
   }
 
-  int GetJoinCount(url::Origin owner, std::string name) {
+  int GetJoinCount(const url::Origin& owner, const std::string& name) {
     for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
       if (interest_group->group->name == name) {
         return interest_group->signals->join_count;
@@ -240,8 +240,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return 0;
   }
 
-  bool JoinInterestGroupAndWaitInJs(url::Origin owner,
-                                    std::string name) WARN_UNUSED_RESULT {
+  bool JoinInterestGroupAndWaitInJs(const url::Origin& owner,
+                                    const std::string& name)
+      WARN_UNUSED_RESULT {
     int initial_count = GetJoinCount(owner, name);
     if (!JoinInterestGroupInJS(owner, name)) {
       return false;
@@ -267,7 +268,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return true;
   }
 
-  bool LeaveInterestGroupAndWait(url::Origin owner, std::string name) {
+  bool LeaveInterestGroupAndWait(const url::Origin& owner,
+                                 const std::string& name) {
     if (!LeaveInterestGroupInJS(owner, name)) {
       return false;
     }
@@ -352,41 +354,41 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   // This join should fail and throw an exception since a.test is not the same
   // origin as the bidding_url, bid.a.test.
   EXPECT_FALSE(JoinInterestGroupInJS(blink::mojom::InterestGroup::New(
-      /* expiry */ base::Time(),
-      /* owner= */ test_origin_a,
-      /* name = */ "bicycles",
-      /* bidding_url = */ GURL("https://bid.a.test"),
-      /* update_url  = */ absl::nullopt,
-      /* trusted_bidding_signals_url = */ absl::nullopt,
-      /* trusted_bidding_signals_keys = */ absl::nullopt,
-      /* user_bidding_signals = */ absl::nullopt,
-      /* ads = */ absl::nullopt)));
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin_a,
+      /*name=*/"bicycles",
+      /*bidding_url=*/GURL("https://bid.a.test"),
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/absl::nullopt)));
 
   // This join should fail and throw an exception since a.test is not the same
   // origin as the update_url, update.a.test.
   EXPECT_FALSE(JoinInterestGroupInJS(blink::mojom::InterestGroup::New(
-      /* expiry */ base::Time(),
-      /* owner= */ test_origin_a,
-      /* name = */ "tricycles",
-      /* bidding_url = */ absl::nullopt,
-      /* update_url  = */ GURL("https://update.a.test"),
-      /* trusted_bidding_signals_url = */ absl::nullopt,
-      /* trusted_bidding_signals_keys = */ absl::nullopt,
-      /* user_bidding_signals = */ absl::nullopt,
-      /* ads = */ absl::nullopt)));
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin_a,
+      /*name=*/"tricycles",
+      /*bidding_url=*/absl::nullopt,
+      /*update_url=*/GURL("https://update.a.test"),
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/absl::nullopt)));
 
   // This join should fail and throw an exception since a.test is not the same
   // origin as the trusted_bidding_signals_url, signals.a.test.
   EXPECT_FALSE(JoinInterestGroupInJS(blink::mojom::InterestGroup::New(
-      /* expiry */ base::Time(),
-      /* owner= */ test_origin_a,
-      /* name = */ "four-wheelers",
-      /* bidding_url = */ absl::nullopt,
-      /* update_url  = */ absl::nullopt,
-      /* trusted_bidding_signals_url = */ GURL("https://signals.a.test"),
-      /* trusted_bidding_signals_keys = */ absl::nullopt,
-      /* user_bidding_signals = */ absl::nullopt,
-      /* ads = */ absl::nullopt)));
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin_a,
+      /*name=*/"four-wheelers",
+      /*bidding_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/GURL("https://signals.a.test"),
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/absl::nullopt)));
 
   // This join should silently fail since d.test is not allowlisted for the API,
   // and allowlist checks only happen in the browser process, so don't throw an
@@ -417,15 +419,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   // Inject an interest group into the DB for that for that site so we can try
   // to remove it.
   manager_->JoinInterestGroup(blink::mojom::InterestGroup::New(
-      /* expiry */ base::Time::Now() + base::TimeDelta::FromSeconds(300),
-      /* owner= */ test_origin_d,
-      /* name = */ "candy",
-      /* bidding_url = */ absl::nullopt,
-      /* update_url  = */ absl::nullopt,
-      /* trusted_bidding_signals_url = */ absl::nullopt,
-      /* trusted_bidding_signals_keys = */ absl::nullopt,
-      /* user_bidding_signals = */ absl::nullopt,
-      /* ads = */ absl::nullopt));
+      /*expiry=*/base::Time::Now() + base::TimeDelta::FromSeconds(300),
+      /*owner=*/test_origin_d,
+      /*name=*/"candy",
+      /*bidding_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/absl::nullopt));
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url_d));
   // This leave should do nothing because origin_d is not allowed by privacy
@@ -521,20 +523,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidBiddingLogicUrl) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "biddingLogicUrl 'https://invalid^&' for AuctionAdInterestGroup with "
-      "owner 'https://test.com' and name 'cars' cannot be resolved to a valid "
-      "URL.",
-      EvalJs(shell(), R"(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "biddingLogicUrl 'https://invalid^&' for AuctionAdInterestGroup with "
+          "owner '%s' and name 'cars' cannot be resolved to a valid URL.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
 (function() {
   try {
     navigator.joinAdInterestGroup(
         {
           name: 'cars',
-          owner: 'https://test.com',
+          owner: $1,
           biddingLogicUrl: 'https://invalid^&',
         },
         /*joinDurationSec=*/1);
@@ -542,25 +547,29 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     return e.toString();
   }
   return 'done';
-})())"));
+})())",
+                                origin_string.c_str())));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidDailyUpdateUrl) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "dailyUpdateUrl 'https://invalid^&' for AuctionAdInterestGroup with "
-      "owner 'https://test.com' and name 'cars' cannot be resolved to a valid "
-      "URL.",
-      EvalJs(shell(), R"(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "dailyUpdateUrl 'https://invalid^&' for AuctionAdInterestGroup with "
+          "owner '%s' and name 'cars' cannot be resolved to a valid URL.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
 (function() {
   try {
     navigator.joinAdInterestGroup(
         {
           name: 'cars',
-          owner: 'https://test.com',
+          owner: $1,
           dailyUpdateUrl: 'https://invalid^&',
         },
         /*joinDurationSec=*/1);
@@ -568,25 +577,29 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     return e.toString();
   }
   return 'done';
-})())"));
+})())",
+                                origin_string.c_str())));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidTrustedBiddingSignalsUrl) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "trustedBiddingSignalsUrl 'https://invalid^&' for "
-      "AuctionAdInterestGroup with owner 'https://test.com' and name 'cars' "
-      "cannot be resolved to a valid URL.",
-      EvalJs(shell(), R"(
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'joinAdInterestGroup' on "
+                "'Navigator': trustedBiddingSignalsUrl 'https://invalid^&' for "
+                "AuctionAdInterestGroup with owner '%s' and name 'cars' cannot "
+                "be resolved to a valid URL.",
+                origin_string.c_str()),
+            EvalJs(shell(), JsReplace(R"(
 (function() {
   try {
     navigator.joinAdInterestGroup(
         {
           name: 'cars',
-          owner: 'https://test.com',
+          owner: $1,
           trustedBiddingSignalsUrl: 'https://invalid^&',
         },
         /*joinDurationSec=*/1);
@@ -594,24 +607,29 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     return e.toString();
   }
   return 'done';
-})())"));
+})())",
+                                      origin_string.c_str())));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidUserBiddingSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "userBiddingSignals for AuctionAdInterestGroup with owner "
-      "'https://test.com' and name 'cars' must be a JSON-serializable object.",
-      EvalJs(shell(), R"(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "userBiddingSignals for AuctionAdInterestGroup with owner '%s' and "
+          "name 'cars' must be a JSON-serializable object.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
 (function() {
   try {
     navigator.joinAdInterestGroup(
         {
           name: 'cars',
-          owner: 'https://test.com',
+          owner: $1,
           userBiddingSignals: function() {},
         },
         /*joinDurationSec=*/1);
@@ -619,24 +637,29 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     return e.toString();
   }
   return 'done';
-})())"));
+})())",
+                                origin_string.c_str())));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidAdUrl) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "ad renderUrl 'https://invalid^&' for AuctionAdInterestGroup with owner "
-      "'https://test.com' and name 'cars' cannot be resolved to a valid URL.",
-      EvalJs(shell(), R"(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "ad renderUrl 'https://invalid^&' for AuctionAdInterestGroup with "
+          "owner '%s' and name 'cars' cannot be resolved to a valid URL.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
 (function() {
   try {
     navigator.joinAdInterestGroup(
         {
           name: 'cars',
-          owner: 'https://test.com',
+          owner: $1,
           ads: [{renderUrl:"https://invalid^&"}],
         },
         /*joinDurationSec=*/1);
@@ -644,18 +667,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     return e.toString();
   }
   return 'done';
-})())"));
+})())",
+                                origin_string.c_str())));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidAdMetadata) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': ad "
-      "metadata for AuctionAdInterestGroup with owner 'https://test.com' and "
-      "name 'cars' must be a JSON-serializable object.",
-      EvalJs(shell(), R"(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on "
+          "'Navigator': ad metadata for AuctionAdInterestGroup with "
+          "owner '%s' and name 'cars' must be a JSON-serializable object.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
 (function() {
   let x = {};
   let y = {};
@@ -665,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     navigator.joinAdInterestGroup(
         {
           name: 'cars',
-          owner: 'https://test.com',
+          owner: $1,
           ads: [{renderUrl:"https://test.com", metadata:x}],
         },
         /*joinDurationSec=*/1);
@@ -673,7 +701,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     return e.toString();
   }
   return 'done';
-})())"));
+})())",
+                                origin_string.c_str())));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -748,16 +777,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */ absl::nullopt,
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       ads));
 
   EXPECT_EQ(
@@ -880,16 +909,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */ absl::nullopt,
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       ads));
 
   EXPECT_EQ(
@@ -949,18 +978,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url_a),
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url_a),
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       ads, "['key1']"));
 
   GURL test_url_d = https_server_->GetURL("d.test", "/echo");
@@ -1023,19 +1052,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL(test_url.host(),
                                 "/interest_group/bidding_logic.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/
           https_server_->GetURL(test_url.host(),
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       ads, "['key1']"));
 
   EXPECT_EQ("https://example.com/render",
@@ -1071,18 +1100,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
       "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       ads, "['key1']"));
 
   EXPECT_EQ(
@@ -1209,18 +1238,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOrigin) {
       "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(bidder_url.GetOrigin()),
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(bidder_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/
           https_server_->GetURL(kBidder,
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       ads, "['key1']"));
 
   // Navigate to publisher.
@@ -1284,18 +1313,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
   ASSERT_TRUE(NavigateToURL(shell(), other_url));
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ other_origin,
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/other_origin,
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL(
               kOtherHost,
               "/interest_group/bidding_logic_expect_top_frame_a_test.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */ absl::nullopt,
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ absl::nullopt,
-          /* ads = */ absl::nullopt),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/absl::nullopt,
+          /*ads=*/absl::nullopt),
       "[{renderUrl : 'https://example.com/render'}]"));
 
   const struct {
@@ -1366,46 +1395,46 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL(
               "a.test",
               "/interest_group/bidding_logic_stop_bidding_after_win.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */ absl::nullopt,
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       "[{renderUrl : 'https://stop_bidding_after_win.com/render'}]"));
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
-          /* name = */ "bikes",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"bikes",
+          /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       "[{renderUrl : 'https://example.com/render'}]", "['key1']"));
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
-          /* name = */ "shoes",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"shoes",
+          /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */ absl::nullopt,
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       "[{renderUrl : 'https://example.com/render2'}]"));
 
   EXPECT_EQ(
@@ -1439,18 +1468,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   // This group will win if it has never won an auction.
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL(
               "a.test",
               "/interest_group/bidding_logic_stop_bidding_after_win.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */ absl::nullopt,
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       ads));
 
   GURL test_url2 = https_server_->GetURL("b.test", "/echo");
@@ -1458,16 +1487,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   // This group will win if the other interest group has won an auction.
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url2.GetOrigin()),
-          /* name = */ "shoes",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url2.GetOrigin()),
+          /*name=*/"shoes",
+          /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */ absl::nullopt,
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       "[{renderUrl : 'https://example.com/render'}]"));
 
   // Both owners have one interest group in storage, and both interest groups
@@ -1558,17 +1587,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
       "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
-          /* name = */ "cars",
-          /* bidding_url = */
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
           https_server_->GetURL(
               "a.test", "/interest_group/bidding_logic_invalid_ad_url.js"),
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */ absl::nullopt,
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       ads));
 
   EXPECT_EQ(
@@ -1803,16 +1832,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, QuitWithRunningAuction) {
       "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
-          /* expiry */ base::Time(),
-          /* owner= */ url::Origin::Create(hanging_url.GetOrigin()),
-          /* name = */ "cars",
-          /* bidding_url = */
-          hanging_url,
-          /* update_url  = */ absl::nullopt,
-          /* trusted_bidding_signals_url = */ absl::nullopt,
-          /* trusted_bidding_signals_keys = */ absl::nullopt,
-          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ absl::nullopt),
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(hanging_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/hanging_url,
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
       ads, "['key1']"));
 
   ExecuteScriptAsync(
