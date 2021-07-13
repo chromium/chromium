@@ -74,6 +74,10 @@ class StubResolverConfigReader {
                                         bool has_device_owner);
 #endif
 
+  void OverrideParentalControlsForTesting(bool parental_controls_override) {
+    parental_controls_testing_override_ = parental_controls_override;
+  }
+
  private:
   void OnParentalControlsDelayTimer();
 
@@ -93,6 +97,8 @@ class StubResolverConfigReader {
   // Whether or not parental controls have already been checked, either due to
   // expiration of the delay timer or because of a forced check.
   bool parental_controls_checked_ = false;
+
+  absl::optional<bool> parental_controls_testing_override_;
 
   // This object lives on the UI thread, but it's possible for it to be created
   // before BrowserMainLoop::CreateThreads() is called which would cause a
