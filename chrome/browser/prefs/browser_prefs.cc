@@ -633,6 +633,9 @@ constexpr char kProfileSwitchInterceptionDeclinedPref[] =
     "signin.ProfileSwitchInterceptionDeclinedPref";
 #endif
 
+const char kSuggestionsBlocklist[] = "suggestions.blacklist";
+const char kSuggestionsData[] = "suggestions.data";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -810,6 +813,9 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterDictionaryPref(kProfileSwitchInterceptionDeclinedPref);
 #endif
+
+  registry->RegisterStringPref(kSuggestionsBlocklist, std::string());
+  registry->RegisterStringPref(kSuggestionsData, std::string());
 }
 
 }  // namespace
@@ -1590,6 +1596,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   profile_prefs->ClearPref(kProfileSwitchInterceptionDeclinedPref);
 #endif
+
+  profile_prefs->ClearPref(kSuggestionsBlocklist);
+  profile_prefs->ClearPref(kSuggestionsData);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

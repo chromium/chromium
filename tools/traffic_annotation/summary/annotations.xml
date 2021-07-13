@@ -337,7 +337,7 @@ Refer to README.md for content description and update process.
  <item id="stream_message_pipe_adapter" added_in_milestone="66" hash_code="71837756" type="0" content_hash_code="66212605" os_list="linux,windows" file_path="remoting/protocol/stream_message_pipe_adapter.cc"/>
  <item id="stream_packet_socket" added_in_milestone="84" hash_code="38197513" type="0" content_hash_code="55116994" os_list="linux,windows" file_path="remoting/protocol/stream_packet_socket.cc"/>
  <item id="suggestions_image_manager" added_in_milestone="62" hash_code="13211343" type="0" deprecated="2018-11-28" content_hash_code="36271280" file_path=""/>
- <item id="suggestions_service" added_in_milestone="62" hash_code="35370363" type="0" content_hash_code="66296423" os_list="linux,windows" file_path="components/suggestions/suggestions_service_impl.cc"/>
+ <item id="suggestions_service" added_in_milestone="62" hash_code="35370363" type="0" deprecated="2021-07-08" content_hash_code="66296423" file_path=""/>
  <item id="supervised_user_refresh_token_fetcher" added_in_milestone="62" hash_code="136117054" type="0" deprecated="2018-04-18" content_hash_code="101636136" file_path=""/>
  <item id="supervised_user_url_filter" added_in_milestone="62" hash_code="14257952" type="0" deprecated="2019-07-30" content_hash_code="30470003" file_path=""/>
  <item id="supervised_users_blacklist" added_in_milestone="62" hash_code="78544924" type="0" deprecated="2019-07-30" content_hash_code="10924669" file_path=""/>

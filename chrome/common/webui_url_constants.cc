@@ -165,8 +165,6 @@ const char kChromeUISigninReauthURL[] = "chrome://signin-reauth/";
 const char kChromeUISiteDetailsPrefixURL[] =
     "chrome://settings/content/siteDetails?site=";
 const char kChromeUISiteEngagementHost[] = "site-engagement";
-const char kChromeUISuggestionsHost[] = "suggestions";
-const char kChromeUISuggestionsURL[] = "chrome://suggestions/";
 const char kChromeUISupervisedUserPassphrasePageHost[] =
     "managed-user-passphrase";
 const char kChromeUISyncConfirmationHost[] = "sync-confirmation";
@@ -530,7 +528,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUISiteEngagementHost,
     kChromeUINTPTilesInternalsHost,
     safe_browsing::kChromeUISafeBrowsingHost,
-    kChromeUISuggestionsHost,
     kChromeUISyncInternalsHost,
 #if !defined(OS_ANDROID)
     kChromeUITermsHost,

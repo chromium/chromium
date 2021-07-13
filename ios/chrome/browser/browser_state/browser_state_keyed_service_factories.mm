@@ -55,7 +55,6 @@
 #include "ios/chrome/browser/signin/signin_browser_state_info_updater_factory.h"
 #include "ios/chrome/browser/signin/signin_client_factory.h"
 #include "ios/chrome/browser/signin/signin_error_controller_factory.h"
-#include "ios/chrome/browser/suggestions/suggestions_service_factory.h"
 #include "ios/chrome/browser/sync/consent_auditor_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
@@ -111,7 +110,6 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ios::WebDataServiceFactory::GetInstance();
   ios::WebHistoryServiceFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
-  suggestions::SuggestionsServiceFactory::GetInstance();
   AuthenticationServiceFactory::GetInstance();
   BreadcrumbManagerKeyedServiceFactory::GetInstance();
   BrowserDownloadServiceFactory::GetInstance();

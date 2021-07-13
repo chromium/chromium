@@ -77,7 +77,6 @@ components/safe_browsing/core/browser/db 2 1
 components/safe_browsing/core/common/proto 3 1
 components/security_interstitials/content 1 1
 components/strictmode/android/java/src/org/chromium/components/strictmode 4 3
-components/suggestions 5 3
 components/sync 1 1
 components/sync/protocol 5 2
 components/test/data/autofill/heuristics/input 4 1

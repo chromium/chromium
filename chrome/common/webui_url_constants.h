@@ -162,8 +162,6 @@ extern const char kChromeUISigninReauthHost[];
 extern const char kChromeUISigninReauthURL[];
 extern const char kChromeUISiteDetailsPrefixURL[];
 extern const char kChromeUISiteEngagementHost[];
-extern const char kChromeUISuggestionsHost[];
-extern const char kChromeUISuggestionsURL[];
 extern const char kChromeUISupervisedUserPassphrasePageHost[];
 extern const char kChromeUISyncConfirmationHost[];
 extern const char kChromeUISyncConfirmationLoadingPath[];

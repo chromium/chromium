@@ -751,8 +751,7 @@ bool IsHostAllowedInIncognito(const GURL& url) {
   base::StringPiece host = url.host_piece();
   if (scheme == chrome::kChromeSearchScheme) {
     return host != chrome::kChromeUIThumbnailHost &&
-           host != chrome::kChromeUIThumbnailHost2 &&
-           host != chrome::kChromeUISuggestionsHost;
+           host != chrome::kChromeUIThumbnailHost2;
   }
 
   if (scheme != content::kChromeUIScheme)
@@ -785,7 +784,6 @@ bool IsHostAllowedInIncognito(const GURL& url) {
          host != chrome::kChromeUIBookmarksHost &&
          host != chrome::kChromeUIThumbnailHost &&
          host != chrome::kChromeUIThumbnailHost2 &&
-         host != chrome::kChromeUISuggestionsHost &&
          host != chrome::kChromeUIDevicesHost &&
          host != chrome::kChromeUINewTabPageHost &&
          host != chrome::kChromeUINewTabPageThirdPartyHost;
