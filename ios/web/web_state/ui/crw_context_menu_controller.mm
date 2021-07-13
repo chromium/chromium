@@ -101,6 +101,11 @@ const CGFloat kJavaScriptTimeout = 1;
   __block BOOL javascriptEvaluationComplete = NO;
   __block BOOL isRunLoopComplete = NO;
 
+  // Clear params in case elementFetcher fails, which would lead to a popping
+  // a context menu with the previous context menu params.
+  self.params.link_url = GURL();
+  self.params.src_url = GURL();
+
   __weak __typeof(self) weakSelf = self;
   [self.elementFetcher
       fetchDOMElementAtPoint:locationInWebView
