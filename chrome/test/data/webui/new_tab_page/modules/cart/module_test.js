@@ -714,6 +714,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertEquals(
           loadTimeData.getString('modulesCartDiscountConsentAccept'),
           consentCard.querySelector('#actionButton').innerText);
+      assertEquals(0, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
 
       // Act.
       consentCard.querySelector('#cancelButton').click();
@@ -726,6 +727,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           'Reject confirmation!',
           consentToast.querySelector('#confirmDiscountConsentMessage')
               .innerText);
+      assertEquals(1, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
 
       // Act.
       consentToast.querySelector('#confirmDiscountConsentButton').click();
@@ -740,6 +742,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Assert.
       assertEquals(true, isVisible(consentCard));
+      assertEquals(0, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
 
       // Act.
       consentCard.querySelector('#actionButton').click();
@@ -759,6 +762,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Assert.
       assertEquals(false, consentToast.open);
       assertEquals(false, isVisible(consentCard));
+      assertEquals(1, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
     });
 
     test('scroll with consent card', async () => {
@@ -1024,5 +1028,66 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           'https://www.foo.com/',
           moduleElement.shadowRoot.querySelectorAll('.cart-item')[index].href);
     }
+
+    test('record discount consent show', async () => {
+      // Arrange.
+      const carts = [
+        {
+          merchant: 'Foo',
+          cartUrl: {url: 'https://foo.com'},
+          productImageUrls: [],
+        },
+      ];
+      testProxy.handler.setResultFor(
+          'getMerchantCarts', Promise.resolve({carts}));
+      testProxy.handler.setResultFor(
+          'getDiscountConsentCardVisible',
+          Promise.resolve({consentVisible: true}));
+
+      assertEquals(0, metrics.count('NewTabPage.Carts.DiscountConsentShow', 1));
+
+      // Act.
+      const moduleElement = await chromeCartDescriptor.initialize();
+
+      // Assert.
+      assertEquals(1, metrics.count('NewTabPage.Carts.DiscountConsentShow', 1));
+    });
+
+    test('record discount carts count and index', async () => {
+      // Arrange.
+      const carts = [
+        {
+          merchant: 'Boo',
+          cartUrl: {url: 'https://Boo.com'},
+          productImageUrls: [],
+          discountText: '5% off'
+        },
+        {
+          merchant: 'Foo',
+          cartUrl: {url: 'https://foo.com'},
+          productImageUrls: [],
+        },
+        {
+          merchant: 'Koo',
+          cartUrl: {url: 'https://Koo.com'},
+          productImageUrls: [],
+          discountText: '10% off'
+        },
+      ];
+      testProxy.handler.setResultFor(
+          'getMerchantCarts', Promise.resolve({carts}));
+
+      assertEquals(0, metrics.count('NewTabPage.Carts.DiscountCountAtLoad', 2));
+      assertEquals(0, metrics.count('NewTabPage.Carts.DiscountAt', 0));
+      assertEquals(0, metrics.count('NewTabPage.Carts.DiscountAt', 2));
+
+      // Act.
+      const moduleElement = await chromeCartDescriptor.initialize();
+
+      // Assert.
+      assertEquals(1, metrics.count('NewTabPage.Carts.DiscountCountAtLoad', 2));
+      assertEquals(1, metrics.count('NewTabPage.Carts.DiscountAt', 0));
+      assertEquals(1, metrics.count('NewTabPage.Carts.DiscountAt', 2));
+    });
   });
 });

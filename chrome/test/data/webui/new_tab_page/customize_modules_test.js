@@ -289,4 +289,48 @@ suite('NewTabPageCustomizeModulesTest', () => {
     assertFalse(toggleRows[0].querySelector('cr-toggle').checked);
     assertFalse(isVisible(subToggleRows[0]));
   });
+
+  test('record disable discount', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartTestProxy.handler.setResultFor(
+        'getDiscountEnabled', Promise.resolve({enabled: true}));
+    const customizeModules = await createCustomizeModules(false, [
+      {id: 'chrome_cart', name: 'foo name', disabled: false},
+    ]);
+    const subToggleRows = queryAll(customizeModules, '.discount-toggle-row');
+
+    assertEquals(0, metrics.count('NewTabPage.Carts.DisableDiscount'));
+
+    // Act.
+    subToggleRows[0].querySelector('cr-toggle').click();
+    customizeModules.apply();
+
+    // Assert.
+    assertDeepEquals(
+        false, cartTestProxy.handler.getArgs('setDiscountEnabled')[0]);
+    assertEquals(1, metrics.count('NewTabPage.Carts.DisableDiscount'));
+  });
+
+  test('record enable discount', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartTestProxy.handler.setResultFor(
+        'getDiscountEnabled', Promise.resolve({enabled: false}));
+    const customizeModules = await createCustomizeModules(false, [
+      {id: 'chrome_cart', name: 'foo name', disabled: false},
+    ]);
+    const subToggleRows = queryAll(customizeModules, '.discount-toggle-row');
+
+    assertEquals(0, metrics.count('NewTabPage.Carts.DisableDiscount'));
+
+    // Act.
+    subToggleRows[0].querySelector('cr-toggle').click();
+    customizeModules.apply();
+
+    // Assert.
+    assertDeepEquals(
+        true, cartTestProxy.handler.getArgs('setDiscountEnabled')[0]);
+    assertEquals(1, metrics.count('NewTabPage.Carts.EnableDiscount'));
+  });
 });

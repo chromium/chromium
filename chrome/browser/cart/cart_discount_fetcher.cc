@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -255,6 +256,7 @@ void CartDiscountFetcher::fetchForDiscounts(
       base::BindOnce(&CartDiscountFetcher::OnDiscountsAvailable,
                      std::move(fetcher), std::move(callback)),
       nullptr);
+  CartDiscountMetricCollector::RecordFetchingForDiscounts();
 }
 
 std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(

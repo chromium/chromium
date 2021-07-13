@@ -8772,6 +8772,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Has CRC"/>
 </enum>
 
+<enum name="BooleanHasDiscount">
+  <int value="0" label="No discount"/>
+  <int value="1" label="has discount"/>
+</enum>
+
 <enum name="BooleanHasDistilledData">
   <int value="0" label="No distilled data"/>
   <int value="1" label="Has distilled data"/>
@@ -10327,6 +10332,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="No data received and capture stopped within 500ms"/>
   <int value="6" label="Failed to create low latency stream"/>
   <int value="7" label="Failed to open low latency stream"/>
+</enum>
+
+<enum name="CartDiscountDataType">
+  <summary>Discount related data associated with the cart module.</summary>
+  <int value="0" label="cart_discount_info"/>
+  <int value="1" label="cart_discount_link"/>
 </enum>
 
 <enum name="CastCertificateStatus">

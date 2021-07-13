@@ -167,6 +167,9 @@ class CustomizeModulesElement extends mixinBehaviors
             this.discountToggle_.initiallyEnabled) {
       ChromeCartProxy.getInstance().handler.setDiscountEnabled(
           this.discountToggle_.enabled);
+      chrome.metricsPrivate.recordUserAction(`NewTabPage.Carts.${
+          this.discountToggle_.enabled ? 'EnableDiscount' :
+                                         'DisableDiscount'}`);
     }
   }
 
