@@ -131,7 +131,7 @@ void FilterGroup::ParseVolumeLimits(const base::Value* volume_limits) {
   }
 
   float min, max;
-  for (const auto& item : volume_limits->DictItems()) {
+  for (const auto item : volume_limits->DictItems()) {
     if (ParseVolumeLimit(&item.second, &min, &max)) {
       AUDIO_LOG(INFO) << "Volume limits for device ID '" << item.first
                       << "' = [" << min << ", " << max << "]";

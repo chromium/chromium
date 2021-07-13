@@ -33,7 +33,7 @@ bool CastRedirectHandler::Parse(extensions::Extension* extension,
   std::unique_ptr<Data> info(new Data);
   const base::DictionaryValue* dict;
   if (extension->manifest()->GetDictionary(kCastRedirect, &dict)) {
-    for (const auto& kv : dict->DictItems()) {
+    for (const auto kv : dict->DictItems()) {
       std::string path;
       if (kv.second.GetAsString(&path)) {
         info->redirects.emplace_back(kv.first, path);

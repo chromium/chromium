@@ -213,7 +213,7 @@ void InitializeFeatureList(const base::Value& dcs_features,
                                           all_disable_features);
 
   // Override defaults from the DCS config.
-  for (const auto& kv : dcs_features.DictItems()) {
+  for (const auto kv : dcs_features.DictItems()) {
     // Each feature must have its own FieldTrial object. Since experiments are
     // controlled server-side for Chromecast, and this class is designed with a
     // client-side experimentation framework in mind, these parameters are
@@ -259,7 +259,7 @@ void InitializeFeatureList(const base::Value& dcs_features,
         // Build a map of the FieldTrial parameters and associate it to the
         // FieldTrial.
         base::FieldTrialParams params;
-        for (const auto& params_kv : kv.second.DictItems()) {
+        for (const auto params_kv : kv.second.DictItems()) {
           if (params_kv.second.is_string()) {
             params[params_kv.first] = params_kv.second.GetString();
           } else {
@@ -293,7 +293,7 @@ base::Value GetOverriddenFeaturesForStorage(const base::Value& features) {
   base::Value persistent_dict(base::Value::Type::DICTIONARY);
 
   // |features| maps feature names to either a boolean or a dict of params.
-  for (const auto& feature : features.DictItems()) {
+  for (const auto feature : features.DictItems()) {
     if (feature.second.is_bool()) {
       persistent_dict.SetBoolKey(feature.first, feature.second.GetBool());
       continue;
