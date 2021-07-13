@@ -457,8 +457,16 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
 // Tests that if a page embeds a portal whose contents are considered dangerous
 // by Safe Browsing, the embedder is also treated as dangerous in terms of how
 // we display the Safe Browsing interstitial.
+// Flaky on ChromeOS & under Ozone (crbug.com/1220319)
+#if defined(OS_CHROMEOS) || defined(USE_OZONE)
+#define MAYBE_EmbedderOfDangerousPortalConsideredDangerous \
+  DISABLED_EmbedderOfDangerousPortalConsideredDangerous
+#else
+#define MAYBE_EmbedderOfDangerousPortalConsideredDangerous \
+  EmbedderOfDangerousPortalConsideredDangerous
+#endif
 IN_PROC_BROWSER_TEST_F(PortalSafeBrowsingBrowserTest,
-                       EmbedderOfDangerousPortalConsideredDangerous) {
+                       MAYBE_EmbedderOfDangerousPortalConsideredDangerous) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
