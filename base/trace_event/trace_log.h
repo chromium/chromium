@@ -464,7 +464,7 @@ class BASE_EXPORT TraceLog :
   class OptionalAutoLock;
   struct RegisteredAsyncObserver;
 
-  TraceLog();
+  explicit TraceLog(int generation);
   ~TraceLog() override;
   void AddMetadataEventsWhileLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   template <typename T>

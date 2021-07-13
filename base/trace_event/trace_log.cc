@@ -574,7 +574,7 @@ TraceLogStatus::~TraceLogStatus() = default;
 
 // static
 TraceLog* TraceLog::GetInstance() {
-  static base::NoDestructor<TraceLog> instance;
+  static base::NoDestructor<TraceLog> instance(0);
   return instance.get();
 }
 
@@ -593,12 +593,16 @@ void TraceLog::ResetForTesting() {
     AutoLock lock(g_trace_log_for_testing->lock_);
     CategoryRegistry::ResetForTesting();
   }
+  // Don't reset the generation value back to 0. TraceLog is normally
+  // supposed to be a singleton and the value of generation is never
+  // supposed to decrease.
+  const int generation = g_trace_log_for_testing->generation() + 1;
   g_trace_log_for_testing->~TraceLog();
-  new (g_trace_log_for_testing) TraceLog;
+  new (g_trace_log_for_testing) TraceLog(generation);
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-TraceLog::TraceLog()
+TraceLog::TraceLog(int generation)
     : enabled_modes_(0),
       num_traces_recorded_(0),
       process_sort_index_(0),
@@ -607,7 +611,7 @@ TraceLog::TraceLog()
       trace_options_(kInternalRecordUntilFull),
       trace_config_(TraceConfig()),
       thread_shared_chunk_index_(0),
-      generation_(0),
+      generation_(generation),
       use_worker_thread_(false) {
   CategoryRegistry::Initialize();
 
