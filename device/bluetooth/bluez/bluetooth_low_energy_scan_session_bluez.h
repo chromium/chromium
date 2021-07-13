@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
@@ -35,9 +33,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanSessionBlueZ
       base::OnceCallback<void(const std::string&)> destructor_callback);
 
   ~BluetoothLowEnergyScanSessionBlueZ() override;
-
-  // device::BluetoothLowEnergyScanSession override:
-  const std::string& session_id() const override;
 
   // bluez::BluetoothAdvertisementMonitorServiceProvider::Delegate override:
   void OnActivate() override;

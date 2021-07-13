@@ -10,6 +10,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -62,6 +63,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/bluetooth/test/mock_bluetooth_low_energy_scan_session.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -370,7 +372,10 @@ class NearbySharingServiceImplTest : public testing::Test {
  public:
   NearbySharingServiceImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(features::kNearbySharing);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kNearbySharing,
+                              features::kNearbySharingBackgroundScanning},
+        /*disabled_features=*/{});
     RegisterNearbySharingPrefs(prefs_.registry());
   }
 
@@ -402,6 +407,9 @@ class NearbySharingServiceImplTest : public testing::Test {
     ON_CALL(*mock_bluetooth_adapter_, OnSetAdvertisingInterval(_, _))
         .WillByDefault(Invoke(
             this, &NearbySharingServiceImplTest::OnSetAdvertisingInterval));
+    ON_CALL(*mock_bluetooth_adapter_, StartLowEnergyScanSession(_, _))
+        .WillByDefault(Invoke(
+            this, &NearbySharingServiceImplTest::StartLowEnergyScanSession));
     device::BluetoothAdapterFactory::SetAdapterForTesting(
         mock_bluetooth_adapter_);
 
@@ -532,6 +540,21 @@ class NearbySharingServiceImplTest : public testing::Test {
     last_advertising_interval_min_ = min;
     last_advertising_interval_max_ = max;
   }
+
+  std::unique_ptr<device::BluetoothLowEnergyScanSession>
+  StartLowEnergyScanSession(
+      std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
+      base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
+    auto mock_scan_session =
+        std::make_unique<device::MockBluetoothLowEnergyScanSession>(
+            base::BindOnce(
+                &NearbySharingServiceImplTest::OnScanSessionDestroyed,
+                weak_ptr_factory_.GetWeakPtr()));
+    mock_scan_session_ = mock_scan_session.get();
+    return mock_scan_session;
+  }
+
+  void OnScanSessionDestroyed() { mock_scan_session_ = nullptr; }
 
   void SetConnectionType(net::NetworkChangeNotifier::ConnectionType type) {
     network_notifier_->SetConnectionType(type);
@@ -1057,6 +1080,7 @@ class NearbySharingServiceImplTest : public testing::Test {
   device::BluetoothAdapter::Observer* adapter_observer_ = nullptr;
   scoped_refptr<NiceMock<MockBluetoothAdapterWithIntervals>>
       mock_bluetooth_adapter_;
+  device::MockBluetoothLowEnergyScanSession* mock_scan_session_ = nullptr;
   NiceMock<chromeos::nearby::MockNearbySharingDecoder> mock_decoder_;
   FakeNearbyConnection connection_;
   size_t set_advertising_interval_call_count_ = 0u;
@@ -1065,6 +1089,8 @@ class NearbySharingServiceImplTest : public testing::Test {
   chromeos::nearby::NearbyProcessManager::NearbyProcessStoppedCallback
       process_stopped_callback_;
   base::HistogramTester histogram_tester_;
+
+  base::WeakPtrFactory<NearbySharingServiceImplTest> weak_ptr_factory_{this};
 };
 
 struct ValidSendSurfaceTestData {
@@ -4384,6 +4410,13 @@ TEST_F(NearbySharingServiceImplTest, NoShutdownTimerWithoutProcessRef) {
   service_->UnregisterReceiveSurface(&callback);
   EXPECT_FALSE(IsBoundToProcess());
   EXPECT_FALSE(IsProcessShutdownTimerRunning());
+}
+
+TEST_F(NearbySharingServiceImplTest, BackgroundScanningStartAndStop) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
+  EXPECT_TRUE(mock_scan_session_);
+  SetBluetoothIsPowered(false);
+  EXPECT_FALSE(mock_scan_session_);
 }
 
 }  // namespace NearbySharingServiceUnitTests

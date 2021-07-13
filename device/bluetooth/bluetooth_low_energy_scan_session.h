@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_SCAN_SESSION_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_SCAN_SESSION_H_
 
-#include <string>
-
 #include "device/bluetooth/bluetooth_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -53,13 +51,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanSession {
 
   virtual ~BluetoothLowEnergyScanSession();
 
-  virtual const std::string& session_id() const = 0;
-
  protected:
   BluetoothLowEnergyScanSession();
-
- private:
-  std::string session_id_;
 };
 
 }  // namespace device

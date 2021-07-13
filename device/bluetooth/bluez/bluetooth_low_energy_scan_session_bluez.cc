@@ -31,10 +31,6 @@ BluetoothLowEnergyScanSessionBlueZ::~BluetoothLowEnergyScanSessionBlueZ() {
   std::move(destructor_callback_).Run(session_id_);
 }
 
-const std::string& BluetoothLowEnergyScanSessionBlueZ::session_id() const {
-  return session_id_;
-}
-
 void BluetoothLowEnergyScanSessionBlueZ::OnActivate() {
   has_activated_ = true;
   if (!delegate_) {

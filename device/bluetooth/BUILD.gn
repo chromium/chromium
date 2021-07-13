@@ -541,6 +541,13 @@ static_library("mocks") {
     "test/mock_bluetooth_socket.h",
   ]
 
+  if (is_chromeos_ash) {
+    sources += [
+      "test/mock_bluetooth_low_energy_scan_session.cc",
+      "test/mock_bluetooth_low_energy_scan_session.h",
+    ]
+  }
+
   public_deps = [
     ":bluetooth",
     "//base",
