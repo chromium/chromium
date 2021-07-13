@@ -84,6 +84,9 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
       const gfx::Rect& match_rect) const = 0;
 
   // Suspends the platform-specific screensaver, if applicable.
+  // Can be called more than once with the same value for |suspend|, but those
+  // states should not stack: the first alternating value should toggle the
+  // state of the suspend.
   virtual void SetScreenSaverSuspended(bool suspend);
 
   // Returns whether the screensaver is currently running.

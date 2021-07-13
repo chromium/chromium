@@ -16,6 +16,7 @@
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/public/platform_screen.h"
 
 namespace gfx {
@@ -62,6 +63,8 @@ class WaylandScreen : public PlatformScreen {
       const gfx::Point& point) const override;
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
+  void SetScreenSaverSuspended(bool suspend) override;
+  bool IsScreenSaverActive() const override;
   base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
@@ -96,6 +99,8 @@ class WaylandScreen : public PlatformScreen {
   // feature is enabled. Thus, store only this decimal part and updates displays
   // accordingly.
   float additional_scale_ = 0.f;
+
+  wl::Object<zwp_idle_inhibitor_v1> idle_inhibitor_;
 
   base::WeakPtrFactory<WaylandScreen> weak_factory_;
 };

@@ -17,6 +17,10 @@ wayland_protocol("primary_selection_protocol") {
       [ "src/unstable/primary-selection/primary-selection-unstable-v1.xml" ]
 }
 
+wayland_protocol("idle_inhibit_protocol") {
+  sources = [ "src/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml" ]
+}
+
 wayland_protocol("input_method_protocol") {
   sources = [ "src/unstable/input-method/input-method-unstable-v1.xml" ]
 }

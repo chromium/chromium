@@ -53,6 +53,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_relative_pointer_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
+#include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
@@ -118,6 +119,7 @@ constexpr uint32_t kMinGtkShell1Version = 3;
 constexpr uint32_t kMaxGtkShell1Version = 4;
 
 constexpr uint32_t kMaxOrgKdeKwinIdleVersion = 1;
+constexpr uint32_t kMaxZwpIdleInhibitManagerVersion = 1;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
@@ -549,6 +551,16 @@ void WaylandConnection::Global(void* data,
     }
     connection->gtk_shell1_ = std::make_unique<GtkShell1>(gtk_shell1.release());
     ReportShellUMA(UMALinuxWaylandShell::kGtkShell1);
+  } else if (!connection->zwp_idle_inhibit_manager_ &&
+             strcmp(interface, "zwp_idle_inhibit_manager_v1") == 0) {
+    auto manager = wl::Bind<zwp_idle_inhibit_manager_v1>(
+        registry, name, std::min(version, kMaxZwpIdleInhibitManagerVersion));
+    if (!manager) {
+      LOG(ERROR) << "Failed to bind zwp_idle_inhibit_manager_v1";
+      return;
+    }
+    connection->zwp_idle_inhibit_manager_ =
+        std::make_unique<ZwpIdleInhibitManager>(manager.release(), connection);
   } else if (!connection->zwp_primary_selection_device_manager_ &&
              strcmp(interface, "zwp_primary_selection_device_manager_v1") ==
                  0) {

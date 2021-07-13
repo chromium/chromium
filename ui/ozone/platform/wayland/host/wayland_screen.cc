@@ -26,6 +26,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 
 #if defined(USE_DBUS)
 #include "ui/ozone/platform/wayland/host/org_gnome_mutter_idle_monitor.h"
@@ -247,6 +248,36 @@ display::Display WaylandScreen::GetDisplayMatching(
       display::FindDisplayWithBiggestIntersection(display_list_.displays(),
                                                   match_rect);
   return display_matching ? *display_matching : GetPrimaryDisplay();
+}
+
+void WaylandScreen::SetScreenSaverSuspended(bool suspend) {
+  if (!connection_->zwp_idle_inhibit_manager())
+    return;
+
+  if (suspend) {
+    // Wayland inhibits idle behaviour on certain output, and implies that a
+    // surface bound to that output should obtain the inhibitor and hold it
+    // until it no longer needs to prevent the output to go idle.
+    // We assume that the idle lock is initiated by the user, and therefore the
+    // surface that we should use is the one owned by the window that is focused
+    // currently.
+    const auto* window_manager = connection_->wayland_window_manager();
+    DCHECK(window_manager);
+    const auto* current_window = window_manager->GetCurrentFocusedWindow();
+    if (!current_window) {
+      LOG(WARNING) << "Cannot inhibit going idle when no window is focused";
+      return;
+    }
+    DCHECK(current_window->root_surface());
+    idle_inhibitor_ = connection_->zwp_idle_inhibit_manager()->CreateInhibitor(
+        current_window->root_surface()->surface());
+  } else {
+    idle_inhibitor_.reset();
+  }
+}
+
+bool WaylandScreen::IsScreenSaverActive() const {
+  return idle_inhibitor_ != nullptr;
 }
 
 base::TimeDelta WaylandScreen::CalculateIdleTime() const {

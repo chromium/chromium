@@ -54,6 +54,7 @@ class WaylandCursorPosition;
 class WaylandWindowDragController;
 class GtkPrimarySelectionDeviceManager;
 class GtkShell1;
+class ZwpIdleInhibitManager;
 class ZwpPrimarySelectionDeviceManager;
 class XdgForeignWrapper;
 
@@ -216,6 +217,10 @@ class WaylandConnection {
 
   XdgForeignWrapper* xdg_foreign() const { return xdg_foreign_.get(); }
 
+  ZwpIdleInhibitManager* zwp_idle_inhibit_manager() const {
+    return zwp_idle_inhibit_manager_.get();
+  }
+
   // Returns true when dragging is entered or started.
   bool IsDragInProgress() const;
 
@@ -319,6 +324,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandShm> shm_;
   std::unique_ptr<WaylandBufferManagerHost> buffer_manager_host_;
   std::unique_ptr<XdgForeignWrapper> xdg_foreign_;
+  std::unique_ptr<ZwpIdleInhibitManager> zwp_idle_inhibit_manager_;
 
   // Clipboard-related objects. |clipboard_| must be declared after all
   // DeviceManager instances it depends on, otherwise tests may crash with

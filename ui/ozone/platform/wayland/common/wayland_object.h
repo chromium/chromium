@@ -17,6 +17,8 @@ struct gtk_shell1;
 struct gtk_surface1;
 struct org_kde_kwin_idle;
 struct org_kde_kwin_idle_timeout;
+struct zwp_idle_inhibit_manager_v1;
+struct zwp_idle_inhibitor_v1;
 struct zwp_primary_selection_device_v1;
 struct zwp_primary_selection_device_manager_v1;
 struct zwp_primary_selection_offer_v1;
@@ -146,6 +148,18 @@ template <>
 struct ObjectTraits<org_kde_kwin_idle_timeout> {
   static const wl_interface* interface;
   static void (*deleter)(org_kde_kwin_idle_timeout*);
+};
+
+template <>
+struct ObjectTraits<zwp_idle_inhibit_manager_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zwp_idle_inhibit_manager_v1*);
+};
+
+template <>
+struct ObjectTraits<zwp_idle_inhibitor_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zwp_idle_inhibitor_v1*);
 };
 
 template <>
