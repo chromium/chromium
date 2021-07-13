@@ -1050,8 +1050,8 @@ void NetworkContext::ClearDomainReliability(
 void NetworkContext::GetDomainReliabilityJSON(
     GetDomainReliabilityJSONCallback callback) {
   if (!domain_reliability_monitor_) {
-    base::DictionaryValue data;
-    data.SetString("error", "no_service");
+    base::Value data(base::Value::Type::DICTIONARY);
+    data.SetStringKey("error", "no_service");
     std::move(callback).Run(std::move(data));
     return;
   }
@@ -1221,7 +1221,7 @@ void NetworkContext::GetExpectCTState(
     const std::string& domain,
     const net::NetworkIsolationKey& network_isolation_key,
     GetExpectCTStateCallback callback) {
-  base::DictionaryValue result;
+  base::Value result(base::Value::Type::DICTIONARY);
   if (base::IsStringASCII(domain)) {
     net::TransportSecurityState* transport_security_state =
         url_request_context()->transport_security_state();
@@ -1232,23 +1232,23 @@ void NetworkContext::GetExpectCTState(
 
       // TODO(estark): query static Expect-CT state as well.
       if (found) {
-        result.SetString("dynamic_expect_ct_domain", domain);
-        result.SetDouble("dynamic_expect_ct_observed",
-                         dynamic_expect_ct_state.last_observed.ToDoubleT());
-        result.SetDouble("dynamic_expect_ct_expiry",
-                         dynamic_expect_ct_state.expiry.ToDoubleT());
-        result.SetBoolean("dynamic_expect_ct_enforce",
+        result.SetStringKey("dynamic_expect_ct_domain", domain);
+        result.SetDoubleKey("dynamic_expect_ct_observed",
+                            dynamic_expect_ct_state.last_observed.ToDoubleT());
+        result.SetDoubleKey("dynamic_expect_ct_expiry",
+                            dynamic_expect_ct_state.expiry.ToDoubleT());
+        result.SetBoolKey("dynamic_expect_ct_enforce",
                           dynamic_expect_ct_state.enforce);
-        result.SetString("dynamic_expect_ct_report_uri",
-                         dynamic_expect_ct_state.report_uri.spec());
+        result.SetStringKey("dynamic_expect_ct_report_uri",
+                            dynamic_expect_ct_state.report_uri.spec());
       }
 
-      result.SetBoolean("result", found);
+      result.SetBoolKey("result", found);
     } else {
-      result.SetString("error", "no Expect-CT state active");
+      result.SetStringKey("error", "no Expect-CT state active");
     }
   } else {
-    result.SetString("error", "non-ASCII domain name");
+    result.SetStringKey("error", "non-ASCII domain name");
   }
 
   std::move(callback).Run(std::move(result));
@@ -1559,7 +1559,7 @@ void NetworkContext::IsHSTSActiveForHost(const std::string& host,
 
 void NetworkContext::GetHSTSState(const std::string& domain,
                                   GetHSTSStateCallback callback) {
-  base::DictionaryValue result;
+  base::Value result(base::Value::Type::DICTIONARY);
 
   if (base::IsStringASCII(domain)) {
     net::TransportSecurityState* transport_security_state =
@@ -1570,24 +1570,24 @@ void NetworkContext::GetHSTSState(const std::string& domain,
       bool found_static = transport_security_state->GetStaticDomainState(
           domain, &static_sts_state, &static_pkp_state);
       if (found_static) {
-        result.SetInteger("static_upgrade_mode",
-                          static_cast<int>(static_sts_state.upgrade_mode));
-        result.SetBoolean("static_sts_include_subdomains",
+        result.SetIntKey("static_upgrade_mode",
+                         static_cast<int>(static_sts_state.upgrade_mode));
+        result.SetBoolKey("static_sts_include_subdomains",
                           static_sts_state.include_subdomains);
-        result.SetDouble("static_sts_observed",
-                         static_sts_state.last_observed.ToDoubleT());
-        result.SetDouble("static_sts_expiry",
-                         static_sts_state.expiry.ToDoubleT());
-        result.SetBoolean("static_pkp_include_subdomains",
+        result.SetDoubleKey("static_sts_observed",
+                            static_sts_state.last_observed.ToDoubleT());
+        result.SetDoubleKey("static_sts_expiry",
+                            static_sts_state.expiry.ToDoubleT());
+        result.SetBoolKey("static_pkp_include_subdomains",
                           static_pkp_state.include_subdomains);
-        result.SetDouble("static_pkp_observed",
-                         static_pkp_state.last_observed.ToDoubleT());
-        result.SetDouble("static_pkp_expiry",
-                         static_pkp_state.expiry.ToDoubleT());
-        result.SetString("static_spki_hashes",
-                         HashesToBase64String(static_pkp_state.spki_hashes));
-        result.SetString("static_sts_domain", static_sts_state.domain);
-        result.SetString("static_pkp_domain", static_pkp_state.domain);
+        result.SetDoubleKey("static_pkp_observed",
+                            static_pkp_state.last_observed.ToDoubleT());
+        result.SetDoubleKey("static_pkp_expiry",
+                            static_pkp_state.expiry.ToDoubleT());
+        result.SetStringKey("static_spki_hashes",
+                            HashesToBase64String(static_pkp_state.spki_hashes));
+        result.SetStringKey("static_sts_domain", static_sts_state.domain);
+        result.SetStringKey("static_pkp_domain", static_pkp_state.domain);
       }
 
       net::TransportSecurityState::STSState dynamic_sts_state;
@@ -1598,36 +1598,37 @@ void NetworkContext::GetHSTSState(const std::string& domain,
       bool found_pkp_dynamic = transport_security_state->GetDynamicPKPState(
           domain, &dynamic_pkp_state);
       if (found_sts_dynamic) {
-        result.SetInteger("dynamic_upgrade_mode",
-                          static_cast<int>(dynamic_sts_state.upgrade_mode));
-        result.SetBoolean("dynamic_sts_include_subdomains",
+        result.SetIntKey("dynamic_upgrade_mode",
+                         static_cast<int>(dynamic_sts_state.upgrade_mode));
+        result.SetBoolKey("dynamic_sts_include_subdomains",
                           dynamic_sts_state.include_subdomains);
-        result.SetDouble("dynamic_sts_observed",
-                         dynamic_sts_state.last_observed.ToDoubleT());
-        result.SetDouble("dynamic_sts_expiry",
-                         dynamic_sts_state.expiry.ToDoubleT());
-        result.SetString("dynamic_sts_domain", dynamic_sts_state.domain);
+        result.SetDoubleKey("dynamic_sts_observed",
+                            dynamic_sts_state.last_observed.ToDoubleT());
+        result.SetDoubleKey("dynamic_sts_expiry",
+                            dynamic_sts_state.expiry.ToDoubleT());
+        result.SetStringKey("dynamic_sts_domain", dynamic_sts_state.domain);
       }
 
       if (found_pkp_dynamic) {
-        result.SetBoolean("dynamic_pkp_include_subdomains",
+        result.SetBoolKey("dynamic_pkp_include_subdomains",
                           dynamic_pkp_state.include_subdomains);
-        result.SetDouble("dynamic_pkp_observed",
-                         dynamic_pkp_state.last_observed.ToDoubleT());
-        result.SetDouble("dynamic_pkp_expiry",
-                         dynamic_pkp_state.expiry.ToDoubleT());
-        result.SetString("dynamic_spki_hashes",
-                         HashesToBase64String(dynamic_pkp_state.spki_hashes));
-        result.SetString("dynamic_pkp_domain", dynamic_pkp_state.domain);
+        result.SetDoubleKey("dynamic_pkp_observed",
+                            dynamic_pkp_state.last_observed.ToDoubleT());
+        result.SetDoubleKey("dynamic_pkp_expiry",
+                            dynamic_pkp_state.expiry.ToDoubleT());
+        result.SetStringKey(
+            "dynamic_spki_hashes",
+            HashesToBase64String(dynamic_pkp_state.spki_hashes));
+        result.SetStringKey("dynamic_pkp_domain", dynamic_pkp_state.domain);
       }
 
-      result.SetBoolean("result",
+      result.SetBoolKey("result",
                         found_static || found_sts_dynamic || found_pkp_dynamic);
     } else {
-      result.SetString("error", "no TransportSecurityState active");
+      result.SetStringKey("error", "no TransportSecurityState active");
     }
   } else {
-    result.SetString("error", "non-ASCII domain name");
+    result.SetStringKey("error", "non-ASCII domain name");
   }
 
   std::move(callback).Run(std::move(result));
