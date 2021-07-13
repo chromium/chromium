@@ -231,12 +231,11 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
         restored_watcher.recursive = recursive.value();
         restored_watcher.last_tag = last_tag;
         for (const auto& persistent_origin : persistent_origins->GetList()) {
-          std::string origin;
-          if (persistent_origin.GetAsString(&origin)) {
+          if (!persistent_origin.is_string()) {
             LOG(ERROR) << "Malformed subscriber information in preferences.";
             continue;
           }
-          const GURL origin_as_gurl(origin);
+          const GURL origin_as_gurl(persistent_origin.GetString());
           restored_watcher.subscribers[origin_as_gurl].origin = origin_as_gurl;
           restored_watcher.subscribers[origin_as_gurl].persistent = true;
         }

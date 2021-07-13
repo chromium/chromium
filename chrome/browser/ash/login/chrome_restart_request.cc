@@ -232,9 +232,7 @@ void DeriveCommandLine(const GURL& start_url,
 
   for (base::DictionaryValue::Iterator it(new_switches); !it.IsAtEnd();
        it.Advance()) {
-    std::string value;
-    CHECK(it.value().GetAsString(&value));
-    command_line->AppendSwitchASCII(it.key(), value);
+    command_line->AppendSwitchASCII(it.key(), it.value().GetString());
   }
 }
 

@@ -125,13 +125,12 @@ void ChromeUserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
   if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
       entry->value() && entry->value()->GetAsList(&list)) {
     for (const auto& entry : list->GetList()) {
-      std::string locale;
-      if (!entry.GetAsString(&locale)) {
+      if (!entry.is_string()) {
         NOTREACHED();
         new_recommended_locales.clear();
         break;
       }
-      new_recommended_locales.push_back(locale);
+      new_recommended_locales.push_back(entry.GetString());
     }
   }
 

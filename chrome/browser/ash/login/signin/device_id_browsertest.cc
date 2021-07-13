@@ -154,9 +154,8 @@ class DeviceIDTest : public OobeBaseTest,
     FakeGaia::RefreshTokenToDeviceIdMap map;
     for (base::DictionaryValue::Iterator it(*dictionary); !it.IsAtEnd();
          it.Advance()) {
-      std::string device_id;
-      EXPECT_TRUE(it.value().GetAsString(&device_id));
-      map[it.key()] = device_id;
+      ASSERT_TRUE(it.value().is_string());
+      map[it.key()] = it.value().GetString();
     }
     fake_gaia_.fake_gaia()->SetRefreshTokenToDeviceIdMap(map);
   }

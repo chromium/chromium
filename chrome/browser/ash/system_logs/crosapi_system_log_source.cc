@@ -47,9 +47,8 @@ void CrosapiSystemLogSource::OnGetFeedbackData(base::Value system_infos) {
   if (system_infos.GetAsDictionary(&sysinfo_dict)) {
     for (const auto& item : sysinfo_dict->DictItems()) {
       std::string log_entry_key = kLacrosLogEntryPrefix + item.first;
-      std::string log_entry_value;
-      if (item.second.GetAsString(&log_entry_value)) {
-        response->emplace(log_entry_key, log_entry_value);
+      if (item.second.is_string()) {
+        response->emplace(log_entry_key, item.second.GetString());
       } else {
         LOG(ERROR) << "Failed to retrieve the content for log entry: "
                    << log_entry_key;

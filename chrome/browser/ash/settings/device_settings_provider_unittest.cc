@@ -501,9 +501,8 @@ TEST_F(DeviceSettingsProviderTest, InitializationTestUnowned) {
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.
   const base::Value* value = provider_->Get(kReleaseChannel);
   ASSERT_TRUE(value);
-  std::string string_value;
-  EXPECT_TRUE(value->GetAsString(&string_value));
-  EXPECT_TRUE(string_value.empty());
+  ASSERT_TRUE(value->is_string());
+  EXPECT_TRUE(value->GetString().empty());
 
   // Sets should succeed though and be readable from the cache.
   EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
@@ -520,8 +519,8 @@ TEST_F(DeviceSettingsProviderTest, InitializationTestUnowned) {
   // Verify the change has been applied.
   const base::Value* saved_value = provider_->Get(kReleaseChannel);
   ASSERT_TRUE(saved_value);
-  EXPECT_TRUE(saved_value->GetAsString(&string_value));
-  ASSERT_EQ("stable-channel", string_value);
+  ASSERT_TRUE(saved_value->is_string());
+  ASSERT_EQ("stable-channel", saved_value->GetString());
 }
 
 TEST_F(DeviceSettingsProviderTestEnterprise, NoPolicyDefaultsOn) {

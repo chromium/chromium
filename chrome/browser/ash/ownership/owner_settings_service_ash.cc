@@ -528,9 +528,8 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
   } else if (path == kAccountsPrefDeviceLocalAccountAutoLoginId) {
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
-    std::string id;
-    if (value.GetAsString(&id))
-      device_local_accounts->set_auto_login_id(id);
+    if (value.is_string())
+      device_local_accounts->set_auto_login_id(value.GetString());
     else
       NOTREACHED();
   } else if (path == kAccountsPrefDeviceLocalAccountAutoLoginDelay) {
@@ -566,8 +565,8 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     em::ReleaseChannelProto* release_channel =
         settings.mutable_release_channel();
     std::string channel_value;
-    if (value.GetAsString(&channel_value))
-      release_channel->set_release_channel(channel_value);
+    if (value.is_string())
+      release_channel->set_release_channel(value.GetString());
     else
       NOTREACHED();
   } else if (path == kStatsReportingPref) {

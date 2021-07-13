@@ -163,8 +163,10 @@ bool CrosSettings::GetString(const std::string& path,
                              std::string* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsString(out_value);
+  if (value && value->is_string()) {
+    *out_value = value->GetString();
+    return true;
+  }
   return false;
 }
 

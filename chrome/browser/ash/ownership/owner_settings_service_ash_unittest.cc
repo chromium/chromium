@@ -181,9 +181,10 @@ TEST_F(OwnerSettingsServiceAshTest, MultipleSetTest) {
 
 TEST_F(OwnerSettingsServiceAshTest, FailedSetRequest) {
   session_manager_client_.ForceStorePolicyFailure(true);
-  std::string current_channel;
-  ASSERT_TRUE(provider_->Get(kReleaseChannel)->GetAsString(&current_channel));
-  ASSERT_NE(current_channel, "stable-channel");
+  ASSERT_TRUE(provider_->Get(kReleaseChannel)->is_string());
+  const std::string current_channel =
+      provider_->Get(kReleaseChannel)->GetString();
+  ASSERT_NE("stable-channel", current_channel);
 
   // Check that DeviceSettingsProvider's cache is updated.
   PrefsChecker checker(service_, provider_.get());
