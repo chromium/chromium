@@ -22,6 +22,7 @@
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/navigation/navigation_manager.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -445,7 +446,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 - (void)layoutActionButton {
   CGRect containerBounds = self.containerBounds;
-  BOOL isIPadIdiom = IsIPadIdiom();
+  BOOL isIPadIdiom = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
   BOOL isPortrait = IsPortrait(self.window);
   BOOL shouldAddActionButtonToContainer = isIPadIdiom || !isPortrait;
   LayoutRect actionButtonLayout = LayoutRectZero;
@@ -485,7 +486,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
   CGFloat containerOriginX =
       (CGRectGetWidth(self.bounds) - containerSize.width) / 2.0f;
   CGFloat containerOriginY = 0.0f;
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Center the containerView on iPads.
     containerOriginY =
         (CGRectGetHeight(self.bounds) - containerSize.height) / 2.0f;

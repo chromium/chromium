@@ -23,7 +23,6 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller_testing.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -34,6 +33,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 #include "url/gurl.h"
@@ -428,7 +428,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
       [tempDirPath stringByAppendingPathComponent:_suggestedFilename];
 
   // In iPad the toolbar has to be displayed to anchor the "Open in" menu.
-  if (!IsIPadIdiom())
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)
     [self hideOpenInToolbar];
 
   // Show an overlayed view to indicate a download is in progress. On tap this
@@ -455,7 +455,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
     return;
 
   [self removeOverlayedView];
-  if (IsIPadIdiom())
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
     [self hideOpenInToolbar];
   _downloadCanceled = YES;
 }
@@ -526,7 +526,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
                                    RemoveDocumentAtPath(fileURL);
                                  }));
 
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     _openInTimer =
         [NSTimer scheduledTimerWithTimeInterval:kOpenInToolbarDisplayDuration
                                          target:self
@@ -621,7 +621,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   OpenInDownloadResult download_result = OpenInDownloadResult::kCanceled;
   if (!_downloadCanceled) {
     download_result = OpenInDownloadResult::kFailed;
-    if (IsIPadIdiom())
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
       [self hideOpenInToolbar];
     [self removeOverlayedView];
     [self showErrorWithMessage:l10n_util::GetNSStringWithFixup(

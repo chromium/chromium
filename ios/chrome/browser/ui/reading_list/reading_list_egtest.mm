@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_constants.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -38,6 +37,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ios/ui_image_test_utils.h"
 
@@ -865,7 +865,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // of displaying the 'Delete' button.
   if (@available(iOS 13, *)) {
   } else {
-    if (IsIPadIdiom())
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
       EARL_GREY_TEST_SKIPPED(@"Test skipped on Ipad Air 2, iOS12.");
   }
 

@@ -12,8 +12,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/web/public/thread/web_thread.h"
+#include "ui/base/device_form_factor.h"
 
 const char* kFirstUserActionNewTaskHistogramName[] = {
     "FirstUserAction.BackgroundTimeNewTaskHandset",
@@ -96,7 +96,10 @@ const int kDurationHistogramBucketCount = 50;
 
 FirstUserActionRecorder::FirstUserActionRecorder(
     base::TimeDelta background_duration)
-    : device_family_(IsIPadIdiom() ? TABLET : HANDSET),
+    : device_family_(
+          (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+              ? TABLET
+              : HANDSET),
       recorded_action_(false),
       action_pending_(false),
       background_duration_(background_duration),

@@ -42,6 +42,7 @@ source_set("feature_flags") {
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/util",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]

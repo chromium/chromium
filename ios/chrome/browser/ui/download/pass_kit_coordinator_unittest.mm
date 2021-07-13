@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #include "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_pass_kit_tab_helper_delegate.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -26,6 +25,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -84,7 +84,7 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
             presentDialogForPass:pass
                         webState:web_state_.get()];
 
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Wallet app is not supported on iPads.
   } else {
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
@@ -112,7 +112,7 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
 // Tests presenting multiple valid PKPass objects.
 // TODO(crbug.com/804250): this test is flaky.
 TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Wallet app is not supported on iPads.
     return;
   }
@@ -166,7 +166,7 @@ TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
 // Tests presenting valid PKPass object, while another view controller is
 // already presented.
 TEST_F(PassKitCoordinatorTest, AnotherViewControllerIsPresented) {
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Wallet app is not supported on iPads.
     return;
   }

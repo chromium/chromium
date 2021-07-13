@@ -128,6 +128,7 @@ source_set("unit_tests") {
     "//ios/third_party/material_components_ios",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
     "//url",
   ]
 }

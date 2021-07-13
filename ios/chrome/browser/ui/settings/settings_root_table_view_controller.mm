@@ -19,6 +19,7 @@
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -311,9 +312,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   // Create |waitButton|.
   BOOL displayActivityIndicatorOnTheRight =
       self.navigationItem.rightBarButtonItem != nil;
-  CGFloat activityIndicatorDimension = IsIPadIdiom()
-                                           ? kActivityIndicatorDimensionIPad
-                                           : kActivityIndicatorDimensionIPhone;
+  CGFloat activityIndicatorDimension =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kActivityIndicatorDimensionIPad
+          : kActivityIndicatorDimensionIPhone;
   BarButtonActivityIndicator* indicator = [[BarButtonActivityIndicator alloc]
       initWithFrame:CGRectMake(0.0, 0.0, activityIndicatorDimension,
                                activityIndicatorDimension)];

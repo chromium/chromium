@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
 #include "ios/chrome/browser/ui/omnibox/popup/self_sizing_table_view.h"
 #include "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -65,7 +65,7 @@ const CGFloat kTopAndBottomPadding = 8.0;
 - (instancetype)init {
   if (self = [super initWithNibName:nil bundle:nil]) {
     _forwardsScrollEvents = YES;
-    if (IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       // The iPad keyboard can cover some of the rows of the scroll view. The
       // scroll view's content inset may need to be updated when the keyboard is
       // displayed.

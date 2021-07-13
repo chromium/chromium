@@ -60,6 +60,7 @@
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
@@ -1224,7 +1225,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 
   // Starting with iOS13, alerts of style UIAlertControllerStyleActionSheet
   // need a sourceView or sourceRect, or this crashes.
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     exportConfirmation.popoverPresentationController.sourceView =
         self.tableView;
   }
@@ -1506,7 +1507,8 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 
   UIView* sourceView = nil;
   CGRect sourceRect = CGRectZero;
-  if (IsIPadIdiom() && !IsCompactWidth(self.view.window)) {
+  if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
+      !IsCompactWidth(self.view.window)) {
     NSIndexPath* indexPath = [self.tableViewModel
         indexPathForItemType:ItemTypeExportPasswordsButton
            sectionIdentifier:SectionIdentifierExportPasswordsButton];

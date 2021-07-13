@@ -7,10 +7,10 @@
 #include "base/ios/ios_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -212,7 +212,8 @@ constexpr CGFloat kSectionFooterHeight = 8;
 }
 
 - (void)handleKeyboardDidHide:(NSNotification*)notification {
-  if (self.contentInsetsAlwaysEqualToSafeArea && !IsIPadIdiom()) {
+  if (self.contentInsetsAlwaysEqualToSafeArea &&
+      (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)) {
     // Resets the table view content inssets to be equal to the safe area
     // insets.
     self.tableView.contentInset = UIEdgeInsetsZero;
@@ -220,7 +221,8 @@ constexpr CGFloat kSectionFooterHeight = 8;
 }
 
 - (void)handleKeyboardWillShow:(NSNotification*)notification {
-  if (self.contentInsetsAlwaysEqualToSafeArea && !IsIPadIdiom()) {
+  if (self.contentInsetsAlwaysEqualToSafeArea &&
+      (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)) {
     // Sets the bottom inset to be equal to the height of the keyboard to
     // override the behaviour in UITableViewController. Which adjust the scroll
     // view insets to accommodate for the keyboard.

@@ -36,11 +36,11 @@
 #import "ios/chrome/browser/ui/commands/security_alert_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -172,7 +172,7 @@
                     injectionHandler:self.injectionHandler
               invokedOnPasswordField:invokedOnPasswordField];
   passwordCoordinator.delegate = self;
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [passwordCoordinator presentFromButton:button];
   } else {
     [self.formInputAccessoryViewController
@@ -188,7 +188,7 @@
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
   cardCoordinator.delegate = self;
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [cardCoordinator presentFromButton:button];
   } else {
     [self.formInputAccessoryViewController
@@ -204,7 +204,7 @@
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
   addressCoordinator.delegate = self;
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [addressCoordinator presentFromButton:button];
   } else {
     [self.formInputAccessoryViewController
@@ -220,7 +220,7 @@
   // On iOS 13, beta 3, the popover is not dismissed when the keyboard hides.
   // This explicitly dismiss any popover.
   // TODO(crbug.com/1116037): Verify if this workaround is still needed.
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [self reset];
   }
 }

@@ -8,12 +8,12 @@
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/first_run/welcome/checkbox_button.h"
 #import "ios/chrome/browser/ui/first_run/welcome/tos_commands.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -137,11 +137,12 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
     self.subtitleText = l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE_ENTERPRISE);
   } else {
-    self.titleText = IsIPadIdiom()
-                         ? l10n_util::GetNSString(
-                               IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD)
-                         : l10n_util::GetNSString(
-                               IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
+    self.titleText =
+        (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+            ? l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD)
+            : l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
     self.subtitleText =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE);
   }

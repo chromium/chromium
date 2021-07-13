@@ -11,11 +11,11 @@
 #include "base/test/task_environment.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -71,7 +71,7 @@ TEST_F(RepostFormCoordinatorTest, CGRectUsage) {
   [coordinator_ start];
   UIPopoverPresentationController* popover_presentation_controller =
       GetAlertController().popoverPresentationController;
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     CGRect source_rect = popover_presentation_controller.sourceRect;
     EXPECT_EQ(kDialogHorizontalLocation, CGRectGetMinX(source_rect));
     EXPECT_EQ(kDialogVerticalLocation, CGRectGetMinY(source_rect));

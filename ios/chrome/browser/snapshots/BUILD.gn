@@ -36,6 +36,7 @@ source_set("snapshots") {
     "//ios/chrome/browser/web_state_list",
     "//ios/third_party/webkit",
     "//ios/web/public",
+    "//ui/base",
     "//ui/gfx",
   ]
   frameworks = [

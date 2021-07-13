@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_input_assistant_items.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_keyboard_accessory_view.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,7 +21,7 @@ void ConfigureAssistiveKeyboardViews(
   DCHECK(dotComTLD);
   NSArray<NSString*>* buttonTitles = @[ @":", @"-", @"/", dotComTLD ];
 
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     textField.inputAssistantItem.leadingBarButtonGroups =
         OmniboxAssistiveKeyboardLeadingBarButtonGroups(delegate);
     textField.inputAssistantItem.trailingBarButtonGroups =

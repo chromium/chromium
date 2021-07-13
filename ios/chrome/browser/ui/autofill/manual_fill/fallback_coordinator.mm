@@ -15,8 +15,8 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,7 +41,8 @@
 
 - (BOOL)dismissIfNecessaryThenDoCompletion:(void (^)(void))completion {
   // On iPad, dismiss the popover before the settings are presented.
-  if (IsIPadIdiom() && self.viewController.presentingViewController) {
+  if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
+      self.viewController.presentingViewController) {
     [self.viewController dismissViewControllerAnimated:true
                                             completion:completion];
     return YES;

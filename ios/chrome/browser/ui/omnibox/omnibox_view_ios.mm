@@ -32,13 +32,13 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ios/web/public/navigation/referrer.h"
 #import "net/base/mac/url_conversions.h"
 #include "skia/ext/skia_utils_ios.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
@@ -434,7 +434,7 @@ void OmniboxViewIOS::OnWillEndEditing() {
   // This will also be called if -resignFirstResponder is called
   // programmatically. On phone, the omnibox may still be editing when
   // the popup is open, so the Cancel button calls OnWillEndEditing.
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [omnibox_focuser_ cancelOmniboxEdit];
   }
 }
@@ -834,7 +834,7 @@ void OmniboxViewIOS::OnResultsChanged(const AutocompleteResult& result) {
 }
 
 void OmniboxViewIOS::OnPopupDidScroll() {
-  if (!IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     this->HideKeyboard();
   }
 }

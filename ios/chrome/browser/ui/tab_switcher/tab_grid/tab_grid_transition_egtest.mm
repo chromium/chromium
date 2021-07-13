@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -18,6 +17,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -366,7 +366,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 - (void)testNavigateSwitcherDoneButton {
   // Rotate the iPhone in lanscape mode in order to see the Done button when the
   // confirmation action sheet is presented.
-  if (!IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                   error:nil];
   }
@@ -398,7 +398,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];
 
-  if (!IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   }
 }

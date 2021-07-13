@@ -27,8 +27,8 @@
 #include "base/time/time.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -109,7 +109,7 @@ ImageScale ImageScaleForDevice() {
   // the snapshot images should match the scale of the device.
   // On tablet, the color snapshot is only used to generate the grey snapshot,
   // which does not have to be high quality, so use scale of 1.0 on all tablets.
-  if (IsIPadIdiom())
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
     return IMAGE_SCALE_1X;
 
   // Cap snapshot resolution to 2x to reduce the amount of memory used.

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -178,7 +179,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
 // time, this can break with any new iOS version.
 - (BOOL)executeFormAssistAction:(NSString*)actionName {
   NSArray* descendants = nil;
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // There is no input accessory view for iPads, instead Apple adds the assist
     // controls to the UITextInputAssistantItem.
     UIResponder* firstResponder = GetFirstResponder();

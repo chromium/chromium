@@ -7,11 +7,11 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
+#include "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -98,7 +98,7 @@ const CGFloat kVerticalOffset = 6;
   if (popupHeightIsZero && popupIsOnscreen) {
     // If intrinsic size is 0 and popup is onscreen, we want to remove the
     // popup view.
-    if (!IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       self.bottomConstraint.active = NO;
       self.bottomSeparator.hidden = YES;
     }
@@ -120,7 +120,7 @@ const CGFloat kVerticalOffset = 6;
 
     [self initialLayout];
 
-    if (!IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       self.bottomConstraint.active = YES;
       self.bottomSeparator.hidden = NO;
     }

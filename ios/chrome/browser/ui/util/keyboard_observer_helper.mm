@@ -5,8 +5,9 @@
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 
 #include "base/check.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#include "base/check_op.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -63,7 +64,8 @@
 
 + (UIView*)keyboardView {
   NSArray* windows = [UIApplication sharedApplication].windows;
-  NSUInteger expectedMinWindows = IsIPadIdiom() ? 2 : 3;
+  NSUInteger expectedMinWindows =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) ? 2 : 3;
   if (windows.count < expectedMinWindows)
     return nil;
 
@@ -141,7 +143,7 @@
 // keyboard. Unexpected behaviour on iPad.
 + (id<EdgeLayoutGuideProvider>)keyboardLayoutGuideInHostView:(UIView*)hostView
                                                     withName:(NSString*)name {
-  DCHECK(!IsIPadIdiom());
+  DCHECK_NE(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
 
   for (UIView* subview in hostView.subviews) {
     if ([NSStringFromClass([subview class]) containsString:name]) {

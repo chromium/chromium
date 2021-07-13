@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/tabs/tab_strip_controller.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -29,6 +28,7 @@
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,7 +42,7 @@ class TabStripControllerTest : public PlatformTest {
       : scene_state_([[SceneState alloc] initWithAppState:nil]) {}
 
   void SetUp() override {
-    if (!IsIPadIdiom())
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)
       return;
 
     visible_navigation_item_ = web::NavigationItem::Create();
@@ -70,7 +70,7 @@ class TabStripControllerTest : public PlatformTest {
   }
 
   void TearDown() override {
-    if (!IsIPadIdiom())
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)
       return;
     [controller_ disconnect];
   }
@@ -98,7 +98,7 @@ class TabStripControllerTest : public PlatformTest {
 };
 
 TEST_F(TabStripControllerTest, LoadAndDisplay) {
-  if (!IsIPadIdiom())
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)
     return;
   AddWebStateForTesting("Tab Title 1");
   AddWebStateForTesting("Tab Title 2");

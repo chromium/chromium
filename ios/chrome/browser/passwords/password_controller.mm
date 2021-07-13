@@ -63,7 +63,6 @@
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_password_coordinator.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/web/common/url_scheme_util.h"
@@ -72,6 +71,7 @@
 #include "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
 
@@ -557,8 +557,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
                             view:self.baseViewController.view];
   self.actionSheetCoordinator.popoverArrowDirection = 0;
   self.actionSheetCoordinator.alertStyle =
-      IsIPadIdiom() ? UIAlertControllerStyleAlert
-                    : UIAlertControllerStyleActionSheet;
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? UIAlertControllerStyleAlert
+          : UIAlertControllerStyleActionSheet;
 
   // Set attributed text.
   [self updateGeneratePasswordStrings:self];

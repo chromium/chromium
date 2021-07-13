@@ -13,9 +13,9 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -85,7 +85,8 @@ CGFloat const kInputAccessoryHeight = 44.0f;
 // used to constraint any presented view. iPad always presents in a separate
 // popover.
 - (BOOL)canPresentView {
-  return IsIPadIdiom() || KeyboardObserverHelper.keyboardLayoutGuide;
+  return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) ||
+         KeyboardObserverHelper.keyboardLayoutGuide;
 }
 
 #pragma mark - Public
@@ -139,7 +140,7 @@ CGFloat const kInputAccessoryHeight = 44.0f;
 - (void)keyboardWillChangeToState:(KeyboardState)keyboardState {
   self.lastKeyboardState = keyboardState;
 
-  if (!IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     // On iPhones, when using a hardware keyboard, for most models, there's no
     // space to show suggestions because of the on-screen menu button.
     self.inputAccessoryView.leadingView.hidden = keyboardState.isHardware;
@@ -160,7 +161,7 @@ CGFloat const kInputAccessoryHeight = 44.0f;
     [self createFormSuggestionViewIfNeeded];
 
     self.inputAccessoryView = [[FormInputAccessoryView alloc] init];
-    if (IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       [self.inputAccessoryView
           setUpWithLeadingView:self.formSuggestionView
             customTrailingView:self.manualFillAccessoryViewController.view];
@@ -298,7 +299,7 @@ CGFloat const kInputAccessoryHeight = 44.0f;
     return;
   }
   if (self.inputAccessoryView) {
-    if (IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       // On iPad the keyboard view can change so this updates it when needed.
       UIView* keyboardView = KeyboardObserverHelper.keyboardView;
       if (!keyboardView) {

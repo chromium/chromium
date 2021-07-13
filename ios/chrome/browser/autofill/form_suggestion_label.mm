@@ -16,11 +16,11 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,7 +49,10 @@ struct IconImageMap {
 UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
   UILabel* label = [[UILabel alloc] init];
   [label setText:text];
-  CGFloat fontSize = IsIPadIdiom() ? kIpadFontSize : kIphoneFontSize;
+  CGFloat fontSize =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kIpadFontSize
+          : kIphoneFontSize;
   UIFont* font = bold ? [UIFont boldSystemFontOfSize:fontSize]
                       : [UIFont systemFontOfSize:fontSize];
   [label setFont:font];

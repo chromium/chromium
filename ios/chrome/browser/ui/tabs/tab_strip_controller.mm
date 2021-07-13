@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -62,6 +61,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -1743,7 +1743,7 @@ UIColor* BackgroundColor() {
   if (index == WebStateList::kInvalidIndex)
     return;
 
-  if (IsIPadIdiom() &&
+  if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
       (_webStateList->active_index() != static_cast<int>(index))) {
     SnapshotTabHelper::FromWebState(_webStateList->GetActiveWebState())
         ->UpdateSnapshotWithCallback(nil);
@@ -1781,7 +1781,9 @@ UIColor* BackgroundColor() {
 #pragma mark - Tab Stacking
 
 - (BOOL)shouldUseTabStacking {
-  BOOL useTabStacking = !IsIPadIdiom() || !IsCompactWidth(self.view);
+  BOOL useTabStacking =
+      (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) ||
+      !IsCompactWidth(self.view);
   if (base::FeatureList::IsEnabled(kVoiceOverUnstackedTabstrip) &&
       UIAccessibilityIsVoiceOverRunning()) {
     useTabStacking = NO;

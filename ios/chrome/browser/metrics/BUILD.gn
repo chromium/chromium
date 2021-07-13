@@ -233,6 +233,7 @@ source_set("unit_tests_internal") {
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
 
