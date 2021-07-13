@@ -5202,6 +5202,7 @@ others/histograms.xml -->
   <int value="2" label="User chose 'not now'"/>
   <int value="3" label="Ui hidden due to trigger condition no longer true"/>
   <int value="4" label="User swipe-dismissed the bottom sheet"/>
+  <int value="5" label="UI timeout"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptStarted">

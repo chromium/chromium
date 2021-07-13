@@ -175,8 +175,11 @@ class Metrics {
     // Since Chrome M-88. The user swipe-dismissed the bottom sheet. Depending
     // on configuration, this may happen multiple times per run.
     SWIPE_DISMISSED = 4,
+    // Since Chrome M-93. The UI has timed out without receiving any user
+    // interaction.
+    UI_TIMEOUT = 5,
 
-    kMaxValue = SWIPE_DISMISSED
+    kMaxValue = UI_TIMEOUT
   };
 
   // The different ways a user might have opted out of the trigger script

@@ -533,7 +533,7 @@ message GetTriggerScriptsResponseProto {
   // reset on tab switch and whenever a trigger script is hidden. Note that this
   // only counts the time in-between checks, so the actual timeout will be
   // slightly longer.
-  optional int32 timeout_ms = 3;
+  optional int32 trigger_condition_timeout_ms = 3;
 
   // The amount of time between consecutive checks of trigger conditions. Should
   // not be too small to limit performance impact.
@@ -690,12 +690,23 @@ message TriggerScriptUIProto {
   // bottom of the page while the trigger script is being displayed.
   optional bool resize_visual_viewport = 8;
   // Whether the bottom sheet should temporarily disappear when scrolling down
-  // the website, to move out of the way.
+  // the website, to move out of the way. This setting is ignored if
+  // |ui_timeout_ms| is specified.
   //
   // The value of resize_visual_viewport is ignored when scroll_to_hide is true.
   // This allows the backend setting both to true and letting chrome choose
   // scroll_to_hide if it is supported.
   optional bool scroll_to_hide = 9;
+  // The amount of time that the UI may be shown to the user. If not specified,
+  // there is no limit. This is intended for websites where the UI could block
+  // important parts of the website underneath and |scroll_to_hide| does not
+  // mitigate the issue. If this field is specified, |scroll_to_hide| will be
+  // ignored. |resize_visual_viewport| will be applied if requested.
+  //
+  // Once hidden, the UI may be shown again the next time the trigger condition
+  // is true (same behavior as NOT_NOW). Note that the timeout is disabled if
+  // the user taps either the overflow icon or the confirm chip.
+  optional int32 ui_timeout_ms = 10;
 }
 
 // An action could be performed.

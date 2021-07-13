@@ -233,10 +233,9 @@ public class AssistantTriggerScript {
             if (actions[index] == TriggerScriptAction.SHOW_CANCEL_POPUP) {
                 chips.get(index).setPopupItems(mCancelPopupItems,
                         result -> mDelegate.onTriggerScriptAction(mCancelPopupActions.get(result)));
-            } else {
-                chips.get(index).setSelectedListener(
-                        () -> mDelegate.onTriggerScriptAction(actions[index]));
             }
+            chips.get(index).setSelectedListener(
+                    () -> mDelegate.onTriggerScriptAction(actions[index]));
         }
     }
 

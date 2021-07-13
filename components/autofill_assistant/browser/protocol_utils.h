@@ -92,7 +92,7 @@ class ProtocolUtils {
       std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
       std::vector<std::string>* additional_allowed_domains,
       int* trigger_condition_check_interval_ms,
-      absl::optional<int>* timeout_ms,
+      absl::optional<int>* trigger_condition_timeout_ms,
       absl::optional<std::unique_ptr<ScriptParameters>>* script_parameters);
 
  private:

@@ -92,12 +92,13 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
 
   trigger_scripts_.clear();
   additional_allowed_domains_.clear();
-  absl::optional<int> timeout_ms;
+  absl::optional<int> trigger_condition_timeout_ms;
   int check_interval_ms;
   absl::optional<std::unique_ptr<ScriptParameters>> script_parameters;
   if (!ProtocolUtils::ParseTriggerScripts(
           response, &trigger_scripts_, &additional_allowed_domains_,
-          &check_interval_ms, &timeout_ms, &script_parameters)) {
+          &check_interval_ms, &trigger_condition_timeout_ms,
+          &script_parameters)) {
     Stop(Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR);
     return;
   }
@@ -110,12 +111,12 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
   }
   trigger_condition_check_interval_ =
       base::TimeDelta::FromMilliseconds(check_interval_ms);
-  if (timeout_ms.has_value()) {
+  if (trigger_condition_timeout_ms.has_value()) {
     // Note: add 1 for the initial, not-delayed check.
     initial_trigger_condition_evaluations_ =
-        1 + base::ClampCeil<int64_t>(
-                base::TimeDelta::FromMilliseconds(*timeout_ms) /
-                trigger_condition_check_interval_);
+        1 + base::ClampCeil<int64_t>(base::TimeDelta::FromMilliseconds(
+                                         *trigger_condition_timeout_ms) /
+                                     trigger_condition_check_interval_);
   } else {
     initial_trigger_condition_evaluations_ = -1;
   }
@@ -151,7 +152,8 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
       Stop(Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_FOREVER);
       return;
     case TriggerScriptProto::SHOW_CANCEL_POPUP:
-      NOTREACHED();
+      // This action is currently performed in Java.
+      ui_timeout_timer_.Stop();
       return;
     case TriggerScriptProto::ACCEPT:
       if (visible_trigger_script_ == -1) {
@@ -159,6 +161,7 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
         return;
       }
       waiting_for_onboarding_ = true;
+      ui_timeout_timer_.Stop();
       starter_delegate_->ShowOnboarding(
           IsDialogOnboardingEnabled(), *trigger_context_.get(),
           base::BindOnce(&TriggerScriptCoordinator::OnOnboardingFinished,
@@ -264,6 +267,33 @@ void TriggerScriptCoordinator::OnTriggerScriptShown(bool success) {
   // this particular update to avoid hiding the first-time trigger script
   // immediately after showing it.
   starter_delegate_->SetIsFirstTimeUser(false);
+  if (visible_trigger_script_ != -1 && trigger_scripts_[visible_trigger_script_]
+                                           ->AsProto()
+                                           .user_interface()
+                                           .has_ui_timeout_ms()) {
+    ui_timeout_timer_.Start(
+        FROM_HERE,
+        base::TimeDelta::FromMilliseconds(
+            trigger_scripts_[visible_trigger_script_]
+                ->AsProto()
+                .user_interface()
+                .ui_timeout_ms()),
+        base::BindOnce(&TriggerScriptCoordinator::OnUiTimeoutReached,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void TriggerScriptCoordinator::OnUiTimeoutReached() {
+  if (visible_trigger_script_ == -1) {
+    return;
+  }
+
+  Metrics::RecordTriggerScriptShownToUser(
+      ukm_recorder_, ukm_source_id_, GetTriggerUiTypeForVisibleScript(),
+      Metrics::TriggerScriptShownToUser::UI_TIMEOUT);
+  trigger_scripts_[visible_trigger_script_]
+      ->waiting_for_precondition_no_longer_true(true);
+  HideTriggerScript();
 }
 
 void TriggerScriptCoordinator::Stop(Metrics::TriggerScriptFinishedState state) {
@@ -285,6 +315,19 @@ void TriggerScriptCoordinator::Stop(Metrics::TriggerScriptFinishedState state) {
   waiting_for_onboarding_ = false;
 
   RunCallback(trigger_ui_type, state, /* trigger_script = */ absl::nullopt);
+}
+
+void TriggerScriptCoordinator::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!is_checking_trigger_conditions_ || !navigation_handle->IsInMainFrame()) {
+    return;
+  }
+
+  // A navigation also serves as a boundary for NOT_NOW. This prevents possible
+  // race conditions where the UI remains on screen even after navigations.
+  for (auto& trigger_script : trigger_scripts_) {
+    trigger_script->waiting_for_precondition_no_longer_true(false);
+  }
 }
 
 void TriggerScriptCoordinator::DidFinishNavigation(
@@ -446,6 +489,7 @@ void TriggerScriptCoordinator::HideTriggerScript() {
       initial_trigger_condition_evaluations_;
   visible_trigger_script_ = -1;
   ui_delegate_->HideTriggerScript();
+  ui_timeout_timer_.Stop();
 
   // Now that the trigger script is hidden, we may need to update the
   // static trigger conditions. This is done specifically to account for

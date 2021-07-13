@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
@@ -123,6 +124,8 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   friend class TriggerScriptCoordinatorTest;
 
   // From content::WebContentsObserver.
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -138,6 +141,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   GURL GetCurrentURL() const;
   void OnEffectiveVisibilityChanged();
   void OnOnboardingFinished(bool onboardingShown, OnboardingResult result);
+  void OnUiTimeoutReached();
 
   // Can be invoked to trigger an immediate check of the trigger condition,
   // reusing the dynamic results of the last time. Does nothing if there are no
@@ -242,6 +246,12 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
 
   // True while the onboarding is being displayed.
   bool waiting_for_onboarding_ = false;
+
+  // Used to automatically hide the UI after a set amount of time, if started.
+  // This behaves the same as NOT_NOW; thus, the UI may be reshown the next
+  // time the trigger condition matches. The timeout applies each time the UI
+  // is shown, but will be disabled if the user starts interacting with the UI.
+  base::OneShotTimer ui_timeout_timer_;
 
   base::WeakPtrFactory<TriggerScriptCoordinator> weak_ptr_factory_{this};
 };

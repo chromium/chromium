@@ -618,7 +618,7 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
       ToSelectorProto("#selector");
   script->set_trigger_ui_type(
       TriggerScriptProto::SHOPPING_CHECKOUT_RETURNING_USER);
-  response.set_timeout_ms(3000);
+  response.set_trigger_condition_timeout_ms(3000);
   response.set_trigger_condition_check_interval_ms(1000);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
@@ -658,7 +658,7 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
   *script->mutable_trigger_condition()->mutable_selector() =
       ToSelectorProto("#selector");
   script->set_trigger_ui_type(TriggerScriptProto::SHOPPING_CART_RETURNING_USER);
-  response.set_timeout_ms(3000);
+  response.set_trigger_condition_timeout_ms(3000);
   response.set_trigger_condition_check_interval_ms(1000);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
@@ -730,7 +730,7 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
   *response.add_trigger_scripts()
        ->mutable_trigger_condition()
        ->mutable_selector() = ToSelectorProto("#selector");
-  response.set_timeout_ms(3000);
+  response.set_trigger_condition_timeout_ms(3000);
   response.set_trigger_condition_check_interval_ms(1000);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
@@ -1209,6 +1209,188 @@ TEST_F(TriggerScriptCoordinatorTest, BackendCanOverrideScriptParameters) {
   EXPECT_THAT(coordinator_->GetTriggerContext().GetScriptParameters().ToProto(),
               ElementsAre(std::make_pair("name_1", "new_value_1"),
                           std::make_pair("name_2", "new_value_2")));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, UiTimeoutWhileShown) {
+  GetTriggerScriptsResponseProto response;
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  script->set_trigger_ui_type(TriggerScriptProto::SHOPPING_CART_RETURNING_USER);
+  script->mutable_user_interface()->set_ui_timeout_ms(2000);
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Reloading the page should show the prompt again, resetting the timer.
+  EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(1);
+  content::NavigationSimulator::Reload(web_contents());
+  navigation_ids_.emplace_back(
+      ukm::GetSourceIdForWebContentsDocument(web_contents()));
+
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_THAT(GetUkmTriggerScriptShownToUsers(ukm_recorder_),
+              UnorderedElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptShownToUser::RUNNING,
+                     TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}},
+                   {navigation_ids_[0],
+                    {Metrics::TriggerScriptShownToUser::SHOWN_TO_USER,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}},
+                   {navigation_ids_[0],
+                    {Metrics::TriggerScriptShownToUser::UI_TIMEOUT,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}},
+                   {navigation_ids_[1],
+                    {Metrics::TriggerScriptShownToUser::SHOWN_TO_USER,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}},
+                   {navigation_ids_[1],
+                    {Metrics::TriggerScriptShownToUser::UI_TIMEOUT,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedByCancelPopup) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts()->mutable_user_interface()->set_ui_timeout_ms(
+      2000);
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).WillOnce([&]() {
+    coordinator_->OnTriggerScriptShown(true);
+    coordinator_->PerformTriggerScriptAction(
+        TriggerScriptProto::SHOW_CANCEL_POPUP);
+  });
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  // Showing the cancel popup should have disabled the timer.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+
+  // As long as the prompt is not hidden, the timer continues to be disabled.
+  content::NavigationSimulator::Reload(web_contents());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedByOnboarding) {
+  // Specify a mock onboarding callback to simulate that the onboarding is shown
+  // for a longer period of time.
+  base::MockCallback<base::OnceCallback<void(
+      base::OnceCallback<void(bool, OnboardingResult)>)>>
+      mock_onboarding_callback;
+  fake_platform_delegate_.on_show_onboarding_callback_ =
+      mock_onboarding_callback.Get();
+
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts()->mutable_user_interface()->set_ui_timeout_ms(
+      2000);
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).WillOnce([&]() {
+    coordinator_->OnTriggerScriptShown(true);
+    coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
+  });
+  EXPECT_CALL(mock_onboarding_callback, Run);
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  // Showing the onboarding should have disabled the timer.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedBySkipSession) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts()->mutable_user_interface()->set_ui_timeout_ms(
+      2000);
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).WillOnce([&]() {
+    coordinator_->OnTriggerScriptShown(true);
+    coordinator_->PerformTriggerScriptAction(
+        TriggerScriptProto::CANCEL_SESSION);
+  });
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_SESSION, _,
+          _));
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  // Just to check that the timer has gone properly out-of-scope along with the
+  // coordinator and nothing blows up.
+  coordinator_.reset();
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedByNotNow) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts()->mutable_user_interface()->set_ui_timeout_ms(
+      2000);
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).WillOnce([&]() {
+    coordinator_->OnTriggerScriptShown(true);
+    coordinator_->PerformTriggerScriptAction(TriggerScriptProto::NOT_NOW);
+  });
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  // Time that passes while the prompt is hidden is irrelevant
+  // (HideTriggerScript is not called again).
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+
+  // Reloading the page will show the prompt again and reset the timeout.
+  EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).WillOnce([&]() {
+    coordinator_->OnTriggerScriptShown(true);
+  });
+  content::NavigationSimulator::Reload(web_contents());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
 }  // namespace autofill_assistant

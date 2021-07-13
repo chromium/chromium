@@ -326,11 +326,11 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsParseError) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
   int interval_ms;
-  absl::optional<int> timeout_ms;
+  absl::optional<int> trigger_condition_timeout_ms;
   absl::optional<std::unique_ptr<ScriptParameters>> script_parameters;
   EXPECT_FALSE(ProtocolUtils::ParseTriggerScripts(
       "invalid", &trigger_scripts, &additional_allowed_domains, &interval_ms,
-      &timeout_ms, &script_parameters));
+      &trigger_condition_timeout_ms, &script_parameters));
   EXPECT_TRUE(trigger_scripts.empty());
 }
 
@@ -357,7 +357,7 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   proto.add_additional_allowed_domains("other-example.com");
 
   proto.set_trigger_condition_check_interval_ms(2000);
-  proto.set_timeout_ms(500000);
+  proto.set_trigger_condition_timeout_ms(500000);
 
   auto* param_1 = proto.add_script_parameters();
   param_1->set_name("param_1");
@@ -369,6 +369,8 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   TriggerScriptProto trigger_script_1;
   *trigger_script_1.mutable_trigger_condition()->mutable_selector() =
       ToSelectorProto("fake_element_1");
+  trigger_script_1.mutable_user_interface()->set_ui_timeout_ms(4000);
+  trigger_script_1.mutable_user_interface()->set_scroll_to_hide(false);
   TriggerScriptProto trigger_script_2;
 
   *proto.add_trigger_scripts() = trigger_script_1;
@@ -380,11 +382,11 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
   int interval_ms;
-  absl::optional<int> timeout_ms;
+  absl::optional<int> trigger_condition_timeout_ms;
   absl::optional<std::unique_ptr<ScriptParameters>> script_parameters;
   EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(
       proto_str, &trigger_scripts, &additional_allowed_domains, &interval_ms,
-      &timeout_ms, &script_parameters));
+      &trigger_condition_timeout_ms, &script_parameters));
   EXPECT_THAT(
       trigger_scripts,
       ElementsAre(
@@ -393,7 +395,7 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   EXPECT_THAT(additional_allowed_domains,
               ElementsAre("example.com", "other-example.com"));
   EXPECT_EQ(interval_ms, 2000);
-  EXPECT_EQ(timeout_ms, 500000);
+  EXPECT_EQ(trigger_condition_timeout_ms, 500000);
   ASSERT_THAT(script_parameters, Ne(absl::nullopt));
   EXPECT_THAT((*script_parameters)
                   ->ToProto(
@@ -418,11 +420,11 @@ TEST_F(ProtocolUtilsTest, TurnOffResizeVisualViewport) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
   int interval_ms;
-  absl::optional<int> timeout_ms;
+  absl::optional<int> trigger_condition_timeout_ms;
   absl::optional<std::unique_ptr<ScriptParameters>> script_parameters;
   EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(
       proto_str, &trigger_scripts, &additional_allowed_domains, &interval_ms,
-      &timeout_ms, &script_parameters));
+      &trigger_condition_timeout_ms, &script_parameters));
   ASSERT_THAT(trigger_scripts, SizeIs(2));
 
   EXPECT_TRUE(trigger_scripts[0]->AsProto().user_interface().scroll_to_hide());
@@ -432,6 +434,53 @@ TEST_F(ProtocolUtilsTest, TurnOffResizeVisualViewport) {
   EXPECT_FALSE(trigger_scripts[1]->AsProto().user_interface().scroll_to_hide());
   EXPECT_TRUE(
       trigger_scripts[1]->AsProto().user_interface().resize_visual_viewport());
+}
+
+TEST_F(ProtocolUtilsTest, TurnOffScrollToHide) {
+  GetTriggerScriptsResponseProto proto;
+
+  auto* script1 = proto.add_trigger_scripts();
+  script1->mutable_user_interface()->set_scroll_to_hide(true);
+  script1->mutable_user_interface()->set_resize_visual_viewport(true);
+  script1->mutable_user_interface()->set_ui_timeout_ms(4000);
+
+  auto* script2 = proto.add_trigger_scripts();
+  script2->mutable_user_interface()->set_resize_visual_viewport(true);
+  script2->mutable_user_interface()->set_ui_timeout_ms(4000);
+
+  auto* script3 = proto.add_trigger_scripts();
+  script3->mutable_user_interface()->set_ui_timeout_ms(4000);
+
+  std::string proto_str;
+  proto.SerializeToString(&proto_str);
+
+  std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
+  std::vector<std::string> additional_allowed_domains;
+  int interval_ms;
+  absl::optional<int> trigger_condition_timeout_ms;
+  absl::optional<std::unique_ptr<ScriptParameters>> script_parameters;
+  EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(
+      proto_str, &trigger_scripts, &additional_allowed_domains, &interval_ms,
+      &trigger_condition_timeout_ms, &script_parameters));
+  ASSERT_THAT(trigger_scripts, SizeIs(3));
+
+  EXPECT_FALSE(trigger_scripts[0]->AsProto().user_interface().scroll_to_hide());
+  EXPECT_TRUE(
+      trigger_scripts[0]->AsProto().user_interface().resize_visual_viewport());
+  EXPECT_EQ(trigger_scripts[0]->AsProto().user_interface().ui_timeout_ms(),
+            4000);
+
+  EXPECT_FALSE(trigger_scripts[1]->AsProto().user_interface().scroll_to_hide());
+  EXPECT_TRUE(
+      trigger_scripts[1]->AsProto().user_interface().resize_visual_viewport());
+  EXPECT_EQ(trigger_scripts[1]->AsProto().user_interface().ui_timeout_ms(),
+            4000);
+
+  EXPECT_FALSE(trigger_scripts[2]->AsProto().user_interface().scroll_to_hide());
+  EXPECT_FALSE(
+      trigger_scripts[2]->AsProto().user_interface().resize_visual_viewport());
+  EXPECT_EQ(trigger_scripts[2]->AsProto().user_interface().ui_timeout_ms(),
+            4000);
 }
 
 TEST_F(ProtocolUtilsTest, ParseTriggerScriptsFailsOnInvalidConditions) {
@@ -451,11 +500,11 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsFailsOnInvalidConditions) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
   int interval_ms;
-  absl::optional<int> timeout_ms;
+  absl::optional<int> trigger_condition_timeout_ms;
   absl::optional<std::unique_ptr<ScriptParameters>> script_parameters;
   EXPECT_FALSE(ProtocolUtils::ParseTriggerScripts(
       proto_str, &trigger_scripts, &additional_allowed_domains, &interval_ms,
-      &timeout_ms, &script_parameters));
+      &trigger_condition_timeout_ms, &script_parameters));
   EXPECT_THAT(trigger_scripts, IsEmpty());
 }
 

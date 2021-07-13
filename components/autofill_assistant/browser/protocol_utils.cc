@@ -477,12 +477,12 @@ bool ProtocolUtils::ParseTriggerScripts(
     std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
     std::vector<std::string>* additional_allowed_domains,
     int* trigger_condition_check_interval_ms,
-    absl::optional<int>* timeout_ms,
+    absl::optional<int>* trigger_condition_timeout_ms,
     absl::optional<std::unique_ptr<ScriptParameters>>* script_parameters) {
   DCHECK(trigger_scripts);
   DCHECK(additional_allowed_domains);
   DCHECK(trigger_condition_check_interval_ms);
-  DCHECK(timeout_ms);
+  DCHECK(trigger_condition_timeout_ms);
   DCHECK(script_parameters);
 
   GetTriggerScriptsResponseProto response_proto;
@@ -498,6 +498,10 @@ bool ProtocolUtils::ParseTriggerScripts(
   }
 
   for (auto& trigger_script_proto : *response_proto.mutable_trigger_scripts()) {
+    if (trigger_script_proto.user_interface().has_ui_timeout_ms()) {
+      // Turn off scroll_to_hide if a UI timeout is set.
+      trigger_script_proto.mutable_user_interface()->set_scroll_to_hide(false);
+    }
     if (trigger_script_proto.user_interface().scroll_to_hide()) {
       // Turn off viewport resizing when scroll to hide is on as it causes
       // issues.
@@ -515,8 +519,9 @@ bool ProtocolUtils::ParseTriggerScripts(
 
   *trigger_condition_check_interval_ms =
       response_proto.trigger_condition_check_interval_ms();
-  if (response_proto.has_timeout_ms()) {
-    *timeout_ms = response_proto.timeout_ms();
+  if (response_proto.has_trigger_condition_timeout_ms()) {
+    *trigger_condition_timeout_ms =
+        response_proto.trigger_condition_timeout_ms();
   }
 
   if (!response_proto.script_parameters().empty()) {
