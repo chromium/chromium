@@ -158,6 +158,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   // RenderProcessHostObserver:
   void RenderProcessExited(RenderProcessHost* render_process_host,
                            const ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   // Called from WorkerScriptFetchInitiator. Continues starting the dedicated
   // worker in the renderer process.
@@ -214,12 +215,18 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> GetWorkerCoepReporter();
 
+  // This outlives `this` as follows:
+  //  - StoragePartitionImpl owns DedicatedWorkerServiceImpl until its dtor.
+  //  - StoragePartitionImpl outlives RenderProcessHostImpl.
+  //  - RenderProcessHostImpl outlives DedicatedWorkerHost.
+  // As the conclusion of the above, DedicatedWorkerServiceImpl outlives
+  // DedicatedWorkerHost.
   DedicatedWorkerServiceImpl* const service_;
 
   // The renderer generated ID of this worker, unique across all processes.
   const blink::DedicatedWorkerToken token_;
 
-  // The RenderProcessHost that hosts this worker.
+  // The RenderProcessHost that hosts this worker. This outlives `this`.
   RenderProcessHost* const worker_process_host_;
 
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>

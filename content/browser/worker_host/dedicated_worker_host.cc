@@ -100,6 +100,9 @@ DedicatedWorkerHost::DedicatedWorkerHost(
 }
 
 DedicatedWorkerHost::~DedicatedWorkerHost() {
+  // This DedicatedWorkerHost is destroyed via either the mojo disconnection
+  // or RenderProcessHostObserver. This destruction should be called before
+  // the observed render process host (`worker_process_host_`) is destroyed.
   service_->NotifyBeforeWorkerDestroyed(token_, ancestor_render_frame_host_id_);
 }
 
@@ -135,6 +138,18 @@ void DedicatedWorkerHost::RenderProcessExited(
     RenderProcessHost* render_process_host,
     const ChildProcessTerminationInfo& info) {
   DCHECK_EQ(worker_process_host_, render_process_host);
+
+  delete this;
+}
+
+void DedicatedWorkerHost::RenderProcessHostDestroyed(
+    RenderProcessHost* render_process_host) {
+  DCHECK_EQ(worker_process_host_, render_process_host);
+
+  // In --single-process mode, RenderProcessExited() is not called, so we must
+  // also listen to RenderProcessHostDestroyed() to know to delete `this` and
+  // preserve the invariant that RenderProcessHostImpl outlives `this`.
+  DCHECK(RenderProcessHost::run_renderer_in_process());
 
   delete this;
 }
