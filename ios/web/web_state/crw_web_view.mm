@@ -18,7 +18,10 @@
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
   if ([responderInputView respondsToSelector:@selector(inputView)]) {
-    return [responderInputView inputView];
+    UIView* view = [responderInputView inputView];
+    if (view) {
+      return view;
+    }
   }
   return [super inputView];
 }
@@ -27,7 +30,11 @@
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
   if ([responderInputView respondsToSelector:@selector(inputViewController)]) {
-    return [responderInputView inputViewController];
+    UIInputViewController* controller =
+        [responderInputView inputViewController];
+    if (controller) {
+      return controller;
+    }
   }
   return [super inputViewController];
 }
@@ -36,7 +43,10 @@
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
   if ([responderInputView respondsToSelector:@selector(inputAccessoryView)]) {
-    return [responderInputView inputAccessoryView];
+    UIView* view = [responderInputView inputAccessoryView];
+    if (view) {
+      return view;
+    }
   }
   return [super inputAccessoryView];
 }
@@ -46,7 +56,11 @@
       self.inputViewProvider.responderInputView;
   if ([responderInputView
           respondsToSelector:@selector(inputAccessoryViewController)]) {
-    return [responderInputView inputAccessoryViewController];
+    UIInputViewController* controller =
+        [responderInputView inputAccessoryViewController];
+    if (controller) {
+      return controller;
+    }
   }
   return [super inputAccessoryViewController];
 }
