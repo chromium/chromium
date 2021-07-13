@@ -45,6 +45,7 @@ PictureLayerTiling::PictureLayerTiling(
       min_preraster_distance_(min_preraster_distance),
       max_preraster_distance_(max_preraster_distance),
       can_use_lcd_text_(can_use_lcd_text) {
+  recordreplay::RegisterPointer(this);
   DCHECK(!raster_source->IsSolidColor());
   DCHECK_GE(raster_transform.translation().x(), 0.f);
   DCHECK_LT(raster_transform.translation().x(), 1.f);
@@ -76,7 +77,9 @@ PictureLayerTiling::PictureLayerTiling(
   tiling_data_.SetMaxTextureSize(tile_size);
 }
 
-PictureLayerTiling::~PictureLayerTiling() = default;
+PictureLayerTiling::~PictureLayerTiling() {
+  recordreplay::UnregisterPointer(this);
+}
 
 Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
   const int i = info.tiling_i_index;
@@ -309,6 +312,8 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
 }
 
 Tile::CreateInfo PictureLayerTiling::CreateInfoForTile(int i, int j) const {
+  recordreplay::Assert("PictureLayerTiling::CreateInfoForTile Start %d",
+                       recordreplay::PointerId((void*)this));
   gfx::Rect tile_rect = tiling_data_.TileBoundsWithBorder(i, j);
   recordreplay::Assert("PictureLayerTiling::CreateInfoForTile %d %d %d %d %d %d",
                        i, j, tile_rect.x(), tile_rect.y(), tile_rect.width(), tile_rect.height());
