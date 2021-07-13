@@ -9,6 +9,7 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
@@ -163,7 +164,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
          *         default handler, this method will return false.
          */
         private boolean hasDefaultHandler(Intent intent) {
-            ResolveInfo info = PackageManagerUtils.resolveActivity(intent, 0);
+            ResolveInfo info =
+                    PackageManagerUtils.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
             if (info == null) return false;
 
             final String chromePackage = mApplicationContext.getPackageName();
