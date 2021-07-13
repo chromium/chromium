@@ -1443,7 +1443,9 @@ DeviceStatusCollector::DeviceStatusCollector(
       graphics_status_fetcher_(graphics_status_fetcher),
       crash_report_info_fetcher_(crash_report_info_fetcher),
       power_manager_(chromeos::PowerManagerClient::Get()),
-      app_info_generator_(kMaxStoredPastActivityInterval, clock_) {
+      app_info_generator_(&managed_session_service_,
+                          kMaxStoredPastActivityInterval,
+                          clock_) {
   // protected fields of `StatusCollector`.
   max_stored_past_activity_interval_ = kMaxStoredPastActivityInterval;
   max_stored_future_activity_interval_ = kMaxStoredFutureActivityInterval;
@@ -1547,8 +1549,7 @@ DeviceStatusCollector::DeviceStatusCollector(
   stats_reporting_pref_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kStatsReportingPref, callback);
 
-  affiliated_session_service_.AddObserver(&app_info_generator_);
-
+  // TODO(b/191986061):: consider using ScopedObservation instead.
   power_manager_->AddObserver(this);
 
   // Fetch the current values of the policies.
@@ -1603,7 +1604,6 @@ DeviceStatusCollector::DeviceStatusCollector(
 
 DeviceStatusCollector::~DeviceStatusCollector() {
   power_manager_->RemoveObserver(this);
-  affiliated_session_service_.RemoveObserver(&app_info_generator_);
 }
 
 // static

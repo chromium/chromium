@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_STATUS_COLLECTOR_AFFILIATED_SESSION_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_STATUS_COLLECTOR_AFFILIATED_SESSION_SERVICE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_STATUS_COLLECTOR_MANAGED_SESSION_SERVICE_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_STATUS_COLLECTOR_MANAGED_SESSION_SERVICE_H_
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -11,26 +11,33 @@
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/login/auth/auth_status_consumer.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace policy {
 
-class AffiliatedSessionService : public session_manager::SessionManagerObserver,
-                                 public ProfileObserver,
-                                 public chromeos::PowerManagerClient::Observer {
+class ManagedSessionService : public session_manager::SessionManagerObserver,
+                              public ProfileObserver,
+                              public chromeos::PowerManagerClient::Observer,
+                              public chromeos::AuthStatusConsumer,
+                              public ash::UserAuthenticatorObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Occurs when an affiliated primary user has logged in.
-    virtual void OnAffiliatedLogin(Profile* profile) {}
+    // Occurs when a user's login attempt fails.
+    virtual void OnLoginFailure(const chromeos::AuthFailure& error) {}
 
-    // Occurs when an affiliated primary user has logged out.
-    virtual void OnAffiliatedLogout(Profile* profile) {}
+    // Occurs when a user has logged in.
+    virtual void OnLogin(Profile* profile) {}
+
+    // Occurs when a user has logged out.
+    virtual void OnLogout(Profile* profile) {}
 
     // Occurs when the active user has locked the user session.
     virtual void OnLocked() {}
@@ -44,11 +51,11 @@ class AffiliatedSessionService : public session_manager::SessionManagerObserver,
     virtual void OnResumeActive(base::Time suspend_time) {}
   };
 
-  explicit AffiliatedSessionService(
+  explicit ManagedSessionService(
       base::Clock* clock = base::DefaultClock::GetInstance());
-  AffiliatedSessionService(const AffiliatedSessionService&) = delete;
-  AffiliatedSessionService& operator=(const AffiliatedSessionService&) = delete;
-  ~AffiliatedSessionService() override;
+  ManagedSessionService(const ManagedSessionService&) = delete;
+  ManagedSessionService& operator=(const ManagedSessionService&) = delete;
+  ~ManagedSessionService() override;
 
   void AddObserver(Observer* observer);
 
@@ -63,6 +70,12 @@ class AffiliatedSessionService : public session_manager::SessionManagerObserver,
 
   // chromeos::PowerManagerClient::Observer
   void SuspendDone(base::TimeDelta sleep_duration) override;
+
+  void OnAuthSuccess(const ash::UserContext& user_context) override {}
+
+  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+
+  void OnAuthAttemptStarted() override;
 
  private:
   bool is_session_locked_;
@@ -81,8 +94,14 @@ class AffiliatedSessionService : public session_manager::SessionManagerObserver,
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_manager_observation_{this};
+  base::ScopedObservation<
+      ash::UserSessionManager,
+      ash::UserAuthenticatorObserver,
+      &ash::UserSessionManager::AddUserAuthenticatorObserver,
+      &ash::UserSessionManager::RemoveUserAuthenticatorObserver>
+      authenticator_observation_{this};
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_STATUS_COLLECTOR_AFFILIATED_SESSION_SERVICE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_STATUS_COLLECTOR_MANAGED_SESSION_SERVICE_H_

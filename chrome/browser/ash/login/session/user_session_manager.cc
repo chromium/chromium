@@ -620,6 +620,10 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
     // TODO(nkostylev): Fix this hack by improving Authenticator dependencies.
     authenticator_->SetConsumer(consumer);
   }
+
+  for (auto& observer : authenticator_observer_list_) {
+    observer.OnAuthAttemptStarted();
+  }
   return authenticator_;
 }
 
@@ -964,6 +968,16 @@ void UserSessionManager::RemoveSessionStateObserver(
     ash::UserSessionStateObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   session_state_observer_list_.RemoveObserver(observer);
+}
+
+void UserSessionManager::AddUserAuthenticatorObserver(
+    ash::UserAuthenticatorObserver* observer) {
+  authenticator_observer_list_.AddObserver(observer);
+}
+
+void UserSessionManager::RemoveUserAuthenticatorObserver(
+    ash::UserAuthenticatorObserver* observer) {
+  authenticator_observer_list_.RemoveObserver(observer);
 }
 
 void UserSessionManager::OnSessionRestoreStateChanged(
