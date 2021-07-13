@@ -47,6 +47,11 @@ const base::Feature kMuteNotificationSnoozeAction{
     "MuteNotificationSnoozeAction", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Shows a confirmation dialog when updates to PWAs identity (name and icon)
+// have been detected.
+const base::Feature kPwaUpdateDialogForNameAndIcon{
+    "pwa-update-dialog-for-name-and-icon", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables taking snapshots of the user data directory after a major
 // milestone update and restoring them after a version rollback.

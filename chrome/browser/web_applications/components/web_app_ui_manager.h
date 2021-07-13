@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
@@ -73,6 +74,17 @@ class WebAppUiManager {
 
   virtual content::WebContents* NavigateExistingWindow(const AppId& app_id,
                                                        const GURL& url) = 0;
+
+  virtual void ShowWebAppIdentityUpdateDialog(
+      const std::string& app_id,
+      bool title_change,
+      bool icon_change,
+      const std::u16string& old_title,
+      const std::u16string& new_title,
+      const SkBitmap& old_icon,
+      const SkBitmap& new_icon,
+      content::WebContents* web_contents,
+      web_app::AppIdentityDialogCallback callback) = 0;
 };
 
 }  // namespace web_app

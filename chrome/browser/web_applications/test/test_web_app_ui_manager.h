@@ -47,6 +47,16 @@ class TestWebAppUiManager : public WebAppUiManager {
                               bool shortcut_created) override;
   content::WebContents* NavigateExistingWindow(const AppId& app_id,
                                                const GURL& url) override;
+  void ShowWebAppIdentityUpdateDialog(
+      const std::string& app_id,
+      bool title_change,
+      bool icon_change,
+      const std::u16string& old_title,
+      const std::u16string& new_title,
+      const SkBitmap& old_icon,
+      const SkBitmap& new_icon,
+      content::WebContents* web_contents,
+      web_app::AppIdentityDialogCallback callback) override {}
 
  private:
   std::map<AppId, size_t> app_id_to_num_windows_map_;

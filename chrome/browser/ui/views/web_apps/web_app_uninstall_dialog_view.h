@@ -72,6 +72,7 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
 
   // The web app we are showing the dialog for.
   const web_app::AppId app_id_;
+
   // The dialog needs start_url copy even if app gets uninstalled.
   GURL app_start_url_;
 

@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -30,13 +31,27 @@
 
 namespace web_app {
 
+struct IconDiff {
+ public:
+  IconDiff() = default;
+  explicit IconDiff(bool changes) { changes_detected = changes; }
+  IconDiff(const SkBitmap& before_icon, const SkBitmap& after_icon) {
+    changes_detected = true;
+    before = before_icon;
+    after = after_icon;
+  }
+  bool changes_detected = false;
+  SkBitmap before;
+  SkBitmap after;
+};
+
 namespace {
 
-bool HaveIconContentsChanged(
+IconDiff HaveIconContentsChanged(
     const std::map<SquareSizePx, SkBitmap>& disk_icon_bitmaps,
     const std::map<SquareSizePx, SkBitmap>& downloaded_icon_bitmaps) {
   if (downloaded_icon_bitmaps.size() != disk_icon_bitmaps.size())
-    return true;
+    return IconDiff(true);
 
   for (const std::pair<const SquareSizePx, SkBitmap>& entry :
        downloaded_icon_bitmaps) {
@@ -45,29 +60,40 @@ bool HaveIconContentsChanged(
 
     auto it = disk_icon_bitmaps.find(size);
     if (it == disk_icon_bitmaps.end())
-      return true;
+      return IconDiff(true);
 
     const SkBitmap& disk_bitmap = it->second;
     if (!gfx::BitmapsAreEqual(downloaded_bitmap, disk_bitmap))
-      return true;
+      return IconDiff(disk_bitmap, downloaded_bitmap);
   }
 
-  return false;
+  return IconDiff(false);
 }
 
-bool HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
-                            const IconBitmaps& downloaded_icon_bitmaps) {
-  return HaveIconContentsChanged(disk_icon_bitmaps.any,
-                                 downloaded_icon_bitmaps.any) ||
-         HaveIconContentsChanged(disk_icon_bitmaps.maskable,
-                                 downloaded_icon_bitmaps.maskable) ||
-         HaveIconContentsChanged(disk_icon_bitmaps.monochrome,
-                                 downloaded_icon_bitmaps.monochrome);
+IconDiff HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
+                                const IconBitmaps& downloaded_icon_bitmaps) {
+  IconDiff icon_diff = HaveIconContentsChanged(disk_icon_bitmaps.any,
+                                               downloaded_icon_bitmaps.any);
+  if (icon_diff.changes_detected)
+    return icon_diff;
+
+  icon_diff = HaveIconContentsChanged(disk_icon_bitmaps.maskable,
+                                      downloaded_icon_bitmaps.maskable);
+  if (icon_diff.changes_detected)
+    return icon_diff;
+
+  icon_diff = HaveIconContentsChanged(disk_icon_bitmaps.monochrome,
+                                      downloaded_icon_bitmaps.monochrome);
+  if (icon_diff.changes_detected)
+    return icon_diff;
+
+  return IconDiff(false);
 }
 
 // Some apps, such as pre-installed apps, have been vetted and are therefore
 // considered safe and permitted to update their names.
-bool AllowNameUpdating(const AppId& app_id, const WebAppRegistrar& registrar) {
+bool AllowUnpromptedNameUpdate(const AppId& app_id,
+                               const WebAppRegistrar& registrar) {
   const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
   if (!web_app)
     return false;
@@ -77,7 +103,8 @@ bool AllowNameUpdating(const AppId& app_id, const WebAppRegistrar& registrar) {
 // Some apps, such as pre-installed apps, have been vetted and are therefore
 // considered safe and permitted to update their icon. For others, the feature
 // flag needs to be on.
-bool AllowIconUpdating(const AppId& app_id, const WebAppRegistrar& registrar) {
+bool AllowUnpromptedIconUpdate(const AppId& app_id,
+                               const WebAppRegistrar& registrar) {
   const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
   if (!web_app)
     return false;
@@ -222,9 +249,10 @@ void ManifestUpdateTask::WebContentsDestroyed() {
     case Stage::kPendingPageLoad:
     case Stage::kPendingInstallableData:
     case Stage::kPendingIconDownload:
+    case Stage::kPendingIconReadFromDisk:
       DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
       return;
-    case Stage::kPendingIconReadFromDisk:
+    case Stage::kPendingAppIdentityCheck:
     case Stage::kPendingWindowsClosed:
     case Stage::kPendingMaybeReadExistingIcons:
     case Stage::kPendingInstallation:
@@ -308,7 +336,7 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
 
   // Allow app icon updating for certain apps, or if the existing icons are
   // empty - this means the app icon download during install failed.
-  if (AllowIconUpdating(app_id_, registrar_) &&
+  if (AllowUnpromptedIconUpdate(app_id_, registrar_) &&
       web_application_info_->icon_infos !=
           registrar_.GetAppIconInfos(app_id_)) {
     return true;
@@ -370,7 +398,7 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
-  if (AllowNameUpdating(app_id_, registrar_) &&
+  if (AllowUnpromptedNameUpdate(app_id_, registrar_) &&
       web_application_info_->title !=
           base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_))) {
     return true;
@@ -384,7 +412,7 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
 
 void ManifestUpdateTask::UpdateAfterWindowsClose() {
   DCHECK(stage_ == Stage::kPendingInstallableData ||
-         stage_ == Stage::kPendingIconReadFromDisk);
+         stage_ == Stage::kPendingAppIdentityCheck);
   stage_ = Stage::kPendingWindowsClosed;
   Observe(nullptr);
 
@@ -418,7 +446,6 @@ void ManifestUpdateTask::OnIconsDownloaded(bool success, IconsMap icons_map) {
   }
 
   stage_ = Stage::kPendingIconReadFromDisk;
-  Observe(nullptr);
   icon_manager_.ReadAllIcons(
       app_id_, base::BindOnce(&ManifestUpdateTask::OnAllIconsRead, AsWeakPtr(),
                               std::move(icons_map)));
@@ -434,9 +461,13 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
   }
   DCHECK(web_application_info_.has_value());
 
-  // Allow app icon updating for certain apps, or if the existing icons are
-  // empty - this means the app icon download during install failed.
-  if (AllowIconUpdating(app_id_, registrar_)) {
+  content::WebContents* web_contents = WebContentsObserver::web_contents();
+  stage_ = Stage::kPendingAppIdentityCheck;
+  Observe(nullptr);
+
+  if (!AllowUnpromptedNameUpdate(app_id_, registrar_) &&
+      !AllowUnpromptedIconUpdate(app_id_, registrar_) &&
+      base::FeatureList::IsEnabled(features::kPwaUpdateDialogForNameAndIcon)) {
     // This call populates the |web_application_info_| with all icon bitmap
     // data.
     // If this data does not match what we already have on disk, then an update
@@ -445,8 +476,74 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
     // task.
     FilterAndResizeIconsGenerateMissing(&web_application_info_.value(),
                                         &downloaded_icons_map);
+    IconDiff icon_diff = IsUpdateNeededForIconContents(disk_icon_bitmaps);
+    std::u16string old_title =
+        base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
+    std::u16string new_title = web_application_info_->title;
+    bool title_change = old_title != new_title;
+
+    if (title_change || icon_diff.changes_detected) {
+      SkBitmap* before_icon = nullptr;
+      SkBitmap* after_icon = nullptr;
+      if (icon_diff.changes_detected) {
+        before_icon = &icon_diff.before;
+        after_icon = &icon_diff.after;
+      } else {
+        auto it = disk_icon_bitmaps.any.find(web_app::kWebAppIconSmall);
+        if (it != disk_icon_bitmaps.any.end()) {
+          before_icon = &it->second;
+          after_icon = &it->second;
+        }
+      }
+
+      if (before_icon != nullptr && after_icon != nullptr) {
+        ui_manager_.ShowWebAppIdentityUpdateDialog(
+            app_id_, title_change, icon_diff.changes_detected, old_title,
+            new_title, *before_icon, *after_icon, web_contents,
+            base::BindOnce(&ManifestUpdateTask::OnPostAppIdentityUpdateCheck,
+                           AsWeakPtr(), std::move(downloaded_icons_map),
+                           std::move(disk_icon_bitmaps)));
+        return;
+      }
+    }
+  }
+
+  // App Identity Warning dialog was not needed, proceed with update check.
+  OnPostAppIdentityUpdateCheck(downloaded_icons_map, disk_icon_bitmaps,
+                               AppIdentityUpdate::kSkipped);
+}
+
+void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
+    IconsMap downloaded_icons_map,
+    IconBitmaps disk_icon_bitmaps,
+    AppIdentityUpdate app_identity_update_allowed) {
+  DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
+  app_identity_update_allowed_ =
+      app_identity_update_allowed == AppIdentityUpdate::kAllowed;
+  if (app_identity_update_allowed_) {
+    UpdateAfterWindowsClose();
+    return;
+  }
+
+  // Allow app icon updating for certain apps, or if the existing icons are
+  // empty - this means the app icon download during install failed.
+  if (AllowUnpromptedIconUpdate(app_id_, registrar_)) {
+    // When kPwaUpdateDialogForNameAndIcon is enabled, the FilterAndResizeIcons
+    // call has already been made.
+    if (!base::FeatureList::IsEnabled(
+            features::kPwaUpdateDialogForNameAndIcon)) {
+      // This call populates the |web_application_info_| with all icon bitmap
+      // data.
+      // If this data does not match what we already have on disk, then an
+      // update is necessary.
+      // TODO(https://crbug.com/1184911): Reuse this data in the web app install
+      // task.
+      FilterAndResizeIconsGenerateMissing(&web_application_info_.value(),
+                                          &downloaded_icons_map);
+    }
+
     // TODO: compare in a BEST_EFFORT blocking PostTaskAndReply.
-    if (IsUpdateNeededForIconContents(disk_icon_bitmaps)) {
+    if (IsUpdateNeededForIconContents(disk_icon_bitmaps).changes_detected) {
       UpdateAfterWindowsClose();
       return;
     }
@@ -474,7 +571,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
   }
 }
 
-bool ManifestUpdateTask::IsUpdateNeededForIconContents(
+IconDiff ManifestUpdateTask::IsUpdateNeededForIconContents(
     const IconBitmaps& disk_icon_bitmaps) const {
   DCHECK(web_application_info_.has_value());
   return HaveIconBitmapsChanged(disk_icon_bitmaps,
@@ -483,7 +580,7 @@ bool ManifestUpdateTask::IsUpdateNeededForIconContents(
 
 void ManifestUpdateTask::OnAllShortcutsMenuIconsRead(
     ShortcutsMenuIconBitmaps disk_shortcuts_menu_icon_bitmaps) {
-  DCHECK_EQ(stage_, Stage::kPendingIconReadFromDisk);
+  DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
 
   DCHECK(web_application_info_.has_value());
 
@@ -510,7 +607,8 @@ bool ManifestUpdateTask::IsUpdateNeededForShortcutsMenuIconsContents(
     const IconBitmaps& downloaded_icon_bitmaps =
         downloaded_shortcuts_menu_icon_bitmaps[i];
     const IconBitmaps& disk_icon_bitmaps = disk_shortcuts_menu_icon_bitmaps[i];
-    if (HaveIconBitmapsChanged(disk_icon_bitmaps, downloaded_icon_bitmaps))
+    if (HaveIconBitmapsChanged(disk_icon_bitmaps, downloaded_icon_bitmaps)
+            .changes_detected)
       return true;
   }
 
@@ -526,7 +624,7 @@ bool ManifestUpdateTask::IsUpdateNeededForWebAppOriginAssociations() const {
 }
 
 void ManifestUpdateTask::NoManifestUpdateRequired() {
-  DCHECK_EQ(stage_, Stage::kPendingIconReadFromDisk);
+  DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
   stage_ = Stage::kPendingAssociationsUpdate;
   if (!IsUpdateNeededForWebAppOriginAssociations()) {
     DestroySelf(ManifestUpdateResult::kAppUpToDate);
@@ -550,7 +648,8 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
 
   DCHECK(web_application_info_.has_value());
 
-  if (!AllowNameUpdating(app_id_, registrar_)) {
+  if (!AllowUnpromptedNameUpdate(app_id_, registrar_) &&
+      !app_identity_update_allowed_) {
     // The app's name must not change due to an automatic update, except for
     // default installed apps (that have been vetted).
     // TODO(crbug.com/1088338): Provide a safe way for apps to update their
@@ -577,9 +676,10 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
   }
 
   stage_ = Stage::kPendingMaybeReadExistingIcons;
-  // Allow app icon updating if the existing icons are empty - this means the
-  // app icon download during install failed.
-  if (AllowIconUpdating(app_id_, registrar_)) {
+  // If icon updating is disabled, then read the existing icons so they can be
+  // populated on the WebApplicationInfo.
+  if (AllowUnpromptedIconUpdate(app_id_, registrar_) ||
+      app_identity_update_allowed_) {
     OnExistingIconsRead(IconBitmaps());
     return;
   }
