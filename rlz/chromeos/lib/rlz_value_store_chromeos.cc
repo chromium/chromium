@@ -163,7 +163,7 @@ absl::optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
     case base::Value::Type::DICTIONARY: {
       base::Value::DictStorage storage;
 
-      for (const auto& key_value_pair : value.DictItems()) {
+      for (const auto key_value_pair : value.DictItems()) {
         absl::optional<base::Value> item_copy =
             CopyWithoutEmptyChildren(key_value_pair.second);
         if (item_copy)
