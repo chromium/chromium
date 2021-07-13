@@ -352,6 +352,7 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
+    @FlakyTest(message = "https://crbug.com/1225926")
     public void testGridToTabToOtherLive() throws InterruptedException {
         prepareTabs(2, mUrl);
         reportGridToTabPerf(true, false, "Grid-to-Tab to other live tab");
