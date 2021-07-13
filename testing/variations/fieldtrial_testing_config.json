@@ -5911,6 +5911,20 @@
                         "OmniboxAssistantVoiceSearch",
                         "VoiceSearchAudioCapturePolicy"
                     ]
+                },
+                {
+                    "name": "AssistantIntegration_MultiUser_20210708",
+                    "params": {
+                        "colorful_mic": "false",
+                        "enable_multi_account_check": "false",
+                        "experiment_id": "47732038",
+                        "min_agsa_version": "12.26"
+                    },
+                    "enable_features": [
+                        "AssistantIntentExperimentId",
+                        "OmniboxAssistantVoiceSearch",
+                        "VoiceSearchAudioCapturePolicy"
+                    ]
                 }
             ]
         }
