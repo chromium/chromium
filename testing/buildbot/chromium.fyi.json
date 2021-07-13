@@ -88040,20 +88040,20 @@
     "gtest_tests": [
       {
         "args": [
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_M92/chrome"
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v93.0.4570.0/test_ash_chrome"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_chrome_browsertests_Lacros version skew testing ash 92.0.4499.0",
+        "name": "lacros_chrome_browsertests_Lacros version skew testing ash 93.0.4570.0",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_M92",
-              "revision": "version:92.0.4499.0"
+              "location": "lacros_version_skew_tests_v93.0.4570.0",
+              "revision": "version:93.0.4570.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -88063,20 +88063,66 @@
       },
       {
         "args": [
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_M92/chrome"
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v93.0.4573.0/test_ash_chrome"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_chrome_browsertests_run_in_series_Lacros version skew testing ash 92.0.4499.0",
+        "name": "lacros_chrome_browsertests_Lacros version skew testing ash 93.0.4573.0",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_M92",
-              "revision": "version:92.0.4499.0"
+              "location": "lacros_version_skew_tests_v93.0.4573.0",
+              "revision": "version:93.0.4573.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "lacros_chrome_browsertests",
+        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests/"
+      },
+      {
+        "args": [
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v93.0.4570.0/test_ash_chrome"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "lacros_chrome_browsertests_run_in_series_Lacros version skew testing ash 93.0.4570.0",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
+              "location": "lacros_version_skew_tests_v93.0.4570.0",
+              "revision": "version:93.0.4570.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "lacros_chrome_browsertests_run_in_series",
+        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests_run_in_series/"
+      },
+      {
+        "args": [
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v93.0.4573.0/test_ash_chrome"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "lacros_chrome_browsertests_run_in_series_Lacros version skew testing ash 93.0.4573.0",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
+              "location": "lacros_version_skew_tests_v93.0.4573.0",
+              "revision": "version:93.0.4573.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

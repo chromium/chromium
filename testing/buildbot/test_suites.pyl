@@ -7303,6 +7303,7 @@
       'linux_lacros_chrome_browsertests_version_skew': {
         'variants': [
           'LACROS_VERSION_SKEW_CANARY',
+          'LACROS_VERSION_SKEW_DEV',
         ]
       },
     },
