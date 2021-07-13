@@ -236,6 +236,18 @@ message PerfDataProto {
 
     // Indicates a mispredicted branch.
     optional bool mispredicted = 3;
+
+    // Indicates a predicted branch.
+    optional bool predicted = 4;
+
+    // Indicates running in a hardware transaction
+    optional bool in_transaction = 5;
+
+    // Indicates aborting a hardware transaction
+    optional bool abort = 6;
+
+    // Cycle count to last branch
+    optional uint32 cycles = 7;
   }
 
   message SampleEvent {
@@ -336,6 +348,9 @@ message PerfDataProto {
     // Not added from original: optional LostEvent lost_event = 6;
     // Not added from original: optional ThrottleEvent throttle_event = 7;
     // Not added from original: optional ReadEvent read_event = 8;
+
+    // Time after boot in nanoseconds corresponding to the event.
+    optional uint64 timestamp = 10;
   }
 
   message PerfEventStats {

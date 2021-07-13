@@ -20,10 +20,21 @@ enum SourceType {
   PAYMENT_APP_ID = 5;
   DESKTOP_WEB_APP_ID = 6;
   WORKER_ID = 7;
+  NO_URL_ID = 8;
+}
+
+// Android Activity Type defined by
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/flags/android/chrome_session_state.h?q=ActivityType
+enum AndroidActivityType {
+  TABBED = 0;
+  CUSTOM_TAB = 1;
+  TRUSTED_WEB_ACTIVITY = 2;
+  WEB_APP = 3;
+  WEB_APK = 4;
 }
 
 // Source contains data related to a top-level navigation.
-// Next tag: 18
+// Next tag: 19
 message Source {
   // The URL scheme, such as HTTP, HTTPS, CHROME_EXTENSION, etc.
   enum UrlScheme {
@@ -144,7 +155,16 @@ message Source {
   optional string initial_url = 6;
 
   // Flag indicating if the metric was collected while inside a "custom tab".
+  // TODO(b/191457204): to be replaced by |android_activity_type| below.
   optional bool is_custom_tab = 7;
+
+  // For Android only. Denotes the Chrome activity type when the source was
+  // created. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/flags/android/chrome_session_state.h;l=20;drc=c14f6f4b9c44fe479a8d004576b42723b2a5feb6
+  // This field should eventually replace the |is_custom_tab| above because it
+  // additionally distinguishes between Trusted Web Activities, WebAPKs, and
+  // WebApps.
+  optional AndroidActivityType android_activity_type = 18;
 
   // Relative time of navigation for this Source, as seen by the client, and is
   // set for sources of type ukm::SourceIdType::NAVIGATION_ID. Time of events

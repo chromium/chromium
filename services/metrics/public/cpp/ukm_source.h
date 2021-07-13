@@ -132,6 +132,9 @@ class METRICS_EXPORT UkmSource {
 
   // Sets the current "custom tab" state. This can be called from any thread.
   static void SetCustomTabVisible(bool visible);
+  // Sets the current "android_activity_type" state, this will replace the
+  // "custom tab" state.
+  static void SetAndroidActivityTypeState(int32_t android_activity_type);
 
  private:
   const ukm::SourceId id_;
@@ -142,7 +145,9 @@ class METRICS_EXPORT UkmSource {
   // A flag indicating if metric was collected in a custom tab. This is set
   // automatically when the object is created and so represents the state when
   // the metric was created.
+  // TODO(crbug/1228735): To be replaced by |android_activity_type_state_|.
   const CustomTabState custom_tab_state_;
+  const int32_t android_activity_type_state_ = -1;
 
   // When this object was created.
   const base::TimeTicks creation_time_;

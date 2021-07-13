@@ -27,9 +27,11 @@ constexpr char kMaxUrlLengthMessage[] = "URLTooLong";
 // changed to an Atomic32 (make CustomTabState derive from int32_t) and accessed
 // with no-barrier loads and stores.
 UkmSource::CustomTabState g_custom_tab_state = UkmSource::kCustomTabUnset;
+// TODO(crbug/1228735): This will be replacing g_custom_tab_state above.
+int32_t g_android_activity_type_state = -1;
 
 // Returns a URL that is under the length limit, by returning a constant
-// string when the URl is too long.
+// string when the URL is too long.
 std::string GetShortenedURL(const GURL& url) {
   if (url.spec().length() > kMaxURLLength)
     return kMaxUrlLengthMessage;
@@ -60,11 +62,35 @@ SourceType ToProtobufSourceType(SourceIdType source_id_type) {
       return SourceType::DEFAULT;
   }
 }
+
+AndroidActivityType ToProtobufActivityType(int32_t type) {
+  switch (type) {
+    case 0:
+      return AndroidActivityType::TABBED;
+    case 1:
+      return AndroidActivityType::CUSTOM_TAB;
+    case 2:
+      return AndroidActivityType::TRUSTED_WEB_ACTIVITY;
+    case 3:
+      return AndroidActivityType::WEB_APP;
+    case 4:
+      return AndroidActivityType::WEB_APK;
+    default:
+      NOTREACHED();
+      return AndroidActivityType::TABBED;
+  }
+}
+
 }  // namespace
 
 // static
 void UkmSource::SetCustomTabVisible(bool visible) {
   g_custom_tab_state = visible ? kCustomTabTrue : kCustomTabFalse;
+}
+
+// static
+void UkmSource::SetAndroidActivityTypeState(int32_t activity_type) {
+  g_android_activity_type_state = activity_type;
 }
 
 UkmSource::NavigationData::NavigationData() = default;
@@ -100,6 +126,7 @@ UkmSource::UkmSource(ukm::SourceId id, const GURL& url)
     : id_(id),
       type_(GetSourceIdType(id_)),
       custom_tab_state_(g_custom_tab_state),
+      android_activity_type_state_(g_android_activity_type_state),
       creation_time_(base::TimeTicks::Now()) {
   navigation_data_.urls = {url};
   DCHECK(!url.is_empty());
@@ -110,6 +137,7 @@ UkmSource::UkmSource(ukm::SourceId id, const NavigationData& navigation_data)
       type_(GetSourceIdType(id_)),
       navigation_data_(navigation_data),
       custom_tab_state_(g_custom_tab_state),
+      android_activity_type_state_(g_android_activity_type_state),
       creation_time_(base::TimeTicks::Now()) {
   DCHECK(type_ == SourceIdType::NAVIGATION_ID);
   DCHECK(!navigation_data.urls.empty());
@@ -140,6 +168,12 @@ void UkmSource::PopulateProto(Source* proto_source) const {
 
   if (custom_tab_state_ != kCustomTabUnset)
     proto_source->set_is_custom_tab(custom_tab_state_ == kCustomTabTrue);
+
+  // -1 corresponds to the unset state. Android activity type values start at 0.
+  // See chrome/browser/flags/ActivityType.java
+  if (android_activity_type_state_ != -1)
+    proto_source->set_android_activity_type(
+        ToProtobufActivityType(android_activity_type_state_));
 
   if (navigation_data_.previous_source_id != kInvalidSourceId)
     proto_source->set_previous_source_id(navigation_data_.previous_source_id);

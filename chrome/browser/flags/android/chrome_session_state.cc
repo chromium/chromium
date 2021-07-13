@@ -46,10 +46,11 @@ bool GetIsInMultiWindowModeValue() {
 
 static void JNI_ChromeSessionState_SetActivityType(JNIEnv* env, jint type) {
   activity_type = static_cast<ActivityType>(type);
-  // TODO(peconn): Look into adding this for UKM as well.
+  // TODO(crbug/1228735): deprecate custom tab field.
   ukm::UkmSource::SetCustomTabVisible(
       GetCustomTabsVisibleValue(activity_type) ==
       chrome::android::VISIBLE_CUSTOM_TAB);
+  ukm::UkmSource::SetAndroidActivityTypeState(type);
 }
 
 static void JNI_ChromeSessionState_SetIsInMultiWindowMode(
