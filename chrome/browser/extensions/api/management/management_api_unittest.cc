@@ -80,7 +80,7 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
   // A wrapper around extension_function_test_utils::RunFunction that runs with
   // the associated browser, no flags, and can take stack-allocated arguments.
   bool RunFunction(const scoped_refptr<ExtensionFunction>& function,
-                   const base::ListValue& args);
+                   const base::Value& args);
 
   // Runs the management.setEnabled() function to enable an extension.
   bool RunSetEnabledFunction(content::WebContents* web_contents,
@@ -124,9 +124,10 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
 
 bool ManagementApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
-    const base::ListValue& args) {
+    const base::Value& args) {
   return extension_function_test_utils::RunFunction(
-      function.get(), args.CreateDeepCopy(), browser(), api_test_utils::NONE);
+      function.get(), base::Value::AsListValue(args).CreateDeepCopy(),
+      browser(), api_test_utils::NONE);
 }
 
 bool ManagementApiUnitTest::RunSetEnabledFunction(
@@ -147,9 +148,9 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
       base::MakeRefCounted<ManagementSetEnabledFunction>();
   if (web_contents)
     function->SetRenderFrameHost(web_contents->GetMainFrame());
-  base::ListValue args;
-  args.AppendString(extension_id);
-  args.AppendBoolean(enabled);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(extension_id);
+  args.Append(enabled);
   bool result = RunFunction(function, args);
   if (error)
     *error = function->GetError();
@@ -189,18 +190,18 @@ TEST_F(ManagementApiUnitTest, ManagementSetEnabled) {
       new ManagementSetEnabledFunction());
   function->set_extension(source_extension);
 
-  base::ListValue disable_args;
-  disable_args.AppendString(extension_id);
-  disable_args.AppendBoolean(false);
+  base::Value disable_args(base::Value::Type::LIST);
+  disable_args.Append(extension_id);
+  disable_args.Append(false);
 
   // Test disabling an (enabled) extension.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
   EXPECT_TRUE(RunFunction(function, disable_args)) << function->GetError();
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
 
-  base::ListValue enable_args;
-  enable_args.AppendString(extension_id);
-  enable_args.AppendBoolean(true);
+  base::Value enable_args(base::Value::Type::LIST);
+  enable_args.Append(extension_id);
+  enable_args.Append(true);
 
   // Test re-enabling it.
   function = new ManagementSetEnabledFunction();
@@ -252,9 +253,9 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {
       [this](scoped_refptr<const Extension> source_extension,
              scoped_refptr<const Extension> target_extension) {
         std::string id = target_extension->id();
-        base::ListValue args;
-        args.AppendString(id);
-        args.AppendBoolean(false /* disable the extension */);
+        base::Value args(base::Value::Type::LIST);
+        args.Append(id);
+        args.Append(false /* disable the extension */);
         auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
         function->set_extension(source_extension);
         bool did_disable = RunFunction(function, args);
@@ -307,9 +308,9 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
       [this, component](scoped_refptr<const Extension> source_extension,
                         scoped_refptr<const Extension> target_extension) {
         std::string id = target_extension->id();
-        base::ListValue args;
-        args.AppendString(id);
-        args.AppendBoolean(true /* enable the extension */);
+        base::Value args(base::Value::Type::LIST);
+        args.Append(id);
+        args.Append(true /* enable the extension */);
         auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
         function->set_extension(source_extension);
         bool did_enable = RunFunction(function, args);
@@ -336,8 +337,8 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
   scoped_refptr<const Extension> extension = AddExtension();
   std::string extension_id = extension->id();
 
-  base::ListValue uninstall_args;
-  uninstall_args.AppendString(extension->id());
+  base::Value uninstall_args(base::Value::Type::LIST);
+  uninstall_args.Append(extension->id());
 
   // Auto-accept any uninstalls.
   {
@@ -380,8 +381,8 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
               function->GetError());
 
     // Try again, using showConfirmDialog: false.
-    std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue());
-    options->SetBoolean("showConfirmDialog", false);
+    base::Value options(base::Value::Type::DICTIONARY);
+    options.SetBoolPath("showConfirmDialog", false);
     uninstall_args.Append(std::move(options));
     function = new ManagementUninstallFunction();
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
@@ -412,8 +413,8 @@ TEST_F(ManagementApiUnitTest, ManagementWebStoreUninstall) {
       ExtensionBuilder("Test").SetID(extensions::kWebStoreAppId).Build();
   scoped_refptr<const Extension> extension = AddExtension();
   std::string extension_id = extension->id();
-  base::ListValue uninstall_args;
-  uninstall_args.AppendString(extension->id());
+  base::Value uninstall_args(base::Value::Type::LIST);
+  uninstall_args.Append(extension->id());
 
   {
     ScopedTestDialogAutoConfirm auto_confirm(
@@ -466,8 +467,8 @@ TEST_F(ManagementApiUnitTest, ManagementProgrammaticUninstall) {
       ExtensionBuilder("Triggering Extension").SetID("123").Build();
   scoped_refptr<const Extension> extension = AddExtension();
   std::string extension_id = extension->id();
-  base::ListValue uninstall_args;
-  uninstall_args.AppendString(extension->id());
+  base::Value uninstall_args(base::Value::Type::LIST);
+  uninstall_args.Append(extension->id());
   {
     scoped_refptr<ExtensionFunction> function(
         new ManagementUninstallFunction());
@@ -507,8 +508,8 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
   ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
   scoped_refptr<ExtensionFunction> function(new ManagementUninstallFunction());
-  base::ListValue uninstall_args;
-  uninstall_args.AppendString(id);
+  base::Value uninstall_args(base::Value::Type::LIST);
+  uninstall_args.Append(id);
   EXPECT_TRUE(RunFunction(function, uninstall_args)) << function->GetError();
 
   EXPECT_EQ(nullptr, registry()->GetInstalledExtension(id));
@@ -525,9 +526,9 @@ TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlocklisted) {
 
   // Test enabling it.
   {
-    base::ListValue enable_args;
-    enable_args.AppendString(id);
-    enable_args.AppendBoolean(true);
+    base::Value enable_args(base::Value::Type::LIST);
+    enable_args.Append(id);
+    enable_args.Append(true);
     function = new ManagementSetEnabledFunction();
     EXPECT_TRUE(RunFunction(function, enable_args)) << function->GetError();
     EXPECT_FALSE(registry()->enabled_extensions().Contains(id));
@@ -536,9 +537,9 @@ TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlocklisted) {
 
   // Test disabling it
   {
-    base::ListValue disable_args;
-    disable_args.AppendString(id);
-    disable_args.AppendBoolean(false);
+    base::Value disable_args(base::Value::Type::LIST);
+    disable_args.Append(id);
+    disable_args.Append(false);
 
     function = new ManagementSetEnabledFunction();
     EXPECT_TRUE(RunFunction(function, disable_args)) << function->GetError();
