@@ -1068,11 +1068,13 @@ TEST_P(ArcDataSnapshotdManagerFlowTest, LoadSnapshotsBasic) {
     EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kRunning);
     manager->OnSnapshotSessionPolicyCompliant();
     CheckVerifiedLastSnapshot();
+    CheckSnapshots(2 /* expected_snapshots_number */,
+                   false /* expected_blocked_ui_mode */);
+  } else {
+    CheckSnapshots(0 /* expected_snapshots_number */,
+                   false /* expected_blocked_ui_mode */);
   }
-
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
-  CheckSnapshots(2 /* expected_snapshots_number */,
-                 false /* expected_blocked_ui_mode */);
 
   // Exit MGS successfully.
   LogoutPublicSession();

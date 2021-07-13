@@ -295,8 +295,10 @@ void ArcDataSnapshotdManager::Snapshot::Sync() {
 void ArcDataSnapshotdManager::Snapshot::ClearSnapshot(bool last) {
   std::unique_ptr<SnapshotInfo>* snapshot =
       (last ? &last_snapshot_ : &previous_snapshot_);
-  snapshot->reset();
-  Sync();
+  if (snapshot) {
+    snapshot->reset();
+    Sync();
+  }
 }
 
 void ArcDataSnapshotdManager::Snapshot::StartNewSnapshot() {
@@ -908,6 +910,10 @@ void ArcDataSnapshotdManager::OnSnapshotLoaded(base::OnceClosure callback,
   if (!success) {
     LOG(ERROR) << "Failed to load ARC data directory snapshot.";
     state_ = State::kNone;
+
+    snapshot_.ClearSnapshot(false /* last */);
+    snapshot_.ClearSnapshot(true /* last */);
+
     std::move(callback).Run();
     return;
   }
@@ -915,9 +921,8 @@ void ArcDataSnapshotdManager::OnSnapshotLoaded(base::OnceClosure callback,
           << " snapshot";
   state_ = State::kRunning;
   // Clear last snapshot if the previous one was loaded.
-  if (!last && snapshot_.last_snapshot()) {
+  if (!last) {
     snapshot_.ClearSnapshot(true /* last */);
-    snapshot_.Sync();
   }
   EnsureDaemonStopped(base::DoNothing());
 
