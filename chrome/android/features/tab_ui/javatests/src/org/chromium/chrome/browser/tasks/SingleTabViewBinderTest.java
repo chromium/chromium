@@ -32,14 +32,14 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /** Tests for {@link SingleTabViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class SingleTabViewBinderTest extends DummyUiActivityTestCase {
+public class SingleTabViewBinderTest extends DummyUiChromeActivityTestCase {
     private SingleTabView mSingleTabView;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private PropertyModel mPropertyModel;

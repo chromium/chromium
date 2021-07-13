@@ -26,9 +26,9 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import java.util.concurrent.TimeoutException;
  * Tests for {@link AppMenuAdapter}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class AppMenuAdapterTest extends DummyUiActivityTestCase {
+public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
     static class TestClickHandler implements AppMenuClickHandler {
         public CallbackHelper onClickCallback = new CallbackHelper();
         public MenuItem lastClickedItem;

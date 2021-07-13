@@ -40,9 +40,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -54,6 +54,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 /**
  * Instrumentation tests for {@link ConfirmImportSyncDataDialogCoordinator}.
@@ -93,8 +94,8 @@ public class ConfirmImportSyncDataDialogTest {
             new DisableAnimationsTestRule();
 
     @ClassRule
-    public static final BaseActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static final ThemedDummyUiActivityTestRule<DummyUiActivity> sActivityTestRule =
+            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
 
     @Mock
     private ConfirmImportSyncDataDialogCoordinator.Listener mListenerMock;

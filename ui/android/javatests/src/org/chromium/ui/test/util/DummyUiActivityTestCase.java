@@ -24,16 +24,30 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 public class DummyUiActivityTestCase {
     private DummyUiActivity mActivity;
 
-    private BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    private final BaseActivityTestRule<? extends DummyUiActivity> mActivityTestRule;
 
     // Disable animations to reduce flakiness.
     @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    public static final DisableAnimationsTestRule disableAnimationsRule =
+            new DisableAnimationsTestRule();
 
     @Rule
-    public TestRule ruleChain = RuleChain.outerRule(mActivityTestRule)
-                                        .around(new TestDriverRule());
+    public final TestRule ruleChain;
+
+    /** Default constructor that creates a {@link DummyUiActivity} as expected. */
+    public DummyUiActivityTestCase() {
+        this(new BaseActivityTestRule<DummyUiActivity>(DummyUiActivity.class));
+    }
+
+    /**
+     * Constructor to allow subclasses to inject activity and rule subclasses.
+     * @param activityTestRule Injected rule to use for activity interactions.
+     */
+    protected DummyUiActivityTestCase(
+            BaseActivityTestRule<? extends DummyUiActivity> activityTestRule) {
+        mActivityTestRule = activityTestRule;
+        ruleChain = RuleChain.outerRule(mActivityTestRule).around(new TestDriverRule());
+    }
 
     /**
      * TestRule to setup and tear down for each test.
@@ -71,9 +85,5 @@ public class DummyUiActivityTestCase {
 
     public DummyUiActivity getActivity() {
         return mActivity;
-    }
-
-    public BaseActivityTestRule<DummyUiActivity> getActivityTestRule() {
-        return mActivityTestRule;
     }
 }

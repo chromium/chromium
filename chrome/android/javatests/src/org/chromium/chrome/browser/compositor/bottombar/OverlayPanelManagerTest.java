@@ -31,12 +31,12 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Pane
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.concurrent.TimeoutException;
 
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeoutException;
  * Class responsible for testing the OverlayPanelManager.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
+public class OverlayPanelManagerTest extends DummyUiChromeActivityTestCase {
     private static final int MOCK_TOOLBAR_HEIGHT = 100;
 
     @Rule

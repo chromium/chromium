@@ -16,8 +16,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link SnackbarManager}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class SnackbarTest extends DummyUiActivityTestCase {
+public class SnackbarTest extends DummyUiChromeActivityTestCase {
     private SnackbarManager mManager;
     private SnackbarController mDefaultController = new SnackbarController() {
         @Override

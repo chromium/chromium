@@ -8,8 +8,8 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
@@ -39,7 +39,7 @@ public class DummyUiActivity extends AppCompatActivity {
      * in test code later if you want to set theme after activity launched.
      * @param resid The style resource describing the theme.
      */
-    public static void setTestTheme(@IdRes int resid) {
+    public static void setTestTheme(@StyleRes int resid) {
         sTestTheme = resid;
     }
 

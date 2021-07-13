@@ -28,9 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
-import org.chromium.components.browser_ui.settings.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**

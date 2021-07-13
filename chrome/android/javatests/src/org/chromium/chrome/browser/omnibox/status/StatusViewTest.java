@@ -39,18 +39,18 @@ import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.UiRestriction;
 
 /**
  * Tests for {@link StatusView} and {@link StatusViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class StatusViewTest extends DummyUiActivityTestCase {
+public class StatusViewTest extends DummyUiChromeActivityTestCase {
     @Mock
     private SearchEngineLogoUtils mSearchEngineLogoUtils;
 

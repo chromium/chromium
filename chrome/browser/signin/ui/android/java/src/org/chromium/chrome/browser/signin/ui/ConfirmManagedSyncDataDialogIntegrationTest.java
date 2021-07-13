@@ -22,8 +22,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  * Test for {@link ConfirmManagedSyncDataDialog}
@@ -31,7 +31,7 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(ConfirmSyncDataIntegrationTest.CONFIRM_SYNC_DATA_BATCH_NAME)
-public class ConfirmManagedSyncDataDialogIntegrationTest extends DummyUiActivityTestCase {
+public class ConfirmManagedSyncDataDialogIntegrationTest extends DummyUiChromeActivityTestCase {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
     @Rule

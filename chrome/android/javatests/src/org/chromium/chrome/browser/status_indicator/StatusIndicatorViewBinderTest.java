@@ -29,19 +29,19 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  * Tests for {@link StatusIndicatorViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class StatusIndicatorViewBinderTest extends DummyUiActivityTestCase {
+public class StatusIndicatorViewBinderTest extends DummyUiChromeActivityTestCase {
     private static final String STATUS_TEXT = "Offline";
 
     private ViewResourceFrameLayout mContainer;

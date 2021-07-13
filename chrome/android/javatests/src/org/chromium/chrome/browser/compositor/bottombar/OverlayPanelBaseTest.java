@@ -28,17 +28,17 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  * Tests logic in the OverlayPanelBase.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class OverlayPanelBaseTest extends DummyUiActivityTestCase {
+public class OverlayPanelBaseTest extends DummyUiChromeActivityTestCase {
     private static final float UPWARD_VELOCITY = -1.0f;
     private static final float DOWNWARD_VELOCITY = 1.0f;
 

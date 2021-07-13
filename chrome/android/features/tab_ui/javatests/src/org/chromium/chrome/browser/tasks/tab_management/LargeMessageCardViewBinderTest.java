@@ -25,10 +25,10 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for {@link LargeMessageCardViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class LargeMessageCardViewBinderTest extends DummyUiActivityTestCase {
+public class LargeMessageCardViewBinderTest extends DummyUiChromeActivityTestCase {
     private static final String TITLE_TEXT = "titleText";
     private static final String ACTION_TEXT = "actionText";
     private static final String DESCRIPTION_TEXT = "descriptionText";

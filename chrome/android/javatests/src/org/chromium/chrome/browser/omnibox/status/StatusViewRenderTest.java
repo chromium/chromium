@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIco
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -42,7 +43,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.io.IOException;
 
@@ -50,7 +50,7 @@ import java.io.IOException;
  * Render tests for {@link StatusView}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class StatusViewRenderTest extends DummyUiActivityTestCase {
+public class StatusViewRenderTest extends DummyUiChromeActivityTestCase {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();

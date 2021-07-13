@@ -31,9 +31,9 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for {@link TabGroupUiViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TabGroupUiViewBinderTest extends DummyUiActivityTestCase {
+public class TabGroupUiViewBinderTest extends DummyUiChromeActivityTestCase {
     private ImageView mLeftButton;
     private ImageView mRightButton;
     private ViewGroup mContainerView;

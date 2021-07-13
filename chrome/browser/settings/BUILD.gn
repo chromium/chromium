@@ -43,6 +43,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
+    "//ui/android:ui_java_test_support",
   ]
 }
 

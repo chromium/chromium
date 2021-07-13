@@ -18,13 +18,13 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 import java.util.Arrays;
 
@@ -38,8 +38,9 @@ public class PasswordEditDialogViewTest {
     private static final String FOOTER = "Footer";
 
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static ThemedDummyUiActivityTestRule<DummyUiActivity> sActivityTestRule =
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, org.chromium.chrome.R.style.ColorOverlay);
 
     private static Activity sActivity;
 

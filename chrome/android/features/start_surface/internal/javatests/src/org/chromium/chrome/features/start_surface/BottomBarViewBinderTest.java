@@ -28,16 +28,16 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link BottomBarViewBinder}. */
 @SuppressWarnings("ConstantConditions")
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class BottomBarViewBinderTest extends DummyUiActivityTestCase {
+public class BottomBarViewBinderTest extends DummyUiChromeActivityTestCase {
     @SuppressWarnings("unused")
     private BottomBarCoordinator mBottomBarCoordinator;
     private TabLayout mTabLayout;

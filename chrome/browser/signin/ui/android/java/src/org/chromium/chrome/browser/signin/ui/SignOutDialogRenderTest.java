@@ -34,11 +34,11 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  * Render tests for {@link SignOutDialogFragment}
@@ -46,7 +46,7 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class SignOutDialogRenderTest extends DummyUiActivityTestCase {
+public class SignOutDialogRenderTest extends DummyUiChromeActivityTestCase {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
     @Rule

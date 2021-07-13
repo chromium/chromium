@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
@@ -37,6 +36,7 @@ import org.chromium.chrome.browser.video_tutorials.test.TestVideoTutorialService
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 /**
  * Tests for {@link TutorialListCoordinator}.
@@ -44,8 +44,8 @@ import org.chromium.ui.test.util.DummyUiActivity;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TutorialListCoordinatorTest {
     @Rule
-    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
 
     private Activity mActivity;
     private View mContentView;
