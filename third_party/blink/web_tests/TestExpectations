@@ -7290,7 +7290,6 @@ crbug.com/1227710 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.h
 crbug.com/1220114 [ Linux ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
 
 # PlzServiceWorker failing tests
-crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/network/cross-origin-isolation/coop-coep-get-security-isolation-info-service-worker.js [ Failure ]
 crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Timeout ]
 crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/service-worker/offline-service-worker.js [ Timeout ]
 crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/target/target-setAutoAttach-service-worker.js [ Crash ]

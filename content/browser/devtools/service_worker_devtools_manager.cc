@@ -165,6 +165,12 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
     agent_host->WorkerStarted(worker_process_id, worker_route_id);
     *pause_on_start = agent_host->should_pause_on_start();
     *devtools_worker_token = agent_host->devtools_worker_token();
+
+    if (cross_origin_embedder_policy) {
+      UpdateCrossOriginEmbedderPolicy(worker_process_id, worker_route_id,
+                                      cross_origin_embedder_policy.value(),
+                                      std::move(coep_reporter));
+    }
     return;
   }
 
