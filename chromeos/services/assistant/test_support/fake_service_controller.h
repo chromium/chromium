@@ -98,6 +98,7 @@ class FakeServiceController
   void UpdateSettings(const std::string& settings,
                       UpdateSettingsCallback callback) override;
   void GetSettings(const std::string& selector,
+                   bool include_header,
                    GetSettingsCallback callback) override;
   void SetHotwordEnabled(bool value) override {}
 

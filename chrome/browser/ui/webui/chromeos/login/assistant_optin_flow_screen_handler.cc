@@ -22,6 +22,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/proto/get_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
@@ -169,9 +170,6 @@ void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
                    chromeos::assistant::features::IsVoiceMatchDisabled());
   dict->SetBoolean("betterAssistantEnabled",
                    chromeos::assistant::features::IsBetterAssistantEnabled());
-  // TODO(https://crbug.com/1224850): read actual minor mode signal from account
-  // capability or get this info from consent server.
-  dict->SetBoolean("isMinorMode", features::IsMinorModeRestrictionEnabled());
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
@@ -350,7 +348,7 @@ void AssistantOptInFlowScreenHandler::SendGetSettingsRequest() {
   }
 
   assistant::SettingsUiSelector selector = GetSettingsUiSelector();
-  assistant::AssistantSettings::Get()->GetSettings(
+  assistant::AssistantSettings::Get()->GetSettingsWithHeader(
       selector.SerializeAsString(),
       base::BindOnce(&AssistantOptInFlowScreenHandler::OnGetSettingsResponse,
                      weak_factory_.GetWeakPtr()));
@@ -377,7 +375,7 @@ void AssistantOptInFlowScreenHandler::UpdateValuePropScreen() {
 }
 
 void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
-    const std::string& settings) {
+    const std::string& response) {
   const base::TimeDelta time_since_request_sent =
       base::TimeTicks::Now() - send_request_time_;
   UMA_HISTOGRAM_TIMES("Assistant.OptInFlow.GetSettingsRequestTime",
@@ -391,12 +389,20 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
     return;
   }
 
-  assistant::SettingsUi settings_ui;
-  if (!settings_ui.ParseFromString(settings)) {
+  assistant::GetSettingsUiResponse settings_ui_response;
+  if (!settings_ui_response.ParseFromString(response)) {
     LOG(ERROR) << "Failed to parse get settings response.";
     HandleFlowFinished();
     return;
   }
+
+  auto settings_ui = settings_ui_response.settings();
+  auto header = settings_ui_response.header();
+
+  bool equal_weight_buttons =
+      features::IsMinorModeRestrictionEnabled() &&
+      header.footer_button_layout() ==
+          assistant::SettingsResponseHeader_AcceptRejectLayout_EQUAL_WEIGHT;
 
   if (settings_ui.has_gaia_user_context_ui()) {
     auto gaia_user_context_ui = settings_ui.gaia_user_context_ui();
@@ -427,6 +433,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   base::Value zippy_data(base::Value::Type::LIST);
   bool skip_activity_control = true;
   pending_consent_data_.clear();
+  // We read from `multi_consent_ui` field if it is populated and we assume user
+  // is a minor user; otherwise, we read from `consent_ui` field.
   if (features::IsMinorModeRestrictionEnabled() &&
       settings_ui.consent_flow_ui().multi_consent_ui().size()) {
     auto multi_consent_ui = settings_ui.consent_flow_ui().multi_consent_ui();
@@ -438,7 +446,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
         data.consent_token = activity_control_ui.consent_token();
         data.ui_audit_key = activity_control_ui.ui_audit_key();
         pending_consent_data_.push_back(data);
-        zippy_data.Append(CreateZippyData(activity_control_ui.setting_zippy()));
+        zippy_data.Append(CreateZippyData(activity_control_ui.setting_zippy(),
+                                          /*is_minor_mode=*/true));
       }
     }
   } else {
@@ -449,7 +458,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
       data.consent_token = activity_control_ui.consent_token();
       data.ui_audit_key = activity_control_ui.ui_audit_key();
       pending_consent_data_.push_back(data);
-      zippy_data.Append(CreateZippyData(activity_control_ui.setting_zippy()));
+      zippy_data.Append(CreateZippyData(activity_control_ui.setting_zippy(),
+                                        /*is_minor_mode=*/false));
     }
   }
 
@@ -505,7 +515,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   }
 
   // Pass string constants dictionary.
-  auto dictionary = GetSettingsUiStrings(settings_ui, activity_control_needed_);
+  auto dictionary = GetSettingsUiStrings(settings_ui, activity_control_needed_,
+                                         equal_weight_buttons);
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   dictionary.SetKey("voiceMatchEnforcedOff",
                     base::Value(IsVoiceMatchEnforcedOff(prefs)));

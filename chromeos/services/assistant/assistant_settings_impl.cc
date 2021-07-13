@@ -35,7 +35,15 @@ void AssistantSettingsImpl::Initialize(
 
 void AssistantSettingsImpl::GetSettings(const std::string& selector,
                                         GetSettingsCallback callback) {
-  settings_controller().GetSettings(selector, std::move(callback));
+  settings_controller().GetSettings(selector, /*include_header=*/false,
+                                    std::move(callback));
+}
+
+void AssistantSettingsImpl::GetSettingsWithHeader(
+    const std::string& selector,
+    GetSettingsCallback callback) {
+  settings_controller().GetSettings(selector, /*include_header=*/true,
+                                    std::move(callback));
 }
 
 void AssistantSettingsImpl::UpdateSettings(const std::string& update,

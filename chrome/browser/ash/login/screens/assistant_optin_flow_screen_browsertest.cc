@@ -32,6 +32,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/proto/get_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/services/assistant/service.h"
 #include "components/prefs/pref_service.h"
@@ -159,6 +160,8 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
 
   void set_setting_zippy_size(int size) { setting_zippy_size_ = size; }
 
+  void set_is_minor_user(bool is_minor_user) { is_minor_user_ = is_minor_user; }
+
   const std::set<OptIn>& collected_optins() const { return collected_optins_; }
 
   // Advances speaker ID enrollment to the next state.
@@ -203,7 +206,10 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
 
   // chromeos::assistant::AssistantSettings:
   void GetSettings(const std::string& selector,
-                   GetSettingsCallback callback) override {
+                   GetSettingsCallback callback) override {}
+
+  void GetSettingsWithHeader(const std::string& selector,
+                             GetSettingsCallback callback) override {
     chromeos::assistant::SettingsUiSelector selector_proto;
     ASSERT_TRUE(selector_proto.ParseFromString(selector));
     EXPECT_FALSE(selector_proto.about_me_settings());
@@ -212,15 +218,24 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
                   ASSISTANT_SUW_ONBOARDING_ON_CHROME_OS,
               selector_proto.consent_flow_ui_selector().flow_id());
 
-    chromeos::assistant::SettingsUi settings_ui;
-    auto* gaia_user_context_ui = settings_ui.mutable_gaia_user_context_ui();
+    chromeos::assistant::GetSettingsUiResponse response;
+
+    if (is_minor_user_) {
+      auto* header = response.mutable_header();
+      header->set_footer_button_layout(
+          chromeos::assistant::
+              SettingsResponseHeader_AcceptRejectLayout_EQUAL_WEIGHT);
+    }
+
+    auto* settings_ui = response.mutable_settings();
+    auto* gaia_user_context_ui = settings_ui->mutable_gaia_user_context_ui();
     gaia_user_context_ui->set_is_gaia_user(true);
     gaia_user_context_ui->set_waa_disabled_by_dasher_domain(
         (consent_ui_flags_ & CONSENT_UI_FLAG_WAA_DISABLED_BY_POLICY));
     gaia_user_context_ui->set_assistant_disabled_by_dasher_domain(
         (consent_ui_flags_ & CONSENT_UI_FLAG_ASSISTANT_DISABLED_BY_POLICY));
 
-    auto* consent_flow_ui = settings_ui.mutable_consent_flow_ui();
+    auto* consent_flow_ui = settings_ui->mutable_consent_flow_ui();
     consent_flow_ui->set_consent_status(
         chromeos::assistant::ConsentFlowUi_ConsentStatus_ASK_FOR_CONSENT);
     consent_flow_ui->mutable_consent_ui()->set_accept_button_text("OK");
@@ -251,7 +266,7 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
 
     if (selector_proto.email_opt_in() &&
         (consent_ui_flags_ & CONSENT_UI_FLAG_ASK_EMAIL_OPT_IN)) {
-      auto* email_opt_in = settings_ui.mutable_email_opt_in_ui();
+      auto* email_opt_in = settings_ui->mutable_email_opt_in_ui();
       email_opt_in->set_title("Receive email upfates");
       email_opt_in->set_description("It might be useful");
       email_opt_in->set_legal_text("And you can opt out");
@@ -261,7 +276,7 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
     }
 
     std::string message;
-    EXPECT_TRUE(settings_ui.SerializeToString(&message));
+    EXPECT_TRUE(response.SerializeToString(&message));
     std::move(callback).Run(message);
   }
 
@@ -366,6 +381,7 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
   std::set<OptIn> collected_optins_;
 
   int setting_zippy_size_ = 1;
+  bool is_minor_user_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedAssistantSettings);
 };
@@ -530,12 +546,17 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, Basic) {
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
+  EXPECT_TRUE(test::OobeJS().GetAttributeBool("inverse", kValuePropNextButton));
   TapWhenEnabled(kValuePropNextButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  EXPECT_TRUE(
+      test::OobeJS().GetAttributeBool("inverse", kRelatedInfoNextButton));
   TapWhenEnabled(kRelatedInfoNextButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
+  EXPECT_TRUE(
+      test::OobeJS().GetAttributeBool("inverse", kVoiceMatchAgreeButton));
   TapWhenEnabled(kVoiceMatchAgreeButton);
 
   WaitForScreenExit();
@@ -1113,6 +1134,11 @@ class AssistantOptInFlowMinorModeTest : public AssistantOptInFlowTest {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(features::kMinorModeRestriction);
   }
+
+  void SetUpOnMainThread() override {
+    AssistantOptInFlowTest::SetUpOnMainThread();
+    assistant_settings_->set_is_minor_user(true);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
@@ -1131,13 +1157,21 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
+  EXPECT_FALSE(
+      test::OobeJS().GetAttributeBool("inverse", kValuePropNextButton));
   TapWhenEnabled(kValuePropNextButton);
+  EXPECT_FALSE(
+      test::OobeJS().GetAttributeBool("inverse", kValuePropNextButton));
   TapWhenEnabled(kValuePropNextButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  EXPECT_FALSE(
+      test::OobeJS().GetAttributeBool("inverse", kRelatedInfoNextButton));
   TapWhenEnabled(kRelatedInfoNextButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
+  EXPECT_FALSE(
+      test::OobeJS().GetAttributeBool("inverse", kVoiceMatchAgreeButton));
   TapWhenEnabled(kVoiceMatchAgreeButton);
 
   WaitForScreenExit();

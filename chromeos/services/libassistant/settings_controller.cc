@@ -117,9 +117,9 @@ class SettingsController::DeviceSettingsUpdater
 // running or stopped.
 class GetSettingsResponseWaiter : public AbortableTask {
  public:
-  explicit GetSettingsResponseWaiter(
-      SettingsController::GetSettingsCallback callback)
-      : callback_(std::move(callback)) {}
+  GetSettingsResponseWaiter(SettingsController::GetSettingsCallback callback,
+                            bool include_header)
+      : callback_(std::move(callback)), include_header_(include_header) {}
 
   GetSettingsResponseWaiter(const GetSettingsResponseWaiter&) = delete;
   GetSettingsResponseWaiter& operator=(const GetSettingsResponseWaiter&) =
@@ -154,11 +154,16 @@ class GetSettingsResponseWaiter : public AbortableTask {
 
  private:
   void OnResponse(const assistant_client::VoicelessResponse& response) {
-    std::string result = assistant::UnwrapGetSettingsUiResponse(response);
+    std::string result =
+        assistant::UnwrapGetSettingsUiResponse(response, include_header_);
     std::move(callback_).Run(result);
   }
 
   SettingsController::GetSettingsCallback callback_;
+  // Whether to include header in response. If this is true, a serialized proto
+  // of GetSettingsUiResponse is passed to the callback; otherwise, a serialized
+  // proto of SettingsUi is passed to the callback.
+  bool include_header_;
   base::WeakPtrFactory<GetSettingsResponseWaiter> weak_factory_{this};
 };
 
@@ -247,9 +252,11 @@ void SettingsController::SetHotwordEnabled(bool value) {
 }
 
 void SettingsController::GetSettings(const std::string& selector,
+                                     bool include_header,
                                      GetSettingsCallback callback) {
-  auto* waiter = pending_response_waiters_.Add(
-      std::make_unique<GetSettingsResponseWaiter>(std::move(callback)));
+  auto* waiter =
+      pending_response_waiters_.Add(std::make_unique<GetSettingsResponseWaiter>(
+          std::move(callback), include_header));
   waiter->SendRequest(assistant_manager_internal_, selector);
 }
 

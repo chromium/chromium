@@ -22,6 +22,8 @@ class FakeAssistantSettingsImpl : public AssistantSettings {
   // AssistantSettings overrides:
   void GetSettings(const std::string& selector,
                    GetSettingsCallback callback) override;
+  void GetSettingsWithHeader(const std::string& selector,
+                             GetSettingsCallback callback) override;
   void UpdateSettings(const std::string& update,
                       UpdateSettingsCallback callback) override;
   void StartSpeakerIdEnrollment(

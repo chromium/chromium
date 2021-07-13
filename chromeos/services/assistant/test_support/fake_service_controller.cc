@@ -122,6 +122,7 @@ void FakeServiceController::UpdateSettings(const std::string& settings,
 }
 
 void FakeServiceController::GetSettings(const std::string& selector,
+                                        bool include_header,
                                         GetSettingsCallback callback) {
   // Callback must be called to satisfy the mojom contract.
   std::move(callback).Run(std::string());

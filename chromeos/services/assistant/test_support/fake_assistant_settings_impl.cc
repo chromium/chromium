@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "chromeos/services/assistant/public/proto/get_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 
 namespace chromeos {
@@ -23,6 +24,16 @@ void FakeAssistantSettingsImpl::GetSettings(const std::string& selector,
   settings_ui.mutable_consent_flow_ui()->set_consent_status(
       ConsentFlowUi_ConsentStatus_ALREADY_CONSENTED);
   std::move(callback).Run(settings_ui.SerializeAsString());
+}
+
+void FakeAssistantSettingsImpl::GetSettingsWithHeader(
+    const std::string& selector,
+    GetSettingsCallback callback) {
+  // Create a fake response
+  assistant::GetSettingsUiResponse response;
+  response.mutable_settings()->mutable_consent_flow_ui()->set_consent_status(
+      ConsentFlowUi_ConsentStatus_ALREADY_CONSENTED);
+  std::move(callback).Run(response.SerializeAsString());
 }
 
 void FakeAssistantSettingsImpl::UpdateSettings(
