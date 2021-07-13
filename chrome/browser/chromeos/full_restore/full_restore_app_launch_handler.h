@@ -72,8 +72,11 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // true, launches apps based on the restore data when apps are ready.
   void MaybeRestore();
 
+  // Goes through the normal startup browser session restore flow for launching
+  // browsers.
+  void LaunchBrowser();
+
   // AppLaunchHandler:
-  void LaunchBrowser() override;
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
   bool should_restore_ = false;

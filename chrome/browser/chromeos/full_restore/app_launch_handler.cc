@@ -59,34 +59,6 @@ bool AppLaunchHandler::HasRestoreData() {
   return restore_data_ && !restore_data_->app_id_to_launch_list().empty();
 }
 
-void AppLaunchHandler::LaunchApps() {
-  // If there is no launch list from the restore data, we don't need to handle
-  // launching.
-  const auto& launch_list = restore_data_->app_id_to_launch_list();
-  if (launch_list.empty())
-    return;
-
-  // Observe AppRegistryCache to get the notification when the app is ready.
-  DCHECK(
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
-  auto* cache = &apps::AppServiceProxyFactory::GetForProfile(profile_)
-                     ->AppRegistryCache();
-  Observe(cache);
-
-  // Add the app to `app_ids` if there is a launch list from the restore data
-  // for the app.
-  std::set<std::string> app_ids;
-  cache->ForEachApp([&app_ids, &launch_list](const apps::AppUpdate& update) {
-    if (update.Readiness() == apps::mojom::Readiness::kReady &&
-        launch_list.find(update.AppId()) != launch_list.end()) {
-      app_ids.insert(update.AppId());
-    }
-  });
-
-  for (const auto& app_id : app_ids)
-    LaunchApp(cache->GetAppType(app_id), app_id);
-}
-
 void AppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (!restore_data_ || !update.ReadinessChanged())
     return;
@@ -119,15 +91,44 @@ void AppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
   apps::AppRegistryCache::Observer::Observe(nullptr);
 }
 
+void AppLaunchHandler::LaunchApps() {
+  // If there is no launch list from the restore data, we don't need to handle
+  // launching.
+  const auto& launch_list = restore_data_->app_id_to_launch_list();
+  if (launch_list.empty())
+    return;
+
+  // Observe AppRegistryCache to get the notification when the app is ready.
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
+  auto* cache = &apps::AppServiceProxyFactory::GetForProfile(profile_)
+                     ->AppRegistryCache();
+  Observe(cache);
+
+  // Add the app to `app_ids` if there is a launch list from the restore data
+  // for the app.
+  std::set<std::string> app_ids;
+  cache->ForEachApp([&app_ids, &launch_list](const apps::AppUpdate& update) {
+    if (update.Readiness() == apps::mojom::Readiness::kReady &&
+        launch_list.find(update.AppId()) != launch_list.end()) {
+      app_ids.insert(update.AppId());
+    }
+  });
+
+  for (const auto& app_id : app_ids) {
+    // Chrome browser web pages are restored separately, so we don't need to
+    // launch browser windows.
+    if (app_id == extension_misc::kChromeAppId)
+      continue;
+
+    LaunchApp(cache->GetAppType(app_id), app_id);
+  }
+}
+
 void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
                                  const std::string& app_id) {
   DCHECK(restore_data_);
-
-  // For the Chrome browser, the browser session restore is used to restore the
-  // web pages, so we don't need to launch the app.
-  if (app_id == extension_misc::kChromeAppId) {
-    return;
-  }
+  DCHECK_NE(app_id, extension_misc::kChromeAppId);
 
   const auto it = restore_data_->app_id_to_launch_list().find(app_id);
   if (it == restore_data_->app_id_to_launch_list().end() ||

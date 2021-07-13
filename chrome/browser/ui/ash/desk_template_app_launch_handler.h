@@ -39,8 +39,10 @@ class DeskTemplateAppLaunchHandler : public chromeos::AppLaunchHandler {
       override;
 
  private:
+  // Go through the restore data launch list and launches the browser windows.
+  void LaunchBrowsers();
+
   // chromeos::AppLaunchHandler:
-  void LaunchBrowser() override;
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
   base::WeakPtrFactory<DeskTemplateAppLaunchHandler> weak_ptr_factory_{this};

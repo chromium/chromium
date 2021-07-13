@@ -48,16 +48,22 @@ namespace {
 
 constexpr int32_t kSettingsWindowId = 100;
 
-constexpr char kExampleUrl1[] = "https://examples.com";
-constexpr char kExampleUrl2[] = "https://examples.com";
+constexpr char kExampleUrl1[] = "https://examples1.com";
+constexpr char kExampleUrl2[] = "https://examples2.com";
+constexpr char kExampleUrl3[] = "https://examples3.com";
 
-aura::Window* FindAppWindow(int32_t window_id) {
+Browser* FindBrowser(int32_t window_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
     if (window->GetProperty(full_restore::kRestoreWindowIdKey) == window_id)
-      return window;
+      return browser;
   }
   return nullptr;
+}
+
+aura::Window* FindAppWindow(int32_t window_id) {
+  Browser* browser = FindBrowser(window_id);
+  return browser ? browser->window()->GetNativeWindow() : nullptr;
 }
 
 std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
@@ -546,4 +552,71 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithChromeApp) {
   DesksClient::Get()->LaunchDeskTemplate(desk_template_ptr->uuid(),
                                          base::DoNothing());
   waiter.Wait();
+}
+
+// Tests that launching a template that contains a browser window works as
+// expected.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  // Create a new browser and add a few tabs to it.
+  Browser::CreateParams params(Browser::TYPE_NORMAL, browser()->profile(),
+                               /*user_gesture=*/false);
+  Browser* browser = Browser::Create(params);
+  chrome::AddTabAt(browser, GURL(kExampleUrl1), /*index=*/-1,
+                   /*foreground=*/false);
+  chrome::AddTabAt(browser, GURL(kExampleUrl2), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser, GURL(kExampleUrl3), /*index=*/-1,
+                   /*foreground=*/false);
+  browser->window()->Show();
+  aura::Window* window = browser->window()->GetNativeWindow();
+
+  // Verify that the active tab is correct.
+  const int browser_active_index = browser->tab_strip_model()->active_index();
+  EXPECT_EQ(1, browser_active_index);
+
+  const int32_t browser_window_id =
+      window->GetProperty(full_restore::kWindowIdKey);
+  // Get current tabs from browser.
+  const std::vector<GURL> urls = GetURLsForBrowserWindow(browser);
+
+  base::RunLoop run_loop;
+  std::unique_ptr<ash::DeskTemplate> desk_template;
+  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
+      base::BindLambdaForTesting(
+          [&](bool success,
+              std::unique_ptr<ash::DeskTemplate> captured_desk_template) {
+            run_loop.Quit();
+            ASSERT_TRUE(captured_desk_template);
+            desk_template = std::move(captured_desk_template);
+          }));
+  run_loop.Run();
+  ASSERT_TRUE(desk_template);
+
+  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
+  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+
+  // Set the template we created as the template we want to launch.
+  ash::DeskTemplate* desk_template_ptr = desk_template.get();
+  SetLaunchTemplate(std::move(desk_template));
+  ash::DeskSwitchAnimationWaiter waiter;
+  DesksClient::Get()->LaunchDeskTemplate(desk_template_ptr->uuid(),
+                                         base::DoNothing());
+  waiter.Wait();
+
+  // Verify that the browser was launched with the correct urls and active tab.
+  Browser* new_browser = FindBrowser(browser_window_id);
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(urls, GetURLsForBrowserWindow(new_browser));
+  EXPECT_EQ(browser_active_index,
+            new_browser->tab_strip_model()->active_index());
+
+  // Verify that the browser window has been launched on the new desk (desk B).
+  EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
+  aura::Window* browser_window = new_browser->window()->GetNativeWindow();
+  ASSERT_TRUE(browser_window);
+  EXPECT_EQ(ash::Shell::GetContainer(browser_window->GetRootWindow(),
+                                     ash::kShellWindowId_DeskContainerB),
+            browser_window->parent());
 }

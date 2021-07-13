@@ -31,17 +31,20 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   // Returns true if there are some restore data. Otherwise, returns false.
   bool HasRestoreData();
 
-  void LaunchApps();
-
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
  protected:
+  // Note: LaunchApps does not launch browser windows, this is handled
+  // separately.
+  void LaunchApps();
+
+  virtual base::WeakPtr<AppLaunchHandler> GetWeakPtrAppLaunchHandler() = 0;
+
   Profile* profile_;
   std::unique_ptr<::full_restore::RestoreData> restore_data_;
-  virtual base::WeakPtr<AppLaunchHandler> GetWeakPtrAppLaunchHandler() = 0;
 
  private:
   void LaunchApp(apps::mojom::AppType app_type, const std::string& app_id);
@@ -51,7 +54,6 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
       const std::string& app_id,
       const ::full_restore::RestoreData::LaunchList& launch_list);
 
-  virtual void LaunchBrowser() = 0;
   virtual void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) = 0;
 };
 

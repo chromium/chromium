@@ -7,7 +7,11 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "components/full_restore/restore_data.h"
+#include "extensions/common/constants.h"
 
 DeskTemplateAppLaunchHandler::DeskTemplateAppLaunchHandler(Profile* profile)
     : chromeos::AppLaunchHandler(profile) {}
@@ -19,8 +23,10 @@ void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
   // TODO(sammiequon) : Investigate if we can early return if a launch is
   // currently underway.
   restore_data_ = std::move(restore_data);
-  if (HasRestoreData())
+  if (HasRestoreData()) {
     LaunchApps();
+    LaunchBrowsers();
+  }
 }
 
 base::WeakPtr<chromeos::AppLaunchHandler>
@@ -28,9 +34,35 @@ DeskTemplateAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void DeskTemplateAppLaunchHandler::LaunchBrowser() {
-  // TODO: Launch browser with `restore_id`.
-  NOTIMPLEMENTED();
+void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
+  DCHECK(restore_data_);
+
+  const auto& launch_list = restore_data_->app_id_to_launch_list();
+  for (const auto& iter : launch_list) {
+    if (iter.first != extension_misc::kChromeAppId)
+      continue;
+
+    for (const auto& window_iter : iter.second) {
+      absl::optional<std::vector<GURL>> urls = window_iter.second->urls;
+      if (!urls || urls->empty())
+        continue;
+
+      Browser::CreateParams create_params = Browser::CreateParams(
+          Browser::TYPE_NORMAL, profile_, /*user_gesture=*/false);
+      create_params.restore_id = window_iter.first;
+      Browser* browser = Browser::Create(create_params);
+
+      absl::optional<int32_t> active_tab_index =
+          window_iter.second->active_tab_index;
+      for (int i = 0; i < urls->size(); i++) {
+        chrome::AddTabAt(
+            browser, urls->at(i), /*index=*/-1,
+            /*foreground=*/(active_tab_index && i == *active_tab_index));
+      }
+
+      browser->window()->ShowInactive();
+    }
+  }
 }
 
 void DeskTemplateAppLaunchHandler::RecordRestoredAppLaunch(
