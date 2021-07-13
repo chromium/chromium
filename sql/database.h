@@ -21,6 +21,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
@@ -323,9 +324,9 @@ class COMPONENT_EXPORT(SQL) Database {
   // These APIs are only exposed for use in recovery. They are extremely subtle
   // and are not useful for features built on top of //sql.
   bool AttachDatabase(const base::FilePath& other_db_path,
-                      const char* attachment_point,
+                      base::StringPiece attachment_point,
                       InternalApiToken);
-  bool DetachDatabase(const char* attachment_point, InternalApiToken);
+  bool DetachDatabase(base::StringPiece attachment_point, InternalApiToken);
 
   // Statements ----------------------------------------------------------------
 
@@ -396,9 +397,9 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns true if the given structure exists.  Instead of test-then-create,
   // callers should almost always prefer the "IF NOT EXISTS" version of the
   // CREATE statement.
-  bool DoesIndexExist(const char* index_name) const;
-  bool DoesTableExist(const char* table_name) const;
-  bool DoesViewExist(const char* table_name) const;
+  bool DoesIndexExist(base::StringPiece index_name) const;
+  bool DoesTableExist(base::StringPiece table_name) const;
+  bool DoesViewExist(base::StringPiece table_name) const;
 
   // Returns true if a column with the given name exists in the given table.
   //
@@ -529,7 +530,8 @@ class COMPONENT_EXPORT(SQL) Database {
   }
 
   // Internal helper for Does*Exist() functions.
-  bool DoesSchemaItemExist(const char* name, const char* type) const;
+  bool DoesSchemaItemExist(base::StringPiece name,
+                           base::StringPiece type) const;
 
   // Accessors for global error-expecter, for injecting behavior during tests.
   // See test/scoped_error_expecter.h.

@@ -22,6 +22,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -111,11 +112,10 @@ int BackupDatabase(sqlite3* src, sqlite3* dst, const char* db_name) {
 // Be very strict on attachment point.  SQLite can handle a much wider
 // character set with appropriate quoting, but Chromium code should
 // just use clean names to start with.
-bool ValidAttachmentPoint(const char* attachment_point) {
-  for (size_t i = 0; attachment_point[i]; ++i) {
-    if (!(base::IsAsciiDigit(attachment_point[i]) ||
-          base::IsAsciiAlpha(attachment_point[i]) ||
-          attachment_point[i] == '_')) {
+bool ValidAttachmentPoint(base::StringPiece attachment_point) {
+  for (char attachment_char : attachment_point) {
+    if (!(base::IsAsciiDigit(attachment_char) ||
+          base::IsAsciiAlpha(attachment_char) || attachment_char == '_')) {
       return false;
     }
   }
@@ -1071,7 +1071,7 @@ void Database::RollbackAllTransactions() {
 }
 
 bool Database::AttachDatabase(const base::FilePath& other_db_path,
-                              const char* attachment_point,
+                              base::StringPiece attachment_point,
                               InternalApiToken) {
   TRACE_EVENT0("sql", "Database::AttachDatabase");
 
@@ -1089,7 +1089,8 @@ bool Database::AttachDatabase(const base::FilePath& other_db_path,
   return s.Run();
 }
 
-bool Database::DetachDatabase(const char* attachment_point, InternalApiToken) {
+bool Database::DetachDatabase(base::StringPiece attachment_point,
+                              InternalApiToken) {
   TRACE_EVENT0("sql", "Database::DetachDatabase");
 
   DCHECK(ValidAttachmentPoint(attachment_point));
@@ -1322,19 +1323,20 @@ bool Database::IsSQLValid(const char* sql) {
   return true;
 }
 
-bool Database::DoesIndexExist(const char* index_name) const {
+bool Database::DoesIndexExist(base::StringPiece index_name) const {
   return DoesSchemaItemExist(index_name, "index");
 }
 
-bool Database::DoesTableExist(const char* table_name) const {
+bool Database::DoesTableExist(base::StringPiece table_name) const {
   return DoesSchemaItemExist(table_name, "table");
 }
 
-bool Database::DoesViewExist(const char* view_name) const {
+bool Database::DoesViewExist(base::StringPiece view_name) const {
   return DoesSchemaItemExist(view_name, "view");
 }
 
-bool Database::DoesSchemaItemExist(const char* name, const char* type) const {
+bool Database::DoesSchemaItemExist(base::StringPiece name,
+                                   base::StringPiece type) const {
   static const char kSql[] =
       "SELECT 1 FROM sqlite_master WHERE type=? AND name=?";
   Statement statement(GetUntrackedStatement(kSql));
