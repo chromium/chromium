@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
 import org.chromium.chrome.browser.browserservices.QualityEnforcer;
-import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;

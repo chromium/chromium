@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebacti
 import android.os.SystemClock;
 
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.tab.Tab;
 
 import javax.inject.Inject;
 
@@ -70,7 +71,10 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
         mLastStateChangeTimestampMs = SystemClock.elapsedRealtime();
 
         if (mInVerifiedOrigin && !mTwaOpenedRecorded) {
-            mRecorder.recordTwaOpened(mTabProvider.get());
+            Tab tab = mTabProvider.get();
+            if (tab != null) {
+                mRecorder.recordTwaOpened(tab.getWebContents());
+            }
             mTwaOpenedRecorded = true;
         }
     }

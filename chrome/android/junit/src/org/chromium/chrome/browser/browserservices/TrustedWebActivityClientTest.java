@@ -34,6 +34,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;

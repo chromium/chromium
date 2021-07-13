@@ -11,7 +11,7 @@ import androidx.annotation.WorkerThread;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;

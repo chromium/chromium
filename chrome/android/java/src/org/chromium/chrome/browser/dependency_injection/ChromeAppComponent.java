@@ -39,7 +39,6 @@ public interface ChromeAppComponent {
     TrustedWebActivityPermissionManager resolveTwaPermissionManager();
     PermissionUpdater resolveTwaPermissionUpdater();
     TrustedWebActivityClient resolveTrustedWebActivityClient();
-
     ExternalAuthUtils resolveExternalAuthUtils();
 
     CustomTabsClientFileProcessor resolveCustomTabsFileProcessor();

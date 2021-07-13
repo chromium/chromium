@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices;
+package org.chromium.chrome.browser.browserservices.metrics;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -13,10 +13,9 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.constants.LocationUpdateError;
 import org.chromium.chrome.browser.browserservices.constants.QualityEnforcementViolationType;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -62,21 +61,29 @@ public class TrustedWebActivityUmaRecorder {
         int NUM_ENTRIES = 4;
     }
 
-    private final ChromeBrowserInitializer mBrowserInitializer;
+    /**
+     * A callback for adding task to run when full browser initialization is done.
+     */
+    public interface DeferredTaskHandler {
+        /* Call to add task to run after full browser started.*/
+        void doWhenNativeLoaded(Runnable runnable);
+    }
+
+    private final DeferredTaskHandler mDeferredTaskHandler;
 
     @Inject
-    public TrustedWebActivityUmaRecorder(ChromeBrowserInitializer browserInitializer) {
-        mBrowserInitializer = browserInitializer;
+    public TrustedWebActivityUmaRecorder(DeferredTaskHandler taskHandler) {
+        mDeferredTaskHandler = taskHandler;
     }
 
     /**
      * Records that a Trusted Web Activity has been opened.
      */
-    public void recordTwaOpened(@Nullable Tab tab) {
+    public void recordTwaOpened(@Nullable WebContents webContents) {
         RecordUserAction.record("BrowserServices.TwaOpened");
-        if (tab != null) {
+        if (webContents != null) {
             new UkmRecorder.Bridge().recordEventWithBooleanMetric(
-                    tab.getWebContents(), "TrustedWebActivity.Open", "HasOccurred");
+                    webContents, "TrustedWebActivity.Open", "HasOccurred");
         }
     }
 
@@ -139,8 +146,8 @@ public class TrustedWebActivityUmaRecorder {
      * settings.
      */
     public void recordOpenedSettingsViaManageSpace() {
-        doWhenNativeLoaded(() ->
-            RecordUserAction.record("TrustedWebActivity.OpenedSettingsViaManageSpace"));
+        mDeferredTaskHandler.doWhenNativeLoaded(
+                () -> RecordUserAction.record("TrustedWebActivity.OpenedSettingsViaManageSpace"));
     }
 
     /**
@@ -158,23 +165,21 @@ public class TrustedWebActivityUmaRecorder {
      * Uses {@link TaskTraits#BEST_EFFORT} in order to not get in the way of loading the page.
      */
     public void recordSplashScreenUsage(boolean wasShown) {
-        doWhenNativeLoaded(() ->
+        // clang-format off
+        mDeferredTaskHandler.doWhenNativeLoaded(() ->
                 PostTask.postTask(TaskTraits.BEST_EFFORT, () ->
                         RecordHistogram.recordBooleanHistogram(
                                 "TrustedWebActivity.SplashScreenShown", wasShown)
                 ));
+        // clang-format on
     }
 
     /**
      * Records the fact that data was shared via a TWA.
      */
     public void recordShareTargetRequest(@ShareRequestMethod int method) {
-        RecordHistogram.recordEnumeratedHistogram("TrustedWebActivity.ShareTargetRequest",
-                method, ShareRequestMethod.NUM_ENTRIES);
-    }
-
-    private void doWhenNativeLoaded(Runnable runnable) {
-        mBrowserInitializer.runNowOrAfterFullBrowserStarted(runnable);
+        RecordHistogram.recordEnumeratedHistogram(
+                "TrustedWebActivity.ShareTargetRequest", method, ShareRequestMethod.NUM_ENTRIES);
     }
 
     public void recordLocationDelegationEnrolled(boolean enrolled) {
@@ -217,14 +222,16 @@ public class TrustedWebActivityUmaRecorder {
     }
 
     public void recordQualityEnforcementViolation(
-            Tab tab, @QualityEnforcementViolationType int type) {
+            WebContents webContents, @QualityEnforcementViolationType int type) {
         RecordHistogram.recordEnumeratedHistogram("TrustedWebActivity.QualityEnforcementViolation",
                 type, QualityEnforcementViolationType.MAX_VALUE + 1);
 
-        new UkmRecorder.Bridge().recordEventWithIntegerMetric(tab.getWebContents(),
-                /* eventName = */ "TrustedWebActivity.QualityEnforcementViolation",
-                /* metricName = */ "ViolationType",
-                /* metricValue = */ type);
+        if (webContents != null) {
+            new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
+                    /* eventName = */ "TrustedWebActivity.QualityEnforcementViolation",
+                    /* metricName = */ "ViolationType",
+                    /* metricValue = */ type);
+        }
     }
 
     public void recordQualityEnforcementViolationCrashed(
