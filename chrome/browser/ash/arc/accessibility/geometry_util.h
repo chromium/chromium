@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_GEOMETRY_UTIL_H_
 #define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_GEOMETRY_UTIL_H_
 
-// TODO(hirokisato): support multiple display.
-
 namespace gfx {
 class Rect;
 class RectF;

@@ -36,6 +36,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/controls/native/native_view_host.h"
@@ -99,6 +101,10 @@ void DispatchFocusChange(arc::mojom::AccessibilityNodeInfoData* node_data,
                  active_window));
   bounds_in_screen.Offset(0,
                           arc::GetChromeWindowHeightOffsetInDip(active_window));
+
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestView(active_window);
+  bounds_in_screen.Offset(display.bounds().x(), display.bounds().y());
 
   bool is_editable = arc::GetBooleanProperty(
       node_data, arc::mojom::AccessibilityBooleanProperty::EDITABLE);
