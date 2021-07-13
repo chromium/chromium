@@ -298,6 +298,10 @@ const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
 const base::Feature kEnableInputInDiagnosticsApp{
     "EnableInputInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables noise cancellation UI toggle.
+const base::Feature kEnableInputNoiseCancellationUi{
+    "EnableInputNoiseCancellationUi", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables LocalSearchService to be initialized.
 const base::Feature kEnableLocalSearchService{"EnableLocalSearchService",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
@@ -460,10 +464,6 @@ const base::Feature kVirtualKeyboardFloatingDefault{
 // Enables or disables Instant Tethering on Chrome OS.
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables or disables noise cancellation UI toggle.
-const base::Feature kEnableInputNoiseCancellationUi{
-    "EnableInputNoiseCancellationUi", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the Kerberos Section in ChromeOS settings. When disabled, Kerberos
 // settings will stay under People Section. https://crbug.com/983041
