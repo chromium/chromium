@@ -105,4 +105,25 @@ TEST_F(BrowserAccessibilityStateImplTest,
   EXPECT_FALSE(state_->IsAccessibleBrowser());
 }
 
+TEST_F(BrowserAccessibilityStateImplTest,
+       AddAccessibilityModeFlagsPreventsAutoDisableAccessibility) {
+  // Initially, accessibility should be disabled.
+  EXPECT_FALSE(state_->IsAccessibleBrowser());
+
+  // Enable accessibility.
+  state_->OnScreenReaderDetected();
+  EXPECT_TRUE(state_->IsAccessibleBrowser());
+
+  // Send user input, wait 31 seconds, then send another user input event -
+  // but add a new accessibility mode flag.
+  state_->OnUserInputEvent();
+  state_->OnUserInputEvent();
+  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  state_->AddAccessibilityModeFlags(ui::kAXModeComplete);
+  state_->OnUserInputEvent();
+
+  // Accessibility should still be enabled.
+  EXPECT_TRUE(state_->IsAccessibleBrowser());
+}
+
 }  // namespace content

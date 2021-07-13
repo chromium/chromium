@@ -321,6 +321,12 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
     return;
   }
 
+  // Adding an accessibility mode flag is generally the result of an
+  // accessibility API call, so we should also reset the auto-disable
+  // accessibility code. The only exception is in tests or when a user manually
+  // toggles accessibility flags in chrome://accessibility.
+  OnAccessibilityApiUsage();
+
   ui::AXMode previous_mode = accessibility_mode_;
   accessibility_mode_ |= mode;
   if (accessibility_mode_ == previous_mode)
