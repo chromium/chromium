@@ -380,10 +380,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // This way, this class knows exactly the number of allocated (once all work
   // posted to GPU thread are done).
   int num_allocated_buffers_ = 0;
-  // Number of SwapBuffers that has yet been matched with a
-  // DidSwapBuffersComplete. This is used to compute a lower bound on the number
-  // of available buffers on the GPU thread.
-  int pending_swaps_ = 0;
+  // For each SwapBuffers that has yet been matched with a
+  // DidSwapBuffersComplete, store whether that swap has damage to the main
+  // buffer. DidSwapBuffersComplete. This is used to compute a lower bound on
+  // the number of available buffers on the GPU thread.
+  base::circular_deque<bool> pending_swaps_;
   // Consecutive number of swaps where there is an extra buffer allocated. Used
   // as part of heuristic to decide when to release extra frame buffers.
   int consecutive_frames_with_extra_buffer_ = 0;

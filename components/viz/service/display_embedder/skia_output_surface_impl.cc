@@ -490,10 +490,11 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
         frame.sub_buffer_rect ? *frame.sub_buffer_rect : gfx::Rect(size_);
     frame_buffer_damage_tracker_->SwappedWithDamage(damage_rect);
   }
+  pending_swaps_.push_back(current_buffer_modified_);
   current_buffer_modified_ = false;
 
-  pending_swaps_++;
-  if (AvailableBuffersLowerBound() > 0) {
+  int available_buffers_lower_bound = AvailableBuffersLowerBound();
+  if (available_buffers_lower_bound > 0) {
     consecutive_frames_with_extra_buffer_++;
   } else {
     consecutive_frames_with_extra_buffer_ = 0;
@@ -503,7 +504,7 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   bool release_one_buffer =
       capabilities_.use_dynamic_frame_buffer_allocation &&
       consecutive_frames_with_extra_buffer_ > kFreeBufferThreshold &&
-      AvailableBuffersLowerBound() > 0;
+      available_buffers_lower_bound > 0;
   if (release_one_buffer) {
     consecutive_frames_with_extra_buffer_ = 0;
     num_allocated_buffers_--;
@@ -974,8 +975,7 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
       frame_buffer_damage_tracker_->ReallocatedFrameBuffers(size_);
   }
 
-  DCHECK_GT(pending_swaps_, 0);
-  pending_swaps_--;
+  pending_swaps_.pop_front();
 
   if (use_damage_area_from_skia_output_device_) {
     damage_of_current_buffer_ = params.frame_buffer_damage_area;
@@ -1270,9 +1270,14 @@ void SkiaOutputSurfaceImpl::InitDelegatedInkPointRendererReceiver(
 }
 
 int SkiaOutputSurfaceImpl::AvailableBuffersLowerBound() const {
-  // Up to 1 buffer may be held for display, and each pending swap can use up
-  // to 1 buffer. Note the result can be negative.
-  return num_allocated_buffers_ - 1 - pending_swaps_;
+  // Up to 1 buffer may be held for display, and each pending swap with damage
+  // can use up to 1 buffer. Note the result can be negative.
+  int pending_swaps_with_damage = 0;
+  for (bool has_damage : pending_swaps_) {
+    if (has_damage)
+      pending_swaps_with_damage++;
+  }
+  return num_allocated_buffers_ - 1 - pending_swaps_with_damage;
 }
 
 bool SkiaOutputSurfaceImpl::ShouldCreateNewBufferForNextSwap() const {
