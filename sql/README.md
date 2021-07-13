@@ -321,7 +321,7 @@ primary key reuse would be unacceptable.
 SQLite exposes a vast array of functionality via SQL statements. The following
 features are not a good match for SQL statements used by Chrome feature code.
 
-#### PRAGMA statements
+#### PRAGMA statements {#no-pragmas}
 
 [`PRAGMA` statements](https://www.sqlite.org/pragma.html) should never be used
 directly. Chrome's SQLite abstraction layer should be modified to support the
@@ -332,7 +332,7 @@ Direct `PRAGMA` use limits our ability to customize and secure our SQLite build.
 Furthermore, some `PRAGMA` statements invalidate previously compiled queries,
 reducing the efficiency of Chrome's compiled query cache.
 
-#### Virtual tables
+#### Virtual tables {#no-virtual-tables}
 
 [`CREATE VIRTUAL TABLE` statements](https://www.sqlite.org/vtab.html) should not
 be used. The desired functionality should be implemented in C++, and access
@@ -357,7 +357,7 @@ After
 to disable SQLite's virtual table support using
 [SQLITE_OMIT_VIRTUALTABLE](https://sqlite.org/compile.html#omit_virtualtable).
 
-#### Foreign key constraints
+#### Foreign key constraints {#no-foreign-keys}
 
 [SQL foreign key constraints](https://sqlite.org/foreignkeys.html) should not be
 used. All data validation should be performed using explicit `SELECT` statements
@@ -375,7 +375,7 @@ After
 to disable SQLite's foreign key support using
 [SQLITE_OMIT_FOREIGN_KEY](https://sqlite.org/compile.html#omit_foreign_key).
 
-#### CHECK constraints
+#### CHECK constraints {#no-checks}
 
 [SQL CHECK constraints](https://sqlite.org/lang_createtable.html#check_constraints)
 should not be used, for the same reasons as foreign key constraints. The
@@ -386,7 +386,7 @@ After
 to disable SQLite's CHECK constraint support using
 [SQLITE_OMIT_CHECK](https://sqlite.org/compile.html#omit_check).
 
-#### Triggers
+#### Triggers {#no-triggers}
 
 [SQL triggers](https://sqlite.org/lang_createtrigger.html) should not be used.
 
@@ -397,7 +397,7 @@ After [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we
 plan to disable SQLite's trigger support using
 [SQLITE_OMIT_TRIGGER](https://sqlite.org/compile.html#omit_trigger).
 
-#### Common Table Expressions
+#### Common Table Expressions {#no-ctes}
 
 [SQL Common Table Expressions (CTEs)](https://sqlite.org/lang_with.html) should
 not be used. Chrome's SQL schemas and queries should be simple enough that
@@ -410,7 +410,7 @@ should be implemented in C++.
 Common Table Expressions do not open up any query optimizations that would not
 be available otherwise, and make it more difficult to review / analyze queries.
 
-#### Views
+#### Views {#no-views}
 
 SQL views, managed by the
 [`CREATE VIEW` statement](https://www.sqlite.org/lang_createview.html) and the
@@ -427,7 +427,7 @@ After
 to disable SQLite's VIEW support using
 [SQLITE_OMIT_VIEW](https://www.sqlite.org/compile.html#omit_view).
 
-#### Compound SELECT statements
+#### Compound SELECT statements {#no-compound-queries}
 
 [Compound SELECT statements](https://www.sqlite.org/lang_select.html#compound_select_statements)
 should not be used. Such statements should be broken down into
@@ -445,7 +445,7 @@ After
 to disable SQLite's compound SELECT support using
 [SQLITE_OMIT_COMPOUND_SELECT](https://www.sqlite.org/compile.html#omit_compound_select).
 
-#### Built-in functions
+#### Built-in functions {#no-builtin-functions}
 
 SQLite's [built-in functions](https://sqlite.org/lang_corefunc.html) should be
 only be used in SQL statements where they unlock significant performance
@@ -472,7 +472,7 @@ reading / before writing the data.
 [Window functions](https://sqlite.org/windowfunctions.html#biwinfunc) are
 disabled in Chrome's SQLite build.
 
-#### ATTACH DATABASE statements
+#### ATTACH DATABASE statements {#no-attach}
 
 [`ATTACH DATABASE` statements](https://www.sqlite.org/lang_attach.html) should
 not be used. Each Chrome feature should store its data in a single database.
