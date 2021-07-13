@@ -34,7 +34,8 @@ if (optimize_webui) {
     deps = [
       ":preprocess",
       ":preprocess_generated",
-      "../../../../../ui/webui/resources:preprocess",
+      "//ui/webui/resources:preprocess",
+      "//ui/webui/resources/cr_components/customize_themes:build_ts",
     ]
     excludes = [
       "chrome://resources/js/cr.m.js",

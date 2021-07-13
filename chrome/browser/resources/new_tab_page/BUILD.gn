@@ -117,7 +117,6 @@ js_library("customize_dialog") {
     ":new_tab_page_proxy",
     ":utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/customize_themes",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
@@ -455,11 +454,12 @@ if (optimize_webui) {
     deps = [
       ":preprocess",
       ":preprocess_gen",
-      "../../../../ui/webui/resources:preprocess",
       "modules:preprocess",
       "modules:preprocess_gen",
       "realbox:preprocess",
       "realbox:preprocess_gen",
+      "//ui/webui/resources:preprocess",
+      "//ui/webui/resources/cr_components/customize_themes:build_ts",
     ]
     js_module_in_files = [
       "new_tab_page.js",

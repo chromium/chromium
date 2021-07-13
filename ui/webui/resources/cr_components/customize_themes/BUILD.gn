@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 group("web_components") {
   public_deps = [
@@ -31,39 +33,66 @@ html_to_js("web_components_local") {
   ]
 }
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
+# Output folder used to hold preprocess_if_expr() output.
+preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes_tmp"
+
+# Output folder used to hold ts_library() output.
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes"
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder_tmp
+  out_dir = preprocess_folder
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "browser_proxy.js",
+    "customize_themes.js",
+    "customize_themes.mojom-webui.js",
+    "theme_icon.js",
+  ]
+
   deps = [
-    ":browser_proxy",
-    ":customize_themes",
-    ":theme_icon",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [
+    ":copy_mojom",
+    ":preprocess_generated",
+    ":preprocess_src",
   ]
 }
 
-js_library("customize_themes") {
-  deps = [
-    ":browser_proxy",
-    ":mojom_webui_js",
-    ":theme_icon",
-    "//skia/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/managed_dialog",
-    "//ui/webui/resources/cr_elements/cr_grid",
-    "//ui/webui/resources/js:i18n_behavior.m",
+preprocess_if_expr("preprocess_src") {
+  in_folder = "./"
+  out_folder = preprocess_folder_tmp
+  in_files = [ "browser_proxy.js" ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components_local" ]
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder_tmp
+  in_files = [
+    "customize_themes.js",
+    "theme_icon.js",
   ]
 }
 
-js_library("theme_icon") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
+copy("copy_mojom") {
+  deps = [ ":mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/customize_themes/customize_themes.mojom-webui.js" ]
+  outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
 }
 
-js_library("browser_proxy") {
-  deps = [
-    ":mojom_webui_js",
-    "//ui/webui/resources/js:cr.m",
+generate_grd("build_grdp") {
+  grd_prefix = "cr_components_customize_themes"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "colorize.svg",
+    "brush.svg",
   ]
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "cr_components/customize_themes"
 }

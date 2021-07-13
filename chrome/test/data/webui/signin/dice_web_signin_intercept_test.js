@@ -81,7 +81,8 @@ suite('DiceWebSigninInterceptTest', function() {
 
   test('ClickAccept', function() {
     assertTrue(isChildVisible(app, '#acceptButton'));
-    const spinner = app.$$('paper-spinner-lite');
+    const spinner =
+        /** @type {PaperSpinnerLiteElement} */ (app.$$('paper-spinner-lite'));
     const acceptButton = app.$$('#acceptButton');
     const cancelButton = app.$$('#cancelButton');
     assertFalse(spinner.active);

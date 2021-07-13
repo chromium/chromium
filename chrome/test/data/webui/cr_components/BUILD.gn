@@ -16,23 +16,10 @@ js_type_check("closure_compile") {
                   ]
 
   deps = [
-    ":customize_themes_test",
     ":managed_dialog_test",
     ":most_visited_focus_test",
     ":most_visited_test",
   ]
-}
-
-js_library("customize_themes_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_browser_proxy.m",
-    "..:test_util.m",
-    "//ui/webui/resources/cr_components/customize_themes",
-    "//ui/webui/resources/cr_components/customize_themes:browser_proxy",
-    "//ui/webui/resources/cr_components/customize_themes:theme_icon",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("managed_dialog_test") {

@@ -49,6 +49,7 @@ js_library("dice_web_signin_intercept_test") {
     "..:chai_assert",
     "..:test_util.m",
     "//chrome/browser/resources/signin/dice_web_signin_intercept:dice_web_signin_intercept_app",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

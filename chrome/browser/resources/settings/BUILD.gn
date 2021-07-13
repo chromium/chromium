@@ -41,6 +41,10 @@ if (optimize_webui) {
       "//ui/webui/resources:preprocess",
     ]
 
+    if (!is_chromeos) {
+      deps += [ "//ui/webui/resources/cr_components/customize_themes:build_ts" ]
+    }
+
     if (use_nss_certs) {
       deps +=
           [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]

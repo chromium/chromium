@@ -21,6 +21,16 @@ import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {createScrollBorders} from './utils.js';
 
+
+/**
+ * Workaround until new_tab_page is migrated to TypeScript.
+ * @interface
+ */
+class CustomizeThemesElement {
+  revertThemeChanges() {}
+  confirmThemeChanges() {}
+}
+
 /**
  * Dialog that lets the user customize the NTP such as the background color or
  * image.
@@ -126,7 +136,8 @@ class CustomizeDialogElement extends mixinBehaviors
 
   /** @private */
   onCancel_() {
-    this.$.customizeThemes.revertThemeChanges();
+    /** @type {CustomizeThemesElement} */ (this.$.customizeThemes)
+        .revertThemeChanges();
     this.backgroundSelection = {type: BackgroundSelectionType.NO_SELECTION};
   }
 
@@ -148,7 +159,8 @@ class CustomizeDialogElement extends mixinBehaviors
    * @private
    */
   onDoneClick_() {
-    this.$.customizeThemes.confirmThemeChanges();
+    /** @type {CustomizeThemesElement} */ (this.$.customizeThemes)
+        .confirmThemeChanges();
     this.shadowRoot.querySelector('ntp-customize-shortcuts').apply();
     if (this.modulesEnabled_) {
       this.shadowRoot.querySelector('ntp-customize-modules').apply();
