@@ -2372,6 +2372,7 @@ bool LocalFrameView::UpdateLifecyclePhases(
 
 void LocalFrameView::UpdateLifecyclePhasesInternal(
     DocumentLifecycle::LifecycleState target_state) {
+  ScriptForbiddenScope forbid_script;
   // RunScrollTimelineSteps must not run more than once.
   bool should_run_scroll_timeline_steps = true;
 
@@ -2472,6 +2473,10 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       if (needs_to_repeat_lifecycle)
         continue;
     }
+
+    // At this point in time, script is allowed to run as we will repeat the
+    // lifecycle update if anything is invalidated.
+    ScriptForbiddenScope::AllowUserAgentScript allow_script;
 
     // ResizeObserver and post-layout IntersectionObserver observation
     // deliveries may dirty style and layout. RunResizeObserverSteps will return
@@ -2724,6 +2729,7 @@ bool LocalFrameView::AnyFrameIsPrintingOrPaintingPreview() {
 }
 
 void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
+  DCHECK(ScriptForbiddenScope::IsScriptForbidden());
   DCHECK(LocalFrameTreeAllowsThrottling());
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunPaintLifecyclePhase");
   // While printing or capturing a paint preview of a document, the paint walk
@@ -2763,15 +2769,9 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
             area->UpdateCompositorScrollAnimations();
         }
         Document& document = frame_view.GetLayoutView()->GetDocument();
-        {
-          // Updating animations can notify ready promises which could mutate
-          // the DOM. We should delay these until we have finished the lifecycle
-          // update. https://crbug.com/1196781
-          ScriptForbiddenScope forbid_script;
-          document.GetDocumentAnimations().UpdateAnimations(
-              DocumentLifecycle::kPaintClean, paint_artifact_compositor_.get(),
-              needed_update);
-        }
+        document.GetDocumentAnimations().UpdateAnimations(
+            DocumentLifecycle::kPaintClean, paint_artifact_compositor_.get(),
+            needed_update);
         total_animations_count +=
             document.GetDocumentAnimations().GetAnimationsCount();
       });
@@ -4422,6 +4422,7 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     // so painting the tree should just clear the previous painted output.
     DCHECK(!IsUpdatingLifecycle());
     AllowThrottlingScope allow_throtting(*this);
+    ScriptForbiddenScope forbid_script;
     RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
   }
 
@@ -4950,6 +4951,7 @@ void LocalFrameView::RunPaintBenchmark(int repeat_count,
       // quantization when the time is very small.
       base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
       do {
+        ScriptForbiddenScope forbid_script;
         // Force a paint with everything cached before a small invalidation
         // test to better simulate real-world scenarios.
         if (mode == PaintBenchmarkMode::kSmallInvalidation)
