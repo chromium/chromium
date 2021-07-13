@@ -107,7 +107,9 @@ class PepperRendererConnection::OpenChannelToPpapiPluginCallback
                            int* renderer_id) override {
     // base::kNullProcessHandle indicates that the channel will be used by the
     // browser itself. Make sure we never output that value here.
-    CHECK_NE(base::kNullProcessHandle, filter_->PeerHandle());
+    if (filter_->PeerHandle() == base::kNullProcessHandle) {
+      return;
+    }
     *renderer_handle = filter_->PeerHandle();
     *renderer_id = filter_->render_process_id_;
   }
