@@ -70,7 +70,8 @@ class AudioDecoderForMixer
   // mixer_service::OutputStreamConnection::Delegate implementation:
   void FillNextBuffer(void* buffer,
                       int frames,
-                      int64_t playout_timestamp) override;
+                      int64_t delay_timestamp,
+                      int64_t delay) override;
   void OnAudioReadyForPlayback(int64_t mixer_delay) override;
   void OnEosPlayed() override;
   void OnMixerError() override;

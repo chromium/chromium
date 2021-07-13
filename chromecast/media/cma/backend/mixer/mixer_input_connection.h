@@ -134,7 +134,7 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   void LogUnderrun(int num_frames, int filled) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void WritePcm(scoped_refptr<net::IOBuffer> data);
-  int64_t QueueData(scoped_refptr<net::IOBuffer> data)
+  RenderingDelay QueueData(scoped_refptr<net::IOBuffer> data)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   double ExtraDelayFrames() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -192,7 +192,7 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   base::circular_deque<scoped_refptr<net::IOBuffer>> queue_ GUARDED_BY(lock_);
   int queued_frames_ GUARDED_BY(lock_) = 0;
   RenderingDelay mixer_rendering_delay_ GUARDED_BY(lock_);
-  int64_t next_playback_timestamp_ GUARDED_BY(lock_) = INT64_MIN;
+  RenderingDelay next_delay_ GUARDED_BY(lock_);
   int mixer_read_size_ GUARDED_BY(lock_) = 0;
   int current_buffer_offset_ GUARDED_BY(lock_) = 0;
   std::unique_ptr<RateAdjuster> rate_adjuster_ GUARDED_BY(lock_);

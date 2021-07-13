@@ -199,7 +199,7 @@ void OutputStreamConnection::OnConnected(std::unique_ptr<MixerSocket> socket) {
   socket_->SendProto(kInitial, message);
   delegate_->FillNextBuffer(
       audio_buffer_->data() + MixerSocket::kAudioMessageHeaderSize,
-      fill_size_frames_, std::numeric_limits<int64_t>::min());
+      fill_size_frames_, std::numeric_limits<int64_t>::min(), 0);
 }
 
 void OutputStreamConnection::OnConnectionError() {
@@ -220,7 +220,8 @@ bool OutputStreamConnection::HandleMetadata(const Generic& message) {
   if (message.has_push_result() && !sent_eos_) {
     delegate_->FillNextBuffer(
         audio_buffer_->data() + MixerSocket::kAudioMessageHeaderSize,
-        fill_size_frames_, message.push_result().next_playback_timestamp());
+        fill_size_frames_, message.push_result().delay_timestamp(),
+        message.push_result().delay());
   }
 
   if (message.has_ready_for_playback()) {

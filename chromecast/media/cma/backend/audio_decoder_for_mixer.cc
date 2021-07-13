@@ -563,10 +563,11 @@ void AudioDecoderForMixer::WritePcm(scoped_refptr<DecoderBufferBase> buffer) {
 
 void AudioDecoderForMixer::FillNextBuffer(void* buffer,
                                           int frames,
-                                          int64_t playout_timestamp) {
+                                          int64_t delay_timestamp,
+                                          int64_t delay) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   pending_output_frames_ = kNoPendingOutput;
-  next_buffer_delay_ = RenderingDelay(0, playout_timestamp);
+  next_buffer_delay_ = RenderingDelay(delay, delay_timestamp);
   CheckBufferComplete();
 }
 

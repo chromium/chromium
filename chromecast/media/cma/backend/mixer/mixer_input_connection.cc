@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -49,6 +50,8 @@ constexpr base::TimeDelta kDefaultFadeTime =
     base::TimeDelta::FromMilliseconds(5);
 constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromSeconds(5);
 constexpr int64_t kDefaultMaxTimestampError = 2000;
+// Max absolute value for timestamp errors, to avoid overflow/underflow.
+constexpr int64_t kTimestampErrorLimit = 1000000;
 
 constexpr int kAudioMessageHeaderSize =
     mixer_service::MixerSocket::kAudioMessageHeaderSize;
@@ -794,7 +797,7 @@ bool MixerInputConnection::active() {
 void MixerInputConnection::WritePcm(scoped_refptr<net::IOBuffer> data) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-  int64_t next_playback_timestamp;
+  RenderingDelay rendering_delay;
   bool queued;
   {
     base::AutoLock lock(lock_);
@@ -810,20 +813,22 @@ void MixerInputConnection::WritePcm(scoped_refptr<net::IOBuffer> data) {
       pending_data_ = std::move(data);
       queued = false;
     } else {
-      next_playback_timestamp = QueueData(std::move(data));
+      rendering_delay = QueueData(std::move(data));
       queued = true;
     }
   }
 
   if (queued) {
     mixer_service::Generic message;
-    message.mutable_push_result()->set_next_playback_timestamp(
-        next_playback_timestamp);
+    auto* push_result = message.mutable_push_result();
+    push_result->set_delay_timestamp(rendering_delay.timestamp_microseconds);
+    push_result->set_delay(rendering_delay.delay_microseconds);
     socket_->SendProto(kPushResult, message);
   }
 }
 
-int64_t MixerInputConnection::QueueData(scoped_refptr<net::IOBuffer> data) {
+MixerInputConnection::RenderingDelay MixerInputConnection::QueueData(
+    scoped_refptr<net::IOBuffer> data) {
   int frames = GetFrameCount(data.get());
   if (frames == 0) {
     AUDIO_LOG(INFO) << "End of stream for " << this;
@@ -847,13 +852,13 @@ int64_t MixerInputConnection::QueueData(scoped_refptr<net::IOBuffer> data) {
 
   if (!started_ || paused_ ||
       mixer_rendering_delay_.timestamp_microseconds == INT64_MIN) {
-    return INT64_MIN;
+    return RenderingDelay();
   }
 
-  int64_t mixer_timestamp = mixer_rendering_delay_.timestamp_microseconds +
-                            mixer_rendering_delay_.delay_microseconds;
-  return mixer_timestamp +
-         SamplesToMicroseconds(ExtraDelayFrames(), input_samples_per_second_);
+  RenderingDelay delay = mixer_rendering_delay_;
+  delay.delay_microseconds +=
+      SamplesToMicroseconds(ExtraDelayFrames(), input_samples_per_second_);
+  return delay;
 }
 
 double MixerInputConnection::ExtraDelayFrames() {
@@ -892,7 +897,7 @@ void MixerInputConnection::InitializeAudioPlayback(
     }
 
     if (pending_data_ && queued_frames_ < max_queued_frames_) {
-      next_playback_timestamp_ = QueueData(std::move(pending_data_));
+      next_delay_ = QueueData(std::move(pending_data_));
       queued_data = true;
     }
   }
@@ -1061,11 +1066,11 @@ int MixerInputConnection::FillAudioPlaybackFrames(
 
     // See if we can accept more data into the queue.
     if (pending_data_ && queued_frames_ < max_queued_frames_) {
-      next_playback_timestamp_ = QueueData(std::move(pending_data_));
+      next_delay_ = QueueData(std::move(pending_data_));
       post_pcm_completion = true;
     } else if (pts_is_timestamp_) {
-      next_playback_timestamp_ =
-          playback_absolute_timestamp +
+      next_delay_ = rendering_delay;
+      next_delay_.delay_microseconds +=
           SamplesToMicroseconds(ExtraDelayFrames(), input_samples_per_second_);
     }
 
@@ -1153,6 +1158,10 @@ int MixerInputConnection::FillTimestampedAudio(int num_frames,
                                                int64_t expected_playout_time,
                                                float* const* channels,
                                                bool after_silence) {
+  if (expected_playout_time < 0) {
+    // Invalid playout time.
+    return 0;
+  }
   int filled = 0;
   while (filled < num_frames && !queue_.empty()) {
     net::IOBuffer* buffer = queue_.front().get();
@@ -1167,7 +1176,9 @@ int MixerInputConnection::FillTimestampedAudio(int num_frames,
         SamplesToMicroseconds(current_buffer_offset_ / playback_rate_,
                               input_samples_per_second_);
 
-    const int64_t error = playout_time - desired_playout_time;
+    const int64_t error =
+        base::ClampToRange(playout_time - desired_playout_time,
+                           -kTimestampErrorLimit, kTimestampErrorLimit);
     if (error < -max_timestamp_error_ ||
         (after_silence &&
          error < -1e6 / (input_samples_per_second_ * playback_rate_))) {
@@ -1270,7 +1281,8 @@ void MixerInputConnection::PostPcmCompletion() {
   auto* push_result = message.mutable_push_result();
   {
     base::AutoLock lock(lock_);
-    push_result->set_next_playback_timestamp(next_playback_timestamp_);
+    push_result->set_delay_timestamp(next_delay_.timestamp_microseconds);
+    push_result->set_delay(next_delay_.delay_microseconds);
   }
   socket_->SendProto(kPushResult, message);
 }

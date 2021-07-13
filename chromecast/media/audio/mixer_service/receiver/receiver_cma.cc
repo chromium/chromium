@@ -135,17 +135,9 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
   // CmaBackendShim::Delegate implementation:
   void OnBufferPushed(CmaBackendShim::RenderingDelay rendering_delay) override {
     if (!pushed_eos_) {
-      int64_t next_playout_timestamp;
-      if (rendering_delay.timestamp_microseconds ==
-          std::numeric_limits<int64_t>::min()) {
-        next_playout_timestamp = std::numeric_limits<int64_t>::min();
-      } else {
-        next_playout_timestamp = rendering_delay.timestamp_microseconds +
-                                 rendering_delay.delay_microseconds;
-      }
-
       mixer_service::BufferPushResult message;
-      message.set_next_playback_timestamp(next_playout_timestamp);
+      message.set_delay_timestamp(rendering_delay.timestamp_microseconds);
+      message.set_delay(rendering_delay.delay_microseconds);
       mixer_service::Generic generic;
       *(generic.mutable_push_result()) = message;
       socket_->SendProto(kPushResult, generic);

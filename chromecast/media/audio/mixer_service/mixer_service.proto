@@ -143,7 +143,8 @@ message SetAudioClockRate {
 // and the next audio data that is pushed to the mixer will start playing at
 // |next_playback_timestamp|.
 message BufferPushResult {
-  optional fixed64 next_playback_timestamp = 1;
+  optional fixed64 delay_timestamp = 1;
+  optional int64 delay = 2;
 }
 
 // Indicates that EOS for an audio output stream has been played out.

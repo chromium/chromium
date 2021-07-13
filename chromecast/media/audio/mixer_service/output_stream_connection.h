@@ -45,7 +45,8 @@ class OutputStreamConnection : public MixerConnection,
     // data is expected to play out.
     virtual void FillNextBuffer(void* buffer,
                                 int frames,
-                                int64_t playout_timestamp) = 0;
+                                int64_t delay_timestamp,
+                                int64_t delay) = 0;
 
     // Called when audio is ready to begin playing out, ie the start threshold
     // has been reached. |mixer_delay| is the delay before the first buffered

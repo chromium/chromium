@@ -109,7 +109,8 @@ class CastAudioOutputStream::MixerServiceWrapper
   // mixer_service::OutputStreamConnection::Delegate implementation:
   void FillNextBuffer(void* buffer,
                       int frames,
-                      int64_t playout_timestamp) override;
+                      int64_t delay_timestamp,
+                      int64_t delay) override;
   // We don't push an EOS buffer.
   void OnEosPlayed() override { NOTREACHED(); }
 
@@ -249,7 +250,8 @@ void CastAudioOutputStream::MixerServiceWrapper::SetVolume(double volume) {
 void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
     void* buffer,
     int frames,
-    int64_t playout_timestamp) {
+    int64_t delay_timestamp,
+    int64_t delay) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   // Round down to closest multiple of 4 to ensure correct channel alignment.
@@ -264,6 +266,8 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
   if (!running_)
     return;
 
+  int64_t playout_timestamp =
+      (delay_timestamp == INT64_MIN ? INT64_MIN : delay_timestamp + delay);
   if (playout_timestamp < 0) {
     // Assume any negative timestamp is invalid.
     playout_timestamp = 0;
@@ -279,13 +283,13 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
   }
   audio_bus_->set_frames(frames);
 
-  base::TimeDelta delay = ::media::AudioTimestampHelper::FramesToTime(
+  base::TimeDelta reported_delay = ::media::AudioTimestampHelper::FramesToTime(
       max_buffered_frames_, audio_params_.sample_rate());
-  base::TimeTicks delay_timestamp =
+  base::TimeTicks reported_delay_timestamp =
       base::TimeTicks() + base::TimeDelta::FromMicroseconds(playout_timestamp);
 
-  int frames_filled =
-      source_callback_->OnMoreData(delay, delay_timestamp, 0, audio_bus_.get());
+  int frames_filled = source_callback_->OnMoreData(
+      reported_delay, reported_delay_timestamp, 0, audio_bus_.get());
   DCHECK_EQ(frames_filled, frames);
   mixer_connection_->SendNextBuffer(frames);
 }
