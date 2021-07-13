@@ -94,7 +94,21 @@ public class QuickActionSearchWidgetProviderDelegateTest {
             // clang-format off
             QuickActionSearchWidgetTestUtils.assertSearchActivityLaunchedAfterAction(
                     () -> QuickActionSearchWidgetTestUtils.clickOnView(
-                            view, R.id.quick_action_search_widget_search_bar_container));
+                            view, R.id.quick_action_search_widget_search_bar_container),
+                    /*shouldActivityLaunchVoiceMode=*/false);
+            // clang-format on
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testVoiceButtonClick() {
+        for (View view : mWidgetViews) {
+            // clang-format off
+            QuickActionSearchWidgetTestUtils.assertSearchActivityLaunchedAfterAction(
+                    () -> QuickActionSearchWidgetTestUtils.clickOnView(
+                            view, R.id.voice_search_quick_action_button),
+                    /*shouldActivityLaunchVoiceMode=*/true);
             // clang-format on
         }
     }
@@ -107,7 +121,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
             // clang-format off
             QuickActionSearchWidgetTestUtils.assertDinoGameLaunchedAfterAction(
                     () -> QuickActionSearchWidgetTestUtils.clickOnView(
-                                    view, R.id.dino_quick_action_button));
+                            view, R.id.dino_quick_action_button));
             // clang-format on
         }
     }

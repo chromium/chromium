@@ -90,22 +90,38 @@ public class QuickActionSearchWidgetProviderDelegate {
                 context.getPackageName(), R.layout.quick_action_search_widget_layout);
 
         // Search Bar Intent
-        Intent textSearchIntent = createTrustedIntentForAction(
-                QuickActionSearchWidgetReceiverDelegate.ACTION_START_TEXT_QUERY);
-        remoteViews.setOnClickPendingIntent(R.id.quick_action_search_widget_search_bar_container,
-                PendingIntent.getBroadcast(context, /*requestCode=*/0, textSearchIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                                | IntentUtils.getPendingIntentMutabilityFlag(false)));
+        PendingIntent textSearchPendingIntent = createPendingIntentForAction(
+                QuickActionSearchWidgetReceiverDelegate.ACTION_START_TEXT_QUERY, context);
+        remoteViews.setOnClickPendingIntent(
+                R.id.quick_action_search_widget_search_bar_container, textSearchPendingIntent);
+
+        // Voice Search Intent
+        PendingIntent voiceSearchPendingIntent = createPendingIntentForAction(
+                QuickActionSearchWidgetReceiverDelegate.ACTION_START_VOICE_QUERY, context);
+        remoteViews.setOnClickPendingIntent(
+                R.id.voice_search_quick_action_button, voiceSearchPendingIntent);
 
         // Dino Game intent
-        Intent dinoGameIntent = createTrustedIntentForAction(
-                QuickActionSearchWidgetReceiverDelegate.ACTION_START_DINO_GAME);
-        remoteViews.setOnClickPendingIntent(R.id.dino_quick_action_button,
-                PendingIntent.getBroadcast(context, /*requestCode=*/0, dinoGameIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                                | IntentUtils.getPendingIntentMutabilityFlag(false)));
+        PendingIntent dinoGamePendingIntent = createPendingIntentForAction(
+                QuickActionSearchWidgetReceiverDelegate.ACTION_START_DINO_GAME, context);
+        remoteViews.setOnClickPendingIntent(R.id.dino_quick_action_button, dinoGamePendingIntent);
 
         return remoteViews;
+    }
+
+    /**
+     * Creates a {@link PendingIntent} that will broadcast a trusted intent for a specified action.
+     *
+     * @param context The Context from which the PendingIntent will perform the broadcast.
+     * @param action A String specifying the action for the intent.
+     * @return A {@link PendingIntent} that will broadcast a trusted intent for the specified
+     *         action.
+     */
+    private PendingIntent createPendingIntentForAction(final String action, final Context context) {
+        Intent intent = createTrustedIntentForAction(action);
+        return PendingIntent.getBroadcast(context, /*requestCode=*/0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 
     /**

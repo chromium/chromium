@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
@@ -114,8 +115,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     static final String ACTION_UPDATE_ALL_WIDGETS =
             "org.chromium.chrome.browser.searchwidget.UPDATE_ALL_WIDGETS";
 
-    public static final String EXTRA_START_VOICE_SEARCH =
-            "org.chromium.chrome.browser.searchwidget.START_VOICE_SEARCH";
     public static final String EXTRA_FROM_SEARCH_WIDGET =
             "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_WIDGET";
 
@@ -194,9 +193,9 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     static void handleAction(Intent intent) {
         String action = intent.getAction();
         if (ACTION_START_TEXT_QUERY.equals(action)) {
-            startSearchActivity(intent, false);
+            startSearchActivity(intent, /*shouldStartVoiceSearch=*/false);
         } else if (ACTION_START_VOICE_QUERY.equals(action)) {
-            startSearchActivity(intent, true);
+            startSearchActivity(intent, /*shouldStartVoiceSearch=*/true);
         } else if (ACTION_UPDATE_ALL_WIDGETS.equals(action)) {
             performUpdate(null);
         } else {
@@ -205,8 +204,8 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static void startSearchActivity(Intent intent, boolean startVoiceSearch) {
-        Log.d(SearchActivity.TAG, "Launching SearchActivity: VOICE=" + startVoiceSearch);
+    public static void startSearchActivity(Intent intent, boolean shouldStartVoiceSearch) {
+        Log.d(SearchActivity.TAG, "Launching SearchActivity: VOICE=" + shouldStartVoiceSearch);
         Context context = getDelegate().getContext();
 
         // Abort if the user needs to go through First Run.
@@ -220,7 +219,9 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         searchIntent.setClass(context, SearchActivity.class);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        searchIntent.putExtra(EXTRA_START_VOICE_SEARCH, startVoiceSearch);
+        searchIntent.putExtra(
+                SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, shouldStartVoiceSearch);
+
         searchIntent.putExtra(EXTRA_FROM_SEARCH_WIDGET, true);
 
         Bundle optionsBundle =

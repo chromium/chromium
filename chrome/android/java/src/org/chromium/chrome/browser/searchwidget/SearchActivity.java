@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -343,7 +344,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private boolean isVoiceSearchIntent() {
         return IntentUtils.safeGetBooleanExtra(
-                getIntent(), SearchWidgetProvider.EXTRA_START_VOICE_SEARCH, false);
+                getIntent(), SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, false);
     }
 
     private boolean isFromSearchWidget() {

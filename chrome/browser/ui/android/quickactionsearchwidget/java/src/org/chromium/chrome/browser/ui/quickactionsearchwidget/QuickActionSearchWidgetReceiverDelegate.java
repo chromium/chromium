@@ -13,11 +13,12 @@ import android.os.Bundle;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
- * This class serves as the delegate for the {@link QuickActionSearchWidgetReceiver}. This
- * class contains as much of the business logic for the Quick Action Search Widget as possible.
+ * This class serves as the delegate for the {@link QuickActionSearchWidgetReceiver}. This class
+ * contains as much of the business logic for the Quick Action Search Widget as possible.
  */
 public class QuickActionSearchWidgetReceiverDelegate {
     private final ComponentName mSearchComponent;
@@ -28,6 +29,8 @@ public class QuickActionSearchWidgetReceiverDelegate {
     // AndroidManifest.
     static final String ACTION_START_TEXT_QUERY =
             "org.chromium.chrome.browser.ui.quickactionsearchwidget.START_TEXT_QUERY";
+    static final String ACTION_START_VOICE_QUERY =
+            "org.chromium.chrome.browser.ui.quickactionsearchwidget.START_VOICE_QUERY";
     static final String ACTION_START_DINO_GAME =
             "org.chromium.chrome.browser.ui.quickactionsearchwidget.START_DINO_GAME";
 
@@ -55,7 +58,9 @@ public class QuickActionSearchWidgetReceiverDelegate {
     public void handleAction(final Context context, final Intent intent) {
         String action = intent.getAction();
         if (ACTION_START_TEXT_QUERY.equals(action)) {
-            startSearchActivity(context);
+            startSearchActivity(context, /*shouldStartVoiceSearch=*/false);
+        } else if (ACTION_START_VOICE_QUERY.equals(action)) {
+            startSearchActivity(context, /*shouldStartVoiceSearch=*/true);
         } else if (ACTION_START_DINO_GAME.equals(action)) {
             startDinoGame(context);
         } else {
@@ -67,13 +72,17 @@ public class QuickActionSearchWidgetReceiverDelegate {
      * Starts the component specified by mSearchComponent. Generally this component is {@link
      * SearchActivity}.
      *
-     * @param context the {@link Context} in which we will launch the activity.
+     * @param context The {@link Context} in which we will launch the activity.
+     * @param shouldStartVoiceSearch If the activity should be launched in voice search mode.
      */
-    private void startSearchActivity(final Context context) {
+    private void startSearchActivity(final Context context, boolean shouldStartVoiceSearch) {
         Intent searchIntent = new Intent();
         searchIntent.setComponent(mSearchComponent);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+
+        searchIntent.putExtra(
+                SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, shouldStartVoiceSearch);
 
         Bundle optionsBundle =
                 ActivityOptionsCompat.makeCustomAnimation(context, R.anim.activity_open_enter, 0)

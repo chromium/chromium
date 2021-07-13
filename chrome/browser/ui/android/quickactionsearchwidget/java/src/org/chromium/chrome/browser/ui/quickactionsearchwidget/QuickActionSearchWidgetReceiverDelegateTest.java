@@ -69,8 +69,20 @@ public class QuickActionSearchWidgetReceiverDelegateTest {
         Intent startTextQueryIntent =
                 new Intent(QuickActionSearchWidgetReceiverDelegate.ACTION_START_TEXT_QUERY);
 
-        QuickActionSearchWidgetTestUtils.assertSearchActivityLaunchedAfterAction(
-                () -> mDelegate.handleAction(mContext, startTextQueryIntent));
+        QuickActionSearchWidgetTestUtils.assertSearchActivityLaunchedAfterAction(() -> {
+            mDelegate.handleAction(mContext, startTextQueryIntent);
+        }, /*shouldActivityLaunchVoiceMode=*/false);
+    }
+
+    @Test
+    @SmallTest
+    public void testHandleStartVoiceQueryAction() {
+        Intent startVoiceQueryIntent =
+                new Intent(QuickActionSearchWidgetReceiverDelegate.ACTION_START_VOICE_QUERY);
+
+        QuickActionSearchWidgetTestUtils.assertSearchActivityLaunchedAfterAction(() -> {
+            mDelegate.handleAction(mContext, startVoiceQueryIntent);
+        }, /*shouldActivityLaunchVoiceMode=*/true);
     }
 
     @Test
