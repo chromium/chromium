@@ -1,67 +1,50 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="internet-shared iron-flex">
+  cr-dialog::part(dialog) {
+    width: 460px;
+  }
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_config.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="internet_shared_css.html">
+  .error {
+    color: red;
+    font-weight: 500;
+  }
+</style>
 
-<dom-module id="internet-config">
-  <template>
-    <style include="internet-shared iron-flex">
-      cr-dialog::part(dialog) {
-        width: 460px;
-      }
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">
+    [[getDialogTitle_(name, type, showConnect)]]
+  </div>
+  <div slot="body">
+    <network-config id="networkConfig" class="flex"
+        guid="[[guid]]" name="{{name}}" type="{{type}}"
+        enable-connect="{{enableConnect_}}" enable-save="{{enableSave_}}"
+        share-allow-enable="[[shareAllowEnable_]]"
+        share-default="[[shareDefault_]]"
+        error="{{error_}}"
+        on-close="onClose_"
+        connect-on-enter="[[showConnect]]"
+        on-properties-set="onPropertiesSet_">
+    </network-config>
+  </div>
 
-      .error {
-        color: red;
-        font-weight: 500;
-      }
-    </style>
+  <div class="layout horizontal center" slot="button-container">
+    <template is="dom-if" if="[[error_]]" restamp>
+      <div class="flex error">[[getError_(error_)]]</div>
+    </template>
+    <cr-button class="cancel-button" on-click="onCancelTap_">
+      $i18n{cancel}
+    </cr-button>
+    <template is="dom-if" if="[[!showConnect]]">
+      <cr-button id="saveButton" class="action-button"
+          on-click="onSaveTap_" disabled="[[!enableSave_]]">
+        $i18n{save}
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[showConnect]]">
+      <cr-button id="connectButton" class="action-button"
+          on-click="onConnectTap_" disabled="[[!enableConnect_]]">
+        $i18n{networkButtonConnect}
+      </cr-button>
+    </template>
+  </div>
 
-    <cr-dialog id="dialog" close-text="$i18n{close}">
-      <div slot="title">
-        [[getDialogTitle_(name, type, showConnect)]]
-      </div>
-      <div slot="body">
-        <network-config id="networkConfig" class="flex"
-            guid="[[guid]]" name="{{name}}" type="{{type}}"
-            enable-connect="{{enableConnect_}}" enable-save="{{enableSave_}}"
-            share-allow-enable="[[shareAllowEnable_]]"
-            share-default="[[shareDefault_]]"
-            error="{{error_}}"
-            on-close="onClose_"
-            connect-on-enter="[[showConnect]]"
-            on-properties-set="onPropertiesSet_">
-        </network-config>
-      </div>
-
-      <div class="layout horizontal center" slot="button-container">
-        <template is="dom-if" if="[[error_]]" restamp>
-          <div class="flex error">[[getError_(error_)]]</div>
-        </template>
-        <cr-button class="cancel-button" on-click="onCancelTap_">
-          $i18n{cancel}
-        </cr-button>
-        <template is="dom-if" if="[[!showConnect]]">
-          <cr-button id="saveButton" class="action-button"
-              on-click="onSaveTap_" disabled="[[!enableSave_]]">
-            $i18n{save}
-          </cr-button>
-        </template>
-        <template is="dom-if" if="[[showConnect]]">
-          <cr-button id="connectButton" class="action-button"
-              on-click="onConnectTap_" disabled="[[!enableConnect_]]">
-            $i18n{networkButtonConnect}
-          </cr-button>
-        </template>
-      </div>
-
-    </cr-dialog>
-  </template>
-  <script src="internet_config.js"></script>
-</dom-module>
+</cr-dialog>

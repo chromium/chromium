@@ -8,14 +8,60 @@
  * for a network.
  */
 
+import '//resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js';
+import '//resources/cr_components/chromeos/network/network_apnlist.m.js';
+import '//resources/cr_components/chromeos/network/network_choose_mobile.m.js';
+import '//resources/cr_components/chromeos/network/network_config_toggle.m.js';
+import '//resources/cr_components/chromeos/network/network_icon.m.js';
+import '//resources/cr_components/chromeos/network/network_ip_config.m.js';
+import '//resources/cr_components/chromeos/network/network_nameservers.m.js';
+import '//resources/cr_components/chromeos/network/network_property_list_mojo.m.js';
+import '//resources/cr_components/chromeos/network/network_siminfo.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import '../../controls/controlled_button.js';
+import '../../controls/settings_toggle_button.js';
+import '../../prefs/prefs.js';
+import './cellular_roaming_toggle_button.js';
+import './internet_shared_css.js';
+import './network_proxy_section.js';
+import './tether_connection_dialog.js';
+
+import {getSimSlotCount, hasActiveCellularNetwork, isActiveSim, isConnectedToNonCellularNetwork} from '//resources/cr_components/chromeos/network/cellular_utils.m.js';
+import {CrPolicyNetworkBehaviorMojo} from '//resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../../people_page/sync_browser_proxy.js';
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.m.js';
+import {routes} from '../os_route.m.js';
+
+import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-internet-detail-page',
 
   behaviors: [
     NetworkListenerBehavior,
     CrPolicyNetworkBehaviorMojo,
     DeepLinkingBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     I18nBehavior,
     WebUIListenerBehavior,
   ],
@@ -319,13 +365,13 @@ Polymer({
    */
   shouldShowConfigureWhenNetworkLoaded_: false,
 
-  /** @private  {settings.InternetPageBrowserProxy} */
+  /** @private  {InternetPageBrowserProxy} */
   browserProxy_: null,
 
-  /** @private {?settings.OsSyncBrowserProxy} */
+  /** @private {?OsSyncBrowserProxy} */
   osSyncBrowserProxy_: null,
 
-  /** @private {?settings.SyncBrowserProxy} */
+  /** @private {?SyncBrowserProxy} */
   syncBrowserProxy_: null,
 
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
@@ -359,14 +405,14 @@ Polymer({
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.InternetPageBrowserProxyImpl.getInstance();
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    this.browserProxy_ = InternetPageBrowserProxyImpl.getInstance();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
     if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
-      this.osSyncBrowserProxy_ = settings.OsSyncBrowserProxyImpl.getInstance();
+      this.osSyncBrowserProxy_ = OsSyncBrowserProxyImpl.getInstance();
     } else {
-      this.syncBrowserProxy_ = settings.SyncBrowserProxyImpl.getInstance();
+      this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
     }
   },
 
@@ -378,7 +424,7 @@ Polymer({
    */
   afterRenderShowDeepLink(settingId, elementCallback) {
     // Wait for element to load.
-    Polymer.RenderStatus.afterNextRender(this, () => {
+    afterNextRender(this, () => {
       const deepLinkElement = elementCallback();
       if (!deepLinkElement || deepLinkElement.hidden) {
         console.warn(`Element with deep link id ${settingId} not focusable.`);
@@ -478,17 +524,17 @@ Polymer({
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
-    if (route !== settings.routes.NETWORK_DETAIL) {
+    if (route !== routes.NETWORK_DETAIL) {
       return;
     }
 
-    const queryParams = settings.Router.getInstance().getQueryParameters();
+    const queryParams = Router.getInstance().getQueryParameters();
     const guid = queryParams.get('guid') || '';
     if (!guid) {
       console.warn('No guid specified for page:' + route);
@@ -554,7 +600,7 @@ Polymer({
       this.managedProperties_ = undefined;
       this.propertiesReceived_ = false;
 
-      settings.Router.getInstance().navigateToPreviousRoute();
+      Router.getInstance().navigateToPreviousRoute();
     });
   },
 
@@ -631,17 +677,17 @@ Polymer({
     // Update the detail page title.
     const networkName = OncMojo.getNetworkName(this.managedProperties_);
     this.parentNode.pageTitle = networkName;
-    Polymer.dom.flush();
+    flush();
 
     if (!this.didSetFocus_ &&
-        !settings.Router.getInstance().getQueryParameters().has('search') &&
+        !Router.getInstance().getQueryParameters().has('search') &&
         !this.getDeepLinkSettingId()) {
       // Unless the page was navigated to via search or has a deep linked
       // setting, focus a button once the initial state is set.
       this.didSetFocus_ = true;
       const button = this.$$('#titleDiv .action-button:not([hidden])');
       if (button) {
-        Polymer.RenderStatus.afterNextRender(this, () => button.focus());
+        afterNextRender(this, () => button.focus());
       }
     }
 
@@ -737,7 +783,7 @@ Polymer({
     // This is slightly preferable to requestAnimationFrame used within
     // network-siminfo to focus elements since it can be reproduced in
     // testing.
-    Polymer.RenderStatus.afterNextRender(this, () => {
+    afterNextRender(this, () => {
       if (simLockStatus && !!simLockStatus.lockType) {
         this.afterRenderShowDeepLink(
             settingId, () => this.$$('network-siminfo').getUnlockButton());
@@ -763,7 +809,7 @@ Polymer({
     if (!this.propertiesReceived_) {
       return;
     }
-    settings.recordSettingChange(
+    recordSettingChange(
         chromeos.settings.mojom.Setting.kWifiHidden,
         {boolValue: !!this.hiddenPref_.value});
     const config = this.getDefaultConfigProperties_();
@@ -1006,7 +1052,7 @@ Polymer({
           this.managedProperties_.typeProperties.cellular;
     }
     this.managedProperties_ = properties;
-    Polymer.RenderStatus.afterNextRender(this, () => {
+    afterNextRender(this, () => {
       this.applyingChanges_ = false;
     });
   },
@@ -1083,7 +1129,7 @@ Polymer({
         this.getNetworkDetails_();
       }
     });
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -1556,7 +1602,7 @@ Polymer({
     this.fire(
         'network-connect',
         {networkState: networkState, bypassConnectionDialog: bypassDialog});
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /** @private */
@@ -1566,7 +1612,7 @@ Polymer({
         console.warn('Disconnect failed for: ' + this.guid);
       }
     });
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /** @private */
@@ -1646,10 +1692,9 @@ Polymer({
 
     if (this.managedProperties_.type ===
         chromeos.networkConfig.mojom.NetworkType.kWiFi) {
-      settings.recordSettingChange(
-          chromeos.settings.mojom.Setting.kForgetWifiNetwork);
+      recordSettingChange(chromeos.settings.mojom.Setting.kForgetWifiNetwork);
     } else {
-      settings.recordSettingChange();
+      recordSettingChange();
     }
   },
 
@@ -1664,7 +1709,7 @@ Polymer({
         (this.isThirdPartyVpn_(this.managedProperties_) ||
          this.isArcVpn_(this.managedProperties_))) {
       this.browserProxy_.configureThirdPartyVpn(this.guid);
-      settings.recordSettingChange();
+      recordSettingChange();
       return;
     }
 
@@ -2031,7 +2076,7 @@ Polymer({
     }
 
     this.preferNetwork_ = !this.preferNetwork_;
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**

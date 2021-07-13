@@ -16,7 +16,17 @@ const EMOJI_REGEX_EXP =
  * @fileoverview Polymer element to rename eSIM profile name
  */
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.m.js';
+import {getPendingESimProfiles, getNonPendingESimProfiles, getNumESimProfiles, getEuicc, getESimProfile, getESimProfileProperties} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'esim-rename-dialog',
 
   behaviors: [
@@ -83,8 +93,8 @@ Polymer({
               chromeos.networkConfig.mojom.NetworkType.kCellular)) {
       return;
     }
-    this.esimProfileRemote_ = await cellular_setup.getESimProfile(
-        this.networkState.typeState.cellular.iccid);
+    this.esimProfileRemote_ =
+        await getESimProfile(this.networkState.typeState.cellular.iccid);
     // Fail gracefully if init is incomplete, see crbug/1194729.
     if (!this.esimProfileRemote_) {
       this.errorMessage_ = this.i18n('eSimRenameProfileDialogError');

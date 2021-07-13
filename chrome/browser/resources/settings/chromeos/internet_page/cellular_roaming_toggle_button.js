@@ -9,7 +9,17 @@
  * the transition to a more granular approach to roaming configuration.
  */
 
+import '../../prefs/prefs.js';
+
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'cellular-roaming-toggle-button',
 
   behaviors: [

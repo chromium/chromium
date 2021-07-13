@@ -1,81 +1,65 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style>
+  :host {
+    --cr-dialog-width: 416px;
+  }
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../os_route.html">
+  #title {
+    height: 15px;
+  }
 
-<dom-module id="esim-remove-profile-dialog">
-  <template>
-    <style>
-      :host {
-        --cr-dialog-width: 416px;
-      }
+  #warningMessage {
+    --iron-icon-fill-color: var(--google-grey-600);
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    font-size: smaller;
+    margin-top: 20px;
+  }
 
-      #title {
-        height: 15px;
-      }
+  #warningMessage iron-icon {
+    float: left;
+    padding-inline-end: 4px;
+  }
 
-      #warningMessage {
-        --iron-icon-fill-color: var(--google-grey-600);
-        --iron-icon-height: 16px;
-        --iron-icon-width: 16px;
-        font-size: smaller;
-        margin-top: 20px;
-      }
+  :host-context([dir='rtl']) #warningMessage iron-icon {
+    float: right;
+  }
 
-      #warningMessage iron-icon {
-        float: left;
-        padding-inline-end: 4px;
-      }
+  #warningMessage div {
+    overflow: hidden;
+  }
 
-      :host-context([dir='rtl']) #warningMessage iron-icon {
-        float: right;
-      }
+  #cancel {
+    margin-inline-end: 8px;
+  }
 
-      #warningMessage div {
-        overflow: hidden;
-      }
-
-      #cancel {
-        margin-inline-end: 8px;
-      }
-
-      #cancel:focus {
-        box-shadow: 0 0 0 2px var(--focus-shadow-color);
-      }
-    </style>
-    <cr-dialog id="dialog" show-on-attach>
-      <div id="title" slot="title">
-        [[getTitleString_(esimProfileName_)]]
-      </div>
-      <div slot="body">
-        <div id="description">$i18n{eSimRemoveProfileDialogDescription}</div>
-        <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
-          <iron-icon icon="cr:info-outline"></iron-icon>
-          <div>$i18n{eSimDialogConnectionWarning}</div>
-        </div>
-      </div>
-      <div slot="button-container">
-        <cr-button id="cancel"
-            aria-label="[[getCancelBtnA11yLabel_(esimProfileName_)]]"
-            on-click="onCancelTap_"
-            class="cancel-button">
-          $i18n{eSimRemoveProfileDialogCancel}
-        </cr-button>
-        <cr-button id="remove"
-            aria-label$="[[getRemoveBtnA11yLabel_(esimProfileName_)]]"
-            aria-describedby="description warningMessage"
-            on-click="onRemoveProfileTap_"
-            class="action-button">
-          $i18n{eSimRemoveProfileDialogRemove}
-        </cr-button>
-      </div>
-    </cr-dialog>
-  </template>
-  <script src="esim_remove_profile_dialog.js"></script>
-</dom-module>
+  #cancel:focus {
+    box-shadow: 0 0 0 2px var(--focus-shadow-color);
+  }
+</style>
+<cr-dialog id="dialog" show-on-attach>
+  <div id="title" slot="title">
+    [[getTitleString_(esimProfileName_)]]
+  </div>
+  <div slot="body">
+    <div id="description">$i18n{eSimRemoveProfileDialogDescription}</div>
+    <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
+      <iron-icon icon="cr:info-outline"></iron-icon>
+      <div>$i18n{eSimDialogConnectionWarning}</div>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancel"
+        aria-label="[[getCancelBtnA11yLabel_(esimProfileName_)]]"
+        on-click="onCancelTap_"
+        class="cancel-button">
+      $i18n{eSimRemoveProfileDialogCancel}
+    </cr-button>
+    <cr-button id="remove"
+        aria-label$="[[getRemoveBtnA11yLabel_(esimProfileName_)]]"
+        aria-describedby="description warningMessage"
+        on-click="onRemoveProfileTap_"
+        class="action-button">
+      $i18n{eSimRemoveProfileDialogRemove}
+    </cr-button>
+  </div>
+</cr-dialog>

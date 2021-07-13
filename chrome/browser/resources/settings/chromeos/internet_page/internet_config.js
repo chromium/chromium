@@ -6,7 +6,21 @@
  * @fileoverview
  * 'internet-config' is a Settings dialog wrapper for network-config.
  */
+import '//resources/cr_components/chromeos/network/network_config.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import './internet_shared_css.js';
+
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {HTMLEscape, listenOnce} from '//resources/js/util.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'internet-config',
 
   behaviors: [I18nBehavior],
@@ -149,11 +163,11 @@ Polymer({
     if (this.type ===
         OncMojo.getNetworkTypeString(
             chromeos.networkConfig.mojom.NetworkType.kWiFi)) {
-      settings.recordSettingChange(
+      recordSettingChange(
           chromeos.settings.mojom.Setting.kWifiAddNetwork,
           {stringValue: this.guid});
     } else {
-      settings.recordSettingChange();
+      recordSettingChange();
     }
   },
 });

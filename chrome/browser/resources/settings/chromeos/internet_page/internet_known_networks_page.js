@@ -7,14 +7,34 @@
  * 'settings-internet-known-networks' is the settings subpage listing the
  * known networks for a type (currently always WiFi).
  */
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/icons.m.js';
+import '../../settings_shared_css.js';
+import './internet_shared_css.js';
+
+import {CrPolicyNetworkBehaviorMojo} from '//resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-internet-known-networks-page',
 
   behaviors: [
     DeepLinkingBehavior,
     NetworkListenerBehavior,
     CrPolicyNetworkBehaviorMojo,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -83,19 +103,19 @@ Polymer({
 
   /** @override */
   created() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.KNOWN_NETWORKS) {
+    if (route !== routes.KNOWN_NETWORKS) {
       return;
     }
 
@@ -242,7 +262,7 @@ Polymer({
                 JSON.stringify(config));
           }
         });
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /** @private */
@@ -272,10 +292,9 @@ Polymer({
     });
 
     if (this.networkType === chromeos.networkConfig.mojom.NetworkType.kWiFi) {
-      settings.recordSettingChange(
-          chromeos.settings.mojom.Setting.kForgetWifiNetwork);
+      recordSettingChange(chromeos.settings.mojom.Setting.kForgetWifiNetwork);
     } else {
-      settings.recordSettingChange();
+      recordSettingChange();
     }
 
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();

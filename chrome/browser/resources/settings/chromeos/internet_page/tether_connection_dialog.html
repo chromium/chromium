@@ -1,131 +1,111 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="../../chromeos/os_icons.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../os_route.html">
+<style include="settings-shared iron-flex">
+  [slot=title] {
+    margin-top: 9px;
+  }
 
-<dom-module id="tether-connection-dialog">
-  <template>
-    <style include="settings-shared iron-flex">
-      [slot=title] {
-        margin-top: 9px;
-      }
+  [slot=body] {
+    border-top: solid 2px rgba(0, 0, 0, .14);
+  }
 
-      [slot=body] {
-        border-top: solid 2px rgba(0, 0, 0, .14);
-      }
+  [slot=body] > * {
+    margin-inline-start: 5px;
+  }
 
-      [slot=body] > * {
-        margin-inline-start: 5px;
-      }
+  iron-icon {
+    --iron-icon-fill-color: #4285F4;
+  }
 
-      iron-icon {
-        --iron-icon-fill-color: #4285F4;
-      }
+  #host-device-text-container {
+    display: flex;
+    flex-direction: column;
+    margin-inline-start: 18px;
+  }
 
-      #host-device-text-container {
-        display: flex;
-        flex-direction: column;
-        margin-inline-start: 18px;
-      }
+  #availability-title {
+    color: black;
+    margin-top: 5px;
+    opacity: 0.54;
+  }
 
-      #availability-title {
-        color: black;
-        margin-top: 5px;
-        opacity: 0.54;
-      }
+  #host-device-container {
+    align-items: center;
+    display: flex;
+    margin-top: 12px;
+    min-height: 46px;
+  }
 
-      #host-device-container {
-        align-items: center;
-        display: flex;
-        margin-top: 12px;
-        min-height: 46px;
-      }
+  #tether-explanation,
+  #tether-carrier-warning,
+  #tether-description-title {
+    margin-top: var(--cr-section-vertical-margin);
+  }
 
-      #tether-explanation,
-      #tether-carrier-warning,
-      #tether-description-title {
-        margin-top: var(--cr-section-vertical-margin);
-      }
+  #tether-carrier-warning {
+    font-weight: 600;
+  }
 
-      #tether-carrier-warning {
-        font-weight: 600;
-      }
+  #tether-description-list {
+    padding-inline-start: 16px;
+  }
 
-      #tether-description-list {
-        padding-inline-start: 16px;
-      }
-
-      #host-device-lost-container {
-        color: var(--google-red-500);
-        font-weight: 500;
-      }
-    </style>
-    <cr-dialog id="dialog" close-text="$i18n{close}">
-      <div slot="title">$i18n{tetherConnectionDialogTitle}</div>
-      <div slot="body">
-        <span id="availability-title">
-          $i18n{tetherConnectionAvailableDeviceTitle}
+  #host-device-lost-container {
+    color: var(--google-red-500);
+    font-weight: 500;
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">$i18n{tetherConnectionDialogTitle}</div>
+  <div slot="body">
+    <span id="availability-title">
+      $i18n{tetherConnectionAvailableDeviceTitle}
+    </span>
+    <div id="host-device-container">
+      <iron-icon id="host-device-signal-strength-icon"
+          icon="[[getSignalStrengthIconName_(managedProperties)]]"
+          aria-label$="[[getSignalStrengthLabel_(managedProperties)]]">
+      </iron-icon>
+      <div id="host-device-text-container">
+        <span id="host-device-text-name"
+            aria-describedby="host-device-signal-strength-icon
+            hostDeviceTextBattery">
+          [[getDeviceName_(managedProperties)]]
         </span>
-        <div id="host-device-container">
-          <iron-icon id="host-device-signal-strength-icon"
-              icon="[[getSignalStrengthIconName_(managedProperties)]]"
-              aria-label$="[[getSignalStrengthLabel_(managedProperties)]]">
-          </iron-icon>
-          <div id="host-device-text-container">
-            <span id="host-device-text-name"
-                aria-describedby="host-device-signal-strength-icon
-                hostDeviceTextBattery">
-              [[getDeviceName_(managedProperties)]]
-            </span>
-            <span id="hostDeviceTextBattery" class="secondary"
-                aria-hidden="true">
-              [[getBatteryPercentageString_(managedProperties)]]
-            </span>
-          </div>
-          <div class="flex"></div>
-          <div id="host-device-lost-container" hidden$="[[!outOfRange]]">
-            <iron-icon icon="os-settings:alert-device-out-of-range">
-            </iron-icon>
-            $i18n{tetherPhoneOutOfRange}
-          </div>
-        </div>
-        <div id="tether-explanation">
-          [[getExplanation_(managedProperties)]]
-        </div>
-        <div id="tether-carrier-warning">
-          $i18n{tetherConnectionCarrierWarning}
-        </div>
-        <div id="tether-description-title">
-          [[getDescriptionTitle_(managedProperties)]]
-        </div>
-        <ul id="tether-description-list">
-          <li>$i18n{tetherConnectionDescriptionMobileData}</li>
-          <li>[[getBatteryDescription_(managedProperties)]]</li>
-          <li hidden$="[[!shouldShowDisconnectFromWifi_(managedProperties)]]">
-            $i18n{tetherConnectionDescriptionWiFi}
-          </li>
-        </ul>
+        <span id="hostDeviceTextBattery" class="secondary"
+            aria-hidden="true">
+          [[getBatteryPercentageString_(managedProperties)]]
+        </span>
       </div>
-      <div slot="button-container">
-        <cr-button class="cancel-button" on-click="onNotNowTap_">
-          $i18n{tetherConnectionNotNowButton}
-        </cr-button>
-        <cr-button id="connectButton" class="action-button"
-            on-click="onConnectTap_" disabled="[[outOfRange]]">
-          $i18n{tetherConnectionConnectButton}
-        </cr-button>
+      <div class="flex"></div>
+      <div id="host-device-lost-container" hidden$="[[!outOfRange]]">
+        <iron-icon icon="os-settings:alert-device-out-of-range">
+        </iron-icon>
+        $i18n{tetherPhoneOutOfRange}
       </div>
-    </cr-dialog>
-  </template>
-  <script src="tether_connection_dialog.js"></script>
-</dom-module>
+    </div>
+    <div id="tether-explanation">
+      [[getExplanation_(managedProperties)]]
+    </div>
+    <div id="tether-carrier-warning">
+      $i18n{tetherConnectionCarrierWarning}
+    </div>
+    <div id="tether-description-title">
+      [[getDescriptionTitle_(managedProperties)]]
+    </div>
+    <ul id="tether-description-list">
+      <li>$i18n{tetherConnectionDescriptionMobileData}</li>
+      <li>[[getBatteryDescription_(managedProperties)]]</li>
+      <li hidden$="[[!shouldShowDisconnectFromWifi_(managedProperties)]]">
+        $i18n{tetherConnectionDescriptionWiFi}
+      </li>
+    </ul>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onNotNowTap_">
+      $i18n{tetherConnectionNotNowButton}
+    </cr-button>
+    <cr-button id="connectButton" class="action-button"
+        on-click="onConnectTap_" disabled="[[outOfRange]]">
+      $i18n{tetherConnectionConnectButton}
+    </cr-button>
+  </div>
+</cr-dialog>

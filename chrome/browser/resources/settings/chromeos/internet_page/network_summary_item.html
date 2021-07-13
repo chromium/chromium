@@ -1,107 +1,87 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="internet-shared iron-flex">
+  network-siminfo {
+    padding-inline-start: var(--cr-section-padding);
+  }
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_siminfo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+  #outerBox {
+    padding: 0 var(--cr-section-padding);
+  }
 
-<dom-module id="network-summary-item">
-  <template>
-    <style include="internet-shared iron-flex">
-      network-siminfo {
-        padding-inline-start: var(--cr-section-padding);
-      }
+  #details {
+    align-items: center;
+    display: flex;
+    flex: auto;
+  }
 
-      #outerBox {
-        padding: 0 var(--cr-section-padding);
-      }
+  .network-state {
+    color: var(--cr-secondary-text-color);
+    font-size: inherit;
+  }
 
-      #details {
-        align-items: center;
-        display: flex;
-        flex: auto;
-      }
-
-      .network-state {
-        color: var(--cr-secondary-text-color);
-        font-size: inherit;
-      }
-
-      .locked-warning-message {
-        color: var(--google-yellow-800);
-        font-size: inherit;
-      }
-    </style>
-    <div class="settings-box two-line no-padding">
-      <div actionable$="[[isItemActionable_(activeNetworkState,
-                            deviceState, networkStateList)]]"
-          class="flex layout horizontal center link-wrapper"
-          on-click="onShowDetailsTap_">
-        <div id="details" no-flex$="[[showSimInfo_(deviceState)]]"
-             aria-hidden="true">
-          <network-icon
-              id="networkIcon"
-              show-technology-badge="[[showTechnologyBadge_]]"
-              network-state="[[activeNetworkState]]"
-              device-state="[[deviceState]]">
-          </network-icon>
-          <div class="flex settings-box-text">
-            <div id="networkTitleText">
-              [[getTitleText_(activeNetworkState)]]
-            </div>
-            <div id="networkState"
-                class$="[[getNetworkStateClass_(deviceState, deviceState.*)]]">
-              [[getNetworkStateText_(activeNetworkState, deviceState.*)]]
-            </div>
-          </div>
+  .locked-warning-message {
+    color: var(--google-yellow-800);
+    font-size: inherit;
+  }
+</style>
+<div class="settings-box two-line no-padding">
+  <div actionable$="[[isItemActionable_(activeNetworkState,
+                        deviceState, networkStateList)]]"
+      class="flex layout horizontal center link-wrapper"
+      on-click="onShowDetailsTap_">
+    <div id="details" no-flex$="[[showSimInfo_(deviceState)]]"
+          aria-hidden="true">
+      <network-icon
+          id="networkIcon"
+          show-technology-badge="[[showTechnologyBadge_]]"
+          network-state="[[activeNetworkState]]"
+          device-state="[[deviceState]]">
+      </network-icon>
+      <div class="flex settings-box-text">
+        <div id="networkTitleText">
+          [[getTitleText_(activeNetworkState)]]
         </div>
-
-        <template is="dom-if" if="[[showSimInfo_(deviceState)]]" restamp>
-          <network-siminfo
-              on-click="doNothing_"
-              network-state="[[activeNetworkState]]"
-              device-state="[[deviceState]]">
-          </network-siminfo>
-        </template>
-
-        <template is="dom-if" if="[[showPolicyIndicator_(activeNetworkState)]]">
-          <cr-policy-indicator id="policyIndicator"
-              icon-aria-label="[[getTitleText_(activeNetworkState)]]"
-              indicator-type="[[getPolicyIndicatorType_(activeNetworkState)]]"
-              on-click="doNothing_">
-          </cr-policy-indicator>
-        </template>
-
-        <template is="dom-if" if="[[showArrowButton_(activeNetworkState,
-                                      deviceState, networkStateList)]]">
-          <cr-icon-button class="subpage-arrow"
-              aria-labelledby="networkTitleText"
-              aria-describedby="networkState networkIcon"
-              aria-roledescription="$i18n{subpageArrowRoleDescription}">
-          </cr-icon-button>
-        </template>
+        <div id="networkState"
+            class$="[[getNetworkStateClass_(deviceState, deviceState.*)]]">
+          [[getNetworkStateText_(activeNetworkState, deviceState.*)]]
+        </div>
       </div>
-
-      <template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
-        <div class="separator"></div>
-        <cr-toggle id="deviceEnabledButton"
-            class="margin-matches-padding"
-            aria-label$="[[getToggleA11yString_(deviceState)]]"
-            aria-describedby$="[[getToggleA11yDescribedBy_(deviceState)]]"
-            checked="[[deviceIsEnabled_(deviceState)]]"
-            disabled="[[!enableToggleIsEnabled_(deviceState)]]"
-            on-change="onDeviceEnabledChange_">
-        </cr-toggle>
-      </template>
     </div>
+
+    <template is="dom-if" if="[[showSimInfo_(deviceState)]]" restamp>
+      <network-siminfo
+          on-click="doNothing_"
+          network-state="[[activeNetworkState]]"
+          device-state="[[deviceState]]">
+      </network-siminfo>
+    </template>
+
+    <template is="dom-if" if="[[showPolicyIndicator_(activeNetworkState)]]">
+      <cr-policy-indicator id="policyIndicator"
+          icon-aria-label="[[getTitleText_(activeNetworkState)]]"
+          indicator-type="[[getPolicyIndicatorType_(activeNetworkState)]]"
+          on-click="doNothing_">
+      </cr-policy-indicator>
+    </template>
+
+    <template is="dom-if" if="[[showArrowButton_(activeNetworkState,
+                                  deviceState, networkStateList)]]">
+      <cr-icon-button class="subpage-arrow"
+          aria-labelledby="networkTitleText"
+          aria-describedby="networkState networkIcon"
+          aria-roledescription="$i18n{subpageArrowRoleDescription}">
+      </cr-icon-button>
+    </template>
+  </div>
+
+  <template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
+    <div class="separator"></div>
+    <cr-toggle id="deviceEnabledButton"
+        class="margin-matches-padding"
+        aria-label$="[[getToggleA11yString_(deviceState)]]"
+        aria-describedby$="[[getToggleA11yDescribedBy_(deviceState)]]"
+        checked="[[deviceIsEnabled_(deviceState)]]"
+        disabled="[[!enableToggleIsEnabled_(deviceState)]]"
+        on-change="onDeviceEnabledChange_">
+    </cr-toggle>
   </template>
-  <script src="network_summary_item.js"></script>
-</dom-module>
+</div>

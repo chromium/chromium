@@ -6,7 +6,20 @@
  * @fileoverview Polymer element to remove eSIM profile
  */
 
+import '//resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+
+import {getESimProfile, getESimProfileProperties, getEuicc, getNonPendingESimProfiles, getNumESimProfiles, getPendingESimProfiles} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'esim-remove-profile-dialog',
 
   behaviors: [
@@ -48,8 +61,8 @@ Polymer({
               chromeos.networkConfig.mojom.NetworkType.kCellular)) {
       return;
     }
-    this.esimProfileRemote_ = await cellular_setup.getESimProfile(
-        this.networkState.typeState.cellular.iccid);
+    this.esimProfileRemote_ =
+        await getESimProfile(this.networkState.typeState.cellular.iccid);
     // Fail gracefully if init is incomplete, see crbug/1194729.
     if (!this.esimProfileRemote_) {
       this.fire('show-error-toast', this.i18n('eSimRemoveProfileDialogError'));
@@ -99,8 +112,8 @@ Polymer({
         'type',
         OncMojo.getNetworkTypeString(
             chromeos.networkConfig.mojom.NetworkType.kCellular));
-    settings.Router.getInstance().setCurrentRoute(
-        settings.routes.INTERNET_NETWORKS, params, /*isPopState=*/ true);
+    Router.getInstance().setCurrentRoute(
+        routes.INTERNET_NETWORKS, params, /*isPopState=*/ true);
   },
 
   /**

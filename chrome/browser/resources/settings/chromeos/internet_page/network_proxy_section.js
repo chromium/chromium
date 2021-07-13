@@ -8,14 +8,34 @@
  * shared networks'.
  */
 
+import '//resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js';
+import '//resources/cr_components/chromeos/network/network_proxy.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/hidden_style_css.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../../controls/extension_controlled_indicator.js';
+import '../../settings_vars_css.js';
+import './internet_shared_css.js';
+
+import {CrPolicyNetworkBehaviorMojo} from '//resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-proxy-section',
 
   behaviors: [
     CrPolicyNetworkBehaviorMojo,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -46,9 +66,9 @@ Polymer({
     return /** @type {?CrToggleElement} */ (this.$$('#allowShared'));
   },
 
-  /** @protected settings.RouteObserverBehavior */
+  /** @protected RouteObserverBehavior */
   currentRouteChanged(newRoute) {
-    if (newRoute === settings.routes.NETWORK_DETAIL) {
+    if (newRoute === routes.NETWORK_DETAIL) {
       /** @type {NetworkProxyElement} */ (this.$$('network-proxy')).reset();
     }
   },

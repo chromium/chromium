@@ -7,19 +7,51 @@
  * Cellular, or virtual networks.
  */
 
-(function() {
+import '//resources/cr_components/chromeos/network/network_list.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '//resources/cr_elements/md_select_css.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../os_settings_icons_css.m.js';
+import '../../settings_shared_css.js';
+import '../localized_link/localized_link.js';
+import './cellular_networks_list.js';
+import './network_always_on_vpn.js';
+
+import {CrPolicyNetworkBehaviorMojo} from '//resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteOriginBehavior, RouteOriginBehaviorImpl} from '../route_origin_behavior.m.js';
+
+import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
+
 
 const mojom = chromeos.networkConfig.mojom;
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-internet-subpage',
 
   behaviors: [
     NetworkListenerBehavior,
     CrPolicyNetworkBehaviorMojo,
     DeepLinkingBehavior,
-    settings.RouteObserverBehavior,
-    settings.RouteOriginBehavior,
+    RouteObserverBehavior,
+    RouteOriginBehavior,
     I18nBehavior,
   ],
 
@@ -195,8 +227,8 @@ Polymer({
     },
   },
 
-  /** settings.RouteOriginBehavior override */
-  route_: settings.routes.INTERNET_NETWORKS,
+  /** RouteOriginBehavior override */
+  route_: routes.INTERNET_NETWORKS,
 
   observers: [
     'deviceStateChanged_(deviceState)',
@@ -206,7 +238,7 @@ Polymer({
   /** @private {number|null} */
   scanIntervalId_: null,
 
-  /** @private  {settings.InternetPageBrowserProxy} */
+  /** @private  {InternetPageBrowserProxy} */
   browserProxy_: null,
 
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
@@ -214,9 +246,9 @@ Polymer({
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.InternetPageBrowserProxyImpl.getInstance();
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    this.browserProxy_ = InternetPageBrowserProxyImpl.getInstance();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   },
 
   /** @override */
@@ -225,8 +257,7 @@ Polymer({
         this.onNotificationsDisabledDeviceNamesReceived_.bind(this));
     this.browserProxy_.requestGmsCoreNotificationsDisabledDeviceNames();
 
-    this.addFocusConfig_(
-        settings.routes.KNOWN_NETWORKS, '#knownNetworksSubpageButton');
+    this.addFocusConfig_(routes.KNOWN_NETWORKS, '#knownNetworksSubpageButton');
   },
 
   /** override */
@@ -241,7 +272,7 @@ Polymer({
    */
   beforeDeepLinkAttempt(settingId) {
     if (settingId === chromeos.settings.mojom.Setting.kAddESimNetwork) {
-      Polymer.RenderStatus.afterNextRender(this, () => {
+      afterNextRender(this, () => {
         const deepLinkElement =
             this.$$('cellular-networks-list').getAddEsimButton();
         if (!deepLinkElement || deepLinkElement.hidden) {
@@ -255,7 +286,7 @@ Polymer({
 
     if (settingId === chromeos.settings.mojom.Setting.kInstantTetheringOnOff) {
       // Wait for element to load.
-      Polymer.RenderStatus.afterNextRender(this, () => {
+      afterNextRender(this, () => {
         // If both Cellular and Instant Tethering are enabled, we show a special
         // toggle for Instant Tethering. If it exists, deep link to it.
         const tetherEnabled = this.$$('#tetherEnabledButton');
@@ -279,19 +310,18 @@ Polymer({
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} newRoute
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} newRoute
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
-    if (newRoute !== settings.routes.INTERNET_NETWORKS) {
+    if (newRoute !== routes.INTERNET_NETWORKS) {
       this.stopScanning_();
       return;
     }
     this.init();
-    settings.RouteOriginBehaviorImpl.currentRouteChanged.call(
-        this, newRoute, oldRoute);
+    RouteOriginBehaviorImpl.currentRouteChanged.call(this, newRoute, oldRoute);
 
     this.attemptDeepLink().then(result => {
       if (!result.deepLinkShown && result.pendingSettingId) {
@@ -364,8 +394,7 @@ Polymer({
     }
 
     // Scans should only be triggered by the "networks" subpage.
-    if (settings.Router.getInstance().getCurrentRoute() !==
-        settings.routes.INTERNET_NETWORKS) {
+    if (Router.getInstance().getCurrentRoute() !== routes.INTERNET_NETWORKS) {
       this.stopScanning_();
       return;
     }
@@ -708,7 +737,7 @@ Polymer({
   onAddThirdPartyVpnTap_(event) {
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -775,7 +804,7 @@ Polymer({
     e.target.blur();
     if (this.canAttemptConnection_(networkState)) {
       this.fire('network-connect', {networkState: networkState});
-      settings.recordSettingChange();
+      recordSettingChange();
       return;
     }
     this.fire('show-detail', networkState);
@@ -1085,4 +1114,3 @@ Polymer({
     this.networkConfig_.setAlwaysOnVpn(properties);
   },
 });
-})();

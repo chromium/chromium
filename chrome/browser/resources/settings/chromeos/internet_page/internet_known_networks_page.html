@@ -1,107 +1,84 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="internet-shared iron-flex">
+  cr-policy-indicator {
+    margin-inline-start: var(--settings-controlled-by-spacing);
+  }
+</style>
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="internet_shared_css.html">
+<div class="settings-box first">
+  <div class="settings-box-text">$i18n{knownNetworksMessage}</div>
+</div>
 
-<dom-module id="settings-internet-known-networks-page">
-  <template>
-    <style include="internet-shared iron-flex">
-      cr-policy-indicator {
-        margin-inline-start: var(--settings-controlled-by-spacing);
-      }
-    </style>
-
-    <div class="settings-box first">
-      <div class="settings-box-text">$i18n{knownNetworksMessage}</div>
+<div class="settings-box settings-box-text">
+  <div class="secondary">$i18n{knownNetworksPreferred}</div>
+</div>
+<div class="list-frame vertical-list"
+    hidden$="[[havePreferred_(networkStateList_)]]">
+  <div class="list-item settings-box-text">
+    $i18n{internetNoNetworks}
+  </div>
+</div>
+<div id="preferredNetworkList" class="list-frame vertical-list"
+    hidden$="[[!havePreferred_(networkStateList_)]]">
+  <template is="dom-repeat" items="[[networkStateList_]]"
+      filter="networkIsPreferred_">
+    <div class="list-item">
+      <cr-link-row embedded label="[[getNetworkDisplayName_(item)]]"
+          on-click="fireShowDetails_"
+          role-description="$i18n{subpageArrowRoleDescription}"
+          deep-link-focus-id$="[[Setting.kForgetWifiNetwork]]">
+        <template is="dom-if" if="[[isPolicySource(item.source))]]">
+          <cr-policy-indicator on-click="doNothing_"
+              indicator-type="[[getIndicatorTypeForSource(item.source)]]">
+          </cr-policy-indicator>
+        </template>
+      </cr-link-row>
+      <div class="separator"></div>
+      <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
+          on-click="onMenuButtonTap_" title="$i18n{moreActions}">
+      </cr-icon-button>
     </div>
-
-    <div class="settings-box settings-box-text">
-      <div class="secondary">$i18n{knownNetworksPreferred}</div>
-    </div>
-    <div class="list-frame vertical-list"
-        hidden$="[[havePreferred_(networkStateList_)]]">
-      <div class="list-item settings-box-text">
-        $i18n{internetNoNetworks}
-      </div>
-    </div>
-    <div id="preferredNetworkList" class="list-frame vertical-list"
-        hidden$="[[!havePreferred_(networkStateList_)]]">
-      <template is="dom-repeat" items="[[networkStateList_]]"
-          filter="networkIsPreferred_">
-        <div class="list-item">
-          <cr-link-row embedded label="[[getNetworkDisplayName_(item)]]"
-              on-click="fireShowDetails_"
-              role-description="$i18n{subpageArrowRoleDescription}"
-              deep-link-focus-id$="[[Setting.kForgetWifiNetwork]]">
-            <template is="dom-if" if="[[isPolicySource(item.source))]]">
-              <cr-policy-indicator on-click="doNothing_"
-                  indicator-type="[[getIndicatorTypeForSource(item.source)]]">
-              </cr-policy-indicator>
-            </template>
-          </cr-link-row>
-          <div class="separator"></div>
-          <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-              on-click="onMenuButtonTap_" title="$i18n{moreActions}">
-          </cr-icon-button>
-        </div>
-      </template>
-    </div>
-
-    <div class="settings-box settings-box-text">
-      <div class="secondary">$i18n{knownNetworksAll}</div>
-    </div>
-    <div id="notPreferredNetworkList" class="list-frame vertical-list"
-        hidden$="[[!haveNotPreferred_(networkStateList_)]]">
-      <template is="dom-repeat" items="[[networkStateList_]]"
-          filter="networkIsNotPreferred_">
-        <div class="list-item">
-          <cr-link-row embedded label="[[getNetworkDisplayName_(item)]]"
-              on-click="fireShowDetails_"
-              role-description="$i18n{subpageArrowRoleDescription}"
-              deep-link-focus-id$="[[Setting.kPreferWifiNetwork]]
-                  [[Setting.kForgetWifiNetwork]]">
-            <template is="dom-if" if="[[isPolicySource(item.source))]]">
-              <cr-policy-indicator on-click="doNothing_"
-                  indicator-type="[[getIndicatorTypeForSource(item.source)]]">
-              </cr-policy-indicator>
-            </template>
-          </cr-link-row>
-          <div class="separator"></div>
-          <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-              on-click="onMenuButtonTap_" title="$i18n{moreActions}">
-          </cr-icon-button>
-        </div>
-      </template>
-    </div>
-
-    <cr-action-menu id="dotsMenu" role-description="$i18n{menu}">
-      <button class="dropdown-item" hidden="[[!showAddPreferred_]]"
-          on-click="onAddPreferredTap_">
-        $i18n{knownNetworksMenuAddPreferred}
-      </button>
-      <button class="dropdown-item"
-          hidden="[[!showRemovePreferred_]]" on-click="onRemovePreferredTap_">
-        $i18n{knownNetworksMenuRemovePreferred}
-      </button>
-      <button class="dropdown-item" disabled="[[!enableForget_]]"
-          on-click="onForgetTap_">
-        $i18n{knownNetworksMenuForget}
-      </button>
-    </cr-action-menu>
-
   </template>
-  <script src="internet_known_networks_page.js"></script>
-</dom-module>
+</div>
+
+<div class="settings-box settings-box-text">
+  <div class="secondary">$i18n{knownNetworksAll}</div>
+</div>
+<div id="notPreferredNetworkList" class="list-frame vertical-list"
+    hidden$="[[!haveNotPreferred_(networkStateList_)]]">
+  <template is="dom-repeat" items="[[networkStateList_]]"
+      filter="networkIsNotPreferred_">
+    <div class="list-item">
+      <cr-link-row embedded label="[[getNetworkDisplayName_(item)]]"
+          on-click="fireShowDetails_"
+          role-description="$i18n{subpageArrowRoleDescription}"
+          deep-link-focus-id$="[[Setting.kPreferWifiNetwork]]
+              [[Setting.kForgetWifiNetwork]]">
+        <template is="dom-if" if="[[isPolicySource(item.source))]]">
+          <cr-policy-indicator on-click="doNothing_"
+              indicator-type="[[getIndicatorTypeForSource(item.source)]]">
+          </cr-policy-indicator>
+        </template>
+      </cr-link-row>
+      <div class="separator"></div>
+      <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
+          on-click="onMenuButtonTap_" title="$i18n{moreActions}">
+      </cr-icon-button>
+    </div>
+  </template>
+</div>
+
+<cr-action-menu id="dotsMenu" role-description="$i18n{menu}">
+  <button class="dropdown-item" hidden="[[!showAddPreferred_]]"
+      on-click="onAddPreferredTap_">
+    $i18n{knownNetworksMenuAddPreferred}
+  </button>
+  <button class="dropdown-item"
+      hidden="[[!showRemovePreferred_]]" on-click="onRemovePreferredTap_">
+    $i18n{knownNetworksMenuRemovePreferred}
+  </button>
+  <button class="dropdown-item" disabled="[[!enableForget_]]"
+      on-click="onForgetTap_">
+    $i18n{knownNetworksMenuForget}
+  </button>
+</cr-action-menu>
+

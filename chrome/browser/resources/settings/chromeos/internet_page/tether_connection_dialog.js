@@ -25,7 +25,23 @@ function signalStrengthToBarCount(strength) {
   return 0;
 }
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import '//resources/cr_components/chromeos/network/network_icon.m.js';
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {HTMLEscape, listenOnce} from '//resources/js/util.m.js';
+import '../os_icons.m.js';
+import '../../settings_shared_css.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'tether-connection-dialog',
 
   behaviors: [I18nBehavior],

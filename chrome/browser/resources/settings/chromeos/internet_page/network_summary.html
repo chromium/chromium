@@ -1,27 +1,15 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="network_summary_item.html">
-
-<dom-module id="network-summary">
-  <template>
-    <style>
-      network-summary-item:first-child {
-        --cr-separator-line: 0;
-      }
-    </style>
-    <div id="summary">
-      <template is="dom-repeat" items="[[activeNetworkStates_]]">
-        <network-summary-item id="[[getTypeString_(item)]]"
-            active-network-state="[[item]]"
-            device-state="[[get(item.type, deviceStates)]]"
-            network-state-list="[[get(item.type, networkStateLists_)]]"
-            tether-device-state="[[getTetherDeviceState_(deviceStates)]]">
-        </network-summary-item>
-      </template>
-    </div>
+<style>
+  network-summary-item:first-child {
+    --cr-separator-line: 0;
+  }
+</style>
+<div id="summary">
+  <template is="dom-repeat" items="[[activeNetworkStates_]]">
+    <network-summary-item id="[[getTypeString_(item)]]"
+        active-network-state="[[item]]"
+        device-state="[[get(item.type, deviceStates)]]"
+        network-state-list="[[get(item.type, networkStateLists_)]]"
+        tether-device-state="[[getTetherDeviceState_(deviceStates)]]">
+    </network-summary-item>
   </template>
-  <script src="network_summary.js"></script>
-</dom-module>
+</div>

@@ -1,289 +1,254 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-shared-style os-settings-icons settings-shared iron-flex">
+  #networkListDiv {
+    min-height: var(--settings-row-min-height);
+  }
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_list.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="../../chromeos/os_settings_icons_css.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../localized_link/localized_link.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="./cellular_networks_list.html">
-<link rel="import" href="../route_origin_behavior.html">
-<link rel="import" href="internet_page_browser_proxy.html">
-<link rel="import" href="network_always_on_vpn.html">
+  :host(:not([is-showing-vpn_])) #networkListDiv {
+    margin-top: var(--cr-section-vertical-margin);
+  }
 
-<dom-module id="settings-internet-subpage">
-  <template>
-    <style include="cr-shared-style os-settings-icons settings-shared iron-flex">
-      #networkListDiv {
-        min-height: var(--settings-row-min-height);
-      }
+  #cellularNetworkList {
+    /* No extra margin-top when displaying the cellular network list. */
+    margin-top: calc(-1*var(--cr-section-vertical-margin));
+  }
 
-      :host(:not([is-showing-vpn_])) #networkListDiv {
-        margin-top: var(--cr-section-vertical-margin);
-      }
+  /* Set padding on children instead of the container itself to ensure that
+      separator lines can fill the entire width of the page. */
+  #networkListDiv > * {
+    /* network-list is padded to the right to allow space for a ripple */
+    padding-inline-end: calc(var(--cr-section-padding) -
+        var(--cr-icon-ripple-padding));
+    padding-inline-start: var(--cr-section-padding);
+  }
 
-      #cellularNetworkList {
-        /* No extra margin-top when displaying the cellular network list. */
-        margin-top: calc(-1*var(--cr-section-vertical-margin));
-      }
+  .add-button {
+    margin-inline-end: var(--settings-control-label-spacing);
+  }
 
-      /* Set padding on children instead of the container itself to ensure that
-         separator lines can fill the entire width of the page. */
-      #networkListDiv > * {
-        /* network-list is padded to the right to allow space for a ripple */
-        padding-inline-end: calc(var(--cr-section-padding) -
-            var(--cr-icon-ripple-padding));
-        padding-inline-start: var(--cr-section-padding);
-      }
+  #onOff {
+    font-weight: 500;
+  }
 
-      .add-button {
-        margin-inline-end: var(--settings-control-label-spacing);
-      }
+  #onOff[on] {
+    color: var(--cr-toggle-color);
+  }
 
-      #onOff {
-        font-weight: 500;
-      }
+  .vpn-header {
+    margin-bottom: 8px;
+    margin-inline-end: 12px;
+    margin-inline-start: 4px;
+    margin-top: 8px;
+  }
 
-      #onOff[on] {
-        color: var(--cr-toggle-color);
-      }
+  .no-networks {
+    margin: 4px;
+  }
 
-      .vpn-header {
-        margin-bottom: 8px;
-        margin-inline-end: 12px;
-        margin-inline-start: 4px;
-        margin-top: 8px;
-      }
+  network-list {
+    flex: 1;
+  }
 
-      .no-networks {
-        margin: 4px;
-      }
+  network-always-on-vpn {
+    width: 100%;
+  }
 
-      network-list {
-        flex: 1;
-      }
+  #gmscore-notifications-container {
+    border-top: var(--cr-separator-line);
+    margin: 10px 0;
+    padding-bottom: var(--cr-section-padding);
+    padding-top: var(--cr-section-padding);
+  }
 
-      network-always-on-vpn {
-        width: 100%;
-      }
+  #gmscore-notifications-container[no-networks-text-below] {
+    border-bottom: var(--cr-separator-line);
+    margin-top: 0;
+  }
 
-      #gmscore-notifications-container {
-        border-top: var(--cr-separator-line);
-        margin: 10px 0;
-        padding-bottom: var(--cr-section-padding);
-        padding-top: var(--cr-section-padding);
-      }
+  #gmscore-notifications-device-string {
+    margin-top: 5px;
+  }
 
-      #gmscore-notifications-container[no-networks-text-below] {
-        border-bottom: var(--cr-separator-line);
-        margin-top: 0;
-      }
+  #gmscore-notifications-instructions {
+    margin: 0;
+    padding-inline-start: 15px;
+  }
 
-      #gmscore-notifications-device-string {
-        margin-top: 5px;
-      }
+  #cellularNetworkList {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+</style>
+<template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
+  <div class="settings-box first">
+    <div id="onOff" class="start" on$="[[deviceIsEnabled_(deviceState)]]"
+        aria-hidden="true">
+      [[getOffOnString_(deviceState,
+        '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
+    </div>
+    <!-- The add button in this row is only shown for WiFi networks. -->
+    <cr-icon-button class="icon-add-wifi add-button" id="addWifiButton"
+        hidden$="[[!showAddWifiButton_(deviceState, globalPolicy)]]"
+        aria-label="$i18n{internetAddWiFi}" on-click="onAddWifiButtonTap_"
+        tabindex$="[[tabindex]]"
+        deep-link-focus-id$="[[Setting.kWifiAddNetwork]]">
+    </cr-icon-button>
+    <cr-toggle id="deviceEnabledButton"
+        aria-label$="[[getToggleA11yString_(deviceState)]]"
+        checked="[[deviceIsEnabled_(deviceState)]]"
+        disabled="[[!enableToggleIsEnabled_(deviceState,
+          deviceState.inhibitReason)]]"
+        on-change="onDeviceEnabledChange_"
+        deep-link-focus-id$="[[Setting.kWifiOnOff]]
+            [[Setting.kMobileOnOff]]">
+    </cr-toggle>
+  </div>
+</template>
 
-      #gmscore-notifications-instructions {
-        margin: 0;
-        padding-inline-start: 15px;
-      }
+<template is="dom-if" if="[[knownNetworksIsVisible_(deviceState)]]">
+  <cr-link-row
+      id="knownNetworksSubpageButton"
+      class="hr"
+      label="$i18n{knownNetworksButton}"
+      on-click="onKnownNetworksTap_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
 
-      #cellularNetworkList {
-        padding-inline-end: 0;
-        padding-inline-start: 0;
-      }
-    </style>
-    <template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
-      <div class="settings-box first">
-        <div id="onOff" class="start" on$="[[deviceIsEnabled_(deviceState)]]"
-            aria-hidden="true">
-          [[getOffOnString_(deviceState,
-            '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
-        </div>
-        <!-- The add button in this row is only shown for WiFi networks. -->
-        <cr-icon-button class="icon-add-wifi add-button" id="addWifiButton"
-            hidden$="[[!showAddWifiButton_(deviceState, globalPolicy)]]"
-            aria-label="$i18n{internetAddWiFi}" on-click="onAddWifiButtonTap_"
-            tabindex$="[[tabindex]]"
-            deep-link-focus-id$="[[Setting.kWifiAddNetwork]]">
+<template is="dom-if" if="[[deviceIsEnabled_(deviceState)]]">
+  <div id="networkListDiv" class="layout vertical flex">
+    <!-- VPN only header for built-in VPNs. -->
+    <template is="dom-if" if="[[isShowingVpn_]]">
+      <div class="vpn-header layout horizontal center">
+        <div class="flex settings-box-text">$i18n{networkVpnBuiltin}</div>
+        <template is="dom-if" if="[[!vpnIsEnabled_]]">
+          <cr-policy-indicator indicator-type="devicePolicy">
+          </cr-policy-indicator>
+        </template>
+        <cr-icon-button class="icon-add-circle"
+            disabled="[[!vpnIsEnabled_]]"
+            aria-label="$i18n{internetAddVPN}"
+            on-click="onAddVpnButtonTap_"
+            tabindex$="[[tabindex]]">
         </cr-icon-button>
-        <cr-toggle id="deviceEnabledButton"
-            aria-label$="[[getToggleA11yString_(deviceState)]]"
-            checked="[[deviceIsEnabled_(deviceState)]]"
-            disabled="[[!enableToggleIsEnabled_(deviceState,
-              deviceState.inhibitReason)]]"
-            on-change="onDeviceEnabledChange_"
-            deep-link-focus-id$="[[Setting.kWifiOnOff]]
-                [[Setting.kMobileOnOff]]">
-        </cr-toggle>
       </div>
     </template>
 
-    <template is="dom-if" if="[[knownNetworksIsVisible_(deviceState)]]">
-      <cr-link-row
-          id="knownNetworksSubpageButton"
-          class="hr"
-          label="$i18n{knownNetworksButton}"
-          on-click="onKnownNetworksTap_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
+    <!-- List of networks (empty if no networks exist). -->
+    <template is="dom-if"
+        if="[[shouldShowNetworkList_(networkStateList_, deviceState)]]">
+      <network-list id="networkList" show-buttons
+          show-technology-badge="[[showTechnologyBadge_]]"
+          networks="[[networkStateList_]]"
+          on-selected="onNetworkSelected_"
+          device-state="[[deviceState]]">
+      </network-list>
     </template>
 
-    <template is="dom-if" if="[[deviceIsEnabled_(deviceState)]]">
-      <div id="networkListDiv" class="layout vertical flex">
-        <!-- VPN only header for built-in VPNs. -->
-        <template is="dom-if" if="[[isShowingVpn_]]">
-          <div class="vpn-header layout horizontal center">
-            <div class="flex settings-box-text">$i18n{networkVpnBuiltin}</div>
-            <template is="dom-if" if="[[!vpnIsEnabled_]]">
-              <cr-policy-indicator indicator-type="devicePolicy">
-              </cr-policy-indicator>
-            </template>
-            <cr-icon-button class="icon-add-circle"
-                disabled="[[!vpnIsEnabled_]]"
-                aria-label="$i18n{internetAddVPN}"
-                on-click="onAddVpnButtonTap_"
-                tabindex$="[[tabindex]]">
-            </cr-icon-button>
-          </div>
-        </template>
+    <!-- List of cellular and instant tethering networks -->
+    <template is="dom-if"
+        if="[[shouldShowCellularNetworkList_(networkStateList_,
+                                              deviceState)]]">
+      <cellular-networks-list id="cellularNetworkList"
+          networks="[[networkStateList_]]"
+          show-technology-badge="[[showTechnologyBadge_]]"
+          on-selected="onNetworkSelected_"
+          cellular-device-state="[[deviceState]]"
+          tether-device-state="[[tetherDeviceState]]"
+          global-policy="[[globalPolicy]]"
+          is-connected-to-non-cellular-network="[[isConnectedToNonCellularNetwork]]"
+          can-show-spinner="[[!isCellularSetupActive]]">
+      </cellular-networks-list>
+    </template>
 
-        <!-- List of networks (empty if no networks exist). -->
-        <template is="dom-if"
-            if="[[shouldShowNetworkList_(networkStateList_, deviceState)]]">
-          <network-list id="networkList" show-buttons
-              show-technology-badge="[[showTechnologyBadge_]]"
-              networks="[[networkStateList_]]"
-              on-selected="onNetworkSelected_"
-              device-state="[[deviceState]]">
-          </network-list>
-        </template>
-
-        <!-- List of cellular and instant tethering networks -->
-        <template is="dom-if"
-            if="[[shouldShowCellularNetworkList_(networkStateList_,
-                                                 deviceState)]]">
-          <cellular-networks-list id="cellularNetworkList"
-              networks="[[networkStateList_]]"
-              show-technology-badge="[[showTechnologyBadge_]]"
-              on-selected="onNetworkSelected_"
-              cellular-device-state="[[deviceState]]"
-              tether-device-state="[[tetherDeviceState]]"
-              global-policy="[[globalPolicy]]"
-              is-connected-to-non-cellular-network="[[isConnectedToNonCellularNetwork]]"
-              can-show-spinner="[[!isCellularSetupActive]]">
-          </cellular-networks-list>
-        </template>
-
-        <!-- Instructions for how to enable "Google Play Services" notifications
-            (needed for Instant Tethering). -->
-        <template is="dom-if" if="[[showGmsCoreNotificationsSection_(
-            notificationsDisabledDeviceNames_)]]">
-          <div id="gmscore-notifications-container"
-              no-networks-text-below$="[[!networkStateList_.length]]">
-            <div>$i18n{gmscoreNotificationsTitle}</div>
-            <div id="gmscore-notifications-device-string"
-                class="cr-secondary-text">
-              [[getGmsCoreNotificationsDevicesString_(
-                  notificationsDisabledDeviceNames_)]]
-            </div>
-            <ol id="gmscore-notifications-instructions"
-                class="cr-secondary-text">
-              <li>$i18n{gmscoreNotificationsFirstStep}</li>
-              <li>$i18n{gmscoreNotificationsSecondStep}</li>
-              <li>$i18n{gmscoreNotificationsThirdStep}</li>
-              <li>$i18n{gmscoreNotificationsFourthStep}</li>
-            </ol>
-          </div>
-        </template>
-
-        <!-- Text shown if no networks exist. -->
-        <settings-localized-link
-            class="no-networks"
-            hidden="[[hideNoNetworksMessage_(networkStateList_, deviceState)]]"
-            localized-string=
-                "[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
-        </settings-localized-link>
-
-        <template is="dom-if" if="[[isShowingVpn_]]">
-          <!-- Third party VPNs. -->
-          <template is="dom-repeat"
-              items="[[getVpnProviders_(vpnProviders, thirdPartyVpns_)]]">
-            <div id="[[item.providerName]]"
-                class="vpn-header layout horizontal center">
-              <div class="flex settings-box-text">[[item.providerName]]</div>
-              <cr-icon-button class="icon-add-circle"
-                  aria-label$="[[getAddThirdPartyVpnA11yString_(item)]]"
-                  on-click="onAddThirdPartyVpnTap_" tabindex$="[[tabindex]]">
-              </cr-icon-button>
-            </div>
-            <network-list show-buttons
-                hidden$="[[!haveThirdPartyVpnNetwork_(thirdPartyVpns_, item)]]"
-                networks="[[getThirdPartyVpnNetworks_(thirdPartyVpns_, item)]]"
-                on-selected="onNetworkSelected_">
-            </network-list>
-            <div hidden$="[[haveThirdPartyVpnNetwork_(thirdPartyVpns_, item)]]"
-                class="no-networks settings-box-text">
-              $i18n{internetNoNetworks}
-            </div>
-          </template>
-        </template>
+    <!-- Instructions for how to enable "Google Play Services" notifications
+        (needed for Instant Tethering). -->
+    <template is="dom-if" if="[[showGmsCoreNotificationsSection_(
+        notificationsDisabledDeviceNames_)]]">
+      <div id="gmscore-notifications-container"
+          no-networks-text-below$="[[!networkStateList_.length]]">
+        <div>$i18n{gmscoreNotificationsTitle}</div>
+        <div id="gmscore-notifications-device-string"
+            class="cr-secondary-text">
+          [[getGmsCoreNotificationsDevicesString_(
+              notificationsDisabledDeviceNames_)]]
+        </div>
+        <ol id="gmscore-notifications-instructions"
+            class="cr-secondary-text">
+          <li>$i18n{gmscoreNotificationsFirstStep}</li>
+          <li>$i18n{gmscoreNotificationsSecondStep}</li>
+          <li>$i18n{gmscoreNotificationsThirdStep}</li>
+          <li>$i18n{gmscoreNotificationsFourthStep}</li>
+        </ol>
       </div>
+    </template>
 
-      <template is="dom-if"
-          if="[[shouldShowVpnPreferences_(isManaged_, isShowingVpn_)]]">
-        <div class="settings-box first">
-          <h2>$i18n{networkVpnPreferences}</h2>
-        </div>
-        <div class="settings-box first">
-          <network-always-on-vpn id="alwaysOnVpnSelector"
-              networks="[[getAlwaysOnVpnNetworks_(deviceState,
-                networkStateList_, thirdPartyVpns_)]]"
-              mode="{{alwaysOnVpnMode_}}"
-              service="{{alwaysOnVpnService_}}">
-          </network-always-on-vpn>
-        </div>
-      </template>
+    <!-- Text shown if no networks exist. -->
+    <settings-localized-link
+        class="no-networks"
+        hidden="[[hideNoNetworksMessage_(networkStateList_, deviceState)]]"
+        localized-string=
+            "[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
+    </settings-localized-link>
 
-      <template is="dom-if"
-          if="[[tetherToggleIsVisible_(deviceState, tetherDeviceState)]]">
-        <div class="settings-box two-line" actionable
-            on-click="onTetherEnabledChange_">
-          <div class="start settings-box-text">
-            $i18n{internetToggleTetherLabel}
-            <div id="tetherSecondary" class="secondary">
-              $i18n{internetToggleTetherSubtext}
-            </div>
-          </div>
-          <cr-toggle id="tetherEnabledButton"
-              aria-label="$i18n{internetToggleTetherLabel}"
-              aria-describedby="tetherSecondary"
-              checked="[[deviceIsEnabled_(tetherDeviceState)]]"
-              disabled="[[!tetherToggleIsEnabled_(deviceState,
-                         tetherDeviceState)]]"
-              on-change="onTetherEnabledChange_">
-          </cr-toggle>
+    <template is="dom-if" if="[[isShowingVpn_]]">
+      <!-- Third party VPNs. -->
+      <template is="dom-repeat"
+          items="[[getVpnProviders_(vpnProviders, thirdPartyVpns_)]]">
+        <div id="[[item.providerName]]"
+            class="vpn-header layout horizontal center">
+          <div class="flex settings-box-text">[[item.providerName]]</div>
+          <cr-icon-button class="icon-add-circle"
+              aria-label$="[[getAddThirdPartyVpnA11yString_(item)]]"
+              on-click="onAddThirdPartyVpnTap_" tabindex$="[[tabindex]]">
+          </cr-icon-button>
+        </div>
+        <network-list show-buttons
+            hidden$="[[!haveThirdPartyVpnNetwork_(thirdPartyVpns_, item)]]"
+            networks="[[getThirdPartyVpnNetworks_(thirdPartyVpns_, item)]]"
+            on-selected="onNetworkSelected_">
+        </network-list>
+        <div hidden$="[[haveThirdPartyVpnNetwork_(thirdPartyVpns_, item)]]"
+            class="no-networks settings-box-text">
+          $i18n{internetNoNetworks}
         </div>
       </template>
     </template>
+  </div>
 
+  <template is="dom-if"
+      if="[[shouldShowVpnPreferences_(isManaged_, isShowingVpn_)]]">
+    <div class="settings-box first">
+      <h2>$i18n{networkVpnPreferences}</h2>
+    </div>
+    <div class="settings-box first">
+      <network-always-on-vpn id="alwaysOnVpnSelector"
+          networks="[[getAlwaysOnVpnNetworks_(deviceState,
+            networkStateList_, thirdPartyVpns_)]]"
+          mode="{{alwaysOnVpnMode_}}"
+          service="{{alwaysOnVpnService_}}">
+      </network-always-on-vpn>
+    </div>
   </template>
-  <script src="internet_subpage.js"></script>
-</dom-module>
+
+  <template is="dom-if"
+      if="[[tetherToggleIsVisible_(deviceState, tetherDeviceState)]]">
+    <div class="settings-box two-line" actionable
+        on-click="onTetherEnabledChange_">
+      <div class="start settings-box-text">
+        $i18n{internetToggleTetherLabel}
+        <div id="tetherSecondary" class="secondary">
+          $i18n{internetToggleTetherSubtext}
+        </div>
+      </div>
+      <cr-toggle id="tetherEnabledButton"
+          aria-label="$i18n{internetToggleTetherLabel}"
+          aria-describedby="tetherSecondary"
+          checked="[[deviceIsEnabled_(tetherDeviceState)]]"
+          disabled="[[!tetherToggleIsEnabled_(deviceState,
+                      tetherDeviceState)]]"
+          on-change="onTetherEnabledChange_">
+      </cr-toggle>
+    </div>
+  </template>
+</template>
+

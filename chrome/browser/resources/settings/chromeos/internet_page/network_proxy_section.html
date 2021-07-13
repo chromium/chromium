@@ -1,101 +1,78 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="internet-shared cr-hidden-style iron-flex
+    iron-flex-alignment">
+  cr-policy-network-indicator-mojo {
+    margin-inline-end: 10px;
+  }
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_proxy.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../controls/extension_controlled_indicator.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_vars_css.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="internet_shared_css.html">
+  extension-controlled-indicator {
+    margin-inline-start: 0;
+    width: 100%;
+  }
 
-<dom-module id="network-proxy-section">
-  <template>
-    <style include="internet-shared cr-hidden-style iron-flex
-        iron-flex-alignment">
-      cr-policy-network-indicator-mojo {
-        margin-inline-end: 10px;
-      }
+  .settings-box:first-of-type {
+    border-top: none;
+  }
+</style>
 
-      extension-controlled-indicator {
-        margin-inline-start: 0;
-        width: 100%;
-      }
-
-      .settings-box:first-of-type {
-        border-top: none;
-      }
-    </style>
-
-    <!-- Policy indicator. Only one dom-if below will be shown. -->
-    <template is="dom-if"
-        if="[[shouldShowNetworkPolicyIndicator_(managedProperties)]]">
-      <div class="settings-box">
-        <div class="layout horizontal center">
-          <cr-policy-network-indicator-mojo
-              property="[[managedProperties.proxySettings.type]]"
-              no-extension-indicator>
-          </cr-policy-network-indicator-mojo>
-          <div>$i18n{networkProxyEnforcedPolicy}</div>
-        </div>
-      </div>
-    </template>
-    <template is="dom-if"
-        if="[[shouldShowExtensionIndicator_(managedProperties)]]">
-      <div class="settings-box">
-        <extension-controlled-indicator
-            extension-id="[[prefs.proxy.extensionId]]"
-            extension-name="[[prefs.proxy.controlledByName]]"
-            extension-can-be-disabled="[[prefs.proxy.extensionCanBeDisabled]]">
-        </extension-controlled-indicator>
-      </div>
-    </template>
-
-    <!-- Allow shared proxies -->
-    <settings-toggle-button id="allowShared" class="indented"
-        hidden$="[[!shouldShowAllowShared_(managedProperties.source)]]"
-        pref="{{prefs.settings.use_shared_proxies}}"
-        label="$i18n{networkProxyAllowShared}"
-        on-settings-boolean-control-change="onAllowSharedProxiesChange_"
-        no-set-pref
-        disabled="[[disabled]]">
-    </settings-toggle-button>
-
-    <div class="settings-box single-column stretch continuation indented">
-      <network-proxy editable="[[!disabled]]"
-          managed-properties="[[managedProperties]]"
-          use-shared-proxies="[[useSharedProxies_]]">
-      </network-proxy>
+<!-- Policy indicator. Only one dom-if below will be shown. -->
+<template is="dom-if"
+    if="[[shouldShowNetworkPolicyIndicator_(managedProperties)]]">
+  <div class="settings-box">
+    <div class="layout horizontal center">
+      <cr-policy-network-indicator-mojo
+          property="[[managedProperties.proxySettings.type]]"
+          no-extension-indicator>
+      </cr-policy-network-indicator-mojo>
+      <div>$i18n{networkProxyEnforcedPolicy}</div>
     </div>
+  </div>
+</template>
+<template is="dom-if"
+    if="[[shouldShowExtensionIndicator_(managedProperties)]]">
+  <div class="settings-box">
+    <extension-controlled-indicator
+        extension-id="[[prefs.proxy.extensionId]]"
+        extension-name="[[prefs.proxy.controlledByName]]"
+        extension-can-be-disabled="[[prefs.proxy.extensionCanBeDisabled]]">
+    </extension-controlled-indicator>
+  </div>
+</template>
 
-    <!-- Confirm Allow shared proxies dialog -->
-    <cr-dialog id="confirmAllowSharedDialog"
-        close-text="$i18n{close}" on-cancel="onAllowSharedDialogCancel_"
-        on-close="onAllowSharedDialogClose_">
-      <div slot="title">
-        [[getAllowSharedDialogTitle_(prefs.settings.use_shared_proxies.value)]]
-      </div>
-      <div slot="body">
-        $i18n{networkProxyAllowSharedWarningMessage}
-      </div>
-      <div slot="button-container">
-        <cr-button class="cancel-button"
-            on-click="onAllowSharedDialogCancel_">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button class="action-button"
-            on-click="onAllowSharedDialogConfirm_">
-          $i18n{confirm}
-        </cr-button>
-      </div>
-    </cr-dialog>
-  </template>
-  <script src="network_proxy_section.js"></script>
-</dom-module>
+<!-- Allow shared proxies -->
+<settings-toggle-button id="allowShared" class="indented"
+    hidden$="[[!shouldShowAllowShared_(managedProperties.source)]]"
+    pref="{{prefs.settings.use_shared_proxies}}"
+    label="$i18n{networkProxyAllowShared}"
+    on-settings-boolean-control-change="onAllowSharedProxiesChange_"
+    no-set-pref
+    disabled="[[disabled]]">
+</settings-toggle-button>
+
+<div class="settings-box single-column stretch continuation indented">
+  <network-proxy editable="[[!disabled]]"
+      managed-properties="[[managedProperties]]"
+      use-shared-proxies="[[useSharedProxies_]]">
+  </network-proxy>
+</div>
+
+<!-- Confirm Allow shared proxies dialog -->
+<cr-dialog id="confirmAllowSharedDialog"
+    close-text="$i18n{close}" on-cancel="onAllowSharedDialogCancel_"
+    on-close="onAllowSharedDialogClose_">
+  <div slot="title">
+    [[getAllowSharedDialogTitle_(prefs.settings.use_shared_proxies.value)]]
+  </div>
+  <div slot="body">
+    $i18n{networkProxyAllowSharedWarningMessage}
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button"
+        on-click="onAllowSharedDialogCancel_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button"
+        on-click="onAllowSharedDialogConfirm_">
+      $i18n{confirm}
+    </cr-button>
+  </div>
+</cr-dialog>

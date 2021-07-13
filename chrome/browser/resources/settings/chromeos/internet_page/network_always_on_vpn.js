@@ -6,11 +6,18 @@
  * @fileoverview Polymer element for displaying and modifying always-on VPN
  * settings.
  */
-(function() {
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/md_select_css.m.js';
+import '//resources/cr_components/chromeos/network/network_shared_css.m.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 
 const mojom = chromeos.networkConfig.mojom;
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-always-on-vpn',
 
   behaviors: [I18nBehavior],
@@ -162,4 +169,3 @@ Polymer({
   },
 
 });
-})();
