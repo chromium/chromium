@@ -7,6 +7,8 @@
 
 namespace autofill {
 
+class AutofillErrorDialogController;
+
 // The cross-platform view interface which helps show an error dialog for
 // autofill flows.
 //
@@ -15,11 +17,10 @@ class AutofillErrorDialogView {
  public:
   virtual ~AutofillErrorDialogView() = default;
 
-  virtual void Show() = 0;
   virtual void Dismiss() = 0;
 
-  // Factory function for creating the view.
-  static std::unique_ptr<AutofillErrorDialogView> Create(
+  // Factory function for creating and showing the view.
+  static AutofillErrorDialogView* CreateAndShow(
       AutofillErrorDialogController* controller);
 };
 

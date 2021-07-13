@@ -24,11 +24,13 @@ class AutofillErrorDialogViewAndroid : public AutofillErrorDialogView {
   ~AutofillErrorDialogViewAndroid() override;
 
   // AutofillErrorDialogView.
-  void Show() override;
   void Dismiss() override;
 
   // Called by the Java code when the error dialog is dismissed.
   void OnDismissed(JNIEnv* env);
+
+  // Show the dialog view.
+  void Show();
 
  private:
   AutofillErrorDialogController* controller_;

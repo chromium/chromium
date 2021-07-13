@@ -254,6 +254,10 @@ void TestAutofillClient::UpdatePopup(const std::vector<Suggestion>& suggestions,
 
 void TestAutofillClient::HideAutofillPopup(PopupHidingReason reason) {}
 
+void TestAutofillClient::ShowVirtualCardErrorDialog(bool is_permanent_error) {
+  virtual_card_error_dialog_shown_ = true;
+}
+
 bool TestAutofillClient::IsAutocompleteEnabled() {
   return true;
 }

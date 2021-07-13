@@ -19,22 +19,20 @@ AutofillErrorDialogControllerImpl::~AutofillErrorDialogControllerImpl() {
 }
 
 void AutofillErrorDialogControllerImpl::Show(
-    std::unique_ptr<AutofillErrorDialogView> autofill_error_dialog_view,
     AutofillErrorDialogController::AutofillErrorDialogType error_dialog_type) {
   if (autofill_error_dialog_view_)
     Dismiss();
 
   DCHECK(autofill_error_dialog_view_ == nullptr);
-  autofill_error_dialog_view_ = std::move(autofill_error_dialog_view);
   error_dialog_type_ = error_dialog_type;
-  autofill_error_dialog_view_->Show();
+  autofill_error_dialog_view_ = AutofillErrorDialogView::CreateAndShow(this);
   base::UmaHistogramEnumeration("Autofill.ErrorDialogShown", error_dialog_type);
 }
 
 void AutofillErrorDialogControllerImpl::OnDismissed() {
   // TODO(crbug.com/1196021): Log the dismiss action along with the type of the
   // error dialog.
-  autofill_error_dialog_view_.reset();
+  autofill_error_dialog_view_ = nullptr;
 }
 
 const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {

@@ -962,6 +962,7 @@ TEST_F(CreditCardAccessManagerTest, FetchVirtualCardFIDOFailureNoCVCFallback) {
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kPermanentError);
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::NONE_FLOW,
             GetFIDOAuthenticator()->current_flow());
+  EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.BetterAuth.WebauthnResult.ImmediateAuthentication",

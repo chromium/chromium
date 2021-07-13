@@ -141,6 +141,7 @@ class TestAutofillClient : public AutofillClient {
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    PopupType popup_type) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
+  void ShowVirtualCardErrorDialog(bool is_permanent_error) override;
   bool IsAutocompleteEnabled() override;
   void PropagateAutofillPredictions(
       content::RenderFrameHost* rfh,
@@ -221,6 +222,10 @@ class TestAutofillClient : public AutofillClient {
     return offer_to_save_credit_card_bubble_was_shown_.value();
   }
 
+  bool virtual_card_error_dialog_shown() {
+    return virtual_card_error_dialog_shown_;
+  }
+
   SaveCreditCardOptions get_save_credit_card_options() {
     return save_credit_card_options_.value();
   }
@@ -272,6 +277,8 @@ class TestAutofillClient : public AutofillClient {
   bool should_save_autofill_profiles_ = true;
 
   bool confirm_save_credit_card_locally_called_ = false;
+
+  bool virtual_card_error_dialog_shown_ = false;
 
   // Populated if save was offered. True if bubble was shown, false otherwise.
   absl::optional<bool> offer_to_save_credit_card_bubble_was_shown_;

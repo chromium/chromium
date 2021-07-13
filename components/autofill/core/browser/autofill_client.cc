@@ -66,10 +66,14 @@ void AutofillClient::ShowOfferNotificationIfApplicable(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
-void AutofillClient::OnVirtualCardFetched(CreditCardFetchResult result,
-                                          const CreditCard* credit_card,
-                                          const std::u16string& cvc,
-                                          const gfx::Image& card_image) {
+void AutofillClient::OnVirtualCardDataAvailable(const CreditCard* credit_card,
+                                                const std::u16string& cvc,
+                                                const gfx::Image& card_image) {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop & Android) implements this.
+}
+
+void AutofillClient::ShowVirtualCardErrorDialog(bool is_permanent_error) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }

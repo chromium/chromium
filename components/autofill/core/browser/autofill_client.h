@@ -563,15 +563,18 @@ class AutofillClient : public RiskDataLoader {
   virtual void ShowOfferNotificationIfApplicable(
       const AutofillOfferData* offer);
 
-  // Called when the result of fetching a virtual card from the server returns.
-  // |result| indicates whether the fetching was successful. |credit_card| and
-  // |cvc| include the information that allow the user to manually fill payment
-  // form. |card_image| is used for manual fallback bubble.
-  virtual void OnVirtualCardFetched(
-      CreditCardFetchResult result,
-      const CreditCard* credit_card = nullptr,
-      const std::u16string& cvc = std::u16string(),
+  // Called when the virtual card has been fetched successfully.
+  // |credit_card| and |cvc| include the information that allow the user to
+  // manually fill payment form. |card_image| is used for manual fallback
+  // bubble.
+  virtual void OnVirtualCardDataAvailable(
+      const CreditCard* credit_card,
+      const std::u16string& cvc,
       const gfx::Image& card_image = gfx::Image());
+
+  // Called when some virtual card retrieval errors happened. Will show the
+  // error dialog with virtual card related messages.
+  virtual void ShowVirtualCardErrorDialog(bool is_permanent_error);
 
   // Returns true if the Autofill Assistant UI is currently being shown.
   virtual bool IsAutofillAssistantShowing();

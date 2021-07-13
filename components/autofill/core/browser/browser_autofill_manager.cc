@@ -1460,9 +1460,6 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
                                                  const CreditCard* credit_card,
                                                  const std::u16string& cvc) {
   if (result != CreditCardFetchResult::kSuccess) {
-    if (credit_card && credit_card->record_type() == CreditCard::VIRTUAL_CARD)
-      client()->OnVirtualCardFetched(result);
-
     driver()->RendererShouldClearPreviewedForm();
     return;
   }
@@ -1488,8 +1485,8 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
   // show the UI to help user to manually fill the form, if needed.
   if (credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
     // TODO(crbug.com/1196021): Pass in real card image.
-    client()->OnVirtualCardFetched(CreditCardFetchResult::kSuccess, credit_card,
-                                   cvc, /*card_image=*/gfx::Image());
+    client()->OnVirtualCardDataAvailable(credit_card, cvc,
+                                         /*card_image=*/gfx::Image());
   }
 
   FillCreditCardForm(credit_card_query_id_, credit_card_form_,

@@ -651,11 +651,15 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
             ? CreditCardFetchResult::kTransientError
             : CreditCardFetchResult::kPermanentError;
     // If it is an virtual card retrieval error, we don't want to invoke the CVC
-    // authentication afterwards. Instead reset all states and notify accessor.
+    // authentication afterwards. Instead reset all states, notify accessor and
+    // invoke the error dialog.
     is_authentication_in_progress_ = false;
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
     can_fetch_unmask_details_.Signal();
-    accessor_->OnCreditCardFetched(result, card_.get());
+    client_->ShowVirtualCardErrorDialog(
+        response.failure_type ==
+        payments::FullCardRequest::VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE);
+    accessor_->OnCreditCardFetched(result);
   } else {
     // If it is an authentication error, start the CVC authentication process.
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kCvcFallbackFromFido;

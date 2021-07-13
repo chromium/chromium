@@ -29,7 +29,6 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
 
   // Show the error dialog for the given `AutofillErrorDialogType`
   void Show(
-      std::unique_ptr<AutofillErrorDialogView> view,
       AutofillErrorDialogController::AutofillErrorDialogType error_dialog_type);
 
   // AutofillErrorDialogController.
@@ -39,6 +38,10 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   const std::u16string GetButtonLabel() override;
   content::WebContents* GetWebContents() override;
 
+  AutofillErrorDialogView* autofill_error_dialog_view() {
+    return autofill_error_dialog_view_;
+  }
+
  private:
   // Dismiss the error dialog if showing.
   void Dismiss();
@@ -47,7 +50,7 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   // The type of the error dialog that is being displayed.
   AutofillErrorDialogController::AutofillErrorDialogType error_dialog_type_;
   // View that displays the error dialog.
-  std::unique_ptr<AutofillErrorDialogView> autofill_error_dialog_view_;
+  AutofillErrorDialogView* autofill_error_dialog_view_ = nullptr;
 };
 
 }  // namespace autofill

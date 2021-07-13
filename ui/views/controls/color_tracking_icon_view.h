@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_COLOR_TRACKING_ICON_VIEW_H_
 #define UI_VIEWS_CONTROLS_COLOR_TRACKING_ICON_VIEW_H_
 
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/image_view.h"
 
 namespace gfx {
@@ -17,7 +18,10 @@ namespace views {
 // icon is always the correct color.
 class VIEWS_EXPORT ColorTrackingIconView : public ImageView {
  public:
-  ColorTrackingIconView(const gfx::VectorIcon& icon, int icon_size);
+  ColorTrackingIconView(const gfx::VectorIcon& icon,
+                        int icon_size,
+                        ui::NativeTheme::ColorId icon_color_id =
+                            ui::NativeTheme::kColorId_DefaultIconColor);
 
   // ImageView:
   void OnThemeChanged() override;
@@ -25,6 +29,7 @@ class VIEWS_EXPORT ColorTrackingIconView : public ImageView {
  private:
   const gfx::VectorIcon& icon_;
   const int icon_size_;
+  const ui::NativeTheme::ColorId icon_color_id_;
 };
 
 }  // namespace views

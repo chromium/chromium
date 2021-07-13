@@ -13,13 +13,6 @@
 
 namespace autofill {
 
-class MockAutofillErrorDialogView : public AutofillErrorDialogView {
- public:
-  MockAutofillErrorDialogView() = default;
-  void Show() override {}
-  void Dismiss() override {}
-};
-
 class AutofillErrorDialogControllerImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -38,7 +31,6 @@ class AutofillErrorDialogControllerImplTest
 TEST_F(AutofillErrorDialogControllerImplTest, MetricsTest) {
   base::HistogramTester histogram_tester;
   controller()->Show(
-      std::make_unique<MockAutofillErrorDialogView>(),
       AutofillErrorDialogController::VIRTUAL_CARD_TEMPORARY_ERROR);
 
   // Verify that the metric for shown is incremented.

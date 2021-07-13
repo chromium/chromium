@@ -30,9 +30,27 @@ AutofillErrorDialogViewAndroid::AutofillErrorDialogViewAndroid(
 AutofillErrorDialogViewAndroid::~AutofillErrorDialogViewAndroid() = default;
 
 // static
-std::unique_ptr<AutofillErrorDialogView> AutofillErrorDialogView::Create(
+AutofillErrorDialogView* AutofillErrorDialogView::CreateAndShow(
     AutofillErrorDialogController* controller) {
-  return std::make_unique<AutofillErrorDialogViewAndroid>(controller);
+  AutofillErrorDialogViewAndroid* dialog_view =
+      new AutofillErrorDialogViewAndroid(controller);
+  dialog_view->Show();
+  return dialog_view;
+}
+
+void AutofillErrorDialogViewAndroid::Dismiss() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (!java_object_.is_null()) {
+    Java_AutofillErrorDialogBridge_dismiss(env, java_object_);
+  } else {
+    OnDismissed(env);
+  }
+}
+
+void AutofillErrorDialogViewAndroid::OnDismissed(JNIEnv* env) {
+  controller_->OnDismissed();
+  controller_ = nullptr;
+  delete this;
 }
 
 void AutofillErrorDialogViewAndroid::Show() {
@@ -53,19 +71,6 @@ void AutofillErrorDialogViewAndroid::Show() {
       ConvertUTF16ToJavaString(env, controller_->GetButtonLabel()),
       ResourceMapper::MapToJavaDrawableId(
           IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER));
-}
-
-void AutofillErrorDialogViewAndroid::Dismiss() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (!java_object_.is_null()) {
-    Java_AutofillErrorDialogBridge_dismiss(env, java_object_);
-  } else {
-    OnDismissed(env);
-  }
-}
-
-void AutofillErrorDialogViewAndroid::OnDismissed(JNIEnv* env) {
-  controller_->OnDismissed();
 }
 
 }  // namespace autofill

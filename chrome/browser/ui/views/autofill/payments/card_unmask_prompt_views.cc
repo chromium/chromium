@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -27,10 +28,12 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_utils.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -46,22 +49,6 @@
 namespace autofill {
 
 namespace {
-
-class ErrorIconView : public views::ImageView {
- public:
-  METADATA_HEADER(ErrorIconView);
-
-  // views::ImageView:
-  void OnThemeChanged() override {
-    ImageView::OnThemeChanged();
-    const SkColor warning_text_color = views::style::GetColor(
-        *this, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL, STYLE_RED);
-    SetImage(gfx::CreateVectorIcon(kBrowserToolsErrorIcon, warning_text_color));
-  }
-};
-
-BEGIN_METADATA(ErrorIconView, views::ImageView)
-END_METADATA
 
 static views::GridLayout* ResetOverlayLayout(views::View* overlay) {
   views::GridLayout* overlay_layout =
@@ -402,7 +389,10 @@ void CardUnmaskPromptViews::InitIfNecessary() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   temporary_error->SetVisible(false);
-  temporary_error->AddChildView(std::make_unique<ErrorIconView>());
+  temporary_error->AddChildView(std::make_unique<views::ColorTrackingIconView>(
+      vector_icons::kErrorIcon,
+      gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon),
+      ui::NativeTheme::kColorId_AlertSeverityHigh));
 
   auto error_label = std::make_unique<views::Label>(
       std::u16string(), ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,

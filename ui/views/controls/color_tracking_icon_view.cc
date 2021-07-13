@@ -5,23 +5,25 @@
 #include "ui/views/controls/color_tracking_icon_view.h"
 
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace views {
 
-ColorTrackingIconView::ColorTrackingIconView(const gfx::VectorIcon& icon,
-                                             int icon_size)
-    : icon_(icon), icon_size_(icon_size) {
-  // Set the image using a placeholder color. This will allow the ImageView to
-  // report its preferred size before OnThemeChanged for layout purposes.
-  SetImage(gfx::CreateVectorIcon(icon_, icon_size_, gfx::kPlaceholderColor));
+ColorTrackingIconView::ColorTrackingIconView(
+    const gfx::VectorIcon& icon,
+    int icon_size,
+    ui::NativeTheme::ColorId icon_color_id)
+    : icon_(icon), icon_size_(icon_size), icon_color_id_(icon_color_id) {
+  // Set the image using the color generated from icon_color_id_. This will
+  // allow the ImageView to report its preferred size before OnThemeChanged for
+  // layout purposes.
+  SetImage(gfx::CreateVectorIcon(
+      icon_, icon_size_, GetNativeTheme()->GetSystemColor(icon_color_id_)));
 }
 
 void ColorTrackingIconView::OnThemeChanged() {
   ImageView::OnThemeChanged();
-  const SkColor color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DefaultIconColor);
-  SetImage(gfx::CreateVectorIcon(icon_, icon_size_, color));
+  SetImage(gfx::CreateVectorIcon(
+      icon_, icon_size_, GetNativeTheme()->GetSystemColor(icon_color_id_)));
 }
 
 }  // namespace views

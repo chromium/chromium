@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_gstatic_reader.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -27,7 +28,6 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/autofill/android/save_update_address_profile_flow_manager.h"
-#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #else  // !OS_ANDROID
@@ -150,10 +150,10 @@ class ChromeAutofillClient
   void HideAutofillPopup(PopupHidingReason reason) override;
   void ShowOfferNotificationIfApplicable(
       const AutofillOfferData* offer) override;
-  void OnVirtualCardFetched(CreditCardFetchResult result,
-                            const CreditCard* credit_card,
-                            const std::u16string& cvc,
-                            const gfx::Image& card_image) override;
+  void OnVirtualCardDataAvailable(const CreditCard* credit_card,
+                                  const std::u16string& cvc,
+                                  const gfx::Image& card_image) override;
+  void ShowVirtualCardErrorDialog(bool is_permanent_error) override;
   bool IsAutofillAssistantShowing() override;
   bool IsAutocompleteEnabled() override;
   void PropagateAutofillPredictions(
@@ -207,9 +207,9 @@ class ChromeAutofillClient
       card_expiration_date_fix_flow_controller_;
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
   SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
-  AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
 #endif
   CardUnmaskPromptControllerImpl unmask_controller_;
+  AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
