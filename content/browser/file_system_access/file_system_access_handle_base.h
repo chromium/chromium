@@ -5,15 +5,12 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 
-#include <vector>
-
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -28,6 +25,8 @@ class FileSystemOperationRunner;
 }  // namespace storage
 
 namespace content {
+
+class WebContentsImpl;
 
 // Base class for File and Directory handle implementations. Holds data that is
 // common to both and (will) deal with functionality that is common as well,
@@ -98,9 +97,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
     return manager()->context();
   }
 
-  WebContentsImpl* web_contents() const {
-    return static_cast<WebContentsImpl*>(WebContentsObserver::web_contents());
-  }
+  WebContentsImpl* web_contents() const;
 
   virtual base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() = 0;
 

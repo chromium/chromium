@@ -11,6 +11,7 @@
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"

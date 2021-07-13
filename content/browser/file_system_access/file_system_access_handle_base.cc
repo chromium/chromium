@@ -198,4 +198,8 @@ void FileSystemAccessHandleBase::DoRemove(
       url, recurse);
 }
 
+WebContentsImpl* FileSystemAccessHandleBase::web_contents() const {
+  return static_cast<WebContentsImpl*>(WebContentsObserver::web_contents());
+}
+
 }  // namespace content
