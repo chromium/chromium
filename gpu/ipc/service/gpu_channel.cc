@@ -657,7 +657,7 @@ void GpuChannel::ExecuteDeferredRequest(
           *params->get_command_buffer_request();
       CommandBufferStub* stub = LookupCommandBuffer(request.routing_id);
       if (!stub || !stub->IsScheduled()) {
-        DLOG(ERROR) << "Invalid routing ID in deferred request";
+        DVLOG(1) << "Invalid routing ID in deferred request";
         return;
       }
 
