@@ -7,7 +7,6 @@ package org.chromium.chrome.test.smoke;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
@@ -21,7 +20,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
@@ -73,38 +71,22 @@ public class ChromeBundleSmokeTest {
     }
 
     @Test
-    @DisableIf.Build(message = "Flaky on Android Marshmallow, see crbug.com/1178106",
-            sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N)
-    public void
-    testModuleJavaCodeExecution() {
+    public void testModuleJavaCodeExecution() {
         runTestActivity(0); // Test case EXECUTE_JAVA.
     }
 
     @Test
-    @DisableIf.Build(message = "Flaky on Android Marshmallow, see crbug.com/1178106",
-            sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N)
-    public void
-    testModuleNativeCodeExecution() {
+    public void testModuleNativeCodeExecution() {
         runTestActivity(1); // Test case EXECUTE_NATIVE.
     }
 
     @Test
-    @DisableIf.Build(message = "Flaky on Android Marshmallow, see crbug.com/1178106",
-            sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N)
-    public void
-    testModuleJavaResourceLoading() {
+    public void testModuleJavaResourceLoading() {
         runTestActivity(2); // Test case LOAD_JAVA_RESOURCE.
     }
 
     @Test
-    @DisableIf.Build(message = "Flaky on Android Marshmallow, see crbug.com/1178106",
-            sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N)
-    public void
-    testModuleNativeResourceLoading() {
+    public void testModuleNativeResourceLoading() {
         runTestActivity(3); // Test case LOAD_NATIVE_RESOURCE.
     }
 }
