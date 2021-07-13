@@ -36,6 +36,11 @@ class MultipleVirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
     VirtualCtap2Device::Config config;
     scoped_refptr<VirtualFidoDevice::State> state =
         base::MakeRefCounted<VirtualFidoDevice::State>();
+    // disconnect_events can be emplaced in order to cause the device to be
+    // disconnected. It is not expected that one would want to disconnect it
+    // multiple times but that is possible to simulate with this interface.
+    // The |bool| argument is ignored (void is not a valid template argument).
+    std::unique_ptr<FidoDeviceDiscovery::EventStream<bool>> disconnect_events;
   };
 
   MultipleVirtualFidoDeviceFactory();

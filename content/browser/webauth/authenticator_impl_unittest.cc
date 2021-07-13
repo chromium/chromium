@@ -5154,6 +5154,62 @@ TEST_F(PINAuthenticatorImplTest, ExcludeListBatchesIncludePinToken) {
             AuthenticatorStatus::CREDENTIAL_EXCLUDED);
 }
 
+TEST_F(PINAuthenticatorImplTest, RemoveSecondAuthenticator) {
+  // Create two PIN-capable devices. Touch one of them to trigger a prompt for
+  // a PIN. Remove the other. Don't crash.
+  base::RepeatingCallback<void(bool)> disconnect_1, disconnect_2;
+
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_1;
+  device_1.state->pin = kTestPIN;
+  device_1.config.pin_support = true;
+  std::tie(disconnect_1, device_1.disconnect_events) =
+      device::FidoDeviceDiscovery::EventStream<bool>::New();
+
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_2;
+  device_2.state->pin = kTestPIN;
+  device_2.config.pin_support = true;
+  std::tie(disconnect_2, device_2.disconnect_events) =
+      device::FidoDeviceDiscovery::EventStream<bool>::New();
+
+  int callbacks = 0;
+  auto touch_callback = [&](int device_num) -> bool {
+    callbacks++;
+    if (callbacks == 1) {
+      // Wait for the other authenticator to be triggered.
+      return false;
+    } else if (callbacks == 2) {
+      // Touch authenticator to collect a PIN.
+      return true;
+    } else {
+      CHECK_EQ(callbacks, 3);
+
+      // Disconnect other authenticator then complete with a touch.
+      if (device_num == 1) {
+        disconnect_2.Run(false);
+      } else {
+        disconnect_1.Run(false);
+      }
+      return true;
+    }
+  };
+
+  device_1.state->simulate_press_callback = base::BindLambdaForTesting(
+      [&](VirtualFidoDevice* _) -> bool { return touch_callback(1); });
+  device_2.state->simulate_press_callback = base::BindLambdaForTesting(
+      [&](VirtualFidoDevice* _) -> bool { return touch_callback(2); });
+
+  auto discovery =
+      std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
+  discovery->AddDevice(std::move(device_1));
+  discovery->AddDevice(std::move(device_2));
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
+
+  test_client_.expected = {
+      {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+}
+
 class InternalUVAuthenticatorImplTest : public UVAuthenticatorImplTest {
  public:
   struct TestCase {

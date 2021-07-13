@@ -18,10 +18,12 @@ class VirtualFidoDeviceDiscovery
     : public FidoDeviceDiscovery,
       public base::SupportsWeakPtr<VirtualFidoDeviceDiscovery> {
  public:
-  VirtualFidoDeviceDiscovery(FidoTransportProtocol transport,
-                             scoped_refptr<VirtualFidoDevice::State> state,
-                             ProtocolVersion supported_protocol,
-                             const VirtualCtap2Device::Config& ctap2_config);
+  VirtualFidoDeviceDiscovery(
+      FidoTransportProtocol transport,
+      scoped_refptr<VirtualFidoDevice::State> state,
+      ProtocolVersion supported_protocol,
+      const VirtualCtap2Device::Config& ctap2_config,
+      std::unique_ptr<EventStream<bool>> disconnect_events);
   ~VirtualFidoDeviceDiscovery() override;
   VirtualFidoDeviceDiscovery(const VirtualFidoDeviceDiscovery& other) = delete;
   VirtualFidoDeviceDiscovery& operator=(
@@ -31,9 +33,13 @@ class VirtualFidoDeviceDiscovery
   void StartInternal() override;
 
  private:
+  void Disconnect(bool _);
+
   scoped_refptr<VirtualFidoDevice::State> state_;
   const ProtocolVersion supported_protocol_;
   const VirtualCtap2Device::Config ctap2_config_;
+  std::unique_ptr<EventStream<bool>> disconnect_events_;
+  std::string id_;
 };
 
 }  // namespace test

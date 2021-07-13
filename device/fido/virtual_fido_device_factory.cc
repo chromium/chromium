@@ -38,7 +38,8 @@ VirtualFidoDeviceFactory::Create(FidoTransportProtocol transport) {
     return {};
   }
   return SingleDiscovery(std::make_unique<VirtualFidoDeviceDiscovery>(
-      transport_, state_, supported_protocol_, ctap2_config_));
+      transport_, state_, supported_protocol_, ctap2_config_,
+      /*disconnect_events=*/nullptr));
 }
 
 bool VirtualFidoDeviceFactory::IsTestOverride() {

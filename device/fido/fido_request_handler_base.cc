@@ -248,9 +248,6 @@ void FidoRequestHandlerBase::AuthenticatorRemoved(
   // CancelOngoingTasks().
   auto authenticator_it = active_authenticators_.find(authenticator->GetId());
   if (authenticator_it == active_authenticators_.end()) {
-    NOTREACHED();
-    FIDO_LOG(ERROR) << "AuthenticatorRemoved() for unknown authenticator "
-                    << authenticator->GetId();
     return;
   }
   DCHECK_EQ(authenticator_it->second, authenticator);
