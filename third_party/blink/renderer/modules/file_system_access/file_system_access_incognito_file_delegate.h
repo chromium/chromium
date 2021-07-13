@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_INCOGNITO_FILE_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_INCOGNITO_FILE_DELEGATE_H_
 
+#include "base/files/file.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -14,6 +15,8 @@
 
 namespace blink {
 
+// Incognito implementation of the FileSystemAccessFileDelegate. All file
+// operations are routed to the browser to be written to in-memory files.
 class FileSystemAccessIncognitoFileDelegate final
     : public FileSystemAccessFileDelegate {
  public:
@@ -30,7 +33,18 @@ class FileSystemAccessIncognitoFileDelegate final
   FileSystemAccessIncognitoFileDelegate& operator=(
       const FileSystemAccessIncognitoFileDelegate&) = delete;
 
+  int Read(int64_t offset, base::span<uint8_t> data) override;
+  int Write(int64_t offset, const base::span<uint8_t> data) override;
+
+  int64_t GetLength() override;
+  bool SetLength(int64_t length) override;
+
+  bool Flush() override;
+  void Close() override;
+
   bool IsValid() const override { return mojo_ptr_.is_bound(); }
+
+  base::File::Error GetLastFileError() override;
 
   void Trace(Visitor*) const override;
 

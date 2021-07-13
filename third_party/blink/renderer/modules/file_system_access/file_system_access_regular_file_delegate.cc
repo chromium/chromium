@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_regular_file_delegate.h"
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -19,5 +20,48 @@ FileSystemAccessRegularFileDelegate::FileSystemAccessRegularFileDelegate(
     base::File backing_file,
     base::PassKey<FileSystemAccessFileDelegate>)
     : backing_file_(std::move(backing_file)) {}
+
+int FileSystemAccessRegularFileDelegate::Read(int64_t offset,
+                                              base::span<uint8_t> data) {
+  // TODO(crbug.com/1218431): Implement this method.
+  NOTIMPLEMENTED();
+  return 0;
+}
+
+int FileSystemAccessRegularFileDelegate::Write(int64_t offset,
+                                               const base::span<uint8_t> data) {
+  // TODO(crbug.com/1218431): Implement this method.
+  NOTIMPLEMENTED();
+  return 0;
+}
+
+int64_t FileSystemAccessRegularFileDelegate::GetLength() {
+  // TODO(crbug.com/1218431): Implement this method.
+  NOTIMPLEMENTED();
+  return 0;
+}
+
+bool FileSystemAccessRegularFileDelegate::SetLength(int64_t length) {
+  // TODO(crbug.com/1218431): Implement this method.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool FileSystemAccessRegularFileDelegate::Flush() {
+  // TODO(crbug.com/1218431): Implement this method.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void FileSystemAccessRegularFileDelegate::Close() {
+  // TODO(crbug.com/1218431): Implement this method.
+  NOTIMPLEMENTED();
+}
+
+base::File::Error FileSystemAccessRegularFileDelegate::GetLastFileError() {
+  // TODO(crbug.com/1218431): Implement this method.
+  NOTIMPLEMENTED();
+  return base::File::Error::FILE_OK;
+}
 
 }  // namespace blink
