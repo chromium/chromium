@@ -302,11 +302,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   scoped_refptr<cc::Layer> ScrollHitTestLayerForPendingLayer(
       const PendingLayer&);
 
-  // Finds an existing scroll hit test layer for the pending layer, returning
-  // nullptr if none exists.
-  scoped_refptr<cc::Layer> ExistingScrollHitTestLayerForPendingLayer(
-      const PendingLayer&) const;
-
   // Finds an existing or creates a new scrollbar layer for the pending layer,
   // returning nullptr if the layer is not a scrollbar layer.
   scoped_refptr<cc::ScrollbarLayerBase> ScrollbarLayerForPendingLayer(
@@ -340,8 +335,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
       const PendingLayer* previous_layer) const;
 
   void UpdateDebugInfo() const;
-
-  cc::ScrollbarLayerBase* ScrollbarLayer(CompositorElementId);
 
   // For notifying blink of composited scrolling.
   base::WeakPtr<CompositorScrollCallbacks> scroll_callbacks_;

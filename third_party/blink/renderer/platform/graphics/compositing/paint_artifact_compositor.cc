@@ -185,8 +185,15 @@ PaintArtifactCompositor::ScrollHitTestLayerForPendingLayer(
   const auto& scroll_node =
       *pending_layer.ScrollTranslationForScrollHitTestLayer().ScrollNode();
 
-  scoped_refptr<cc::Layer> scroll_layer =
-      ExistingScrollHitTestLayerForPendingLayer(pending_layer);
+  scoped_refptr<cc::Layer> scroll_layer;
+  auto scroll_element_id = scroll_node.GetCompositorElementId();
+  for (auto& existing_layer : scroll_hit_test_layers_) {
+    if (existing_layer && existing_layer->element_id() == scroll_element_id) {
+      scroll_layer = std::move(existing_layer);
+      break;
+    }
+  }
+
   if (scroll_layer) {
     DCHECK_EQ(scroll_layer->element_id(), scroll_node.GetCompositorElementId());
   } else {
@@ -215,19 +222,6 @@ PaintArtifactCompositor::ScrollHitTestLayerForPendingLayer(
   return scroll_layer;
 }
 
-scoped_refptr<cc::Layer>
-PaintArtifactCompositor::ExistingScrollHitTestLayerForPendingLayer(
-    const PendingLayer& pending_layer) const {
-  const auto& scroll_node =
-      *pending_layer.ScrollTranslationForScrollHitTestLayer().ScrollNode();
-  auto scroll_element_id = scroll_node.GetCompositorElementId();
-  for (auto& existing_layer : scroll_hit_test_layers_) {
-    if (existing_layer && existing_layer->element_id() == scroll_element_id)
-      return existing_layer;
-  }
-  return nullptr;
-}
-
 scoped_refptr<cc::ScrollbarLayerBase>
 PaintArtifactCompositor::ScrollbarLayerForPendingLayer(
     const PendingLayer& pending_layer) {
@@ -238,13 +232,19 @@ PaintArtifactCompositor::ScrollbarLayerForPendingLayer(
   DCHECK(item.IsScrollbar());
 
   const auto& scrollbar_item = To<ScrollbarDisplayItem>(item);
-  auto* existing_layer = ScrollbarLayer(scrollbar_item.ElementId());
-  scoped_refptr<cc::ScrollbarLayerBase> layer =
-      scrollbar_item.CreateOrReuseLayer(existing_layer);
-  layer->SetOffsetToTransformParent(
-      layer->offset_to_transform_parent() +
+  scoped_refptr<cc::ScrollbarLayerBase> scrollbar_layer;
+  for (auto& layer : scrollbar_layers_) {
+    if (layer && layer->element_id() == scrollbar_item.ElementId()) {
+      scrollbar_layer = std::move(layer);
+      break;
+    }
+  }
+
+  scrollbar_layer = scrollbar_item.CreateOrReuseLayer(scrollbar_layer.get());
+  scrollbar_layer->SetOffsetToTransformParent(
+      scrollbar_layer->offset_to_transform_parent() +
       gfx::Vector2dF(pending_layer.OffsetOfDecompositedTransforms()));
-  return layer;
+  return scrollbar_layer;
 }
 
 std::unique_ptr<ContentLayerClientImpl>
@@ -1370,15 +1370,6 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
   }
 }
 
-cc::ScrollbarLayerBase* PaintArtifactCompositor::ScrollbarLayer(
-    CompositorElementId element_id) {
-  for (auto& layer : scrollbar_layers_) {
-    if (layer->element_id() == element_id)
-      return layer.get();
-  }
-  return nullptr;
-}
-
 CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
     const PendingLayer& layer,
     const PendingLayer* previous_layer) const {
@@ -1492,8 +1483,12 @@ size_t PaintArtifactCompositor::ApproximateUnsharedMemoryUsage() const {
 
 void PaintArtifactCompositor::SetScrollbarNeedsDisplay(
     CompositorElementId element_id) {
-  if (auto* scrollbar_layer = ScrollbarLayer(element_id))
-    scrollbar_layer->SetNeedsDisplay();
+  for (auto& layer : scrollbar_layers_) {
+    if (layer->element_id() == element_id) {
+      layer->SetNeedsDisplay();
+      return;
+    }
+  }
 }
 
 void LayerListBuilder::Add(scoped_refptr<cc::Layer> layer) {
