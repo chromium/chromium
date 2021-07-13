@@ -14,9 +14,9 @@
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/policy/core/browser/configuration_policy_handler.h"
-#include "components/policy/core/browser/url_blocklist_policy_handler.h"
-#include "components/policy/core/common/async_policy_provider.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/browser/url_blocklist_policy_handler.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/common/async_policy_provider.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "headless/lib/browser/headless_pref_names.h"
@@ -33,7 +33,7 @@
 #include "components/policy/core/common/policy_loader_mac.h"
 #include "components/policy/core/common/preferences_mac.h"
 #elif defined(OS_POSIX) && !defined(OS_ANDROID)
-#include "components/policy/core/common/config_dir_policy_loader.h"
+#include "components/policy/core/common/config_dir_policy_loader.h"  // nogncheck http://crbug.com/1227148
 #endif
 
 namespace policy {

@@ -7,7 +7,7 @@
 
 #if defined(OS_WIN)
 #include "content/public/app/sandbox_helper_win.h"
-#include "sandbox/win/src/sandbox_types.h"
+#include "sandbox/win/src/sandbox_types.h"  // nogncheck
 #elif defined(OS_MAC)
 #include "base/check.h"
 #include "sandbox/mac/seatbelt_exec.h"

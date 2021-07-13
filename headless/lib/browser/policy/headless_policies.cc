@@ -5,7 +5,7 @@
 #include "headless/lib/browser/policy/headless_policies.h"
 
 #include "base/check.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_blocklist_manager.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/policy_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"

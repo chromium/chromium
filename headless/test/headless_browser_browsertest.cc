@@ -52,7 +52,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if defined(OS_MAC)
-#include "third_party/crashpad/crashpad/client/crash_report_database.h"
+#include "third_party/crashpad/crashpad/client/crash_report_database.h"  // nogncheck
 #endif
 
 using testing::UnorderedElementsAre;

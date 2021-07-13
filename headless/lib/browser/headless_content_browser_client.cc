@@ -53,7 +53,7 @@
 
 #if defined(HEADLESS_USE_POLICY)
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
-#include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_service.h"  // nogncheck http://crbug.com/1227148
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #endif  // defined(HEADLESS_USE_POLICY)

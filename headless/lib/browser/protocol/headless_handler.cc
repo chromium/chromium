@@ -14,7 +14,7 @@
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
 #include "headless/lib/browser/headless_browser_impl.h"
-#include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/lib/browser/headless_web_contents_impl.h"  // nogncheck http://crbug.com/1227378
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/jpeg_codec.h"

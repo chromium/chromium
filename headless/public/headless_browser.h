@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "headless/public/headless_browser_context.h"
 #include "headless/public/headless_devtools_channel.h"
 #include "headless/public/headless_export.h"

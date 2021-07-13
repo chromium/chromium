@@ -27,7 +27,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if defined(HEADLESS_USE_POLICY)
-#include "components/user_prefs/user_prefs.h"
+#include "components/user_prefs/user_prefs.h"  // nogncheck
 #endif
 
 namespace headless {

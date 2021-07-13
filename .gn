@@ -65,7 +65,7 @@ default_args = {
 no_check_targets = [
   "//extensions/browser:*",  # 20 errors
   "//extensions:*",  # 28 errors
-  "//headless:*",  # 167 errors
+  "//headless:*",  # 107 errors
   "//ppapi/proxy:ipc_sources",  # 13 errors
   "//ppapi/thunk:*",  # 1071 errors
   "//remoting/host/security_key:*",  # 10 errors

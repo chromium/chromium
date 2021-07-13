@@ -5,7 +5,7 @@
 #ifndef HEADLESS_LIB_BROWSER_POLICY_HEADLESS_MODE_POLICY_H_
 #define HEADLESS_LIB_BROWSER_POLICY_HEADLESS_MODE_POLICY_H_
 
-#include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "headless/public/headless_export.h"
 
 class PrefService;
