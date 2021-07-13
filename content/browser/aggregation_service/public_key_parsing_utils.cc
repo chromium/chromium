@@ -36,7 +36,7 @@ std::string GetLatestVersion(base::Value& value) {
 
   std::string latest_version;
 
-  for (const auto& kv : value.DictItems()) {
+  for (const auto kv : value.DictItems()) {
     const std::string& version = kv.first;
     if (version < latest_version)
       continue;
