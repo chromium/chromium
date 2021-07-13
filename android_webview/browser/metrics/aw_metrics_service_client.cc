@@ -10,6 +10,7 @@
 #include "android_webview/browser/metrics/aw_stability_metrics_provider.h"
 #include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 #include "android_webview/common/aw_features.h"
+#include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
@@ -25,8 +26,8 @@
 namespace android_webview {
 
 namespace prefs {
-const char kMetricsShouldRecordAppPackageNameExpiryDate[] =
-    "aw_metrics_app_package_name_allowlist.expiry_date";
+const char kMetricsAppPackageNameLoggingRule[] =
+    "aw_metrics_app_package_name_logging_rule";
 }  // namespace prefs
 
 namespace {
@@ -103,22 +104,41 @@ bool AwMetricsServiceClient::ShouldRecordPackageName() {
     return ::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName();
   }
 
-  PrefService* local_state = pref_service();
-  DCHECK(local_state);
-  return local_state->GetTime(
-             prefs::kMetricsShouldRecordAppPackageNameExpiryDate) >=
-         base::Time::Now();
+  return cached_package_name_record_.has_value() &&
+         cached_package_name_record_.value().IsAppPackageNameAllowed();
 }
 
-void AwMetricsServiceClient::SetShouldRecordPackageName(
-    absl::optional<base::Time> expiry_date) {
-  if (!expiry_date.has_value())
+void AwMetricsServiceClient::SetAppPackageNameLoggingRule(
+    absl::optional<AppPackageNameLoggingRule> record) {
+  if (!record.has_value())
     return;
+
+  absl::optional<AppPackageNameLoggingRule> cached_record =
+      GetCachedAppPackageNameLoggingRule();
+
+  if (cached_record.has_value() &&
+      record.value().IsSameAs(cached_package_name_record_.value())) {
+    return;
+  }
 
   PrefService* local_state = pref_service();
   DCHECK(local_state);
-  local_state->SetTime(prefs::kMetricsShouldRecordAppPackageNameExpiryDate,
-                       expiry_date.value());
+  local_state->Set(prefs::kMetricsAppPackageNameLoggingRule,
+                   record.value().ToDictionary());
+  cached_package_name_record_ = record;
+}
+
+absl::optional<AppPackageNameLoggingRule>
+AwMetricsServiceClient::GetCachedAppPackageNameLoggingRule() {
+  if (cached_package_name_record_.has_value()) {
+    return cached_package_name_record_;
+  }
+
+  PrefService* local_state = pref_service();
+  DCHECK(local_state);
+  cached_package_name_record_ = AppPackageNameLoggingRule::FromDictionary(
+      *(local_state->Get(prefs::kMetricsAppPackageNameLoggingRule)));
+  return cached_package_name_record_;
 }
 
 void AwMetricsServiceClient::OnMetricsStart() {
@@ -172,8 +192,8 @@ void AwMetricsServiceClient::RegisterAdditionalMetricsProviders(
 void AwMetricsServiceClient::RegisterMetricsPrefs(
     PrefRegistrySimple* registry) {
   RegisterPrefs(registry);
-  registry->RegisterTimePref(
-      prefs::kMetricsShouldRecordAppPackageNameExpiryDate, base::Time::Min());
+  registry->RegisterDictionaryPref(prefs::kMetricsAppPackageNameLoggingRule,
+                                   base::Value(base::Value::Type::DICTIONARY));
 }
 
 // static

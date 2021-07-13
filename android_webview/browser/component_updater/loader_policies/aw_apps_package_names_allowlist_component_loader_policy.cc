@@ -16,6 +16,7 @@
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
+#include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
@@ -38,51 +39,68 @@ namespace {
 
 constexpr int kBitsPerByte = 8;
 
-// It returns an empty (null) absl::optional<base::Time> if loading of the
-// allowlist file fails. Otherwise it returns:
-// - `expiry_date` if the given `package_name` is in the allowlist.
-// - `base::Time::Min()` if the given `package_name` isn't in the allowlist.
-absl::optional<base::Time> GetExpiryTimeIfPackageNameLoggable(
+// Lookup the allowlist in `allowlist_fd`, returns null if it fails.
+//
+// `allowlist_fd` the fd of a file the contain a bloomfilter that represents an
+//                allowlist of apps package names.
+// `num_hash`     the number of hash functions to use in the
+//                `optimization_guide::BloomFilter`.
+// `num_bits`     the number of bits in the `optimization_guide::BloomFilter`.
+// `package_name` the app package name to look up in the allowlist.
+// `version`      the allowlist version.
+// `expiry_date`  the expiry date of the allowlist, i.e the date after which
+//                this allowlist shouldn't be used.
+absl::optional<AppPackageNameLoggingRule> GetAppPackageNameLoggingRule(
     base::ScopedFD allowlist_fd,
     int num_hash,
     int num_bits,
     const std::string& package_name,
+    const base::Version& version,
     const base::Time& expiry_date) {
   // Transfer the ownership of the file from `allowlist_fd` to `file_stream`.
   base::ScopedFILE file_stream(fdopen(allowlist_fd.release(), "r"));
   if (!file_stream.get())
-    return absl::optional<base::Time>();
+    return absl::optional<AppPackageNameLoggingRule>();
 
   // TODO(https://crbug.com/1219496): use mmap instead of reading the whole
   // file.
   std::string bloom_filter_data;
   if (!base::ReadStreamToString(file_stream.get(), &bloom_filter_data) ||
       bloom_filter_data.empty()) {
-    return absl::optional<base::Time>();
+    return absl::optional<AppPackageNameLoggingRule>();
   }
 
   // Make sure the bloomfilter binary data is of the correct length.
   if (bloom_filter_data.size() !=
       size_t((num_bits + kBitsPerByte - 1) / kBitsPerByte)) {
-    return absl::optional<base::Time>();
+    return absl::optional<AppPackageNameLoggingRule>();
   }
 
-  return optimization_guide::BloomFilter(num_hash, num_bits, bloom_filter_data)
-                 .Contains(package_name)
-             ? expiry_date
-             : base::Time::Min();
+  if (optimization_guide::BloomFilter(num_hash, num_bits, bloom_filter_data)
+          .Contains(package_name)) {
+    return AppPackageNameLoggingRule(version, expiry_date);
+  } else {
+    return AppPackageNameLoggingRule(version, base::Time::Min());
+  }
 }
 
-void SetShouldRecordPackageName(absl::optional<base::Time> expiry_date) {
+void SetAppPackageNameLoggingRule(
+    absl::optional<AppPackageNameLoggingRule> record) {
   auto* metrics_service_client = AwMetricsServiceClient::GetInstance();
   DCHECK(metrics_service_client);
-  metrics_service_client->SetShouldRecordPackageName(expiry_date);
+  metrics_service_client->SetAppPackageNameLoggingRule(record);
 
-  if (expiry_date.has_value()) {
-    VLOG(2) << "WebView apps package allowlist is loaded, expiry_date ="
-            << (expiry_date.value() - base::Time::UnixEpoch()).InMilliseconds();
-  } else {
+  if (!record.has_value()) {
     VLOG(2) << "Failed to load WebView apps package allowlist";
+  }
+
+  VLOG(2) << "WebView apps package allowlist version "
+          << record.value().GetVersion() << " is loaded";
+  if (record.value().IsAppPackageNameAllowed()) {
+    VLOG(2) << "App package name should be recorded until "
+            << record.value().GetExpiryDate();
+  } else {
+    VLOG(2) << "App package name shouldn't be recorded";
   }
 }
 
@@ -91,8 +109,10 @@ void SetShouldRecordPackageName(absl::optional<base::Time> expiry_date) {
 AwAppsPackageNamesAllowlistComponentLoaderPolicy::
     AwAppsPackageNamesAllowlistComponentLoaderPolicy(
         std::string app_package_name,
+        absl::optional<AppPackageNameLoggingRule> cached_record,
         AllowListLookupCallback lookup_callback)
     : app_package_name_(std::move(app_package_name)),
+      cached_record_(cached_record),
       lookup_callback_(std::move(lookup_callback)) {
   DCHECK(!app_package_name_.empty());
   DCHECK(lookup_callback_);
@@ -123,8 +143,7 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     base::flat_map<std::string, base::ScopedFD>& fd_map,
     std::unique_ptr<base::DictionaryValue> manifest) {
-  // TODO(https://crbug.com/1216202): store the allowlist version in the local
-  // cache, don't lookup the allowlist if it's the same version.
+  DCHECK(version.IsValid());
 
   // Have to use double because base::DictionaryValue doesn't support int64
   // values.
@@ -148,6 +167,13 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
     return;
   }
 
+  if (cached_record_.has_value() &&
+      cached_record_.value().GetVersion() == version) {
+    DCHECK(lookup_callback_);
+    std::move(lookup_callback_).Run(cached_record_);
+    return;
+  }
+
   auto allowlist_iterator = fd_map.find(kAllowlistBloomFilterFileName);
   if (allowlist_iterator == fd_map.end()) {
     ComponentLoadFailed();
@@ -156,17 +182,16 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetExpiryTimeIfPackageNameLoggable,
+      base::BindOnce(&GetAppPackageNameLoggingRule,
                      std::move(allowlist_iterator->second), num_hash.value(),
-                     num_bits.value(), std::move(app_package_name_),
+                     num_bits.value(), std::move(app_package_name_), version,
                      expiry_date),
       std::move(lookup_callback_));
 }
 
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed() {
   DCHECK(lookup_callback_);
-  std::move(lookup_callback_)
-      .Run(/* expiry_date= */ absl::optional<base::Time>());
+  std::move(lookup_callback_).Run(absl::optional<AppPackageNameLoggingRule>());
 }
 
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::GetHash(
@@ -180,10 +205,14 @@ void LoadPackageNamesAllowlistComponent(
           android_webview::features::kWebViewAppsPackageNamesAllowlist)) {
     return;
   }
+
+  auto* metrics_service_client = AwMetricsServiceClient::GetInstance();
+  DCHECK(metrics_service_client);
   policies.push_back(
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
-          AwMetricsServiceClient::GetInstance()->GetAppPackageName(),
-          base::BindOnce(&SetShouldRecordPackageName)));
+          metrics_service_client->GetAppPackageName(),
+          metrics_service_client->GetCachedAppPackageNameLoggingRule(),
+          base::BindOnce(&SetAppPackageNameLoggingRule)));
 }
 
 }  // namespace android_webview

@@ -485,6 +485,7 @@ test("android_webview_unittests") {
     "//android_webview/browser/lifecycle",
     "//android_webview/browser/metrics",
     "//android_webview/common",
+    "//android_webview/common:tests",
     "//android_webview/nonembedded",
     "//base/test:test_support",
     "//components/autofill/core/browser",

@@ -9,11 +9,11 @@
 #include <string>
 
 #include "android_webview/browser/lifecycle/webview_app_state_observer.h"
+#include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -24,7 +24,7 @@
 namespace android_webview {
 
 namespace prefs {
-extern const char kMetricsShouldRecordAppPackageNameExpiryDate[];
+extern const char kMetricsAppPackageNameLoggingRule[];
 }  // namespace prefs
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -98,7 +98,7 @@ enum class BackfillInstallDate {
 // WebView will try to lookup the embedding app's package name in a list of apps
 // whose package names are allowed to be recorded. This operation takes place on
 // a background thread. The result of the lookup is then posted back on the UI
-// thread and SetShouldRecordPackageName() will be called. Unlike user's
+// thread and SetAppPackageNameLoggingRule() will be called. Unlike user's
 // consent, the metrics service doesn't currently block on the allowlist lookup
 // result. If the result isn't present at the moment of creating a metrics log,
 // it assumes that the app package name isn't allowed to be logged.
@@ -166,11 +166,15 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   // dynamically downloaded allowlist of apps see
   // `AwAppsPackageNamesAllowlistComponentLoaderPolicy`.
   //
-  // `expiry_date` the date after which the app package name shouldn't be
-  //               recoreded in UMA because the allowlist that contained this
-  //               app has expired. If it has a null value, then it will be
-  //               ignored and the cached date will be used if any.
-  void SetShouldRecordPackageName(absl::optional<base::Time> expiry_date);
+  // `record` If it has a null value, then it will be ignored and the cached
+  //          record will be used if any.
+  void SetAppPackageNameLoggingRule(
+      absl::optional<AppPackageNameLoggingRule> record);
+
+  // Get the cached record of the app package names allowlist set by
+  // `SetAppPackageNameLoggingRule` if any.
+  absl::optional<AppPackageNameLoggingRule>
+  GetCachedAppPackageNameLoggingRule();
 
  protected:
   // Restrict usage of the inherited AndroidMetricsServiceClient::RegisterPrefs,
@@ -180,6 +184,8 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
  private:
   bool app_in_foreground_ = false;
   std::unique_ptr<Delegate> delegate_;
+
+  absl::optional<AppPackageNameLoggingRule> cached_package_name_record_;
 
   DISALLOW_COPY_AND_ASSIGN(AwMetricsServiceClient);
 };

@@ -7,16 +7,20 @@
 #include <memory>
 
 #include "android_webview/common/aw_features.h"
+#include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/metrics/user_metrics.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
 
 namespace {
+
+constexpr char kTestAllowlistVersion[] = "123.456.789.10";
 
 class AwMetricsServiceClientTestDelegate
     : public AwMetricsServiceClient::Delegate {
@@ -45,6 +49,7 @@ class AwMetricsServiceClientTest : public testing::Test {
   }
 
   AwMetricsServiceClient* GetClient() { return client_.get(); }
+  TestingPrefServiceSimple* GetPrefs() { return prefs_.get(); }
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
@@ -59,45 +64,90 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_CacheNotSet) {
   scoped_list.InitAndEnableFeature(
       android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
-  EXPECT_FALSE(GetClient()->ShouldRecordPackageName());
-}
-
-TEST_F(AwMetricsServiceClientTest,
-       TestShouldRecordPackageName_TestExpiredResult) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
-
-  auto* client = GetClient();
-  auto one_day_ago = base::Time::Now() - base::TimeDelta::FromDays(1);
-  client->SetShouldRecordPackageName(/* expiry_date= */ one_day_ago);
+  AwMetricsServiceClient* client = GetClient();
   EXPECT_FALSE(client->ShouldRecordPackageName());
+  EXPECT_FALSE(client->GetCachedAppPackageNameLoggingRule().has_value());
 }
 
-TEST_F(AwMetricsServiceClientTest,
-       TestShouldRecordPackageName_TestValidResult) {
+TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
       android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
-  auto* client = GetClient();
+  AwMetricsServiceClient* client = GetClient();
+  TestingPrefServiceSimple* prefs = GetPrefs();
+
   auto one_day_from_now = base::Time::Now() + base::TimeDelta::FromDays(1);
-  client->SetShouldRecordPackageName(/* expiry_date= */ one_day_from_now);
+  AppPackageNameLoggingRule expected_record(
+      base::Version(kTestAllowlistVersion), one_day_from_now);
+  prefs->Set(prefs::kMetricsAppPackageNameLoggingRule,
+             expected_record.ToDictionary());
+
+  absl::optional<AppPackageNameLoggingRule> cached_record =
+      client->GetCachedAppPackageNameLoggingRule();
   EXPECT_TRUE(client->ShouldRecordPackageName());
+  ASSERT_TRUE(cached_record.has_value());
+  EXPECT_TRUE(expected_record.IsSameAs(cached_record.value()));
 }
 
 TEST_F(AwMetricsServiceClientTest,
-       TestShouldRecordPackageName_TestInvalidResult) {
+       TestShouldRecordPackageName_TestShouldNotRecordPackageName) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
       android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
-  auto* client = GetClient();
+  AwMetricsServiceClient* client = GetClient();
+  AppPackageNameLoggingRule expected_record(
+      base::Version(kTestAllowlistVersion), base::Time::Min());
+  client->SetAppPackageNameLoggingRule(expected_record);
+  absl::optional<AppPackageNameLoggingRule> cached_record =
+      client->GetCachedAppPackageNameLoggingRule();
+
+  EXPECT_FALSE(client->ShouldRecordPackageName());
+  ASSERT_TRUE(cached_record.has_value());
+  EXPECT_TRUE(expected_record.IsSameAs(cached_record.value()));
+}
+
+TEST_F(AwMetricsServiceClientTest,
+       TestShouldRecordPackageName_TestShouldRecordPackageName) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      android_webview::features::kWebViewAppsPackageNamesAllowlist);
+
   auto one_day_from_now = base::Time::Now() + base::TimeDelta::FromDays(1);
-  client->SetShouldRecordPackageName(/* expiry_date= */ one_day_from_now);
-  client->SetShouldRecordPackageName(
-      /* expiry_date= */ absl::optional<base::Time>());
+
+  AwMetricsServiceClient* client = GetClient();
+  AppPackageNameLoggingRule expected_record(
+      base::Version(kTestAllowlistVersion), one_day_from_now);
+  client->SetAppPackageNameLoggingRule(expected_record);
+  absl::optional<AppPackageNameLoggingRule> cached_record =
+      client->GetCachedAppPackageNameLoggingRule();
+
   EXPECT_TRUE(client->ShouldRecordPackageName());
+  ASSERT_TRUE(cached_record.has_value());
+  EXPECT_TRUE(expected_record.IsSameAs(cached_record.value()));
+}
+
+TEST_F(AwMetricsServiceClientTest,
+       TestShouldRecordPackageName_TestFailureAfterValidResult) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      android_webview::features::kWebViewAppsPackageNamesAllowlist);
+
+  auto one_day_from_now = base::Time::Now() + base::TimeDelta::FromDays(1);
+
+  AwMetricsServiceClient* client = GetClient();
+  AppPackageNameLoggingRule expected_record(
+      base::Version(kTestAllowlistVersion), one_day_from_now);
+  client->SetAppPackageNameLoggingRule(expected_record);
+  client->SetAppPackageNameLoggingRule(
+      absl::optional<AppPackageNameLoggingRule>());
+  absl::optional<AppPackageNameLoggingRule> cached_record =
+      client->GetCachedAppPackageNameLoggingRule();
+
+  EXPECT_TRUE(client->ShouldRecordPackageName());
+  ASSERT_TRUE(cached_record.has_value());
+  EXPECT_TRUE(expected_record.IsSameAs(cached_record.value()));
 }
 
 }  // namespace android_webview

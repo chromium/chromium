@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
@@ -31,15 +32,10 @@ constexpr char kBloomFilterNumHashKey[] = "bloomfilter_num_hash";
 constexpr char kBloomFilterNumBitsKey[] = "bloomfilter_num_bits";
 constexpr char kExpiryDateKey[] = "expiry_date";
 
-// A callback that accepts an `absl::optional<base::Time>` expiry_date:
-// - If the allowlist loading fails, it will be called with a null value.
-// - If the package name isn't in the allowlist, it will be called with an
-//   always expired date `base::Time::Min()`.
-// - If the package name is in the allowlist, it will be called with the
-//   expiry_date after which the app package name shouldn't be recorded in UMA
-//   metrics.
+// A callback for the result of loading and looking up the allowlist. If the
+// allowlist loading fails, it will be called with a null record.
 using AllowListLookupCallback =
-    base::OnceCallback<void(absl::optional<base::Time>)>;
+    base::OnceCallback<void(absl::optional<AppPackageNameLoggingRule>)>;
 
 // Defines a loader responsible for receiving the allowlist for apps package
 // names that can be included in UMA records and lookup the embedding app's name
@@ -48,10 +44,13 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
     : public component_updater::ComponentLoaderPolicy {
  public:
   // `app_package_name` the embedding app package name.
-  // `lookup_callback` callback to report the result of looking up
-  //                   `app_package_name` in the packages names allowlist.
+  // `cached_record`    the cached lookup result of a previous successfully
+  //                    loaded allowlist, if any.
+  // `lookup_callback`  callback to report the result of looking up
+  //                    `app_package_name` in the packages names allowlist.
   AwAppsPackageNamesAllowlistComponentLoaderPolicy(
       std::string app_package_name,
+      absl::optional<AppPackageNameLoggingRule> cached_record,
       AllowListLookupCallback lookup_callback);
   ~AwAppsPackageNamesAllowlistComponentLoaderPolicy() override;
 
@@ -70,6 +69,8 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
 
  private:
   std::string app_package_name_;
+  absl::optional<AppPackageNameLoggingRule> cached_record_;
+
   AllowListLookupCallback lookup_callback_;
 };
 

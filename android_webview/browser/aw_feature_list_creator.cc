@@ -90,10 +90,9 @@ const char* const kPersistentPrefsAllowlist[] = {
     variations::prefs::kVariationsLastFetchTime,
     variations::prefs::kVariationsSeedDate,
 
-    // Cache the expiry date of the list of apps whose package names are allowed
-    // to be recorded in UMA. This will have a valid value (not
-    // base::Time::Min()) only if the app is in the allowlist.
-    prefs::kMetricsShouldRecordAppPackageNameExpiryDate,
+    // A dictionary that caches 'AppPackageNameLoggingRule' object which decides
+    // whether the app package name should be recorded in UMA or not.
+    prefs::kMetricsAppPackageNameLoggingRule,
 };
 
 void HandleReadError(PersistentPrefStore::PrefReadError error) {}
