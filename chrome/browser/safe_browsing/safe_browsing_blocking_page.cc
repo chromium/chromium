@@ -16,6 +16,7 @@
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_controller_client.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -46,7 +47,6 @@ using security_interstitials::SecurityInterstitialControllerClient;
 namespace safe_browsing {
 
 namespace {
-const char kHelpCenterLink[] = "cpn_safe_browsing";
 
 SafeBrowsingMetricsCollector::EventType GetEventTypeFromThreatSource(
     ThreatSource threat_source) {
@@ -72,59 +72,9 @@ SafeBrowsingMetricsCollector::EventType GetEventTypeFromThreatSource(
 // static
 SafeBrowsingBlockingPageFactory* SafeBrowsingBlockingPage::factory_ = NULL;
 
-// The default SafeBrowsingBlockingPageFactory.  Global, made a singleton so we
-// don't leak it.
-class SafeBrowsingBlockingPageFactoryImpl
-    : public SafeBrowsingBlockingPageFactory {
- public:
-  SafeBrowsingBlockingPage* CreateSafeBrowsingPage(
-      BaseUIManager* ui_manager,
-      WebContents* web_contents,
-      const GURL& main_frame_url,
-      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-      bool should_trigger_reporting) override {
-    // Create appropriate display options for this blocking page.
-    PrefService* prefs =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext())
-            ->GetPrefs();
-    bool is_extended_reporting_opt_in_allowed =
-        IsExtendedReportingOptInAllowed(*prefs);
-    bool is_proceed_anyway_disabled =
-        prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled);
-
-    // Determine if any prefs need to be updated prior to showing the security
-    // interstitial. This must happen before querying IsScout to populate the
-    // Display Options below.
-    safe_browsing::UpdatePrefsBeforeSecurityInterstitial(prefs);
-
-    BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options(
-        BaseBlockingPage::IsMainPageLoadBlocked(unsafe_resources),
-        is_extended_reporting_opt_in_allowed,
-        web_contents->GetBrowserContext()->IsOffTheRecord(),
-        IsExtendedReportingEnabled(*prefs),
-        IsExtendedReportingPolicyManaged(*prefs),
-        IsEnhancedProtectionEnabled(*prefs), is_proceed_anyway_disabled,
-        true,  // should_open_links_in_new_tab
-        true,  // always_show_back_to_safety
-        true,  // is_enhanced_protection_message_enabled
-        IsSafeBrowsingPolicyManaged(*prefs), kHelpCenterLink);
-
-    return new SafeBrowsingBlockingPage(
-        ui_manager, web_contents, main_frame_url, unsafe_resources,
-        display_options, should_trigger_reporting);
-  }
-
- private:
-  friend struct base::LazyInstanceTraitsBase<
-      SafeBrowsingBlockingPageFactoryImpl>;
-
-  SafeBrowsingBlockingPageFactoryImpl() { }
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPageFactoryImpl);
-};
-
-static base::LazyInstance<SafeBrowsingBlockingPageFactoryImpl>::DestructorAtExit
-    g_safe_browsing_blocking_page_factory_impl = LAZY_INSTANCE_INITIALIZER;
+static base::LazyInstance<ChromeSafeBrowsingBlockingPageFactory>::
+    DestructorAtExit g_chrome_safe_browsing_blocking_page_factory =
+        LAZY_INSTANCE_INITIALIZER;
 
 // static
 const security_interstitials::SecurityInterstitialPage::TypeID
@@ -256,7 +206,7 @@ SafeBrowsingBlockingPage* SafeBrowsingBlockingPage::CreateBlockingPage(
   // Set up the factory if this has not been done already (tests do that
   // before this method is called).
   if (!factory_)
-    factory_ = g_safe_browsing_blocking_page_factory_impl.Pointer();
+    factory_ = g_chrome_safe_browsing_blocking_page_factory.Pointer();
   return factory_->CreateSafeBrowsingPage(ui_manager, web_contents,
                                           main_frame_url, resources,
                                           should_trigger_reporting);

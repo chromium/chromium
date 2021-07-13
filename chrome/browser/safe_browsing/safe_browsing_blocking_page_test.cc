@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
+#include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"

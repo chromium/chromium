@@ -11,6 +11,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
+#include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

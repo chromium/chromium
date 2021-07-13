@@ -76,7 +76,7 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
       override;
 
  protected:
-  friend class SafeBrowsingBlockingPageFactoryImpl;
+  friend class ChromeSafeBrowsingBlockingPageFactory;
   friend class SafeBrowsingBlockingPageTestBase;
   friend class SafeBrowsingBlockingPageBrowserTest;
   friend class SafeBrowsingBlockingQuietPageFactoryImpl;
@@ -142,19 +142,6 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
                          const BaseUIManager* ui_manager);
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPage);
-};
-
-// Factory for creating SafeBrowsingBlockingPage.  Useful for tests.
-class SafeBrowsingBlockingPageFactory {
- public:
-  virtual ~SafeBrowsingBlockingPageFactory() { }
-
-  virtual SafeBrowsingBlockingPage* CreateSafeBrowsingPage(
-      BaseUIManager* ui_manager,
-      content::WebContents* web_contents,
-      const GURL& main_frame_url,
-      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-      bool should_trigger_reporting) = 0;
 };
 
 }  // namespace safe_browsing
