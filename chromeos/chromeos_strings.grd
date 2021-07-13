@@ -693,6 +693,18 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_ACTION_TOOLBAR_PAGE_COUNT_TEXT" desc="The text in the action toolbar that shows the current page number and the total number of pages scanned.">
         <ph name="CURRENT_PAGE">$1<ex>2</ex></ph> of <ph name="TOTAL_PAGES">$2<ex>4</ex></ph>
       </message>
+      <message name="IDS_SCANNING_APP_REMOVE_PAGE_BUTTON_LABEL" desc="The label for the button that lets the user delete a page from their scan job.">
+        {PAGE_NUMBER, plural,
+        =0 {Remove page}
+        =1 {Remove page {PAGE_NUMBER}}
+        other {Remove page {PAGE_NUMBER}}}
+      </message>
+      <message name="IDS_SCANNING_APP_RESCAN_PAGE_BUTTON_LABEL" desc="The label for the button that lets the user replace a page from their scan job by scanning a new page from their scanner.">
+        {PAGE_NUMBER, plural,
+        =0 {Rescan page}
+        =1 {Rescan page {PAGE_NUMBER}}
+        other {Rescan page {PAGE_NUMBER}}}
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

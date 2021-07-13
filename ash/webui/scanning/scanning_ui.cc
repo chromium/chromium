@@ -124,6 +124,8 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"editButtonLabel", IDS_SCANNING_APP_EDIT_BUTTON_LABEL},
       {"fileSavedText", IDS_SCANNING_APP_FILE_SAVED_TEXT},
+      {"removePageButtonLabel", IDS_SCANNING_APP_REMOVE_PAGE_BUTTON_LABEL},
+      {"rescanPageButtonLabel", IDS_SCANNING_APP_RESCAN_PAGE_BUTTON_LABEL},
       {"scanButtonText", IDS_SCANNING_APP_SCAN_BUTTON_TEXT},
       {"scannedImagesAriaLabel", IDS_SCANNING_APP_SCANNED_IMAGES_ARIA_LABEL}};
 
