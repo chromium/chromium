@@ -4829,18 +4829,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -4898,18 +4898,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -4968,18 +4968,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5037,18 +5037,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5101,18 +5101,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5161,18 +5161,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5230,18 +5230,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5299,18 +5299,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5368,18 +5368,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5437,18 +5437,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5507,18 +5507,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5577,18 +5577,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5646,18 +5646,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5715,18 +5715,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5785,18 +5785,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5854,18 +5854,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5923,18 +5923,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -5992,18 +5992,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6067,18 +6067,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6137,18 +6137,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6206,18 +6206,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6276,18 +6276,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6346,18 +6346,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6416,18 +6416,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6486,18 +6486,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6555,18 +6555,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6624,18 +6624,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6693,18 +6693,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6762,18 +6762,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6831,18 +6831,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6900,18 +6900,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -6969,18 +6969,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7040,18 +7040,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7109,18 +7109,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7178,18 +7178,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7247,18 +7247,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7316,18 +7316,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7385,18 +7385,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7454,18 +7454,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7523,18 +7523,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7592,18 +7592,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7661,18 +7661,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7730,18 +7730,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7799,18 +7799,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7868,18 +7868,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -7937,18 +7937,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8006,18 +8006,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8075,18 +8075,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8144,18 +8144,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8213,18 +8213,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8283,18 +8283,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8352,18 +8352,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8421,18 +8421,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8490,18 +8490,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8559,18 +8559,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8628,18 +8628,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8697,18 +8697,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8766,18 +8766,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8835,18 +8835,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8904,18 +8904,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -8973,18 +8973,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9042,18 +9042,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9112,18 +9112,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9181,18 +9181,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9250,18 +9250,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9319,18 +9319,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9388,18 +9388,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9457,18 +9457,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9526,18 +9526,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9600,18 +9600,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9670,18 +9670,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9740,18 +9740,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9809,18 +9809,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
@@ -9878,18 +9878,18 @@
           ],
           "named_caches": [
             {
-              "name": "avd_generic_androidS",
+              "name": "avd_generic_android_s",
               "path": ".android"
             },
             {
-              "name": "system_images_android_S_google_apis_x64",
+              "name": "system_images_android_s_google_apis_x64",
               "path": ".emulator_sdk"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_androidS"
+                "caches": "avd_generic_android_s"
               }
             ]
           },
