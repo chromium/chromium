@@ -22,21 +22,27 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
       base::FilePath path,
       base::FilePath file_name,
       std::string mime_type,
+      bool delay_opening_file,
       BinaryUploadService::ContentAnalysisCallback callback);
   FileAnalysisRequest(const FileAnalysisRequest&) = delete;
   FileAnalysisRequest& operator=(const FileAnalysisRequest&) = delete;
   ~FileAnalysisRequest() override;
 
-  // BinaryUploadService::Request implementation.
+  // BinaryUploadService::Request implementation. If |delay_opening_file_| is
+  // false, OnGotFileData is called by posting after GetFileDataBlocking runs
+  // a base::MayBlock() thread, otherwise the callback will be stored and run
+  // later when OpenFile is called.
   void GetRequestData(DataCallback callback) override;
+
+  // Opens the file, reads it, and then calls OnGotFileData on the UI thread.
+  // This should be called on a thread with base::MayBlock().
+  void OpenFile();
 
  private:
   void OnGotFileData(
-      DataCallback callback,
       std::pair<BinaryUploadService::Result, Data> result_and_data);
 
-  void OnCheckedForEncryption(DataCallback callback,
-                              Data data,
+  void OnCheckedForEncryption(Data data,
                               const ArchiveAnalyzerResults& analyzer_result);
 
   // Helper functions to access the request proto.
@@ -44,6 +50,9 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
   bool HasMalwareRequest() const;
 
   void CacheResultAndData(BinaryUploadService::Result result, Data data);
+
+  // Runs |data_callback_|.
+  void RunCallback();
 
   bool has_cached_result_;
   BinaryUploadService::Result cached_result_;
@@ -56,6 +65,14 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
 
   // File name excluding the path.
   base::FilePath file_name_;
+
+  DataCallback data_callback_;
+
+  // The file being opened can be delayed so that an external class can have
+  // more control on parallelism when multiple files are being opened. If
+  // |delay_opening_file_| is false, a task to open the file is posted in the
+  // GetRequestData call.
+  bool delay_opening_file_;
 
   base::WeakPtrFactory<FileAnalysisRequest> weakptr_factory_{this};
 };

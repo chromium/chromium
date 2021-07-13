@@ -17,6 +17,8 @@
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/base/filename_util.h"
@@ -124,12 +126,14 @@ FileAnalysisRequest::FileAnalysisRequest(
     base::FilePath path,
     base::FilePath file_name,
     std::string mime_type,
+    bool delay_opening_file,
     BinaryUploadService::ContentAnalysisCallback callback)
     : Request(std::move(callback), analysis_settings.analysis_url),
       has_cached_result_(false),
       block_unsupported_types_(analysis_settings.block_unsupported_file_types),
       path_(std::move(path)),
-      file_name_(std::move(file_name)) {
+      file_name_(std::move(file_name)),
+      delay_opening_file_(delay_opening_file) {
   set_filename(file_name_.AsUTF8Unsafe());
   cached_data_.mime_type = std::move(mime_type);
 }
@@ -137,17 +141,37 @@ FileAnalysisRequest::FileAnalysisRequest(
 FileAnalysisRequest::~FileAnalysisRequest() = default;
 
 void FileAnalysisRequest::GetRequestData(DataCallback callback) {
+  data_callback_ = std::move(callback);
+
   if (has_cached_result_) {
-    std::move(callback).Run(cached_result_, cached_data_);
+    RunCallback();
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&GetFileDataBlocking, path_,
-                     cached_data_.mime_type.empty()),
+  if (!delay_opening_file_) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+        base::BindOnce(&GetFileDataBlocking, path_,
+                       cached_data_.mime_type.empty()),
+        base::BindOnce(&FileAnalysisRequest::OnGotFileData,
+                       weakptr_factory_.GetWeakPtr()));
+  }
+}
+
+void FileAnalysisRequest::OpenFile() {
+  DCHECK(!data_callback_.is_null());
+
+  // Opening the file synchronously here is OK since OpenFile should be called
+  // on a base::MayBlock() thread.
+  std::pair<BinaryUploadService::Result, Data> file_data =
+      GetFileDataBlocking(path_, cached_data_.mime_type.empty());
+
+  // The result of opening the file is passed back to the UI thread since
+  // |data_callback_| calls functions that must run there.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&FileAnalysisRequest::OnGotFileData,
-                     weakptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weakptr_factory_.GetWeakPtr(), std::move(file_data)));
 }
 
 bool FileAnalysisRequest::FileSupportedByDlp(
@@ -178,7 +202,6 @@ bool FileAnalysisRequest::HasMalwareRequest() const {
 }
 
 void FileAnalysisRequest::OnGotFileData(
-    DataCallback callback,
     std::pair<BinaryUploadService::Result, Data> result_and_data) {
   set_digest(result_and_data.second.hash);
   set_content_type(result_and_data.second.mime_type);
@@ -186,7 +209,7 @@ void FileAnalysisRequest::OnGotFileData(
   if (result_and_data.first != BinaryUploadService::Result::SUCCESS) {
     CacheResultAndData(result_and_data.first,
                        std::move(result_and_data.second));
-    std::move(callback).Run(cached_result_, cached_data_);
+    RunCallback();
     return;
   }
 
@@ -201,7 +224,7 @@ void FileAnalysisRequest::OnGotFileData(
       CacheResultAndData(
           BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE,
           std::move(result_and_data.second));
-      std::move(callback).Run(cached_result_, cached_data_);
+      RunCallback();
       return;
     } else {
       clear_dlp_scan_request();
@@ -214,7 +237,7 @@ void FileAnalysisRequest::OnGotFileData(
     auto analyzer = base::MakeRefCounted<SandboxedZipAnalyzer>(
         path_,
         base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
-                       weakptr_factory_.GetWeakPtr(), std::move(callback),
+                       weakptr_factory_.GetWeakPtr(),
                        std::move(result_and_data.second)),
         LaunchFileUtilService());
     analyzer->Start();
@@ -222,19 +245,18 @@ void FileAnalysisRequest::OnGotFileData(
     auto analyzer = base::MakeRefCounted<SandboxedRarAnalyzer>(
         path_,
         base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
-                       weakptr_factory_.GetWeakPtr(), std::move(callback),
+                       weakptr_factory_.GetWeakPtr(),
                        std::move(result_and_data.second)),
         LaunchFileUtilService());
     analyzer->Start();
   } else {
     CacheResultAndData(BinaryUploadService::Result::SUCCESS,
                        std::move(result_and_data.second));
-    std::move(callback).Run(cached_result_, cached_data_);
+    RunCallback();
   }
 }
 
 void FileAnalysisRequest::OnCheckedForEncryption(
-    DataCallback callback,
     Data data,
     const ArchiveAnalyzerResults& analyzer_result) {
   bool encrypted =
@@ -246,7 +268,7 @@ void FileAnalysisRequest::OnCheckedForEncryption(
       encrypted ? BinaryUploadService::Result::FILE_ENCRYPTED
                 : BinaryUploadService::Result::SUCCESS;
   CacheResultAndData(result, std::move(data));
-  std::move(callback).Run(cached_result_, cached_data_);
+  RunCallback();
 }
 
 void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
@@ -259,6 +281,12 @@ void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
     data.mime_type = std::move(cached_data_.mime_type);
 
   cached_data_ = std::move(data);
+}
+
+void FileAnalysisRequest::RunCallback() {
+  if (!data_callback_.is_null()) {
+    std::move(data_callback_).Run(cached_result_, cached_data_);
+  }
 }
 
 }  // namespace safe_browsing

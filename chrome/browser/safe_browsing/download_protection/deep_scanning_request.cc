@@ -216,6 +216,7 @@ void DeepScanningRequest::Start() {
   auto request = std::make_unique<FileAnalysisRequest>(
       analysis_settings_, item_->GetFullPath(),
       item_->GetTargetFilePath().BaseName(), item_->GetMimeType(),
+      /* delay_opening_file */ false,
       base::BindOnce(&DeepScanningRequest::OnScanComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   request->set_filename(item_->GetTargetFilePath().BaseName().AsUTF8Unsafe());
