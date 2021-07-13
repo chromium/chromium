@@ -91,6 +91,16 @@ const base::Feature kIChromeAccessible{"IChromeAccessible",
 bool IsIChromeAccessibleEnabled() {
   return base::FeatureList::IsEnabled(::features::kIChromeAccessible);
 }
+
+const base::Feature kSelectiveUIAEnablement{"SelectiveUIAEnablement",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Returns true if accessibility will be selectively enabled depending on the
+// UIA APIs that are called, allowing non-screenreader usage to enable less of
+// the accessibility system.
+bool IsSelectiveUIAEnablementEnabled() {
+  return base::FeatureList::IsEnabled(::features::kSelectiveUIAEnablement);
+}
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

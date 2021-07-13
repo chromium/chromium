@@ -121,6 +121,13 @@ static constexpr AXMode kAXModeComplete(AXMode::kNativeAPIs |
                                         AXMode::kInlineTextBoxes |
                                         AXMode::kScreenReader | AXMode::kHTML);
 
+// Similar to kAXModeComplete, used when an AT that requires full accessibility
+// access, but does not need all HTML properties or attributes.
+static constexpr AXMode kAXModeCompleteNoHTML(AXMode::kNativeAPIs |
+                                              AXMode::kWebContents |
+                                              AXMode::kInlineTextBoxes |
+                                              AXMode::kScreenReader);
+
 // For debugging, test assertions, etc.
 AX_BASE_EXPORT std::ostream& operator<<(std::ostream& stream,
                                         const AXMode& mode);

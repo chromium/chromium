@@ -341,7 +341,10 @@ class AX_EXPORT WinAccessibilityAPIUsageObserver {
   virtual void OnIAccessible2Used() = 0;
   virtual void OnScreenReaderHoneyPotQueried() = 0;
   virtual void OnAccNameCalled() = 0;
-  virtual void OnUIAutomationUsed() = 0;
+  virtual void OnBasicUIAutomationUsed() = 0;
+  virtual void OnAdvancedUIAutomationUsed() = 0;
+  virtual void OnProbableUIAutomationScreenReaderDetected() = 0;
+  virtual void OnTextPatternRequested() = 0;
   virtual void StartFiringUIAEvents() = 0;
   virtual void EndFiringUIAEvents() = 0;
 };
@@ -1469,6 +1472,9 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
       const gfx::Range& range,
       const std::wstring& active_composition_text,
       bool is_composition_committed);
+
+  void NotifyAPIObserverForPatternRequest(PATTERNID pattern_id) const;
+  void NotifyAPIObserverForPropertyRequest(PROPERTYID property_id) const;
 
   // Return true if the given element is valid enough to be returned as a value
   // for a UIA relation property (e.g. ControllerFor).

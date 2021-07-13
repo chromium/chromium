@@ -73,6 +73,11 @@ const AXMode = {
   get kAXModeComplete() {
     return AXMode.kNativeAPIs | AXMode.kWebContents | AXMode.kInlineTextBoxes |
         AXMode.kScreenReader | AXMode.kHTML;
+  },
+
+  get kAXModeCompleteNoHTML() {
+    return AXMode.kNativeAPIs | AXMode.kWebContents | AXMode.kInlineTextBoxes |
+        AXMode.kScreenReader;
   }
 };
 
