@@ -55,13 +55,14 @@ class CartLoaderAndUpdaterFactory {
 //
 //   UI Thread              | backend_task_runner_
 //  ===========================================
-// 1) PrepareToFetch        |
-// 2) ReadyToFetch          |
-// 3)                       | FetchInBackground
-// 4)                       | DoneFetchingInBackground
-// 5) AfterDiscountFetched  |
-// 6) OnUpdatingDiscounts   |
-// 7) Restart PrepareToFetch|
+// 1) Start                 |
+// 2) PrepareToFetch (delay)|
+// 3) ReadyToFetch          |
+// 4)                       | FetchInBackground
+// 5)                       | DoneFetchingInBackground
+// 6) AfterDiscountFetched  |
+// 7) OnUpdatingDiscounts   |
+// 8) Start                 |
 
 // TODO(meiliang): Add an API to allow ending the work earlier. e.g. when user
 // has hidden the cart module.
@@ -93,13 +94,11 @@ class FetchDiscountWorker {
 
   // This is run in the UI thread, it creates a `CartLoader` and loads all
   // active carts.
-  void PrepareToFetch(base::TimeDelta delay_fetch);
+  void PrepareToFetch();
 
   // This is run in the UI thread, it posts the discount fetching work,
-  // FetchInBackground(), to another thread as a delayed background task.
-  void ReadyToFetch(base::TimeDelta delay_fetch,
-                    bool success,
-                    std::vector<CartDB::KeyAndValue> proto_pairs);
+  // FetchInBackground(), to another thread as a background task.
+  void ReadyToFetch(bool success, std::vector<CartDB::KeyAndValue> proto_pairs);
 
   // TODO(crbug.com/1207197): Change these two static method to anonymous
   // namespace in the cc file. This is run in a background thread, it fetches
