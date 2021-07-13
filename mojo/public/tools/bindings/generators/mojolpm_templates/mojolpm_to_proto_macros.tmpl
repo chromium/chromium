@@ -83,7 +83,7 @@ bool ToProto(
   {{type}}& output) {
   bool result = true;
 
-  for ({{maybe_const}}auto& in_value : input) {
+  for (auto&& in_value : input) {
 {%-   if kind.kind|is_nullable_kind %}
     {{type}}Entry* out_value = output.mutable_values()->Add();
     if ({{util.not_null(kind.kind, 'in_value')}}) {
