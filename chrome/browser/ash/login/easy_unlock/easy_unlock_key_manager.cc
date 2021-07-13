@@ -40,7 +40,7 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
   auto do_refresh_keys = base::BindRepeating(
       &EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent,
       weak_ptr_factory_.GetWeakPtr(), user_context,
-      base::Owned(remote_devices.DeepCopy()), base::Passed(&callback));
+      base::Passed(remote_devices.CreateDeepCopy()), base::Passed(&callback));
 
   // Private TPM key is needed only when adding new keys.
   if (remote_devices.GetList().empty() ||
@@ -60,7 +60,7 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
 
 void EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent(
     const UserContext& user_context,
-    base::ListValue* remote_devices,
+    std::unique_ptr<base::ListValue> remote_devices,
     RefreshKeysCallback callback) {
   EasyUnlockTpmKeyManager* tpm_key_manager =
       EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForUser(

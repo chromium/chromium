@@ -86,9 +86,10 @@ class EasyUnlockKeyManager {
 
   // Called when the TPM key is ready to be used for creating Easy Unlock key
   // challenges.
-  void RefreshKeysWithTpmKeyPresent(const UserContext& user_context,
-                                    base::ListValue* remote_devices,
-                                    RefreshKeysCallback callback);
+  void RefreshKeysWithTpmKeyPresent(
+      const UserContext& user_context,
+      std::unique_ptr<base::ListValue> remote_devices,
+      RefreshKeysCallback callback);
 
   // Callback invoked after refresh keys operation.
   void OnKeysRefreshed(RefreshKeysCallback callback, bool create_success);
