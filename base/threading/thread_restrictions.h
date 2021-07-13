@@ -282,6 +282,10 @@ namespace proxy_resolver {
 class ScopedAllowThreadJoinForProxyResolverV8Tracing;
 }
 
+namespace remote_cocoa {
+class DroppedScreenShotCopierMac;
+}  // namespace remote_cocoa
+
 namespace remoting {
 class AutoThread;
 class ScopedBypassIOThreadRestrictions;
@@ -425,6 +429,8 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class printing::PrintBackendServiceImpl;
 #endif
   friend class printing::PrintJobWorker;
+  friend class remote_cocoa::
+      DroppedScreenShotCopierMac;  // https://crbug.com/1148078
   friend class remoting::ScopedBypassIOThreadRestrictions;  // crbug.com/1144161
   friend class web::WebSubThread;
   friend class weblayer::BrowserContextImpl;

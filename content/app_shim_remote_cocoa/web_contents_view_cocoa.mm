@@ -4,6 +4,8 @@
 
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 
+#import "content/browser/web_contents/web_contents_view_mac.h"
+
 #import "base/mac/mac_util.h"
 #import "content/app_shim_remote_cocoa/web_drag_source_mac.h"
 #import "content/browser/web_contents/web_drag_dest_mac.h"
@@ -15,10 +17,70 @@
 #include "ui/base/dragdrop/cocoa_dnd_util.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+
 using remote_cocoa::mojom::DraggingInfo;
 using remote_cocoa::mojom::SelectionDirection;
 using remote_cocoa::mojom::Visibility;
 using content::DropData;
+
+namespace remote_cocoa {
+
+// DroppedScreenShotCopierMac is a utility to copy screenshots to a usable
+// directory for PWAs. When screenshots are taken and dragged directly on to an
+// application, the resulting file can only be opened by the application that it
+// is passed to. For PWAs, this means that the file dragged to the PWA is not
+// accessible by the browser, resulting in a failure to open the file. This
+// class works around that problem by copying such screenshot files.
+// https://crbug.com/1148078
+class DroppedScreenShotCopierMac {
+ public:
+  DroppedScreenShotCopierMac() = default;
+  ~DroppedScreenShotCopierMac() {
+    if (temp_dir_) {
+      base::ScopedAllowBlocking allow_io;
+      temp_dir_.reset();
+    }
+  }
+
+  // Examine all entries in `drop_data.filenames`. If any of them look like a
+  // screenshot file, copy the file to a temporary directory. This temporary
+  // directory (and its contents) will be kept alive until `this` is destroyed.
+  void CopyScreenShotsInDropData(content::DropData& drop_data) {
+    for (auto& file_info : drop_data.filenames) {
+      if (IsPathScreenShot(file_info.path)) {
+        base::ScopedAllowBlocking allow_io;
+        if (!temp_dir_) {
+          auto new_temp_dir = std::make_unique<base::ScopedTempDir>();
+          if (!new_temp_dir->CreateUniqueTempDir())
+            return;
+          temp_dir_ = std::move(new_temp_dir);
+        }
+        base::FilePath copy_path =
+            temp_dir_->GetPath().Append(file_info.path.BaseName());
+        if (base::CopyFile(file_info.path, copy_path))
+          file_info.path = copy_path;
+      }
+    }
+  }
+
+ private:
+  bool IsPathScreenShot(const base::FilePath& path) const {
+    const std::string& value = path.value();
+    size_t found_var = value.find("/var");
+    if (found_var != 0)
+      return false;
+    size_t found_screencaptureui = value.find("screencaptureui");
+    if (found_screencaptureui == std::string::npos)
+      return false;
+    return true;
+  }
+
+  std::unique_ptr<base::ScopedTempDir> temp_dir_;
+};
+
+}  // namespace remote_cocoa
 
 // Ensure that the ui::DragDropTypes::DragOperation enum values stay in sync
 // with NSDragOperation constants, since the code below uses
@@ -60,6 +122,12 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   [super dealloc];
+}
+
+- (void)enableDroppedScreenShotCopier {
+  DCHECK(!_droppedScreenShotCopier);
+  _droppedScreenShotCopier =
+      std::make_unique<remote_cocoa::DroppedScreenShotCopierMac>();
 }
 
 - (void)populateDraggingInfo:(DraggingInfo*)info
@@ -197,6 +265,12 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   DropData dropData;
   content::PopulateDropDataFromPasteboard(&dropData,
                                           [sender draggingPasteboard]);
+
+  // Work around screen shot drag-drop permission bugs.
+  // https://crbug.com/1148078
+  if (_droppedScreenShotCopier)
+    _droppedScreenShotCopier->CopyScreenShotsInDropData(dropData);
+
   _host->SetDropData(dropData);
 
   auto draggingInfo = DraggingInfo::New();
