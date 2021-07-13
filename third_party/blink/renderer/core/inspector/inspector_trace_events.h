@@ -68,6 +68,7 @@ class Resource;
 class ResourceError;
 struct ResourceLoaderOptions;
 class ResourceRequest;
+class ResourceRequestHead;
 class ResourceResponse;
 class StyleChangeReasonForTracing;
 class StyleImage;
@@ -320,6 +321,14 @@ void Data(perfetto::TracedValue context,
           uint64_t identifier,
           LocalFrame*,
           const ResourceRequest&,
+          RenderBlockingBehavior);
+}
+
+namespace inspector_change_render_blocking_behavior_event {
+void Data(perfetto::TracedValue context,
+          DocumentLoader*,
+          uint64_t identifier,
+          const ResourceRequestHead&,
           RenderBlockingBehavior);
 }
 

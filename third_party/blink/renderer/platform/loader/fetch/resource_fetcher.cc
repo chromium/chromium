@@ -709,6 +709,10 @@ void ResourceFetcher::MakePreloadedResourceBlockOnloadIfNeeded(
       non_blocking_loaders_.Contains(resource->Loader())) {
     non_blocking_loaders_.erase(resource->Loader());
     loaders_.insert(resource->Loader());
+    if (resource_load_observer_) {
+      resource_load_observer_->DidChangeRenderBlockingBehavior(resource,
+                                                               params);
+    }
   }
 }
 

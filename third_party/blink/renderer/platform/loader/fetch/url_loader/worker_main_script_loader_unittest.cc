@@ -179,6 +179,8 @@ class WorkerMainScriptLoaderTest : public testing::Test {
                       const ResourceError&,
                       int64_t encoded_data_length,
                       IsInternalRequest));
+    MOCK_METHOD2(DidChangeRenderBlockingBehavior,
+                 void(Resource* resource, const FetchParameters& params));
     MOCK_METHOD1(EvictFromBackForwardCache,
                  void(blink::mojom::RendererEvictionReason));
   };

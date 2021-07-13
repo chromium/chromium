@@ -1,7 +1,7 @@
 (async function(testRunner) {
-  // The number includes the frame, the 4 CSS files it loads directly, and the
+  // The number includes the frame, the 5 CSS files it loads directly, and the
   // one imported by them.
-  const numberOfURLs = 11;
+  const numberOfURLs = 12;
 
   var {page, session, dp} = await testRunner.startHTML(`
       <head></head>
@@ -27,17 +27,26 @@
   }
 
   const events = await tracingHelper.stopTracing();
-  const requestEvents = events.filter(e => e.name == "ResourceSendRequest");
+  const requestEvents = events.filter(e =>
+      (e.name == "ResourceSendRequest" ||
+       e.name == "PreloadRenderBlockingStatusChange"));
   const resources = new Map();
   for (let e of requestEvents) {
     const data = e['args']['data'];
     const url_list = data['url'].split('/');
     const url = url_list[url_list.length - 1];
     if (url.includes("css")) {
-      resources.set(url, data['renderBlocking']);
+      const previousValue = resources.get(url);
+      if (previousValue) {
+        const descriptor = (previousValue[1] === data['requestId']) ?
+          "identical" : "different";
+        testRunner.log(`Previous value requestId is ${descriptor} to the ` +
+          `current one`);
+      }
+      resources.set(url, [data['renderBlocking'], data['requestId']]);
     }
   }
   for (const resource of Array.from(resources.keys()).sort())
-    testRunner.log(`${resource}: ${resources.get(resource)}`);
+    testRunner.log(`${resource}: ${resources.get(resource)[0]}`);
   testRunner.completeTest();
 })

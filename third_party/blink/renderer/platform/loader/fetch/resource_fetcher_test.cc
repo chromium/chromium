@@ -158,6 +158,9 @@ class ResourceFetcherTest : public testing::Test {
                         const ResourceError&,
                         int64_t encoded_data_length,
                         IsInternalRequest is_internal_request) override {}
+    void DidChangeRenderBlockingBehavior(
+        Resource* resource,
+        const FetchParameters& params) override {}
     const absl::optional<PartialResourceRequest>& GetLastRequest() const {
       return request_;
     }

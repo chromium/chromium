@@ -57,6 +57,9 @@ class ResourceLoadObserverForWorker final : public ResourceLoadObserver {
                       const ResourceError&,
                       int64_t encoded_data_length,
                       IsInternalRequest) override;
+  void DidChangeRenderBlockingBehavior(Resource* resource,
+                                       const FetchParameters& params) override {
+  }
   void Trace(Visitor*) const override;
 
  private:

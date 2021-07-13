@@ -96,6 +96,11 @@ class PLATFORM_EXPORT ResourceLoadObserver
                               int64_t encoded_data_length,
                               IsInternalRequest) = 0;
 
+  // Called when the RenderBlockingBehavior given to WillSendRequest changes.
+  virtual void DidChangeRenderBlockingBehavior(
+      Resource* resource,
+      const FetchParameters& params) = 0;
+
   virtual void Trace(Visitor*) const {}
 };
 
