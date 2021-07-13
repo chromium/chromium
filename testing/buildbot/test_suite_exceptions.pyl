@@ -241,7 +241,7 @@
           '--debug',
         ],
         'swarming': {
-          'shards': 25,
+          'shards': 30,
         },
       },
       'Mac10.11 Tests': {
