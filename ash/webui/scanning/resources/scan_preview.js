@@ -7,6 +7,7 @@ import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -102,12 +103,19 @@ Polymer({
       type: Number,
       value: 1,
     },
+
+    /** @private {number} */
+    previousPageInView_: {
+      type: Number,
+      value: -1,
+    },
   },
 
   observers: [
     'setPreviewAriaLabel_(showScannedImages_, showCancelingProgress_,' +
         ' showHelperText_)',
     'setScanProgressTimer_(showScanProgress_, progressPercent)',
+    'setFocusedScannedImage_(objectUrls.length, currentPageInView_)',
   ],
 
   /** @override */
@@ -216,6 +224,8 @@ Polymer({
   onScannedImagesScroll_() {
     const imageHeight = this.$$('.scanned-image').height;
     const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight * .5);
+    assert(this.currentPageInView_ > 0);
+    this.previousPageInView_ = this.currentPageInView_;
 
     // This is a special case for the first page since there is no margin or
     // previous page above it.
@@ -226,5 +236,30 @@ Polymer({
 
     this.currentPageInView_ = 2 +
         Math.floor(scrollTop / (imageHeight + SCANNED_IMG_MARGIN_BOTTOM_PX));
+    assert(this.currentPageInView_ > 0);
+  },
+
+  /**
+   * Sets the CSS class for the current scanned image in view so the blue border
+   * will show on the correct page when hovered.
+   * @private
+   */
+  setFocusedScannedImage_() {
+    // Need to wait for the scanned images to render.
+    afterNextRender(this, () => {
+      const scannedImages =
+          this.$$('#scannedImages').getElementsByClassName('scanned-image');
+      if (scannedImages.length === 0) {
+        return;
+      }
+
+      if (this.previousPageInView_ > 0) {
+        scannedImages[this.previousPageInView_ - 1].classList.remove(
+            'focused-scanned-image');
+      }
+      assert(this.currentPageInView_ > 0);
+      scannedImages[this.currentPageInView_ - 1].classList.add(
+          'focused-scanned-image');
+    });
   },
 });

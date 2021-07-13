@@ -48,10 +48,15 @@
     max-height: calc(100vh - var(--panel-container-margin-top));
     outline: none;
     overflow-y: auto;
+    padding-top: 2px;
   }
 
   .preview:focus {
     box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), .4);
+  }
+
+  .preview:hover {
+    box-shadow: none;
   }
 
   .preview-item {
@@ -67,6 +72,10 @@
     margin-bottom: var(--scanned-image-margin-bottom);
     margin-inline-start: 12px;
     width: calc(100% - 24px);
+  }
+
+  .preview:hover .focused-scanned-image {
+    box-shadow: rgba(var(--google-blue-600-rgb), .4) 0 0 0 2px;
   }
 
   paper-progress {
