@@ -1034,20 +1034,33 @@ suite('InternetDetailPage', function() {
       init();
     });
 
-    test('Tether1', function() {
-      init();
-      const mojom = chromeos.networkConfig.mojom;
-      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether, true);
-      setNetworksForTest([
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
-      ]);
+    test(
+        'Create tether network, first connection attempt shows tether dialog',
+        async () => {
+          init();
+          const mojom = chromeos.networkConfig.mojom;
+          mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether, true);
+          setNetworksForTest([
+            OncMojo.getDefaultNetworkState(
+                mojom.NetworkType.kTether, 'tether1'),
+          ]);
 
-      internetDetailPage.init('tether1_guid', 'Tether', 'tether1');
-      assertEquals('tether1_guid', internetDetailPage.guid);
-      return flushAsync().then(() => {
-        return mojoApi_.whenCalled('getManagedProperties');
-      });
-    });
+          internetDetailPage.init('tether1_guid', 'Tether', 'tether1');
+          assertEquals('tether1_guid', internetDetailPage.guid);
+          await flushAsync();
+          await mojoApi_.whenCalled('getManagedProperties');
+
+          const connect = internetDetailPage.$$('#connectDisconnect');
+          assertTrue(!!connect);
+
+          const tetherDialog = internetDetailPage.$$('#tetherDialog');
+          assertTrue(!!tetherDialog);
+          assertFalse(tetherDialog.$.dialog.open);
+
+          connect.click();
+          await flushAsync();
+          assertTrue(tetherDialog.$.dialog.open);
+        });
 
     test('Deep link to disconnect tether network', async () => {
       init();

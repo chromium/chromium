@@ -422,12 +422,10 @@
     </template>
   </template>
 </template>
-<template is="dom-if" if="[[showConfigurableSections_]]"  restamp>
-  <template is="dom-if" if="[[isTether_(managedProperties_)]]" restamp>
-    <tether-connection-dialog id="tetherDialog"
-        managed-properties="[[managedProperties_]]"
-        on-tether-connect="onTetherConnect_"
-        out-of-range="[[outOfRange_]]">
-    </tether-connection-dialog>
-  </template>
+<template is="dom-if" if="[[isTether_(managedProperties_)]]" restamp>
+  <tether-connection-dialog id="tetherDialog"
+      managed-properties="[[managedProperties_]]"
+      on-tether-connect="onTetherConnect_"
+      out-of-range="[[outOfRange_]]">
+  </tether-connection-dialog>
 </template>
