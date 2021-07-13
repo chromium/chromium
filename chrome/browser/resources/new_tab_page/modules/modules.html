@@ -7,15 +7,20 @@
     width: var(--ntp-module-width);
   }
 
-  ntp-module-wrapper + ntp-module-wrapper {
-    margin-top: 16px;
+  .module-container + .module-container {
+    padding-top: 16px;
   }
 
   #removeModuleToastMessage {
     flex-grow: 1;
   }
 
+  [draggable] {
+    cursor: grab;
+  }
+
   [dragging] {
+    pointer-events: none;
     position: fixed;
     z-index: 2;
   }

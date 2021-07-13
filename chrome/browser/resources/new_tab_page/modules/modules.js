@@ -152,7 +152,11 @@ export class ModulesElement extends mixinBehaviors
               (event));
         });
         moduleWrapper.hidden = this.moduleDisabled_(module.descriptor.id);
-        this.$.modules.appendChild(moduleWrapper);
+
+        const moduleContainer = this.ownerDocument.createElement('div');
+        moduleContainer.classList.add('module-container');
+        moduleContainer.appendChild(moduleWrapper);
+        this.$.modules.appendChild(moduleContainer);
       });
       this.onModulesLoaded_();
     }
@@ -323,10 +327,8 @@ export class ModulesElement extends mixinBehaviors
       y: e.y - dragElementRect.y,
     };
 
-    const moduleWrappers = Array.from(this.$.modules.childNodes);
-
-    const dragIndex = moduleWrappers.indexOf(dragElement);
-    let dropIndex = dragIndex;
+    dragElement.parentElement.style.width = `${dragElementRect.width}px`;
+    dragElement.parentElement.style.height = `${dragElementRect.height}px`;
 
     const dragOver = e => {
       e.preventDefault();
@@ -337,29 +339,40 @@ export class ModulesElement extends mixinBehaviors
       dragElement.setAttribute('dragging', '');
       dragElement.style.left = `${e.x - dragOffset.x}px`;
       dragElement.style.top = `${e.y - dragOffset.y}px`;
-
-      const moduleRects = moduleWrappers.map(m => m.getBoundingClientRect());
-      moduleRects.splice(dragIndex, 1);
-      dropIndex = moduleRects.findIndex(
-          r => e.x >= r.left && e.x <= r.right && e.y >= r.top &&
-              e.y <= r.bottom);
-      dropIndex = (dropIndex > -1) ? dropIndex : dragIndex;
     };
+
+    const dragEnter = e => {
+      const moduleContainers = Array.from(this.$.modules.childNodes);
+      const dragIndex = moduleContainers.indexOf(dragElement.parentElement);
+      const dropIndex = moduleContainers.indexOf(e.target.parentElement);
+
+      const positionType = dragIndex > dropIndex ? 'beforebegin' : 'afterend';
+      const dragContainer = moduleContainers[dragIndex];
+      const previousContainer = moduleContainers[dropIndex];
+
+      dragContainer.remove();
+      previousContainer.insertAdjacentElement(positionType, dragContainer);
+    };
+
+    const undraggedModuleWrappers =
+        Array.from(this.shadowRoot.querySelectorAll('ntp-module-wrapper'))
+            .filter(moduleWrapper => moduleWrapper !== dragElement);
+
+    undraggedModuleWrappers.forEach(moduleWrapper => {
+      moduleWrapper.addEventListener('dragenter', dragEnter);
+    });
 
     this.ownerDocument.addEventListener('dragover', dragOver);
     this.ownerDocument.addEventListener('dragend', () => {
       this.ownerDocument.removeEventListener('dragover', dragOver);
 
-      const [draggingModule] = moduleWrappers.splice(dragIndex, 1);
-      draggingModule.removeAttribute('dragging');
-      draggingModule.style.removeProperty('left');
-      draggingModule.style.removeProperty('top');
-      moduleWrappers.splice(dropIndex, 0, draggingModule);
-
-      moduleWrappers.forEach(moduleWrapper => {
-        moduleWrapper.remove();
-        this.$.modules.appendChild(moduleWrapper);
+      undraggedModuleWrappers.forEach(moduleWrapper => {
+        moduleWrapper.removeEventListener('dragenter', dragEnter);
       });
+
+      dragElement.removeAttribute('dragging');
+      dragElement.style.removeProperty('left');
+      dragElement.style.removeProperty('top');
     }, {once: true});
   }
 }
