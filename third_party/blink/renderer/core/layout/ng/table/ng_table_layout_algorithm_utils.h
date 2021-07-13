@@ -61,7 +61,7 @@ class NGTableAlgorithmUtils {
   static void ComputeSectionMinimumRowBlockSizes(
       const NGBlockNode& section,
       const LayoutUnit cell_percentage_resolution_inline_size,
-      const bool is_restricted_block_size_table,
+      const bool is_table_block_size_specified,
       const NGTableTypes::ColumnLocations& column_locations,
       const NGTableBorders& table_borders,
       const LayoutUnit block_border_spacing,

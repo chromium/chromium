@@ -494,11 +494,10 @@ class CORE_EXPORT NGConstraintSpace final {
   // If this is a child of a table-cell.
   bool IsTableCellChild() const { return bitfields_.is_table_cell_child; }
 
-  // If we should apply the restricted block-size measuring behavior. See where
-  // this is set within |NGBlockLayoutAlgorithm| for the conditions when this
-  // applies.
-  bool IsMeasuringRestrictedBlockSizeTableCellChild() const {
-    return bitfields_.is_measuring_restricted_block_size_table_cell_child;
+  // If we should apply the restricted block-size behavior. See where this is
+  // set within |NGBlockLayoutAlgorithm| for the conditions when this applies.
+  bool IsRestrictedBlockSizeTableCellChild() const {
+    return bitfields_.is_restricted_block_size_table_cell_child;
   }
 
   bool IsPaintedAtomically() const { return bitfields_.is_painted_atomically; }
@@ -1344,7 +1343,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_fixed_block_size(false),
           is_fixed_block_size_indefinite(false),
           is_table_cell_child(false),
-          is_measuring_restricted_block_size_table_cell_child(false),
+          is_restricted_block_size_table_cell_child(false),
           percentage_inline_storage(kSameAsAvailable),
           percentage_block_storage(kSameAsAvailable),
           replaced_percentage_block_storage(kSameAsAvailable) {}
@@ -1375,8 +1374,8 @@ class CORE_EXPORT NGConstraintSpace final {
              is_fixed_block_size_indefinite ==
                  other.is_fixed_block_size_indefinite &&
              is_table_cell_child == other.is_table_cell_child &&
-             is_measuring_restricted_block_size_table_cell_child ==
-                 other.is_measuring_restricted_block_size_table_cell_child;
+             is_restricted_block_size_table_cell_child ==
+                 other.is_restricted_block_size_table_cell_child;
     }
 
     unsigned has_rare_data : 1;
@@ -1405,7 +1404,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_fixed_block_size : 1;
     unsigned is_fixed_block_size_indefinite : 1;
     unsigned is_table_cell_child : 1;
-    unsigned is_measuring_restricted_block_size_table_cell_child : 1;
+    unsigned is_restricted_block_size_table_cell_child : 1;
 
     unsigned percentage_inline_storage : 2;           // NGPercentageStorage
     unsigned percentage_block_storage : 2;            // NGPercentageStorage

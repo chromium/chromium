@@ -80,8 +80,8 @@ bool BlockSizeMayChange(const NGBlockNode& node,
             old_space.IsFixedBlockSizeIndefinite());
   DCHECK_EQ(new_space.BlockAutoBehavior(), old_space.BlockAutoBehavior());
   DCHECK_EQ(new_space.IsTableCellChild(), old_space.IsTableCellChild());
-  DCHECK_EQ(new_space.IsMeasuringRestrictedBlockSizeTableCellChild(),
-            old_space.IsMeasuringRestrictedBlockSizeTableCellChild());
+  DCHECK_EQ(new_space.IsRestrictedBlockSizeTableCellChild(),
+            old_space.IsRestrictedBlockSizeTableCellChild());
 
   if (node.IsQuirkyAndFillsViewport())
     return true;

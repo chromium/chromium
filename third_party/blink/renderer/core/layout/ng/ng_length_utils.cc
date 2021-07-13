@@ -669,10 +669,10 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
       space, style, border_padding, available_block_size_adjustment,
       opt_percentage_resolution_block_size_for_min_max);
 
-  // Scrollable percentage-sized children of table cells, in the table
-  // "measure" phase contribute nothing to the row height measurement.
+  // Scrollable percentage-sized children of table cells (sometimes) are sized
+  // to their min-size.
   // See: https://drafts.csswg.org/css-tables-3/#row-layout
-  if (space.IsMeasuringRestrictedBlockSizeTableCellChild())
+  if (space.IsRestrictedBlockSizeTableCellChild())
     return min_max.min_size;
 
   const bool has_aspect_ratio = !style.AspectRatio().IsAuto();

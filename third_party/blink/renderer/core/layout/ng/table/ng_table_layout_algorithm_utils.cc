@@ -497,7 +497,7 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
   builder.SetTableCellAlignmentBaseline(alignment_baseline);
   builder.SetTableCellColumnIndex(column_index);
   builder.SetIsRestrictedBlockSizeTableCell(
-      is_table_block_size_specified || !cell_style.LogicalHeight().IsAuto());
+      is_table_block_size_specified || cell_style.LogicalHeight().IsFixed());
   builder.SetIsTableCellHiddenForPaint(is_hidden_for_paint);
   builder.SetIsTableCellWithCollapsedBorders(has_collapsed_borders);
   builder.SetHideTableCellIfEmpty(
@@ -572,7 +572,7 @@ NGTableAlgorithmUtils::ComputeColumnConstraints(
 void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
     const NGBlockNode& section,
     const LayoutUnit cell_percentage_inline_size,
-    const bool is_table_block_size_restricted,
+    const bool is_table_block_size_specified,
     const NGTableTypes::ColumnLocations& column_locations,
     const NGTableBorders& table_borders,
     const LayoutUnit block_border_spacing,
@@ -594,7 +594,7 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
        row = To<NGBlockNode>(row.NextSibling())) {
     colspan_cell_tabulator.StartRow();
     NGTableTypes::Row row_constraint = ComputeMinimumRowBlockSize(
-        row, cell_percentage_inline_size, is_table_block_size_restricted,
+        row, cell_percentage_inline_size, is_table_block_size_specified,
         column_locations, table_borders, current_row++, section_index,
         /* is_section_collapsed */ section.Style().Visibility() ==
             EVisibility::kCollapse,
