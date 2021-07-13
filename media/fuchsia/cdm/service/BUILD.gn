@@ -20,7 +20,6 @@ source_set("service") {
   deps = [
     "//fuchsia/base",
     "//media/fuchsia/mojom",
-    "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
     "//url",
   ]
 }
@@ -36,7 +35,6 @@ source_set("unittests") {
     "//media",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
     "//url",
   ]
 
