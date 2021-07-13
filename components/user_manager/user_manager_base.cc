@@ -1007,7 +1007,7 @@ User* UserManagerBase::RemoveRegularOrSupervisedUserFromList(
     const AccountId& account_id,
     bool notify) {
   ListPrefUpdate prefs_users_update(GetLocalState(), kRegularUsersPref);
-  prefs_users_update->Clear();
+  prefs_users_update->ClearList();
   User* user = nullptr;
   for (UserList::iterator it = users_.begin(); it != users_.end();) {
     if ((*it)->GetAccountId() == account_id) {

@@ -250,7 +250,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
       std::move(spellcheck_languages));
 
   // Build the language list.
-  language_list_->Clear();
+  language_list_->ClearList();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::flat_set<std::string> allowed_ui_locales(GetAllowedLanguages(
       Profile::FromBrowserContext(browser_context())->GetPrefs()));

@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DiscoveryListChanges) {
   EXPECT_STREQ("somehost:2000", AllTargetsString(provider).c_str());
 
   invocations = called;
-  list.Clear();
+  list.ClearList();
   service->Set(prefs::kDevToolsTCPDiscoveryConfig, list);
 
   EXPECT_LT(invocations, called);

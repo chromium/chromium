@@ -756,7 +756,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   if (GetEphemeralUsersEnabled() && !IsUserLoggedIn()) {
     ListPrefUpdate prefs_users_update(GetLocalState(),
                                       user_manager::kRegularUsersPref);
-    prefs_users_update->Clear();
+    prefs_users_update->ClearList();
     for (user_manager::UserList::iterator it = users_.begin();
          it != users_.end();) {
       const AccountId account_id = (*it)->GetAccountId();
@@ -1014,7 +1014,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   // us to clean up associated data if they disappear from policy.
   ListPrefUpdate prefs_device_local_accounts_update(
       GetLocalState(), kDeviceLocalAccountsWithSavedData);
-  prefs_device_local_accounts_update->Clear();
+  prefs_device_local_accounts_update->ClearList();
   for (const auto& account : device_local_accounts)
     prefs_device_local_accounts_update->AppendString(account.user_id);
 

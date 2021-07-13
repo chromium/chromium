@@ -120,7 +120,7 @@ TEST_F(NetworkUtilTest, ParseScanResults) {
   EXPECT_FALSE(ParseCellularScanResults(list, &scan_results));
 
   // Scan result has no network id.
-  list.Clear();
+  list.ClearList();
   auto dict_value = std::make_unique<base::DictionaryValue>();
   dict_value->SetString(shill::kStatusProperty, "available");
   list.Append(std::move(dict_value));

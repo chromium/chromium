@@ -216,7 +216,7 @@ class DisplayPrefsTest : public AshTestBase {
       const std::set<int64_t>& external_display_mirror_info) {
     ListPrefUpdate update(local_state(), prefs::kExternalDisplayMirrorInfo);
     base::ListValue* pref_data = update.Get();
-    pref_data->Clear();
+    pref_data->ClearList();
     for (const auto& id : external_display_mirror_info)
       pref_data->Append(base::Value(base::NumberToString(id)));
   }

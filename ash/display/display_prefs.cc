@@ -715,7 +715,7 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
 void StoreExternalDisplayMirrorInfo(PrefService* pref_service) {
   ListPrefUpdate update(pref_service, prefs::kExternalDisplayMirrorInfo);
   base::ListValue* pref_data = update.Get();
-  pref_data->Clear();
+  pref_data->ClearList();
   const std::set<int64_t>& external_display_mirror_info =
       GetDisplayManager()->external_display_mirror_info();
   for (const auto& id : external_display_mirror_info)

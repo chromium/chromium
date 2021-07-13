@@ -1490,7 +1490,7 @@ TEST(ValuesTest, ListDeletion) {
   ListValue list;
   list.Append(std::make_unique<Value>());
   EXPECT_FALSE(list.GetList().empty());
-  list.Clear();
+  list.ClearList();
   EXPECT_TRUE(list.GetList().empty());
 }
 

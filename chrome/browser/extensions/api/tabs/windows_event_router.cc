@@ -133,10 +133,10 @@ bool WillDispatchWindowFocusedEvent(
       window_controller, extension, listener_filter);
 
   if (cant_cross_incognito || !visible_to_listener) {
-    event->event_args->Clear();
+    event->event_args->ClearList();
     event->event_args->AppendInteger(extension_misc::kUnknownWindowId);
   } else {
-    event->event_args->Clear();
+    event->event_args->ClearList();
     event->event_args->AppendInteger(window_id);
   }
   return true;

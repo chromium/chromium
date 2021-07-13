@@ -166,7 +166,7 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
           i, std::make_unique<base::Value>(base::NumberToString(i)));
     }
 
-    received_daily_content_length_list->Clear();
+    received_daily_content_length_list->ClearList();
     for (size_t i = 0; i < kNumDaysInHistory / 2; ++i) {
       received_daily_content_length_list->AppendString(base::NumberToString(i));
     }

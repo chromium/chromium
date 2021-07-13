@@ -1094,7 +1094,7 @@ TEST_F(ExtensionAdminPolicyTest, BlocklistedByDefault) {
   blocklist.AppendString("*");
   EXPECT_TRUE(BlocklistedByDefault(&blocklist));
 
-  blocklist.Clear();
+  blocklist.ClearList();
   blocklist.AppendString("*");
   EXPECT_TRUE(BlocklistedByDefault(&blocklist));
 }
@@ -1171,7 +1171,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadBlocklisted) {
   blocklist.AppendString(extension_->id());
   EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                            extension_.get(), nullptr));
-  blocklist.Clear();
+  blocklist.ClearList();
   blocklist.AppendString(extension_->id());
   EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                            extension_.get(), nullptr));

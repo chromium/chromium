@@ -347,7 +347,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
       map, std::move(extension_provider),
       HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
 
-  exceptions.Clear();
+  exceptions.ClearList();
   GetExceptionsForContentType(kContentType, &profile,
                               /*extension_registry=*/nullptr,
                               /*web_ui=*/nullptr,

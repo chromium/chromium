@@ -40,9 +40,9 @@ bool PrefServiceFlagsStorage::SetFlags(const std::set<std::string>& flags) {
   ListPrefUpdate update(prefs_, prefs::kAboutFlagsEntries);
   base::ListValue* experiments_list = update.Get();
 
-  experiments_list->Clear();
-  for (auto it = flags.begin(); it != flags.end(); ++it) {
-    experiments_list->AppendString(*it);
+  experiments_list->ClearList();
+  for (const auto& item : flags) {
+    experiments_list->AppendString(item);
   }
 
   return true;

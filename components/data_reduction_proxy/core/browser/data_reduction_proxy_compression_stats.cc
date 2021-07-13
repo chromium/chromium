@@ -241,7 +241,7 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
     } else if (days_since_last_update < -1) {
       // Erase all entries if the system went backwards in time by more than
       // a day.
-      update_->Clear();
+      update_->ClearList();
 
       days_since_last_update = kNumDaysInHistory;
     }
@@ -464,8 +464,8 @@ void DataReductionProxyCompressionStats::ResetStatistics() {
       GetList(prefs::kDailyHttpOriginalContentLength);
   base::ListValue* received_update =
       GetList(prefs::kDailyHttpReceivedContentLength);
-  original_update->Clear();
-  received_update->Clear();
+  original_update->ClearList();
+  received_update->ClearList();
   for (size_t i = 0; i < kNumDaysInHistory; ++i) {
     original_update->AppendString(base::NumberToString(0));
     received_update->AppendString(base::NumberToString(0));
@@ -610,7 +610,7 @@ void DataReductionProxyCompressionStats::ClearDataSavingStatistics(
 
   for (auto iter = list_pref_map_.begin(); iter != list_pref_map_.end();
        ++iter) {
-    iter->second->Clear();
+    iter->second->ClearList();
   }
 
   RecordSavingsClearedMetric(reason);

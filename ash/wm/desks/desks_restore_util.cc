@@ -206,7 +206,7 @@ void UpdatePrimaryUserDeskNamesPrefs() {
 
   ListPrefUpdate name_update(primary_user_prefs, prefs::kDesksNamesList);
   base::ListValue* name_pref_data = name_update.Get();
-  name_pref_data->Clear();
+  name_pref_data->ClearList();
 
   const auto& desks = DesksController::Get()->desks();
   for (const auto& desk : desks) {
@@ -234,7 +234,7 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   // Save per-desk metrics.
   ListPrefUpdate metrics_update(primary_user_prefs, prefs::kDesksMetricsList);
   base::ListValue* metrics_pref_data = metrics_update.Get();
-  metrics_pref_data->Clear();
+  metrics_pref_data->ClearList();
 
   auto* desks_controller = DesksController::Get();
   const auto& desks = desks_controller->desks();

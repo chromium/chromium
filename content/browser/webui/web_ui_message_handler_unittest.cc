@@ -26,27 +26,27 @@ TEST(WebUIMessageHandlerTest, ExtractIntegerValue) {
   list.AppendInteger(zero_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
   EXPECT_EQ(value, zero_value);
-  list.Clear();
+  list.ClearList();
 
   list.AppendInteger(neg_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
   EXPECT_EQ(value, neg_value);
-  list.Clear();
+  list.ClearList();
 
   list.AppendInteger(pos_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
   EXPECT_EQ(value, pos_value);
-  list.Clear();
+  list.ClearList();
 
   list.AppendString(zero_string);
   EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
   EXPECT_EQ(value, zero_value);
-  list.Clear();
+  list.ClearList();
 
   list.AppendString(neg_string);
   EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
   EXPECT_EQ(value, neg_value);
-  list.Clear();
+  list.ClearList();
 
   list.AppendString(pos_string);
   EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
@@ -66,27 +66,27 @@ TEST(WebUIMessageHandlerTest, ExtractDoubleValue) {
   list.Append(zero_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
   EXPECT_DOUBLE_EQ(value, zero_value);
-  list.Clear();
+  list.ClearList();
 
   list.Append(neg_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
   EXPECT_DOUBLE_EQ(value, neg_value);
-  list.Clear();
+  list.ClearList();
 
   list.Append(pos_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
   EXPECT_DOUBLE_EQ(value, pos_value);
-  list.Clear();
+  list.ClearList();
 
   list.AppendString(zero_string);
   EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
   EXPECT_DOUBLE_EQ(value, zero_value);
-  list.Clear();
+  list.ClearList();
 
   list.AppendString(neg_string);
   EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
   EXPECT_DOUBLE_EQ(value, neg_value);
-  list.Clear();
+  list.ClearList();
 
   list.AppendString(pos_string);
   EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));

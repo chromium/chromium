@@ -361,7 +361,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
   ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
-  update->Clear();
+  update->ClearList();
   auto dict = std::make_unique<base::DictionaryValue>();
   dict->SetString("account_id", email);
   dict->SetString("email", email);
@@ -394,7 +394,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
   ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
-  update->Clear();
+  update->ClearList();
   auto dict = std::make_unique<base::DictionaryValue>();
   dict->SetString("account_id", email);
   dict->SetString("email", email);
@@ -427,7 +427,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration_ForceAllAccounts) {
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
   ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
-  update->Clear();
+  update->ClearList();
   auto dict = std::make_unique<base::DictionaryValue>();
   dict->SetString("account_id", email);
   dict->SetString("email", email);

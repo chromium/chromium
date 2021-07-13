@@ -407,7 +407,7 @@ void SetAnalysisConnector(PrefService* prefs,
   ListPrefUpdate settings_list(prefs, ConnectorPref(connector));
   DCHECK(settings_list.Get());
   if (!settings_list->GetList().empty())
-    settings_list->Clear();
+    settings_list->ClearList();
 
   settings_list->Append(*base::JSONReader::Read(pref_value));
   prefs->SetInteger(
@@ -453,7 +453,7 @@ void ClearAnalysisConnector(
     enterprise_connectors::AnalysisConnector connector) {
   ListPrefUpdate settings_list(prefs, ConnectorPref(connector));
   DCHECK(settings_list.Get());
-  settings_list->Clear();
+  settings_list->ClearList();
   prefs->ClearPref(ConnectorScopePref(connector));
 }
 

@@ -540,7 +540,7 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
                                  media::VideoCaptureFormats>>&
         descriptors_and_formats) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  video_capture_capabilities_cached_data_.Clear();
+  video_capture_capabilities_cached_data_.ClearList();
 
   for (const auto& device_format_pair : descriptors_and_formats) {
     base::ListValue control_support;

@@ -263,7 +263,7 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
-    list->Clear();
+    list->ClearList();
   }
   EXPECT_TRUE(model.IsEnabledAt(options_index));
 

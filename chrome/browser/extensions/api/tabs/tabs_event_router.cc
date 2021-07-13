@@ -77,7 +77,7 @@ bool WillDispatchTabCreatedEvent(WebContents* contents,
                                  const Extension* extension,
                                  Event* event,
                                  const base::DictionaryValue* listener_filter) {
-  event->event_args->Clear();
+  event->event_args->ClearList();
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);

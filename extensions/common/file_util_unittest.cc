@@ -400,7 +400,7 @@ TEST_F(FileUtilTest, BackgroundScriptsMustExist) {
             error);
   EXPECT_EQ(0U, warnings.size());
 
-  scripts->Clear();
+  scripts->ClearList();
   scripts->AppendString("http://google.com/foo.js");
 
   extension = LoadExtensionManifest(*value, temp.GetPath(),

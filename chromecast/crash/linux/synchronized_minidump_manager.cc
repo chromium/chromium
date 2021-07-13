@@ -392,7 +392,7 @@ std::vector<std::unique_ptr<DumpInfo>> SynchronizedMinidumpManager::GetDumps() {
 
 bool SynchronizedMinidumpManager::SetCurrentDumps(
     const std::vector<std::unique_ptr<DumpInfo>>& dumps) {
-  dumps_->Clear();
+  dumps_->ClearList();
 
   for (auto& dump : dumps)
     dumps_->Append(dump->GetAsValue());

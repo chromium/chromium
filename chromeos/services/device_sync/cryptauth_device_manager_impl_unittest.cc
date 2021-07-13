@@ -704,7 +704,7 @@ TEST_F(
     InitWithExistingPrefs_MigrateDeprecateBooleansFromPrefsToSoftwareFeature) {
   ListPrefUpdate update_clear(&pref_service_,
                               prefs::kCryptAuthDeviceSyncUnlockKeys);
-  update_clear.Get()->Clear();
+  update_clear.Get()->ClearList();
 
   // Simulate a deprecated device being persisted to prefs.
   auto device_dictionary = std::make_unique<base::DictionaryValue>();

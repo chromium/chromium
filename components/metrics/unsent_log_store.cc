@@ -334,7 +334,7 @@ void UnsentLogStore::TrimLogs() {
 }
 
 void UnsentLogStore::WriteLogsToPrefList(base::ListValue* list_value) const {
-  list_value->Clear();
+  list_value->ClearList();
 
   base::HistogramBase::Count unsent_samples_count = 0;
   size_t unsent_persisted_size = 0;

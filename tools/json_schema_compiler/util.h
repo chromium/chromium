@@ -161,7 +161,7 @@ void AddItemToList(const T& from, base::ListValue* out) {
 // implemented for |T|.
 template <class T>
 void PopulateListFromArray(const std::vector<T>& from, base::ListValue* out) {
-  out->Clear();
+  out->ClearList();
   for (const T& item : from)
     AddItemToList(item, out);
 }

@@ -124,7 +124,7 @@ TEST(WebRequestConditionAttributeTest, ContentType) {
   EXPECT_FALSE(attribute_exclude->IsFulfilled(WebRequestData(
       &request_info, ON_HEADERS_RECEIVED, response_headers.get())));
 
-  content_types.Clear();
+  content_types.ClearList();
   content_types.AppendString("something/invalid");
   scoped_refptr<const WebRequestConditionAttribute> attribute_unincluded =
       WebRequestConditionAttribute::Create(

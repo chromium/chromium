@@ -505,7 +505,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   base::FilePath expected_file_path =
       data_dir().AppendASCII("simple_with_popup.pem");
   api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(&expected_file_path);
-  choose_args.Clear();
+  choose_args.ClearList();
   choose_args.AppendString("FILE");
   choose_args.AppendString("PEM");
   function = new api::DeveloperPrivateChoosePathFunction();

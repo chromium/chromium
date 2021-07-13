@@ -678,7 +678,7 @@ void HostCache::GetAsListValue(base::ListValue* entry_list,
                                bool include_staleness,
                                SerializationType serialization_type) const {
   DCHECK(entry_list);
-  entry_list->Clear();
+  entry_list->ClearList();
 
   for (const auto& pair : entries_) {
     const Key& key = pair.first;

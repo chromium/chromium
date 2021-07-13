@@ -1394,7 +1394,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
-    list->Clear();
+    list->ClearList();
   }
   GetAppServiceProxy(browser()->profile())->FlushMojoCallsForTesting();
   EXPECT_EQ(apps::mojom::Readiness::kReady, GetAppReadiness(*settings_id));
@@ -1430,7 +1430,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
-    list->Clear();
+    list->ClearList();
   }
   proxy->FlushMojoCallsForTesting();
   EXPECT_EQ(apps::mojom::Readiness::kReady, GetAppReadiness(*settings_id));

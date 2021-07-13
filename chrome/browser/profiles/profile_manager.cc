@@ -2172,7 +2172,7 @@ void ProfileManager::SaveActiveProfiles() {
   ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
   base::ListValue* profile_list = update.Get();
 
-  profile_list->Clear();
+  profile_list->ClearList();
 
   // crbug.com/120112 -> several non-off-the-record profiles might have the same
   // GetBaseName(). In that case, we cannot restore both

@@ -500,7 +500,7 @@ void FakeShillManagerClient::RemoveDevice(const std::string& device_path) {
 }
 
 void FakeShillManagerClient::ClearDevices() {
-  GetListProperty(shill::kDevicesProperty)->Clear();
+  GetListProperty(shill::kDevicesProperty)->ClearList();
   CallNotifyObserversPropertyChanged(shill::kDevicesProperty);
 }
 
@@ -623,7 +623,7 @@ void FakeShillManagerClient::RemoveManagerService(
 
 void FakeShillManagerClient::ClearManagerServices() {
   VLOG(1) << "ClearManagerServices";
-  GetListProperty(shill::kServiceCompleteListProperty)->Clear();
+  GetListProperty(shill::kServiceCompleteListProperty)->ClearList();
   CallNotifyObserversPropertyChanged(shill::kServiceCompleteListProperty);
 }
 

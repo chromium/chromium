@@ -46,7 +46,7 @@ TEST(IdlCompiler, Basics) {
   EXPECT_EQ(5, f2_params->x);
 
   // Test Function3, which takes a MyType1 parameter.
-  list.Clear();
+  list.ClearList();
   std::unique_ptr<base::DictionaryValue> tmp(new base::DictionaryValue());
   tmp->SetInteger("x", 17);
   tmp->SetString("y", "hello");
@@ -93,7 +93,7 @@ TEST(IdlCompiler, OptionalArguments) {
 
   // Similar to above, but a function with one required and one optional
   // argument.
-  list.Clear();
+  list.ClearList();
   list.AppendInteger(8);
   std::unique_ptr<Function8::Params> f8_params =
       Function8::Params::Create(list);
@@ -105,11 +105,11 @@ TEST(IdlCompiler, OptionalArguments) {
   EXPECT_EQ("foo", *(f8_params->arg2));
 
   // Test a function with an optional argument of custom type.
-  list.Clear();
+  list.ClearList();
   std::unique_ptr<Function9::Params> f9_params =
       Function9::Params::Create(list);
   EXPECT_EQ(NULL, f9_params->arg.get());
-  list.Clear();
+  list.ClearList();
   std::unique_ptr<base::DictionaryValue> tmp(new base::DictionaryValue());
   tmp->SetInteger("x", 17);
   tmp->SetString("y", "hello");
@@ -138,7 +138,7 @@ TEST(IdlCompiler, ArrayTypes) {
   EXPECT_TRUE(f10_params->y.empty());
 
   // Same function, but this time with 2 values in the array.
-  list.Clear();
+  list.ClearList();
   list.AppendInteger(33);
   std::unique_ptr<base::ListValue> sublist(new base::ListValue);
   sublist->AppendInteger(34);
@@ -152,7 +152,7 @@ TEST(IdlCompiler, ArrayTypes) {
   EXPECT_EQ(35, f10_params->y[1]);
 
   // Now test a function which takes an array of a defined type.
-  list.Clear();
+  list.ClearList();
   MyType1 a;
   MyType1 b;
   a.x = 5;

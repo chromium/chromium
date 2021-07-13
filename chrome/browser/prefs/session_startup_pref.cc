@@ -88,7 +88,7 @@ void SessionStartupPref::SetStartupPref(PrefService* prefs,
     ListPrefUpdate update(prefs, prefs::kURLsToRestoreOnStartup);
     base::ListValue* url_pref_list = update.Get();
     DCHECK(url_pref_list);
-    url_pref_list->Clear();
+    url_pref_list->ClearList();
     for (size_t i = 0; i < pref.urls.size(); ++i) {
       url_pref_list->Set(static_cast<int>(i),
                          std::make_unique<base::Value>(pref.urls[i].spec()));

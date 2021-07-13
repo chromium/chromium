@@ -2385,7 +2385,7 @@ void ExtensionPrefs::SetExtensionPrefFromContainer(
     const ExtensionIdContainer& strings) {
   ListPrefUpdate update(prefs_, pref);
   base::ListValue* list_of_values = update.Get();
-  list_of_values->Clear();
+  list_of_values->ClearList();
   for (auto iter = strings.cbegin(); iter != strings.cend(); ++iter) {
     list_of_values->AppendString(*iter);
   }

@@ -396,7 +396,7 @@ StartupProfileInfo CreatePrimaryProfile(
     ListPrefUpdate update(g_browser_process->local_state(),
                           prefs::kProfilesLastActive);
     base::ListValue* profile_list = update.Get();
-    profile_list->Clear();
+    profile_list->ClearList();
   }
 
   StartupProfileInfo profile_info;

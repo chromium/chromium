@@ -178,7 +178,7 @@ void SodaInstaller::RegisterLanguage(const std::string& language,
 
 void SodaInstaller::UnregisterLanguages(PrefService* global_prefs) {
   ListPrefUpdate update(global_prefs, prefs::kSodaRegisteredLanguagePacks);
-  update->Clear();
+  update->ClearList();
 }
 
 bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) {

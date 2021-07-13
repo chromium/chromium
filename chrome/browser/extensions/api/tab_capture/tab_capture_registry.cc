@@ -149,7 +149,7 @@ void TabCaptureRegistry::GetCapturedTabs(
     base::ListValue* list_of_capture_info) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(list_of_capture_info);
-  list_of_capture_info->Clear();
+  list_of_capture_info->ClearList();
   for (const std::unique_ptr<LiveRequest>& request : requests_) {
     if (request->is_anonymous() || !request->is_verified() ||
         request->extension_id() != extension_id)

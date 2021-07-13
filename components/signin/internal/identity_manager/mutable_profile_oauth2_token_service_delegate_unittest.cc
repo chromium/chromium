@@ -1099,7 +1099,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GaiaIdMigration) {
                              AccountTrackerService::MIGRATION_NOT_STARTED);
 
     ListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
-    update->Clear();
+    update->ClearList();
     auto dict = std::make_unique<base::DictionaryValue>();
     dict->SetString("account_id", email);
     dict->SetString("email", email);
@@ -1162,7 +1162,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                              AccountTrackerService::MIGRATION_NOT_STARTED);
 
     ListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
-    update->Clear();
+    update->ClearList();
     auto dict = std::make_unique<base::DictionaryValue>();
     dict->SetString("account_id", email1);
     dict->SetString("email", email1);
