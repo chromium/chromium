@@ -29,10 +29,6 @@
     position: relative;
   }
 
-  :host([header-description-text]) #moduleContent {
-    height: 158px;
-  }
-
   #cartCarousel {
     display: flex;
     flex-direction: column;
@@ -41,10 +37,6 @@
     padding-top: 24px;
     white-space: nowrap;
     z-index: 0;
-  }
-
-  :host([header-description-text]) #cartCarousel {
-    padding-top: 16px;
   }
 
   #consentCard,
@@ -277,7 +269,6 @@
 <div id="module">
   <ntp-module-header
       chip-text="[[headerChipText]]"
-      description-text="[[headerDescriptionText]]"
       dismiss-text="[[i18nRecursive('',
                                     'modulesDismissButtonText',
                                     'modulesCartLowerThese')]]"

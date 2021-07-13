@@ -308,3 +308,16 @@ var NewTabPageModulesChromeCartModuleTest =
 TEST_F('NewTabPageModulesChromeCartModuleTest', 'All', function() {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var NewTabPageModulesChromeCartV2ModuleTest =
+    class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/cart_v2/module_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesChromeCartV2ModuleTest', 'All', function() {
+  mocha.run();
+});
