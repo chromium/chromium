@@ -4294,8 +4294,8 @@ void LayoutBox::ComputeLogicalWidth(
     computed_values.extent_ =
         ComputeReplacedLogicalWidth() + BorderAndPaddingLogicalWidth();
   } else if (StyleRef().LogicalWidth().IsAuto() &&
-             (!IsGridItem() || !HasStretchedLogicalWidth() ||
-              !HasStretchedLogicalHeight()) &&
+             (!IsGridItem() || !ShouldComputeSizeAsReplaced() ||
+              !HasStretchedLogicalWidth() || !HasStretchedLogicalHeight()) &&
              ComputeLogicalWidthFromAspectRatio(&computed_values.extent_)) {
     /* we're good */
   } else {
@@ -5545,7 +5545,6 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
       }
     }
   }
-
   if (ShouldComputeLogicalHeightFromAspectRatio()) {
     NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
                               BorderEnd() + ComputedCSSPaddingEnd(),

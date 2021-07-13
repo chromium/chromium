@@ -321,6 +321,9 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
                                                      LineDirectionMode);
   static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
 
+  bool AspectRatioPrefersInline(const LayoutBox& child,
+                                bool block_flow_is_column_axis);
+
   std::unique_ptr<Grid> grid_;
   GridTrackSizingAlgorithm track_sizing_algorithm_;
 
