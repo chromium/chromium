@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CheckElementIsOnTopProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -493,7 +492,6 @@ public class AutofillAssistantInputActionIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1172648")
     public void clickOnButtonCoveredByOverlay() throws Exception {
         checkElementExists(mTestRule.getWebContents(), "button");
         checkElementExists(mTestRule.getWebContents(), "overlay");
@@ -536,9 +534,16 @@ public class AutofillAssistantInputActionIntegrationTest {
         testService.waitUntilGetNextActions(1);
 
         List<ProcessedActionProto> processed = testService.getProcessedActions();
-        assertThat(processed, hasSize(2));
-        assertThat(processed.get(0).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
-        assertThat(processed.get(1).getStatus(), is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
+        assertThat(processed, hasSize(4));
+        assertThat(processed.get(/* WaitForDom */ 0).getStatus(),
+                is(ProcessedActionStatusProto.ACTION_APPLIED));
+        assertThat(processed.get(/* ScrollIntoView */ 1).getStatus(),
+                is(ProcessedActionStatusProto.ACTION_APPLIED));
+        assertThat(processed.get(/* SendClickEvent */ 2).getStatus(),
+                is(ProcessedActionStatusProto.ACTION_APPLIED));
+        assertThat(processed.get(/* CheckOnTop */ 3).getStatus(),
+                is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
+        // No SendClickEvent
     }
 
     @Test
