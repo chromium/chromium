@@ -325,7 +325,7 @@ bool TraceEventTestFixture::FindNonMatchingValue(const char* key,
 }
 
 bool IsStringInDict(const char* string_to_match, const Value* dict) {
-  for (const auto& pair : dict->DictItems()) {
+  for (const auto pair : dict->DictItems()) {
     if (pair.first.find(string_to_match) != std::string::npos)
       return true;
 
