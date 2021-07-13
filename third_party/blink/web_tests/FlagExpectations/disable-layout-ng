@@ -1115,9 +1115,9 @@ crbug.com/1178754 external/wpt/html/semantics/interactive-elements/the-popup-ele
 ### virtual/stable/compositing/filters/
 crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw-nested-shadow.html [ Failure ]
 
-### wpt_internal/css/css-counter-styles/
-crbug.com/591099 wpt_internal/css/css-counter-styles/counter-style-fallbacks-in-shadow-dom.html [ Failure ]
-crbug.com/591099 wpt_internal/css/css-counter-styles/counter-styles-override-in-shadow-dom.html [ Failure ]
+### external/wpt/css/css-counter-styles/
+crbug.com/591099 external/wpt/css/css-counter-styles/counter-style-fallbacks-in-shadow-dom.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-counter-styles/counter-styles-override-in-shadow-dom.html [ Failure ]
 
 ### wpt_internal/webcodecs/
 crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.any.html [ Failure ]
