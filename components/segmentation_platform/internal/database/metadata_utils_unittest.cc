@@ -167,6 +167,10 @@ TEST_F(MetadataUtilsTest, HasFreshResults) {
   // No result.
   EXPECT_FALSE(metadata_utils::HasFreshResults(segment_info));
 
+  auto* metadata = segment_info.mutable_model_metadata();
+  metadata->set_result_time_to_live(1);
+  metadata->set_time_unit(proto::DAY);
+
   // Stale results.
   auto* prediction_result = segment_info.mutable_prediction_result();
   base::Time result_time = base::Time::Now() - base::TimeDelta::FromDays(3);

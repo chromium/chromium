@@ -38,6 +38,7 @@ class SignalData;
 class SignalStorageConfigs;
 }  // namespace proto
 
+struct Config;
 class HistogramSignalHandler;
 class ModelExecutionManager;
 class ModelExecutionSchedulerImpl;
@@ -58,7 +59,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       const base::FilePath& storage_dir,
       PrefService* pref_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      base::Clock* clock);
+      base::Clock* clock,
+      std::unique_ptr<Config> config);
 
   // For testing only.
   SegmentationPlatformServiceImpl(
@@ -71,7 +73,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       PrefService* pref_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      base::Clock* clock);
+      base::Clock* clock,
+      std::unique_ptr<Config> config);
 
   ~SegmentationPlatformServiceImpl() override;
 
@@ -92,6 +95,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   void OnSignalStorageConfigInitialized(bool success);
   bool IsInitializationFinished() const;
   void MaybeRunPostInitializationRoutines();
+
+  // Config.
+  std::unique_ptr<Config> config_;
 
   // Databases.
   std::unique_ptr<SegmentInfoDatabase> segment_info_database_;

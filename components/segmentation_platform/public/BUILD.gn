@@ -9,6 +9,8 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "config.cc",
+    "config.h",
     "segment_selection_result.cc",
     "segment_selection_result.h",
     "segmentation_platform_service.cc",

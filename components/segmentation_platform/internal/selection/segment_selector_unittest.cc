@@ -11,6 +11,7 @@
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
+#include "components/segmentation_platform/public/config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,6 +20,18 @@ using testing::Return;
 using testing::SaveArg;
 
 namespace segmentation_platform {
+namespace {
+
+Config CreateTestConfig() {
+  Config config;
+  config.segmentation_key = "some_key";
+  config.segment_selection_ttl = base::TimeDelta::FromDays(28);
+  config.segment_ids = {
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
+  return config;
+}
+}  // namespace
 
 class MockSegmentationResultPrefs : public SegmentationResultPrefs {
  public:
@@ -50,10 +63,11 @@ class SegmentSelectorTest : public testing::Test {
   ~SegmentSelectorTest() override = default;
 
   void SetUp() override {
+    config_ = CreateTestConfig();
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     prefs_ = std::make_unique<MockSegmentationResultPrefs>();
     segment_selector_ = std::make_unique<SegmentSelectorImpl>(
-        segment_database_.get(), prefs_.get(), kAdaptiveToolbarSegmentationKey);
+        segment_database_.get(), prefs_.get(), &config_);
     segment_selector_->set_model_execution_scheduler(
         &model_execution_scheduler_);
   }
@@ -82,6 +96,7 @@ class SegmentSelectorTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  Config config_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSegmentationResultPrefs> prefs_;
   std::unique_ptr<SegmentSelectorImpl> segment_selector_;
@@ -91,25 +106,24 @@ class SegmentSelectorTest : public testing::Test {
 TEST_F(SegmentSelectorTest, CheckDiscreteMapping) {
   OptimizationTarget segment_id =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  std::string segmentation_key = kAdaptiveToolbarSegmentationKey;
   float mapping[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
   segment_database_->AddDiscreteMapping(segment_id, mapping, 3,
-                                        segmentation_key);
+                                        config_.segmentation_key);
   proto::SegmentInfo* segment_info =
       segment_database_->FindOrCreateSegment(segment_id);
   const proto::SegmentationModelMetadata& metadata =
       segment_info->model_metadata();
 
-  ASSERT_EQ(
-      0, ConvertToDiscreteScore(segment_id, segmentation_key, 0.1, metadata));
-  ASSERT_EQ(
-      1, ConvertToDiscreteScore(segment_id, segmentation_key, 0.4, metadata));
-  ASSERT_EQ(
-      3, ConvertToDiscreteScore(segment_id, segmentation_key, 0.5, metadata));
-  ASSERT_EQ(
-      3, ConvertToDiscreteScore(segment_id, segmentation_key, 0.6, metadata));
-  ASSERT_EQ(
-      4, ConvertToDiscreteScore(segment_id, segmentation_key, 0.9, metadata));
+  ASSERT_EQ(0, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.1,
+                                      metadata));
+  ASSERT_EQ(1, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.4,
+                                      metadata));
+  ASSERT_EQ(3, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.5,
+                                      metadata));
+  ASSERT_EQ(3, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.6,
+                                      metadata));
+  ASSERT_EQ(4, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.9,
+                                      metadata));
 }
 
 TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
@@ -117,13 +131,13 @@ TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
   segment_database_->AddDiscreteMapping(segment_id, mapping, 3,
-                                        kAdaptiveToolbarSegmentationKey);
+                                        config_.segmentation_key);
 
   OptimizationTarget segment_id2 =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   float mapping2[][2] = {{0.3, 1}, {0.4, 4}};
   segment_database_->AddDiscreteMapping(segment_id2, mapping2, 2,
-                                        kAdaptiveToolbarSegmentationKey);
+                                        config_.segmentation_key);
 
   base::Time result_timestamp = base::Time::Now();
   segment_database_->AddPredictionResult(segment_id, 0.6, result_timestamp);
@@ -144,7 +158,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
   segment_database_->AddDiscreteMapping(segment_id1, mapping1, 3,
-                                        kAdaptiveToolbarSegmentationKey);
+                                        config_.segmentation_key);
 
   base::Time result_timestamp = base::Time::Now();
   segment_database_->AddPredictionResult(segment_id1, 0.6, result_timestamp);
@@ -163,7 +177,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   float mapping2[][2] = {{0.3, 1}, {0.4, 4}};
   segment_database_->AddDiscreteMapping(segment_id2, mapping2, 2,
-                                        kAdaptiveToolbarSegmentationKey);
+                                        config_.segmentation_key);
 
   segment_database_->AddPredictionResult(segment_id2, 0.5, result_timestamp);
   EXPECT_CALL(*prefs_, SaveSegmentationResultToPref(_, _))
@@ -186,7 +200,7 @@ TEST_F(SegmentSelectorTest,
 
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
-      segment_database_.get(), prefs_.get(), kAdaptiveToolbarSegmentationKey);
+      segment_database_.get(), prefs_.get(), &config_);
   segment_selector_->set_model_execution_scheduler(&model_execution_scheduler_);
 
   base::RunLoop loop;
@@ -203,7 +217,7 @@ TEST_F(SegmentSelectorTest,
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
   segment_database_->AddDiscreteMapping(segment_id1, mapping1, 3,
-                                        kAdaptiveToolbarSegmentationKey);
+                                        config_.segmentation_key);
 
   base::Time result_timestamp = base::Time::Now();
   segment_database_->AddPredictionResult(segment_id1, 0.6, result_timestamp);

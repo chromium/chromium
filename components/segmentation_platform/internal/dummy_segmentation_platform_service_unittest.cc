@@ -42,7 +42,7 @@ TEST_F(DummySegmentationPlatformServiceTest, GetSelectedSegment) {
   SegmentSelectionResult expected;
   base::RunLoop loop;
   segmentation_platform_service_->GetSelectedSegment(
-      kAdaptiveToolbarSegmentationKey,
+      "some_key",
       base::BindOnce(
           &DummySegmentationPlatformServiceTest::OnGetSelectedSegment,
           base::Unretained(this), loop.QuitClosure(), expected));

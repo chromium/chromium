@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/public/config.h"
 
 namespace segmentation_platform {
 
-const char kSegmentationResultPref[] =
-    "segmentation_platform.segmentation_result";
+Config::Config() = default;
+
+Config::~Config() = default;
+
+Config::Config(const Config& other) = default;
+
+Config& Config::operator=(const Config& other) = default;
 
 }  // namespace segmentation_platform

@@ -25,7 +25,10 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
 
   // SegmentInfoDatabase overrides.
   void Initialize(SuccessCallback callback) override;
-  void GetAllSegmentInfo(AllSegmentInfoCallback callback) override;
+  void GetAllSegmentInfo(MultipleSegmentInfoCallback callback) override;
+  void GetSegmentInfoForSegments(
+      const std::vector<OptimizationTarget>& segment_ids,
+      MultipleSegmentInfoCallback callback) override;
   void GetSegmentInfo(OptimizationTarget segment_id,
                       SegmentInfoCallback callback) override;
   void UpdateSegment(OptimizationTarget segment_id,

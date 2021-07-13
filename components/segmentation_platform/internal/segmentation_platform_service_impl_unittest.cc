@@ -36,9 +36,24 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
+#include "components/segmentation_platform/public/config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
+namespace {
+
+std::string kTestSegmentationKey = "some_key";
+
+Config CreateTestConfig() {
+  Config config;
+  config.segmentation_key = kTestSegmentationKey;
+  config.segment_selection_ttl = base::TimeDelta::FromDays(28);
+  config.segment_ids = {
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
+  return config;
+}
+}  // namespace
 
 class SegmentationPlatformServiceImplTest : public testing::Test {
  public:
@@ -66,11 +81,13 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     SegmentationPlatformService::RegisterProfilePrefs(pref_service_.registry());
     SetUpPrefs(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
 
+    auto config = std::make_unique<Config>(CreateTestConfig());
+    config_ = config.get();
     segmentation_platform_service_impl_ =
         std::make_unique<SegmentationPlatformServiceImpl>(
             std::move(segment_db), std::move(signal_db),
             std::move(segment_storage_config_db), &model_provider_,
-            &pref_service_, task_runner_, &test_clock_);
+            &pref_service_, task_runner_, &test_clock_, std::move(config));
   }
 
   void TearDown() override {
@@ -86,8 +103,7 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
 
     base::Value segmentation_result(base::Value::Type::DICTIONARY);
     segmentation_result.SetIntKey("segment_id", segment_id);
-    dictionary->SetKey(kAdaptiveToolbarSegmentationKey,
-                       std::move(segmentation_result));
+    dictionary->SetKey(kTestSegmentationKey, std::move(segmentation_result));
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,
@@ -100,6 +116,7 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+  Config* config_;
   std::map<std::string, proto::SegmentInfo> segment_db_entries_;
   std::map<std::string, proto::SignalData> signal_db_entries_;
   std::map<std::string, proto::SignalStorageConfigs>
@@ -135,7 +152,7 @@ TEST_F(SegmentationPlatformServiceImplTest,
   expected.segment = OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   base::RunLoop loop;
   segmentation_platform_service_impl_->GetSelectedSegment(
-      kAdaptiveToolbarSegmentationKey,
+      kTestSegmentationKey,
       base::BindOnce(&SegmentationPlatformServiceImplTest::OnGetSelectedSegment,
                      base::Unretained(this), loop.QuitClosure(), expected));
   loop.Run();

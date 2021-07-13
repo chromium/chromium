@@ -12,6 +12,7 @@
 
 namespace segmentation_platform {
 
+struct Config;
 class ModelExecutionScheduler;
 class SegmentationResultPrefs;
 class SegmentInfoDatabase;
@@ -25,7 +26,7 @@ class SegmentSelectorImpl : public SegmentSelector {
  public:
   SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
                       SegmentationResultPrefs* result_prefs,
-                      const std::string& segmentation_key);
+                      Config* config);
 
   ~SegmentSelectorImpl() override;
 
@@ -84,9 +85,8 @@ class SegmentSelectorImpl : public SegmentSelector {
   // Helper class to read/write results to the prefs.
   SegmentationResultPrefs* result_prefs_;
 
-  // The key specific to this selection, and used for finding the discrete
-  // mapping and writing to prefs.
-  const std::string segmentation_key_;
+  // The config for providing configuration params.
+  Config* config_;
 
   // These values are read from prefs or db on init and used for serving the
   // clients in the current session.
