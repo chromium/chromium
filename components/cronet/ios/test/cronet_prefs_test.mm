@@ -116,11 +116,11 @@ TEST_F(PrefsTest, HttpServerProperties) {
   ASSERT_TRUE(prefs_file_content);
   ASSERT_TRUE(
       [prefs_file_content containsString:@"{\"http_server_properties\":"])
-      << "Unable to find 'http_server_properties' in the JSON prefs.";
+      << "Unable to find 'http_server_properties' in the JSON prefs: "
+      << prefs_file_content.UTF8String;
   ASSERT_TRUE([prefs_file_content containsString:@"\"supports_quic\":"])
-      << "Unable to find 'supports_quic' in the JSON prefs.";
-  ASSERT_TRUE([prefs_file_content containsString:@"\"server_info\":"])
-      << "Unable to find 'server_info' in the JSON prefs.";
+      << "Unable to find 'supports_quic' in the JSON prefs: "
+      << prefs_file_content.UTF8String;
 
   // Delete the prefs file to avoid side effects with other tests.
   [[NSFileManager defaultManager] removeItemAtPath:prefs_file_name error:nil];

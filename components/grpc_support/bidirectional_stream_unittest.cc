@@ -712,7 +712,9 @@ TEST_P(MAYBE_BidirectionalStreamTest, StreamFailAfterStreamReadyCallback) {
   ASSERT_EQ(TestBidirectionalStreamCallback::ON_FAILED, test.response_step);
   ASSERT_TRUE(test.net_error == net::ERR_QUIC_PROTOCOL_ERROR ||
               test.net_error == net::ERR_QUIC_HANDSHAKE_FAILED ||
-              test.net_error == net::ERR_CONNECTION_REFUSED);
+              test.net_error == net::ERR_CONNECTION_REFUSED ||
+              test.net_error == net::ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED)
+      << net::ErrorToString(test.net_error);
   bidirectional_stream_destroy(test.stream);
 }
 

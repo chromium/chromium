@@ -200,6 +200,7 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
   HttpStreamFactoryJobControllerTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    FLAGS_quic_enable_http3_grease_randomness = false;
     session_deps_.enable_quic = true;
     session_deps_.host_resolver->set_synchronous_mode(true);
   }
@@ -2934,7 +2935,14 @@ TEST_F(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
       [](const quic::ParsedQuicVersion& a, const quic::ParsedQuicVersion& b) {
         return a.transport_version < b.transport_version;
       });
-  EXPECT_EQ(supported_versions, alt_svc_info.advertised_versions());
+  quic::ParsedQuicVersionVector advertised_versions =
+      alt_svc_info.advertised_versions();
+  std::sort(
+      advertised_versions.begin(), advertised_versions.end(),
+      [](const quic::ParsedQuicVersion& a, const quic::ParsedQuicVersion& b) {
+        return a.transport_version < b.transport_version;
+      });
+  EXPECT_EQ(supported_versions, advertised_versions);
 
   quic::ParsedQuicVersion unsupported_version_1 =
       quic::ParsedQuicVersion::Unsupported();
@@ -3107,8 +3115,15 @@ TEST_F(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
       [](const quic::ParsedQuicVersion& a, const quic::ParsedQuicVersion& b) {
         return a.transport_version < b.transport_version;
       });
+  quic::ParsedQuicVersionVector advertised_versions =
+      alt_svc_info.advertised_versions();
+  std::sort(
+      advertised_versions.begin(), advertised_versions.end(),
+      [](const quic::ParsedQuicVersion& a, const quic::ParsedQuicVersion& b) {
+        return a.transport_version < b.transport_version;
+      });
   EXPECT_EQ(kProtoQUIC, alt_svc_info.alternative_service().protocol);
-  EXPECT_EQ(supported_versions, alt_svc_info.advertised_versions());
+  EXPECT_EQ(supported_versions, advertised_versions);
 
   session_->http_server_properties()->SetQuicAlternativeService(
       server, NetworkIsolationKey(),

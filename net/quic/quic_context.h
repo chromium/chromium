@@ -20,12 +20,10 @@ DefaultSupportedQuicVersions() {
   // The ordering of this list does not matter for Chrome because it respects
   // the ordering received from the server via Alt-Svc. However, cronet offers
   // an addQuicHint() API which uses the first version from this list until
-  // it receives Alt-Svc from the server. We therefore list Q050 first here
-  // because there are some cronet applications which communicate with servers
-  // that speak Q050 but not Draft29.
-  // TODO(dschinazi) Move Draft29 first once those servers support it.
-  return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q050(),
-                                       quic::ParsedQuicVersion::Draft29()};
+  // it receives Alt-Svc from the server.
+  return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::RFCv1(),
+                                       quic::ParsedQuicVersion::Draft29(),
+                                       quic::ParsedQuicVersion::Q050()};
 }
 
 // Obsolete QUIC supported versions are versions that are supported by the

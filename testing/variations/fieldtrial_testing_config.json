@@ -6647,7 +6647,7 @@
                     "name": "Enabled",
                     "params": {
                         "enable_quic": "true",
-                        "quic_version": "h3-29,h3-Q050",
+                        "quic_version": "h3,h3-29,h3-Q050",
                         "retransmittable_on_wire_timeout_milliseconds": "200"
                     },
                     "enable_features": [

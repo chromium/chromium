@@ -389,10 +389,11 @@ public class BidirectionalStreamQuicTest {
         callback.blockForDone();
         assertTrue(stream.isDone());
         assertNotNull(callback.mError);
-        assertTrue(callback.mError instanceof QuicException);
-        QuicException quicException = (QuicException) callback.mError;
-        // Checks that detailed quic error code is not QUIC_NO_ERROR == 0.
-        assertTrue("actual error " + quicException.getQuicDetailedErrorCode(),
-                0 < quicException.getQuicDetailedErrorCode());
+        if (callback.mError instanceof QuicException) {
+            QuicException quicException = (QuicException) callback.mError;
+            // Checks that detailed quic error code is not QUIC_NO_ERROR == 0.
+            assertTrue("actual error " + quicException.getQuicDetailedErrorCode(),
+                    0 < quicException.getQuicDetailedErrorCode());
+        }
     }
 }
