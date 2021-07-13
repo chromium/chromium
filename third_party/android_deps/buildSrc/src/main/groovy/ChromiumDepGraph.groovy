@@ -212,7 +212,8 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0'),
         org_eclipse_jgit_org_eclipse_jgit: new PropertyOverride(
             url: 'https://www.eclipse.org/jgit/',
-            licenseUrl: 'https://raw.githubusercontent.com/eclipse/jgit/master/LICENSE',
+            licenseUrl: 'https://www.eclipse.org/org/documents/edl-v10.html',
+            licensePath: 'licenses/Eclipse_EDL.txt',
             licenseName: 'BSD 3-Clause'),
         com_google_protobuf_protobuf_java: new PropertyOverride(
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
