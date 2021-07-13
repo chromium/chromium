@@ -35,12 +35,9 @@ ContextImpl::ContextImpl(
                                           base::Unretained(this))) {
   DCHECK(browser_context_);
   DCHECK(devtools_controller_);
-  devtools_controller_->OnContextCreated();
 }
 
-ContextImpl::~ContextImpl() {
-  devtools_controller_->OnContextDestroyed();
-}
+ContextImpl::~ContextImpl() = default;
 
 void ContextImpl::DestroyFrame(FrameImpl* frame) {
   auto iter = frames_.find(frame);
