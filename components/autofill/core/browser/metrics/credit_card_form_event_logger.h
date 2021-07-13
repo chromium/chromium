@@ -71,6 +71,14 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // Logging when an authentication prompt is completed.
   void LogCardUnmaskAuthenticationPromptCompleted(UnmaskAuthFlowType flow);
 
+  // Allows mocking that a virtual card was selected, for unit tests that don't
+  // run the actual Autofill suggestions dropdown UI.
+  void set_latest_selected_card_was_virtual_card_for_testing(
+      bool latest_selected_card_was_virtual_card) {
+    latest_selected_card_was_virtual_card_ =
+        latest_selected_card_was_virtual_card;
+  }
+
  protected:
   // FormEventLoggerBase pure-virtual overrides.
   void RecordPollSuggestions() override;
@@ -104,6 +112,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_virtual_card_suggestion_selected_ = false;
   bool logged_suggestion_filled_was_masked_server_card_ = false;
   bool logged_suggestion_filled_was_virtual_card_ = false;
+  // If true, the most recent card to be selected as an Autofill suggestion was
+  // a virtual card. False for all other card types.
+  bool latest_selected_card_was_virtual_card_ = false;
   std::vector<Suggestion> suggestions_;
   bool has_eligible_offer_ = false;
   bool card_selected_has_offer_ = false;

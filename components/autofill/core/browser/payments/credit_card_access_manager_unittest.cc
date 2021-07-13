@@ -1223,6 +1223,67 @@ TEST_F(CreditCardAccessManagerTest, FetchExpiredServerCardInvokesCvcPrompt) {
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 }
 
+// Ensures that UnmaskAuthFlowEvents also log to a ".ServerCard" subhistogram
+// when a masked server card is selected.
+TEST_F(CreditCardAccessManagerTest,
+       UnmaskAuthFlowEvent_AlsoLogsServerCardSubhistogram) {
+  CreateServerCard(kTestGUID, kTestNumber);
+  CreditCard* card = credit_card_access_manager_->GetCreditCard(kTestGUID);
+  base::HistogramTester histogram_tester;
+  std::string flow_events_histogram_name =
+      "Autofill.BetterAuth.FlowEvents.Cvc.ServerCard";
+
+  credit_card_access_manager_->PrepareToFetchCreditCard();
+  WaitForCallbacks();
+
+  credit_card_access_manager_->FetchCreditCard(card, accessor_->GetWeakPtr());
+  histogram_tester.ExpectUniqueSample(
+      flow_events_histogram_name,
+      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
+
+  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::SUCCESS, kTestNumber));
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+
+  histogram_tester.ExpectBucketCount(
+      flow_events_histogram_name,
+      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptCompleted, 1);
+}
+
+// Ensures that UnmaskAuthFlowEvents also log to a ".VirtualCard" subhistogram
+// when a virtual card is selected.
+TEST_F(CreditCardAccessManagerTest,
+       UnmaskAuthFlowEvent_AlsoLogsVirtualCardSubhistogram) {
+  CreateServerCard(kTestGUID, kTestNumber);
+  CreditCard* card = credit_card_access_manager_->GetCreditCard(kTestGUID);
+  // This doesn't mock virtual card unmasking as well as
+  // BrowserAutofillManager::FillVirtualCardInformation(~) does, but all we
+  // really care about is that CreditCardFormEventLogger knows a VIRTUAL_CARD
+  // was selected first before server-based unmasking steps occur.
+  card->set_record_type(CreditCard::VIRTUAL_CARD);
+  credit_card_access_manager_
+      ->set_virtual_card_suggestion_selected_on_form_event_logger_for_testing();
+  base::HistogramTester histogram_tester;
+  std::string flow_events_histogram_name =
+      "Autofill.BetterAuth.FlowEvents.Cvc.VirtualCard";
+
+  credit_card_access_manager_->PrepareToFetchCreditCard();
+  WaitForCallbacks();
+
+  credit_card_access_manager_->FetchCreditCard(card, accessor_->GetWeakPtr());
+  histogram_tester.ExpectUniqueSample(
+      flow_events_histogram_name,
+      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
+
+  EXPECT_TRUE(GetRealPanForCVCAuth(
+      AutofillClient::SUCCESS, kTestNumber, /*fido_opt_in=*/false,
+      /*follow_with_fido_auth=*/false, /*is_virtual_card=*/true));
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+
+  histogram_tester.ExpectBucketCount(
+      flow_events_histogram_name,
+      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptCompleted, 1);
+}
+
 #if defined(OS_ANDROID)
 // Ensures that the WebAuthn verification prompt is invoked after user opts in
 // on unmask card checkbox.

@@ -69,6 +69,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
                               card_selected_has_offer_);
   }
 
+  latest_selected_card_was_virtual_card_ = false;
   switch (credit_card.record_type()) {
     case CreditCard::LOCAL_CARD:
     case CreditCard::FULL_SERVER_CARD:
@@ -83,6 +84,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       }
       break;
     case CreditCard::VIRTUAL_CARD:
+      latest_selected_card_was_virtual_card_ = true;
       Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED, form);
       if (!has_logged_virtual_card_suggestion_selected_) {
         has_logged_virtual_card_suggestion_selected_ = true;
@@ -203,11 +205,9 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
   } else if (logged_suggestion_filled_was_virtual_card_) {
     Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, form);
 
-    // TODO(crbug/1196021): Log BetterAuth.FlowEvents here as well. Virtual
-    //     cards are still unmasked similarly to masked cards, they just return
-    //     a different result. However, until virtual cards are wired up to be
-    //     unmasked properly, certain flow variables will be missing and tests
-    //     will be unhappy.
+    // Log BetterAuth.FlowEvents.
+    RecordCardUnmaskFlowEvent(current_authentication_flow_,
+                              UnmaskAuthFlowEvent::kFormSubmitted);
   } else if (logged_suggestion_filled_was_server_data_) {
     Log(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, form);
   } else {
@@ -287,28 +287,33 @@ FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
 void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
     UnmaskAuthFlowType flow,
     UnmaskAuthFlowEvent event) {
-  std::string suffix;
+  std::string flow_type_suffix;
   switch (flow) {
     case UnmaskAuthFlowType::kCvc:
-      suffix = ".Cvc";
+      flow_type_suffix = ".Cvc";
       break;
     case UnmaskAuthFlowType::kFido:
-      suffix = ".Fido";
+      flow_type_suffix = ".Fido";
       break;
     case UnmaskAuthFlowType::kCvcThenFido:
-      suffix = ".CvcThenFido";
+      flow_type_suffix = ".CvcThenFido";
       break;
     case UnmaskAuthFlowType::kCvcFallbackFromFido:
-      suffix = ".CvcFallbackFromFido";
+      flow_type_suffix = ".CvcFallbackFromFido";
       break;
     case UnmaskAuthFlowType::kNone:
       NOTREACHED();
-      suffix = "";
+      flow_type_suffix = "";
       break;
   }
+  std::string card_type_suffix =
+      latest_selected_card_was_virtual_card_ ? ".VirtualCard" : ".ServerCard";
 
-  base::UmaHistogramEnumeration("Autofill.BetterAuth.FlowEvents" + suffix,
-                                event);
+  base::UmaHistogramEnumeration(
+      "Autofill.BetterAuth.FlowEvents" + flow_type_suffix, event);
+  base::UmaHistogramEnumeration(
+      "Autofill.BetterAuth.FlowEvents" + flow_type_suffix + card_type_suffix,
+      event);
 }
 
 bool CreditCardFormEventLogger::DoesCardHaveOffer(

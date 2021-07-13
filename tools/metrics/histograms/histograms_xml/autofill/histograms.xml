@@ -41,6 +41,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
                to be filled and assigned to the control case."/>
 </variants>
 
+<variants name="Autofill.BetterAuthFlowType">
+  <variant name="Cvc" summary="CVC authentication only"/>
+  <variant name="CvcFallbackFromFido"
+      summary="CVC fallback from FIDO authentication"/>
+  <variant name="CvcThenFido" summary="CVC followed by FIDO authentication"/>
+  <variant name="Fido" summary="FIDO authentication only"/>
+</variants>
+
 <variants name="Autofill.OfferNotification.Type">
   <variant name="CardLinkedOffer"
       summary="The bubble/infobar for an offer that is linked to a credit
@@ -356,6 +364,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     authentication type. This will provide a relative conversion rate for each
     authentication type.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.BetterAuth.FlowEvents.{BetterAuthFlowType}.{CardType}"
+    enum="AutofillCreditCardAuthenticationEvents" expires_after="2021-12-05">
+  <owner>jsaul@google.com</owner>
+  <owner>manasverma@google.com</owner>
+  <owner>autofill-auth-team@google.com</owner>
+  <summary>
+    Tracks when a user completes each step in a card unmasking flow per
+    authentication flow type, with an additional breakdown for if it was a
+    server card or virtual card.
+  </summary>
+  <token key="BetterAuthFlowType" variants="Autofill.BetterAuthFlowType"/>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
 <histogram base="true" name="Autofill.BetterAuth.OptInCalled"

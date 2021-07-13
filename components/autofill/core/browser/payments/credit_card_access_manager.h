@@ -162,6 +162,8 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
                            NavigateFromPage_UnmaskedCardCacheResets);
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
                            PreflightCallRateLimited);
+  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
+                           UnmaskAuthFlowEvent_AlsoLogsVirtualCardSubhistogram);
   friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
@@ -171,6 +173,16 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   void set_fido_authenticator_for_testing(
       std::unique_ptr<CreditCardFIDOAuthenticator> fido_authenticator) {
     fido_authenticator_ = std::move(fido_authenticator);
+  }
+#endif
+
+#if defined(UNIT_TEST)
+  // Mocks that a virtual card was selected, so unit tests that don't run the
+  // actual Autofill suggestions dropdown UI can still follow their remaining
+  // steps under the guise of doing it for a virtual card.
+  void set_virtual_card_suggestion_selected_on_form_event_logger_for_testing() {
+    form_event_logger_->set_latest_selected_card_was_virtual_card_for_testing(
+        /*latest_selected_card_was_virtual_card=*/true);
   }
 #endif
 
