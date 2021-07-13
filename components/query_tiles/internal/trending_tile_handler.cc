@@ -36,17 +36,12 @@ std::vector<Tile> TrendingTileHandler::FilterExtraTrendingTiles(
 }
 
 void TrendingTileHandler::OnTileClicked(const std::string& tile_id) {
-  tile_impressions_.erase(tile_id);
   if (IsTrendingTile(tile_id))
     stats::RecordTrendingTileEvent(stats::TrendingTileEvent::kClicked);
 }
 
-std::vector<std::string> TrendingTileHandler::GetInactiveTrendingTiles() {
+std::vector<std::string> TrendingTileHandler::GetTrendingTilesToRemove() {
   std::vector<std::string> tile_ids;
-  if (!base::FeatureList::IsEnabled(
-          features::kQueryTilesRemoveTrendingTilesAfterInactivity)) {
-    return tile_ids;
-  }
   ImpressionMap::iterator it = tile_impressions_.begin();
   while (it != tile_impressions_.end()) {
     if (it->second >= TileConfig::GetMaxTrendingTileImpressions()) {

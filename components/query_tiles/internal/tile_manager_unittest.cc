@@ -427,10 +427,8 @@ TEST_F(TileManagerTest, GetSingleTileWithTrendingSubTiles) {
 }
 
 // Check that trending tiles get removed after inactivity.
-TEST_F(TileManagerTest, TrendingTopTilesRemovedAfterInactivity) {
+TEST_F(TileManagerTest, TrendingTopTilesRemovedAfterShown) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kQueryTilesRemoveTrendingTilesAfterInactivity);
   EXPECT_CALL(*tile_store(), Update(_, _, _))
       .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
                           MockTileStore::UpdateCallback callback) {
@@ -454,9 +452,8 @@ TEST_F(TileManagerTest, TrendingTopTilesRemovedAfterInactivity) {
   OnTileClicked("trending_2");
   GetTiles(expected);
 
-  // The first tile will be removed due to inactivity and the third tile
-  // will be returned.
-  expected.erase(expected.begin());
+  // Both the first and the second tile will be removed.
+  expected.erase(expected.begin(), expected.begin() + 2);
   expected.emplace_back(std::move(trending_3));
   EXPECT_CALL(*tile_store(), Update(_, _, _))
       .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
@@ -464,8 +461,9 @@ TEST_F(TileManagerTest, TrendingTopTilesRemovedAfterInactivity) {
         std::move(callback).Run(true);
       }));
   GetTiles(expected);
+  GetTiles(expected);
 
-  // The 2nd tile will be removed due to inactivity.
+  // The 3rd tile will be removed due to max impression threshold.
   expected.erase(expected.begin());
   EXPECT_CALL(*tile_store(), Update(_, _, _))
       .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
@@ -478,8 +476,6 @@ TEST_F(TileManagerTest, TrendingTopTilesRemovedAfterInactivity) {
 // Check that trending subtiles will not be removed if they are not displayed.
 TEST_F(TileManagerTest, UnshownTrendingSubTilesNotRemoved) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kQueryTilesRemoveTrendingTilesAfterInactivity);
   EXPECT_CALL(*tile_store(), Update(_, _, _))
       .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
                           MockTileStore::UpdateCallback callback) {
@@ -516,8 +512,6 @@ TEST_F(TileManagerTest, UnshownTrendingSubTilesNotRemoved) {
 // correctly counted.
 TEST_F(TileManagerTest, GetSingleTileAfterOnTileClicked) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kQueryTilesRemoveTrendingTilesAfterInactivity);
   EXPECT_CALL(*tile_store(), Update(_, _, _))
       .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
                           MockTileStore::UpdateCallback callback) {
@@ -553,11 +547,12 @@ TEST_F(TileManagerTest, GetSingleTileAfterOnTileClicked) {
   OnTileClicked("parent");
   GetSingleTile("parent", get_single_tile_expected);
 
-  // Click a trending tile to reset its impression.
+  // Click a trending tile will not reset its impression.
   OnTileClicked("trending_1");
 
-  // The 2nd tile will get removed.
-  expected[0].sub_tiles.erase(expected[0].sub_tiles.begin() + 1);
+  // The first two tiles will get removed.
+  expected[0].sub_tiles.erase(expected[0].sub_tiles.begin(),
+                              expected[0].sub_tiles.begin() + 2);
   EXPECT_CALL(*tile_store(), Update(_, _, _))
       .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
                           MockTileStore::UpdateCallback callback) {
@@ -565,7 +560,7 @@ TEST_F(TileManagerTest, GetSingleTileAfterOnTileClicked) {
       }));
   GetTiles(expected);
 
-  get_single_tile_expected->sub_tiles.pop_back();
+  get_single_tile_expected->sub_tiles.clear();
   get_single_tile_expected->sub_tiles.emplace_back(
       std::make_unique<Tile>(std::move(trending_3)));
   OnTileClicked("parent");

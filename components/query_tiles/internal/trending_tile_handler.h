@@ -39,8 +39,8 @@ class TrendingTileHandler {
   // Called when a tile is clicked.
   void OnTileClicked(const std::string& tile_id);
 
-  // Returns a list of inactive trending tile Ids.
-  std::vector<std::string> GetInactiveTrendingTiles();
+  // Returns a list of trending tile Ids to remove.
+  std::vector<std::string> GetTrendingTilesToRemove();
 
  private:
   // Record the impression for a tile with the give id.

@@ -302,7 +302,7 @@ class TileManagerImpl : public TileManager {
     if (!tile_group_)
       return;
     std::vector<std::string> tiles_to_remove =
-        trending_tile_handler_.GetInactiveTrendingTiles();
+        trending_tile_handler_.GetTrendingTilesToRemove();
     if (tiles_to_remove.empty())
       return;
     tile_group_->RemoveTiles(tiles_to_remove);
