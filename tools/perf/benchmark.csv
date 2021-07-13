@@ -22,7 +22,7 @@ blink_perf.parser,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromi
 blink_perf.sanitizer-api,lyf@chromium.org,Blink>Security>SanitizerAPI,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.shadow_dom,masonf@chromium.org,Blink>DOM>ShadowDOM,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.svg,"fs@opera.com, pdr@chromium.org",Blink>SVG,https://bit.ly/blink-perf-benchmarks,all
-blink_perf.webaudio,"hongchan@chromium.org, rtoy@chromium.org",Blink>WebAudio,https://bit.ly/blink-perf-benchmarks,all
+blink_perf.webaudio,hongchan@chromium.org,Blink>WebAudio,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.webgl,"kbr@chromium.org, enga@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,
 blink_perf.webgl_fast_call,"kbr@chromium.org, enga@chromium.org, mslekova@chromium.org, junov@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,
 blink_perf.webgpu,"enga@chromium.org, cwallez@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,

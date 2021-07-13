@@ -701,7 +701,8 @@ class BlinkPerfDisplayLocking(_BlinkPerfBenchmark):
     options.AppendExtraBrowserArgs(
       ['--enable-blink-features=DisplayLocking,CSSContentSize'])
 
-@benchmark.Info(emails=['hongchan@chromium.org', 'rtoy@chromium.org'],
+
+@benchmark.Info(emails=['hongchan@chromium.org'],
                 component='Blink>WebAudio',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfWebAudio(_BlinkPerfBenchmark):
