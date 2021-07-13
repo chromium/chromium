@@ -70879,6 +70879,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Cached StyleSheetContents was reused"/>
 </enum>
 
+<enum name="RestoreResult">
+  <int value="0" label="Finish"/>
+  <int value="1" label="Not finish"/>
+</enum>
+
 <enum name="RestoreSetting">
   <int value="0" label="Unknown"/>
   <int value="1" label="Always restore"/>

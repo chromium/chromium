@@ -65,6 +65,11 @@ constexpr int kCpuUsageThreshold = 90;
 // |kCpuRestrictCoresCondition|.
 constexpr int kCpuRestrictCoresCondition = 2;
 
+constexpr char kRestoredAppWindowCountHistogram[] =
+    "Apps.RestoreArcWindowCount";
+
+constexpr char kRestoredArcAppResultHistogram[] = "Apps.RestoreArcAppsResult";
+
 constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
 
 }  // namespace
@@ -282,6 +287,9 @@ void ArcAppLaunchHandler::LoadRestoreData() {
       }
     }
   }
+
+  base::UmaHistogramCounts100(kRestoredAppWindowCountHistogram,
+                              windows_.size() + no_stack_windows_.size());
 }
 
 void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
@@ -359,16 +367,27 @@ bool ArcAppLaunchHandler::HasRestoreData() {
 
 bool ArcAppLaunchHandler::CanLaunchApp() {
   if (should_apply_cpu_restirction_) {
-    if (GetCpuUsageRate() >= kCpuUsageThreshold)
+    int cpu_usage_rate = GetCpuUsageRate();
+    if (cpu_usage_rate >= kCpuUsageThreshold) {
+      LOG(WARNING) << "CPU usage rate is too high to restore Arc apps: "
+                   << cpu_usage_rate;
       return false;
+    }
   }
 
   switch (pressure_level_) {
     case chromeos::ResourcedClient::PressureLevel::NONE:
       return true;
     case chromeos::ResourcedClient::PressureLevel::MODERATE:
-    case chromeos::ResourcedClient::PressureLevel::CRITICAL:
+    case chromeos::ResourcedClient::PressureLevel::CRITICAL: {
+      LOG(WARNING)
+          << "Stop restoring Arc apps due to memory pressure: "
+          << (pressure_level_ ==
+                      chromeos::ResourcedClient::PressureLevel::MODERATE
+                  ? "MODERATE"
+                  : "CRITICAL");
       return false;
+    }
   }
 }
 
@@ -385,8 +404,10 @@ bool ArcAppLaunchHandler::IsAppReady(const std::string& app_id) {
 }
 
 void ArcAppLaunchHandler::MaybeLaunchApp() {
-  if (!first_run_ && !CanLaunchApp())
+  if (!first_run_ && !CanLaunchApp()) {
+    MaybeReStartTimer(kAppLaunchCheckingDelay);
     return;
+  }
 
   for (auto it = pending_windows_.begin(); it != pending_windows_.end(); ++it) {
     if (IsAppReady(it->app_id)) {
@@ -574,6 +595,12 @@ void ArcAppLaunchHandler::StopRestore() {
   stop_restore_timer_.reset();
 
   StopCpuUsageCount();
+
+  base::UmaHistogramEnumeration(
+      kRestoredArcAppResultHistogram,
+      windows_.empty() && no_stack_windows_.empty() && pending_windows_.empty()
+          ? RestoreResult::kFinish
+          : RestoreResult::kNotFinish);
 }
 
 int ArcAppLaunchHandler::GetCpuUsageRate() {

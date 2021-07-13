@@ -43,6 +43,16 @@ struct CpuTick {
   }
 };
 
+// This is used for logging, so do not remove or reorder existing entries.
+enum class RestoreResult {
+  kFinish = 0,
+  kNotFinish = 1,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kNotFinish,
+};
+
 // The restoration process might be blocked by some issues, e.g. the memory
 // pressure, CPU rate, etc. However we don't want to have the restoration
 // process taking too long to interact the normal usage. So if the restoration
