@@ -1094,7 +1094,8 @@ void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
             std::move(callback).Run(res);
           },
           std::move(callback)),
-      is_initial_install);
+      // TODO(crbug/1228109): uncomment when Dlc issues are fixed.
+      /*is_initial_install=*/false);
 }
 
 void CrostiniManager::CancelInstallTermina() {
