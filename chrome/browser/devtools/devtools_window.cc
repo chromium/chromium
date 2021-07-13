@@ -1403,7 +1403,7 @@ void DevToolsWindow::ActivateWindow() {
     return;
   if (is_docked_ && GetInspectedBrowserWindow())
     main_web_contents_->Focus();
-  else if (!is_docked_ && !browser_->window()->IsActive())
+  else if (!is_docked_ && browser_ && !browser_->window()->IsActive())
     browser_->window()->Activate();
 }
 
@@ -1456,7 +1456,7 @@ void DevToolsWindow::SetIsDocked(bool dock_requested) {
   if (dock_requested == was_docked)
     return;
 
-  if (dock_requested && !was_docked) {
+  if (dock_requested && !was_docked && browser_) {
     // Detach window from the external devtools browser. It will lead to
     // the browser object's close and delete. Remove observer first.
     TabStripModel* tab_strip_model = browser_->tab_strip_model();
