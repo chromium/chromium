@@ -639,6 +639,19 @@ absl::optional<base::TimeTicks> PerformanceTiming::LastPortalActivatedPaint()
   return timing->LastPortalActivatedPaint();
 }
 
+absl::optional<base::TimeDelta> PerformanceTiming::PrerenderActivationStart()
+    const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing)
+    return absl::nullopt;
+
+  base::TimeTicks activation_start = timing->ActivationStart();
+  if (activation_start.is_null())
+    return absl::nullopt;
+
+  return timing->MonotonicTimeToZeroBasedDocumentTime(activation_start);
+}
+
 absl::optional<base::TimeTicks> PerformanceTiming::UnloadStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
   if (!timing)

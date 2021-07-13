@@ -456,11 +456,13 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
 
 void PageLoadTracker::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
-  if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE)
+  if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
+    was_prerendered_then_activated_in_foreground_ = true;
     PageShown();
+  }
 
   for (const auto& observer : observers_)
-    observer->DidActivatePrerenderedPage();
+    observer->DidActivatePrerenderedPage(navigation_handle);
 
   base::UmaHistogramEnumeration(
       internal::kPageLoadPrerender2Event,
@@ -899,6 +901,10 @@ PageLoadTracker::GetBackForwardCacheRestore(size_t index) const {
 
 bool PageLoadTracker::StartedInForeground() const {
   return started_in_foreground_;
+}
+
+bool PageLoadTracker::WasPrerenderedThenActivatedInForeground() const {
+  return was_prerendered_then_activated_in_foreground_;
 }
 
 const UserInitiatedInfo& PageLoadTracker::GetUserInitiatedInfo() const {

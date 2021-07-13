@@ -11,6 +11,7 @@
 #include "components/page_load_metrics/browser/observers/early_hints_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/layout_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/prerender_features_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 
@@ -33,6 +34,7 @@ void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
     tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<PrerenderFeaturesPageLoadMetricsObserver>());
+    tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
   }
   // Allow the embedder to register any embedder-specific observers
   RegisterEmbedderObservers(tracker);

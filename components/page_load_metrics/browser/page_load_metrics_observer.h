@@ -560,8 +560,9 @@ class PageLoadMetricsObserver {
   virtual void DidActivatePortal(base::TimeTicks activation_time) {}
 
   // Called when the page tracked was just activated after being prerendered.
-  // TODO(crbug.com/1190112): Add |activation_time| parameter.
-  virtual void DidActivatePrerenderedPage() {}
+  // |navigation_handle| is for the activation navigation.
+  virtual void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) {}
 
   // Called when V8 per-frame memory usage updates are available. Each
   // MemoryUpdate consists of a GlobalRenderFrameHostId and a nonzero int64_t

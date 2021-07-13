@@ -308,6 +308,11 @@ absl::optional<base::TimeTicks> WebPerformance::LastPortalActivatedPaint()
   return private_->timing()->LastPortalActivatedPaint();
 }
 
+absl::optional<base::TimeDelta> WebPerformance::PrerenderActivationStart()
+    const {
+  return private_->timing()->PrerenderActivationStart();
+}
+
 absl::optional<base::TimeTicks> WebPerformance::UnloadStart() const {
   return private_->timing()->UnloadStart();
 }

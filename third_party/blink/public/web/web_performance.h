@@ -139,6 +139,7 @@ class WebPerformance {
   BLINK_EXPORT double ParseBlockedOnScriptExecutionFromDocumentWriteDuration()
       const;
   BLINK_EXPORT absl::optional<base::TimeTicks> LastPortalActivatedPaint() const;
+  BLINK_EXPORT absl::optional<base::TimeDelta> PrerenderActivationStart() const;
   BLINK_EXPORT absl::optional<base::TimeTicks> UnloadStart() const;
   BLINK_EXPORT absl::optional<base::TimeTicks> UnloadEnd() const;
   BLINK_EXPORT absl::optional<base::TimeTicks> CommitNavigationEnd() const;

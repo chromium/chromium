@@ -274,8 +274,7 @@ class PageLoadMetricsTestWaiter
 
   void OnCommit(page_load_metrics::PageLoadTracker* tracker) override;
 
-  void OnRestoredFromBackForwardCache(
-      page_load_metrics::PageLoadTracker* tracker) override;
+  void OnActivate(page_load_metrics::PageLoadTracker* tracker) override;
 
   // These methods check whether expectations are satisfied for specific fields
   // inside the State object, by comparing them in expected_ and observed_.

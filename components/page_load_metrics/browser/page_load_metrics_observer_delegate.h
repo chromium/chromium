@@ -77,6 +77,10 @@ class PageLoadMetricsObserverDelegate {
   // True if the page load started in the foreground.
   virtual bool StartedInForeground() const = 0;
 
+  // True if the page load was a prerender, that was later activated by a
+  // navigation that started in the foreground.
+  virtual bool WasPrerenderedThenActivatedInForeground() const = 0;
+
   // Whether the page load was initiated by a user.
   virtual const UserInitiatedInfo& GetUserInitiatedInfo() const = 0;
 

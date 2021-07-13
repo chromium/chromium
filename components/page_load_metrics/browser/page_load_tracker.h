@@ -229,6 +229,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
       size_t index) const override;
   bool StartedInForeground() const override;
+  bool WasPrerenderedThenActivatedInForeground() const override;
   const UserInitiatedInfo& GetUserInitiatedInfo() const override;
   const GURL& GetUrl() const override;
   const GURL& GetStartUrl() const override;
@@ -462,6 +463,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   absl::optional<base::TimeDelta> first_foreground_time_;
   std::vector<BackForwardCacheRestore> back_forward_cache_restores_;
   const bool started_in_foreground_;
+  bool was_prerendered_then_activated_in_foreground_ = false;
 
   mojom::PageLoadTimingPtr last_dispatched_merged_page_timing_;
   blink::MobileFriendliness latest_mobile_friendliness_;

@@ -75,7 +75,9 @@ class MetricsWebContentsObserver
     // fine.
     virtual void OnCommit(PageLoadTracker* tracker) {}
 
-    virtual void OnRestoredFromBackForwardCache(PageLoadTracker* tracker) {}
+    // This is called both for prerender activation and restoration from
+    // the back/forward cache.
+    virtual void OnActivate(PageLoadTracker* tracker) {}
 
     // Returns the observer delegate for the committed load associated with
     // the MetricsWebContentsObserver, or null if the observer has gone away

@@ -103,6 +103,15 @@ bool WasStartedInForegroundOptionalEventInForeground(
     const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate);
 
+// Returns true if:
+// - We have timing information for the event.
+// - The page load was prerendered, and was later activated by a navigation that
+//   started in the foreground.
+// - The event occurred prior to the page being moved to the background.
+bool WasActivatedInForegroundOptionalEventInForeground(
+    const absl::optional<base::TimeDelta>& event,
+    const PageLoadMetricsObserverDelegate& delegate);
+
 bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
     const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate,

@@ -196,6 +196,8 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
 
   // The time of the first paint after a portal activation.
   absl::optional<base::TimeTicks> LastPortalActivatedPaint() const;
+  // The start time of the prerender activation navigation.
+  absl::optional<base::TimeDelta> PrerenderActivationStart() const;
 
   typedef uint64_t (PerformanceTiming::*PerformanceTimingGetter)() const;
   using NameToAttributeMap = HashMap<AtomicString, PerformanceTimingGetter>;

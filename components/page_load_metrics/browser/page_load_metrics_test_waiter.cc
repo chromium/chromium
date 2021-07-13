@@ -330,7 +330,7 @@ void PageLoadMetricsTestWaiter::OnCommit(
   AddObserver(tracker);
 }
 
-void PageLoadMetricsTestWaiter::OnRestoredFromBackForwardCache(
+void PageLoadMetricsTestWaiter::OnActivate(
     page_load_metrics::PageLoadTracker* tracker) {
   // A PageLoadMetricsWaiter should only wait for events from a single page
   // load.

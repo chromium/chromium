@@ -18,7 +18,8 @@ mojom::PageLoadTimingPtr CreatePageLoadTiming() {
       mojom::ParseTiming::New(),
       std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>{},
       absl::optional<base::TimeDelta>(), absl::optional<base::TimeDelta>(),
-      absl::optional<base::TimeDelta>(), absl::optional<base::TimeDelta>());
+      absl::optional<base::TimeDelta>(), absl::optional<base::TimeDelta>(),
+      absl::optional<base::TimeDelta>());
 }
 
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {

@@ -654,6 +654,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     timing->paint_timing->portal_activated_paint =
         *perf.LastPortalActivatedPaint();
   }
+  if (perf.PrerenderActivationStart().has_value())
+    timing->activation_start = perf.PrerenderActivationStart();
 
   if (perf.UserTimingMarkFullyLoaded().has_value())
     timing->user_timing_mark_fully_loaded = perf.UserTimingMarkFullyLoaded();

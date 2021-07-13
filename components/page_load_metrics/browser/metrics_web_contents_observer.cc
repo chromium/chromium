@@ -699,11 +699,11 @@ bool MetricsWebContentsObserver::MaybeActivatePageLoadTracker(
 
   if (navigation_handle->IsServedFromBackForwardCache()) {
     committed_load_->OnRestoreFromBackForwardCache(navigation_handle);
-    for (auto& observer : testing_observers_)
-      observer.OnRestoredFromBackForwardCache(committed_load_.get());
   } else if (navigation_handle->IsPrerenderedPageActivation()) {
     committed_load_->DidActivatePrerenderedPage(navigation_handle);
   }
+  for (auto& observer : testing_observers_)
+    observer.OnActivate(committed_load_.get());
 
   return true;
 }

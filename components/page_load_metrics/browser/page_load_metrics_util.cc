@@ -109,6 +109,14 @@ bool WasStartedInForegroundOptionalEventInForeground(
           event.value() <= delegate.GetFirstBackgroundTime().value());
 }
 
+bool WasActivatedInForegroundOptionalEventInForeground(
+    const absl::optional<base::TimeDelta>& event,
+    const PageLoadMetricsObserverDelegate& delegate) {
+  return delegate.WasPrerenderedThenActivatedInForeground() && event &&
+         (!delegate.GetFirstBackgroundTime() ||
+          event.value() <= delegate.GetFirstBackgroundTime().value());
+}
+
 bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
     const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate,
