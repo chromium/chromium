@@ -748,7 +748,7 @@ void AddNavigationRequestClientHintsHeaders(
 }
 
 absl::optional<std::vector<network::mojom::WebClientHintsType>>
-ParseAndPersistAcceptCHForNagivation(
+ParseAndPersistAcceptCHForNavigation(
     const GURL& url,
     const ::network::mojom::ParsedHeadersPtr& headers,
     BrowserContext* context,

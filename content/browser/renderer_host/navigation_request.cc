@@ -3693,7 +3693,7 @@ void NavigationRequest::OnRedirectChecksComplete(
       browser_context->GetClientHintsControllerDelegate();
   if (client_hints_delegate) {
     net::HttpRequestHeaders client_hints_extra_headers;
-    ParseAndPersistAcceptCHForNagivation(
+    ParseAndPersistAcceptCHForNavigation(
         commit_params_->redirects.back(),
         commit_params_->redirect_response.back()->parsed_headers,
         browser_context, client_hints_delegate, frame_tree_node_);
@@ -4088,7 +4088,7 @@ void NavigationRequest::CommitNavigation() {
     absl::optional<std::vector<network::mojom::WebClientHintsType>>
         opt_in_hints_from_response;
     if (response()) {
-      opt_in_hints_from_response = ParseAndPersistAcceptCHForNagivation(
+      opt_in_hints_from_response = ParseAndPersistAcceptCHForNavigation(
           common_params_->url, response()->parsed_headers, browser_context,
           client_hints_delegate, frame_tree_node_);
     }

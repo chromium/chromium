@@ -83,7 +83,7 @@ CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
 // policy is off and there is no valid Accept-CH-Lifetime, where the header
 // still applies locally within frame.
 CONTENT_EXPORT absl::optional<std::vector<network::mojom::WebClientHintsType>>
-ParseAndPersistAcceptCHForNagivation(
+ParseAndPersistAcceptCHForNavigation(
     const GURL& url,
     const ::network::mojom::ParsedHeadersPtr& headers,
     BrowserContext* context,
