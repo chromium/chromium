@@ -17,6 +17,7 @@ source_set("in_process") {
       "//base",
       "//components/metrics",
       "//components/metrics:child_call_stack_profile_builder",
+      "//components/services/heap_profiling/public/cpp:cpp",
     ]
   }
 }

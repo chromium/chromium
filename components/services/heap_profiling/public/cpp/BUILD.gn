@@ -6,6 +6,8 @@ static_library("cpp") {
   sources = [
     "controller.cc",
     "controller.h",
+    "merge_samples.cc",
+    "merge_samples.h",
     "profiling_client.cc",
     "profiling_client.h",
     "settings.cc",
@@ -28,7 +30,10 @@ static_library("cpp") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "switches_unittest.cc" ]
+  sources = [
+    "merge_samples_unittests.cc",
+    "switches_unittest.cc",
+  ]
   deps = [
     ":cpp",
     "//base",

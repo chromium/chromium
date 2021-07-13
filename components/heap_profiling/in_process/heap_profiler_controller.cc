@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/services/heap_profiling/public/cpp/merge_samples.h"
 
 namespace {
 
@@ -75,34 +76,6 @@ void HeapProfilerController::Start() {
   ScheduleNextSnapshot(stopped_, base::TimeDelta::FromMinutes(interval));
 }
 
-bool HeapProfilerController::SampleComparator::operator()(
-    const Sample& lhs,
-    const Sample& rhs) const {
-  // We consider two samples to be equal if and only if their stacks are equal.
-  // Note that equal stack implies equal allocator. It's technically possible
-  // for two equal stacks to have different thread names, but it's an edge
-  // condition and marking them as equal will not significantly change analysis.
-  return lhs.stack < rhs.stack;
-}
-
-// Merges samples that have identical stack traces, excluding total and size.
-HeapProfilerController::SampleMap HeapProfilerController::MergeSamples(
-    const std::vector<Sample>& samples) {
-  SampleMap results;
-  for (const Sample& sample : samples) {
-    size_t count = std::max<size_t>(
-        static_cast<size_t>(
-            std::llround(static_cast<double>(sample.total) / sample.size)),
-        1);
-    // Either update the existing entry or construct a new entry [with default
-    // initializer 0].
-    SampleValue& value = results[sample];
-    value.total += sample.total;
-    value.count += count;
-  }
-  return results;
-}
-
 // static
 void HeapProfilerController::ScheduleNextSnapshot(
     scoped_refptr<StoppedFlag> stopped,
@@ -126,7 +99,8 @@ void HeapProfilerController::TakeSnapshot(
 
 // static
 void HeapProfilerController::RetrieveAndSendSnapshot() {
-  std::vector<base::SamplingHeapProfiler::Sample> samples =
+  using Sample = base::SamplingHeapProfiler::Sample;
+  std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
   if (samples.empty())
     return;
@@ -144,11 +118,12 @@ void HeapProfilerController::RetrieveAndSendSnapshot() {
       metrics::CallStackProfileParams::PERIODIC_HEAP_COLLECTION);
   metrics::CallStackProfileBuilder profile_builder(params);
 
-  SampleMap merged_samples = MergeSamples(samples);
+  heap_profiling::SampleMap merged_samples =
+      heap_profiling::MergeSamples(samples);
 
   for (auto& pair : merged_samples) {
     const Sample& sample = pair.first;
-    const SampleValue& value = pair.second;
+    const heap_profiling::SampleValue& value = pair.second;
 
     std::vector<base::Frame> frames;
     frames.reserve(sample.stack.size());

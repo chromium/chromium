@@ -1,6 +1,7 @@
 include_rules = [
   "+components/metrics/call_stack_profile_builder.h",
   "+components/metrics/call_stack_profile_metrics_provider.h",
+  "+components/services/heap_profiling/public",
 ]
 
 specific_include_rules = {
