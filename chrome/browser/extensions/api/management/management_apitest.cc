@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -210,7 +210,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     web_app::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
     auto* provider =
-        web_app::WebAppProviderBase::GetProviderBase(browser()->profile());
+        web_app::WebAppProvider::GetForWebApps(browser()->profile());
     EXPECT_FALSE(provider->registrar().IsLocallyInstalled(start_url));
     EXPECT_EQ(0, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));

@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -115,8 +114,8 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     chrome::CloseWindow(app_browser);
   }
 
-  WebAppProviderBase& provider() {
-    auto* provider = WebAppProviderBase::GetProviderBase(profile());
+  WebAppProvider& provider() {
+    auto* provider = WebAppProvider::GetForWebApps(profile());
     DCHECK(provider);
     return *provider;
   }

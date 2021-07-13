@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -134,7 +133,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   // disabled if the previous page was outside scope. Packaged apps are not
   // affected.
   WebAppRegistrar& registrar =
-      WebAppProviderBase::GetProviderBase(profile)->registrar();
+      WebAppProvider::GetForWebApps(profile)->registrar();
   if (registrar.IsInstalled(app_id)) {
     absl::optional<GURL> app_scope = registrar.GetAppScope(app_id);
     if (!app_scope)

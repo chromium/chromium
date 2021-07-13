@@ -36,9 +36,9 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -247,7 +247,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
           image_result.image.AsBitmap();
     }
 
-    auto* provider = web_app::WebAppProviderBase::GetProviderBase(
+    auto* provider = web_app::WebAppProvider::GetForWebApps(
         Profile::FromBrowserContext(context));
     DCHECK(provider);
 
@@ -261,7 +261,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
   extensions::api::management::ExtensionInfo CreateExtensionInfoFromWebApp(
       const std::string& app_id,
       content::BrowserContext* context) override {
-    auto* provider = web_app::WebAppProviderBase::GetProviderBase(
+    auto* provider = web_app::WebAppProvider::GetForWebApps(
         Profile::FromBrowserContext(context));
     DCHECK(provider);
     const web_app::WebAppRegistrar& registrar = provider->registrar();
@@ -327,7 +327,7 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
   // preference, the default launch value will be returned.
   // TODO(crbug.com/1003602): Make AppLaunchParams launch container Optional or
   // add a "default" launch container enum value.
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
   blink::mojom::DisplayMode display_mode =
       provider->registrar().GetAppUserDisplayMode(app_id);
@@ -530,7 +530,7 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
     const GURL& web_app_url,
     InstallOrLaunchWebAppCallback callback) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
 
   // Launch the app if web_app_url happens to match start_url. If not, the app

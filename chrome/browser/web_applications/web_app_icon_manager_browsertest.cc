@@ -17,8 +17,8 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -87,8 +87,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     }
 
     InstallManager& install_manager =
-        WebAppProviderBase::GetProviderBase(browser()->profile())
-            ->install_manager();
+        WebAppProvider::GetForWebApps(browser()->profile())->install_manager();
 
     base::RunLoop run_loop;
     install_manager.InstallWebAppFromInfo(

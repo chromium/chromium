@@ -33,8 +33,8 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/arc/arc_util.h"
@@ -79,8 +79,8 @@ const extensions::Extension* GetExtensionForTab(Profile* profile,
 
 absl::optional<std::string> GetAppIdForTab(Profile* profile,
                                            content::WebContents* tab) {
-  if (web_app::WebAppProviderBase* provider =
-          web_app::WebAppProviderBase::GetProviderBase(profile)) {
+  if (web_app::WebAppProvider* provider =
+          web_app::WebAppProvider::GetForWebApps(profile)) {
     // Use the Browser's app name to determine the web app for app windows and
     // use the tab's url for app tabs.
 

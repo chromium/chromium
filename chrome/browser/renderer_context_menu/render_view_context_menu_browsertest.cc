@@ -41,9 +41,9 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/pref_names.h"
@@ -116,7 +116,7 @@ using content::WebContents;
 using extensions::MimeHandlerViewGuest;
 using extensions::TestMimeHandlerViewGuest;
 using web_app::AppId;
-using web_app::WebAppProviderBase;
+using web_app::WebAppProvider;
 
 namespace {
 
@@ -566,8 +566,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   const AppId app_id = InstallTestWebApp(GURL(kAppUrl1));
 
   {
-    WebAppProviderBase* const provider =
-        WebAppProviderBase::GetProviderBase(browser()->profile());
+    WebAppProvider* const provider =
+        WebAppProvider::GetForWebApps(browser()->profile());
     base::RunLoop run_loop;
 
     ASSERT_TRUE(provider->install_finalizer().CanUserUninstallWebApp(app_id));

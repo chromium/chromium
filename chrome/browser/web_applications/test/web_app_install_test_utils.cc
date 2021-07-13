@@ -14,7 +14,6 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
@@ -80,16 +79,14 @@ AppId InstallDummyWebApp(Profile* profile,
   // Hence we use FinalizeInstall instead of InstallWebAppFromManifest
   // to install the web app.
   base::RunLoop run_loop;
-  WebAppProviderBase::GetProviderBase(profile)
-      ->install_finalizer()
-      .FinalizeInstall(
-          web_app_info, options,
-          base::BindLambdaForTesting(
-              [&](const AppId& installed_app_id, InstallResultCode code) {
-                EXPECT_EQ(installed_app_id, app_id);
-                EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
-                run_loop.Quit();
-              }));
+  WebAppProvider::GetForWebApps(profile)->install_finalizer().FinalizeInstall(
+      web_app_info, options,
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, InstallResultCode code) {
+            EXPECT_EQ(installed_app_id, app_id);
+            EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
+            run_loop.Quit();
+          }));
   run_loop.Run();
 
   return app_id;
@@ -136,7 +133,7 @@ AppId InstallWebAppWithUrlHandlers(
   web_app::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(info));
 
-  auto& url_handler_manager = WebAppProviderBase::GetProviderBase(profile)
+  auto& url_handler_manager = WebAppProvider::GetForWebApps(profile)
                                   ->os_integration_manager()
                                   .url_handler_manager_for_testing();
 

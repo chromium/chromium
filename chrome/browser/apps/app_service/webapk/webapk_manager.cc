@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/connection_holder.h"
@@ -29,7 +29,7 @@ namespace apps {
 WebApkManager::WebApkManager(Profile* profile)
     : profile_(profile),
       web_app_registrar_(
-          web_app::WebAppProviderBase::GetProviderBase(profile)->registrar()),
+          web_app::WebAppProvider::GetForWebApps(profile)->registrar()),
       initialized_(false) {
   proxy_ = AppServiceProxyFactory::GetForProfile(profile);
   apk_service_ = ash::ApkWebAppService::Get(profile_);

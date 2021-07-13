@@ -21,7 +21,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
@@ -114,7 +114,7 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
     const extensions::Extension* extension = registry->GetExtensionById(
         shortcut_info->extension_id, extensions::ExtensionRegistry::EVERYTHING);
     bool is_app_installed = false;
-    auto* app_provider = WebAppProviderBase::GetProviderBase(profile);
+    auto* app_provider = WebAppProvider::GetForWebApps(profile);
     if (app_provider &&
         app_provider->registrar().IsInstalled(shortcut_info->extension_id)) {
       is_app_installed = true;
@@ -199,7 +199,7 @@ std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
   if (app->from_bookmark()) {
     shortcut_info->is_multi_profile = true;
     OsIntegrationManager& os_integration_manager =
-        WebAppProviderBase::GetProviderBase(profile)->os_integration_manager();
+        WebAppProvider::GetForWebApps(profile)->os_integration_manager();
     if (const auto* file_handlers =
             os_integration_manager.GetEnabledFileHandlers(app->id())) {
       shortcut_info->file_handler_extensions =
@@ -264,7 +264,7 @@ void CreateShortcutsForWebApp(ShortcutCreationReason reason,
                               CreateShortcutsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebAppProviderBase::GetProviderBase(profile)
+  WebAppProvider::GetForWebApps(profile)
       ->os_integration_manager()
       .GetShortcutInfoForApp(
           app_id, base::BindOnce(&CreateShortcutsWithInfo, reason, locations,

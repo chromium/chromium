@@ -38,9 +38,9 @@
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -235,8 +235,8 @@ class ExtensionPolicyTest : public PolicyTest {
     return extensions::ExtensionRegistry::Get(browser()->profile());
   }
 
-  web_app::WebAppProviderBase* web_app_provider_base() {
-    return web_app::WebAppProviderBase::GetProviderBase(browser()->profile());
+  web_app::WebAppProvider* web_app_provider() {
+    return web_app::WebAppProvider::GetForWebApps(browser()->profile());
   }
 
   const extensions::Extension* InstallExtension(
@@ -285,7 +285,7 @@ class ExtensionPolicyTest : public PolicyTest {
     web_application->start_url = GURL("http://www.google.com");
     base::RunLoop loop;
     web_app::AppId return_app_id;
-    web_app_provider_base()->install_manager().InstallWebAppFromInfo(
+    web_app_provider()->install_manager().InstallWebAppFromInfo(
         std::move(web_application), web_app::ForInstallableSite::kYes,
         webapps::WebappInstallSource::SYNC,
         base::BindLambdaForTesting(
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallBlocklist_WebApp) {
   web_app::AppId web_app_id = InstallWebApp();
   EXPECT_TRUE(InstallExtension(kGoodCrxName));
 
-  web_app::WebAppProviderBase* provider = web_app_provider_base();
+  web_app::WebAppProvider* provider = web_app_provider();
   EXPECT_TRUE(provider->registrar().IsInstalled(web_app_id));
   extensions::ExtensionService* service = extension_service();
   EXPECT_TRUE(service->IsExtensionEnabled(kGoodCrxId));
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionAllowedTypes_WebApp) {
   web_app::AppId web_app_id = InstallWebApp();
   EXPECT_TRUE(InstallExtension(kGoodCrxName));
 
-  web_app::WebAppProviderBase* provider = web_app_provider_base();
+  web_app::WebAppProvider* provider = web_app_provider();
   EXPECT_TRUE(provider->registrar().IsInstalled(web_app_id));
   extensions::ExtensionService* service = extension_service();
   EXPECT_TRUE(service->IsExtensionEnabled(kGoodCrxId));
@@ -683,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionSettings_WebApp) {
   web_app::AppId web_app_id = InstallWebApp();
   EXPECT_TRUE(InstallExtension(kGoodCrxName));
 
-  web_app::WebAppProviderBase* provider = web_app_provider_base();
+  web_app::WebAppProvider* provider = web_app_provider();
   EXPECT_TRUE(provider->registrar().IsInstalled(web_app_id));
   extensions::ExtensionService* service = extension_service();
   EXPECT_TRUE(service->IsExtensionEnabled(kGoodCrxId));
@@ -2524,8 +2524,7 @@ class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
-          ->registrar();
+      web_app::WebAppProvider::GetForWebApps(browser()->profile())->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
@@ -2556,8 +2555,7 @@ IN_PROC_BROWSER_TEST_F(
     WebAppInstallForceListPolicyWithAppFallbackNameManifestTest,
     StartUpInstallationPWAFallbackName) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
-          ->registrar();
+      web_app::WebAppProvider::GetForWebApps(browser()->profile())->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
@@ -2588,8 +2586,7 @@ class WebAppInstallForceListPolicySAATest
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
                        StartUpInstallationSAA) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
-          ->registrar();
+      web_app::WebAppProvider::GetForWebApps(browser()->profile())->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
@@ -2617,8 +2614,7 @@ class WebAppInstallForceListPolicyWithAppFallbackNameSAATest
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
                        StartUpInstallationSAAFallbackName) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
-          ->registrar();
+      web_app::WebAppProvider::GetForWebApps(browser()->profile())->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
@@ -2650,8 +2646,7 @@ IN_PROC_BROWSER_TEST_F(
     WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest,
     StartUpInstallationPlaceholderFallbackName) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
-          ->registrar();
+      web_app::WebAppProvider::GetForWebApps(browser()->profile())->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);

@@ -35,8 +35,8 @@ WebAppControllerBrowserTestBase::WebAppControllerBrowserTestBase() = default;
 
 WebAppControllerBrowserTestBase::~WebAppControllerBrowserTestBase() = default;
 
-WebAppProviderBase& WebAppControllerBrowserTestBase::provider() {
-  auto* provider = WebAppProviderBase::GetProviderBase(profile());
+WebAppProvider& WebAppControllerBrowserTestBase::provider() {
+  auto* provider = WebAppProvider::GetForWebApps(profile());
   DCHECK(provider);
   return *provider;
 }

@@ -18,8 +18,8 @@
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -198,8 +198,7 @@ void ChromeAppSorting::MigrateAppIndex(
 void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
   auto* profile = Profile::FromBrowserContext(browser_context_);
   DCHECK(profile);
-  auto* web_app_provider =
-      web_app::WebAppProviderBase::GetProviderBase(profile);
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(web_app_provider);
   web_app_registrar_ = web_app_provider->registrar().AsWebAppRegistrar();
   web_app_sync_bridge_ =

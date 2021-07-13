@@ -14,8 +14,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
@@ -98,7 +98,7 @@ void UpdateFileHandlerRegistrationInOs(
   // On Linux, file associations are managed through shortcuts in the app menu,
   // so after enabling or disabling file handling for an app its shortcuts
   // need to be recreated.
-  WebAppProviderBase::GetProviderBase(profile)
+  WebAppProvider::GetForWebApps(profile)
       ->os_integration_manager()
       .GetShortcutInfoForApp(
           app_id, base::BindOnce(&OnShortcutInfoReceived, std::move(callback)));
@@ -172,7 +172,7 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
   // If this was triggered as part of the uninstallation process, nothing more
   // is needed. Uninstalling already cleans up shortcuts (and thus, file
   // handlers).
-  auto* provider = WebAppProviderBase::GetProviderBase(profile);
+  auto* provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(provider->registrar().IsInstalled(app_id));
   if (provider->registrar().IsUninstalling(app_id)) {
     std::move(callback).Run(true);

@@ -18,7 +18,7 @@
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -58,8 +58,7 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   }
 
   WebAppRegistrar& registrar() {
-    return WebAppProviderBase::GetProviderBase(browser()->profile())
-        ->registrar();
+    return WebAppProvider::GetForWebApps(browser()->profile())->registrar();
   }
 
   void InstallApp(ExternalInstallOptions install_options) {

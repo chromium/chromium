@@ -27,10 +27,9 @@ WebAppProviderFactory* WebAppProviderFactory::GetInstance() {
 }
 
 WebAppProviderFactory::WebAppProviderFactory()
-    : WebAppProviderBaseFactory(
+    : BrowserContextKeyedServiceFactory(
           "WebAppProvider",
           BrowserContextDependencyManager::GetInstance()) {
-  WebAppProviderBaseFactory::SetInstance(this);
   DependsOnExtensionsSystem();
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(ukm::UkmBackgroundRecorderFactory::GetInstance());
@@ -39,9 +38,7 @@ WebAppProviderFactory::WebAppProviderFactory()
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
-WebAppProviderFactory::~WebAppProviderFactory() {
-  WebAppProviderBaseFactory::SetInstance(nullptr);
-}
+WebAppProviderFactory::~WebAppProviderFactory() = default;
 
 KeyedService* WebAppProviderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

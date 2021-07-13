@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -75,7 +75,7 @@ std::vector<IntentPickerAppInfo> FindPwaForUrl(
   if (!app_id)
     return apps;
 
-  auto* const provider = web_app::WebAppProviderBase::GetProviderBase(profile);
+  auto* const provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (provider->registrar().GetAppUserDisplayMode(*app_id) ==
       web_app::DisplayMode::kBrowser) {
     return apps;

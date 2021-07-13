@@ -27,7 +27,7 @@ class WebContents;
 
 namespace web_app {
 
-class WebAppProviderBase;
+class WebAppProvider;
 
 // Base class for tests of user interface support for web applications.
 class WebAppControllerBrowserTestBase : public InProcessBrowserTest {
@@ -39,7 +39,7 @@ class WebAppControllerBrowserTestBase : public InProcessBrowserTest {
       const WebAppControllerBrowserTestBase&) = delete;
   ~WebAppControllerBrowserTestBase() override = 0;
 
-  WebAppProviderBase& provider();
+  WebAppProvider& provider();
 
   Profile* profile();
 

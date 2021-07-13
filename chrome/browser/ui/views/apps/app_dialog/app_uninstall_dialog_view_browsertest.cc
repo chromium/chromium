@@ -19,9 +19,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -181,7 +181,7 @@ class WebAppsUninstallDialogViewBrowserTest
     navigation_observer.WaitForNavigationFinished();
 
     auto* provider =
-        web_app::WebAppProviderBase::GetProviderBase(browser()->profile());
+        web_app::WebAppProvider::GetForWebApps(browser()->profile());
     DCHECK(provider);
     app_name_ = provider->registrar().GetAppShortName(app_id_);
   }

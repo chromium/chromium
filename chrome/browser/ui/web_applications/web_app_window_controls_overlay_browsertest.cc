@@ -57,8 +57,8 @@ class WebAppWindowControlsOverlayBrowserTest
     return app_id;
   }
 
-  WebAppProviderBase& provider() {
-    auto* provider = WebAppProviderBase::GetProviderBase(browser()->profile());
+  WebAppProvider& provider() {
+    auto* provider = WebAppProvider::GetForWebApps(browser()->profile());
     DCHECK(provider);
     return *provider;
   }

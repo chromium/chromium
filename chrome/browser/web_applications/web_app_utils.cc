@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -185,7 +185,7 @@ bool AreFileHandlersAlreadyRegistered(
 
 apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
                                                           const GURL& url) {
-  auto* provider = WebAppProviderBase::GetProviderBase(profile);
+  auto* provider = WebAppProvider::GetForWebApps(profile);
   if (!provider)
     return {};
 

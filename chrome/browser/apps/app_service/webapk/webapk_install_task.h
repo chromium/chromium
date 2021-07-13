@@ -30,7 +30,7 @@ class WebApk;
 }
 
 namespace web_app {
-class WebAppProviderBase;
+class WebAppProvider;
 }
 
 namespace apps {
@@ -73,7 +73,7 @@ class WebApkInstallTask {
   void DeliverResult(WebApkInstallStatus status);
 
   Profile* const profile_;
-  web_app::WebAppProviderBase* web_app_provider_;
+  web_app::WebAppProvider* web_app_provider_;
 
   arc::mojom::WebApkInfoPtr web_apk_info_;
   const std::string app_id_;

@@ -4,14 +4,13 @@
 
 #include "chrome/browser/web_applications/test/web_app_uninstall_waiter.h"
 
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 
 namespace web_app {
 
 WebAppUninstallWaiter::WebAppUninstallWaiter(Profile* profile, AppId app_id)
     : app_id_(std::move(app_id)) {
-  observation_.Observe(
-      &WebAppProviderBase::GetProviderBase(profile)->registrar());
+  observation_.Observe(&WebAppProvider::GetForWebApps(profile)->registrar());
 }
 WebAppUninstallWaiter::~WebAppUninstallWaiter() = default;
 

@@ -80,7 +80,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -661,7 +661,7 @@ void NewWindow(Browser* browser) {
 
     auto launch_container =
         apps::mojom::LaunchContainer::kLaunchContainerWindow;
-    if (web_app::WebAppProviderBase::GetProviderBase(profile)
+    if (web_app::WebAppProvider::GetForWebApps(profile)
             ->registrar()
             .GetAppEffectiveDisplayMode(app_id) ==
         blink::mojom::DisplayMode::kBrowser) {

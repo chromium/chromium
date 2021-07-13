@@ -9,8 +9,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
@@ -20,7 +20,7 @@ namespace web_app {
 class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppRegistrar& registrar() {
-    auto* provider = WebAppProviderBase::GetProviderBase(profile());
+    auto* provider = WebAppProvider::GetForWebApps(profile());
     CHECK(provider);
     return provider->registrar();
   }

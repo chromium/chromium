@@ -28,10 +28,10 @@
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/mojom/app.mojom.h"
@@ -48,7 +48,7 @@
 #include "url/gurl.h"
 
 using web_app::GenerateAppId;
-using web_app::WebAppProviderBase;
+using web_app::WebAppProvider;
 
 namespace ash {
 namespace app_time {
@@ -184,7 +184,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
       base::RunLoop run_loop;
-      WebAppProviderBase::GetProviderBase(&profile_)
+      WebAppProvider::GetForWebApps(&profile_)
           ->install_finalizer()
           .UninstallExternalWebApp(
               app_id.app_id(),
@@ -221,7 +221,7 @@ class AppServiceWrapperTest : public ::testing::Test {
     }
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
-      WebAppProviderBase::GetProviderBase(&profile_)
+      WebAppProvider::GetForWebApps(&profile_)
           ->registry_controller()
           .SetAppIsDisabled(app_id.app_id(), disabled);
       task_environment_.RunUntilIdle();

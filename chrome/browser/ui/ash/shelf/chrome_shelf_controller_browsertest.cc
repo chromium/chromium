@@ -83,7 +83,6 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
@@ -134,7 +133,7 @@ using ::ash::Shelf;
 using ::content::WebContents;
 using ::extensions::AppWindow;
 using ::extensions::Extension;
-using ::web_app::WebAppProviderBase;
+using ::web_app::WebAppProvider;
 
 ash::ShelfAction SelectItem(
     const ash::ShelfID& id,
@@ -2386,8 +2385,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   // Set both apps to open in windows.
   extensions::SetLaunchType(browser()->profile(), hosted_app->id(),
                             extensions::LAUNCH_TYPE_WINDOW);
-  WebAppProviderBase* provider =
-      WebAppProviderBase::GetProviderBase(browser()->profile());
+  WebAppProvider* provider =
+      WebAppProvider::GetForWebApps(browser()->profile());
   DCHECK(provider);
   provider->registry_controller().SetAppUserDisplayMode(
       web_app_id, web_app::DisplayMode::kStandalone, /*is_user_action=*/false);

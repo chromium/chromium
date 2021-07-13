@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -43,7 +43,7 @@ bool IsLastBadgingTimeWithin(base::TimeDelta time_frame,
                              const base::Clock* clock,
                              Profile* profile) {
   const base::Time last_badging_time =
-      web_app::WebAppProviderBase::GetProviderBase(profile)
+      web_app::WebAppProvider::GetForWebApps(profile)
           ->registrar()
           .GetAppLastBadgingTime(app_id);
   return clock->Now() < last_badging_time + time_frame;
@@ -57,7 +57,7 @@ void UpdateBadgingTime(const base::Clock* clock,
     return;
   }
 
-  web_app::WebAppProviderBase::GetProviderBase(profile)
+  web_app::WebAppProvider::GetForWebApps(profile)
       ->registry_controller()
       .SetAppLastBadgingTime(app_id, clock->Now());
 }
@@ -250,7 +250,7 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!contents)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(contents->GetBrowserContext()));
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
@@ -273,7 +273,7 @@ BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!render_process_host)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(render_process_host->GetBrowserContext()));
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};

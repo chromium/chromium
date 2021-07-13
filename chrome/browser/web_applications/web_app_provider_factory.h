@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PROVIDER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base_factory.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -20,7 +20,7 @@ class WebAppProvider;
 
 // Singleton that owns all WebAppProviderFactories and associates them with
 // Profile.
-class WebAppProviderFactory : public WebAppProviderBaseFactory {
+class WebAppProviderFactory : public BrowserContextKeyedServiceFactory {
  public:
   WebAppProviderFactory(const WebAppProviderFactory&) = delete;
   WebAppProviderFactory& operator=(const WebAppProviderFactory&) = delete;

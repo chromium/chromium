@@ -826,7 +826,7 @@ TEST_F(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
 
   // There should be exactly 1 app remaining.
   std::map<AppId, GURL> apps =
-      WebAppProviderBase::GetProviderBase(profile())
+      WebAppProvider::GetForWebApps(profile())
           ->registrar()
           .GetExternallyInstalledApps(ExternalInstallSource::kExternalPolicy);
   EXPECT_EQ(1u, apps.size());

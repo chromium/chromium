@@ -69,7 +69,7 @@ A good example set of browser tests is in [`web_app_browsertest.cc`](../../ui/we
 
 The [`TestWebAppProvider`](../test/test_web_app_provider.h) is a nifty way to mock out pieces of the WebAppProvider system for a browser test. To use it, you put a [`TestWebAppProviderCreator`](../test/test_web_app_provider.h) in your test class, and give it a callback to create a `WebAppProvider` given a `Profile`. This allows you to create a [`TestWebAppProvider`](../test/test_web_app_provider.h) instead of the regular `WebAppProvider`, swapping out any part of the system.
 
-This means that all of the users of [`WebAppProvider::Get`](https://source.chromium.org/search?q=WebAppProvider::Get), [`WebAppProvider::GetForWebContents`](https://source.chromium.org/search?q=WebAppProvider::Get), and [`WebAppProviderBase::Get`](https://source.chromium.org/search?q=WebAppProviderBase::Get) (etc) will be talking to the `TestWebAppProvider` that the test created. This is perfect for a browsertest, as it runs the full browser.
+This means that all of the users of [`WebAppProvider::Get`](https://source.chromium.org/search?q=WebAppProvider::Get), [`WebAppProvider::GetForWebContents`](https://source.chromium.org/search?q=WebAppProvider::Get) (etc) will be talking to the `TestWebAppProvider` that the test created. This is perfect for a browsertest, as it runs the full browser.
 
 The other difference between this and the [`TestWebAppRegistryController`](#tool-testwebappregistrycontroller) above is that this, without any changes (and as long as the user calls `Start()`), will run the normal production `WebAppProvider` system. This means changes are written to disk, the OS integrations are triggered, etc.
 

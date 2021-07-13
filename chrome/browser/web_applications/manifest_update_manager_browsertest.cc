@@ -29,13 +29,13 @@
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -150,7 +150,7 @@ constexpr SkColor kAnotherInstallableIconTopLeftColor =
     SkColorSetRGB(0x5C, 0x5C, 0x5C);
 
 ManifestUpdateManager& GetManifestUpdateManager(Browser* browser) {
-  return WebAppProviderBase::GetProviderBase(browser->profile())
+  return WebAppProvider::GetForWebApps(browser->profile())
       ->manifest_update_manager();
 }
 
@@ -347,8 +347,8 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     return std::move(awaiter).AwaitNextResult();
   }
 
-  WebAppProviderBase& GetProvider() {
-    return *WebAppProviderBase::GetProviderBase(browser()->profile());
+  WebAppProvider& GetProvider() {
+    return *WebAppProvider::GetForWebApps(browser()->profile());
   }
 
  protected:

@@ -18,7 +18,7 @@
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -71,7 +71,7 @@ void AndroidSmsAppSetupControllerImpl::PwaDelegate::RemovePwa(
     const web_app::AppId& app_id,
     Profile* profile,
     SuccessCallback callback) {
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider) {
     std::move(callback).Run(false);
     return;
