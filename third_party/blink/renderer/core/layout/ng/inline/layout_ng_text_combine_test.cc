@@ -136,6 +136,36 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// http://crbug.com/1228058
+TEST_F(LayoutNGTextCombineTest, ElementRecalcOwnStyle) {
+  InsertStyleElement(
+      "#root { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root><br id=target></div>");
+  auto& root = *GetElementById("root");
+  const auto& root_layout_object =
+      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root"
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutBR BR id="target"
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+
+  // Call |Element::RecalcOwnStyle()| for <br>
+  auto& target = *GetElementById("target");
+  target.style()->setProperty(GetDocument().GetExecutionContext(), "color",
+                              "red", "", ASSERT_NO_EXCEPTION);
+  RunDocumentLifecycle();
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root"
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutBR BR id="target" style="color: red;"
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+}
+
 TEST_F(LayoutNGTextCombineTest, InkOverflow) {
   LoadAhem();
   InsertStyleElement(
