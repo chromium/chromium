@@ -126,7 +126,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& button_text,
       ui::NativeTheme::ColorId background_color_id,
       const base::RepeatingClosure& action,
-      bool show_badge);
+      bool show_sync_badge);
   // Displays the sync info section as a rectangle with text. Clicking the
   // rectangle triggers |action|.
   void BuildSyncInfoWithoutCallToAction(const std::u16string& text,

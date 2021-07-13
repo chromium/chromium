@@ -180,30 +180,21 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   if (profile->IsOffTheRecord() || profile->IsGuestSession())
     return gfx::ImageSkia();
 
-  absl::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
   bool is_sync_feature_enabled =
       IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
           signin::ConsentLevel::kSync);
-  if (!error) {
-    // There's no error, so just show the sync on/off icon depending on whether
-    // sync-the-feature is enabled.
-    if (is_sync_feature_enabled) {
-      return ColoredImageForMenu(
-          kSyncCircleIcon, GetNativeTheme()->GetSystemColor(
-                               ui::NativeTheme::kColorId_AlertSeverityLow));
-    }
+  if (!is_sync_feature_enabled) {
+    // This is done regardless of GetAvatarSyncErrorType() because the icon
+    // should reflect that sync-the-feature is off. The error will still be
+    // highlighted by other parts of the UI.
     return ColoredImageForMenu(kSyncPausedCircleIcon, gfx::kGoogleGrey500);
   }
 
-  // There's an error. Usually a red sync-paused icon will be used, but some
-  // errors have special icons.
-  if ((error == AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError ||
-       error == AvatarSyncErrorType::
-                    kTrustedVaultRecoverabilityDegradedForPasswordsError) &&
-      !is_sync_feature_enabled) {
-    return ColoredImageForMenu(
-        kKeyCrossedIcon, GetNativeTheme()->GetSystemColor(
-                             ui::NativeTheme::kColorId_AlertSeverityHigh));
+  absl::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
+  if (!error) {
+      return ColoredImageForMenu(
+          kSyncCircleIcon, GetNativeTheme()->GetSystemColor(
+                               ui::NativeTheme::kColorId_AlertSeverityLow));
   }
 
   ui::NativeTheme::ColorId color_id =
@@ -530,7 +521,7 @@ void ProfileMenuView::BuildSyncInfo() {
             : ui::NativeTheme::kColorId_SyncInfoContainerError,
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
                             base::Unretained(this), *error),
-        /*show_badge=*/true);
+        /*show_sync_badge=*/is_sync_feature_enabled);
     return;
   }
 
@@ -556,7 +547,7 @@ void ProfileMenuView::BuildSyncInfo() {
         ui::NativeTheme::kColorId_SyncInfoContainerNoPrimaryAccount,
         base::BindRepeating(&ProfileMenuView::OnSigninAccountButtonClicked,
                             base::Unretained(this), account_info),
-        /*show_badge=*/true);
+        /*show_sync_badge=*/true);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // There is always an account on ChromeOS.
@@ -568,7 +559,7 @@ void ProfileMenuView::BuildSyncInfo() {
         ui::NativeTheme::kColorId_SyncInfoContainerNoPrimaryAccount,
         base::BindRepeating(&ProfileMenuView::OnSigninButtonClicked,
                             base::Unretained(this)),
-        /*show_badge=*/false);
+        /*show_sync_badge=*/false);
 #endif
   }
 }
