@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_ADDRESS_PROFILE_MESSAGE_CONTROLLER_H_
-#define CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_ADDRESS_PROFILE_MESSAGE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_UPDATE_ADDRESS_PROFILE_MESSAGE_CONTROLLER_H_
+#define CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_UPDATE_ADDRESS_PROFILE_MESSAGE_CONTROLLER_H_
 
 #include <memory>
 
@@ -16,18 +16,18 @@
 
 namespace autofill {
 
-// Android implementation of the prompt for saving an address profile
-// which uses Messages API. The class is responsible for populating
+// Android implementation of the prompt for saving new/updating existing address
+// profile which uses Messages API. The class is responsible for populating
 // message properties, managing message's lifetime and handling user
 // interactions.
-class SaveAddressProfileMessageController {
+class SaveUpdateAddressProfileMessageController {
  public:
-  SaveAddressProfileMessageController();
-  SaveAddressProfileMessageController(
-      const SaveAddressProfileMessageController&) = delete;
-  SaveAddressProfileMessageController& operator=(
-      const SaveAddressProfileMessageController&) = delete;
-  ~SaveAddressProfileMessageController();
+  SaveUpdateAddressProfileMessageController();
+  SaveUpdateAddressProfileMessageController(
+      const SaveUpdateAddressProfileMessageController&) = delete;
+  SaveUpdateAddressProfileMessageController& operator=(
+      const SaveUpdateAddressProfileMessageController&) = delete;
+  ~SaveUpdateAddressProfileMessageController();
 
   using PrimaryActionCallback = base::OnceCallback<void(
       content::WebContents*,
@@ -35,6 +35,13 @@ class SaveAddressProfileMessageController {
       const AutofillProfile* original_profile,
       AutofillClient::AddressProfileSavePromptCallback)>;
 
+  // Triggers a message for saving the `profile` using the given
+  // `web_contents`. If another message is already shown, it will be replaced
+  // with the incoming one. The `original_profile` is nullptr for a new address
+  // or points to the existing profile which is to be updated.
+  // `primary_action_callback` is triggered when the user accepts the message,
+  // otherwise `save_address_profile_callback` is run with the corresponding
+  // decision.
   void DisplayMessage(content::WebContents* web_contents,
                       const AutofillProfile& profile,
                       const AutofillProfile* original_profile,
@@ -51,7 +58,7 @@ class SaveAddressProfileMessageController {
   void DismissMessageForTest(messages::DismissReason reason);
 
  private:
-  friend class SaveAddressProfileMessageControllerTest;
+  friend class SaveUpdateAddressProfileMessageControllerTest;
 
   void DismissMessage();
 
@@ -77,4 +84,4 @@ class SaveAddressProfileMessageController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_ADDRESS_PROFILE_MESSAGE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_UPDATE_ADDRESS_PROFILE_MESSAGE_CONTROLLER_H_

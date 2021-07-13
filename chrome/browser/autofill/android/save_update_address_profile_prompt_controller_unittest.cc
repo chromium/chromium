@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/android/save_address_profile_prompt_controller.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
 
 #include <jni.h>
 #include <memory>
@@ -23,17 +23,18 @@
 
 namespace autofill {
 
-class MockSaveAddressProfilePromptView : public SaveAddressProfilePromptView {
+class MockSaveUpdateAddressProfilePromptView
+    : public SaveUpdateAddressProfilePromptView {
  public:
   MOCK_METHOD(bool,
               Show,
-              (SaveAddressProfilePromptController * controller,
+              (SaveUpdateAddressProfilePromptController * controller,
                const AutofillProfile& autofill_profile,
                bool is_update),
               (override));
 };
 
-class SaveAddressProfilePromptControllerTest : public testing::Test {
+class SaveUpdateAddressProfilePromptControllerTest : public testing::Test {
  public:
   void SetUp() override {
     // Enable both explicit save prompts and structured names.
@@ -71,21 +72,22 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
   std::string GetLocale() { return "en-US"; }
 
   base::test::ScopedFeatureList feature_list_;
-  MockSaveAddressProfilePromptView* prompt_view_;
+  MockSaveUpdateAddressProfilePromptView* prompt_view_;
   AutofillProfile profile_;
   AutofillProfile original_profile_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;
-  std::unique_ptr<SaveAddressProfilePromptController> controller_;
+  std::unique_ptr<SaveUpdateAddressProfilePromptController> controller_;
   JNIEnv* env_ = base::android::AttachCurrentThread();
   base::android::JavaParamRef<jobject> mock_caller_{nullptr};
 };
 
-void SaveAddressProfilePromptControllerTest::SetUpController(bool is_update) {
-  auto prompt_view = std::make_unique<MockSaveAddressProfilePromptView>();
+void SaveUpdateAddressProfilePromptControllerTest::SetUpController(
+    bool is_update) {
+  auto prompt_view = std::make_unique<MockSaveUpdateAddressProfilePromptView>();
   prompt_view_ = prompt_view.get();
-  controller_ = std::make_unique<SaveAddressProfilePromptController>(
+  controller_ = std::make_unique<SaveUpdateAddressProfilePromptController>(
       std::move(prompt_view), profile_,
       is_update ? &original_profile_ : nullptr, decision_callback_.Get(),
       dismissal_callback_.Get());
@@ -93,20 +95,20 @@ void SaveAddressProfilePromptControllerTest::SetUpController(bool is_update) {
       .WillByDefault(testing::Return(true));
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldShowViewOnDisplayPromptWhenSave) {
   EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, false));
   controller_->DisplayPrompt();
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldShowViewOnDisplayPromptWhenUpdate) {
   SetUpController(/*is_update=*/true);
   EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, true));
   controller_->DisplayPrompt();
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeDismissalCallbackWhenShowReturnsFalse) {
   EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, false))
       .WillOnce(testing::Return(false));
@@ -115,7 +117,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_->DisplayPrompt();
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenUserAccepts) {
   controller_->DisplayPrompt();
 
@@ -126,7 +128,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_->OnUserAccepted(env_, mock_caller_);
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenUserDeclines) {
   controller_->DisplayPrompt();
 
@@ -137,7 +139,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_->OnUserDeclined(env_, mock_caller_);
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenUserEditsProfile) {
   controller_->DisplayPrompt();
 
@@ -154,7 +156,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
       base::android::JavaParamRef<jobject>(env_, edited_profile_java.obj()));
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeDismissalCallbackWhenPromptIsDismissed) {
   controller_->DisplayPrompt();
 
@@ -162,7 +164,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_->OnPromptDismissed(env_, mock_caller_);
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenControllerDiesWithoutInteraction) {
   controller_->DisplayPrompt();
 
@@ -172,7 +174,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_.reset();
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldReturnDataToDisplayWhenSave) {
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
             controller_->GetTitle());
@@ -190,7 +192,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
             controller_->GetNegativeButtonText());
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldReturnDataToDisplayWhenUpdate) {
   SetUpController(/*is_update=*/true);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE),
@@ -208,7 +210,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
             controller_->GetNegativeButtonText());
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest,
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldReturnDataToDisplayWhenUpdateWithAddressChanged) {
   original_profile_ = test::GetFullProfile();
   original_profile_.SetInfo(ADDRESS_HOME_ZIP, u"", GetLocale());

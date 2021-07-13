@@ -8,8 +8,8 @@
 #include <string>
 
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "chrome/browser/ui/autofill/save_address_profile_icon_controller.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_icon_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -22,7 +22,7 @@ class AutofillBubbleBase;
 class SaveUpdateAddressProfileBubbleControllerImpl
     : public AutofillBubbleControllerBase,
       public SaveUpdateAddressProfileBubbleController,
-      public SaveAddressProfileIconController,
+      public SaveUpdateAddressProfileIconController,
       public content::WebContentsUserData<
           SaveUpdateAddressProfileBubbleControllerImpl> {
  public:

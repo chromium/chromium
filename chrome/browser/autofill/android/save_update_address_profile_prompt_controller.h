@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_ADDRESS_PROFILE_PROMPT_CONTROLLER_H_
-#define CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_ADDRESS_PROFILE_PROMPT_CONTROLLER_H_
+#ifndef CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER_H_
+#define CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER_H_
 
 #include <memory>
 
 #include <jni.h>
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "chrome/browser/autofill/android/save_address_profile_prompt_view.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -18,23 +18,23 @@
 
 namespace autofill {
 
-// Android implementation of the modal prompt for saving an address profile.
-// The class is responsible for showing the view and handling user
-// interactions. The controller owns its java counterpart and the corresponding
-// view.
-class SaveAddressProfilePromptController {
+// Android implementation of the modal prompt for saving new/updating existing
+// address profile. The class is responsible for showing the view and handling
+// user interactions. The controller owns its java counterpart and the
+// corresponding view.
+class SaveUpdateAddressProfilePromptController {
  public:
-  SaveAddressProfilePromptController(
-      std::unique_ptr<SaveAddressProfilePromptView> prompt_view,
+  SaveUpdateAddressProfilePromptController(
+      std::unique_ptr<SaveUpdateAddressProfilePromptView> prompt_view,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
       AutofillClient::AddressProfileSavePromptCallback decision_callback,
       base::OnceCallback<void()> dismissal_callback);
-  SaveAddressProfilePromptController(
-      const SaveAddressProfilePromptController&) = delete;
-  SaveAddressProfilePromptController& operator=(
-      const SaveAddressProfilePromptController&) = delete;
-  ~SaveAddressProfilePromptController();
+  SaveUpdateAddressProfilePromptController(
+      const SaveUpdateAddressProfilePromptController&) = delete;
+  SaveUpdateAddressProfilePromptController& operator=(
+      const SaveUpdateAddressProfilePromptController&) = delete;
+  ~SaveUpdateAddressProfilePromptController();
 
   void DisplayPrompt();
 
@@ -74,7 +74,7 @@ class SaveAddressProfilePromptController {
   // If the user explicitly accepted/dismissed/edited the profile.
   bool had_user_interaction_ = false;
   // View that displays the prompt.
-  std::unique_ptr<SaveAddressProfilePromptView> prompt_view_;
+  std::unique_ptr<SaveUpdateAddressProfilePromptView> prompt_view_;
   // The profile which is being confirmed by the user.
   AutofillProfile profile_;
   // The profile (if exists) which will be updated if the user confirms.
@@ -83,10 +83,10 @@ class SaveAddressProfilePromptController {
   AutofillClient::AddressProfileSavePromptCallback decision_callback_;
   // The callback guaranteed to be run once the prompt is dismissed.
   base::OnceCallback<void()> dismissal_callback_;
-  // The corresponding Java SaveAddressProfilePromptController.
+  // The corresponding Java SaveUpdateAddressProfilePromptController.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_ADDRESS_PROFILE_PROMPT_CONTROLLER_H_
+#endif  // CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER_H_

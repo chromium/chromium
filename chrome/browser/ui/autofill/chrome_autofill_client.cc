@@ -569,7 +569,7 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
     AddressProfileSavePromptCallback callback) {
 #if defined(OS_ANDROID)
   // TODO(crbug.com/1167061): Respect SaveAddressProfilePromptOptions.
-  save_address_profile_flow_manager_.OfferSave(
+  save_update_address_profile_flow_manager_.OfferSave(
       web_contents(), profile, original_profile, std::move(callback));
 #else
   SaveUpdateAddressProfileBubbleControllerImpl::CreateForWebContents(

@@ -26,7 +26,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/autofill/android/save_address_profile_flow_manager.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_flow_manager.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
@@ -206,7 +206,7 @@ class ChromeAutofillClient
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
-  SaveAddressProfileFlowManager save_address_profile_flow_manager_;
+  SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
 #endif
   CardUnmaskPromptControllerImpl unmask_controller_;

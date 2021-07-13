@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/save_address_profile_icon_view.h"
+#include "chrome/browser/ui/views/autofill/save_update_address_profile_icon_view.h"
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/autofill/save_address_profile_icon_controller.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_icon_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
@@ -13,7 +13,7 @@
 
 namespace autofill {
 
-SaveAddressProfileIconView::SaveAddressProfileIconView(
+SaveUpdateAddressProfileIconView::SaveUpdateAddressProfileIconView(
     CommandUpdater* command_updater,
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
     PageActionIconView::Delegate* page_action_icon_delegate)
@@ -22,10 +22,11 @@ SaveAddressProfileIconView::SaveAddressProfileIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate) {}
 
-SaveAddressProfileIconView::~SaveAddressProfileIconView() = default;
+SaveUpdateAddressProfileIconView::~SaveUpdateAddressProfileIconView() = default;
 
-views::BubbleDialogDelegate* SaveAddressProfileIconView::GetBubble() const {
-  SaveAddressProfileIconController* controller = GetController();
+views::BubbleDialogDelegate* SaveUpdateAddressProfileIconView::GetBubble()
+    const {
+  SaveUpdateAddressProfileIconController* controller = GetController();
   if (!controller)
     return nullptr;
 
@@ -37,32 +38,32 @@ views::BubbleDialogDelegate* SaveAddressProfileIconView::GetBubble() const {
       controller->GetBubbleView());
 }
 
-void SaveAddressProfileIconView::UpdateImpl() {
-  SaveAddressProfileIconController* controller = GetController();
+void SaveUpdateAddressProfileIconView::UpdateImpl() {
+  SaveUpdateAddressProfileIconController* controller = GetController();
   bool command_enabled =
       SetCommandEnabled(controller && controller->IsBubbleActive());
   SetVisible(command_enabled);
 }
 
-std::u16string SaveAddressProfileIconView::GetTextForTooltipAndAccessibleName()
-    const {
-  SaveAddressProfileIconController* controller = GetController();
+std::u16string
+SaveUpdateAddressProfileIconView::GetTextForTooltipAndAccessibleName() const {
+  SaveUpdateAddressProfileIconController* controller = GetController();
   if (!controller)
     return std::u16string();
   return controller->GetPageActionIconTootip();
 }
 
-void SaveAddressProfileIconView::OnExecuting(
+void SaveUpdateAddressProfileIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
-const gfx::VectorIcon& SaveAddressProfileIconView::GetVectorIcon() const {
+const gfx::VectorIcon& SaveUpdateAddressProfileIconView::GetVectorIcon() const {
   // TODO(crbug.com/1167060): Update the icon upon having final mocks.
   return vector_icons::kLocationOnIcon;
 }
 
-SaveAddressProfileIconController* SaveAddressProfileIconView::GetController()
-    const {
-  return SaveAddressProfileIconController::Get(GetWebContents());
+SaveUpdateAddressProfileIconController*
+SaveUpdateAddressProfileIconView::GetController() const {
+  return SaveUpdateAddressProfileIconController::Get(GetWebContents());
 }
 
 }  // namespace autofill

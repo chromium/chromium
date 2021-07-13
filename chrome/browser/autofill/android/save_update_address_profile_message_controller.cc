@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/android/save_address_profile_message_controller.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_message_controller.h"
 
 #include <utility>
 
@@ -20,14 +20,15 @@
 
 namespace autofill {
 
-SaveAddressProfileMessageController::SaveAddressProfileMessageController() =
-    default;
+SaveUpdateAddressProfileMessageController::
+    SaveUpdateAddressProfileMessageController() = default;
 
-SaveAddressProfileMessageController::~SaveAddressProfileMessageController() {
+SaveUpdateAddressProfileMessageController::
+    ~SaveUpdateAddressProfileMessageController() {
   DismissMessage();
 }
 
-void SaveAddressProfileMessageController::DisplayMessage(
+void SaveUpdateAddressProfileMessageController::DisplayMessage(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
@@ -52,14 +53,16 @@ void SaveAddressProfileMessageController::DisplayMessage(
   primary_action_callback_ = std::move(primary_action_callback);
 
   // Binding with base::Unretained(this) is safe here because
-  // SaveAddressProfileMessageController owns message_. Callbacks won't be
+  // SaveUpdateAddressProfileMessageController owns message_. Callbacks won't be
   // called after the current object is destroyed.
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::SAVE_ADDRESS_PROFILE,
-      base::BindOnce(&SaveAddressProfileMessageController::OnPrimaryAction,
-                     base::Unretained(this)),
-      base::BindOnce(&SaveAddressProfileMessageController::OnMessageDismissed,
-                     base::Unretained(this)));
+      base::BindOnce(
+          &SaveUpdateAddressProfileMessageController::OnPrimaryAction,
+          base::Unretained(this)),
+      base::BindOnce(
+          &SaveUpdateAddressProfileMessageController::OnMessageDismissed,
+          base::Unretained(this)));
 
   message_->SetTitle(GetTitle());
   message_->SetDescription(GetDescription());
@@ -73,17 +76,17 @@ void SaveAddressProfileMessageController::DisplayMessage(
       messages::MessagePriority::kNormal);
 }
 
-bool SaveAddressProfileMessageController::IsMessageDisplayed() {
+bool SaveUpdateAddressProfileMessageController::IsMessageDisplayed() {
   return !!message_;
 }
 
-void SaveAddressProfileMessageController::OnPrimaryAction() {
+void SaveUpdateAddressProfileMessageController::OnPrimaryAction() {
   std::move(primary_action_callback_)
       .Run(web_contents_, profile_, original_profile_,
            std::move(save_address_profile_callback_));
 }
 
-void SaveAddressProfileMessageController::OnMessageDismissed(
+void SaveUpdateAddressProfileMessageController::OnMessageDismissed(
     messages::DismissReason dismiss_reason) {
   switch (dismiss_reason) {
     case messages::DismissReason::PRIMARY_ACTION:
@@ -113,7 +116,7 @@ void SaveAddressProfileMessageController::OnMessageDismissed(
   web_contents_ = nullptr;
 }
 
-void SaveAddressProfileMessageController::DismissMessageForTest(
+void SaveUpdateAddressProfileMessageController::DismissMessageForTest(
     messages::DismissReason reason) {
   if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
@@ -121,33 +124,34 @@ void SaveAddressProfileMessageController::DismissMessageForTest(
   }
 }
 
-void SaveAddressProfileMessageController::DismissMessage() {
+void SaveUpdateAddressProfileMessageController::DismissMessage() {
   if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
         message_.get(), web_contents_, messages::DismissReason::UNKNOWN);
   }
 }
 
-void SaveAddressProfileMessageController::RunSaveAddressProfileCallback(
+void SaveUpdateAddressProfileMessageController::RunSaveAddressProfileCallback(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   std::move(save_address_profile_callback_).Run(decision, profile_);
   primary_action_callback_.Reset();
 }
 
-std::u16string SaveAddressProfileMessageController::GetTitle() {
+std::u16string SaveUpdateAddressProfileMessageController::GetTitle() {
   return l10n_util::GetStringUTF16(
       original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
                         : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
 }
 
-std::u16string SaveAddressProfileMessageController::GetDescription() {
+std::u16string SaveUpdateAddressProfileMessageController::GetDescription() {
   return GetProfileDescription(
       original_profile_ ? *original_profile_ : profile_,
       g_browser_process->GetApplicationLocale(),
       /*include_address_and_contacts=*/true);
 }
 
-std::u16string SaveAddressProfileMessageController::GetPrimaryButtonText() {
+std::u16string
+SaveUpdateAddressProfileMessageController::GetPrimaryButtonText() {
   return l10n_util::GetStringUTF16(
       original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
                         : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);

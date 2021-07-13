@@ -5,12 +5,12 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/android/autofill/save_address_profile_prompt_view_android.h"
+#include "chrome/browser/ui/android/autofill/save_update_address_profile_prompt_view_android.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/SaveAddressProfilePrompt_jni.h"
+#include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePrompt_jni.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
-#include "chrome/browser/autofill/android/save_address_profile_prompt_controller.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -21,21 +21,23 @@ using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
 
-SaveAddressProfilePromptViewAndroid::SaveAddressProfilePromptViewAndroid(
-    content::WebContents* web_contents)
+SaveUpdateAddressProfilePromptViewAndroid::
+    SaveUpdateAddressProfilePromptViewAndroid(
+        content::WebContents* web_contents)
     : web_contents_(web_contents) {
   DCHECK(web_contents);
 }
 
-SaveAddressProfilePromptViewAndroid::~SaveAddressProfilePromptViewAndroid() {
+SaveUpdateAddressProfilePromptViewAndroid::
+    ~SaveUpdateAddressProfilePromptViewAndroid() {
   if (java_object_) {
-    Java_SaveAddressProfilePrompt_dismiss(base::android::AttachCurrentThread(),
-                                          java_object_);
+    Java_SaveUpdateAddressProfilePrompt_dismiss(
+        base::android::AttachCurrentThread(), java_object_);
   }
 }
 
-bool SaveAddressProfilePromptViewAndroid::Show(
-    SaveAddressProfilePromptController* controller,
+bool SaveUpdateAddressProfilePromptViewAndroid::Show(
+    SaveUpdateAddressProfilePromptController* controller,
     const AutofillProfile& autofill_profile,
     bool is_update) {
   DCHECK(controller);
@@ -59,7 +61,7 @@ bool SaveAddressProfilePromptViewAndroid::Show(
   base::android::ScopedJavaLocalRef<jobject> java_autofill_profile =
       PersonalDataManagerAndroid::CreateJavaProfileFromNative(env,
                                                               autofill_profile);
-  java_object_.Reset(Java_SaveAddressProfilePrompt_create(
+  java_object_.Reset(Java_SaveUpdateAddressProfilePrompt_create(
       env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
       java_controller, browser_profile_android->GetJavaObject(),
       java_autofill_profile, static_cast<jboolean>(is_update)));
@@ -67,12 +69,12 @@ bool SaveAddressProfilePromptViewAndroid::Show(
     return false;
 
   SetContent(controller, is_update);
-  Java_SaveAddressProfilePrompt_show(env, java_object_);
+  Java_SaveUpdateAddressProfilePrompt_show(env, java_object_);
   return true;
 }
 
-void SaveAddressProfilePromptViewAndroid::SetContent(
-    SaveAddressProfilePromptController* controller,
+void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
+    SaveUpdateAddressProfilePromptController* controller,
     bool is_update) {
   DCHECK(controller);
   DCHECK(java_object_);
@@ -86,7 +88,7 @@ void SaveAddressProfilePromptViewAndroid::SetContent(
   ScopedJavaLocalRef<jstring> negative_button_text =
       base::android::ConvertUTF16ToJavaString(
           env, controller->GetNegativeButtonText());
-  Java_SaveAddressProfilePrompt_setDialogDetails(
+  Java_SaveUpdateAddressProfilePrompt_setDialogDetails(
       env, java_object_, title, positive_button_text, negative_button_text);
 
   if (is_update) {
@@ -98,8 +100,8 @@ void SaveAddressProfilePromptViewAndroid::SetContent(
         base::android::ConvertUTF16ToJavaString(env, differences.first);
     ScopedJavaLocalRef<jstring> new_details =
         base::android::ConvertUTF16ToJavaString(env, differences.second);
-    Java_SaveAddressProfilePrompt_setUpdateDetails(env, java_object_, subtitle,
-                                                   old_details, new_details);
+    Java_SaveUpdateAddressProfilePrompt_setUpdateDetails(
+        env, java_object_, subtitle, old_details, new_details);
   } else {
     ScopedJavaLocalRef<jstring> address =
         base::android::ConvertUTF16ToJavaString(env, controller->GetAddress());
@@ -107,8 +109,8 @@ void SaveAddressProfilePromptViewAndroid::SetContent(
         base::android::ConvertUTF16ToJavaString(env, controller->GetEmail());
     ScopedJavaLocalRef<jstring> phone = base::android::ConvertUTF16ToJavaString(
         env, controller->GetPhoneNumber());
-    Java_SaveAddressProfilePrompt_setSaveDetails(env, java_object_, address,
-                                                 email, phone);
+    Java_SaveUpdateAddressProfilePrompt_setSaveDetails(env, java_object_,
+                                                       address, email, phone);
   }
 }
 

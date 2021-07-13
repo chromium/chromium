@@ -32,8 +32,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @JNINamespace("autofill")
 @JNIAdditionalImport(PersonalDataManager.class)
-public class SaveAddressProfilePrompt {
-    private final SaveAddressProfilePromptController mController;
+public class SaveUpdateAddressProfilePrompt {
+    private final SaveUpdateAddressProfilePromptController mController;
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mDialogModel;
     private final View mDialogView;
@@ -44,7 +44,7 @@ public class SaveAddressProfilePrompt {
     /**
      * Save prompt to confirm saving an address profile imported from a form submission.
      */
-    public SaveAddressProfilePrompt(SaveAddressProfilePromptController controller,
+    public SaveUpdateAddressProfilePrompt(SaveUpdateAddressProfilePromptController controller,
             ModalDialogManager modalDialogManager, Activity activity, Profile browserProfile,
             PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate) {
         mController = controller;
@@ -92,18 +92,18 @@ public class SaveAddressProfilePrompt {
      * @param browserProfile the Chrome profile being used.
      * @param autofillProfile the address data to be saved.
      * @param isUpdate true if there's an existing profile which will be updated, false otherwise.
-     * @return instance of the SaveAddressProfilePrompt or null if the call failed.
+     * @return instance of the SaveUpdateAddressProfilePrompt or null if the call failed.
      */
     @CalledByNative
     @Nullable
-    private static SaveAddressProfilePrompt create(WindowAndroid windowAndroid,
-            SaveAddressProfilePromptController controller, Profile browserProfile,
+    private static SaveUpdateAddressProfilePrompt create(WindowAndroid windowAndroid,
+            SaveUpdateAddressProfilePromptController controller, Profile browserProfile,
             PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate) {
         Activity activity = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;
 
-        return new SaveAddressProfilePrompt(controller, modalDialogManager, activity,
+        return new SaveUpdateAddressProfilePrompt(controller, modalDialogManager, activity,
                 browserProfile, autofillProfile, isUpdate);
     }
 

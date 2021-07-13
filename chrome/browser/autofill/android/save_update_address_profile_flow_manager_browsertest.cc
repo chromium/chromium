@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/android/save_address_profile_flow_manager.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_flow_manager.h"
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,10 +16,11 @@
 
 namespace autofill {
 
-class SaveAddressProfileFlowManagerBrowserTest : public AndroidBrowserTest {
+class SaveUpdateAddressProfileFlowManagerBrowserTest
+    : public AndroidBrowserTest {
  public:
-  SaveAddressProfileFlowManagerBrowserTest() = default;
-  ~SaveAddressProfileFlowManagerBrowserTest() override = default;
+  SaveUpdateAddressProfileFlowManagerBrowserTest() = default;
+  ~SaveUpdateAddressProfileFlowManagerBrowserTest() override = default;
 
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
@@ -31,7 +32,7 @@ class SaveAddressProfileFlowManagerBrowserTest : public AndroidBrowserTest {
 
   // AndroidBrowserTest:
   void SetUpOnMainThread() override {
-    flow_manager_ = std::make_unique<SaveAddressProfileFlowManager>();
+    flow_manager_ = std::make_unique<SaveUpdateAddressProfileFlowManager>();
   }
 
   void TearDownOnMainThread() override {
@@ -53,11 +54,11 @@ class SaveAddressProfileFlowManagerBrowserTest : public AndroidBrowserTest {
 
   AutofillProfile profile_;
   AutofillProfile original_profile_;
-  std::unique_ptr<SaveAddressProfileFlowManager> flow_manager_;
+  std::unique_ptr<SaveUpdateAddressProfileFlowManager> flow_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SaveAddressProfileFlowManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
                        TriggerAutoDeclineDecisionIfMessageIsDisplayed) {
   flow_manager_->OfferSave(GetWebContents(), profile_, &original_profile_,
                            /*callback=*/base::DoNothing());
@@ -76,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileFlowManagerBrowserTest,
                            another_save_callback.Get());
 }
 
-IN_PROC_BROWSER_TEST_F(SaveAddressProfileFlowManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
                        TriggerAutoDeclineDecisionIfPromptIsDisplayed) {
   flow_manager_->OfferSave(GetWebContents(), profile_, &original_profile_,
                            /*callback=*/base::DoNothing());

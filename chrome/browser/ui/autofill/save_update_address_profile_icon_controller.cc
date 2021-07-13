@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/save_address_profile_icon_controller.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_icon_controller.h"
 
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 
 namespace autofill {
 
 // static
-SaveAddressProfileIconController* SaveAddressProfileIconController::Get(
+SaveUpdateAddressProfileIconController*
+SaveUpdateAddressProfileIconController::Get(
     content::WebContents* web_contents) {
   if (!web_contents)
     return nullptr;

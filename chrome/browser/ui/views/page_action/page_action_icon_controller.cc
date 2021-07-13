@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
-#include "chrome/browser/ui/views/autofill/save_address_profile_icon_view.h"
+#include "chrome/browser/ui/views/autofill/save_update_address_profile_icon_view.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
@@ -157,7 +157,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         break;
       case PageActionIconType::kSaveAutofillAddress:
         add_page_action_icon(
-            type, std::make_unique<autofill::SaveAddressProfileIconView>(
+            type, std::make_unique<autofill::SaveUpdateAddressProfileIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;

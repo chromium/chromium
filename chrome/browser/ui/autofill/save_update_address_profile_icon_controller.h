@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_ICON_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_ICON_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_ICON_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_ICON_CONTROLLER_H_
 
 #include "content/public/browser/web_contents.h"
 
@@ -11,15 +11,15 @@ namespace autofill {
 
 class AutofillBubbleBase;
 
-// The controller for SaveAddressProfileIconView.
-class SaveAddressProfileIconController {
+// The controller for SaveUpdateAddressProfileIconView.
+class SaveUpdateAddressProfileIconController {
  public:
-  virtual ~SaveAddressProfileIconController() = default;
+  virtual ~SaveUpdateAddressProfileIconController() = default;
 
-  // Returns a reference to the SaveAddressProfileIconController associated with
-  // the given |web_contents|. If controller does not exist, this will return
-  // nullptr.
-  static SaveAddressProfileIconController* Get(
+  // Returns a reference to the SaveUpdateAddressProfileIconController
+  // associated with the given |web_contents|. If controller does not exist,
+  // this will return nullptr.
+  static SaveUpdateAddressProfileIconController* Get(
       content::WebContents* web_contents);
 
   virtual void OnPageActionIconClicked() = 0;
@@ -36,4 +36,4 @@ class SaveAddressProfileIconController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_ICON_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_ICON_CONTROLLER_H_

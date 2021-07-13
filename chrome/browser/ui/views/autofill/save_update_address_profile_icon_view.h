@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_ICON_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_ICON_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_ICON_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_ICON_VIEW_H_
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 
@@ -11,19 +11,20 @@ class CommandUpdater;
 
 namespace autofill {
 
-class SaveAddressProfileIconController;
+class SaveUpdateAddressProfileIconController;
 
 // The location bar icon to show the Save Address Profile bubble.
-class SaveAddressProfileIconView : public PageActionIconView {
+class SaveUpdateAddressProfileIconView : public PageActionIconView {
  public:
-  SaveAddressProfileIconView(
+  SaveUpdateAddressProfileIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
-  SaveAddressProfileIconView(const SaveAddressProfileIconView&) = delete;
-  SaveAddressProfileIconView& operator=(const SaveAddressProfileIconView&) =
+  SaveUpdateAddressProfileIconView(const SaveUpdateAddressProfileIconView&) =
       delete;
-  ~SaveAddressProfileIconView() override;
+  SaveUpdateAddressProfileIconView& operator=(
+      const SaveUpdateAddressProfileIconView&) = delete;
+  ~SaveUpdateAddressProfileIconView() override;
 
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
@@ -36,9 +37,9 @@ class SaveAddressProfileIconView : public PageActionIconView {
   const gfx::VectorIcon& GetVectorIcon() const override;
 
  private:
-  SaveAddressProfileIconController* GetController() const;
+  SaveUpdateAddressProfileIconController* GetController() const;
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_ICON_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_ICON_VIEW_H_
