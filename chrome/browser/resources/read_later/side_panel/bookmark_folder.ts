@@ -13,7 +13,9 @@ import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.
 import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
 
 /** Event interface for dom-repeat. */
-interface RepeaterEvent extends CustomEvent {
+interface RepeaterMouseEvent extends CustomEvent {
+  clientX: number;
+  clientY: number;
   model: {
     item: chrome.bookmarks.BookmarkTreeNode,
   };
@@ -71,9 +73,15 @@ export class BookmarkFolderElement extends PolymerElement {
   openFolders: string[];
   private bookmarksApi_: BookmarksApiProxy = BookmarksApiProxy.getInstance();
 
-  private onBookmarkClick_(event: RepeaterEvent) {
+  private onBookmarkClick_(event: RepeaterMouseEvent) {
     event.preventDefault();
     this.bookmarksApi_.openBookmark(event.model.item.url!);
+  }
+
+  private onBookmarkContextMenu_(event: RepeaterMouseEvent) {
+    event.preventDefault();
+    this.bookmarksApi_.showContextMenu(
+        event.model.item.id, event.clientX, event.clientY);
   }
 
   private getBookmarkIcon_(url: string): string {

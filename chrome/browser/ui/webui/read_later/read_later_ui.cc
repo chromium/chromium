@@ -109,5 +109,5 @@ void ReadLaterUI::BindInterface(
 void ReadLaterUI::CreateBookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
   bookmarks_page_handler_ =
-      std::make_unique<BookmarksPageHandler>(std::move(receiver));
+      std::make_unique<BookmarksPageHandler>(std::move(receiver), this);
 }

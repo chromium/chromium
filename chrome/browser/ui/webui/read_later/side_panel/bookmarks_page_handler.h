@@ -10,20 +10,24 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class GURL;
+class ReadLaterUI;
 
 class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
  public:
   explicit BookmarksPageHandler(
-      mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver);
+      mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
+      ReadLaterUI* read_later_ui);
   BookmarksPageHandler(const BookmarksPageHandler&) = delete;
   BookmarksPageHandler& operator=(const BookmarksPageHandler&) = delete;
   ~BookmarksPageHandler() override;
 
   // side_panel::mojom::BookmarksPageHandler:
   void OpenBookmark(const GURL& url) override;
+  void ShowContextMenu(const std::string& id, const gfx::Point& point) override;
 
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPageHandler> receiver_;
+  ReadLaterUI* const read_later_ui_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_BOOKMARKS_PAGE_HANDLER_H_

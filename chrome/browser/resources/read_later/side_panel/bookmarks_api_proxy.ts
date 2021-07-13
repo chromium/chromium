@@ -45,6 +45,10 @@ export class BookmarksApiProxy {
     this.handler.openBookmark({url});
   }
 
+  showContextMenu(id: string, x: number, y: number) {
+    this.handler.showContextMenu(id, {x, y});
+  }
+
   static getInstance() {
     return instance || (instance = new BookmarksApiProxy());
   }

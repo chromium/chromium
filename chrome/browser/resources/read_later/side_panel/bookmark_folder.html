@@ -104,7 +104,8 @@
 
       <template is="dom-if" if="[[item.url]]" restamp>
         <a role="treeitem" href="[[item.url]]" class="bookmark row"
-            on-click="onBookmarkClick_">
+            on-click="onBookmarkClick_"
+            on-contextmenu="onBookmarkContextMenu_">
           <div
               class="icon"
               style="background-image: [[getBookmarkIcon_(item.url)]]">
