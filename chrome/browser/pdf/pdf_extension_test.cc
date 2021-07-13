@@ -1474,7 +1474,14 @@ bool RetrieveGuestContents(WebContents** out_guest_contents,
   return true;
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityInIframe) {
+// Flaky, see crbug.com/1228762
+#if defined(OS_CHROMEOS)
+#define MAYBE_PdfAccessibilityInIframe DISABLED_PdfAccessibilityInIframe
+#else
+#define MAYBE_PdfAccessibilityInIframe PdfAccessibilityInIframe
+#endif
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MAYBE_PdfAccessibilityInIframe) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   GURL test_iframe_url(embedded_test_server()->GetURL("/pdf/test-iframe.html"));
   ui_test_utils::NavigateToURL(browser(), test_iframe_url);
