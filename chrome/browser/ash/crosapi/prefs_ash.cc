@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "chrome/browser/profiles/profile_manager.h"

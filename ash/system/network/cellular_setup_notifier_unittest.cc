@@ -5,7 +5,7 @@
 #include "ash/system/network/cellular_setup_notifier.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/system_notification_controller.h"

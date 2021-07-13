@@ -7,7 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/linux_util.h"
@@ -125,8 +125,9 @@ void LogInstanceIdTokenFetchRetries(int count) {
 // static
 void ClientAppMetadataProviderService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kCryptAuthInstanceId, std::string());
-  registry->RegisterStringPref(prefs::kCryptAuthInstanceIdToken, std::string());
+  registry->RegisterStringPref(::prefs::kCryptAuthInstanceId, std::string());
+  registry->RegisterStringPref(::prefs::kCryptAuthInstanceIdToken,
+                               std::string());
 }
 
 // static
@@ -245,12 +246,12 @@ void ClientAppMetadataProviderService::OnInstanceIdFetched(
     const std::string& instance_id) {
   DCHECK(!instance_id.empty());
   std::string previous_instance_id =
-      pref_service_->GetString(prefs::kCryptAuthInstanceId);
+      pref_service_->GetString(::prefs::kCryptAuthInstanceId);
   if (!previous_instance_id.empty()) {
     base::UmaHistogramBoolean("CryptAuth.InstanceId.DidInstanceIdChange",
                               previous_instance_id != instance_id);
   }
-  pref_service_->SetString(prefs::kCryptAuthInstanceId, instance_id);
+  pref_service_->SetString(::prefs::kCryptAuthInstanceId, instance_id);
 
   GetInstanceId()->GetToken(
       device_sync::
@@ -300,12 +301,12 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
 
   DCHECK(!token.empty());
   std::string previous_instance_id_token =
-      pref_service_->GetString(prefs::kCryptAuthInstanceIdToken);
+      pref_service_->GetString(::prefs::kCryptAuthInstanceIdToken);
   if (!previous_instance_id_token.empty()) {
     base::UmaHistogramBoolean("CryptAuth.InstanceId.DidInstanceIdTokenChange",
                               previous_instance_id_token != token);
   }
-  pref_service_->SetString(prefs::kCryptAuthInstanceIdToken, token);
+  pref_service_->SetString(::prefs::kCryptAuthInstanceIdToken, token);
 
   cryptauthv2::ClientAppMetadata metadata;
 

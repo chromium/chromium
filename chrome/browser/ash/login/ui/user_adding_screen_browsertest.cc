@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -224,11 +224,11 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
   // One of the users has the primary-only policy.
   // List of unlock users doesn't depend on kEnableLockScreen preference.
   prefs1->SetBoolean(ash::prefs::kEnableAutoScreenLock, true);
-  prefs1->SetString(prefs::kMultiProfileUserBehavior,
+  prefs1->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorPrimaryOnly);
-  prefs2->SetString(prefs::kMultiProfileUserBehavior,
+  prefs2->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorUnrestricted);
-  prefs3->SetString(prefs::kMultiProfileUserBehavior,
+  prefs3->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorUnrestricted);
   user_manager::UserList unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 1u);
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
   EXPECT_EQ(users[0].account_id, unlock_users[0]->GetAccountId());
 
   // If all users have unrestricted policy then anyone can perform unlock.
-  prefs1->SetString(prefs::kMultiProfileUserBehavior,
+  prefs1->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorUnrestricted);
   unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 3u);
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
   // In this scenario this user is not allowed in multi-profile session but
   // if that user happened to still be part of multi-profile session it should
   // not be listed on screen lock.
-  prefs3->SetString(prefs::kMultiProfileUserBehavior,
+  prefs3->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorNotAllowed);
   unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 2u);

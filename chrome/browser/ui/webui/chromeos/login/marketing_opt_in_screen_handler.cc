@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/screens/marketing_opt_in_screen.h"

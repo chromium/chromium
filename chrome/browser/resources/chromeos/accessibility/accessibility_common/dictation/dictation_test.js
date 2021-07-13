@@ -42,7 +42,6 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
     GEN(`
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/shell.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"

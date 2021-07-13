@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_map.h"

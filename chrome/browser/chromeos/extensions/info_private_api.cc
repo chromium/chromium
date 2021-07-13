@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/devicetype.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/memory/ptr_util.h"

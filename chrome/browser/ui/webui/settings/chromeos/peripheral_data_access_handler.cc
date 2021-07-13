@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"

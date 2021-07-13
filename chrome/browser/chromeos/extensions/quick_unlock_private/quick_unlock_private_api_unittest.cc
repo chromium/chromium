@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -501,12 +501,12 @@ class QuickUnlockPrivateUnitTest
   bool HasUserValueForPinAutosubmitPref() {
     const bool has_user_val =
         test_pref_service_->GetUserPrefValue(
-            prefs::kPinUnlockAutosubmitEnabled) != nullptr;
+            ::prefs::kPinUnlockAutosubmitEnabled) != nullptr;
     return has_user_val;
   }
 
   bool GetAutosubmitPrefVal() {
-    return test_pref_service_->GetBoolean(prefs::kPinUnlockAutosubmitEnabled);
+    return test_pref_service_->GetBoolean(::prefs::kPinUnlockAutosubmitEnabled);
   }
 
   int GetExposedPinLength() {
@@ -829,39 +829,39 @@ TEST_P(QuickUnlockPrivateUnitTest, CheckCredentialProblemReporting) {
 
   // Verify that now if the minimum length is set to 3, PINs of length 3 are
   // accepted.
-  pref_service->SetInteger(prefs::kPinUnlockMinimumLength, 3);
+  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 3);
   CheckPin(PIN_WEAK_WARNING, "111");
 
   // Verify setting a nonzero maximum length that is less than the minimum
   // length results in the pin only accepting PINs of length minimum length.
-  pref_service->SetInteger(prefs::kPinUnlockMaximumLength, 2);
-  pref_service->SetInteger(prefs::kPinUnlockMinimumLength, 4);
+  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 2);
+  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 4);
   CheckPin(PIN_GOOD, "1112");
   CheckPin(PIN_TOO_SHORT, "112");
   CheckPin(PIN_TOO_LONG, "11112");
 
   // Verify that now if the maximum length is set to 5, PINs longer than 5 are
   // considered too long and cannot be used.
-  pref_service->SetInteger(prefs::kPinUnlockMaximumLength, 5);
+  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 5);
   CheckPin(PIN_TOO_LONG | PIN_WEAK_WARNING, "111111");
   CheckPin(PIN_TOO_LONG | PIN_WEAK_WARNING, "1111111");
 
   // Verify that if both the minimum length and maximum length is set to 4, only
   // 4 digit PINs can be used.
-  pref_service->SetInteger(prefs::kPinUnlockMinimumLength, 4);
-  pref_service->SetInteger(prefs::kPinUnlockMaximumLength, 4);
+  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 4);
+  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 4);
   CheckPin(PIN_TOO_SHORT, "122");
   CheckPin(PIN_TOO_LONG, "12222");
   CheckPin(PIN_GOOD, "1222");
 
   // Set the PINs minimum/maximum lengths back to their defaults.
-  pref_service->SetInteger(prefs::kPinUnlockMinimumLength, 4);
-  pref_service->SetInteger(prefs::kPinUnlockMaximumLength, 0);
+  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 4);
+  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 0);
 
   // Verify that PINs that are weak are flagged as such. See
   // IsPinDifficultEnough in quick_unlock_private_api.cc for the description of
   // a weak pin.
-  pref_service->SetBoolean(prefs::kPinUnlockWeakPinsAllowed, false);
+  pref_service->SetBoolean(::prefs::kPinUnlockWeakPinsAllowed, false);
   // Good.
   CheckPin(PIN_GOOD, "1112");
   CheckPin(PIN_GOOD, "7890");
@@ -887,19 +887,19 @@ TEST_P(QuickUnlockPrivateUnitTest, GetCredentialRequirements) {
 
   // Verify that trying out PINs under the minimum/maximum lengths will send the
   // minimum/maximum lengths as additional information for display purposes.
-  pref_service->SetInteger(prefs::kPinUnlockMinimumLength, 6);
-  pref_service->SetInteger(prefs::kPinUnlockMaximumLength, 8);
+  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, 6);
+  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 8);
   CheckGetCredentialRequirements(6, 8);
 
   // Verify that by setting a maximum length to be nonzero and smaller than the
   // minimum length, the resulting maxium length will be equal to the minimum
   // length pref.
-  pref_service->SetInteger(prefs::kPinUnlockMaximumLength, 4);
+  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, 4);
   CheckGetCredentialRequirements(6, 6);
 
   // Verify that the values received from policy are sanitized.
-  pref_service->SetInteger(prefs::kPinUnlockMinimumLength, -3);
-  pref_service->SetInteger(prefs::kPinUnlockMaximumLength, -3);
+  pref_service->SetInteger(::prefs::kPinUnlockMinimumLength, -3);
+  pref_service->SetInteger(::prefs::kPinUnlockMaximumLength, -3);
   CheckGetCredentialRequirements(1, 0);
 }
 
@@ -916,7 +916,7 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitLongestPossiblePin) {
 // When recommended to be disabled, PIN auto submit will not be enabled when
 // setting a PIN.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitRecommendedDisabled) {
-  test_pref_service_->SetRecommendedPref(prefs::kPinUnlockAutosubmitEnabled,
+  test_pref_service_->SetRecommendedPref(::prefs::kPinUnlockAutosubmitEnabled,
                                          std::make_unique<base::Value>(false));
 
   SetPin("123456");
@@ -928,7 +928,7 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitRecommendedDisabled) {
 // When forced to be disabled, PIN auto submit will not be enabled when
 // setting a PIN.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitForcedDisabled) {
-  test_pref_service_->SetManagedPref(prefs::kPinUnlockAutosubmitEnabled,
+  test_pref_service_->SetManagedPref(::prefs::kPinUnlockAutosubmitEnabled,
                                      std::make_unique<base::Value>(false));
 
   SetPin("123456");
@@ -1013,7 +1013,7 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitCollectLengthOnAuthSuccess) {
   const bool feature_enabled = IsAutosubmitFeatureEnabled();
 
   // Start with MANDATORY FALSE to prevent auto enabling when setting a PIN.
-  test_pref_service_->SetManagedPref(prefs::kPinUnlockAutosubmitEnabled,
+  test_pref_service_->SetManagedPref(::prefs::kPinUnlockAutosubmitEnabled,
                                      std::make_unique<base::Value>(false));
   SetPin("123456");
   EXPECT_TRUE(IsPinSetInBackend());
@@ -1021,7 +1021,7 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitCollectLengthOnAuthSuccess) {
   EXPECT_EQ(GetExposedPinLength(), 0);
 
   // Autosubmit disabled, length unknown. Change to MANDATORY TRUE
-  test_pref_service_->SetManagedPref(prefs::kPinUnlockAutosubmitEnabled,
+  test_pref_service_->SetManagedPref(::prefs::kPinUnlockAutosubmitEnabled,
                                      std::make_unique<base::Value>(true));
   EXPECT_TRUE(GetAutosubmitPrefVal());
   EXPECT_EQ(GetExposedPinLength(), 0);
@@ -1046,7 +1046,7 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitClearLengthOnUiUpdate) {
   EXPECT_EQ(GetExposedPinLength(), feature_enabled ? 6 : 0);
 
   // Switch to MANDATORY FALSE.
-  test_pref_service_->SetManagedPref(prefs::kPinUnlockAutosubmitEnabled,
+  test_pref_service_->SetManagedPref(::prefs::kPinUnlockAutosubmitEnabled,
                                      std::make_unique<base::Value>(false));
 
   // Called during user pod update.
@@ -1118,7 +1118,7 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitBackfillEnterprise) {
     return;
 
   // Enterprise users have auto submit disabled by default.
-  test_pref_service_->SetManagedPref(prefs::kPinUnlockAutosubmitEnabled,
+  test_pref_service_->SetManagedPref(::prefs::kPinUnlockAutosubmitEnabled,
                                      std::make_unique<base::Value>(false));
 
   SetPinForBackfillTests("123456");

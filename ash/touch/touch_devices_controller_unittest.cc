@@ -5,8 +5,8 @@
 #include "ash/touch/touch_devices_controller.h"
 
 #include "ash/accelerators/debug_commands.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"

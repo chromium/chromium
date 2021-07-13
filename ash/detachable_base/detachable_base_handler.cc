@@ -4,8 +4,8 @@
 
 #include "ash/detachable_base/detachable_base_handler.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/detachable_base/detachable_base_observer.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shell.h"
 #include "base/bind.h"

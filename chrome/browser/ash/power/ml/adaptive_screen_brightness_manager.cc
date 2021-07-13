@@ -7,8 +7,8 @@
 #include <cmath>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/devicetype.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/process/launch.h"
 #include "base/task/post_task.h"

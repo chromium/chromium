@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -73,7 +73,7 @@ TEST_F(PinStoragePrefsUnitTest, PinStorageWritesToPrefs) {
   PrefService* prefs = profile_->GetPrefs();
 
   EXPECT_EQ("", prefs->GetString(ash::prefs::kQuickUnlockPinSalt));
-  EXPECT_EQ("", prefs->GetString(prefs::kQuickUnlockPinSecret));
+  EXPECT_EQ("", prefs->GetString(::prefs::kQuickUnlockPinSecret));
 
   PinStoragePrefsTestApi pin_storage_test(PinStoragePrefs());
 
@@ -82,14 +82,14 @@ TEST_F(PinStoragePrefsUnitTest, PinStorageWritesToPrefs) {
   EXPECT_EQ(pin_storage_test.PinSalt(),
             prefs->GetString(ash::prefs::kQuickUnlockPinSalt));
   EXPECT_EQ(pin_storage_test.PinSecret(),
-            prefs->GetString(prefs::kQuickUnlockPinSecret));
+            prefs->GetString(::prefs::kQuickUnlockPinSecret));
   EXPECT_NE("", pin_storage_test.PinSalt());
   EXPECT_NE("", pin_storage_test.PinSecret());
 
   PinStoragePrefs()->RemovePin();
   EXPECT_FALSE(PinStoragePrefs()->IsPinSet());
   EXPECT_EQ("", prefs->GetString(ash::prefs::kQuickUnlockPinSalt));
-  EXPECT_EQ("", prefs->GetString(prefs::kQuickUnlockPinSecret));
+  EXPECT_EQ("", prefs->GetString(::prefs::kQuickUnlockPinSecret));
 }
 
 // Verifies that:

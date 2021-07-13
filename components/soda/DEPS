@@ -1,5 +1,5 @@
 include_rules = [
-  "+ash/public/cpp",
+  "+ash/constants",
   "+chromeos/dbus/dlcservice/dlcservice_client.h",
   "+components/component_updater/component_updater_paths.h",
   "+components/crx_file",

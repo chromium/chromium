@@ -10,8 +10,8 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"

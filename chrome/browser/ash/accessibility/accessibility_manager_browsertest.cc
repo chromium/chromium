@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/accessibility_controller_test_api.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"

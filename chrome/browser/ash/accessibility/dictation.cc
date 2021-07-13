@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/accessibility/dictation.h"
 
 #include "ash/components/audio/sounds.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"

@@ -27,7 +27,7 @@ component("soda") {
     ]
 
     deps += [
-      "//ash/public/cpp",
+      "//ash/constants",
       "//chromeos/dbus/dlcservice",
       "//ui/base",
     ]

@@ -4,8 +4,8 @@
 
 #include "ash/system/media/media_tray.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/focus_cycler.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/media_notification_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"

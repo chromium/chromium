@@ -8,13 +8,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/login_button.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/public_account_monitoring_info_dialog.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"

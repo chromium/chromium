@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accessibility_controller.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

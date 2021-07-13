@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/input_method/assistive_window_controller.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_controller_delegate.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"

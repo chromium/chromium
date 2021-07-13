@@ -4,7 +4,7 @@
 
 #include "ash/fast_ink/fast_ink_pointer_controller.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "components/prefs/pref_change_registrar.h"

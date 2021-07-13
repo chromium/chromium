@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/scoped_testing_local_state.h"

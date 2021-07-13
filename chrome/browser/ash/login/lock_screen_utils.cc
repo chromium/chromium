@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 
 #include "ash/constants/ash_constants.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

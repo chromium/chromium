@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/input_method/tts_handler.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_service.h"
 

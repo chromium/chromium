@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/fullscreen_alert_bubble.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"

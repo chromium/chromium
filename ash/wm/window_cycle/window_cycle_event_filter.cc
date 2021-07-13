@@ -5,8 +5,8 @@
 #include "ash/wm/window_cycle/window_cycle_event_filter.h"
 
 #include "ash/accelerators/debug_commands.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_ash.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
