@@ -33,6 +33,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.internal.R;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**
@@ -182,7 +183,7 @@ class BottomSheet extends FrameLayout
             super(context, atts);
             mShadowLength = context.getResources().getDimensionPixelSize(
                     R.dimen.bottom_sheet_shadow_length);
-            setTranslationX(-mShadowLength);
+            setTranslationX((LocalizationUtils.isLayoutRtl() ? 1 : -1) * mShadowLength);
             setTranslationY(-mShadowLength);
         }
 
@@ -1072,7 +1073,8 @@ class BottomSheet extends FrameLayout
     private void sizeAndPositionSheetInParent() {
         int maxSheetWidth = getMaxSheetWidth();
         getLayoutParams().width = maxSheetWidth;
-        setTranslationX((mContainerWidth - maxSheetWidth) / 2f);
+        setTranslationX((LocalizationUtils.isLayoutRtl() ? -1 : 1)
+                * (mContainerWidth - maxSheetWidth) / 2f);
         requestLayout();
     }
 
