@@ -1567,6 +1567,19 @@ public class IntentHandler {
         }
     }
 
+    /**
+     * Whether bundle has any extra that indicates an incognito tab will be launched.
+     * @param extras A bundle that carries extras
+     * @return True if there is any incognito related extra, otherwise return false.
+     */
+    public static boolean hasAnyIncognitoExtra(@Nullable Bundle extras) {
+        if (extras == null) return false;
+        return IntentUtils.safeGetBoolean(extras, EXTRA_INCOGNITO_MODE, false)
+                || IntentUtils.safeGetBoolean(extras, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                || IntentUtils.safeGetBoolean(
+                        extras, EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
+    }
+
     @NativeMethods
     interface Natives {
         boolean isCorsSafelistedHeader(String name, String value);

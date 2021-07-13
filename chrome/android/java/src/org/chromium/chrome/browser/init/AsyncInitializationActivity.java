@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
@@ -254,7 +253,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             String url = IntentHandler.getUrlFromIntent(intent);
             if (url == null) return;
             // Blocking pre-connect for all off-the-record profiles.
-            if (!IncognitoUtils.hasAnyIncognitoExtra(intent.getExtras())) {
+            if (!IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) {
                 WarmupManager.getInstance().maybePreconnectUrlAndSubResources(
                         Profile.getLastUsedRegularProfile(), url);
             }

@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.init.ChainedTasks;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
@@ -495,7 +494,7 @@ public class CustomTabsConnection {
             // creation in incognito mode not to have inconsistent modes between tab model and
             // hidden tab. (crbug.com/1190971)
             boolean canUseHiddenTab = mClientManager.getCanUseHiddenTab(session)
-                    && !IncognitoUtils.hasAnyIncognitoExtra(extras);
+                    && !IntentHandler.hasAnyIncognitoExtra(extras);
             startSpeculation(session, url, canUseHiddenTab, extras, uid);
         }
         preconnectUrls(otherLikelyBundles);
@@ -553,7 +552,7 @@ public class CustomTabsConnection {
         // mayLaunchUrl should not be executed for Incognito CCT since all setup is created with
         // regular profile. If we need to enable mayLaunchUrl for off-the-record profiles, we need
         // to update the profile used. Please see crbug.com/1106757.
-        if (IncognitoUtils.hasAnyIncognitoExtra(extras)) return false;
+        if (IntentHandler.hasAnyIncognitoExtra(extras)) return false;
 
         final boolean lowConfidence =
                 (url == null || TextUtils.isEmpty(url.toString())) && otherLikelyBundles != null;

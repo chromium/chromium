@@ -8,30 +8,22 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.os.Bundle;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
-import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
-import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,7 +75,7 @@ public class IncognitoUtils {
         // any incognito tabs exist and the current tab model isn't incognito. If so, we should
         // destroy the incognito profile; otherwise it's not safe to do so yet.
         if (tabbedModeTaskIds.size() == 0) {
-            return !(doIncognitoTabsExist() || selectedTabModelIsIncognito);
+            return !(IncognitoTabHostUtils.doIncognitoTabsExist() || selectedTabModelIsIncognito);
         }
 
         // In this case, we have tabbed mode activities listed in recents that do not have an
@@ -91,60 +83,6 @@ public class IncognitoUtils {
         // tab count as we do not know if any incognito tabs are associated with the yet unrestored
         // tabbed mode.  Thus we do not proactively destroy the incognito profile.
         return false;
-    }
-
-    /**
-     * Determine whether there are any incognito tabs.
-     */
-    public static boolean doIncognitoTabsExist() {
-        for (IncognitoTabHost host : IncognitoTabHostRegistry.getInstance().getHosts()) {
-            if (host.hasIncognitoTabs()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Determine whether the incognito tab model is active.
-     */
-    public static boolean isIncognitoTabModelActive() {
-        for (IncognitoTabHost host : IncognitoTabHostRegistry.getInstance().getHosts()) {
-            if (host.isActiveModel()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Closes all incognito tabs.
-     */
-    public static void closeAllIncognitoTabs() {
-        for (IncognitoTabHost host : IncognitoTabHostRegistry.getInstance().getHosts()) {
-            host.closeAllIncognitoTabs();
-        }
-    }
-
-    /**
-     * Deletes files with saved state of incognito tabs.
-     * @return whether successful.
-     */
-    public static boolean deleteIncognitoStateFiles() {
-        File directory = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
-        File[] tabStateFiles = directory.listFiles();
-        if (tabStateFiles == null) return true;
-
-        boolean deletionSuccessful = true;
-        for (File file : tabStateFiles) {
-            Pair<Integer, Boolean> tabInfo =
-                    TabStateFileManager.parseInfoFromFilename(file.getName());
-            boolean isIncognito = tabInfo != null && tabInfo.second;
-            if (isIncognito) {
-                deletionSuccessful &= file.delete();
-            }
-        }
-        return deletionSuccessful;
     }
 
     /**
@@ -162,20 +100,6 @@ public class IncognitoUtils {
      */
     public static boolean isIncognitoModeManaged() {
         return IncognitoUtilsJni.get().getIncognitoModeManaged();
-    }
-
-    /**
-     * Whether bundle has any extra that indicates an incognito tab will be launched.
-     * @param extras A bundle that carries extras
-     * @return True if there is any incognito related extra, otherwise return false.
-     */
-    public static boolean hasAnyIncognitoExtra(@Nullable Bundle extras) {
-        if (extras == null) return false;
-        return IntentUtils.safeGetBoolean(extras, IntentHandler.EXTRA_INCOGNITO_MODE, false)
-                || IntentUtils.safeGetBoolean(
-                        extras, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                || IntentUtils.safeGetBoolean(
-                        extras, IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
     }
 
     /**

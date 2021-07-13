@@ -22,6 +22,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -48,15 +49,15 @@ public class IncognitoNotificationServiceImpl extends IncognitoNotificationServi
     @Override
     protected void onHandleIntent(Intent intent) {
         PostTask.runSynchronously(
-                UiThreadTaskTraits.DEFAULT, IncognitoUtils::closeAllIncognitoTabs);
+                UiThreadTaskTraits.DEFAULT, IncognitoTabHostUtils::closeAllIncognitoTabs);
 
-        boolean clearedIncognito = IncognitoUtils.deleteIncognitoStateFiles();
+        boolean clearedIncognito = IncognitoTabPersistence.deleteIncognitoStateFiles();
 
         // If we failed clearing all of the incognito tabs, then do not dismiss the notification.
         if (!clearedIncognito) return;
 
         PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
-            if (IncognitoUtils.doIncognitoTabsExist()) {
+            if (IncognitoTabHostUtils.doIncognitoTabsExist()) {
                 assert false : "Not all incognito tabs closed as expected";
                 return;
             }
@@ -76,28 +77,6 @@ public class IncognitoNotificationServiceImpl extends IncognitoNotificationServi
             // to remove any trace of incognito mode.
             removeNonVisibleChromeTabbedRecentEntries();
         });
-    }
-
-    private void focusChromeIfNecessary() {
-        Set<Integer> visibleTaskIds = getTaskIdsForVisibleActivities();
-        int tabbedTaskId = -1;
-
-        for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (activity instanceof ChromeTabbedActivity) {
-                tabbedTaskId = activity.getTaskId();
-                break;
-            }
-        }
-
-        // If the task containing the tabbed activity is visible, then do nothing as there is no
-        // snapshot that would need to be regenerated.
-        if (visibleTaskIds.contains(tabbedTaskId)) return;
-
-        Context context = ContextUtils.getApplicationContext();
-        Intent startIntent = new Intent(Intent.ACTION_MAIN);
-        startIntent.setPackage(context.getPackageName());
-        startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(startIntent);
     }
 
     private void removeNonVisibleChromeTabbedRecentEntries() {

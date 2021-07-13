@@ -99,12 +99,12 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
@@ -2037,7 +2037,7 @@ public class StartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(()
                                             -> newActivity.getCurrentTabModel().isIncognito(),
                 "New Activity current TabModel is not incognito");
-        TestThreadUtils.runOnUiThreadBlocking(IncognitoUtils::closeAllIncognitoTabs);
+        TestThreadUtils.runOnUiThreadBlocking(IncognitoTabHostUtils::closeAllIncognitoTabs);
 
         assertTrue("Deferred startup never completed", mActivityTestRule.waitForDeferredStartup());
 

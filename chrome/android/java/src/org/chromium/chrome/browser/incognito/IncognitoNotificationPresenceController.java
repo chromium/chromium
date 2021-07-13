@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.incognito;
 
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -32,7 +33,7 @@ public class IncognitoNotificationPresenceController implements IncognitoTabMode
 
     @Override
     public void didBecomeEmpty() {
-        if (!IncognitoUtils.doIncognitoTabsExist()) {
+        if (!IncognitoTabHostUtils.doIncognitoTabsExist()) {
             IncognitoNotificationManager.dismissIncognitoNotification();
         }
     }
