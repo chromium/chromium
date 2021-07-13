@@ -20,21 +20,13 @@
 namespace ash {
 namespace smb_client {
 
-SmbProvider::SmbProvider(
-    MountIdCallback mount_id_callback,
-    UnmountCallback unmount_callback,
-    SmbFileSystem::RequestCredentialsCallback request_creds_callback,
-    SmbFileSystem::RequestUpdatedSharePathCallback request_path_callback)
+SmbProvider::SmbProvider()
     : provider_id_(file_system_provider::ProviderId::CreateFromNativeId("smb")),
       capabilities_(false /* configurable */,
                     false /* watchable */,
                     true /* multiple_mounts */,
                     extensions::SOURCE_NETWORK),
-      name_(l10n_util::GetStringUTF8(IDS_SMB_SHARES_ADD_SERVICE_MENU_OPTION)),
-      mount_id_callback_(std::move(mount_id_callback)),
-      unmount_callback_(std::move(unmount_callback)),
-      request_creds_callback_(std::move(request_creds_callback)),
-      request_path_callback_(std::move(request_path_callback)) {
+      name_(l10n_util::GetStringUTF8(IDS_SMB_SHARES_ADD_SERVICE_MENU_OPTION)) {
   icon_set_.SetIcon(file_system_provider::IconSet::IconSize::SIZE_16x16,
                     GURL("chrome://theme/IDR_SMB_ICON"));
   icon_set_.SetIcon(file_system_provider::IconSet::IconSize::SIZE_32x32,
@@ -48,9 +40,7 @@ SmbProvider::CreateProvidedFileSystem(
     Profile* profile,
     const file_system_provider::ProvidedFileSystemInfo& file_system_info) {
   DCHECK(profile);
-  return std::make_unique<SmbFileSystem>(
-      file_system_info, mount_id_callback_, unmount_callback_,
-      request_creds_callback_, request_path_callback_);
+  return std::make_unique<SmbFileSystem>(file_system_info);
 }
 
 const file_system_provider::Capabilities& SmbProvider::GetCapabilities() const {

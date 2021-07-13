@@ -53,15 +53,7 @@ class SmbFileSystemTest : public testing::Test {
         kProviderId, {}, base::FilePath(kSharePath), false /* configurable */,
         false /* watchable */, extensions::SOURCE_NETWORK,
         file_system_provider::IconSet());
-    file_system_ = std::make_unique<SmbFileSystem>(
-        file_system_info,
-        base::BindRepeating(
-            [](const file_system_provider::ProvidedFileSystemInfo&) {
-              return kMountId;
-            }),
-        SmbFileSystem::UnmountCallback(),
-        SmbFileSystem::RequestCredentialsCallback(),
-        SmbFileSystem::RequestUpdatedSharePathCallback());
+    file_system_ = std::make_unique<SmbFileSystem>(file_system_info);
 
     std::unique_ptr<MockSmbProviderClient> mock_client =
         std::make_unique<MockSmbProviderClient>();

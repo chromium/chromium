@@ -56,9 +56,6 @@ const char kModeKey[] = "mode";
 const char kModeDropDownValue[] = "drop_down";
 const char kModePreMountValue[] = "pre_mount";
 const char kModeUnknownValue[] = "unknown";
-const base::TimeDelta kHostDiscoveryInterval = base::TimeDelta::FromSeconds(60);
-// -3 is chosen because -1 and -2 have special meaning in smbprovider.
-const int32_t kInvalidMountId = -3;
 // Maximum number of smbfs shares to be mounted at the same time, only enforced
 // on user-initiated mount requests.
 const size_t kMaxSmbFsShares = 16;
@@ -136,7 +133,6 @@ SmbService::SmbService(Profile* profile,
                        std::unique_ptr<base::TickClock> tick_clock)
     : provider_id_(file_system_provider::ProviderId::CreateFromNativeId("smb")),
       profile_(profile),
-      tick_clock_(std::move(tick_clock)),
       registry_(profile) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
@@ -255,27 +251,6 @@ void SmbService::GatherSharesInNetwork(HostDiscoveryResponse discovery_callback,
             std::move(shares_callback).Run(shares_gathered, true);
           },
           std::move(shares_callback)));
-}
-
-void SmbService::UpdateSharePath(int32_t mount_id,
-                                 const std::string& share_path,
-                                 StartReadDirIfSuccessfulCallback reply) {
-  GetSmbProviderClient()->UpdateSharePath(
-      mount_id, share_path,
-      base::BindOnce(&SmbService::OnUpdateSharePathResponse, AsWeakPtr(),
-                     mount_id, std::move(reply)));
-}
-
-void SmbService::OnUpdateSharePathResponse(
-    int32_t mount_id,
-    StartReadDirIfSuccessfulCallback reply,
-    smbprovider::ErrorType error) {
-  if (error != smbprovider::ERROR_OK) {
-    LOG(ERROR) << "Failed to update the share path for mount id " << mount_id;
-    std::move(reply).Run(false /* should_retry_start_read_dir */);
-    return;
-  }
-  std::move(reply).Run(true /* should_retry_start_read_dir */);
 }
 
 void SmbService::Mount(const std::string& display_name,
@@ -467,28 +442,6 @@ void SmbService::OnSmbfsMountDone(const std::string& smbfs_mount_id,
   std::move(callback).Run(SmbMountResult::kSuccess, mount->mount_path());
 }
 
-int32_t SmbService::GetMountId(
-    const file_system_provider::ProvidedFileSystemInfo& info) const {
-  const auto iter = mount_id_map_.find(info.file_system_id());
-  if (iter == mount_id_map_.end()) {
-    // Either the mount process has not yet completed, or it failed to provide
-    // us with a mount id.
-    return kInvalidMountId;
-  }
-  return iter->second;
-}
-
-base::File::Error SmbService::Unmount(
-    const std::string& file_system_id,
-    file_system_provider::Service::UnmountReason reason) {
-  base::File::Error result = GetProviderService()->UnmountFileSystem(
-      provider_id_, file_system_id, reason);
-  // Always erase the mount_id, because at this point, the share has already
-  // been unmounted in smbprovider.
-  mount_id_map_.erase(file_system_id);
-  return result;
-}
-
 file_system_provider::Service* SmbService::GetProviderService() const {
   return file_system_provider::Service::Get(profile_);
 }
@@ -526,18 +479,6 @@ void SmbService::OnHostsDiscovered(
   }
   for (const auto& url : preconfigured_shares) {
     MountPreconfiguredShare(url);
-  }
-}
-
-void SmbService::OnHostsDiscoveredForUpdateSharePath(
-    int32_t mount_id,
-    const std::string& share_path,
-    StartReadDirIfSuccessfulCallback reply) {
-  SmbUrl resolved_url(share_path);
-  if (share_finder_->TryResolveUrl(SmbUrl(share_path), &resolved_url)) {
-    UpdateSharePath(mount_id, resolved_url.ToString(), std::move(reply));
-  } else {
-    std::move(reply).Run(false /* should_retry_start_read_dir */);
   }
 }
 
@@ -616,13 +557,7 @@ void SmbService::CompleteSetup() {
   share_finder_ = std::make_unique<SmbShareFinder>(GetSmbProviderClient());
   RegisterHostLocators();
 
-  GetProviderService()->RegisterProvider(std::make_unique<SmbProvider>(
-      base::BindRepeating(&SmbService::GetMountId, base::Unretained(this)),
-      base::BindRepeating(&SmbService::Unmount, base::Unretained(this)),
-      base::BindRepeating(&SmbService::RequestCredentials,
-                          base::Unretained(this)),
-      base::BindRepeating(&SmbService::RequestUpdatedSharePath,
-                          base::Unretained(this))));
+  GetProviderService()->RegisterProvider(std::make_unique<SmbProvider>());
   RestoreMounts();
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
@@ -735,43 +670,6 @@ std::vector<SmbUrl> SmbService::GetPreconfiguredSharePaths(
   return preconfigured_urls;
 }
 
-void SmbService::RequestCredentials(const std::string& share_path,
-                                    int32_t mount_id,
-                                    base::OnceClosure reply) {
-  smb_dialog::SmbCredentialsDialog::Show(
-      base::NumberToString(mount_id), share_path,
-      base::BindOnce(&SmbService::OnSmbCredentialsDialogShown, AsWeakPtr(),
-                     mount_id, std::move(reply)));
-}
-
-void SmbService::OnSmbCredentialsDialogShown(int32_t mount_id,
-                                             base::OnceClosure reply,
-                                             bool canceled,
-                                             const std::string& username,
-                                             const std::string& password) {
-  if (canceled) {
-    return;
-  }
-
-  std::string parsed_username = username;
-  std::string workgroup;
-  ParseUserName(username, &parsed_username, &workgroup);
-
-  GetSmbProviderClient()->UpdateMountCredentials(
-      mount_id, workgroup, parsed_username, MakeFdWithContents(password),
-      base::BindOnce(
-          [](int32_t mount_id, base::OnceClosure reply,
-             smbprovider::ErrorType error) {
-            if (error == smbprovider::ERROR_OK) {
-              std::move(reply).Run();
-            } else {
-              LOG(ERROR) << "Failed to update the credentials for mount id "
-                         << mount_id;
-            }
-          },
-          mount_id, std::move(reply)));
-}
-
 std::vector<SmbUrl> SmbService::GetPreconfiguredSharePathsForDropdown() const {
   auto drop_down_paths = GetPreconfiguredSharePaths(kModeDropDownValue);
   auto fallback_paths = GetPreconfiguredSharePaths(kModeUnknownValue);
@@ -785,32 +683,6 @@ std::vector<SmbUrl> SmbService::GetPreconfiguredSharePathsForDropdown() const {
 
 std::vector<SmbUrl> SmbService::GetPreconfiguredSharePathsForPremount() const {
   return GetPreconfiguredSharePaths(kModePreMountValue);
-}
-
-void SmbService::RequestUpdatedSharePath(
-    const std::string& share_path,
-    int32_t mount_id,
-    StartReadDirIfSuccessfulCallback reply) {
-  if (ShouldRunHostDiscoveryAgain()) {
-    previous_host_discovery_time_ = tick_clock_->NowTicks();
-    share_finder_->DiscoverHostsInNetwork(
-        base::BindOnce(&SmbService::OnHostsDiscoveredForUpdateSharePath,
-                       AsWeakPtr(), mount_id, share_path, std::move(reply)));
-    return;
-  }
-  // Host discovery did not run, but try to resolve the hostname in case a
-  // previous host discovery found the host.
-  SmbUrl resolved_url(share_path);
-  if (share_finder_->TryResolveUrl(SmbUrl(share_path), &resolved_url)) {
-    UpdateSharePath(mount_id, share_path, std::move(reply));
-  } else {
-    std::move(reply).Run(false /* should_retry_start_read_dir */);
-  }
-}
-
-bool SmbService::ShouldRunHostDiscoveryAgain() const {
-  return tick_clock_->NowTicks() >
-         previous_host_discovery_time_ + kHostDiscoveryInterval;
 }
 
 void SmbService::OnNetworkChanged(

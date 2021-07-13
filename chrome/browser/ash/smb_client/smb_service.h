@@ -93,11 +93,6 @@ class SmbService : public KeyedService,
   void GatherSharesInNetwork(HostDiscoveryResponse discovery_callback,
                              GatherSharesResponse shares_callback);
 
-  // Updates the share path for |mount_id|.
-  void UpdateSharePath(int32_t mount_id,
-                       const std::string& share_path,
-                       StartReadDirIfSuccessfulCallback reply);
-
   // Disable share discovery in test.
   static void DisableShareDiscoveryForTesting() {
     disable_share_discovery_for_testing_ = true;
@@ -150,15 +145,6 @@ class SmbService : public KeyedService,
                         MountInternalCallback callback,
                         SmbMountResult result);
 
-  // Retrieves the mount_id for |file_system_info|.
-  int32_t GetMountId(
-      const file_system_provider::ProvidedFileSystemInfo& info) const;
-
-  // Calls file_system_provider::Service::UnmountFileSystem().
-  base::File::Error Unmount(
-      const std::string& file_system_id,
-      file_system_provider::Service::UnmountReason reason);
-
   file_system_provider::Service* GetProviderService() const;
 
   SmbProviderClient* GetSmbProviderClient() const;
@@ -170,13 +156,6 @@ class SmbService : public KeyedService,
   void OnHostsDiscovered(
       const std::vector<SmbShareInfo>& saved_smbfs_shares,
       const std::vector<SmbUrl>& preconfigured_shares);
-
-  // Closure for OnHostDiscovered(). |reply| is passed down to
-  // UpdateSharePath().
-  void OnHostsDiscoveredForUpdateSharePath(
-      int32_t mount_id,
-      const std::string& share_path,
-      StartReadDirIfSuccessfulCallback reply);
 
   // Mounts a saved (smbfs) SMB share with details |info|.
   void MountSavedSmbfsShare(const SmbShareInfo& info);
@@ -234,42 +213,9 @@ class SmbService : public KeyedService,
   // Gets the shares preconfigured via policy that should be premounted.
   std::vector<SmbUrl> GetPreconfiguredSharePathsForPremount() const;
 
-  // Requests new credentials for the |share_path|. |reply| is stored. Once the
-  // credentials have been successfully updated, |reply| is run.
-  void RequestCredentials(const std::string& share_path,
-                          int32_t mount_id,
-                          base::OnceClosure reply);
-
-  // Handles the response from showing the SMB credentials dialog. If |canceled|
-  // is true, the |reply| callback is dropped. Otherwise, |username| and
-  // |password| are passed to the smb service and |reply| is run if the service
-  // returns success.
-  void OnSmbCredentialsDialogShown(int32_t mount_id,
-                                   base::OnceClosure reply,
-                                   bool canceled,
-                                   const std::string& username,
-                                   const std::string& password);
-
-  // Requests an updated share path via running
-  // ShareFinder::DiscoverHostsInNetwork. |reply| is stored. Once the share path
-  // has been successfully updated, |reply| is run.
-  void RequestUpdatedSharePath(const std::string& share_path,
-                               int32_t mount_id,
-                               StartReadDirIfSuccessfulCallback reply);
-
-  // Handles the response for attempting to update the share path of a mount.
-  // |reply| will run if |error| is ERROR_OK. Logs the error otherwise.
-  void OnUpdateSharePathResponse(int32_t mount_id,
-                                 StartReadDirIfSuccessfulCallback reply,
-                                 smbprovider::ErrorType error);
-
   // Handles the callback for SmbFsShare::RemoveSavedCredentials().
   void OnSmbfsRemoveSavedCredentialsDone(const std::string& mount_id,
                                          bool success);
-
-  // Helper function that determines if HostDiscovery can be run again. Returns
-  // false if HostDiscovery was recently run.
-  bool ShouldRunHostDiscoveryAgain() const;
 
   // NetworkChangeNotifier::NetworkChangeObserver override. Runs HostDiscovery
   // when network detects a change.
@@ -281,13 +227,9 @@ class SmbService : public KeyedService,
 
   static bool disable_share_discovery_for_testing_;
 
-  base::TimeTicks previous_host_discovery_time_;
   const file_system_provider::ProviderId provider_id_;
   Profile* profile_;
-  std::unique_ptr<base::TickClock> tick_clock_;
   std::unique_ptr<SmbShareFinder> share_finder_;
-  // |file_system_id| -> |mount_id|
-  std::unordered_map<std::string, int32_t> mount_id_map_;
   // |smbfs_mount_id| -> SmbFsShare
   // Note, mount ID for smbfs is a randomly generated string. For smbprovider
   // shares, it is an integer.

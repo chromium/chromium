@@ -46,27 +46,8 @@ namespace smb_client {
 class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
                       public base::SupportsWeakPtr<SmbFileSystem> {
  public:
-  using MountIdCallback = base::RepeatingCallback<int32_t(
-      const file_system_provider::ProvidedFileSystemInfo&)>;
-  using UnmountCallback = base::OnceCallback<base::File::Error(
-      const std::string&,
-      file_system_provider::Service::UnmountReason)>;
-  using RequestCredentialsCallback =
-      base::RepeatingCallback<void(const std::string& /* share_path */,
-                                   int32_t /* mount_id */,
-                                   base::OnceClosure /* reply */)>;
-  using RequestUpdatedSharePathCallback =
-      base::RepeatingCallback<void(const std::string& /* share_path */,
-                                   int32_t /* mount_id */,
-                                   SmbService::StartReadDirIfSuccessfulCallback
-                                   /* reply */)>;
-
   SmbFileSystem(
-      const file_system_provider::ProvidedFileSystemInfo& file_system_info,
-      MountIdCallback mount_id_callback,
-      UnmountCallback unmount_callback,
-      RequestCredentialsCallback request_creds_callback,
-      RequestUpdatedSharePathCallback request_path_callback);
+      const file_system_provider::ProvidedFileSystemInfo& file_system_info);
   SmbFileSystem(const SmbFileSystem&) = delete;
   SmbFileSystem& operator=(const SmbFileSystem&) = delete;
   ~SmbFileSystem() override;
@@ -250,10 +231,6 @@ class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
   void RequestUpdatedSharePath(
       SmbService::StartReadDirIfSuccessfulCallback reply);
 
-  void HandleRequestUnmountCallback(
-      storage::AsyncFileUtil::StatusCallback callback,
-      smbprovider::ErrorType error);
-
   void HandleRequestReadDirectoryCallback(
       storage::AsyncFileUtil::ReadDirectoryCallback callback,
       const base::ElapsedTimer& metrics_timer,
@@ -276,10 +253,6 @@ class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
 
   void HandleStatusCallback(storage::AsyncFileUtil::StatusCallback callback,
                             smbprovider::ErrorType error) const;
-
-  base::File::Error RunUnmountCallback(
-      const std::string& file_system_id,
-      file_system_provider::Service::UnmountReason reason);
 
   void HandleRequestReadFileCallback(int32_t length,
                                      scoped_refptr<net::IOBuffer> buffer,
@@ -370,10 +343,6 @@ class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
   // opened_files_ is marked const since is currently unsupported.
   const file_system_provider::OpenedFiles opened_files_;
 
-  MountIdCallback mount_id_callback_;
-  UnmountCallback unmount_callback_;
-  RequestCredentialsCallback request_creds_callback_;
-  RequestUpdatedSharePathCallback request_path_callback_;
   std::unique_ptr<TempFileManager> temp_file_manager_;
   mutable SmbTaskQueue task_queue_;
 };
