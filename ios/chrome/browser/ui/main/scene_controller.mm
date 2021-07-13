@@ -1289,7 +1289,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return;
   }
   self.sceneState.appState.signinUpgradePromoPresentedOnce = YES;
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   Browser* browser = self.mainInterface.browser;
   self.signinCoordinator = [SigninCoordinator
       upgradeSigninPromoCoordinatorWithBaseViewController:self.mainInterface
@@ -1394,7 +1396,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // TODO(crbug.com/779791) : Remove showing settings from MainController.
 - (void)showAutofillSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   if (self.settingsNavigationController)
     return;
 
@@ -1425,7 +1429,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // This dispatch is necessary to give enough time for the tools menu to
   // disappear before taking a screenshot.
   dispatch_async(dispatch_get_main_queue(), ^{
-    DCHECK(!self.signinCoordinator);
+    DCHECK(!self.signinCoordinator) << base::SysNSStringToUTF8(
+        NSStringFromClass(self.signinCoordinator.class));
     if (self.settingsNavigationController)
       return;
     Browser* browser = self.mainInterface.browser;
@@ -1475,7 +1480,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   Browser* mainBrowser = self.mainInterface.browser;
 
   switch (command.operation) {
@@ -1507,7 +1514,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)showAdvancedSigninSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   Browser* mainBrowser = self.mainInterface.browser;
   self.signinCoordinator = [SigninCoordinator
       advancedSettingsSigninCoordinatorWithBaseViewController:baseViewController
@@ -1617,7 +1626,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   if (self.settingsNavigationController)
     return;
   [[DeferredInitializationRunner sharedInstance]
@@ -1662,7 +1673,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // TODO(crbug.com/779791) : Remove show settings from MainController.
 - (void)showAccountsSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   if (!baseViewController) {
     DCHECK_EQ(self.currentInterface.viewController,
               self.mainCoordinator.activeViewController);
@@ -1691,7 +1704,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // TODO(crbug.com/779791) : Remove Google services settings from MainController.
 - (void)showGoogleServicesSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   if (!baseViewController) {
     DCHECK_EQ(self.currentInterface.viewController,
               self.mainCoordinator.activeViewController);
@@ -1719,7 +1734,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSyncSettingsFromViewController:baseViewController];
@@ -1738,7 +1755,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSyncPassphraseSettingsFromViewController:baseViewController];
@@ -1762,7 +1781,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // dispatched command.
     baseViewController = self.currentInterface.viewController;
   }
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSavedPasswordsSettingsFromViewController:baseViewController];
@@ -1780,7 +1801,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   [self dismissModalDialogs];
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
@@ -1801,7 +1824,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showProfileSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showProfileSettingsFromViewController:baseViewController];
@@ -1820,7 +1845,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showCreditCardSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showCreditCardSettingsFromViewController:baseViewController];
@@ -2290,7 +2317,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   ProceduralBlock completionWithBVC = ^{
     DCHECK(self.currentInterface.viewController);
     DCHECK(!self.mainCoordinator.isTabGridActive);
-    DCHECK(!self.signinCoordinator);
+    DCHECK(!self.signinCoordinator) << base::SysNSStringToUTF8(
+        NSStringFromClass(self.signinCoordinator.class));
     // This will dismiss the SSO view controller.
     [self.interfaceProvider.currentInterface
         clearPresentedStateWithCompletion:completion
@@ -2300,7 +2328,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // |self.currentInterface.bvc| may exist but tab switcher should be
     // active.
     DCHECK(self.mainCoordinator.isTabGridActive);
-    DCHECK(!self.signinCoordinator);
+    DCHECK(!self.signinCoordinator) << base::SysNSStringToUTF8(
+        NSStringFromClass(self.signinCoordinator.class));
     // History coordinator can be started on top of the tab grid.
     // This is not true of the other tab switchers.
     DCHECK(self.mainCoordinator);
@@ -2615,7 +2644,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                          (syncer::
                                               TrustedVaultUserActionTriggerForUMA)
                                              trigger {
-  DCHECK(!self.signinCoordinator);
+  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
+                                  << base::SysNSStringToUTF8(NSStringFromClass(
+                                         self.signinCoordinator.class));
   Browser* mainBrowser = self.mainInterface.browser;
   self.signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
