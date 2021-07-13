@@ -2936,8 +2936,10 @@ void LocalFrame::GetStringForRange(const gfx::Range& range,
 
 void LocalFrame::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect_in_dips) {
-  if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(nullptr))
+  if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
+          GetDocument()->GetExecutionContext())) {
     return;
+  }
 
   // The rect passed to us from content is in DIP screen space, relative to the
   // main frame, and needs to move to CSS space. This doesn't take the page's

@@ -66,9 +66,6 @@ bool WebAppBrowserController::IsHostedApp() const {
 }
 
 bool WebAppBrowserController::AppUsesWindowControlsOverlay() const {
-  if (!base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay))
-    return false;
-
   DisplayMode display = registrar().GetAppEffectiveDisplayMode(GetAppId());
   return display == DisplayMode::kWindowControlsOverlay;
 }

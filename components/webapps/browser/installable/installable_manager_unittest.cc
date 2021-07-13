@@ -280,8 +280,8 @@ TEST_F(InstallableManagerUnitTest, ManifestDisplayModes) {
   manifest.display = blink::mojom::DisplayMode::kWindowControlsOverlay;
   EXPECT_TRUE(
       IsManifestValid(manifest, false /* check_webapp_manifest_display */));
-  EXPECT_FALSE(IsManifestValid(manifest));
-  EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED, GetErrorCode());
+  EXPECT_TRUE(IsManifestValid(manifest));
+  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
   manifest.display = blink::mojom::DisplayMode::kTabbed;
   EXPECT_TRUE(
@@ -323,8 +323,8 @@ TEST_F(InstallableManagerUnitTest, ManifestDisplayOverride) {
       blink::mojom::DisplayMode::kWindowControlsOverlay);
   EXPECT_TRUE(
       IsManifestValid(manifest, false /* check_webapp_manifest_display */));
-  EXPECT_FALSE(IsManifestValid(manifest));
-  EXPECT_EQ(MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED, GetErrorCode());
+  EXPECT_TRUE(IsManifestValid(manifest));
+  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
   manifest.display_override.insert(manifest.display_override.begin(),
                                    blink::mojom::DisplayMode::kTabbed);

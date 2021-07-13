@@ -625,6 +625,7 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
 
   // Parsing fails for 'window-controls-overlay' when WCO flag is disabled.
   {
+    ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(false);
     auto& manifest =
         ParseManifest("{ \"display\": \"window-controls-overlay\" }");
     EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
@@ -790,6 +791,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
 
   // Reject 'window-controls-overlay' when WCO flag is disabled.
   {
+    ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(false);
     auto& manifest = ParseManifest(
         "{ \"display_override\": [ \"window-controls-overlay\" ] }");
     EXPECT_TRUE(manifest->display_override.IsEmpty());

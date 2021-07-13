@@ -617,8 +617,7 @@ void PopulateChromeFrameBinders(
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
-  if (base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay) &&
-      !render_frame_host->GetParent()) {
+  if (!render_frame_host->GetParent()) {
     map->Add<chrome::mojom::DraggableRegions>(
         base::BindRepeating(&DraggableRegionsHostImpl::CreateIfAllowed));
   }

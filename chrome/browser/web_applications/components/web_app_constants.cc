@@ -32,10 +32,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
     case DisplayMode::kFullscreen:
       return DisplayMode::kStandalone;
     case DisplayMode::kWindowControlsOverlay:
-      if (base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay))
         return DisplayMode::kWindowControlsOverlay;
-      else
-        return DisplayMode::kStandalone;
     case DisplayMode::kTabbed:
       if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip))
         return DisplayMode::kTabbed;

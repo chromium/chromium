@@ -281,11 +281,7 @@ void ChromeRenderFrameObserver::OnDestruct() {
 }
 
 void ChromeRenderFrameObserver::DraggableRegionsChanged() {
-  // The DraggableRegion interface is bound browser side when
-  // kWebAppWindowControlsOverlay feature is turned on.
-  if (!base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay))
-    return;
-
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   // Only the main frame is allowed to control draggable regions, to avoid other
   // frames manipulate the regions in the browser process.
   if (!render_frame()->IsMainFrame())
@@ -307,6 +303,7 @@ void ChromeRenderFrameObserver::DraggableRegionsChanged() {
   render_frame()->GetBrowserInterfaceBroker()->GetInterface(
       remote.BindNewPipeAndPassReceiver());
   remote->UpdateDraggableRegions(std::move(regions));
+#endif
 }
 
 void ChromeRenderFrameObserver::SetWindowFeatures(
