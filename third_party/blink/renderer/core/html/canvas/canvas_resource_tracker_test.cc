@@ -20,11 +20,13 @@ TEST_F(HTMLCanvasResourceTrackerTest, AddCanvasElement) {
   SetBodyInnerHTML("<canvas id='canvas'></canvas>");
   auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
   auto* context = GetDocument().GetExecutionContext();
-  for (auto entry :
-       CanvasResourceTracker::For(context->GetIsolate())->GetResourceMap()) {
-    EXPECT_EQ(canvas, entry.key);
-    EXPECT_EQ(context, entry.value);
-  }
+  const auto& resource_map =
+      CanvasResourceTracker::For(context->GetIsolate())->GetResourceMap();
+  // The map may hold more than a single entry as CanvasResourceTracker is
+  // instantiated per v8::Isolate which is reused across tests.
+  const auto it = resource_map.find(canvas);
+  EXPECT_NE(resource_map.end(), it);
+  EXPECT_EQ(context, it->value);
 }
 
 }  // namespace blink
