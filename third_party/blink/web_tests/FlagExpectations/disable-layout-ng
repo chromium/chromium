@@ -273,7 +273,7 @@ crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-002
 crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Pass ]
 crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-024.html [ Failure ]
 crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-025.html [ Pass ]
-crbug.com/1203090 external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-018.html [ Pass ]
+crbug.com/1203090 external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-018.html [ Failure Pass ]
 crbug.com/1203090 external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-019.html [ Pass ]
 crbug.com/591099 external/wpt/css/css-sizing/clone-nowrap-intrinsic-size-bidi.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/intrinsic-percent-non-replaced-004.html [ Failure ]
@@ -1254,3 +1254,7 @@ crbug.com/591099 virtual/prerender/wpt_internal/prerender/restriction-media-play
 # unblock wpt-importer
 crbug.com/591099 external/wpt/css/css-lists/list-style-type-decimal-vertical-lr.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-lists/list-style-type-decimal-vertical-rl.html [ Failure ]
+
+# unblock wpt-importer
+crbug.com/591099 external/wpt/css/css-lists/list-style-image-gradients.html [ Failure ]
+crbug.com/591099 external/wpt/editing/other/insert-text-in-void-element.tentative.html [ Failure ]

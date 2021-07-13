@@ -3303,12 +3303,14 @@
   {
     "input": "http:@:www.example.com",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "http:/@:www.example.com",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "http://@:www.example.com",
@@ -6373,7 +6375,8 @@
   {
     "input": "\\\\\\.\\Y:",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   "# file: drive letter cases from https://crbug.com/1078698 but lowercased",
   {
@@ -6435,7 +6438,8 @@
   {
     "input": "\\\\\\.\\y:",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   "# Additional file URL tests for (https://github.com/whatwg/url/issues/405)",
   {
@@ -8016,5 +8020,16 @@
     "protocol": "abc:",
     "search": "",
     "username": ""
+  },
+  "Empty query and fragment with blank should throw an error",
+  {
+    "input": "#",
+    "base": null,
+    "failure": true
+  },
+  {
+    "input": "?",
+    "base": null,
+    "failure": true
   }
 ]

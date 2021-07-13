@@ -13,10 +13,11 @@
 <script>
 test_valid_value('font-size-adjust', 'none');
 test_valid_value('font-size-adjust', '0.5');
-test_valid_value('font-size-adjust', 'ex 0.5', '0.5');  // default basis 'ex' omitted from serialization
-test_valid_value('font-size-adjust', 'cap 0.8');
-test_valid_value('font-size-adjust', 'ch 0.4');
-test_valid_value('font-size-adjust', 'ic 0.9');
+test_valid_value('font-size-adjust', 'ex-height 0.5', '0.5');  // default basis 'ex' omitted from serialization
+test_valid_value('font-size-adjust', 'cap-height 0.8');
+test_valid_value('font-size-adjust', 'ch-width 0.4');
+test_valid_value('font-size-adjust', 'ic-width 0.9');
+test_valid_value('font-size-adjust', 'ic-height 0.9');
 </script>
 </body>
 </html>

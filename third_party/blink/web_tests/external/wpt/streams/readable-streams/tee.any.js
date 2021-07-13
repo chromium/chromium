@@ -2,6 +2,7 @@
 // META: script=../resources/rs-utils.js
 // META: script=../resources/test-utils.js
 // META: script=../resources/recording-streams.js
+// META: script=../resources/rs-test-templates.js
 'use strict';
 
 test(() => {
@@ -161,92 +162,9 @@ promise_test(() => {
 
 }, 'ReadableStream teeing: canceling branch2 should not impact branch1');
 
-promise_test(() => {
-
-  const reason1 = new Error('We\'re wanted men.');
-  const reason2 = new Error('I have the death sentence on twelve systems.');
-
-  let resolve;
-  const promise = new Promise(r => resolve = r);
-  const rs = new ReadableStream({
-    cancel(reason) {
-      assert_array_equals(reason, [reason1, reason2],
-                          'the cancel reason should be an array containing those from the branches');
-      resolve();
-    }
-  });
-
-  const branch = rs.tee();
-  const branch1 = branch[0];
-  const branch2 = branch[1];
-  branch1.cancel(reason1);
-  branch2.cancel(reason2);
-
-  return promise;
-
-}, 'ReadableStream teeing: canceling both branches should aggregate the cancel reasons into an array');
-
-promise_test(() => {
-
-  const reason1 = new Error('This little one\'s not worth the effort.');
-  const reason2 = new Error('Come, let me get you something.');
-
-  let resolve;
-  const promise = new Promise(r => resolve = r);
-  const rs = new ReadableStream({
-    cancel(reason) {
-      assert_array_equals(reason, [reason1, reason2],
-                          'the cancel reason should be an array containing those from the branches');
-      resolve();
-    }
-  });
-
-  const branch = rs.tee();
-  const branch1 = branch[0];
-  const branch2 = branch[1];
-  return Promise.all([
-    branch2.cancel(reason2),
-    branch1.cancel(reason1),
-    promise
-  ]);
-
-}, 'ReadableStream teeing: canceling both branches in reverse order should aggregate the cancel reasons into an array');
-
-promise_test(t => {
-
-  const theError = { name: 'I\'ll be careful.' };
-  const rs = new ReadableStream({
-    cancel() {
-      throw theError;
-    }
-  });
-
-  const branch = rs.tee();
-  const branch1 = branch[0];
-  const branch2 = branch[1];
-
-  return Promise.all([
-    promise_rejects_exactly(t, theError, branch1.cancel()),
-    promise_rejects_exactly(t, theError, branch2.cancel())
-  ]);
-
-}, 'ReadableStream teeing: failing to cancel the original stream should cause cancel() to reject on branches');
-
-promise_test(t => {
-
-  const theError = { name: 'You just watch yourself!' };
-  let controller;
-  const stream = new ReadableStream({ start(c) { controller = c; } });
-  const [branch1, branch2] = stream.tee();
-
-  controller.error(theError);
-
-  return Promise.all([
-    promise_rejects_exactly(t, theError, branch1.cancel()),
-    promise_rejects_exactly(t, theError, branch2.cancel())
-  ]);
-
-}, 'ReadableStream teeing: erroring a teed stream should properly handle canceled branches');
+templatedRSTeeCancel('ReadableStream teeing', (extras) => {
+  return new ReadableStream({ ...extras });
+});
 
 promise_test(t => {
 

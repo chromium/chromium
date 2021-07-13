@@ -17,6 +17,9 @@
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 
 <div id="reference-overlapped-red"></div>
-<div style="display: grid; grid-template-columns: 100px; grid-template-rows: 100px;">
-  <div style="height: 100px; aspect-ratio: 1/2; justify-self: stretch; background: green;"></div>
+<div style="display: grid; grid-template-columns: 100px; grid-template-rows: 50px;">
+  <div style="height: 50px; aspect-ratio: 1/2; justify-self: stretch; background: green;"></div>
+</div>
+<div style="display: grid; grid-template-columns: 100px; grid-template-rows: 50px;justify-items: stretch">
+  <div style="height: 50px; aspect-ratio: 1/2; justify-self: auto; background: green;"></div>
 </div>
