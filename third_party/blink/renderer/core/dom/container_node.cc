@@ -1040,8 +1040,11 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
     // the ComputedStyle goes from null to non-null.
     return;
   }
-  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode())
+  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode()) {
+    recordreplay::Assert("ContainerNode::ChildrenChanged #5 %d",
+                         recordreplay::PointerId(inserted_node));
     inserted_node->SetStyleChangeOnInsertion();
+  }
 }
 
 bool ContainerNode::ChildrenChangedAllChildrenRemovedNeedsList() const {

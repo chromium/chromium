@@ -1353,8 +1353,11 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
       change_type, reason);
 
   StyleChangeType existing_change_type = GetStyleChangeType();
-  if (change_type > existing_change_type)
+  if (change_type > existing_change_type) {
+    recordreplay::Assert("Node::SetNeedsStyleRecalc #5 %d %d",
+                         recordreplay::PointerId(this), (int)change_type);
     SetStyleChange(change_type);
+  }
 
   auto* this_element = DynamicTo<Element>(this);
   if (existing_change_type == kNoStyleChange)
