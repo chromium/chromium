@@ -87,7 +87,7 @@ void AccessibilityLayer::CreateOrUpdateLayer(aura::Window* root_window,
         display::Screen::GetScreen()->GetDisplayMatching(bounds);
     ui::Compositor* compositor = root_window->layer()->GetCompositor();
     if (compositor && !animation_observation_.IsObservingSource(compositor)) {
-      animation_observation_.Reset();
+      Reset();
       animation_observation_.Observe(compositor);
     }
   }
@@ -101,13 +101,23 @@ void AccessibilityLayer::OnDeviceScaleFactorChanged(
 }
 
 void AccessibilityLayer::OnAnimationStep(base::TimeTicks timestamp) {
-  if (delegate_->OnAnimationStep(timestamp))
-    animation_observation_.Reset();
+  if (!delegate_->OnAnimationStep(timestamp) ||
+      !animation_observation_.IsObserving()) {
+    return;
+  }
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AccessibilityLayer::Reset, weak_factory_.GetWeakPtr()));
 }
 
 void AccessibilityLayer::OnCompositingShuttingDown(ui::Compositor* compositor) {
   if (compositor && animation_observation_.IsObservingSource(compositor))
-    animation_observation_.Reset();
+    Reset();
+}
+
+void AccessibilityLayer::Reset() {
+  animation_observation_.Reset();
 }
 
 }  // namespace ash

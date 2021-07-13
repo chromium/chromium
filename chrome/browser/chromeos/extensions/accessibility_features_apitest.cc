@@ -271,9 +271,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get_ComponentApp) {
 
 // Tests that an extension with modify permission can modify accessibility
 // features, while an extension that doesn't have the permission can't.
-//
-// Disabled for being flaky (https://crbug.com/1225390).
-IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, DISABLED_Set) {
+IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Set) {
   // WARNING: Make sure that features which load Chrome extension are not
   // enabled at this point (before the test app is loaded), as that may break
   // the test:

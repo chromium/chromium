@@ -102,6 +102,9 @@ class AccessibilityLayer : public ui::LayerDelegate,
   void OnAnimationStep(base::TimeTicks timestamp) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
+  // Reset internal observation and state.
+  void Reset();
+
   // The object that owns this layer.
   AccessibilityLayerDelegate* delegate_;
 
@@ -110,6 +113,8 @@ class AccessibilityLayer : public ui::LayerDelegate,
                           &ui::Compositor::AddAnimationObserver,
                           &ui::Compositor::RemoveAnimationObserver>
       animation_observation_{this};
+
+  base::WeakPtrFactory<AccessibilityLayer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityLayer);
 };
