@@ -12,9 +12,6 @@ namespace syncer {
 
 namespace prefs {
 
-extern const char kSyncLastSyncedTime[];
-extern const char kSyncLastPollTime[];
-extern const char kSyncPollIntervalSeconds[];
 extern const char kSyncFirstSetupComplete[];
 extern const char kSyncKeepEverythingSynced[];
 
@@ -42,16 +39,7 @@ extern const char kSyncManaged[];
 extern const char kSyncRequested[];
 
 extern const char kSyncEncryptionBootstrapToken[];
-extern const char kSyncKeystoreEncryptionBootstrapToken[];
-
-extern const char kSyncGaiaId[];
-extern const char kSyncCacheGuid[];
-extern const char kSyncBirthday[];
-extern const char kSyncBagOfChips[];
-
 extern const char kSyncPassphrasePromptMutedProductVersion[];
-
-extern const char kSyncInvalidationVersions[];
 
 extern const char kEnableLocalSyncBackend[];
 extern const char kLocalSyncBackendDir[];

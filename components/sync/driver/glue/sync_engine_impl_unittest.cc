@@ -30,8 +30,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/active_devices_provider.h"
+#include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/sync_manager_factory.h"
@@ -182,7 +182,7 @@ class SyncEngineImplTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
 
     ON_CALL(invalidator_, UpdateInterestedTopics)
         .WillByDefault(testing::Return(true));

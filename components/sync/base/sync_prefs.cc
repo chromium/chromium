@@ -7,14 +7,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/rand_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -40,11 +37,6 @@ const char kObsoleteSyncLastRunVersion[] = "sync.last_run_version";
 const char kSyncSuppressStart[] = "sync.suppress_start";
 
 }  // namespace
-
-SyncTransportDataPrefs::SyncTransportDataPrefs(PrefService* pref_service)
-    : pref_service_(pref_service) {}
-
-SyncTransportDataPrefs::~SyncTransportDataPrefs() = default;
 
 SyncPrefObserver::~SyncPrefObserver() {}
 
@@ -97,20 +89,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kSyncEncryptionBootstrapToken,
                                std::string());
 
-  // Internal or bookkeeping prefs.
-  registry->RegisterStringPref(prefs::kSyncGaiaId, std::string());
-  registry->RegisterStringPref(prefs::kSyncCacheGuid, std::string());
-  registry->RegisterStringPref(prefs::kSyncBirthday, std::string());
-  registry->RegisterStringPref(prefs::kSyncBagOfChips, std::string());
-  registry->RegisterInt64Pref(prefs::kSyncLastSyncedTime, 0);
-  registry->RegisterInt64Pref(prefs::kSyncLastPollTime, 0);
-  registry->RegisterInt64Pref(prefs::kSyncPollIntervalSeconds, 0);
   registry->RegisterBooleanPref(prefs::kSyncManaged, false);
-  registry->RegisterStringPref(prefs::kSyncKeystoreEncryptionBootstrapToken,
-                               std::string());
   registry->RegisterIntegerPref(prefs::kSyncPassphrasePromptMutedProductVersion,
                                 0);
-  registry->RegisterDictionaryPref(prefs::kSyncInvalidationVersions);
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
 #if defined(OS_ANDROID)
@@ -132,20 +113,6 @@ void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
 void SyncPrefs::RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_pref_observers_.RemoveObserver(sync_pref_observer);
-}
-
-void SyncTransportDataPrefs::ClearAll() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  pref_service_->ClearPref(prefs::kSyncLastSyncedTime);
-  pref_service_->ClearPref(prefs::kSyncLastPollTime);
-  pref_service_->ClearPref(prefs::kSyncPollIntervalSeconds);
-  pref_service_->ClearPref(prefs::kSyncKeystoreEncryptionBootstrapToken);
-  pref_service_->ClearPref(prefs::kSyncInvalidationVersions);
-  pref_service_->ClearPref(prefs::kSyncGaiaId);
-  pref_service_->ClearPref(prefs::kSyncCacheGuid);
-  pref_service_->ClearPref(prefs::kSyncBirthday);
-  pref_service_->ClearPref(prefs::kSyncBagOfChips);
 }
 
 bool SyncPrefs::IsFirstSetupComplete() const {
@@ -181,40 +148,6 @@ void SyncPrefs::SetSyncRequestedIfNotSetExplicitly() {
   if (!pref_service_->GetUserPrefValue(prefs::kSyncRequested)) {
     pref_service_->SetBoolean(prefs::kSyncRequested, true);
   }
-}
-
-base::Time SyncTransportDataPrefs::GetLastSyncedTime() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromInternalValue(
-      pref_service_->GetInt64(prefs::kSyncLastSyncedTime));
-}
-
-void SyncTransportDataPrefs::SetLastSyncedTime(base::Time time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(prefs::kSyncLastSyncedTime, time.ToInternalValue());
-}
-
-base::Time SyncTransportDataPrefs::GetLastPollTime() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromInternalValue(
-      pref_service_->GetInt64(prefs::kSyncLastPollTime));
-}
-
-void SyncTransportDataPrefs::SetLastPollTime(base::Time time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(prefs::kSyncLastPollTime, time.ToInternalValue());
-}
-
-base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::TimeDelta::FromSeconds(
-      pref_service_->GetInt64(prefs::kSyncPollIntervalSeconds));
-}
-
-void SyncTransportDataPrefs::SetPollInterval(base::TimeDelta interval) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(prefs::kSyncPollIntervalSeconds,
-                          interval.InSeconds());
 }
 
 bool SyncPrefs::HasKeepEverythingSynced() const {
@@ -344,18 +277,6 @@ void SyncPrefs::ClearEncryptionBootstrapToken() {
   pref_service_->ClearPref(prefs::kSyncEncryptionBootstrapToken);
 }
 
-std::string SyncTransportDataPrefs::GetKeystoreEncryptionBootstrapToken()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetString(prefs::kSyncKeystoreEncryptionBootstrapToken);
-}
-
-void SyncTransportDataPrefs::SetKeystoreEncryptionBootstrapToken(
-    const std::string& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetString(prefs::kSyncKeystoreEncryptionBootstrapToken, token);
-}
-
 // static
 const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
   switch (type) {
@@ -419,48 +340,6 @@ void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,
   registry->RegisterBooleanPref(pref_name, false);
 }
 
-void SyncTransportDataPrefs::SetGaiaId(const std::string& gaia_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetString(prefs::kSyncGaiaId, gaia_id);
-}
-
-std::string SyncTransportDataPrefs::GetGaiaId() const {
-  return pref_service_->GetString(prefs::kSyncGaiaId);
-}
-
-void SyncTransportDataPrefs::SetCacheGuid(const std::string& cache_guid) {
-  pref_service_->SetString(prefs::kSyncCacheGuid, cache_guid);
-}
-
-std::string SyncTransportDataPrefs::GetCacheGuid() const {
-  return pref_service_->GetString(prefs::kSyncCacheGuid);
-}
-
-void SyncTransportDataPrefs::SetBirthday(const std::string& birthday) {
-  pref_service_->SetString(prefs::kSyncBirthday, birthday);
-}
-
-std::string SyncTransportDataPrefs::GetBirthday() const {
-  return pref_service_->GetString(prefs::kSyncBirthday);
-}
-
-void SyncTransportDataPrefs::SetBagOfChips(const std::string& bag_of_chips) {
-  // |bag_of_chips| contains a serialized proto which is not utf-8, hence we use
-  // base64 encoding in prefs.
-  std::string encoded;
-  base::Base64Encode(bag_of_chips, &encoded);
-  pref_service_->SetString(prefs::kSyncBagOfChips, encoded);
-}
-
-std::string SyncTransportDataPrefs::GetBagOfChips() const {
-  // |kSyncBagOfChips| gets stored in base64 because it represents a serialized
-  // proto which is not utf-8 encoding.
-  const std::string encoded = pref_service_->GetString(prefs::kSyncBagOfChips);
-  std::string decoded;
-  base::Base64Decode(encoded, &decoded);
-  return decoded;
-}
-
 #if defined(OS_ANDROID)
 void SyncPrefs::SetDecoupledFromAndroidMasterSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -472,37 +351,6 @@ bool SyncPrefs::GetDecoupledFromAndroidMasterSync() {
   return pref_service_->GetBoolean(prefs::kSyncDecoupledFromAndroidMasterSync);
 }
 #endif  // defined(OS_ANDROID)
-
-std::map<ModelType, int64_t> SyncTransportDataPrefs::GetInvalidationVersions()
-    const {
-  std::map<ModelType, int64_t> invalidation_versions;
-  const base::DictionaryValue* invalidation_dictionary =
-      pref_service_->GetDictionary(prefs::kSyncInvalidationVersions);
-  for (ModelType type : ProtocolTypes()) {
-    std::string key = ModelTypeToString(type);
-    std::string version_str;
-    if (!invalidation_dictionary->GetString(key, &version_str))
-      continue;
-    int64_t version = 0;
-    if (!base::StringToInt64(version_str, &version))
-      continue;
-    invalidation_versions[type] = version;
-  }
-  return invalidation_versions;
-}
-
-void SyncTransportDataPrefs::UpdateInvalidationVersions(
-    const std::map<ModelType, int64_t>& invalidation_versions) {
-  std::unique_ptr<base::DictionaryValue> invalidation_dictionary(
-      new base::DictionaryValue());
-  for (const auto& map_iter : invalidation_versions) {
-    std::string version_str = base::NumberToString(map_iter.second);
-    invalidation_dictionary->SetString(ModelTypeToString(map_iter.first),
-                                       version_str);
-  }
-  pref_service_->Set(prefs::kSyncInvalidationVersions,
-                     *invalidation_dictionary);
-}
 
 bool SyncPrefs::IsLocalSyncEnabled() const {
   return local_sync_enabled_;

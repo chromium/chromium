@@ -27,6 +27,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -178,6 +179,7 @@ void WebViewBrowserState::RegisterPrefs(
   autofill::prefs::RegisterProfilePrefs(pref_registry);
   password_manager::PasswordManager::RegisterProfilePrefs(pref_registry);
   syncer::SyncPrefs::RegisterProfilePrefs(pref_registry);
+  syncer::SyncTransportDataPrefs::RegisterProfilePrefs(pref_registry);
   syncer::DeviceInfoPrefs::RegisterProfilePrefs(pref_registry);
   safe_browsing::RegisterProfilePrefs(pref_registry);
   unified_consent::UnifiedConsentService::RegisterPrefs(pref_registry);

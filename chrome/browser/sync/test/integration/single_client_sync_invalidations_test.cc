@@ -12,6 +12,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/protocol/sync.pb.h"

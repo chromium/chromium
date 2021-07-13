@@ -11,7 +11,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/sync/base/sync_prefs.h"
+#include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/protocol/client_commands.pb.h"

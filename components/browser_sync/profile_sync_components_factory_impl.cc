@@ -39,6 +39,7 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/data_type_manager_impl.h"
 #include "components/sync/driver/glue/sync_engine_impl.h"
+#include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"

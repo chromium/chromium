@@ -45,6 +45,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_locale_settings.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
@@ -206,6 +207,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);
   syncer::DeviceInfoPrefs::RegisterProfilePrefs(registry);
   syncer::SyncPrefs::RegisterProfilePrefs(registry);
+  syncer::SyncTransportDataPrefs::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
   unified_consent::UnifiedConsentService::RegisterPrefs(registry);

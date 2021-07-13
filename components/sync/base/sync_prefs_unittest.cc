@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -43,50 +41,6 @@ class SyncPrefsTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
 };
-
-class SyncTransportDataPrefsTest : public testing::Test {
- protected:
-  SyncTransportDataPrefsTest() {
-    SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
-    sync_prefs_ = std::make_unique<SyncTransportDataPrefs>(&pref_service_);
-  }
-
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<SyncTransportDataPrefs> sync_prefs_;
-};
-
-// Verify that invalidation versions are persisted and loaded correctly.
-TEST_F(SyncTransportDataPrefsTest, InvalidationVersions) {
-  std::map<ModelType, int64_t> versions;
-  versions[BOOKMARKS] = 10;
-  versions[SESSIONS] = 20;
-  versions[PREFERENCES] = 30;
-
-  sync_prefs_->UpdateInvalidationVersions(versions);
-
-  std::map<ModelType, int64_t> versions2 =
-      sync_prefs_->GetInvalidationVersions();
-
-  EXPECT_EQ(versions.size(), versions2.size());
-  for (auto map_iter : versions2) {
-    EXPECT_EQ(versions[map_iter.first], map_iter.second);
-  }
-}
-
-TEST_F(SyncTransportDataPrefsTest, PollInterval) {
-  EXPECT_TRUE(sync_prefs_->GetPollInterval().is_zero());
-  sync_prefs_->SetPollInterval(base::TimeDelta::FromMinutes(30));
-  EXPECT_FALSE(sync_prefs_->GetPollInterval().is_zero());
-  EXPECT_EQ(sync_prefs_->GetPollInterval().InMinutes(), 30);
-}
-
-TEST_F(SyncTransportDataPrefsTest, LastSyncTime) {
-  EXPECT_EQ(base::Time(), sync_prefs_->GetLastSyncedTime());
-  const base::Time now = base::Time::Now();
-  sync_prefs_->SetLastSyncedTime(now);
-  EXPECT_EQ(now, sync_prefs_->GetLastSyncedTime());
-}
 
 TEST_F(SyncPrefsTest, EncryptionBootstrapToken) {
   EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
@@ -150,20 +104,6 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
   sync_prefs_->RemoveSyncPrefObserver(&mock_sync_pref_observer);
 }
 #endif
-
-TEST_F(SyncTransportDataPrefsTest, ClearAll) {
-  sync_prefs_->SetLastSyncedTime(base::Time::Now());
-  sync_prefs_->SetKeystoreEncryptionBootstrapToken("keystore_token");
-
-  ASSERT_NE(base::Time(), sync_prefs_->GetLastSyncedTime());
-  ASSERT_EQ("keystore_token",
-            sync_prefs_->GetKeystoreEncryptionBootstrapToken());
-
-  sync_prefs_->ClearAll();
-
-  EXPECT_EQ(base::Time(), sync_prefs_->GetLastSyncedTime());
-  EXPECT_TRUE(sync_prefs_->GetKeystoreEncryptionBootstrapToken().empty());
-}
 
 TEST_F(SyncPrefsTest, Basic) {
   EXPECT_FALSE(sync_prefs_->IsFirstSetupComplete());

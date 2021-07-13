@@ -25,6 +25,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/driver/sync_internals_util.h"
 #include "components/sync/engine/net/url_translator.h"
 #include "components/sync/engine/sync_string_conversions.h"

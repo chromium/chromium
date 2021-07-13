@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
 
@@ -15,11 +14,9 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_member.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 
 class PrefRegistrySimple;
@@ -36,61 +33,6 @@ class SyncPrefObserver {
 
  protected:
   virtual ~SyncPrefObserver();
-};
-
-// Thin wrapper for "bookkeeping" sync preferences, such as the last synced
-// time, whether the last shutdown was clean, etc. Does *NOT* include sync
-// preferences which are directly user-controlled, such as the set of selected
-// types.
-//
-// In order to use this class SyncPrefs::RegisterProfilePrefs() needs to be
-// invoked first.
-// TODO(crbug.com/938894): Move to dedicated file, possibly next to
-// SyncEngineImpl and introduce a separate pref registration function.
-class SyncTransportDataPrefs {
- public:
-  // |pref_service| must not be null and must outlive this object.
-  explicit SyncTransportDataPrefs(PrefService* pref_service);
-  SyncTransportDataPrefs(const SyncTransportDataPrefs&) = delete;
-  SyncTransportDataPrefs& operator=(const SyncTransportDataPrefs&) = delete;
-  ~SyncTransportDataPrefs();
-
-  // Clears all preferences in this class.
-  void ClearAll();
-
-  void SetGaiaId(const std::string& gaia_id);
-  std::string GetGaiaId() const;
-  void SetCacheGuid(const std::string& cache_guid);
-  std::string GetCacheGuid() const;
-  void SetBirthday(const std::string& birthday);
-  std::string GetBirthday() const;
-  void SetBagOfChips(const std::string& bag_of_chips);
-  std::string GetBagOfChips() const;
-
-  base::Time GetLastSyncedTime() const;
-  void SetLastSyncedTime(base::Time time);
-
-  base::Time GetLastPollTime() const;
-  void SetLastPollTime(base::Time time);
-
-  base::TimeDelta GetPollInterval() const;
-  void SetPollInterval(base::TimeDelta interval);
-
-  // Use this keystore bootstrap token if we're not using an explicit
-  // passphrase.
-  std::string GetKeystoreEncryptionBootstrapToken() const;
-  void SetKeystoreEncryptionBootstrapToken(const std::string& token);
-
-  // Get/set for the last known sync invalidation versions.
-  std::map<ModelType, int64_t> GetInvalidationVersions() const;
-  void UpdateInvalidationVersions(
-      const std::map<ModelType, int64_t>& invalidation_versions);
-
- private:
-  // Never null.
-  PrefService* const pref_service_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // SyncPrefs is a helper class that manages getting, setting, and persisting

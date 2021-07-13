@@ -10,17 +10,6 @@ namespace syncer {
 
 namespace prefs {
 
-// 64-bit integer serialization of the base::Time when the last sync occurred.
-const char kSyncLastSyncedTime[] = "sync.last_synced_time";
-
-// 64-bit integer serialization of the base::Time of the last sync poll.
-const char kSyncLastPollTime[] = "sync.last_poll_time";
-
-// 64-bit integer serialization of base::TimeDelta storing poll intervals
-// received by the server (in seconds). For historic reasons, this is called
-// "short_poll_interval", but it's worth the hassle to rename it.
-const char kSyncPollIntervalSeconds[] = "sync.short_poll_interval";
-
 // Boolean specifying whether the user finished setting up sync at least once.
 const char kSyncFirstSetupComplete[] = "sync.has_setup_completed";
 
@@ -78,24 +67,11 @@ const char kSyncRequested[] = "sync.requested";
 // startup so that the user doesn't need to provide credentials on each start.
 const char kSyncEncryptionBootstrapToken[] = "sync.encryption_bootstrap_token";
 
-// Same as kSyncEncryptionBootstrapToken, but derived from the keystore key,
-// so we don't have to do a GetKey command at restart.
-const char kSyncKeystoreEncryptionBootstrapToken[] =
-    "sync.keystore_encryption_bootstrap_token";
-
-const char kSyncGaiaId[] = "sync.gaia_id";
-const char kSyncCacheGuid[] = "sync.cache_guid";
-const char kSyncBirthday[] = "sync.birthday";
-const char kSyncBagOfChips[] = "sync.bag_of_chips";
-
 // Stores whether a platform specific passphrase error prompt has been muted by
 // the user (e.g. an Android system notification). Specifically, it stores which
 // major product version was used to mute this error.
 const char kSyncPassphrasePromptMutedProductVersion[] =
     "sync.passphrase_prompt_muted_product_version";
-
-// Dictionary of last seen invalidation versions for each model type.
-const char kSyncInvalidationVersions[] = "sync.invalidation_versions";
 
 // Enabled the local sync backend implemented by the LoopbackServer.
 const char kEnableLocalSyncBackend[] = "sync.enable_local_sync_backend";
