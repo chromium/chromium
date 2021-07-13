@@ -58,8 +58,8 @@ constexpr int kNonAppsStateVerticalOffset = 24;
 // The opacity the apps container UI should have when shown on non apps page UI.
 constexpr float kNonAppsStateOpacity = 0.1;
 
-// The horizontal margin within the apps container for app list folder view.
-constexpr int kFolderHorizontalMargin = 8;
+// The margins within the apps container for app list folder view.
+constexpr int kFolderMargin = 8;
 
 }  // namespace
 
@@ -271,8 +271,8 @@ void AppsContainerView::Layout() {
   // Set bounding box for the folder view - the folder may overlap with
   // suggestion chips, but not the search box.
   gfx::Rect folder_bounding_box = rect;
-  folder_bounding_box.set_y(chip_container_rect.y());
-  folder_bounding_box.Inset(kFolderHorizontalMargin, 0);
+  folder_bounding_box.Inset(kFolderMargin, chip_container_rect.y(),
+                            kFolderMargin, kFolderMargin);
   app_list_folder_view_->SetBoundingBox(folder_bounding_box);
 
   // Leave the same available bounds for the apps grid view in both
@@ -282,7 +282,6 @@ void AppsContainerView::Layout() {
   rect.set_height(rect.height() -
                   GetExpectedSuggestionChipY(kAppListFullscreenProgressValue) -
                   chip_container_rect.height());
-
   const GridLayout grid_layout = CalculateGridLayout();
   apps_grid_view_->SetLayout(grid_layout.columns, grid_layout.rows);
 
