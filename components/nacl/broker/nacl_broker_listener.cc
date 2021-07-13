@@ -30,6 +30,8 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "sandbox/win/src/sandbox_policy.h"
 
+#include <windows.h>
+
 namespace {
 
 void SendReply(IPC::Channel* channel, int32_t pid, bool result) {
