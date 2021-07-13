@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -37,6 +38,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/api/oauth2.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
@@ -125,7 +127,8 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
       params->details->enable_granular_permissions.get() &&
       *params->details->enable_granular_permissions;
 
-  const OAuth2Info& oauth2_info = OAuth2Info::GetOAuth2Info(extension());
+  DCHECK(extension());
+  const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());
 
   // Check that the necessary information is present in the manifest.
   oauth2_client_id_ = GetOAuth2ClientId();
@@ -459,7 +462,8 @@ void IdentityGetAuthTokenFunction::StartMintToken(
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("identity", "StartMintToken", this,
                                       "type", type);
 
-  const OAuth2Info& oauth2_info = OAuth2Info::GetOAuth2Info(extension());
+  DCHECK(extension());
+  const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());
   IdentityAPI* id_api = IdentityAPI::GetFactoryInstance()->Get(GetProfile());
   IdentityTokenCacheValue cache_entry =
       id_api->token_cache()->GetToken(token_key_);
@@ -493,13 +497,15 @@ void IdentityGetAuthTokenFunction::StartMintToken(
         }
 #endif
 
-        if (oauth2_info.auto_approve)
+        if (oauth2_info.auto_approve && *oauth2_info.auto_approve) {
           // oauth2_info.auto_approve is protected by an allowlist in
           // _manifest_features.json hence only selected extensions take
           // advantage of forcefully minting the token.
           gaia_mint_token_mode_ = OAuth2MintTokenFlow::MODE_MINT_TOKEN_FORCE;
-        else
+        } else {
           gaia_mint_token_mode_ = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
+        }
+
         StartTokenKeyAccountAccessTokenRequest();
         break;
 
@@ -928,14 +934,18 @@ bool IdentityGetAuthTokenFunction::HasRefreshTokenForTokenKeyAccount() const {
 }
 
 std::string IdentityGetAuthTokenFunction::GetOAuth2ClientId() const {
-  const OAuth2Info& oauth2_info = OAuth2Info::GetOAuth2Info(extension());
-  std::string client_id = oauth2_info.client_id;
+  DCHECK(extension());
+  const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());
+
+  std::string client_id;
+  if (oauth2_info.client_id)
+    client_id = *oauth2_info.client_id;
 
   // Component apps using auto_approve may use Chrome's client ID by
   // omitting the field.
   if (client_id.empty() &&
       extension()->location() == mojom::ManifestLocation::kComponent &&
-      oauth2_info.auto_approve) {
+      oauth2_info.auto_approve && *oauth2_info.auto_approve) {
     client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   }
   return client_id;

@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/device_local_account_util.h"
 #include "extensions/common/api/incognito.h"
+#include "extensions/common/api/oauth2.h"
 #include "extensions/common/api/requirements.h"
 #include "extensions/common/api/shared_module.h"
 #include "extensions/common/api/web_accessible_resources.h"
@@ -179,7 +180,7 @@ const char* const kSafeManifestEntries[] = {
 
     // Used in conjunction with the identity API - not really used when there's
     // no GAIA user signed in.
-    emk::kOAuth2,
+    ext_api::oauth2::ManifestKeys::kOauth2,
 
     // Generally safe (i.e. only whitelist apps), except for the policy to
     // whitelist apps for auto-approved token minting (we should just ignore

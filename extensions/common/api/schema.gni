@@ -63,6 +63,7 @@ extensions_manifest_only_schema_files_ = [
   "cross_origin_isolation.idl",
   "extensions_manifest_types.json",
   "incognito.json",
+  "oauth2.idl",
   "requirements.json",
   "shared_module.idl",
   "web_accessible_resources.idl",

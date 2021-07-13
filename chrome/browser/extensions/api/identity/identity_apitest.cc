@@ -67,6 +67,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/common/api/oauth2.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
@@ -99,6 +100,8 @@ namespace {
 
 namespace errors = identity_constants;
 namespace utils = extension_function_test_utils;
+
+using api::oauth2::OAuth2Info;
 
 const char kAccessToken[] = "auth_token";
 const char kExtensionId[] = "ext_id";
@@ -883,7 +886,7 @@ class GetAuthTokenFunctionTest
   // Helper to create an extension with specific OAuth2Info fields set.
   // |fields_to_set| should be computed by using fields of Oauth2Fields enum.
   const Extension* CreateExtension(int fields_to_set) {
-    const Extension* ext;
+    const Extension* ext = nullptr;
     base::FilePath manifest_path =
         test_data_dir_.AppendASCII("platform_apps/oauth2");
     base::FilePath component_manifest_path =
@@ -892,10 +895,16 @@ class GetAuthTokenFunctionTest
       ext = LoadExtension(manifest_path);
     else
       ext = LoadExtensionAsComponent(component_manifest_path);
+
+    if (!ext) {
+      ADD_FAILURE() << "Cannot create extension";
+      return nullptr;
+    }
+
     OAuth2Info& oauth2_info =
-        const_cast<OAuth2Info&>(OAuth2Info::GetOAuth2Info(ext));
+        const_cast<OAuth2Info&>(OAuth2ManifestHandler::GetOAuth2Info(*ext));
     if ((fields_to_set & CLIENT_ID) != 0)
-      oauth2_info.client_id = "client1";
+      oauth2_info.client_id = std::make_unique<std::string>("client1");
     if ((fields_to_set & SCOPES) != 0) {
       oauth2_info.scopes.push_back("scope1");
       oauth2_info.scopes.push_back("scope2");
@@ -1987,9 +1996,11 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, ComponentWithChromeClientId) {
   func->ignore_did_respond_for_testing();
   scoped_refptr<const Extension> extension(
       CreateExtension(SCOPES | AS_COMPONENT));
+  ASSERT_TRUE(extension.get());
   func->set_extension(extension.get());
-  const OAuth2Info& oauth2_info = OAuth2Info::GetOAuth2Info(extension.get());
-  EXPECT_TRUE(oauth2_info.client_id.empty());
+  const OAuth2Info& oauth2_info =
+      OAuth2ManifestHandler::GetOAuth2Info(*extension);
+  EXPECT_FALSE(oauth2_info.client_id);
   EXPECT_FALSE(func->GetOAuth2ClientId().empty());
   EXPECT_NE("client1", func->GetOAuth2ClientId());
 }
