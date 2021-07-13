@@ -6,10 +6,13 @@
 
 #include "ash/public/cpp/notifier_metadata.h"
 #include "ash/public/cpp/notifier_settings_observer.h"
+#include "base/feature_list.h"
 #include "base/i18n/string_compare.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/arc_application_notifier_controller.h"
 #include "chrome/browser/notifications/extension_notifier_controller.h"
+#include "chrome/browser/notifications/pwa_notifier_controller.h"
 #include "chrome/browser/notifications/web_page_notifier_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -107,13 +110,19 @@ ChromeAshMessageCenterClient::ChromeAshMessageCenterClient(
   DCHECK(!g_chrome_ash_message_center_client);
   g_chrome_ash_message_center_client = this;
 
-  sources_.insert(
-      std::make_pair(message_center::NotifierType::APPLICATION,
-                     std::make_unique<ExtensionNotifierController>(this)));
+  if (base::FeatureList::IsEnabled(features::kQuickSettingsPWANotifications)) {
+    sources_.insert(
+        std::make_pair(message_center::NotifierType::APPLICATION,
+                       std::make_unique<PwaNotifierController>(this)));
+  } else {
+    sources_.insert(
+        std::make_pair(message_center::NotifierType::APPLICATION,
+                       std::make_unique<ExtensionNotifierController>(this)));
 
-  sources_.insert(
-      std::make_pair(message_center::NotifierType::WEB_PAGE,
-                     std::make_unique<WebPageNotifierController>(this)));
+    sources_.insert(
+        std::make_pair(message_center::NotifierType::WEB_PAGE,
+                       std::make_unique<WebPageNotifierController>(this)));
+  }
 
   sources_.insert(std::make_pair(
       message_center::NotifierType::ARC_APPLICATION,

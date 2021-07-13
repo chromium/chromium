@@ -4589,6 +4589,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "quick-settings-pwa-notifications",
+    "owners": [ "yulunwu" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "quiet-notification-prompts",
     "owners": [ "engedy", "mkwst", "andypaicu", "hkamila" ],
     "expiry_milestone": 93

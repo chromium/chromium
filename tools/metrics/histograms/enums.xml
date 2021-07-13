@@ -49970,6 +49970,7 @@ from previous Chrome versions.
   <int value="1019623058" label="ash-enable-shelf-model-synchronization"/>
   <int value="1019857902"
       label="disable-hide-inactive-stacked-tab-close-buttons"/>
+  <int value="1021573543" label="QuickSettingsPWA:disabled"/>
   <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>
   <int value="1022424308" label="SignedExchangeSubresourcePrefetch:enabled"/>
   <int value="1022992701" label="enable-origin-chip-always"/>
@@ -51297,6 +51298,7 @@ from previous Chrome versions.
   <int value="2087069781" label="ui-debug-tools:enabled"/>
   <int value="2088446947" label="enable-ephemeral-guest-profiles-on-desktop"/>
   <int value="2089897928" label="enable-audio-focus"/>
+  <int value="2089901626" label="QuickSettingsPWA:enabled"/>
   <int value="2091002949" label="RemoveNavigationHistory:disabled"/>
   <int value="2091943748"
       label="MigrateDefaultChromeAppToWebAppsGSuite:disabled"/>

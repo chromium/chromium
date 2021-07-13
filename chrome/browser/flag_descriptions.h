@@ -2473,6 +2473,9 @@ extern const char kDisableOfficeEditingComponentAppDescription[];
 extern const char kDoubleTapToZoomInTabletModeName[];
 extern const char kDoubleTapToZoomInTabletModeDescription[];
 
+extern const char kQuickSettingsPWANotificationsName[];
+extern const char kQuickSettingsPWANotificationsDescription[];
+
 extern const char kDriveFsBidirectionalNativeMessagingName[];
 extern const char kDriveFsBidirectionalNativeMessagingDescription[];
 

@@ -30,6 +30,11 @@ const base::Feature kPromoBrowserCommands{"PromoBrowserCommands",
 const char kPromoBrowserCommandIdParam[] = "PromoBrowserCommandIdParam";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables reading and writing PWA notification permissions from quick settings
+// menu.
+const base::Feature kQuickSettingsPWANotifications{
+    "QuickSettingsPWA", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables being able to zoom a web page by double tapping in Chrome OS tablet
 // mode.
 const base::Feature kDoubleTapToZoomInTabletMode{

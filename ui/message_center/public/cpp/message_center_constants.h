@@ -19,6 +19,7 @@ namespace message_center {
 // Square image sizes in DIPs.
 const int kNotificationButtonIconSize = 16;
 const int kNotificationIconSize = 80;
+const int kQuickSettingIconSizeInDp = 48;
 // A border is applied to images that have a non-preferred aspect ratio.
 const int kNotificationImageBorderSize = 10;
 const int kNotificationPreferredImageWidth = 360;
