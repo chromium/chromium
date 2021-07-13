@@ -53,6 +53,7 @@ group("chromium_providers") {
 
     # The individual API implementations.
     "//ios/chrome/browser/providers/modals:chromium_modals",
+    "//ios/chrome/browser/providers/text_zoom:chromium_text_zoom",
 
     # The provider API needs to provide MaterialDesignComponent API (as the
     # internal provider provides an alternate implementation).
