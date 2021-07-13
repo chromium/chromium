@@ -50,6 +50,14 @@ class ASH_PUBLIC_EXPORT ProjectorController {
 
   // Called when there is an error in transcription.
   virtual void OnTranscriptionError() = 0;
+
+  // Sets Projector toolbar visibility.
+  virtual void SetProjectorToolsVisible(bool is_visible) = 0;
+  virtual bool AreProjectorToolsVisible() const = 0;
+
+  // Returns true if Projector is eligible to start a new session.
+  // TODO(yilkal): Rename to something more descriptive, like CanStart().
+  virtual bool IsEligible() const = 0;
 };
 
 }  // namespace ash

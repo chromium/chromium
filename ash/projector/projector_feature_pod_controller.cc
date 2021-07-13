@@ -56,17 +56,10 @@ void ProjectorFeaturePodController::OnIconPressed() {
   tray_controller_->CloseBubble();
 
   auto* projector_controller = Shell::Get()->projector_controller();
-  auto* projector_session = projector_controller->projector_session();
   DCHECK(projector_controller);
-  DCHECK(projector_session);
 
-  if (projector_session->is_active()) {
-    projector_session->Stop();
-    projector_controller->SetProjectorToolsVisible(false);
-  } else {
-    projector_session->Start();
-    projector_controller->SetProjectorToolsVisible(true);
-  }
+  bool is_visible = projector_controller->AreProjectorToolsVisible();
+  projector_controller->SetProjectorToolsVisible(!is_visible);
 }
 
 SystemTrayItemUmaType ProjectorFeaturePodController::GetUmaType() const {

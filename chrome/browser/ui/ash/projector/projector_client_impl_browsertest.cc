@@ -43,6 +43,9 @@ class ASH_PUBLIC_EXPORT MockProjectorController : public ProjectorController {
   MOCK_METHOD1(OnTranscription,
                void(const media::SpeechRecognitionResult& result));
   MOCK_METHOD0(OnTranscriptionError, void());
+  MOCK_METHOD1(SetProjectorToolsVisible, void(bool is_visible));
+  MOCK_CONST_METHOD0(AreProjectorToolsVisible, bool());
+  MOCK_CONST_METHOD0(IsEligible, bool());
 };
 
 class ProjectorClientTest : public InProcessBrowserTest {

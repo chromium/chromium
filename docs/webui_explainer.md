@@ -699,7 +699,7 @@ Some handling C++ might do this:
 void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
   AllowJavascript();
   double num_donuts_baked = GetOven()->BakeDonuts();
-  ResolveJavascriptCallback(args->GetList()[0], num_donuts_baked);
+  ResolveJavascriptCallback(args->GetList()[0], base::Value(num_donuts_baked));
 }
 ```
 
@@ -794,7 +794,7 @@ should be communicated to the JavaScript running in a tab.
 
 ```c++
 void OvenHandler::OnBakingDonutsFinished(size_t num_donuts) {
-  FireWebUIListener("donuts-baked", base::FundamentalValue(num_donuts));
+  FireWebUIListener("donuts-baked", base::Value(num_donuts));
 }
 ```
 
@@ -841,7 +841,7 @@ void DonutHandler::HandleGetNumberOfDonuts(const base::ListValue* args) {
 
   const base::Value& callback_id = args->GetList()[0];
   size_t num_donuts = GetOven()->GetNumberOfDonuts();
-  ResolveJavascriptCallback(callback_id, base::FundamentalValue(num_donuts));
+  ResolveJavascriptCallback(callback_id, base::Value(num_donuts));
 }
 ```
 

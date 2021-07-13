@@ -67,6 +67,10 @@ void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
   ui_controller_->CloseToolbar();
 }
 
+bool ProjectorControllerImpl::AreProjectorToolsVisible() const {
+  return ui_controller_->IsToolbarVisible();
+}
+
 bool ProjectorControllerImpl::IsEligible() const {
   return is_speech_recognition_available_;
 }
@@ -85,12 +89,16 @@ void ProjectorControllerImpl::MarkKeyIdea() {
 }
 
 void ProjectorControllerImpl::OnRecordingStarted() {
+  projector_session_->Start();
   StartSpeechRecognition();
   ui_controller_->OnRecordingStateChanged(true /* started */);
   metadata_controller_->OnRecordingStarted();
 }
 
 void ProjectorControllerImpl::OnRecordingEnded() {
+  if (!projector_session_->is_active())
+    return;
+  projector_session_->Stop();
   StopSpeechRecognition();
   ui_controller_->OnRecordingStateChanged(false /* started */);
 

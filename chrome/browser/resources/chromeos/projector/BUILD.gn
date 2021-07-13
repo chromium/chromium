@@ -46,6 +46,7 @@ js_type_check("closure_compile") {
 }
 
 js_library("player_app") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("selfie_cam") {
