@@ -26,6 +26,15 @@ class ChromeSafeBrowsingBlockingPageFactory
   ChromeSafeBrowsingBlockingPageFactory& operator=(
       const ChromeSafeBrowsingBlockingPageFactory&) = delete;
 
+  // Creates a SecurityInterstitialControllerClient configured for //chrome for
+  // safe browsing blocking pages.
+  static std::unique_ptr<
+      security_interstitials::SecurityInterstitialControllerClient>
+  CreateControllerClient(
+      content::WebContents* web_contents,
+      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
+      const BaseUIManager* ui_manager);
+
  private:
   friend struct base::LazyInstanceTraitsBase<
       ChromeSafeBrowsingBlockingPageFactory>;

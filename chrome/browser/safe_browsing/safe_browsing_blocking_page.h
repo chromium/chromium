@@ -107,6 +107,9 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const UnsafeResourceList& unsafe_resources,
+      std::unique_ptr<
+          security_interstitials::SecurityInterstitialControllerClient>
+          controller_client,
       const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
       bool should_trigger_reporting,
       network::SharedURLLoaderFactory* url_loader_for_testing = nullptr);
@@ -135,11 +138,6 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   // SafeBrowsingBlockingPage.
   static SafeBrowsingBlockingPageFactory* factory_;
  private:
-  static std::unique_ptr<
-      security_interstitials::SecurityInterstitialControllerClient>
-  CreateControllerClient(content::WebContents* web_contents,
-                         const UnsafeResourceList& unsafe_resources,
-                         const BaseUIManager* ui_manager);
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPage);
 };

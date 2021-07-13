@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -22,6 +23,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -463,6 +465,10 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
             web_contents,
             main_frame_url,
             unsafe_resources,
+            ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
+                web_contents,
+                unsafe_resources,
+                manager),
             BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
                 BaseBlockingPage::IsMainPageLoadBlocked(unsafe_resources),
                 false,                 // is_extended_reporting_opt_in_allowed

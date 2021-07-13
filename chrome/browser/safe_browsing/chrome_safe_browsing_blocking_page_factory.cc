@@ -4,8 +4,13 @@
 
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_controller_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/content_metrics_helper.h"
+#include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "content/public/browser/web_contents.h"
 
 namespace safe_browsing {
@@ -49,12 +54,40 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
                       true,  // is_enhanced_protection_message_enabled
                       IsSafeBrowsingPolicyManaged(*prefs), kHelpCenterLink);
 
-  return new SafeBrowsingBlockingPage(ui_manager, web_contents, main_frame_url,
-                                      unsafe_resources, display_options,
-                                      should_trigger_reporting);
+  return new SafeBrowsingBlockingPage(
+      ui_manager, web_contents, main_frame_url, unsafe_resources,
+      CreateControllerClient(web_contents, unsafe_resources, ui_manager),
+      display_options, should_trigger_reporting);
 }
 
 ChromeSafeBrowsingBlockingPageFactory::ChromeSafeBrowsingBlockingPageFactory() =
     default;
+
+// static
+std::unique_ptr<security_interstitials::SecurityInterstitialControllerClient>
+ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
+    content::WebContents* web_contents,
+    const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
+    const BaseUIManager* ui_manager) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  DCHECK(profile);
+
+  std::unique_ptr<ContentMetricsHelper> metrics_helper =
+      std::make_unique<ContentMetricsHelper>(
+          HistoryServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+              ServiceAccessType::EXPLICIT_ACCESS),
+          unsafe_resources[0].url,
+          BaseBlockingPage::GetReportingInfo(unsafe_resources));
+
+  auto chrome_settings_page_helper =
+      std::make_unique<security_interstitials::ChromeSettingsPageHelper>();
+
+  return std::make_unique<ChromeControllerClient>(
+      web_contents, std::move(metrics_helper), profile->GetPrefs(),
+      ui_manager->app_locale(), ui_manager->default_safe_page(),
+      std::move(chrome_settings_page_helper));
+}
 
 }  // namespace safe_browsing

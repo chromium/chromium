@@ -49,6 +49,10 @@ class BaseBlockingPage
   // Checks the threat type to decide if we should report ThreatDetails.
   static bool ShouldReportThreatDetails(SBThreatType threat_type);
 
+  // Populates the report details for |unsafe_resources|.
+  static security_interstitials::MetricsHelper::ReportDetails GetReportingInfo(
+      const UnsafeResourceList& unsafe_resources);
+
  protected:
   // Don't instantiate this class directly, use ShowBlockingPage instead.
   BaseBlockingPage(
@@ -101,9 +105,6 @@ class BaseBlockingPage
   BaseSafeBrowsingErrorUI* sb_error_ui() const;
 
   void set_proceeded(bool proceeded);
-
-  static security_interstitials::MetricsHelper::ReportDetails GetReportingInfo(
-      const UnsafeResourceList& unsafe_resources);
 
   void SetThreatDetailsProceedDelayForTesting(int64_t delay);
 

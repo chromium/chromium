@@ -32,6 +32,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -351,12 +352,17 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
       const UnsafeResourceList& unsafe_resources,
       const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
       bool should_trigger_reporting)
-      : SafeBrowsingBlockingPage(manager,
-                                 web_contents,
-                                 main_frame_url,
-                                 unsafe_resources,
-                                 display_options,
-                                 should_trigger_reporting),
+      : SafeBrowsingBlockingPage(
+            manager,
+            web_contents,
+            main_frame_url,
+            unsafe_resources,
+            ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
+                web_contents,
+                unsafe_resources,
+                manager),
+            display_options,
+            should_trigger_reporting),
         wait_for_delete_(false) {
     // Don't wait the whole 3 seconds for the browser test.
     SetThreatDetailsProceedDelayForTesting(100);
