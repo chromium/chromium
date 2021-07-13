@@ -209,12 +209,6 @@ void CountFiringEventListeners(const Event& event,
   }
 }
 
-void RegisterWithScheduler(ExecutionContext* execution_context,
-                           const AtomicString& event_type) {
-  if (!execution_context || !execution_context->GetScheduler())
-    return;
-}
-
 }  // namespace
 
 EventTargetData::EventTargetData() = default;
@@ -535,8 +529,6 @@ void EventTarget::AddedEventListener(
       }
     }
   }
-
-  RegisterWithScheduler(GetExecutionContext(), event_type);
 
   if (event_util::IsDOMMutationEventType(event_type)) {
     if (ExecutionContext* context = GetExecutionContext()) {
