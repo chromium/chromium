@@ -7285,3 +7285,6 @@ crbug.com/1228149 http/tests/devtools/sources/debugger-ui/debugger-inline-values
 crbug.com/1228149 http/tests/devtools/sources/debugger-ui/debugger-inline-values-frames.js [ Pass Timeout ]
 crbug.com/626703 [ Debug Mac10.15 ] external/wpt/css/CSS2/backgrounds/background-position-201.xht [ Failure Pass ]
 crbug.com/1228432 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-before-xr-session.https.html [ Pass Timeout ]
+
+# Depends on fixing WPT cross-origin iframe click flake in crbug.com/1066891.
+crbug.com/1227710 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.https.html [ Failure Pass ]
