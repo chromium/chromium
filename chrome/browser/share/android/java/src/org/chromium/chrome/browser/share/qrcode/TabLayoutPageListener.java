@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.ui.base.AndroidPermissionDelegate;
+
 import java.util.ArrayList;
 
 /**
@@ -53,6 +55,17 @@ public class TabLayoutPageListener extends TabLayout.TabLayoutOnPageChangeListen
      */
     public void resumeSelectedTab() {
         mTabs.get(mVisibleTab).onResume();
+    }
+
+    /**
+     * Called when the fragment's underlying AndroidPermissionDelegate is updated.
+     * Propagates the given AndroidPermissionDelegate to all of the tabs.
+     * @param windowAndroid The updated AndroidPermissionDelegate.
+     */
+    public void updatePermissions(AndroidPermissionDelegate windowAndroid) {
+        for (QrCodeDialogTab tab : mTabs) {
+            tab.updatePermissions(windowAndroid);
+        }
     }
 
     /**

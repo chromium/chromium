@@ -34,7 +34,7 @@ class QrCodeShareMediator {
 
     private final Context mContext;
     private final PropertyModel mPropertyModel;
-    private final AndroidPermissionDelegate mPermissionDelegate;
+    private AndroidPermissionDelegate mPermissionDelegate;
 
     // The number of times the user has attempted to download the QR code in this dialog.
     private int mNumDownloads;
@@ -140,6 +140,10 @@ class QrCodeShareMediator {
                 QrCodeShareViewProperties.HAS_STORAGE_PERMISSION, hasStoragePermission());
     }
 
+    public void updatePermissions(AndroidPermissionDelegate windowAndroid) {
+        mPermissionDelegate = windowAndroid;
+        updatePermissionSettings();
+    }
     /**
      * Sets whether QrCode UI is on foreground.
      *

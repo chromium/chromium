@@ -49,4 +49,9 @@ public class QrCodeShareCoordinator implements QrCodeDialogTab {
 
     @Override
     public void onDestroy() {}
+
+    @Override
+    public void updatePermissions(AndroidPermissionDelegate windowAndroid) {
+        mMediator.updatePermissions(windowAndroid);
+    }
 }

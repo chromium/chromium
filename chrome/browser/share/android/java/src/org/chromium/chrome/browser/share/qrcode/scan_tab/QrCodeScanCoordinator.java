@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialogTab;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -54,4 +55,6 @@ public class QrCodeScanCoordinator implements QrCodeDialogTab {
     public void onDestroy() {
         mScanView.stopCamera();
     }
+    @Override
+    public void updatePermissions(AndroidPermissionDelegate windowAndroid) {}
 }

@@ -85,6 +85,9 @@ public class QrCodeDialog extends DialogFragment {
      */
     public void setAndroidPermissionDelegate(AndroidPermissionDelegate windowAndroid) {
         mWindowAndroid = windowAndroid;
+        if (mTabLayoutPageListener != null) {
+            mTabLayoutPageListener.updatePermissions(windowAndroid);
+        }
     }
 
     private View getDialogView() {
