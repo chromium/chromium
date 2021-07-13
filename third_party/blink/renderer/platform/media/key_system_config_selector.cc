@@ -138,13 +138,13 @@ EmeConfigRule GetPersistentStateConfigRule(EmeFeatureSupport support,
   return EmeConfigRule::PERSISTENCE_REQUIRED;
 }
 
-bool IsPersistentSessionType(blink::WebEncryptedMediaSessionType sessionType) {
+bool IsPersistentSessionType(WebEncryptedMediaSessionType sessionType) {
   switch (sessionType) {
-    case blink::WebEncryptedMediaSessionType::kTemporary:
+    case WebEncryptedMediaSessionType::kTemporary:
       return false;
-    case blink::WebEncryptedMediaSessionType::kPersistentLicense:
+    case WebEncryptedMediaSessionType::kPersistentLicense:
       return true;
-    case blink::WebEncryptedMediaSessionType::kUnknown:
+    case WebEncryptedMediaSessionType::kUnknown:
       break;
   }
 
@@ -207,9 +207,9 @@ bool KeySystemConfigSelector::WebLocalFrameDelegate::
 }
 
 bool KeySystemConfigSelector::WebLocalFrameDelegate::AllowStorageAccessSync(
-    blink::WebContentSettingsClient::StorageType storage_type) {
+    WebContentSettingsClient::StorageType storage_type) {
   DCHECK(web_frame_);
-  blink::WebContentSettingsClient* content_settings_client =
+  WebContentSettingsClient* content_settings_client =
       web_frame_->GetContentSettingsClient();
   return !content_settings_client ||
          content_settings_client->AllowStorageAccessSync(storage_type);
@@ -217,8 +217,7 @@ bool KeySystemConfigSelector::WebLocalFrameDelegate::AllowStorageAccessSync(
 
 struct KeySystemConfigSelector::SelectionRequest {
   std::string key_system;
-  blink::WebVector<blink::WebMediaKeySystemConfiguration>
-      candidate_configurations;
+  WebVector<WebMediaKeySystemConfiguration> candidate_configurations;
   SelectConfigCB cb;
   bool was_permission_requested = false;
   bool is_permission_granted = false;
@@ -467,11 +466,11 @@ EmeConfigRule KeySystemConfigSelector::GetEncryptionSchemeConfigRule(
 bool KeySystemConfigSelector::GetSupportedCapabilities(
     const std::string& key_system,
     EmeMediaType media_type,
-    const blink::WebVector<blink::WebMediaKeySystemMediaCapability>&
+    const WebVector<WebMediaKeySystemMediaCapability>&
         requested_media_capabilities,
     // Corresponds to the partial configuration, plus restrictions.
     KeySystemConfigSelector::ConfigState* config_state,
-    std::vector<blink::WebMediaKeySystemMediaCapability>*
+    std::vector<WebMediaKeySystemMediaCapability>*
         supported_media_capabilities) {
   // From "3.1.1.3 Get Supported Capabilities for Audio/Video Type".
   // https://w3c.github.io/encrypted-media/#get-supported-capabilities-for-audio-video-type
@@ -486,7 +485,7 @@ bool KeySystemConfigSelector::GetSupportedCapabilities(
   for (size_t i = 0; i < requested_media_capabilities.size(); i++) {
     // 3.1. Let content type be requested media capability's contentType member.
     // 3.2. Let robustness be requested media capability's robustness member.
-    const blink::WebMediaKeySystemMediaCapability& capability =
+    const WebMediaKeySystemMediaCapability& capability =
         requested_media_capabilities[i];
     // 3.3. If contentType is the empty string, return null.
     if (capability.mime_type.IsEmpty()) {
@@ -588,9 +587,9 @@ bool KeySystemConfigSelector::GetSupportedCapabilities(
 KeySystemConfigSelector::ConfigurationSupport
 KeySystemConfigSelector::GetSupportedConfiguration(
     const std::string& key_system,
-    const blink::WebMediaKeySystemConfiguration& candidate,
+    const WebMediaKeySystemConfiguration& candidate,
     ConfigState* config_state,
-    blink::WebMediaKeySystemConfiguration* accumulated_configuration) {
+    WebMediaKeySystemConfiguration* accumulated_configuration) {
   DVLOG(3) << __func__;
 
   // From
@@ -711,7 +710,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // If preferences disallow local storage, then indicate persistent state is
   // not supported.
   if (!web_frame_delegate_->AllowStorageAccessSync(
-          blink::WebContentSettingsClient::StorageType::kLocalStorage)) {
+          WebContentSettingsClient::StorageType::kLocalStorage)) {
     if (persistent_state_support == EmeFeatureSupport::ALWAYS_ENABLED)
       return CONFIGURATION_NOT_SUPPORTED;
     persistent_state_support = EmeFeatureSupport::NOT_SUPPORTED;
@@ -735,14 +734,14 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //         let session types be candidate configuration's sessionTypes member.
   //       - Otherwise, let session types be [ "temporary" ].
   //         (Done in MediaKeySystemAccessInitializer.)
-  blink::WebVector<blink::WebEncryptedMediaSessionType> session_types =
+  WebVector<WebEncryptedMediaSessionType> session_types =
       candidate.session_types;
 
   // 13. For each value in session types:
   for (size_t i = 0; i < session_types.size(); i++) {
     // 13.1. Let session type be the value.
-    blink::WebEncryptedMediaSessionType session_type = session_types[i];
-    if (session_type == blink::WebEncryptedMediaSessionType::kUnknown) {
+    WebEncryptedMediaSessionType session_type = session_types[i];
+    if (session_type == WebEncryptedMediaSessionType::kUnknown) {
       DVLOG(2) << "Rejecting requested configuration because "
                << "session type was not recognized.";
       return CONFIGURATION_NOT_SUPPORTED;
@@ -764,13 +763,13 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     //       return NotSupported.
     EmeConfigRule session_type_rule = EmeConfigRule::NOT_SUPPORTED;
     switch (session_type) {
-      case blink::WebEncryptedMediaSessionType::kUnknown:
+      case WebEncryptedMediaSessionType::kUnknown:
         NOTREACHED();
         return CONFIGURATION_NOT_SUPPORTED;
-      case blink::WebEncryptedMediaSessionType::kTemporary:
+      case WebEncryptedMediaSessionType::kTemporary:
         session_type_rule = EmeConfigRule::SUPPORTED;
         break;
-      case blink::WebEncryptedMediaSessionType::kPersistentLicense:
+      case WebEncryptedMediaSessionType::kPersistentLicense:
         session_type_rule = GetSessionTypeConfigRule(
             key_systems_->GetPersistentLicenseSessionSupport(key_system));
         break;
@@ -810,7 +809,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
 
   // 16. If the videoCapabilities member in candidate configuration is
   //     non-empty:
-  std::vector<blink::WebMediaKeySystemMediaCapability> video_capabilities;
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities;
   if (!candidate.video_capabilities.empty()) {
     // 16.1. Let video capabilities be the result of executing the Get
     //       Supported Capabilities for Audio/Video Type algorithm on Video,
@@ -836,7 +835,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
 
   // 17. If the audioCapabilities member in candidate configuration is
   //     non-empty:
-  std::vector<blink::WebMediaKeySystemMediaCapability> audio_capabilities;
+  std::vector<WebMediaKeySystemMediaCapability> audio_capabilities;
   if (!candidate.audio_capabilities.empty()) {
     // 17.1. Let audio capabilities be the result of executing the Get
     //       Supported Capabilities for Audio/Video Type algorithm on Audio,
@@ -980,9 +979,8 @@ KeySystemConfigSelector::GetSupportedConfiguration(
 }
 
 void KeySystemConfigSelector::SelectConfig(
-    const blink::WebString& key_system,
-    const blink::WebVector<blink::WebMediaKeySystemConfiguration>&
-        candidate_configurations,
+    const WebString& key_system,
+    const WebVector<WebMediaKeySystemConfiguration>& candidate_configurations,
     SelectConfigCB cb) {
   // Continued from requestMediaKeySystemAccess(), step 6, from
   // https://w3c.github.io/encrypted-media/#requestmediakeysystemaccess
@@ -1053,7 +1051,7 @@ void KeySystemConfigSelector::SelectConfigInternal(
     //        and return a new MediaKeySystemAccess object.]
     ConfigState config_state(request->was_permission_requested,
                              request->is_permission_granted);
-    blink::WebMediaKeySystemConfiguration accumulated_configuration;
+    WebMediaKeySystemConfiguration accumulated_configuration;
     media::CdmConfig cdm_config;
     ConfigurationSupport support = GetSupportedConfiguration(
         request->key_system, request->candidate_configurations[i],

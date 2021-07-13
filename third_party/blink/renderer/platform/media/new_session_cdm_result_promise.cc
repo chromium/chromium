@@ -32,24 +32,24 @@ CdmResultForUMA ConvertStatusToUMAResult(SessionInitStatus status) {
 
 }  // namespace
 
-static blink::WebContentDecryptionModuleResult::SessionStatus ConvertStatus(
+static WebContentDecryptionModuleResult::SessionStatus ConvertStatus(
     SessionInitStatus status) {
   switch (status) {
     case SessionInitStatus::UNKNOWN_STATUS:
       break;
     case SessionInitStatus::NEW_SESSION:
-      return blink::WebContentDecryptionModuleResult::kNewSession;
+      return WebContentDecryptionModuleResult::kNewSession;
     case SessionInitStatus::SESSION_NOT_FOUND:
-      return blink::WebContentDecryptionModuleResult::kSessionNotFound;
+      return WebContentDecryptionModuleResult::kSessionNotFound;
     case SessionInitStatus::SESSION_ALREADY_EXISTS:
-      return blink::WebContentDecryptionModuleResult::kSessionAlreadyExists;
+      return WebContentDecryptionModuleResult::kSessionAlreadyExists;
   }
   NOTREACHED();
-  return blink::WebContentDecryptionModuleResult::kSessionNotFound;
+  return WebContentDecryptionModuleResult::kSessionNotFound;
 }
 
 NewSessionCdmResultPromise::NewSessionCdmResultPromise(
-    const blink::WebContentDecryptionModuleResult& result,
+    const WebContentDecryptionModuleResult& result,
     const std::string& key_system_uma_prefix,
     const std::string& uma_name,
     SessionInitializedCB new_session_created_cb,
@@ -102,7 +102,7 @@ void NewSessionCdmResultPromise::reject(CdmPromise::Exception exception_code,
                      ConvertCdmExceptionToResultForUMA(exception_code));
   web_cdm_result_.CompleteWithError(ConvertCdmException(exception_code),
                                     system_code,
-                                    blink::WebString::FromUTF8(error_message));
+                                    WebString::FromUTF8(error_message));
 }
 
 }  // namespace blink

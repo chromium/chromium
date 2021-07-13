@@ -118,7 +118,7 @@ MATCHER_P2(PlaybackRateChanged, old_rate_string, new_rate_string, "") {
                                   std::string(new_rate_string));
 }
 
-class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
+class MockWebMediaPlayerClient : public WebMediaPlayerClient {
  public:
   MockWebMediaPlayerClient() = default;
 
@@ -130,34 +130,31 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_METHOD0(SizeChanged, void());
   MOCK_METHOD1(SetCcLayer, void(cc::Layer*));
   MOCK_METHOD5(AddAudioTrack,
-               blink::WebMediaPlayer::TrackId(
-                   const blink::WebString&,
-                   blink::WebMediaPlayerClient::AudioTrackKind,
-                   const blink::WebString&,
-                   const blink::WebString&,
-                   bool));
-  MOCK_METHOD1(RemoveAudioTrack, void(blink::WebMediaPlayer::TrackId));
+               WebMediaPlayer::TrackId(const WebString&,
+                                       WebMediaPlayerClient::AudioTrackKind,
+                                       const WebString&,
+                                       const WebString&,
+                                       bool));
+  MOCK_METHOD1(RemoveAudioTrack, void(WebMediaPlayer::TrackId));
   MOCK_METHOD5(AddVideoTrack,
-               blink::WebMediaPlayer::TrackId(
-                   const blink::WebString&,
-                   blink::WebMediaPlayerClient::VideoTrackKind,
-                   const blink::WebString&,
-                   const blink::WebString&,
-                   bool));
-  MOCK_METHOD1(RemoveVideoTrack, void(blink::WebMediaPlayer::TrackId));
-  MOCK_METHOD1(AddTextTrack, void(blink::WebInbandTextTrack*));
-  MOCK_METHOD1(RemoveTextTrack, void(blink::WebInbandTextTrack*));
-  MOCK_METHOD1(MediaSourceOpened, void(blink::WebMediaSource*));
-  MOCK_METHOD2(RemotePlaybackCompatibilityChanged,
-               void(const blink::WebURL&, bool));
+               WebMediaPlayer::TrackId(const WebString&,
+                                       WebMediaPlayerClient::VideoTrackKind,
+                                       const WebString&,
+                                       const WebString&,
+                                       bool));
+  MOCK_METHOD1(RemoveVideoTrack, void(WebMediaPlayer::TrackId));
+  MOCK_METHOD1(AddTextTrack, void(WebInbandTextTrack*));
+  MOCK_METHOD1(RemoveTextTrack, void(WebInbandTextTrack*));
+  MOCK_METHOD1(MediaSourceOpened, void(WebMediaSource*));
+  MOCK_METHOD2(RemotePlaybackCompatibilityChanged, void(const WebURL&, bool));
   MOCK_METHOD0(WasAlwaysMuted, bool());
   MOCK_METHOD0(HasSelectedVideoTrack, bool());
-  MOCK_METHOD0(GetSelectedVideoTrackId, blink::WebMediaPlayer::TrackId());
+  MOCK_METHOD0(GetSelectedVideoTrackId, WebMediaPlayer::TrackId());
   MOCK_METHOD0(HasNativeControls, bool());
   MOCK_METHOD0(IsAudioElement, bool());
-  MOCK_CONST_METHOD0(GetDisplayType, blink::DisplayType());
+  MOCK_CONST_METHOD0(GetDisplayType, DisplayType());
   MOCK_CONST_METHOD0(IsInAutoPIP, bool());
-  MOCK_METHOD1(MediaRemotingStarted, void(const blink::WebString&));
+  MOCK_METHOD1(MediaRemotingStarted, void(const WebString&));
   MOCK_METHOD1(MediaRemotingStopped, void(int));
   MOCK_METHOD0(PictureInPictureStopped, void());
   MOCK_METHOD0(OnPictureInPictureStateChange, void());
@@ -181,7 +178,7 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_METHOD0(DidSeek, void());
   MOCK_METHOD0(GetFeatures, Features(void));
   MOCK_METHOD0(OnRequestVideoFrameCallback, void());
-  MOCK_METHOD0(GetTextTrackMetadata, std::vector<blink::TextTrackMetadata>());
+  MOCK_METHOD0(GetTextTrackMetadata, std::vector<TextTrackMetadata>());
 
   bool was_always_muted_ = false;
 
@@ -190,7 +187,7 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
 };
 
 class MockWebMediaPlayerEncryptedMediaClient
-    : public blink::WebMediaPlayerEncryptedMediaClient {
+    : public WebMediaPlayerEncryptedMediaClient {
  public:
   MockWebMediaPlayerEncryptedMediaClient() = default;
 
@@ -203,12 +200,12 @@ class MockWebMediaPlayerEncryptedMediaClient
   DISALLOW_COPY_AND_ASSIGN(MockWebMediaPlayerEncryptedMediaClient);
 };
 
-class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
+class MockWebMediaPlayerDelegate : public WebMediaPlayerDelegate {
  public:
   MockWebMediaPlayerDelegate() = default;
   ~MockWebMediaPlayerDelegate() override = default;
 
-  // blink::WebMediaPlayerDelegate implementation.
+  // WebMediaPlayerDelegate implementation.
   int AddObserver(Observer* observer) override {
     DCHECK_EQ(nullptr, observer_);
     observer_ = observer;
@@ -283,7 +280,7 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
   bool is_hidden_ = false;
 };
 
-class MockSurfaceLayerBridge : public blink::WebSurfaceLayerBridge {
+class MockSurfaceLayerBridge : public WebSurfaceLayerBridge {
  public:
   MOCK_CONST_METHOD0(GetCcLayer, cc::Layer*());
   MOCK_CONST_METHOD0(GetFrameSinkId, const viz::FrameSinkId&());
@@ -306,7 +303,7 @@ class MockVideoFrameCompositor : public VideoFrameCompositor {
   MOCK_METHOD1(SetIsPageVisible, void(bool));
   MOCK_METHOD0(
       GetLastPresentedFrameMetadata,
-      std::unique_ptr<blink::WebMediaPlayer::VideoFramePresentationMetadata>());
+      std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>());
   MOCK_METHOD0(GetCurrentFrameOnAnyThread, scoped_refptr<media::VideoFrame>());
   MOCK_METHOD1(UpdateCurrentFrameIfStale,
                void(VideoFrameCompositor::UpdateType));
@@ -318,17 +315,16 @@ class MockVideoFrameCompositor : public VideoFrameCompositor {
 
 class WebMediaPlayerImplTest
     : public testing::Test,
-      private blink::WebTestingSupport::WebScopedMockScrollbars {
+      private WebTestingSupport::WebScopedMockScrollbars {
  public:
   WebMediaPlayerImplTest()
       : WebMediaPlayerImplTest(
-            blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+            scheduler::WebThreadScheduler::MainThreadScheduler()
                 ->CreateAgentGroupScheduler()) {}
   explicit WebMediaPlayerImplTest(
-      std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
-          agent_group_scheduler)
+      std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler)
       : media_thread_("MediaThreadForTest"),
-        web_view_(blink::WebView::Create(
+        web_view_(WebView::Create(
             /*client=*/nullptr,
             /*is_hidden=*/false,
             /*is_inside_portal=*/false,
@@ -339,12 +335,11 @@ class WebMediaPlayerImplTest
             *agent_group_scheduler,
             /*session_storage_namespace_id=*/base::EmptyString(),
             /*page_base_background_color=*/absl::nullopt)),
-        web_local_frame_(
-            blink::WebLocalFrame::CreateMainFrame(web_view_,
-                                                  &web_frame_client_,
-                                                  nullptr,
-                                                  blink::LocalFrameToken(),
-                                                  nullptr)),
+        web_local_frame_(WebLocalFrame::CreateMainFrame(web_view_,
+                                                        &web_frame_client_,
+                                                        nullptr,
+                                                        LocalFrameToken(),
+                                                        nullptr)),
         context_provider_(viz::TestContextProvider::Create()),
         audio_parameters_(media::TestAudioParameters::Normal()),
         memory_dump_manager_(
@@ -452,7 +447,7 @@ class WebMediaPlayerImplTest
         base::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
                        base::Unretained(this)),
         viz::TestContextProvider::Create(),
-        blink::WebMediaPlayer::SurfaceLayerMode::kAlways,
+        WebMediaPlayer::SurfaceLayerMode::kAlways,
         is_background_suspend_enabled_, is_background_video_playback_enabled_,
         true, std::move(demuxer_override), nullptr);
 
@@ -466,25 +461,25 @@ class WebMediaPlayerImplTest
         std::move(params));
   }
 
-  std::unique_ptr<blink::WebSurfaceLayerBridge> CreateMockSurfaceLayerBridge(
-      blink::WebSurfaceLayerBridgeObserver*,
+  std::unique_ptr<WebSurfaceLayerBridge> CreateMockSurfaceLayerBridge(
+      WebSurfaceLayerBridgeObserver*,
       cc::UpdateSubmissionStateCB) {
     return std::move(surface_layer_bridge_);
   }
 
-  blink::WebLocalFrame* GetWebLocalFrame() { return web_local_frame_; }
+  WebLocalFrame* GetWebLocalFrame() { return web_local_frame_; }
 
   int64_t OnAdjustAllocatedMemory(int64_t delta) {
     reported_memory_ += delta;
     return 0;
   }
 
-  void SetNetworkState(blink::WebMediaPlayer::NetworkState state) {
+  void SetNetworkState(WebMediaPlayer::NetworkState state) {
     EXPECT_CALL(client_, NetworkStateChanged());
     wmpi_->SetNetworkState(state);
   }
 
-  void SetReadyState(blink::WebMediaPlayer::ReadyState state) {
+  void SetReadyState(WebMediaPlayer::ReadyState state) {
     EXPECT_CALL(client_, ReadyStateChanged());
     wmpi_->SetReadyState(state);
   }
@@ -519,10 +514,10 @@ class WebMediaPlayerImplTest
   }
 
   void SetMetadata(bool has_audio, bool has_video) {
-    wmpi_->SetNetworkState(blink::WebMediaPlayer::kNetworkStateLoaded);
+    wmpi_->SetNetworkState(WebMediaPlayer::kNetworkStateLoaded);
 
     EXPECT_CALL(client_, ReadyStateChanged());
-    wmpi_->SetReadyState(blink::WebMediaPlayer::kReadyStateHaveMetadata);
+    wmpi_->SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
     wmpi_->pipeline_metadata_.has_audio = has_audio;
     wmpi_->pipeline_metadata_.has_video = has_video;
 
@@ -648,7 +643,7 @@ class WebMediaPlayerImplTest
     wmpi_->SetSuspendState(is_suspended);
   }
 
-  void SetLoadType(blink::WebMediaPlayer::LoadType load_type) {
+  void SetLoadType(WebMediaPlayer::LoadType load_type) {
     wmpi_->load_type_ = load_type;
   }
 
@@ -707,7 +702,7 @@ class WebMediaPlayerImplTest
     // the resource is fully buffered locally. We can use a fake one here since
     // we're injecting the response artificially. It's value is unknown to the
     // underlying demuxer.
-    const blink::KURL kTestURL(
+    const KURL kTestURL(
         String::FromUTF8(std::string(is_streaming ? "http" : "file") +
                          "://example.com/sample.webm"));
 
@@ -715,19 +710,19 @@ class WebMediaPlayerImplTest
     // to the WebAssociatedURLLoaderClient handed out by the DataSource after it
     // requests loading of a resource. We then use that client as if we are the
     // network stack and "serve" an in memory file to the DataSource.
-    blink::WebAssociatedURLLoaderClient* client = nullptr;
+    WebAssociatedURLLoaderClient* client = nullptr;
     EXPECT_CALL(mock_resource_fetch_context_, CreateUrlLoader(_))
         .WillRepeatedly(
-            Invoke([&client](const blink::WebAssociatedURLLoaderOptions&) {
+            Invoke([&client](const WebAssociatedURLLoaderOptions&) {
               auto a = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
               EXPECT_CALL(*a, LoadAsynchronously(_, _))
                   .WillRepeatedly(testing::SaveArg<1>(&client));
               return a;
             }));
 
-    wmpi_->Load(blink::WebMediaPlayer::kLoadTypeURL,
-                blink::WebMediaPlayerSource(blink::WebURL(kTestURL)),
-                blink::WebMediaPlayer::kCorsModeUnspecified,
+    wmpi_->Load(WebMediaPlayer::kLoadTypeURL,
+                WebMediaPlayerSource(WebURL(kTestURL)),
+                WebMediaPlayer::kCorsModeUnspecified,
                 /*is_cache_disabled=*/false);
 
     base::RunLoop().RunUntilIdle();
@@ -739,10 +734,10 @@ class WebMediaPlayerImplTest
     // "Serve" the file to the DataSource. Note: We respond with 200 okay, which
     // will prevent range requests or partial responses from being used. For
     // streaming responses, we'll pretend we don't know the content length.
-    blink::WebURLResponse response(kTestURL);
+    WebURLResponse response(kTestURL);
     response.SetHttpHeaderField(
-        blink::WebString::FromUTF8("Content-Length"),
-        blink::WebString::FromUTF8(
+        WebString::FromUTF8("Content-Length"),
+        WebString::FromUTF8(
             is_streaming ? "-1" : base::NumberToString(data->data_size())));
     response.SetExpectedContentLength(is_streaming ? -1 : data->data_size());
     response.SetHttpStatusCode(200);
@@ -763,7 +758,7 @@ class WebMediaPlayerImplTest
   // unreliable due to asynchronous execution of tasks on the
   // base::test:TaskEnvironment.
   void LoadAndWaitForReadyState(std::string data_file,
-                                blink::WebMediaPlayer::ReadyState ready_state) {
+                                WebMediaPlayer::ReadyState ready_state) {
     Load(data_file);
     while (wmpi_->GetReadyState() < ready_state) {
       base::RunLoop loop;
@@ -779,13 +774,13 @@ class WebMediaPlayerImplTest
     EXPECT_TRUE(wmpi_->data_source_);
     EXPECT_TRUE(wmpi_->demuxer_);
 
-    if (ready_state > blink::WebMediaPlayer::kReadyStateHaveCurrentData)
+    if (ready_state > WebMediaPlayer::kReadyStateHaveCurrentData)
       EXPECT_FALSE(wmpi_->seeking_);
   }
 
   void LoadAndWaitForCurrentData(std::string data_file) {
     LoadAndWaitForReadyState(data_file,
-                             blink::WebMediaPlayer::kReadyStateHaveCurrentData);
+                             WebMediaPlayer::kReadyStateHaveCurrentData);
   }
 
   void CycleThreads() {
@@ -802,7 +797,7 @@ class WebMediaPlayerImplTest
   void OnProgress() { wmpi_->OnProgress(); }
 
   void OnCdmCreated(base::RepeatingClosure quit_closure,
-                    blink::WebContentDecryptionModule* cdm,
+                    WebContentDecryptionModule* cdm,
                     const std::string& error_message) {
     LOG_IF(ERROR, !error_message.empty()) << error_message;
     EXPECT_TRUE(cdm);
@@ -813,8 +808,8 @@ class WebMediaPlayerImplTest
   void CreateCdm() {
     // Must use a supported key system on a secure context.
     std::u16string key_system = u"org.w3.clearkey";
-    auto test_origin = blink::WebSecurityOrigin::CreateFromString(
-        blink::WebString::FromUTF8("https://test.origin"));
+    auto test_origin = WebSecurityOrigin::CreateFromString(
+        WebString::FromUTF8("https://test.origin"));
 
     base::RunLoop run_loop;
     WebContentDecryptionModuleImpl::Create(
@@ -846,9 +841,9 @@ class WebMediaPlayerImplTest
   base::Thread media_thread_;
 
   // Blink state.
-  blink::WebLocalFrameClient web_frame_client_;
-  blink::WebView* web_view_;
-  blink::WebLocalFrame* web_local_frame_;
+  WebLocalFrameClient web_frame_client_;
+  WebView* web_view_;
+  WebLocalFrame* web_local_frame_;
 
   scoped_refptr<viz::TestContextProvider> context_provider_;
   NiceMock<MockVideoFrameCompositor>* compositor_;
@@ -871,7 +866,7 @@ class WebMediaPlayerImplTest
   scoped_refptr<media::MockCdm> mock_cdm_ =
       base::MakeRefCounted<media::MockCdm>();
   media::MockCdmFactory mock_cdm_factory_{mock_cdm_};
-  std::unique_ptr<blink::WebContentDecryptionModule> web_cdm_;
+  std::unique_ptr<WebContentDecryptionModule> web_cdm_;
   media::MockCdmContext mock_cdm_context_;
 
   viz::FrameSinkId frame_sink_id_ = viz::FrameSinkId(1, 1);
@@ -904,8 +899,7 @@ class WebMediaPlayerImplTest
 
   std::unique_ptr<base::trace_event::MemoryDumpManager> memory_dump_manager_;
 
-  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
-      agent_group_scheduler_;
+  std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebMediaPlayerImplTest);
@@ -920,7 +914,7 @@ TEST_F(WebMediaPlayerImplTest, ConstructAndDestroy) {
 TEST_F(WebMediaPlayerImplTest, LoadAndDestroy) {
   InitializeWebMediaPlayerImpl();
   EXPECT_FALSE(IsSuspended());
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadAuto);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
   LoadAndWaitForCurrentData(kAudioOnlyTestFile);
   EXPECT_FALSE(IsSuspended());
   CycleThreads();
@@ -936,9 +930,9 @@ TEST_F(WebMediaPlayerImplTest, LoadAndDestroy) {
 TEST_F(WebMediaPlayerImplTest, LoadAndDestroyDataUrl) {
   InitializeWebMediaPlayerImpl();
   EXPECT_FALSE(IsSuspended());
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadAuto);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
 
-  const blink::KURL kMp3DataUrl(
+  const KURL kMp3DataUrl(
       "data://audio/mp3;base64,SUQzAwAAAAAAFlRFTkMAAAAMAAAAQW1hZGV1cyBQcm//"
       "+5DEAAAAAAAAAAAAAAAAAAAAAABYaW5nAAAADwAAAAwAAAftABwcHBwcHBwcMTExMTExMTFG"
       "RkZGRkZGRlpaWlpaWlpaWm9vb29vb29vhISEhISEhISYmJiYmJiYmJitra2tra2trcLCwsLC"
@@ -991,9 +985,9 @@ TEST_F(WebMediaPlayerImplTest, LoadAndDestroyDataUrl) {
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "AAAAAAAAAAAAAAAAAAP8=");
 
-  wmpi_->Load(blink::WebMediaPlayer::kLoadTypeURL,
-              blink::WebMediaPlayerSource(blink::WebURL(kMp3DataUrl)),
-              blink::WebMediaPlayer::kCorsModeUnspecified,
+  wmpi_->Load(WebMediaPlayer::kLoadTypeURL,
+              WebMediaPlayerSource(WebURL(kMp3DataUrl)),
+              WebMediaPlayer::kCorsModeUnspecified,
               /*is_cache_disabled=*/false);
 
   base::RunLoop().RunUntilIdle();
@@ -1001,8 +995,7 @@ TEST_F(WebMediaPlayerImplTest, LoadAndDestroyDataUrl) {
   // This runs until we reach the have current data state. Attempting to wait
   // for states < kReadyStateHaveCurrentData is unreliable due to asynchronous
   // execution of tasks on the base::test:TaskEnvironment.
-  while (wmpi_->GetReadyState() <
-         blink::WebMediaPlayer::kReadyStateHaveCurrentData) {
+  while (wmpi_->GetReadyState() < WebMediaPlayer::kReadyStateHaveCurrentData) {
     base::RunLoop loop;
     EXPECT_CALL(client_, ReadyStateChanged())
         .WillRepeatedly(RunClosure(loop.QuitClosure()));
@@ -1020,9 +1013,9 @@ TEST_F(WebMediaPlayerImplTest, LoadAndDestroyDataUrl) {
 TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspend) {
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadMetaData);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
   LoadAndWaitForReadyState(kAudioOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveMetadata);
+                           WebMediaPlayer::kReadyStateHaveMetadata);
   testing::Mock::VerifyAndClearExpectations(&client_);
   EXPECT_CALL(client_, ReadyStateChanged()).Times(AnyNumber());
   CycleThreads();
@@ -1040,16 +1033,15 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspend) {
 TEST_F(WebMediaPlayerImplTest, NoBufferSizeIncreaseUntilHaveEnough) {
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(true));
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadAuto);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
   LoadAndWaitForReadyState(kAudioOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveMetadata);
+                           WebMediaPlayer::kReadyStateHaveMetadata);
   testing::Mock::VerifyAndClearExpectations(&client_);
   EXPECT_CALL(client_, ReadyStateChanged()).Times(AnyNumber());
   wmpi_->Play();
   EXPECT_FALSE(IsDataSourceMarkedAsPlaying());
 
-  while (wmpi_->GetReadyState() <
-         blink::WebMediaPlayer::kReadyStateHaveEnoughData) {
+  while (wmpi_->GetReadyState() < WebMediaPlayer::kReadyStateHaveEnoughData) {
     // Clear the mock so it doesn't have a stale QuitClosure.
     testing::Mock::VerifyAndClearExpectations(&client_);
 
@@ -1066,7 +1058,7 @@ TEST_F(WebMediaPlayerImplTest, NoBufferSizeIncreaseUntilHaveEnough) {
 TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoStreaming) {
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadMetaData);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
 
   // This test needs a file which is larger than the MultiBuffer block size;
   // otherwise we'll never complete initialization of the MultiBufferDataSource.
@@ -1074,8 +1066,7 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoStreaming) {
   Load(kLargeAudioOnlyTestFile, LoadType::kStreaming);
 
   // This runs until we reach the metadata state.
-  while (wmpi_->GetReadyState() <
-         blink::WebMediaPlayer::kReadyStateHaveMetadata) {
+  while (wmpi_->GetReadyState() < WebMediaPlayer::kReadyStateHaveMetadata) {
     base::RunLoop loop;
     EXPECT_CALL(client_, ReadyStateChanged())
         .WillRepeatedly(RunClosure(loop.QuitClosure()));
@@ -1097,12 +1088,12 @@ TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
   scoped_feature_list.InitAndEnableFeature(media::kPreloadMetadataLazyLoad);
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadMetaData);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
 
   // Don't set poster, but ensure we still reach suspended state.
 
   LoadAndWaitForReadyState(kVideoOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveMetadata);
+                           WebMediaPlayer::kReadyStateHaveMetadata);
   testing::Mock::VerifyAndClearExpectations(&client_);
   EXPECT_CALL(client_, ReadyStateChanged()).Times(AnyNumber());
   CycleThreads();
@@ -1123,11 +1114,11 @@ TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
 TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoVideoMemoryUsage) {
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadMetaData);
-  wmpi_->SetPoster(blink::WebURL(blink::KURL("file://example.com/sample.jpg")));
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
+  wmpi_->SetPoster(WebURL(KURL("file://example.com/sample.jpg")));
 
   LoadAndWaitForReadyState(kVideoOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveMetadata);
+                           WebMediaPlayer::kReadyStateHaveMetadata);
   testing::Mock::VerifyAndClearExpectations(&client_);
   EXPECT_CALL(client_, ReadyStateChanged()).Times(AnyNumber());
   CycleThreads();
@@ -1147,7 +1138,7 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoVideoMemoryUsage) {
 TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendCouldPlay) {
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(true));
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadMetaData);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
   LoadAndWaitForCurrentData(kAudioOnlyTestFile);
   testing::Mock::VerifyAndClearExpectations(&client_);
   EXPECT_CALL(client_, ReadyStateChanged()).Times(AnyNumber());
@@ -1177,7 +1168,7 @@ TEST_F(WebMediaPlayerImplTest,
 
 TEST_F(WebMediaPlayerImplTest, IdleSuspendIsEnabledIfLoadingHasStalled) {
   InitializeWebMediaPlayerImpl();
-  SetNetworkState(blink::WebMediaPlayer::kNetworkStateLoading);
+  SetNetworkState(WebMediaPlayer::kNetworkStateLoading);
   base::SimpleTestTickClock clock;
   clock.Advance(base::TimeDelta::FromSeconds(1));
   SetTickClock(&clock);
@@ -1193,7 +1184,7 @@ TEST_F(WebMediaPlayerImplTest, IdleSuspendIsEnabledIfLoadingHasStalled) {
 TEST_F(WebMediaPlayerImplTest, DidLoadingProgressTriggersResume) {
   // Same setup as IdleSuspendIsEnabledBeforeLoadingBegins.
   InitializeWebMediaPlayerImpl();
-  SetNetworkState(blink::WebMediaPlayer::kNetworkStateLoading);
+  SetNetworkState(WebMediaPlayer::kNetworkStateLoading);
   EXPECT_TRUE(delegate_.ExpireForTesting());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSuspended());
@@ -1266,7 +1257,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_HaveMetadata) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_HaveFutureData) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   WebMediaPlayerImpl::PlayState state = ComputePlayState();
   EXPECT_EQ(WebMediaPlayerImpl::DelegateState::PAUSED, state.delegate_state);
   EXPECT_TRUE(state.is_idle);
@@ -1278,7 +1269,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_HaveFutureData) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_PlayingError) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
   WebMediaPlayerImpl::PlayState state = ComputePlayState();
   EXPECT_EQ(WebMediaPlayerImpl::DelegateState::PLAYING, state.delegate_state);
@@ -1295,7 +1286,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_PlayingError) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_Playing) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
   WebMediaPlayerImpl::PlayState state = ComputePlayState();
   EXPECT_EQ(WebMediaPlayerImpl::DelegateState::PLAYING, state.delegate_state);
@@ -1307,7 +1298,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_Playing) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_PlayingVideoOnly) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(false, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
   WebMediaPlayerImpl::PlayState state = ComputePlayState();
   EXPECT_EQ(WebMediaPlayerImpl::DelegateState::PLAYING, state.delegate_state);
@@ -1319,9 +1310,9 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_PlayingVideoOnly) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_Underflow) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveCurrentData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveCurrentData);
   WebMediaPlayerImpl::PlayState state = ComputePlayState();
   EXPECT_EQ(WebMediaPlayerImpl::DelegateState::PLAYING, state.delegate_state);
   EXPECT_FALSE(state.is_idle);
@@ -1332,7 +1323,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_Underflow) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHidden) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
 
   WebMediaPlayerImpl::PlayState state = ComputePlayState_FrameHidden();
@@ -1345,7 +1336,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHidden) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenAudioOnly) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
 
   SetMetadata(true, false);
@@ -1363,7 +1354,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenSuspendNoResume) {
 
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
   WebMediaPlayerImpl::PlayState state = ComputePlayState_FrameHidden();
   EXPECT_EQ(WebMediaPlayerImpl::DelegateState::PLAYING, state.delegate_state);
@@ -1386,7 +1377,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenSuspendWithResume) {
 
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
 
   WebMediaPlayerImpl::PlayState state = ComputePlayState_FrameHidden();
@@ -1399,7 +1390,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenSuspendWithResume) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameClosed) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
   SetWasSuspendedForFrameClosed(true);
   WebMediaPlayerImpl::PlayState state = ComputePlayState();
@@ -1412,7 +1403,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameClosed) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_PausedSeek) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetSeeking(true);
   WebMediaPlayerImpl::PlayState state = ComputePlayState();
   EXPECT_EQ(WebMediaPlayerImpl::DelegateState::PAUSED, state.delegate_state);
@@ -1424,7 +1415,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_PausedSeek) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_Ended) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
   SetEnded(true);
 
@@ -1448,7 +1439,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_Ended) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_DoesNotStaySuspended) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveMetadata);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
 
   // Should stay suspended even though not stale or backgrounded.
   WebMediaPlayerImpl::PlayState state = ComputePlayState_Suspended();
@@ -1461,7 +1452,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_DoesNotStaySuspended) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_StaysSuspended) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
 
   // Should stay suspended even though not stale or backgrounded.
   WebMediaPlayerImpl::PlayState state = ComputePlayState_Suspended();
@@ -1474,7 +1465,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_StaysSuspended) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_ResumeForNeedFirstFrame) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
 
   // Should stay suspended even though not stale or backgrounded.
   WebMediaPlayerImpl::PlayState state = ComputePlayState_Suspended();
@@ -1494,7 +1485,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_ResumeForNeedFirstFrame) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_Flinging) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
 
   // Remote media via the FlingingRenderer should not be idle.
   WebMediaPlayerImpl::PlayState state = ComputePlayState_Flinging();
@@ -1507,7 +1498,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_Flinging) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_Fullscreen) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetFullscreen(true);
   SetPaused(true);
   delegate_.SetStaleForTesting(true);
@@ -1523,7 +1514,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_Fullscreen) {
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_Streaming) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(true);
   delegate_.SetStaleForTesting(true);
 
@@ -1558,7 +1549,7 @@ TEST_F(WebMediaPlayerImplTest, ResumeEnded) {
   EXPECT_CALL(delegate_, DidMediaMetadataChange(_, true, true, _)).Times(2);
 
   OnMetadata(metadata);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   Play();
   // Cause PlayerGone
   Pause();
@@ -1598,7 +1589,7 @@ TEST_F(WebMediaPlayerImplTest, AutoplayMuted) {
 TEST_F(WebMediaPlayerImplTest, MediaPositionState_Playing) {
   InitializeWebMediaPlayerImpl();
   LoadAndWaitForReadyState(kAudioOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveFutureData);
+                           WebMediaPlayer::kReadyStateHaveFutureData);
   wmpi_->SetRate(1.0);
   Play();
 
@@ -1611,7 +1602,7 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_Playing) {
 TEST_F(WebMediaPlayerImplTest, MediaPositionState_Paused) {
   InitializeWebMediaPlayerImpl();
   LoadAndWaitForReadyState(kAudioOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveFutureData);
+                           WebMediaPlayer::kReadyStateHaveFutureData);
   wmpi_->SetRate(1.0);
 
   // The effective playback rate is 0.0 while paused.
@@ -1624,7 +1615,7 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_Paused) {
 TEST_F(WebMediaPlayerImplTest, MediaPositionState_PositionChange) {
   InitializeWebMediaPlayerImpl();
   LoadAndWaitForReadyState(kAudioOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveFutureData);
+                           WebMediaPlayer::kReadyStateHaveFutureData);
   wmpi_->SetRate(0.5);
   Play();
 
@@ -1643,7 +1634,7 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_PositionChange) {
                   0.5, kAudioOnlyTestFileDuration,
                   base::TimeDelta::FromSecondsD(0.1), /*end_of_media=*/false))
       .InSequence(sequence);
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   wmpi_->OnTimeUpdate();
 
   // No media time progress -> no MediaPositionState change.
@@ -1653,10 +1644,10 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_PositionChange) {
 TEST_F(WebMediaPlayerImplTest, MediaPositionState_EndOfMedia) {
   InitializeWebMediaPlayerImpl();
   LoadAndWaitForReadyState(kAudioOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveFutureData);
+                           WebMediaPlayer::kReadyStateHaveFutureData);
   wmpi_->SetRate(1.0);
   Play();
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
 
   testing::Sequence sequence;
   EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
@@ -1677,7 +1668,7 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_EndOfMedia) {
 TEST_F(WebMediaPlayerImplTest, MediaPositionState_Underflow) {
   InitializeWebMediaPlayerImpl();
   LoadAndWaitForReadyState(kAudioOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveFutureData);
+                           WebMediaPlayer::kReadyStateHaveFutureData);
   wmpi_->SetRate(1.0);
   Play();
 
@@ -1685,7 +1676,7 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_Underflow) {
   EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
                            0.0, kAudioOnlyTestFileDuration, base::TimeDelta(),
                            /*end_of_media=*/false));
-  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveCurrentData);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveCurrentData);
   wmpi_->OnTimeUpdate();
 }
 
@@ -1727,17 +1718,15 @@ TEST_F(WebMediaPlayerImplTest, NoStreams) {
   // No assertions in the production code should fail.
   OnMetadata(metadata);
 
-  EXPECT_EQ(wmpi_->GetNetworkState(),
-            blink::WebMediaPlayer::kNetworkStateFormatError);
-  EXPECT_EQ(wmpi_->GetReadyState(),
-            blink::WebMediaPlayer::kReadyStateHaveNothing);
+  EXPECT_EQ(wmpi_->GetNetworkState(), WebMediaPlayer::kNetworkStateFormatError);
+  EXPECT_EQ(wmpi_->GetReadyState(), WebMediaPlayer::kReadyStateHaveNothing);
 }
 
 TEST_F(WebMediaPlayerImplTest, Encrypted) {
   InitializeWebMediaPlayerImpl();
 
   // To avoid PreloadMetadataLazyLoad.
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadAuto);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
 
   {
     base::RunLoop run_loop;
@@ -1762,8 +1751,7 @@ TEST_F(WebMediaPlayerImplTest, Encrypted) {
     // error.
     base::RunLoop run_loop;
     EXPECT_CALL(client_, NetworkStateChanged()).WillOnce(Invoke([&] {
-      if (wmpi_->GetNetworkState() ==
-          blink::WebMediaPlayer::kNetworkStateFormatError)
+      if (wmpi_->GetNetworkState() == WebMediaPlayer::kNetworkStateFormatError)
         run_loop.QuitClosure().Run();
     }));
     SetCdm();
@@ -1793,7 +1781,7 @@ ACTION(ReportHaveEnough) {
 TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   InitializeWebMediaPlayerImpl();
   // To avoid PreloadMetadataLazyLoad.
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadAuto);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
 
   // Use MockRendererFactory for kMediaFoundation where the created Renderer
   // will take the CDM, complete Renderer initialization and report HAVE_ENOUGH
@@ -1961,7 +1949,7 @@ TEST_F(WebMediaPlayerImplTest, VideoLockedWhenPausedWhenHidden) {
 
   // With a user gesture it does unlock the player.
   GetWebLocalFrame()->NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType::kTest);
+      mojom::UserActivationNotificationType::kTest);
   Play();
   EXPECT_FALSE(IsVideoLockedWhenPausedWhenHidden());
 
@@ -1972,7 +1960,7 @@ TEST_F(WebMediaPlayerImplTest, VideoLockedWhenPausedWhenHidden) {
 
   // With a user gesture, pause does lock the player.
   GetWebLocalFrame()->NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType::kTest);
+      mojom::UserActivationNotificationType::kTest);
   Pause();
   EXPECT_TRUE(IsVideoLockedWhenPausedWhenHidden());
 
@@ -2097,7 +2085,7 @@ TEST_F(WebMediaPlayerImplTest, PictureInPictureStateChange) {
   OnMetadata(metadata);
 
   EXPECT_CALL(client_, GetDisplayType())
-      .WillRepeatedly(Return(blink::DisplayType::kPictureInPicture));
+      .WillRepeatedly(Return(DisplayType::kPictureInPicture));
   EXPECT_CALL(client_, OnPictureInPictureStateChange()).Times(1);
 
   wmpi_->OnSurfaceIdUpdated(surface_id_);
@@ -2109,15 +2097,14 @@ TEST_F(WebMediaPlayerImplTest, OnProgressClearsStale) {
   InitializeWebMediaPlayerImpl();
   SetMetadata(true, true);
 
-  for (auto rs = blink::WebMediaPlayer::kReadyStateHaveNothing;
-       rs <= blink::WebMediaPlayer::kReadyStateHaveEnoughData;
-       rs = static_cast<blink::WebMediaPlayer::ReadyState>(
-           static_cast<int>(rs) + 1)) {
+  for (auto rs = WebMediaPlayer::kReadyStateHaveNothing;
+       rs <= WebMediaPlayer::kReadyStateHaveEnoughData;
+       rs = static_cast<WebMediaPlayer::ReadyState>(static_cast<int>(rs) + 1)) {
     SetReadyState(rs);
     delegate_.SetStaleForTesting(true);
     OnProgress();
     EXPECT_EQ(delegate_.IsStale(delegate_.player_id()),
-              rs >= blink::WebMediaPlayer::kReadyStateHaveFutureData);
+              rs >= WebMediaPlayer::kReadyStateHaveFutureData);
   }
 }
 
@@ -2131,7 +2118,7 @@ TEST_F(WebMediaPlayerImplTest, MAYBE_MemDumpProvidersRegistration) {
   auto* dump_manager = base::trace_event::MemoryDumpManager::GetInstance();
   InitializeWebMediaPlayerImpl();
 
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadAuto);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
   auto* main_dumper = GetMainThreadMemDumper();
   EXPECT_TRUE(dump_manager->IsDumpProviderRegisteredForTesting(main_dumper));
   LoadAndWaitForCurrentData(kVideoAudioTestFile);
@@ -2150,7 +2137,7 @@ TEST_F(WebMediaPlayerImplTest, MAYBE_MemDumpProvidersRegistration) {
 TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
   InitializeWebMediaPlayerImpl();
 
-  wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadAuto);
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
   LoadAndWaitForCurrentData(kVideoAudioTestFile);
 
   CycleThreads();
@@ -2240,11 +2227,10 @@ TEST_F(WebMediaPlayerImplTest, DISABLED_DemuxerOverride) {
   InitializeWebMediaPlayerImplInternal(std::move(demuxer));
 
   EXPECT_FALSE(IsSuspended());
-  wmpi_->Load(
-      blink::WebMediaPlayer::kLoadTypeURL,
-      blink::WebMediaPlayerSource(blink::WebURL(blink::KURL("data://test"))),
-      blink::WebMediaPlayer::kCorsModeUnspecified,
-      /*is_cache_disabled=*/false);
+  wmpi_->Load(WebMediaPlayer::kLoadTypeURL,
+              WebMediaPlayerSource(WebURL(KURL("data://test"))),
+              WebMediaPlayer::kCorsModeUnspecified,
+              /*is_cache_disabled=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSuspended());
 }
@@ -2297,15 +2283,15 @@ class WebMediaPlayerImplBackgroundBehaviorTest
 
     InitializeWebMediaPlayerImpl();
     bool is_media_source = std::get<kIsMediaSource>(GetParam());
-    SetLoadType(is_media_source ? blink::WebMediaPlayer::kLoadTypeMediaSource
-                                : blink::WebMediaPlayer::kLoadTypeURL);
+    SetLoadType(is_media_source ? WebMediaPlayer::kLoadTypeMediaSource
+                                : WebMediaPlayer::kLoadTypeURL);
     SetVideoKeyframeDistanceAverage(
         base::TimeDelta::FromSeconds(GetAverageKeyframeDistanceSec()));
     SetDuration(base::TimeDelta::FromSeconds(GetDurationSec()));
 
     if (IsPictureInPictureOn()) {
       EXPECT_CALL(client_, GetDisplayType())
-          .WillRepeatedly(Return(blink::DisplayType::kPictureInPicture));
+          .WillRepeatedly(Return(DisplayType::kPictureInPicture));
 
       wmpi_->OnSurfaceIdUpdated(surface_id_);
     }

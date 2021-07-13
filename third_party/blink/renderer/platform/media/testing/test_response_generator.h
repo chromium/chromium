@@ -31,44 +31,44 @@ class TestResponseGenerator {
   TestResponseGenerator& operator=(const TestResponseGenerator&) = delete;
 
   // Generates a WebURLError object.
-  blink::WebURLError GenerateError();
+  WebURLError GenerateError();
 
   // Generates a regular HTTP 200 response.
-  blink::WebURLResponse Generate200();
+  WebURLResponse Generate200();
 
   // Generates a regular HTTP 206 response starting from |first_byte_offset|
   // until the end of the resource.
-  blink::WebURLResponse Generate206(int64_t first_byte_offset);
+  WebURLResponse Generate206(int64_t first_byte_offset);
 
   // Generates a custom HTTP 206 response starting from |first_byte_offset|
   // until the end of the resource. You can tweak what gets included in the
   // headers via |flags|.
-  blink::WebURLResponse Generate206(int64_t first_byte_offset, Flags flags);
+  WebURLResponse Generate206(int64_t first_byte_offset, Flags flags);
 
   // Generates a regular HTTP 206 response starting from |first_byte_offset|
   // until |last_byte_offset|.
-  blink::WebURLResponse GeneratePartial206(int64_t first_byte_offset,
-                                           int64_t last_byte_offset);
+  WebURLResponse GeneratePartial206(int64_t first_byte_offset,
+                                    int64_t last_byte_offset);
 
   // Generates a custom HTTP 206 response starting from |first_byte_offset|
   // until |last_byte_offset|. You can tweak what gets included in the
   // headers via |flags|.
-  blink::WebURLResponse GeneratePartial206(int64_t first_byte_offset,
-                                           int64_t last_byte_offset,
-                                           Flags flags);
+  WebURLResponse GeneratePartial206(int64_t first_byte_offset,
+                                    int64_t last_byte_offset,
+                                    Flags flags);
 
   // Generates a regular HTTP 404 response.
-  blink::WebURLResponse Generate404();
+  WebURLResponse Generate404();
 
   // Generate a HTTP response with specified code.
-  blink::WebURLResponse GenerateResponse(int code);
+  WebURLResponse GenerateResponse(int code);
 
   // Generates a file:// response starting from |first_byte_offset| until the
   // end of the resource.
   //
   // If |first_byte_offset| is negative a response containing no content length
   // will be returned.
-  blink::WebURLResponse GenerateFileResponse(int64_t first_byte_offset);
+  WebURLResponse GenerateFileResponse(int64_t first_byte_offset);
 
   int64_t content_length() { return content_length_; }
 

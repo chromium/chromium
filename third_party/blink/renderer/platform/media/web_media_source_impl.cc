@@ -30,9 +30,9 @@ WebMediaSourceImpl::WebMediaSourceImpl(media::ChunkDemuxer* demuxer)
 
 WebMediaSourceImpl::~WebMediaSourceImpl() = default;
 
-std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
-    const blink::WebString& content_type,
-    const blink::WebString& codecs,
+std::unique_ptr<WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
+    const WebString& content_type,
+    const WebString& codecs,
     WebMediaSource::AddStatus& out_status /* out */) {
   std::string id = base::GenerateGUID();
 
@@ -45,7 +45,7 @@ std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
   return nullptr;
 }
 
-std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
+std::unique_ptr<WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
     std::unique_ptr<media::AudioDecoderConfig> audio_config,
     WebMediaSource::AddStatus& out_status /* out */) {
   std::string id = base::GenerateGUID();
@@ -59,7 +59,7 @@ std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
   return nullptr;
 }
 
-std::unique_ptr<blink::WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
+std::unique_ptr<WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
     std::unique_ptr<media::VideoDecoderConfig> video_config,
     WebMediaSource::AddStatus& out_status /* out */) {
   std::string id = base::GenerateGUID();

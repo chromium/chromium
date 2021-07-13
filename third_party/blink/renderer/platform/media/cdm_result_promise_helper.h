@@ -35,11 +35,11 @@ enum CdmResultForUMA {
 PLATFORM_EXPORT CdmResultForUMA
 ConvertCdmExceptionToResultForUMA(media::CdmPromise::Exception exception_code);
 
-PLATFORM_EXPORT blink::WebContentDecryptionModuleException ConvertCdmException(
-    media::CdmPromise::Exception exception_code);
+PLATFORM_EXPORT WebContentDecryptionModuleException
+ConvertCdmException(media::CdmPromise::Exception exception_code);
 
-PLATFORM_EXPORT blink::WebEncryptedMediaKeyInformation::KeyStatus
-ConvertCdmKeyStatus(media::CdmKeyInformation::KeyStatus key_status);
+PLATFORM_EXPORT WebEncryptedMediaKeyInformation::KeyStatus ConvertCdmKeyStatus(
+    media::CdmKeyInformation::KeyStatus key_status);
 
 PLATFORM_EXPORT void ReportCdmResultUMA(const std::string& uma_name,
                                         uint32_t system_code,

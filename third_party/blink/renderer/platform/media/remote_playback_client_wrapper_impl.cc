@@ -11,7 +11,7 @@
 namespace blink {
 
 RemotePlaybackClientWrapperImpl::RemotePlaybackClientWrapperImpl(
-    blink::WebMediaPlayerClient* client)
+    WebMediaPlayerClient* client)
     : remote_playback_client_(client->RemotePlaybackClient()) {}
 
 RemotePlaybackClientWrapperImpl::~RemotePlaybackClientWrapperImpl() = default;

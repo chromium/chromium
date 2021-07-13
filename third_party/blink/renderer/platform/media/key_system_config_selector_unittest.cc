@@ -381,9 +381,8 @@ class FakeWebLocalFrameDelegate
       : KeySystemConfigSelector::WebLocalFrameDelegate(nullptr) {}
   bool IsCrossOriginToMainFrame() override { return is_cross_origin_; }
   bool AllowStorageAccessSync(
-      blink::WebContentSettingsClient::StorageType storage_type) override {
-    if (storage_type ==
-        blink::WebContentSettingsClient::StorageType::kLocalStorage) {
+      WebContentSettingsClient::StorageType storage_type) override {
+    if (storage_type == WebContentSettingsClient::StorageType::kLocalStorage) {
       return local_storage_allowed_;
     }
     return true;
@@ -1275,13 +1274,13 @@ TEST_F(KeySystemConfigSelectorTest,
 
 TEST_F(KeySystemConfigSelectorTest,
        VideoCapabilities_EncryptionScheme_Supported) {
-  std::vector<blink::WebMediaKeySystemMediaCapability> video_capabilities(1);
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
   video_capabilities[0].content_type = "a";
   video_capabilities[0].mime_type = kSupportedVideoContainer;
   video_capabilities[0].codecs = kSupportedVideoCodec;
   video_capabilities[0].encryption_scheme = kSupportedEncryptionScheme;
 
-  blink::WebMediaKeySystemConfiguration config = EmptyConfiguration();
+  WebMediaKeySystemConfiguration config = EmptyConfiguration();
   config.video_capabilities = video_capabilities;
   configs_.push_back(config);
 
@@ -1293,14 +1292,14 @@ TEST_F(KeySystemConfigSelectorTest,
 
 TEST_F(KeySystemConfigSelectorTest,
        VideoCapabilities_EncryptionScheme_DisallowHwSecureCodec) {
-  std::vector<blink::WebMediaKeySystemMediaCapability> video_capabilities(1);
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
   video_capabilities[0].content_type = "a";
   video_capabilities[0].mime_type = kSupportedVideoContainer;
   video_capabilities[0].codecs = kSupportedVideoCodec;
   video_capabilities[0].encryption_scheme =
       kDisallowHwSecureCodecEncryptionScheme;
 
-  blink::WebMediaKeySystemConfiguration config = EmptyConfiguration();
+  WebMediaKeySystemConfiguration config = EmptyConfiguration();
   config.video_capabilities = video_capabilities;
   configs_.push_back(config);
 
@@ -1488,13 +1487,13 @@ TEST_F(KeySystemConfigSelectorTest,
 }
 
 TEST_F(KeySystemConfigSelectorTest, HwSecureCodec_EncryptionScheme_Supported) {
-  std::vector<blink::WebMediaKeySystemMediaCapability> video_capabilities(1);
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
   video_capabilities[0].content_type = "a";
   video_capabilities[0].mime_type = kSupportedVideoContainer;
   video_capabilities[0].codecs = kRequireHwSecureCodec;
   video_capabilities[0].encryption_scheme = kSupportedEncryptionScheme;
 
-  blink::WebMediaKeySystemConfiguration config = EmptyConfiguration();
+  WebMediaKeySystemConfiguration config = EmptyConfiguration();
   config.video_capabilities = video_capabilities;
   configs_.push_back(config);
 
@@ -1507,14 +1506,14 @@ TEST_F(KeySystemConfigSelectorTest, HwSecureCodec_EncryptionScheme_Supported) {
 
 TEST_F(KeySystemConfigSelectorTest,
        HwSecureCodec_EncryptionScheme_DisallowHwSecureCodec) {
-  std::vector<blink::WebMediaKeySystemMediaCapability> video_capabilities(1);
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
   video_capabilities[0].content_type = "a";
   video_capabilities[0].mime_type = kSupportedVideoContainer;
   video_capabilities[0].codecs = kRequireHwSecureCodec;
   video_capabilities[0].encryption_scheme =
       kDisallowHwSecureCodecEncryptionScheme;
 
-  blink::WebMediaKeySystemConfiguration config = EmptyConfiguration();
+  WebMediaKeySystemConfiguration config = EmptyConfiguration();
   config.video_capabilities = video_capabilities;
   configs_.push_back(config);
 

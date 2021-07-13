@@ -22,7 +22,7 @@ WebMediaPlayerParams::WebMediaPlayerParams(
     const scoped_refptr<base::SingleThreadTaskRunner>&
         video_frame_compositor_task_runner,
     const AdjustAllocatedMemoryCB& adjust_allocated_memory_cb,
-    blink::WebContentDecryptionModule* initial_cdm,
+    WebContentDecryptionModule* initial_cdm,
     media::RequestRoutingTokenCallback request_routing_token_cb,
     base::WeakPtr<media::MediaObserver> media_observer,
     bool enable_instant_source_buffer_gc,
@@ -30,7 +30,7 @@ WebMediaPlayerParams::WebMediaPlayerParams(
     mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video,
+    WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video,
     bool is_background_suspend_enabled,
     bool is_background_video_playback_enabled,
     bool is_background_video_track_optimization_supported,

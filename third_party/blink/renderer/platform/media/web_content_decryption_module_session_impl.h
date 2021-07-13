@@ -25,33 +25,32 @@ namespace blink {
 class CdmSessionAdapter;
 
 class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
-    : public blink::WebContentDecryptionModuleSession {
+    : public WebContentDecryptionModuleSession {
  public:
   WebContentDecryptionModuleSessionImpl(
       const scoped_refptr<CdmSessionAdapter>& adapter,
-      blink::WebEncryptedMediaSessionType session_type);
+      WebEncryptedMediaSessionType session_type);
   WebContentDecryptionModuleSessionImpl(
       const WebContentDecryptionModuleSessionImpl&) = delete;
   WebContentDecryptionModuleSessionImpl& operator=(
       const WebContentDecryptionModuleSessionImpl&) = delete;
   ~WebContentDecryptionModuleSessionImpl() override;
 
-  // blink::WebContentDecryptionModuleSession implementation.
+  // WebContentDecryptionModuleSession implementation.
   void SetClientInterface(Client* client) override;
-  blink::WebString SessionId() const override;
+  WebString SessionId() const override;
 
-  void InitializeNewSession(
-      media::EmeInitDataType init_data_type,
-      const unsigned char* initData,
-      size_t initDataLength,
-      blink::WebContentDecryptionModuleResult result) override;
-  void Load(const blink::WebString& session_id,
-            blink::WebContentDecryptionModuleResult result) override;
+  void InitializeNewSession(media::EmeInitDataType init_data_type,
+                            const unsigned char* initData,
+                            size_t initDataLength,
+                            WebContentDecryptionModuleResult result) override;
+  void Load(const WebString& session_id,
+            WebContentDecryptionModuleResult result) override;
   void Update(const uint8_t* response,
               size_t response_length,
-              blink::WebContentDecryptionModuleResult result) override;
-  void Close(blink::WebContentDecryptionModuleResult result) override;
-  void Remove(blink::WebContentDecryptionModuleResult result) override;
+              WebContentDecryptionModuleResult result) override;
+  void Close(WebContentDecryptionModuleResult result) override;
+  void Remove(WebContentDecryptionModuleResult result) override;
 
   // Callbacks.
   void OnSessionMessage(media::CdmMessageType message_type,

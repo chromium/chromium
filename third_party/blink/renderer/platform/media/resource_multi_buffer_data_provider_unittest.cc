@@ -55,9 +55,9 @@ static bool want_frfr = false;
 // Predicate that checks the Accept-Encoding request header and FRFR previews
 // state.
 static bool CorrectAcceptEncodingAndPreviewsState(
-    const blink::WebURLRequest& request) {
+    const WebURLRequest& request) {
   bool has_frfr =
-      request.GetPreviewsState() & blink::PreviewsTypes::kSrcVideoRedirectOn;
+      request.GetPreviewsState() & PreviewsTypes::kSrcVideoRedirectOn;
   if (has_frfr != want_frfr) {
     return false;
   }
@@ -171,8 +171,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   }
 
   void Redirect(const char* url) {
-    blink::WebURL new_url{GURL(url)};
-    blink::WebURLResponse redirect_response(gurl_);
+    WebURL new_url{GURL(url)};
+    WebURLResponse redirect_response(gurl_);
 
     EXPECT_CALL(*this, RedirectCallback(_))
         .WillOnce(
@@ -210,8 +210,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<blink::WebAssociatedURLLoader> CreateUrlLoader(
-      const blink::WebAssociatedURLLoaderOptions& options) {
+  std::unique_ptr<WebAssociatedURLLoader> CreateUrlLoader(
+      const WebAssociatedURLLoaderOptions& options) {
     auto url_loader = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
     EXPECT_CALL(*url_loader.get(),
                 LoadAsynchronously(Truly(CorrectAcceptEncodingAndPreviewsState),
@@ -370,8 +370,7 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestSaveDataFRFRPreviewsState) {
   };
   for (const TestCase& test_case : kTestCases) {
     SCOPED_TRACE(test_case.label);
-    blink::WebNetworkStateNotifier::SetSaveDataEnabled(
-        test_case.enable_save_data);
+    WebNetworkStateNotifier::SetSaveDataEnabled(test_case.enable_save_data);
 
     Initialize(test_case.url.c_str(), 0);
     want_frfr = test_case.want_frfr_previews_enabled;

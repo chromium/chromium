@@ -22,11 +22,11 @@
 
 namespace blink {
 
-static blink::WebSourceBufferClient::ParseWarning ParseWarningToBlink(
+static WebSourceBufferClient::ParseWarning ParseWarningToBlink(
     const media::SourceBufferParseWarning warning) {
 #define CHROMIUM_PARSE_WARNING_TO_BLINK_ENUM_CASE(name) \
   case media::SourceBufferParseWarning::name:           \
-    return blink::WebSourceBufferClient::ParseWarning::name
+    return WebSourceBufferClient::ParseWarning::name
 
   switch (warning) {
     CHROMIUM_PARSE_WARNING_TO_BLINK_ENUM_CASE(
@@ -37,8 +37,7 @@ static blink::WebSourceBufferClient::ParseWarning ParseWarningToBlink(
   }
 
   NOTREACHED();
-  return blink::WebSourceBufferClient::ParseWarning::
-      kKeyframeTimeGreaterThanDependant;
+  return WebSourceBufferClient::ParseWarning::kKeyframeTimeGreaterThanDependant;
 
 #undef CHROMIUM_PARSE_WARNING_TO_BLINK_ENUM_CASE
 }
@@ -77,7 +76,7 @@ WebSourceBufferImpl::WebSourceBufferImpl(const std::string& id,
 
 WebSourceBufferImpl::~WebSourceBufferImpl() = default;
 
-void WebSourceBufferImpl::SetClient(blink::WebSourceBufferClient* client) {
+void WebSourceBufferImpl::SetClient(WebSourceBufferClient* client) {
   DCHECK(client);
   DCHECK(!client_);
   client_ = client;
@@ -104,9 +103,9 @@ bool WebSourceBufferImpl::SetMode(WebSourceBuffer::AppendMode mode) {
   return false;
 }
 
-blink::WebTimeRanges WebSourceBufferImpl::Buffered() {
+WebTimeRanges WebSourceBufferImpl::Buffered() {
   media::Ranges<base::TimeDelta> ranges = demuxer_->GetBufferedRanges(id_);
-  blink::WebTimeRanges result(ranges.size());
+  WebTimeRanges result(ranges.size());
   for (size_t i = 0; i < ranges.size(); i++) {
     result[i].start = ranges.start(i).InSecondsF();
     result[i].end = ranges.end(i).InSecondsF();
@@ -177,13 +176,13 @@ void WebSourceBufferImpl::Remove(double start, double end) {
   demuxer_->Remove(id_, DoubleToTimeDelta(start), DoubleToTimeDelta(end));
 }
 
-bool WebSourceBufferImpl::CanChangeType(const blink::WebString& content_type,
-                                        const blink::WebString& codecs) {
+bool WebSourceBufferImpl::CanChangeType(const WebString& content_type,
+                                        const WebString& codecs) {
   return demuxer_->CanChangeType(id_, content_type.Utf8(), codecs.Utf8());
 }
 
-void WebSourceBufferImpl::ChangeType(const blink::WebString& content_type,
-                                     const blink::WebString& codecs) {
+void WebSourceBufferImpl::ChangeType(const WebString& content_type,
+                                     const WebString& codecs) {
   // Caller must first call ResetParserState() to flush any pending frames.
   DCHECK(!demuxer_->IsParsingMediaSegment(id_));
 
@@ -219,18 +218,17 @@ void WebSourceBufferImpl::RemovedFromMediaSource() {
   client_ = nullptr;
 }
 
-blink::WebMediaPlayer::TrackType mediaTrackTypeToBlink(
-    media::MediaTrack::Type type) {
+WebMediaPlayer::TrackType mediaTrackTypeToBlink(media::MediaTrack::Type type) {
   switch (type) {
     case media::MediaTrack::Audio:
-      return blink::WebMediaPlayer::kAudioTrack;
+      return WebMediaPlayer::kAudioTrack;
     case media::MediaTrack::Text:
-      return blink::WebMediaPlayer::kTextTrack;
+      return WebMediaPlayer::kTextTrack;
     case media::MediaTrack::Video:
-      return blink::WebMediaPlayer::kVideoTrack;
+      return WebMediaPlayer::kVideoTrack;
   }
   NOTREACHED();
-  return blink::WebMediaPlayer::kAudioTrack;
+  return WebMediaPlayer::kAudioTrack;
 }
 
 void WebSourceBufferImpl::InitSegmentReceived(
@@ -238,16 +236,16 @@ void WebSourceBufferImpl::InitSegmentReceived(
   DCHECK(tracks.get());
   DVLOG(1) << __func__ << " tracks=" << tracks->tracks().size();
 
-  std::vector<blink::WebSourceBufferClient::MediaTrackInfo> trackInfoVector;
+  std::vector<WebSourceBufferClient::MediaTrackInfo> trackInfoVector;
   for (const auto& track : tracks->tracks()) {
-    blink::WebSourceBufferClient::MediaTrackInfo trackInfo;
+    WebSourceBufferClient::MediaTrackInfo trackInfo;
     trackInfo.track_type = mediaTrackTypeToBlink(track->type());
-    trackInfo.id = blink::WebString::FromUTF8(track->id().value());
-    trackInfo.byte_stream_track_id = blink::WebString::FromUTF8(
-        base::NumberToString(track->bytestream_track_id()));
-    trackInfo.kind = blink::WebString::FromUTF8(track->kind().value());
-    trackInfo.label = blink::WebString::FromUTF8(track->label().value());
-    trackInfo.language = blink::WebString::FromUTF8(track->language().value());
+    trackInfo.id = WebString::FromUTF8(track->id().value());
+    trackInfo.byte_stream_track_id =
+        WebString::FromUTF8(base::NumberToString(track->bytestream_track_id()));
+    trackInfo.kind = WebString::FromUTF8(track->kind().value());
+    trackInfo.label = WebString::FromUTF8(track->label().value());
+    trackInfo.language = WebString::FromUTF8(track->language().value());
     trackInfoVector.push_back(trackInfo);
   }
 

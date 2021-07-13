@@ -11,32 +11,31 @@
 
 namespace blink {
 
-class PLATFORM_EXPORT WebInbandTextTrackImpl
-    : public blink::WebInbandTextTrack {
+class PLATFORM_EXPORT WebInbandTextTrackImpl : public WebInbandTextTrack {
  public:
   WebInbandTextTrackImpl(Kind kind,
-                         const blink::WebString& label,
-                         const blink::WebString& language,
-                         const blink::WebString& id);
+                         const WebString& label,
+                         const WebString& language,
+                         const WebString& id);
   WebInbandTextTrackImpl(const WebInbandTextTrackImpl&) = delete;
   WebInbandTextTrackImpl& operator=(const WebInbandTextTrackImpl&) = delete;
   ~WebInbandTextTrackImpl() override;
 
-  void SetClient(blink::WebInbandTextTrackClient* client) override;
-  blink::WebInbandTextTrackClient* Client() override;
+  void SetClient(WebInbandTextTrackClient* client) override;
+  WebInbandTextTrackClient* Client() override;
 
   Kind GetKind() const override;
 
-  blink::WebString Label() const override;
-  blink::WebString Language() const override;
-  blink::WebString Id() const override;
+  WebString Label() const override;
+  WebString Language() const override;
+  WebString Id() const override;
 
  private:
-  blink::WebInbandTextTrackClient* client_;
+  WebInbandTextTrackClient* client_;
   Kind kind_;
-  blink::WebString label_;
-  blink::WebString language_;
-  blink::WebString id_;
+  WebString label_;
+  WebString language_;
+  WebString id_;
 };
 
 }  // namespace blink

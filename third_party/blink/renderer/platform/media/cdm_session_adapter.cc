@@ -74,8 +74,7 @@ void CdmSessionAdapter::GetStatusForPolicy(
 }
 
 std::unique_ptr<WebContentDecryptionModuleSessionImpl>
-CdmSessionAdapter::CreateSession(
-    blink::WebEncryptedMediaSessionType session_type) {
+CdmSessionAdapter::CreateSession(WebEncryptedMediaSessionType session_type) {
   return std::make_unique<WebContentDecryptionModuleSessionImpl>(this,
                                                                  session_type);
 }

@@ -18,7 +18,7 @@ namespace blink {
 
 TextTrackImpl::TextTrackImpl(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    blink::WebMediaPlayerClient* client,
+    WebMediaPlayerClient* client,
     std::unique_ptr<WebInbandTextTrackImpl> text_track)
     : task_runner_(task_runner),
       client_(client),
@@ -48,16 +48,15 @@ void TextTrackImpl::OnAddCue(WebInbandTextTrackImpl* text_track,
                              const std::string& id,
                              const std::string& content,
                              const std::string& settings) {
-  if (blink::WebInbandTextTrackClient* client = text_track->Client()) {
+  if (WebInbandTextTrackClient* client = text_track->Client()) {
     client->AddWebVTTCue(start.InSecondsF(), end.InSecondsF(),
-                         blink::WebString::FromUTF8(id),
-                         blink::WebString::FromUTF8(content),
-                         blink::WebString::FromUTF8(settings));
+                         WebString::FromUTF8(id), WebString::FromUTF8(content),
+                         WebString::FromUTF8(settings));
   }
 }
 
 void TextTrackImpl::OnRemoveTrack(
-    blink::WebMediaPlayerClient* client,
+    WebMediaPlayerClient* client,
     std::unique_ptr<WebInbandTextTrackImpl> text_track) {
   if (text_track->Client())
     client->RemoveTextTrack(text_track.get());

@@ -31,7 +31,7 @@ constexpr const char VideoFrameCompositor::kTracingCategory[];
 
 VideoFrameCompositor::VideoFrameCompositor(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    std::unique_ptr<blink::WebVideoFrameSubmitter> submitter)
+    std::unique_ptr<WebVideoFrameSubmitter> submitter)
     : task_runner_(task_runner),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       background_rendering_timer_(
@@ -313,10 +313,10 @@ void VideoFrameCompositor::StopForceBeginFrames() {
   submitter_->SetForceBeginFrames(false);
 }
 
-std::unique_ptr<blink::WebMediaPlayer::VideoFramePresentationMetadata>
+std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>
 VideoFrameCompositor::GetLastPresentedFrameMetadata() {
   auto frame_metadata =
-      std::make_unique<blink::WebMediaPlayer::VideoFramePresentationMetadata>();
+      std::make_unique<WebMediaPlayer::VideoFramePresentationMetadata>();
 
   scoped_refptr<media::VideoFrame> last_frame;
   {

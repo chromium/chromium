@@ -46,7 +46,7 @@ class PLATFORM_EXPORT NewSessionCdmResultPromise
     : public media::CdmPromiseTemplate<std::string> {
  public:
   NewSessionCdmResultPromise(
-      const blink::WebContentDecryptionModuleResult& result,
+      const WebContentDecryptionModuleResult& result,
       const std::string& key_system_uma_prefix,
       const std::string& uma_name,
       SessionInitializedCB new_session_created_cb,
@@ -63,7 +63,7 @@ class PLATFORM_EXPORT NewSessionCdmResultPromise
               const std::string& error_message) override;
 
  private:
-  blink::WebContentDecryptionModuleResult web_cdm_result_;
+  WebContentDecryptionModuleResult web_cdm_result_;
 
   // UMA prefix and name to report result and time to.
   std::string key_system_uma_prefix_;

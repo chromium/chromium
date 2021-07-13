@@ -23,7 +23,7 @@ class PLATFORM_EXPORT TextTrackImpl : public media::TextTrack {
  public:
   // Constructor assumes ownership of the |text_track| object.
   TextTrackImpl(const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-                blink::WebMediaPlayerClient* client,
+                WebMediaPlayerClient* client,
                 std::unique_ptr<WebInbandTextTrackImpl> text_track);
 
   TextTrackImpl(const TextTrackImpl&) = delete;
@@ -44,11 +44,11 @@ class PLATFORM_EXPORT TextTrackImpl : public media::TextTrack {
                        const std::string& content,
                        const std::string& settings);
 
-  static void OnRemoveTrack(blink::WebMediaPlayerClient* client,
+  static void OnRemoveTrack(WebMediaPlayerClient* client,
                             std::unique_ptr<WebInbandTextTrackImpl> text_track);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  blink::WebMediaPlayerClient* client_;
+  WebMediaPlayerClient* client_;
   std::unique_ptr<WebInbandTextTrackImpl> text_track_;
 };
 

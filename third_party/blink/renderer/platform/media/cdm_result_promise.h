@@ -29,7 +29,7 @@ template <typename... T>
 class PLATFORM_EXPORT CdmResultPromise
     : public media::CdmPromiseTemplate<T...> {
  public:
-  CdmResultPromise(const blink::WebContentDecryptionModuleResult& result,
+  CdmResultPromise(const WebContentDecryptionModuleResult& result,
                    const std::string& key_system_uma_prefix,
                    const std::string& uma_name);
   CdmResultPromise(const CdmResultPromise&) = delete;
@@ -47,7 +47,7 @@ class PLATFORM_EXPORT CdmResultPromise
   using media::CdmPromiseTemplate<T...>::MarkPromiseSettled;
   using media::CdmPromiseTemplate<T...>::RejectPromiseOnDestruction;
 
-  blink::WebContentDecryptionModuleResult web_cdm_result_;
+  WebContentDecryptionModuleResult web_cdm_result_;
 
   // UMA prefix and name to report result and time to.
   std::string key_system_uma_prefix_;
@@ -59,7 +59,7 @@ class PLATFORM_EXPORT CdmResultPromise
 
 template <typename... T>
 CdmResultPromise<T...>::CdmResultPromise(
-    const blink::WebContentDecryptionModuleResult& result,
+    const WebContentDecryptionModuleResult& result,
     const std::string& key_system_uma_prefix,
     const std::string& uma_name)
     : web_cdm_result_(result),
@@ -112,7 +112,7 @@ void CdmResultPromise<T...>::reject(media::CdmPromise::Exception exception_code,
                      ConvertCdmExceptionToResultForUMA(exception_code));
   web_cdm_result_.CompleteWithError(ConvertCdmException(exception_code),
                                     system_code,
-                                    blink::WebString::FromUTF8(error_message));
+                                    WebString::FromUTF8(error_message));
 }
 
 }  // namespace blink

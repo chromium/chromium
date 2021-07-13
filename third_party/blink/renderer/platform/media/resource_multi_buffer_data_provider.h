@@ -30,7 +30,7 @@ class WebAssociatedURLLoader;
 
 class PLATFORM_EXPORT ResourceMultiBufferDataProvider
     : public MultiBuffer::DataProvider,
-      public blink::WebAssociatedURLLoaderClient {
+      public WebAssociatedURLLoaderClient {
  public:
   // NUmber of times we'll retry if the connection fails.
   enum { kMaxRetries = 30 };
@@ -52,16 +52,15 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   scoped_refptr<media::DataBuffer> Read() override;
   void SetDeferred(bool defer) override;
 
-  // blink::WebAssociatedURLLoaderClient implementation.
-  bool WillFollowRedirect(
-      const blink::WebURL& new_url,
-      const blink::WebURLResponse& redirect_response) override;
+  // WebAssociatedURLLoaderClient implementation.
+  bool WillFollowRedirect(const WebURL& new_url,
+                          const WebURLResponse& redirect_response) override;
   void DidSendData(uint64_t bytesSent, uint64_t totalBytesToBeSent) override;
-  void DidReceiveResponse(const blink::WebURLResponse& response) override;
+  void DidReceiveResponse(const WebURLResponse& response) override;
   void DidDownloadData(uint64_t data_length) override;
   void DidReceiveData(const char* data, int data_length) override;
   void DidFinishLoading() override;
-  void DidFail(const blink::WebURLError&) override;
+  void DidFail(const WebURLError&) override;
 
   // Use protected instead of private for testing purposes.
  protected:
@@ -86,7 +85,7 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   int64_t block_size() const;
 
   // If we have made a range request, verify the response from the server.
-  bool VerifyPartialResponse(const blink::WebURLResponse& response,
+  bool VerifyPartialResponse(const WebURLResponse& response,
                              const scoped_refptr<UrlData>& url_data);
 
   // Current Position.
@@ -114,7 +113,7 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
 
   // Keeps track of an active WebAssociatedURLLoader.
   // Only valid while loading resource.
-  std::unique_ptr<blink::WebAssociatedURLLoader> active_loader_;
+  std::unique_ptr<WebAssociatedURLLoader> active_loader_;
 
   // When we encounter a redirect, this is the source of the redirect.
   GURL redirects_to_;

@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
+class MockWebAssociatedURLLoader : public WebAssociatedURLLoader {
  public:
   MockWebAssociatedURLLoader();
   MockWebAssociatedURLLoader(const MockWebAssociatedURLLoader&) = delete;
@@ -20,8 +20,8 @@ class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
   ~MockWebAssociatedURLLoader() override;
 
   MOCK_METHOD2(LoadAsynchronously,
-               void(const blink::WebURLRequest& request,
-                    blink::WebAssociatedURLLoaderClient* client));
+               void(const WebURLRequest& request,
+                    WebAssociatedURLLoaderClient* client));
   MOCK_METHOD0(Cancel, void());
   MOCK_METHOD1(SetDefersLoading, void(bool value));
   MOCK_METHOD1(SetLoadingTaskRunner,

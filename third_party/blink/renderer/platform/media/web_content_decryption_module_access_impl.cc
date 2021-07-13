@@ -17,15 +17,15 @@ namespace blink {
 // The caller owns the created cdm (passed back using |result|).
 static void CreateCdm(
     const base::WeakPtr<WebEncryptedMediaClientImpl>& client,
-    const blink::WebString& key_system,
-    const blink::WebSecurityOrigin& security_origin,
+    const WebString& key_system,
+    const WebSecurityOrigin& security_origin,
     const media::CdmConfig& cdm_config,
-    std::unique_ptr<blink::WebContentDecryptionModuleResult> result) {
+    std::unique_ptr<WebContentDecryptionModuleResult> result) {
   // If |client| is gone (due to the frame getting destroyed), it is
   // impossible to create the CDM, so fail.
   if (!client) {
     result->CompleteWithError(
-        blink::kWebContentDecryptionModuleExceptionInvalidStateError, 0,
+        kWebContentDecryptionModuleExceptionInvalidStateError, 0,
         "Failed to create CDM.");
     return;
   }
@@ -36,15 +36,15 @@ static void CreateCdm(
 // static
 WebContentDecryptionModuleAccessImpl*
 WebContentDecryptionModuleAccessImpl::From(
-    blink::WebContentDecryptionModuleAccess* cdm_access) {
+    WebContentDecryptionModuleAccess* cdm_access) {
   return static_cast<WebContentDecryptionModuleAccessImpl*>(cdm_access);
 }
 
 std::unique_ptr<WebContentDecryptionModuleAccessImpl>
 WebContentDecryptionModuleAccessImpl::Create(
-    const blink::WebString& key_system,
-    const blink::WebSecurityOrigin& security_origin,
-    const blink::WebMediaKeySystemConfiguration& configuration,
+    const WebString& key_system,
+    const WebSecurityOrigin& security_origin,
+    const WebMediaKeySystemConfiguration& configuration,
     const media::CdmConfig& cdm_config,
     const base::WeakPtr<WebEncryptedMediaClientImpl>& client) {
   return std::make_unique<WebContentDecryptionModuleAccessImpl>(
@@ -52,9 +52,9 @@ WebContentDecryptionModuleAccessImpl::Create(
 }
 
 WebContentDecryptionModuleAccessImpl::WebContentDecryptionModuleAccessImpl(
-    const blink::WebString& key_system,
-    const blink::WebSecurityOrigin& security_origin,
-    const blink::WebMediaKeySystemConfiguration& configuration,
+    const WebString& key_system,
+    const WebSecurityOrigin& security_origin,
+    const WebMediaKeySystemConfiguration& configuration,
     const media::CdmConfig& cdm_config,
     const base::WeakPtr<WebEncryptedMediaClientImpl>& client)
     : key_system_(key_system),
@@ -66,24 +66,24 @@ WebContentDecryptionModuleAccessImpl::WebContentDecryptionModuleAccessImpl(
 WebContentDecryptionModuleAccessImpl::~WebContentDecryptionModuleAccessImpl() =
     default;
 
-blink::WebString WebContentDecryptionModuleAccessImpl::GetKeySystem() {
+WebString WebContentDecryptionModuleAccessImpl::GetKeySystem() {
   return key_system_;
 }
 
-blink::WebMediaKeySystemConfiguration
+WebMediaKeySystemConfiguration
 WebContentDecryptionModuleAccessImpl::GetConfiguration() {
   return configuration_;
 }
 
 void WebContentDecryptionModuleAccessImpl::CreateContentDecryptionModule(
-    blink::WebContentDecryptionModuleResult result,
+    WebContentDecryptionModuleResult result,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   // This method needs to run asynchronously, as it may need to load the CDM.
   // As this object's lifetime is controlled by MediaKeySystemAccess on the
   // blink side, copy all values needed by CreateCdm() in case the blink object
   // gets garbage-collected.
-  std::unique_ptr<blink::WebContentDecryptionModuleResult> result_copy(
-      new blink::WebContentDecryptionModuleResult(result));
+  std::unique_ptr<WebContentDecryptionModuleResult> result_copy(
+      new WebContentDecryptionModuleResult(result));
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&CreateCdm, client_, key_system_, security_origin_,

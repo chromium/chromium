@@ -31,7 +31,7 @@ const char kCreateSessionSessionTypeUMAName[] = "CreateSession.SessionType";
 const char kSetServerCertificateUMAName[] = "SetServerCertificate";
 const char kGetStatusForPolicyUMAName[] = "GetStatusForPolicy";
 
-bool ConvertHdcpVersion(const blink::WebString& hdcp_version_string,
+bool ConvertHdcpVersion(const WebString& hdcp_version_string,
                         media::HdcpVersion* hdcp_version) {
   if (!hdcp_version_string.ContainsOnlyASCII())
     return false;
@@ -71,7 +71,7 @@ bool ConvertHdcpVersion(const blink::WebString& hdcp_version_string,
 void WebContentDecryptionModuleImpl::Create(
     media::CdmFactory* cdm_factory,
     const std::u16string& key_system,
-    const blink::WebSecurityOrigin& security_origin,
+    const WebSecurityOrigin& security_origin,
     const media::CdmConfig& cdm_config,
     WebCdmCreatedCB web_cdm_created_cb) {
   DCHECK(!security_origin.IsNull());
@@ -118,9 +118,9 @@ WebContentDecryptionModuleImpl::WebContentDecryptionModuleImpl(
 
 WebContentDecryptionModuleImpl::~WebContentDecryptionModuleImpl() = default;
 
-std::unique_ptr<blink::WebContentDecryptionModuleSession>
+std::unique_ptr<WebContentDecryptionModuleSession>
 WebContentDecryptionModuleImpl::CreateSession(
-    blink::WebEncryptedMediaSessionType session_type) {
+    WebEncryptedMediaSessionType session_type) {
   base::UmaHistogramEnumeration(
       adapter_->GetKeySystemUMAPrefix() + kCreateSessionSessionTypeUMAName,
       session_type);
@@ -130,7 +130,7 @@ WebContentDecryptionModuleImpl::CreateSession(
 void WebContentDecryptionModuleImpl::SetServerCertificate(
     const uint8_t* server_certificate,
     size_t server_certificate_length,
-    blink::WebContentDecryptionModuleResult result) {
+    WebContentDecryptionModuleResult result) {
   DCHECK(server_certificate);
   adapter_->SetServerCertificate(
       std::vector<uint8_t>(server_certificate,
@@ -141,13 +141,12 @@ void WebContentDecryptionModuleImpl::SetServerCertificate(
 }
 
 void WebContentDecryptionModuleImpl::GetStatusForPolicy(
-    const blink::WebString& min_hdcp_version_string,
-    blink::WebContentDecryptionModuleResult result) {
+    const WebString& min_hdcp_version_string,
+    WebContentDecryptionModuleResult result) {
   media::HdcpVersion min_hdcp_version;
   if (!ConvertHdcpVersion(min_hdcp_version_string, &min_hdcp_version)) {
-    result.CompleteWithError(
-        blink::kWebContentDecryptionModuleExceptionTypeError, 0,
-        "Invalid HDCP version");
+    result.CompleteWithError(kWebContentDecryptionModuleExceptionTypeError, 0,
+                             "Invalid HDCP version");
     return;
   }
 

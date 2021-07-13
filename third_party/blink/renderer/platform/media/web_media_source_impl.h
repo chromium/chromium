@@ -18,22 +18,22 @@ class VideoDecoderConfig;
 
 namespace blink {
 
-class PLATFORM_EXPORT WebMediaSourceImpl : public blink::WebMediaSource {
+class PLATFORM_EXPORT WebMediaSourceImpl : public WebMediaSource {
  public:
   WebMediaSourceImpl(media::ChunkDemuxer* demuxer);
   WebMediaSourceImpl(const WebMediaSourceImpl&) = delete;
   WebMediaSourceImpl& operator=(const WebMediaSourceImpl&) = delete;
   ~WebMediaSourceImpl() override;
 
-  // blink::WebMediaSource implementation.
-  std::unique_ptr<blink::WebSourceBuffer> AddSourceBuffer(
-      const blink::WebString& content_type,
-      const blink::WebString& codecs,
+  // WebMediaSource implementation.
+  std::unique_ptr<WebSourceBuffer> AddSourceBuffer(
+      const WebString& content_type,
+      const WebString& codecs,
       AddStatus& out_status /* out */) override;
-  std::unique_ptr<blink::WebSourceBuffer> AddSourceBuffer(
+  std::unique_ptr<WebSourceBuffer> AddSourceBuffer(
       std::unique_ptr<media::AudioDecoderConfig> audio_config,
       AddStatus& out_status /* out */) override;
-  std::unique_ptr<blink::WebSourceBuffer> AddSourceBuffer(
+  std::unique_ptr<WebSourceBuffer> AddSourceBuffer(
       std::unique_ptr<media::VideoDecoderConfig> video_config,
       AddStatus& out_status /* out */) override;
   double Duration() override;

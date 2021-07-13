@@ -25,44 +25,42 @@ CdmResultForUMA ConvertCdmExceptionToResultForUMA(
   return INVALID_STATE_ERROR;
 }
 
-blink::WebContentDecryptionModuleException ConvertCdmException(
+WebContentDecryptionModuleException ConvertCdmException(
     media::CdmPromise::Exception exception_code) {
   switch (exception_code) {
     case media::CdmPromise::Exception::NOT_SUPPORTED_ERROR:
-      return blink::kWebContentDecryptionModuleExceptionNotSupportedError;
+      return kWebContentDecryptionModuleExceptionNotSupportedError;
     case media::CdmPromise::Exception::INVALID_STATE_ERROR:
-      return blink::kWebContentDecryptionModuleExceptionInvalidStateError;
+      return kWebContentDecryptionModuleExceptionInvalidStateError;
     case media::CdmPromise::Exception::QUOTA_EXCEEDED_ERROR:
-      return blink::kWebContentDecryptionModuleExceptionQuotaExceededError;
+      return kWebContentDecryptionModuleExceptionQuotaExceededError;
     case media::CdmPromise::Exception::TYPE_ERROR:
-      return blink::kWebContentDecryptionModuleExceptionTypeError;
+      return kWebContentDecryptionModuleExceptionTypeError;
   }
   NOTREACHED();
-  return blink::kWebContentDecryptionModuleExceptionInvalidStateError;
+  return kWebContentDecryptionModuleExceptionInvalidStateError;
 }
 
-blink::WebEncryptedMediaKeyInformation::KeyStatus ConvertCdmKeyStatus(
+WebEncryptedMediaKeyInformation::KeyStatus ConvertCdmKeyStatus(
     media::CdmKeyInformation::KeyStatus key_status) {
   switch (key_status) {
     case media::CdmKeyInformation::USABLE:
-      return blink::WebEncryptedMediaKeyInformation::KeyStatus::kUsable;
+      return WebEncryptedMediaKeyInformation::KeyStatus::kUsable;
     case media::CdmKeyInformation::INTERNAL_ERROR:
-      return blink::WebEncryptedMediaKeyInformation::KeyStatus::kInternalError;
+      return WebEncryptedMediaKeyInformation::KeyStatus::kInternalError;
     case media::CdmKeyInformation::EXPIRED:
-      return blink::WebEncryptedMediaKeyInformation::KeyStatus::kExpired;
+      return WebEncryptedMediaKeyInformation::KeyStatus::kExpired;
     case media::CdmKeyInformation::OUTPUT_RESTRICTED:
-      return blink::WebEncryptedMediaKeyInformation::KeyStatus::
-          kOutputRestricted;
+      return WebEncryptedMediaKeyInformation::KeyStatus::kOutputRestricted;
     case media::CdmKeyInformation::OUTPUT_DOWNSCALED:
-      return blink::WebEncryptedMediaKeyInformation::KeyStatus::
-          kOutputDownscaled;
+      return WebEncryptedMediaKeyInformation::KeyStatus::kOutputDownscaled;
     case media::CdmKeyInformation::KEY_STATUS_PENDING:
-      return blink::WebEncryptedMediaKeyInformation::KeyStatus::kStatusPending;
+      return WebEncryptedMediaKeyInformation::KeyStatus::kStatusPending;
     case media::CdmKeyInformation::RELEASED:
-      return blink::WebEncryptedMediaKeyInformation::KeyStatus::kReleased;
+      return WebEncryptedMediaKeyInformation::KeyStatus::kReleased;
   }
   NOTREACHED();
-  return blink::WebEncryptedMediaKeyInformation::KeyStatus::kInternalError;
+  return WebEncryptedMediaKeyInformation::KeyStatus::kInternalError;
 }
 
 void ReportCdmResultUMA(const std::string& uma_name,

@@ -31,14 +31,14 @@ enum UncacheableReason {
 // Return the logical OR of the reasons "response" cannot be used for a future
 // request (using the disk cache), or 0 if it might be useful.
 PLATFORM_EXPORT uint32_t
-GetReasonsForUncacheability(const blink::WebURLResponse& response);
+GetReasonsForUncacheability(const WebURLResponse& response);
 
 // Returns when we should evict data from this response from our
 // memory cache. Note that we may still cache data longer if
 // a audio/video tag is currently using it. Returns a TimeDelta
 // which is should be added to base::Time::Now() or base::TimeTicks::Now().
 PLATFORM_EXPORT base::TimeDelta GetCacheValidUntil(
-    const blink::WebURLResponse& response);
+    const WebURLResponse& response);
 
 }  // namespace blink
 

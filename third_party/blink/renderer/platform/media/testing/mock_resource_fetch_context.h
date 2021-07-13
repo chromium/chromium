@@ -18,8 +18,8 @@ class MockResourceFetchContext : public ResourceFetchContext {
   ~MockResourceFetchContext() override;
 
   MOCK_METHOD1(CreateUrlLoader,
-               std::unique_ptr<blink::WebAssociatedURLLoader>(
-                   const blink::WebAssociatedURLLoaderOptions&));
+               std::unique_ptr<WebAssociatedURLLoader>(
+                   const WebAssociatedURLLoaderOptions&));
 };
 
 }  // namespace blink

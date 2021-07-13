@@ -238,7 +238,7 @@ class MultiBufferDataSourceTest : public testing::Test {
  public:
   MultiBufferDataSourceTest() : preload_(MultiBufferDataSource::AUTO) {
     ON_CALL(fetch_context_, CreateUrlLoader(_))
-        .WillByDefault(Invoke([](const blink::WebAssociatedURLLoaderOptions&) {
+        .WillByDefault(Invoke([](const WebAssociatedURLLoaderOptions&) {
           return std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
         }));
   }
@@ -438,13 +438,13 @@ class MultiBufferDataSourceTest : public testing::Test {
   TestMultiBufferDataProvider* data_provider() {
     return multibuffer()->GetProvider();
   }
-  blink::WebAssociatedURLLoader* active_loader() {
+  WebAssociatedURLLoader* active_loader() {
     EXPECT_TRUE(data_provider());
     if (!data_provider())
       return nullptr;
     return data_provider()->active_loader_.get();
   }
-  blink::WebAssociatedURLLoader* active_loader_allownull() {
+  WebAssociatedURLLoader* active_loader_allownull() {
     TestMultiBufferDataProvider* data_provider =
         multibuffer()->GetProvider_allownull();
     if (!data_provider)
@@ -770,7 +770,7 @@ TEST_F(MultiBufferDataSourceTest,
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   response1.SetWasFetchedViaServiceWorker(true);
-  std::vector<blink::WebURL> url_list = {GURL(kHttpUrl)};
+  std::vector<WebURL> url_list = {GURL(kHttpUrl)};
   response1.SetUrlListViaServiceWorker(url_list);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
@@ -785,7 +785,7 @@ TEST_F(MultiBufferDataSourceTest,
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   response1.SetWasFetchedViaServiceWorker(true);
-  std::vector<blink::WebURL> url_list = {GURL(kHttpDifferentPathUrl)};
+  std::vector<WebURL> url_list = {GURL(kHttpDifferentPathUrl)};
   response1.SetUrlListViaServiceWorker(url_list);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
@@ -800,7 +800,7 @@ TEST_F(MultiBufferDataSourceTest,
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   response1.SetWasFetchedViaServiceWorker(true);
-  std::vector<blink::WebURL> url_list = {GURL(kHttpDifferentOriginUrl)};
+  std::vector<WebURL> url_list = {GURL(kHttpDifferentOriginUrl)};
   response1.SetUrlListViaServiceWorker(url_list);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
@@ -815,7 +815,7 @@ TEST_F(MultiBufferDataSourceTest,
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   response1.SetWasFetchedViaServiceWorker(true);
-  std::vector<blink::WebURL> url_list = {GURL(kHttpDifferentOriginUrl)};
+  std::vector<WebURL> url_list = {GURL(kHttpDifferentOriginUrl)};
   response1.SetUrlListViaServiceWorker(url_list);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
@@ -1436,8 +1436,8 @@ TEST_F(MultiBufferDataSourceTest, Http_RetryThenRedirect) {
   run_loop.Run();
 
   // Server responds with a redirect.
-  blink::WebURL url{GURL(kHttpDifferentPathUrl)};
-  blink::WebURLResponse response((GURL(kHttpUrl)));
+  WebURL url{GURL(kHttpDifferentPathUrl)};
+  WebURLResponse response((GURL(kHttpUrl)));
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1454,8 +1454,8 @@ TEST_F(MultiBufferDataSourceTest, Http_NotStreamingAfterRedirect) {
   Initialize(kHttpUrl, true);
 
   // Server responds with a redirect.
-  blink::WebURL url{GURL(kHttpDifferentPathUrl)};
-  blink::WebURLResponse response((GURL(kHttpUrl)));
+  WebURL url{GURL(kHttpDifferentPathUrl)};
+  WebURLResponse response((GURL(kHttpUrl)));
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1476,8 +1476,8 @@ TEST_F(MultiBufferDataSourceTest, Http_RangeNotSatisfiableAfterRedirect) {
   Initialize(kHttpUrl, true);
 
   // Server responds with a redirect.
-  blink::WebURL url{GURL(kHttpDifferentPathUrl)};
-  blink::WebURLResponse response((GURL(kHttpUrl)));
+  WebURL url{GURL(kHttpDifferentPathUrl)};
+  WebURLResponse response((GURL(kHttpUrl)));
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1490,8 +1490,8 @@ TEST_F(MultiBufferDataSourceTest, Http_404AfterRedirect) {
   Initialize(kHttpUrl, false);
 
   // Server responds with a redirect.
-  blink::WebURL url{GURL(kHttpDifferentPathUrl)};
-  blink::WebURLResponse response((GURL(kHttpUrl)));
+  WebURL url{GURL(kHttpDifferentPathUrl)};
+  WebURLResponse response((GURL(kHttpUrl)));
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1529,7 +1529,7 @@ TEST_F(MultiBufferDataSourceTest, LengthKnownAtEOF) {
 TEST_F(MultiBufferDataSourceTest, FileSizeLessThanBlockSize) {
   Initialize(kHttpUrl, true);
   GURL gurl(kHttpUrl);
-  blink::WebURLResponse response(gurl);
+  WebURLResponse response(gurl);
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       WebString::FromUTF8("Content-Length"),

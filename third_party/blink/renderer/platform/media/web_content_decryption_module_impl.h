@@ -28,15 +28,15 @@ class CdmSessionAdapter;
 class WebSecurityOrigin;
 
 using WebCdmCreatedCB =
-    base::OnceCallback<void(blink::WebContentDecryptionModule* cdm,
+    base::OnceCallback<void(WebContentDecryptionModule* cdm,
                             const std::string& error_message)>;
 
 class PLATFORM_EXPORT WebContentDecryptionModuleImpl
-    : public blink::WebContentDecryptionModule {
+    : public WebContentDecryptionModule {
  public:
   static void Create(media::CdmFactory* cdm_factory,
                      const std::u16string& key_system,
-                     const blink::WebSecurityOrigin& security_origin,
+                     const WebSecurityOrigin& security_origin,
                      const media::CdmConfig& cdm_config,
                      WebCdmCreatedCB web_cdm_created_cb);
 
@@ -46,16 +46,14 @@ class PLATFORM_EXPORT WebContentDecryptionModuleImpl
       const WebContentDecryptionModuleImpl&) = delete;
   ~WebContentDecryptionModuleImpl() override;
 
-  // blink::WebContentDecryptionModule implementation.
-  std::unique_ptr<blink::WebContentDecryptionModuleSession> CreateSession(
-      blink::WebEncryptedMediaSessionType session_type) override;
-  void SetServerCertificate(
-      const uint8_t* server_certificate,
-      size_t server_certificate_length,
-      blink::WebContentDecryptionModuleResult result) override;
-  void GetStatusForPolicy(
-      const blink::WebString& min_hdcp_version_string,
-      blink::WebContentDecryptionModuleResult result) override;
+  // WebContentDecryptionModule implementation.
+  std::unique_ptr<WebContentDecryptionModuleSession> CreateSession(
+      WebEncryptedMediaSessionType session_type) override;
+  void SetServerCertificate(const uint8_t* server_certificate,
+                            size_t server_certificate_length,
+                            WebContentDecryptionModuleResult result) override;
+  void GetStatusForPolicy(const WebString& min_hdcp_version_string,
+                          WebContentDecryptionModuleResult result) override;
 
   std::unique_ptr<media::CdmContextRef> GetCdmContextRef();
 
@@ -75,7 +73,7 @@ class PLATFORM_EXPORT WebContentDecryptionModuleImpl
 // Allow typecasting from blink type as this is the only implementation.
 PLATFORM_EXPORT
 inline WebContentDecryptionModuleImpl* ToWebContentDecryptionModuleImpl(
-    blink::WebContentDecryptionModule* cdm) {
+    WebContentDecryptionModule* cdm) {
   return static_cast<WebContentDecryptionModuleImpl*>(cdm);
 }
 

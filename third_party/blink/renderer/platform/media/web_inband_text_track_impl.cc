@@ -9,9 +9,9 @@
 namespace blink {
 
 WebInbandTextTrackImpl::WebInbandTextTrackImpl(Kind kind,
-                                               const blink::WebString& label,
-                                               const blink::WebString& language,
-                                               const blink::WebString& id)
+                                               const WebString& label,
+                                               const WebString& language,
+                                               const WebString& id)
     : client_(nullptr),
       kind_(kind),
       label_(label),
@@ -22,12 +22,11 @@ WebInbandTextTrackImpl::~WebInbandTextTrackImpl() {
   DCHECK(!client_);
 }
 
-void WebInbandTextTrackImpl::SetClient(
-    blink::WebInbandTextTrackClient* client) {
+void WebInbandTextTrackImpl::SetClient(WebInbandTextTrackClient* client) {
   client_ = client;
 }
 
-blink::WebInbandTextTrackClient* WebInbandTextTrackImpl::Client() {
+WebInbandTextTrackClient* WebInbandTextTrackImpl::Client() {
   return client_;
 }
 
@@ -35,15 +34,15 @@ WebInbandTextTrackImpl::Kind WebInbandTextTrackImpl::GetKind() const {
   return kind_;
 }
 
-blink::WebString WebInbandTextTrackImpl::Label() const {
+WebString WebInbandTextTrackImpl::Label() const {
   return label_;
 }
 
-blink::WebString WebInbandTextTrackImpl::Language() const {
+WebString WebInbandTextTrackImpl::Language() const {
   return language_;
 }
 
-blink::WebString WebInbandTextTrackImpl::Id() const {
+WebString WebInbandTextTrackImpl::Id() const {
   return id_;
 }
 

@@ -78,8 +78,8 @@ void ResourceMultiBufferDataProvider::Start() {
   // Prepare the request.
   WebURLRequest request(url_data_->url());
   request.SetRequestContext(is_client_audio_element_
-                                ? blink::mojom::RequestContextType::AUDIO
-                                : blink::mojom::RequestContextType::VIDEO);
+                                ? mojom::RequestContextType::AUDIO
+                                : mojom::RequestContextType::VIDEO);
   request.SetRequestDestination(
       is_client_audio_element_ ? network::mojom::RequestDestination::kAudio
                                : network::mojom::RequestDestination::kVideo);
@@ -90,14 +90,14 @@ void ResourceMultiBufferDataProvider::Start() {
 
   if (url_data_->length() == kPositionNotSpecified &&
       url_data_->CachedSize() == 0 && url_data_->BytesReadFromCache() == 0 &&
-      blink::WebNetworkStateNotifier::SaveDataEnabled() &&
+      WebNetworkStateNotifier::SaveDataEnabled() &&
       (url_data_->url().SchemeIs(url::kHttpScheme) ||
        url_data_->url().SchemeIs(url::kHttpsScheme))) {
     // This lets the data reduction proxy know that we don't have any previously
     // cached data for this resource. We can only send it if this is the first
     // request for this resource.
     request.SetPreviewsState(request.GetPreviewsState() |
-                             blink::PreviewsTypes::kSrcVideoRedirectOn);
+                             PreviewsTypes::kSrcVideoRedirectOn);
   }
 
   // We would like to send an if-match header with the request to
@@ -112,7 +112,7 @@ void ResourceMultiBufferDataProvider::Start() {
       WebString::FromUTF8("identity;q=1, *;q=0"));
 
   // Start resource loading.
-  blink::WebAssociatedURLLoaderOptions options;
+  WebAssociatedURLLoaderOptions options;
   if (url_data_->cors_mode() != UrlData::CORS_UNSPECIFIED) {
     options.expose_all_response_headers = true;
     // The author header set is empty, no preflight should go ahead.
@@ -173,7 +173,7 @@ void ResourceMultiBufferDataProvider::SetDeferred(bool deferred) {
 // WebAssociatedURLLoaderClient implementation.
 
 bool ResourceMultiBufferDataProvider::WillFollowRedirect(
-    const blink::WebURL& new_url,
+    const WebURL& new_url,
     const WebURLResponse& redirect_response) {
   DVLOG(1) << "willFollowRedirect";
   redirects_to_ = new_url;

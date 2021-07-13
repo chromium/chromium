@@ -31,9 +31,9 @@ using ::testing::StrictMock;
 
 using RenderingMode = ::media::VideoRendererSink::RenderCallback::RenderingMode;
 
-class MockWebVideoFrameSubmitter : public blink::WebVideoFrameSubmitter {
+class MockWebVideoFrameSubmitter : public WebVideoFrameSubmitter {
  public:
-  // blink::WebVideoFrameSubmitter implementation.
+  // WebVideoFrameSubmitter implementation.
   void StopUsingProvider() override {}
   MOCK_METHOD1(EnableSubmission, void(viz::SurfaceId));
   MOCK_METHOD0(StartRendering, void());

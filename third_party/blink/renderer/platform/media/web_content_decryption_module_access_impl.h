@@ -20,22 +20,22 @@ namespace blink {
 class WebEncryptedMediaClientImpl;
 
 class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
-    : public blink::WebContentDecryptionModuleAccess {
+    : public WebContentDecryptionModuleAccess {
  public:
   // Allow typecasting from blink type as this is the only implementation.
   static WebContentDecryptionModuleAccessImpl* From(
-      blink::WebContentDecryptionModuleAccess* cdm_access);
+      WebContentDecryptionModuleAccess* cdm_access);
 
   static std::unique_ptr<WebContentDecryptionModuleAccessImpl> Create(
-      const blink::WebString& key_system,
-      const blink::WebSecurityOrigin& security_origin,
-      const blink::WebMediaKeySystemConfiguration& configuration,
+      const WebString& key_system,
+      const WebSecurityOrigin& security_origin,
+      const WebMediaKeySystemConfiguration& configuration,
       const media::CdmConfig& cdm_config,
       const base::WeakPtr<WebEncryptedMediaClientImpl>& client);
   WebContentDecryptionModuleAccessImpl(
-      const blink::WebString& key_system,
-      const blink::WebSecurityOrigin& security_origin,
-      const blink::WebMediaKeySystemConfiguration& configuration,
+      const WebString& key_system,
+      const WebSecurityOrigin& security_origin,
+      const WebMediaKeySystemConfiguration& configuration,
       const media::CdmConfig& cdm_config,
       const base::WeakPtr<WebEncryptedMediaClientImpl>& client);
   WebContentDecryptionModuleAccessImpl(
@@ -44,18 +44,18 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
       const WebContentDecryptionModuleAccessImpl&) = delete;
   ~WebContentDecryptionModuleAccessImpl() override;
 
-  // blink::WebContentDecryptionModuleAccess interface.
-  blink::WebString GetKeySystem() override;
-  blink::WebMediaKeySystemConfiguration GetConfiguration() override;
+  // WebContentDecryptionModuleAccess interface.
+  WebString GetKeySystem() override;
+  WebMediaKeySystemConfiguration GetConfiguration() override;
   void CreateContentDecryptionModule(
-      blink::WebContentDecryptionModuleResult result,
+      WebContentDecryptionModuleResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   bool UseHardwareSecureCodecs() const override;
 
  private:
-  const blink::WebString key_system_;
-  const blink::WebSecurityOrigin security_origin_;
-  const blink::WebMediaKeySystemConfiguration configuration_;
+  const WebString key_system_;
+  const WebSecurityOrigin security_origin_;
+  const WebMediaKeySystemConfiguration configuration_;
   const media::CdmConfig cdm_config_;
 
   // Keep a WeakPtr as client is owned by render_frame_impl.

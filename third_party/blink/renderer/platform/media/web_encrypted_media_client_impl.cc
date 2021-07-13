@@ -28,18 +28,18 @@ namespace {
 const char kKeySystemSupportUMAPrefix[] =
     "Media.EME.RequestMediaKeySystemAccess.";
 
-// A helper function to complete blink::WebContentDecryptionModuleResult. Used
-// to convert blink::WebContentDecryptionModuleResult to a callback.
+// A helper function to complete WebContentDecryptionModuleResult. Used
+// to convert WebContentDecryptionModuleResult to a callback.
 void CompleteWebContentDecryptionModuleResult(
-    std::unique_ptr<blink::WebContentDecryptionModuleResult> result,
-    blink::WebContentDecryptionModule* cdm,
+    std::unique_ptr<WebContentDecryptionModuleResult> result,
+    WebContentDecryptionModule* cdm,
     const std::string& error_message) {
   DCHECK(result);
 
   if (!cdm) {
     result->CompleteWithError(
-        blink::kWebContentDecryptionModuleExceptionNotSupportedError, 0,
-        blink::WebString::FromUTF8(error_message));
+        kWebContentDecryptionModuleExceptionNotSupportedError, 0,
+        WebString::FromUTF8(error_message));
     return;
   }
 
@@ -109,7 +109,7 @@ WebEncryptedMediaClientImpl::WebEncryptedMediaClientImpl(
 WebEncryptedMediaClientImpl::~WebEncryptedMediaClientImpl() = default;
 
 void WebEncryptedMediaClientImpl::RequestMediaKeySystemAccess(
-    blink::WebEncryptedMediaRequest request) {
+    WebEncryptedMediaRequest request) {
   GetReporter(request.KeySystem())->ReportRequested();
 
   key_system_config_selector_.SelectConfig(
@@ -119,10 +119,10 @@ void WebEncryptedMediaClientImpl::RequestMediaKeySystemAccess(
 }
 
 void WebEncryptedMediaClientImpl::CreateCdm(
-    const blink::WebString& key_system,
-    const blink::WebSecurityOrigin& security_origin,
+    const WebString& key_system,
+    const WebSecurityOrigin& security_origin,
     const media::CdmConfig& cdm_config,
-    std::unique_ptr<blink::WebContentDecryptionModuleResult> result) {
+    std::unique_ptr<WebContentDecryptionModuleResult> result) {
   WebContentDecryptionModuleImpl::Create(
       cdm_factory_, key_system.Utf16(), security_origin, cdm_config,
       base::BindOnce(&CompleteWebContentDecryptionModuleResult,
@@ -130,9 +130,9 @@ void WebEncryptedMediaClientImpl::CreateCdm(
 }
 
 void WebEncryptedMediaClientImpl::OnConfigSelected(
-    blink::WebEncryptedMediaRequest request,
+    WebEncryptedMediaRequest request,
     KeySystemConfigSelector::Status status,
-    blink::WebMediaKeySystemConfiguration* accumulated_configuration,
+    WebMediaKeySystemConfiguration* accumulated_configuration,
     media::CdmConfig* cdm_config) {
   // Update encrypted_media_supported_types_browsertest.cc if updating these
   // strings.
@@ -159,7 +159,7 @@ void WebEncryptedMediaClientImpl::OnConfigSelected(
   // requestMediaKeySystemAccess request succeeding. However, the blink
   // objects may have been cleared, so check if this is the case and simply
   // reject the request.
-  blink::WebSecurityOrigin origin = request.GetSecurityOrigin();
+  WebSecurityOrigin origin = request.GetSecurityOrigin();
   if (origin.IsNull()) {
     request.RequestNotSupported("Unable to create MediaKeySystemAccess");
     return;
@@ -171,7 +171,7 @@ void WebEncryptedMediaClientImpl::OnConfigSelected(
 }
 
 WebEncryptedMediaClientImpl::Reporter* WebEncryptedMediaClientImpl::GetReporter(
-    const blink::WebString& key_system) {
+    const WebString& key_system) {
   // Assumes that empty will not be found by GetKeySystemNameForUMA().
   // TODO(sandersd): Avoid doing ASCII conversion more than once.
   std::string key_system_ascii;

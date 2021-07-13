@@ -109,10 +109,9 @@ void RecordSimpleWatchTimeUMA(media::RendererType type) {
   UMA_HISTOGRAM_ENUMERATION(kWatchTimeHistogram, type);
 }
 
-void SetSinkIdOnMediaThread(
-    scoped_refptr<blink::WebAudioSourceProviderImpl> sink,
-    const std::string& device_id,
-    media::OutputDeviceStatusCB callback) {
+void SetSinkIdOnMediaThread(scoped_refptr<WebAudioSourceProviderImpl> sink,
+                            const std::string& device_id,
+                            media::OutputDeviceStatusCB callback) {
   sink->SwitchOutputDevice(device_id, std::move(callback));
 }
 
@@ -132,11 +131,11 @@ bool IsBackgroundVideoPauseOptimizationEnabled() {
   return base::FeatureList::IsEnabled(media::kBackgroundVideoPauseOptimization);
 }
 
-bool IsNetworkStateError(blink::WebMediaPlayer::NetworkState state) {
-  bool result = state == blink::WebMediaPlayer::kNetworkStateFormatError ||
-                state == blink::WebMediaPlayer::kNetworkStateNetworkError ||
-                state == blink::WebMediaPlayer::kNetworkStateDecodeError;
-  DCHECK_EQ(state > blink::WebMediaPlayer::kNetworkStateLoaded, result);
+bool IsNetworkStateError(WebMediaPlayer::NetworkState state) {
+  bool result = state == WebMediaPlayer::kNetworkStateFormatError ||
+                state == WebMediaPlayer::kNetworkStateNetworkError ||
+                state == WebMediaPlayer::kNetworkStateDecodeError;
+  DCHECK_EQ(state > WebMediaPlayer::kNetworkStateLoaded, result);
   return result;
 }
 
@@ -171,11 +170,11 @@ int GetSwitchToLocalMessage(
     case media::MediaObserverClient::ReasonToSwitchToLocal::PIPELINE_ERROR:
       return IDS_MEDIA_REMOTING_STOP_BY_ERROR_TEXT;
     case media::MediaObserverClient::ReasonToSwitchToLocal::ROUTE_TERMINATED:
-      return blink::WebMediaPlayerClient::kMediaRemotingStopNoText;
+      return WebMediaPlayerClient::kMediaRemotingStopNoText;
   }
   NOTREACHED();
   // To suppress compiler warning on Windows.
-  return blink::WebMediaPlayerClient::kMediaRemotingStopNoText;
+  return WebMediaPlayerClient::kMediaRemotingStopNoText;
 }
 
 // These values are persisted to UMA. Entries should not be renumbered and
@@ -215,7 +214,7 @@ void DestructionHelper(
     std::unique_ptr<media::CdmContextRef> cdm_context_2,
     std::unique_ptr<media::MediaLog> media_log,
     std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
-    std::unique_ptr<blink::WebSurfaceLayerBridge> bridge,
+    std::unique_ptr<WebSurfaceLayerBridge> bridge,
     bool is_chunk_demuxer) {
   // We release |bridge| after pipeline stop to ensure layout tests receive
   // painted video frames before test harness exit.
@@ -267,7 +266,7 @@ void DestructionHelper(
           std::move(media_log)));
 }
 
-std::string SanitizeUserStringProperty(blink::WebString value) {
+std::string SanitizeUserStringProperty(WebString value) {
   std::string converted = value.Utf8();
   return base::IsStringUTF8(converted) ? converted : "[invalid property]";
 }
@@ -338,17 +337,16 @@ STATIC_ASSERT_ENUM(WebMediaPlayer::kCorsModeUseCredentials,
                    UrlData::CORS_USE_CREDENTIALS);
 
 WebMediaPlayerImpl::WebMediaPlayerImpl(
-    blink::WebLocalFrame* frame,
-    blink::WebMediaPlayerClient* client,
-    blink::WebMediaPlayerEncryptedMediaClient* encrypted_client,
-    blink::WebMediaPlayerDelegate* delegate,
+    WebLocalFrame* frame,
+    WebMediaPlayerClient* client,
+    WebMediaPlayerEncryptedMediaClient* encrypted_client,
+    WebMediaPlayerDelegate* delegate,
     std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
     UrlIndex* url_index,
     std::unique_ptr<VideoFrameCompositor> compositor,
     std::unique_ptr<WebMediaPlayerParams> params)
     : frame_(frame),
-      main_task_runner_(
-          frame->GetTaskRunner(blink::TaskType::kMediaElementEvent)),
+      main_task_runner_(frame->GetTaskRunner(TaskType::kMediaElementEvent)),
       media_task_runner_(params->media_task_runner()),
       worker_task_runner_(params->worker_task_runner()),
       media_log_(params->take_media_log()),
@@ -445,7 +443,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
 
   auto on_audio_source_provider_set_client_callback = base::BindOnce(
       [](base::WeakPtr<WebMediaPlayerImpl> self,
-         blink::WebMediaPlayerClient* const client) {
+         WebMediaPlayerClient* const client) {
         if (!self)
           return;
         client->DidDisableAudioOutputSinkChanges();
@@ -454,7 +452,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
 
   // TODO(xhwang): When we use an external Renderer, many methods won't work,
   // e.g. GetCurrentFrameFromCompositor(). See http://crbug.com/434861
-  audio_source_provider_ = new blink::WebAudioSourceProviderImpl(
+  audio_source_provider_ = new WebAudioSourceProviderImpl(
       params->audio_renderer_sink(), media_log_.get(),
       std::move(on_audio_source_provider_set_client_callback));
 
@@ -462,7 +460,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
     observer_->SetClient(this);
 
   memory_usage_reporting_timer_.SetTaskRunner(
-      frame_->GetTaskRunner(blink::TaskType::kInternalMedia));
+      frame_->GetTaskRunner(TaskType::kInternalMedia));
 
   main_thread_mem_dumper_ = std::make_unique<media::MemoryDumpProviderProxy>(
       "WebMediaPlayer_MainThread", main_task_runner_,
@@ -522,8 +520,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   // Destruct compositor resources in the proper order.
   client_->SetCcLayer(nullptr);
 
-  client_->MediaRemotingStopped(
-      blink::WebMediaPlayerClient::kMediaRemotingStopNoText);
+  client_->MediaRemotingStopped(WebMediaPlayerClient::kMediaRemotingStopNoText);
 
   if (!surface_layer_for_video_enabled_ && video_layer_)
     video_layer_->StopUsingProvider();
@@ -567,12 +564,12 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
 
 WebMediaPlayer::LoadTiming WebMediaPlayerImpl::Load(
     LoadType load_type,
-    const blink::WebMediaPlayerSource& source,
+    const WebMediaPlayerSource& source,
     CorsMode cors_mode,
     bool is_cache_disabled) {
   // Only URL or MSE blob URL is supported.
   DCHECK(source.IsURL());
-  blink::WebURL url = source.GetAsURL();
+  WebURL url = source.GetAsURL();
   DVLOG(1) << __func__ << "(" << load_type << ", " << GURL(url) << ", "
            << cors_mode << ")";
 
@@ -684,13 +681,13 @@ void WebMediaPlayerImpl::BecameDominantVisibleContent(bool is_dominant) {
 }
 
 void WebMediaPlayerImpl::SetIsEffectivelyFullscreen(
-    blink::WebFullscreenVideoStatus fullscreen_video_status) {
+    WebFullscreenVideoStatus fullscreen_video_status) {
   if (power_status_helper_) {
     // We don't care about pip, so anything that's "not fullscreen" is good
     // enough for us.
     power_status_helper_->SetIsFullscreen(
         fullscreen_video_status !=
-        blink::WebFullscreenVideoStatus::kNotEffectivelyFullscreen);
+        WebFullscreenVideoStatus::kNotEffectivelyFullscreen);
   }
 }
 
@@ -704,26 +701,26 @@ void WebMediaPlayerImpl::OnHasNativeControlsChanged(bool has_native_controls) {
     watch_time_reporter_->OnNativeControlsDisabled();
 }
 
-void WebMediaPlayerImpl::OnDisplayTypeChanged(blink::DisplayType display_type) {
+void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
   if (surface_layer_for_video_enabled_) {
     vfc_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VideoFrameCompositor::SetForceSubmit,
                        base::Unretained(compositor_.get()),
-                       display_type == blink::DisplayType::kPictureInPicture));
+                       display_type == DisplayType::kPictureInPicture));
   }
 
   if (!watch_time_reporter_)
     return;
 
   switch (display_type) {
-    case blink::DisplayType::kInline:
+    case DisplayType::kInline:
       watch_time_reporter_->OnDisplayTypeInline();
       break;
-    case blink::DisplayType::kFullscreen:
+    case DisplayType::kFullscreen:
       watch_time_reporter_->OnDisplayTypeFullscreen();
       break;
-    case blink::DisplayType::kPictureInPicture:
+    case DisplayType::kPictureInPicture:
       watch_time_reporter_->OnDisplayTypePictureInPicture();
 
       // Resumes playback if it was paused when hidden.
@@ -736,7 +733,7 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(blink::DisplayType display_type) {
 }
 
 void WebMediaPlayerImpl::DoLoad(LoadType load_type,
-                                const blink::WebURL& url,
+                                const WebURL& url,
                                 CorsMode cors_mode,
                                 bool is_cache_disabled) {
   TRACE_EVENT1("media", "WebMediaPlayerImpl::DoLoad", "id", media_log_->id());
@@ -796,7 +793,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 
   media_metrics_provider_->Initialize(
       load_type == kLoadTypeMediaSource,
-      load_type == kLoadTypeURL ? blink::GetMediaURLScheme(loaded_url_)
+      load_type == kLoadTypeURL ? GetMediaURLScheme(loaded_url_)
                                 : media::mojom::MediaURLScheme::kUnknown,
       media::mojom::MediaStreamType::kNone);
 
@@ -1081,8 +1078,8 @@ void WebMediaPlayerImpl::OnRequestPictureInPicture() {
 }
 
 bool WebMediaPlayerImpl::SetSinkId(
-    const blink::WebString& sink_id,
-    blink::WebSetSinkIdCompleteCallback completion_callback) {
+    const WebString& sink_id,
+    WebSetSinkIdCompleteCallback completion_callback) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DVLOG(1) << __func__;
 
@@ -1122,7 +1119,7 @@ bool WebMediaPlayerImpl::HasAudio() const {
 }
 
 void WebMediaPlayerImpl::EnabledAudioTracksChanged(
-    const blink::WebVector<blink::WebMediaPlayer::TrackId>& enabledTrackIds) {
+    const WebVector<WebMediaPlayer::TrackId>& enabledTrackIds) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   std::ostringstream logstr;
@@ -1138,7 +1135,7 @@ void WebMediaPlayerImpl::EnabledAudioTracksChanged(
 }
 
 void WebMediaPlayerImpl::SelectedVideoTrackChanged(
-    blink::WebMediaPlayer::TrackId* selectedTrackId) {
+    WebMediaPlayer::TrackId* selectedTrackId) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   absl::optional<MediaTrack::Id> selected_video_track_id;
@@ -1262,17 +1259,17 @@ WebMediaPlayer::ReadyState WebMediaPlayerImpl::GetReadyState() const {
   return ready_state_;
 }
 
-blink::WebMediaPlayer::SurfaceLayerMode
-WebMediaPlayerImpl::GetVideoSurfaceLayerMode() const {
+WebMediaPlayer::SurfaceLayerMode WebMediaPlayerImpl::GetVideoSurfaceLayerMode()
+    const {
   return surface_layer_mode_;
 }
 
-blink::WebString WebMediaPlayerImpl::GetErrorMessage() const {
+WebString WebMediaPlayerImpl::GetErrorMessage() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  return blink::WebString::FromUTF8(media_log_->GetErrorMessage());
+  return WebString::FromUTF8(media_log_->GetErrorMessage());
 }
 
-blink::WebTimeRanges WebMediaPlayerImpl::Buffered() const {
+WebTimeRanges WebMediaPlayerImpl::Buffered() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   media::Ranges<base::TimeDelta> buffered_time_ranges =
@@ -1283,14 +1280,14 @@ blink::WebTimeRanges WebMediaPlayerImpl::Buffered() const {
     buffered_data_source_host_->AddBufferedTimeRanges(&buffered_time_ranges,
                                                       duration);
   }
-  return blink::ConvertToWebTimeRanges(buffered_time_ranges);
+  return ConvertToWebTimeRanges(buffered_time_ranges);
 }
 
-blink::WebTimeRanges WebMediaPlayerImpl::Seekable() const {
+WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   if (ready_state_ < WebMediaPlayer::kReadyStateHaveMetadata)
-    return blink::WebTimeRanges();
+    return WebTimeRanges();
 
   const double seekable_end = Duration();
 
@@ -1308,9 +1305,9 @@ blink::WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   // TODO(dalecurtis): Technically this allows seeking on media which return an
   // infinite duration so long as DataSource::IsStreaming() is false. While not
   // expected, disabling this breaks semi-live players, http://crbug.com/427412.
-  const blink::WebTimeRange seekable_range(
-      0.0, force_seeks_to_zero ? 0.0 : seekable_end);
-  return blink::WebTimeRanges(&seekable_range, 1);
+  const WebTimeRange seekable_range(0.0,
+                                    force_seeks_to_zero ? 0.0 : seekable_end);
+  return WebTimeRanges(&seekable_range, 1);
 }
 
 bool WebMediaPlayerImpl::IsPrerollAttemptNeeded() {
@@ -1436,8 +1433,8 @@ bool WebMediaPlayerImpl::HasAvailableVideoFrame() const {
 }
 
 void WebMediaPlayerImpl::SetContentDecryptionModule(
-    blink::WebContentDecryptionModule* cdm,
-    blink::WebContentDecryptionModuleResult result) {
+    WebContentDecryptionModule* cdm,
+    WebContentDecryptionModuleResult result) {
   DVLOG(1) << __func__ << ": cdm = " << cdm;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -1446,7 +1443,7 @@ void WebMediaPlayerImpl::SetContentDecryptionModule(
   // http://crbug.com/462365#c7.
   if (!cdm) {
     result.CompleteWithError(
-        blink::kWebContentDecryptionModuleExceptionInvalidStateError, 0,
+        kWebContentDecryptionModuleExceptionInvalidStateError, 0,
         "The existing ContentDecryptionModule object cannot be removed at this "
         "time.");
     return;
@@ -1457,8 +1454,7 @@ void WebMediaPlayerImpl::SetContentDecryptionModule(
   // on the wrong thread in some failure conditions. Blink should prevent
   // multiple simultaneous calls.
   DCHECK(!set_cdm_result_);
-  set_cdm_result_ =
-      std::make_unique<blink::WebContentDecryptionModuleResult>(result);
+  set_cdm_result_ = std::make_unique<WebContentDecryptionModuleResult>(result);
 
   SetCdmInternal(cdm);
 }
@@ -1503,20 +1499,18 @@ void WebMediaPlayerImpl::OnFFmpegMediaTracksUpdated(
   bool is_first_video_track = true;
   for (const auto& track : tracks->tracks()) {
     if (track->type() == MediaTrack::Audio) {
-      client_->AddAudioTrack(
-          blink::WebString::FromUTF8(track->id().value()),
-          blink::WebMediaPlayerClient::kAudioTrackKindMain,
-          blink::WebString::FromUTF8(track->label().value()),
-          blink::WebString::FromUTF8(track->language().value()),
-          is_first_audio_track);
+      client_->AddAudioTrack(WebString::FromUTF8(track->id().value()),
+                             WebMediaPlayerClient::kAudioTrackKindMain,
+                             WebString::FromUTF8(track->label().value()),
+                             WebString::FromUTF8(track->language().value()),
+                             is_first_audio_track);
       is_first_audio_track = false;
     } else if (track->type() == MediaTrack::Video) {
-      client_->AddVideoTrack(
-          blink::WebString::FromUTF8(track->id().value()),
-          blink::WebMediaPlayerClient::kVideoTrackKindMain,
-          blink::WebString::FromUTF8(track->label().value()),
-          blink::WebString::FromUTF8(track->language().value()),
-          is_first_video_track);
+      client_->AddVideoTrack(WebString::FromUTF8(track->id().value()),
+                             WebMediaPlayerClient::kVideoTrackKindMain,
+                             WebString::FromUTF8(track->label().value()),
+                             WebString::FromUTF8(track->language().value()),
+                             is_first_video_track);
       is_first_video_track = false;
     } else {
       // Text tracks are not supported through this code path yet.
@@ -1525,8 +1519,7 @@ void WebMediaPlayerImpl::OnFFmpegMediaTracksUpdated(
   }
 }
 
-void WebMediaPlayerImpl::SetCdmInternal(
-    blink::WebContentDecryptionModule* cdm) {
+void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(cdm);
 
@@ -1596,7 +1589,7 @@ void WebMediaPlayerImpl::OnCdmAttached(bool success) {
   pending_cdm_context_ref_.reset();
   if (set_cdm_result_) {
     set_cdm_result_->CompleteWithError(
-        blink::kWebContentDecryptionModuleExceptionNotSupportedError, 0,
+        kWebContentDecryptionModuleExceptionNotSupportedError, 0,
         "Unable to set ContentDecryptionModule object");
     set_cdm_result_.reset();
   }
@@ -1870,7 +1863,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
     // be considered a format error.
     SetNetworkState(WebMediaPlayer::kNetworkStateFormatError);
   } else {
-    SetNetworkState(blink::PipelineErrorToNetworkState(status));
+    SetNetworkState(PipelineErrorToNetworkState(status));
   }
 
   // PipelineController::Stop() is idempotent.
@@ -1943,8 +1936,7 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
         DisableOverlay();
     }
 
-    if (surface_layer_mode_ ==
-        blink::WebMediaPlayer::SurfaceLayerMode::kAlways) {
+    if (surface_layer_mode_ == WebMediaPlayer::SurfaceLayerMode::kAlways) {
       ActivateSurfaceLayerForVideo();
     } else {
       DCHECK(!video_layer_);
@@ -2083,7 +2075,7 @@ void WebMediaPlayerImpl::CreateVideoDecodeStatsReporter() {
                           base::Unretained(this)),
       pipeline_metadata_.video_decoder_config.profile(),
       pipeline_metadata_.natural_size, key_system_, cdm_config_,
-      frame_->GetTaskRunner(blink::TaskType::kInternalMedia));
+      frame_->GetTaskRunner(TaskType::kInternalMedia));
 
   if (delegate_->IsFrameHidden())
     video_decode_stats_reporter_->OnHidden();
@@ -2270,10 +2262,9 @@ void WebMediaPlayerImpl::OnAddTextTrack(const media::TextTrackConfig& config,
 
   const WebInbandTextTrackImpl::Kind web_kind =
       static_cast<WebInbandTextTrackImpl::Kind>(config.kind());
-  const blink::WebString web_label = blink::WebString::FromUTF8(config.label());
-  const blink::WebString web_language =
-      blink::WebString::FromUTF8(config.language());
-  const blink::WebString web_id = blink::WebString::FromUTF8(config.id());
+  const WebString web_label = WebString::FromUTF8(config.label());
+  const WebString web_language = WebString::FromUTF8(config.language());
+  const WebString web_id = WebString::FromUTF8(config.id());
 
   std::unique_ptr<WebInbandTextTrackImpl> web_inband_text_track(
       new WebInbandTextTrackImpl(web_kind, web_label, web_language, web_id));
@@ -2615,7 +2606,7 @@ void WebMediaPlayerImpl::OnRemotePlayStateChange(
 }
 #endif  // defined(OS_ANDROID)
 
-void WebMediaPlayerImpl::SetPoster(const blink::WebURL& poster) {
+void WebMediaPlayerImpl::SetPoster(const WebURL& poster) {
   has_poster_ = !poster.IsEmpty();
 }
 
@@ -2913,7 +2904,7 @@ void WebMediaPlayerImpl::SetReadyState(WebMediaPlayer::ReadyState state) {
   client_->ReadyStateChanged();
 }
 
-scoped_refptr<blink::WebAudioSourceProviderImpl>
+scoped_refptr<WebAudioSourceProviderImpl>
 WebMediaPlayerImpl::GetAudioSourceProvider() {
   return audio_source_provider_;
 }
@@ -3337,8 +3328,7 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
 
   // Idle timeout chosen arbitrarily.
   background_pause_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(5),
-                                client_,
-                                &blink::WebMediaPlayerClient::PausePlayback);
+                                client_, &WebMediaPlayerClient::PausePlayback);
 }
 
 void WebMediaPlayerImpl::CreateWatchTimeReporter() {
@@ -3353,7 +3343,7 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   }
 
   // Create the watch time reporter and synchronize its initial state.
-  watch_time_reporter_ = std::make_unique<blink::WatchTimeReporter>(
+  watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
       media::mojom::PlaybackProperties::New(
           pipeline_metadata_.has_audio, has_video, false, false,
           !!chunk_demuxer_, is_encrypted_, embedded_media_experience_enabled_,
@@ -3364,7 +3354,7 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
       base::BindRepeating(&WebMediaPlayerImpl::GetPipelineStatistics,
                           base::Unretained(this)),
       media_metrics_provider_.get(),
-      frame_->GetTaskRunner(blink::TaskType::kInternalMedia));
+      frame_->GetTaskRunner(TaskType::kInternalMedia));
   watch_time_reporter_->OnVolumeChange(volume_);
   watch_time_reporter_->OnDurationChanged(GetPipelineMediaDuration());
 
@@ -3379,13 +3369,13 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
     watch_time_reporter_->OnNativeControlsDisabled();
 
   switch (client_->GetDisplayType()) {
-    case blink::DisplayType::kInline:
+    case DisplayType::kInline:
       watch_time_reporter_->OnDisplayTypeInline();
       break;
-    case blink::DisplayType::kFullscreen:
+    case DisplayType::kFullscreen:
       watch_time_reporter_->OnDisplayTypeFullscreen();
       break;
-    case blink::DisplayType::kPictureInPicture:
+    case DisplayType::kPictureInPicture:
       watch_time_reporter_->OnDisplayTypePictureInPicture();
       break;
   }
@@ -3478,7 +3468,7 @@ void WebMediaPlayerImpl::OnNewFramePresentedCallback() {
   client_->OnRequestVideoFrameCallback();
 }
 
-std::unique_ptr<blink::WebMediaPlayer::VideoFramePresentationMetadata>
+std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>
 WebMediaPlayerImpl::GetVideoFramePresentationMetadata() {
   return compositor_->GetLastPresentedFrameMetadata();
 }
@@ -3495,7 +3485,7 @@ void WebMediaPlayerImpl::UpdateFrameIfStale() {
                      VideoFrameCompositor::UpdateType::kBypassClient));
 }
 
-base::WeakPtr<blink::WebMediaPlayer> WebMediaPlayerImpl::AsWeakPtr() {
+base::WeakPtr<WebMediaPlayer> WebMediaPlayerImpl::AsWeakPtr() {
   return weak_this_;
 }
 
@@ -3817,7 +3807,7 @@ void WebMediaPlayerImpl::RecordEncryptionScheme(
 
 bool WebMediaPlayerImpl::IsInPictureInPicture() const {
   DCHECK(client_);
-  return client_->GetDisplayType() == blink::DisplayType::kPictureInPicture;
+  return client_->GetDisplayType() == DisplayType::kPictureInPicture;
 }
 
 void WebMediaPlayerImpl::MaybeSetContainerNameForMetrics() {
