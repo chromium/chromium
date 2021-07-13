@@ -75,12 +75,12 @@ public class AssistantRootViewContainer
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(mVisibleViewportRect);
-        int availableHeight = mVisibleViewportRect.height();
         int browserControlsOffset = mBrowserControlsStateProvider == null
                 ? 0
                 : -mBrowserControlsStateProvider.getContentOffset()
                         - mBrowserControlsStateProvider.getBottomControlsHeight()
                         - mBrowserControlsStateProvider.getBottomControlOffset();
+        int availableHeight = mVisibleViewportRect.height() - browserControlsOffset;
 
         int targetHeight;
         int mode;

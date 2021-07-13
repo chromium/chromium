@@ -643,7 +643,7 @@ class AutofillAssistantUiTestUtil {
         Rect coords = getAbsoluteBoundingRect(testRule, elementIds);
         DisplayMetrics displayMetrics = testRule.getActivity().getResources().getDisplayMetrics();
 
-        return (coords.left < displayMetrics.widthPixels && 0 <= coords.right)
+        return (coords.right < displayMetrics.widthPixels && 0 <= coords.left)
                 && (coords.top < displayMetrics.heightPixels && 0 <= coords.bottom);
     }
 

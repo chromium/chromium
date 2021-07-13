@@ -21,8 +21,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementOnScreen;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.fullyCovers;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getAbsoluteBoundingRect;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.scrollIntoViewIfNeeded;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
@@ -41,7 +43,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -184,13 +185,14 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                 .perform(scrollTo(), typeText("Hello World!"));
         onView(withId(R.id.control_container)).check(matches(isCompletelyDisplayed()));
         assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_four"), is(true));
+        scrollIntoViewIfNeeded(mTestRule.getWebContents(), "touch_area_four");
+        waitUntil(() -> checkElementOnScreen(mTestRule, "touch_area_four"));
         tapElement(mTestRule, "touch_area_four");
         waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_four"));
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky test.  crbug.com/1114867")
     public void testBottomSheetListensToAccessibilityChanges() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
