@@ -456,6 +456,8 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultRecoverabilityDegradedDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
+        SyncService.get().recordRecoverabilityDegradedFixTrigger(
+                TrustedVaultUserActionTriggerForUMA.SETTINGS);
         openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
                 TrustedVaultClient.get().createRecoverabilityDegradedIntent(accountInfo));
     }

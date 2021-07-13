@@ -334,7 +334,8 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
         kTrustedVaultRecoverabilityDegradedForEverythingError:
     case AvatarSyncErrorType::
         kTrustedVaultRecoverabilityDegradedForPasswordsError:
-      OpenTabForSyncKeyRecoverabilityDegraded(browser());
+      OpenTabForSyncKeyRecoverabilityDegraded(
+          browser(), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
     case AvatarSyncErrorType::kPassphraseError:
     case AvatarSyncErrorType::kSettingsUnconfirmedError:

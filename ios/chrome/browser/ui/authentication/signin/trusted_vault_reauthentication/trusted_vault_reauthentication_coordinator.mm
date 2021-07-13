@@ -43,8 +43,15 @@ using l10n_util::GetNSStringF;
                                    trigger {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    syncer::RecordKeyRetrievalTrigger(trigger);
     _intent = intent;
+    switch (intent) {
+      case SigninTrustedVaultDialogIntentFetchKeys:
+        syncer::RecordKeyRetrievalTrigger(trigger);
+        break;
+      case SigninTrustedVaultDialogIntentDegradedRecoverability:
+        syncer::RecordRecoverabilityDegradedFixTrigger(trigger);
+        break;
+    }
   }
   return self;
 }

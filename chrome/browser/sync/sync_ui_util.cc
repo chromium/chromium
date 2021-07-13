@@ -439,8 +439,8 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
 
 void OpenTabForSyncKeyRetrieval(
     Browser* browser,
-    syncer::TrustedVaultUserActionTriggerForUMA key_retrieval_trigger) {
-  RecordKeyRetrievalTrigger(key_retrieval_trigger);
+    syncer::TrustedVaultUserActionTriggerForUMA trigger) {
+  RecordKeyRetrievalTrigger(trigger);
   const GURL continue_url =
       GURL(UIThreadSearchTermsData().GoogleBaseURLValue());
   GURL retrieval_url =
@@ -457,7 +457,10 @@ void OpenTabForSyncTrustedVaultUserActionForTesting(Browser* browser,
   OpenTabForSyncTrustedVaultUserAction(browser, url);
 }
 
-void OpenTabForSyncKeyRecoverabilityDegraded(Browser* browser) {
+void OpenTabForSyncKeyRecoverabilityDegraded(
+    Browser* browser,
+    syncer::TrustedVaultUserActionTriggerForUMA trigger) {
+  RecordRecoverabilityDegradedFixTrigger(trigger);
   const GURL continue_url =
       GURL(UIThreadSearchTermsData().GoogleBaseURLValue());
   GURL url = GaiaUrls::GetInstance()

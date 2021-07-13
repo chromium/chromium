@@ -79,6 +79,12 @@ void RecordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA trigger) {
                                 trigger);
 }
 
+void RecordRecoverabilityDegradedFixTrigger(
+    TrustedVaultUserActionTriggerForUMA trigger) {
+  base::UmaHistogramEnumeration(
+      "Sync.TrustedVaultRecoverabilityDegradedFixTrigger", trigger);
+}
+
 bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
   if (!service) {
     return false;

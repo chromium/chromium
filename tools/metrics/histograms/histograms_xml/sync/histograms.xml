@@ -1419,8 +1419,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    Recorded when user clicks/taps on trusted vault error button. Buckets
-    represents the UI elements which contain trusted vault error button.
+    Recorded when user clicks/taps on trusted vault error button for the
+    keys-missing error state. Buckets represents the UI elements which contain
+    trusted vault error button.
+  </summary>
+</histogram>
+
+<histogram name="Sync.TrustedVaultRecoverabilityDegradedFixTrigger"
+    enum="TrustedVaultUserActionTrigger" expires_after="2021-11-01">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded when user clicks/taps on trusted vault error button for the
+    recoverability-degraded error state. Buckets represents the UI elements
+    which contain trusted vault error button.
   </summary>
 </histogram>
 

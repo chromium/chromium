@@ -64,7 +64,9 @@ void TriggerSyncKeyRetrieval(Profile* profile) {
 
 void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  OpenTabForSyncKeyRecoverabilityDegraded(displayer.browser());
+  OpenTabForSyncKeyRecoverabilityDegraded(
+      displayer.browser(),
+      syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
 }
 
 BubbleViewParameters GetBubbleViewParameters(

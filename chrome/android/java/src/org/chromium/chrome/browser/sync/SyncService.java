@@ -307,7 +307,13 @@ public abstract class SyncService {
      * Records TrustedVaultKeyRetrievalTrigger histogram.
      */
     public abstract void recordKeyRetrievalTrigger(
-            @TrustedVaultUserActionTriggerForUMA int keyRetrievalTrigger);
+            @TrustedVaultUserActionTriggerForUMA int trigger);
+
+    /**
+     * Records TrustedVaultRecoverabilityDegradedFixTrigger histogram.
+     */
+    public abstract void recordRecoverabilityDegradedFixTrigger(
+            @TrustedVaultUserActionTriggerForUMA int trigger);
 
     /** @return Whether the user should be offered to opt in to trusted vault encryption. */
     public abstract boolean shouldOfferTrustedVaultOptIn();

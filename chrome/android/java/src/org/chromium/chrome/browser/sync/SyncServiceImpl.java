@@ -333,10 +333,15 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public void recordKeyRetrievalTrigger(
-            @TrustedVaultUserActionTriggerForUMA int keyRetrievalTrigger) {
-        SyncServiceImplJni.get().recordKeyRetrievalTrigger(
-                mSyncServiceAndroidBridge, keyRetrievalTrigger);
+    public void recordKeyRetrievalTrigger(@TrustedVaultUserActionTriggerForUMA int trigger) {
+        SyncServiceImplJni.get().recordKeyRetrievalTrigger(mSyncServiceAndroidBridge, trigger);
+    }
+
+    @Override
+    public void recordRecoverabilityDegradedFixTrigger(
+            @TrustedVaultUserActionTriggerForUMA int trigger) {
+        SyncServiceImplJni.get().recordRecoverabilityDegradedFixTrigger(
+                mSyncServiceAndroidBridge, trigger);
     }
 
     @Override
@@ -450,8 +455,9 @@ public class SyncServiceImpl extends SyncService {
                 long nativeSyncServiceAndroidBridge);
         void markPassphrasePromptMutedForCurrentProductVersion(long nativeSyncServiceAndroidBridge);
         boolean hasKeepEverythingSynced(long nativeSyncServiceAndroidBridge);
-        void recordKeyRetrievalTrigger(
-                long nativeSyncServiceAndroidBridge, int keyRetrievalTrigger);
+        void recordKeyRetrievalTrigger(long nativeSyncServiceAndroidBridge, int trigger);
+        void recordRecoverabilityDegradedFixTrigger(
+                long nativeSyncServiceAndroidBridge, int trigger);
         boolean shouldOfferTrustedVaultOptIn(long nativeSyncServiceAndroidBridge);
         void triggerRefresh(long nativeSyncServiceAndroidBridge);
         long getLastSyncedTimeForDebugging(long nativeSyncServiceAndroidBridge);
