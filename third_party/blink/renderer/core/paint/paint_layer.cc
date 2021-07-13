@@ -1817,8 +1817,7 @@ void PaintLayer::CollectFragments(
       } else if (should_match_fragments) {
         for (root_fragment_data = &first_root_fragment_data; root_fragment_data;
              root_fragment_data = root_fragment_data->NextFragment()) {
-          if (root_fragment_data->LogicalTopInFlowThread() ==
-              fragment_data->LogicalTopInFlowThread())
+          if (root_fragment_data->FragmentID() == fragment_data->FragmentID())
             break;
         }
       } else {

@@ -1391,7 +1391,6 @@ source_set("unit_tests") {
     "layout/ng/ng_column_layout_algorithm_test.cc",
     "layout/ng/ng_constraint_space_builder_test.cc",
     "layout/ng/ng_fieldset_layout_algorithm_test.cc",
-    "layout/ng/ng_fragment_child_iterator_test.cc",
     "layout/ng/ng_fragmentation_test.cc",
     "layout/ng/ng_ink_overflow_test.cc",
     "layout/ng/ng_inline_layout_test.cc",

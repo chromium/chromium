@@ -727,6 +727,7 @@ void NGBoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
                                               PhysicalOffset paint_offset) {
   DCHECK(!box_fragment_.IsInlineFormattingContext());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
+  paint_info_for_descendants.SetIsInFragmentTraversal();
   for (const NGLink& child : box_fragment_.Children()) {
     const NGPhysicalFragment& child_fragment = *child;
     DCHECK(child_fragment.IsBox());

@@ -196,8 +196,7 @@ bool CullRectUpdater::UpdateForSelf(PaintLayer& layer,
     if (should_match_fragments) {
       for (parent_fragment = &first_parent_fragment; parent_fragment;
            parent_fragment = parent_fragment->NextFragment()) {
-        if (parent_fragment->LogicalTopInFlowThread() ==
-            fragment->LogicalTopInFlowThread())
+        if (parent_fragment->FragmentID() == fragment->FragmentID())
           break;
       }
     } else {

@@ -351,6 +351,19 @@ const NGBlockBreakToken* PreviousFragmentainerBreakToken(
     const NGBoxFragmentBuilder& container_builder,
     wtf_size_t index);
 
+// Return the break token that led to the creation of the fragment specified, or
+// nullptr if this is the first fragment. Note that this operation is O(n)
+// (number of fragments generated from the node), and should be avoided when
+// possible. This function should no longer be necessary once everything has
+// been properly converted to LayoutNG, and we have also gotten rid of the
+// fragment stitching of composited objects (will be fixed by
+// CompositeAfterPaint).
+const NGBlockBreakToken* FindPreviousBreakToken(const NGPhysicalBoxFragment&);
+
+// Return the index of the fragmentainer preceding the first fragmentainer
+// inside this fragment. Used by nested block fragmentation.
+wtf_size_t PreviousInnerFragmentainerIndex(const NGPhysicalBoxFragment&);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FRAGMENTATION_UTILS_H_

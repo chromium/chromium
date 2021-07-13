@@ -731,18 +731,19 @@ void PaintLayerPainter::PaintFragmentWithPhase(
       context.GetPaintController(), chunk_properties, paint_layer_,
       DisplayItem::PaintPhaseToDrawingType(phase));
 
-  PaintInfo paint_info(
-      context, cull_rect, phase, painting_info.GetGlobalPaintFlags(),
-      paint_flags, &painting_info.root_layer->GetLayoutObject(),
-      fragment.fragment_data ? fragment.fragment_data->LogicalTopInFlowThread()
-                             : LayoutUnit());
+  PaintInfo paint_info(context, cull_rect, phase,
+                       painting_info.GetGlobalPaintFlags(), paint_flags,
+                       &painting_info.root_layer->GetLayoutObject());
   if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
     paint_info.SetDescendantPaintingBlocked(true);
 
-  if (fragment.physical_fragment)
+  if (fragment.physical_fragment) {
     NGBoxFragmentPainter(*fragment.physical_fragment).Paint(paint_info);
-  else
+  } else {
+    if (fragment.fragment_data)
+      paint_info.SetFragmentID(fragment.fragment_data->FragmentID());
     paint_layer_.GetLayoutObject().Paint(paint_info);
+  }
 }
 
 static CullRect LegacyCullRect(const PaintLayerFragment& fragment,

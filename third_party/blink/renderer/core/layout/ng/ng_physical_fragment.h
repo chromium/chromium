@@ -133,6 +133,9 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsOutOfFlowPositioned() const {
     return IsBox() && BoxType() == NGBoxType::kOutOfFlowPositioned;
   }
+  bool IsFixedPositioned() const {
+    return IsCSSBox() && layout_object_->IsFixedPositioned();
+  }
   bool IsFloatingOrOutOfFlowPositioned() const {
     return IsFloating() || IsOutOfFlowPositioned();
   }

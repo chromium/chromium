@@ -473,14 +473,6 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
   NOT_DESTROYED();
   if (!PaintInvalidationStateIsDirty() || ChildPrePaintBlockedByDisplayLock())
     return;
-  // NG text objects are exempt, as pre-paint walking doesn't visit those with
-  // no paint effects (only white-space, for instance).
-  if ((IsText() && IsLayoutNGObject()) ||
-      // and culled inline boxes too.
-      (IsInLayoutNGInlineFormattingContext() && IsLayoutInline()) ||
-      // TablesNG columns are also not visited.
-      (IsLayoutTableCol() && IsLayoutNGObject()))
-    return;
   ShowLayoutTreeForThis();
   NOTREACHED();
 }

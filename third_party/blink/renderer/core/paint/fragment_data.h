@@ -52,12 +52,32 @@ class CORE_EXPORT FragmentData {
   }
   void SetLayer(std::unique_ptr<PaintLayer>);
 
-  LayoutUnit LogicalTopInFlowThread() const {
-    return rare_data_ ? rare_data_->logical_top_in_flow_thread : LayoutUnit();
+  // A fragment ID unique within the LayoutObject. In NG block fragmentation,
+  // this is the fragmentainer index. In legacy block fragmentation, it's the
+  // flow thread block-offset.
+  wtf_size_t FragmentID() const {
+    return rare_data_ ? rare_data_->fragment_id : 0;
   }
+  void SetFragmentID(wtf_size_t id) {
+    if (!rare_data_ && id == 0)
+      return;
+    EnsureRareData().fragment_id = id;
+  }
+
+  LayoutUnit LogicalTopInFlowThread() const {
+#if DCHECK_IS_ON()
+    DCHECK(!rare_data_ || rare_data_->has_set_flow_thread_offset_ ||
+           !rare_data_->fragment_id);
+#endif
+    return LayoutUnit::FromRawValue(static_cast<int>(FragmentID()));
+  }
+
   void SetLogicalTopInFlowThread(LayoutUnit top) {
-    if (rare_data_ || top)
-      EnsureRareData().logical_top_in_flow_thread = top;
+    SetFragmentID(top.RawValue());
+#if DCHECK_IS_ON()
+    if (rare_data_)
+      rare_data_->has_set_flow_thread_offset_ = true;
+#endif
   }
 
   // The pagination offset is the additional factor to add in to map from flow
@@ -225,7 +245,7 @@ class CORE_EXPORT FragmentData {
 
     // Fragment specific data.
     PhysicalOffset legacy_pagination_offset;
-    LayoutUnit logical_top_in_flow_thread;
+    wtf_size_t fragment_id = 0;
     std::unique_ptr<ObjectPaintProperties> paint_properties;
     std::unique_ptr<RefCountedPropertyTreeState> local_border_box_properties;
     bool is_clip_path_cache_valid = false;
@@ -234,6 +254,15 @@ class CORE_EXPORT FragmentData {
     CullRect cull_rect_;
     CullRect contents_cull_rect_;
     std::unique_ptr<FragmentData> next_fragment_;
+
+#if DCHECK_IS_ON()
+    // Legacy block fragmentation sets the flow thread offset for each
+    // FragmentData object, and this is used as its fragment_id, whereas NG
+    // block fragmentation uses the fragmentainer index instead. Here's a flag
+    // which can be used to assert that legacy code which expects flow thread
+    // offsets actually gets that.
+    bool has_set_flow_thread_offset_ = false;
+#endif
   };
 
   RareData& EnsureRareData();

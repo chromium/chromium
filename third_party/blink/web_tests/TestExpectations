@@ -1022,6 +1022,7 @@ crbug.com/982194 [ Win10 ] fast/writing-mode/background-vertical-rl.html [ Failu
 crbug.com/982194 [ Win10 ] fast/writing-mode/border-image-vertical-lr.html [ Failure Pass ]
 
 ### Tests passing with LayoutNGBlockFragmentation enabled:
+virtual/layout_ng_block_frag/external/wpt/css/css-break/abspos-in-opacity-001.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/avoid-border-break.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/borders-000.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/borders-001.html [ Pass ]
@@ -1047,6 +1048,7 @@ virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolu
 virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-030.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-032.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-034.html [ Pass ]
+virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-035.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-036.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-038.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-039.html [ Pass ]
@@ -1074,6 +1076,7 @@ virtual/layout_ng_block_frag/external/wpt/css/css-break/tall-line-in-short-fragm
 virtual/layout_ng_block_frag/external/wpt/css/css-break/trailing-child-margin-000.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/trailing-child-margin-002.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/transform-006.html [ Pass ]
+virtual/layout_ng_block_frag/external/wpt/css/css-break/transform-008.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-contain/contain-size-monolithic-002.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/abspos-containing-block-outside-spanner.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/balance-break-avoidance-001.html [ Pass ]
@@ -1151,10 +1154,11 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-with-forced-b
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-with-padding.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/span/outer-column-break-after-inner-spanner-2.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/tall-line-in-short-block.html [ Failure ]
-crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/transform-with-fixedpos.html [ Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/vertical-rl/composited-relpos-overlapping-will-change.html [ Failure ]
 
 ### With LayoutNGFragmentTraversal (and LayoutNGFragmentItem) enabled:
+
+crbug.com/1225304 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/positioning/toogle-abspos-on-relpos-inline-child.html [ Failure ]
 
 # Lots of manual tests here; just skip everything - not too interesting for LayoutNGFragmentTraversal anyway:
 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/cascade/* [ Skip ]
@@ -3726,6 +3730,7 @@ crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inlin
 # Failure due to on-going off-thread paint worklet project.
 crbug.com/957457 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-pending-script.https.html [ Crash ]
 
+crbug.com/829028 external/wpt/css/css-break/abspos-in-opacity-001.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/avoid-border-break.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/borders-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/borders-001.html [ Failure ]
@@ -3751,6 +3756,7 @@ crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-029.html 
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-030.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-032.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-034.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-035.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-036.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-038.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-039.html [ Failure ]
@@ -3785,6 +3791,8 @@ crbug.com/1058792 external/wpt/css/css-break/transform-004.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-005.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/transform-006.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-007.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-break/transform-008.html [ Failure ]
+crbug.com/1224888 external/wpt/css/css-break/transform-009.html [ Failure ]
 crbug.com/1156312 external/wpt/css/css-break/widows-orphans-017.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/abspos-containing-block-outside-spanner.html [ Failure ]
 crbug.com/967329 external/wpt/css/css-multicol/columnfill-auto-max-height-001.html [ Failure ]
@@ -3842,6 +3850,7 @@ crbug.com/829028 external/wpt/css/css-multicol/spanner-fragmentation-009.html [ 
 crbug.com/829028 external/wpt/css/css-multicol/spanner-fragmentation-010.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/spanner-fragmentation-011.html [ Failure ]
 crbug.com/1191124 external/wpt/css/css-multicol/spanner-fragmentation-012.html [ Failure ]
+crbug.com/1224888 external/wpt/css/css-multicol/spanner-in-opacity.html [ Failure ]
 
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-007.tentative.html [ Failure ]
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-008.tentative.html [ Failure ]

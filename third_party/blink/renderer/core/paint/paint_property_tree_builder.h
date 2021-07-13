@@ -21,7 +21,7 @@ class FragmentData;
 class LayoutObject;
 class LayoutNGTableSectionInterface;
 class LocalFrameView;
-class NGFragmentChildIterator;
+class NGPhysicalBoxFragment;
 class PaintLayer;
 class VisualViewport;
 
@@ -96,6 +96,8 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // object has changed.
     bool layout_shift_root_changed = false;
 
+    bool is_in_block_fragmentation = false;
+
     // Rendering context for 3D sorting. See
     // TransformPaintPropertyNode::renderingContextId.
     unsigned rendering_context_id = 0;
@@ -123,8 +125,6 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // containing block of corresponding positioned descendants.  Overflow clips
   // are also inherited by containing block tree instead of DOM tree, thus they
   // are included in the additional context too.
-  //
-  // Note that these contexts are not used in LayoutNGFragmentTraversal.
   ContainingBlockContext absolute_position;
 
   ContainingBlockContext fixed_position;
@@ -156,6 +156,13 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
   PhysicalOffset old_paint_offset;
 
+  // Paint offset at the current innermost fragmentainer.
+  PhysicalOffset fragmentainer_paint_offset;
+
+  // Amount of adjustment done by UpdateForPaintOffsetTranslation() since we
+  // entered the innermost fragmentainer.
+  PhysicalOffset adjustment_for_oof_in_fragmentainer;
+
   // An additional offset that applies to the current fragment, but is detected
   // *before* the ContainingBlockContext is updated for it. Once the
   // ContainingBlockContext is set, this value should be added to
@@ -177,7 +184,6 @@ struct PaintPropertyTreeBuilderContext final {
 
   Vector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
 
-  // TODO(mstensho): Stop using these in LayoutNGFragmentTraversal.
   const LayoutObject* container_for_absolute_position = nullptr;
   const LayoutObject* container_for_fixed_position = nullptr;
 
@@ -262,12 +268,41 @@ struct NGPrePaintInfo {
   STACK_ALLOCATED();
 
  public:
-  NGPrePaintInfo(const NGFragmentChildIterator& iterator,
-                 FragmentData& fragment_data)
-      : iterator(iterator), fragment_data(fragment_data) {}
+  NGPrePaintInfo(const NGPhysicalBoxFragment& box_fragment,
+                 PhysicalOffset paint_offset,
+                 wtf_size_t fragmentainer_idx,
+                 bool is_first_for_node,
+                 bool is_last_for_node,
+                 bool is_inside_orphaned_object,
+                 bool is_inside_fragment_child)
+      : box_fragment(box_fragment),
+        paint_offset(paint_offset),
+        fragmentainer_idx(fragmentainer_idx),
+        is_first_for_node(is_first_for_node),
+        is_last_for_node(is_last_for_node),
+        is_inside_orphaned_object(is_inside_orphaned_object),
+        is_inside_fragment_child(is_inside_fragment_child) {}
 
-  const NGFragmentChildIterator& iterator;
-  FragmentData& fragment_data;
+  // The fragment for the LayoutObject currently being processed, or, in the
+  // case of text and non-atomic inlines: the fragment of the containing block.
+  const NGPhysicalBoxFragment& box_fragment;
+
+  FragmentData* fragment_data = nullptr;
+  PhysicalOffset paint_offset;
+  wtf_size_t fragmentainer_idx;
+  bool is_first_for_node;
+  bool is_last_for_node;
+
+  // True if we're fragment-traversing an object (OOF or float) directly,
+  // instead of walking the layout object tree. In this case, the property /
+  // invalidation context chains will be missing ancestors between the
+  // fragmentainer and the OOF / float.
+  bool is_inside_orphaned_object;
+
+  // True if |box_fragment| is the containing block of the LayoutObject
+  // currently being processed. Otherwise, |box_fragment| is a fragment for the
+  // LayoutObject itself.
+  bool is_inside_fragment_child;
 };
 
 // Creates paint property tree nodes for non-local effects in the layout tree.

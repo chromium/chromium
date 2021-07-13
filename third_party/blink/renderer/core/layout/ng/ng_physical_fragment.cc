@@ -459,7 +459,6 @@ bool NGPhysicalFragment::IsPlacedByLayoutNG() const {
 }
 
 const FragmentData* NGPhysicalFragment::GetFragmentData() const {
-  DCHECK(CanTraverse());
   const LayoutBox* box = DynamicTo<LayoutBox>(GetLayoutObject());
   if (!box) {
     DCHECK(!GetLayoutObject());

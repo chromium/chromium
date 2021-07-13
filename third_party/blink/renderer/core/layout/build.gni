@@ -498,8 +498,6 @@ blink_core_sources_layout = [
   "ng/ng_floats_utils.h",
   "ng/ng_fragment.h",
   "ng/ng_fragment_builder.h",
-  "ng/ng_fragment_child_iterator.cc",
-  "ng/ng_fragment_child_iterator.h",
   "ng/ng_fragmentation_utils.cc",
   "ng/ng_fragmentation_utils.h",
   "ng/ng_ink_overflow.cc",
