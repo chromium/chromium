@@ -63,8 +63,6 @@ source_set("feature_flags") {
 source_set("infobars_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "confirm_infobar_view.h",
-    "confirm_infobar_view.mm",
     "infobar_badge_ui_delegate.h",
     "infobar_container_consumer.h",
     "infobar_ui_delegate.h",
@@ -118,10 +116,7 @@ source_set("infobars_ui") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "confirm_infobar_view_unittest.mm",
-    "infobar_container_coordinator_unittest.mm",
-  ]
+  sources = [ "infobar_container_coordinator_unittest.mm" ]
   deps = [
     ":feature_flags",
     ":infobars",
