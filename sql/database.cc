@@ -238,6 +238,8 @@ static_assert(DatabaseOptions::kDefaultPageSize == SQLITE_DEFAULT_PAGE_SIZE,
               "DatabaseOptions::kDefaultPageSize must match the value "
               "configured into SQLite");
 
+// DatabaseOptions::explicit_locking needs to be set to false for historical
+// reasons.
 Database::Database() : Database({.exclusive_locking = false}) {}
 
 Database::Database(DatabaseOptions options)

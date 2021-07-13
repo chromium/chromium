@@ -92,20 +92,44 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
 
   // Database page size.
   //
+  // New Chrome features should set an explicit page size in their
+  // DatabaseOptions initializers, even if they use the default page size. This
+  // makes it easier to track the page size used by the databases on the users'
+  // devices.
+  //
+  // The value in this option is only applied to newly created databases. In
+  // other words, changing the value doesn't impact the databases that have
+  // already been created on the users' devices. So, changing the value in the
+  // code without a lot of work (re-creating existing databases) will result in
+  // inconsistent page sizes across the fleet of user devices, which will make
+  // it (even) more difficult to reason about database performance.
+  //
   // Larger page sizes result in shallower B-trees, because they allow an inner
   // page to hold more keys. On the flip side, larger page sizes may result in
   // more I/O when making small changes to existing records.
   //
   // Must be a power of two between 512 and 65536 inclusive.
+  //
+  // TODO(pwnall): Replace the default with an invalid value after all
+  //               sql::Database users explicitly initialize page_size.
   int page_size = kDefaultPageSize;
 
   // The size of in-memory cache, in pages.
+  //
+  // New Chrome features should set an explicit cache size in their
+  // DatabaseOptions initializers, even if they use the default cache size. This
+  // makes it easier to track the cache size used by the databases on the users'
+  // devices. The default page size of 4,096 bytes results in a cache size of
+  // 500 pages.
   //
   // SQLite's database cache will take up at most (`page_size` * `cache_size`)
   // bytes of RAM.
   //
   // 0 invokes SQLite's default, which is currently to size up the cache to use
   // exactly 2,048,000 bytes of RAM.
+  //
+  // TODO(pwnall): Replace the default with an invalid value after all
+  //               sql::Database users explicitly initialize page_size.
   int cache_size = 0;
 };
 
@@ -113,20 +137,32 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
 //
 // Instances of this class are thread-unsafe and DCHECK that they are accessed
 // on the same sequence.
+//
+// When a Database instance goes out of scope, any uncommitted transactions are
+// rolled back.
 class COMPONENT_EXPORT(SQL) Database {
  private:
   class StatementRef;  // Forward declaration, see real one below.
 
  public:
-  // The database is opened by calling Open[InMemory](). Any uncommitted
-  // transactions will be rolled back when this object is deleted.
+  // Creates an instance that can receive Open() / OpenInMemory() calls.
   //
+  // Some `options` members are only applied to newly created databases.
+  //
+  // Most operations on the new instance will fail until Open() / OpenInMemory()
+  // is called.
+  explicit Database(DatabaseOptions options);
+
   // This constructor is deprecated.
+  //
+  // When transitioning away from this default constructor, consider setting
+  // DatabaseOptions::explicit_locking to true. For historical reasons, this
+  // constructor results in DatabaseOptions::explicit_locking set to false.
+  //
   // TODO(crbug.com/1126968): Remove this constructor after migrating all
   //                          uses to the explicit constructor below.
   Database();
-  // |options| only affects newly created databases.
-  explicit Database(DatabaseOptions options);
+
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;
   ~Database();
