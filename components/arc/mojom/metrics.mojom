@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 12
+// Next MinVersion: 13
 
 module arc.mojom;
 
@@ -232,7 +232,7 @@ enum LowLatencyStylusLibApiId {
   kGLInkOverlaySetViewMatrix = 4,
 };
 
-// Next method ID: 14
+// Next method ID: 16
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -279,6 +279,20 @@ interface MetricsHost {
   // Reports prediction target used in Low-latency Stylus Library.
   [MinVersion=11] ReportLowLatencyStylusLibPredictionTarget@13(
     LowLatencyStylusLibPredictionTarget prediction_target);
+
+  // Reports the metrics to perform the entire fixup for P to R upgrade: the
+  // duration, the number of fixed directories, and the number of apps that
+  // contains at least one file or directory that is failed to be fixed.
+  [MinVersion=12] ReportEntireFixupMetrics@14(
+      mojo_base.mojom.TimeDelta duration,
+      uint32 number_of_directories,
+      uint32 number_of_failures);
+
+  // Reports the metrics to perform fixup per app for P to R upgrade: the
+  // duration and the number of fixed directories.
+  [MinVersion=12] ReportPerAppFixupMetrics@15(
+      mojo_base.mojom.TimeDelta duration,
+      uint32 number_of_directories);
 };
 
 // Next method ID: 3

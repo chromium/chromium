@@ -612,6 +612,45 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.Fixup.Entire.Failures" units="units"
+    expires_after="2022-07-02">
+  <owner>risan@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The number of apps that have at least one file or directory that is failed
+    to be fixed during the fixup process that is triggered after ARC P to R
+    upgrade.
+  </summary>
+</histogram>
+
+<histogram name="Arc.Fixup.{Scale}.Directories" units="units"
+    expires_after="2022-07-02">
+  <owner>risan@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The number of directories that are fixed during the {Scale} fixup process
+    that is triggered after ARC P to R upgrade.
+  </summary>
+  <token key="Scale">
+    <variant name="Entire" summary="the entire fixup process"/>
+    <variant name="PerApp" summary="per Android app"/>
+  </token>
+</histogram>
+
+<histogram name="Arc.Fixup.{Scale}.Duration" units="ms"
+    expires_after="2022-07-02">
+  <owner>risan@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The duration of the {Scale} fixup process that is triggered after ARC P to R
+    upgrade.
+  </summary>
+  <token key="Scale">
+    <variant name="Entire" summary="the entire fixup process"/>
+    <variant name="PerApp" summary="per Android app"/>
+  </token>
+</histogram>
+
 <histogram name="Arc.IconLoadFromFileTime.compressedFirst5" units="ms"
     expires_after="2021-03-11">
   <owner>khmel@google.com</owner>
