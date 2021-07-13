@@ -8,7 +8,7 @@ typedef [StringContext=TrustedScript] DOMString ScriptString;
 
 [
     IsCodeLike,
-    Exposed=Window,
+    Exposed=(Window, Worker),
     RuntimeEnabled=TrustedDOMTypes
 ] interface TrustedScript {
     stringifier;

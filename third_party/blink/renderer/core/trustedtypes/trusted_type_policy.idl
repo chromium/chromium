@@ -7,7 +7,7 @@
 typedef (DOMString or TrustedHTML or TrustedScript or TrustedScriptURL) TrustedString;
 
 [
-    Exposed=Window,
+    Exposed=(Window, Worker),
     RuntimeEnabled=TrustedDOMTypes
 ] interface TrustedTypePolicy {
     readonly attribute DOMString name;
