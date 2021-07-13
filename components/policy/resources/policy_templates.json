@@ -20057,7 +20057,7 @@
     },
     {
       'name': 'CoalesceH2ConnectionsWithClientCertificatesForHosts',
-      'owners': ['nharper@chromium.org', 'rsleevi@chromium.org'],
+      'owners': ['rsleevi@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -22929,7 +22929,7 @@
     },
     {
       'name': 'HSTSPolicyBypassList',
-      'owners': ['nharper@chromium.org', 'rsleevi@chromium.org'],
+      'owners': ['asymmetric@chromium.org', 'rsleevi@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
