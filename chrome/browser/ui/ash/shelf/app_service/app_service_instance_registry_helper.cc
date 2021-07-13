@@ -410,6 +410,7 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
       continue;
 
     if (app_type != apps::mojom::AppType::kExtension &&
+        app_type != apps::mojom::AppType::kSystemWeb &&
         app_type != apps::mojom::AppType::kWeb) {
       return false;
     }

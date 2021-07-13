@@ -106,6 +106,7 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
       // call UpdateItem unconditionally?
       apps::mojom::AppType app_type = update.AppType();
       if ((app_type == apps::mojom::AppType::kExtension) ||
+          (app_type == apps::mojom::AppType::kSystemWeb) ||
           (app_type == apps::mojom::AppType::kWeb)) {
         app_list::AppListSyncableService* serv = service();
         if (serv) {
