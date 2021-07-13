@@ -12,90 +12,87 @@
 
 namespace wl {
 
-namespace {
+// TestSelectionOffer implementation.
+TestSelectionOffer::TestSelectionOffer(wl_resource* resource,
+                                       Delegate* delegate)
+    : ServerObject(resource), delegate_(delegate) {}
 
-void Destroy(wl_client* client, wl_resource* resource) {
-  wl_resource_destroy(resource);
+TestSelectionOffer::~TestSelectionOffer() {
+  delegate_->OnDestroying();
 }
 
-}  // namespace
+void TestSelectionOffer::OnOffer(const std::string& mime_type,
+                                 ui::PlatformClipboard::Data data) {
+  delegate_->SendOffer(mime_type, data);
+}
 
-const struct zwp_primary_selection_device_manager_v1_interface
-    TestSelectionDeviceManager::kTestSelectionManagerImpl = {
-        &CreateSource, &GetDevice, &Destroy};
-
-// TODO(crbug.com/1204670): Implement primary selection offer.
-struct TestSelectionOffer : public ServerObject {
-  explicit TestSelectionOffer(wl_resource* resource) : ServerObject(resource) {}
-  ~TestSelectionOffer() override = default;
-};
-
-TestSelectionSource::TestSelectionSource(wl_resource* resource)
-    : ServerObject(resource) {}
+// TestSelectionSource implementation.
+TestSelectionSource::TestSelectionSource(wl_resource* resource,
+                                         Delegate* delegate)
+    : ServerObject(resource), delegate_(delegate) {}
 
 TestSelectionSource::~TestSelectionSource() = default;
 
-// TODO(crbug.com/1204670): Implement primary selection source.
 void TestSelectionSource::Offer(struct wl_client* client,
                                 struct wl_resource* resource,
                                 const char* mime_type) {
-  NOTIMPLEMENTED();
+  CHECK(GetUserDataAs<TestSelectionSource>(resource));
+  auto* self = GetUserDataAs<TestSelectionSource>(resource);
+  self->delegate_->HandleOffer(mime_type);
 }
 
+// TestSelectionDevice implementation.
 TestSelectionDevice::TestSelectionDevice(wl_resource* resource,
-                                         wl_client* client)
-    : ServerObject(resource) {}
+                                         Delegate* delegate)
+    : ServerObject(resource), delegate_(delegate) {}
 
-TestSelectionDevice::~TestSelectionDevice() = default;
-
-void TestSelectionDevice::SendSelectionOffer(
-    const ui::PlatformClipboard::DataMap& data_map) {
-  NOTIMPLEMENTED();
+TestSelectionDevice::~TestSelectionDevice() {
+  delegate_->OnDestroying();
 }
 
-// TODO(crbug.com/1204670): Implement primary selection device.
+TestSelectionOffer* TestSelectionDevice::OnDataOffer() {
+  return delegate_->CreateAndSendOffer();
+}
+
+void TestSelectionDevice::OnSelection(TestSelectionOffer* offer) {
+  delegate_->SendSelection(offer);
+}
+
 void TestSelectionDevice::SetSelection(struct wl_client* client,
                                        struct wl_resource* resource,
                                        struct wl_resource* source,
                                        uint32_t serial) {
-  NOTIMPLEMENTED();
+  CHECK(GetUserDataAs<TestSelectionDevice>(resource));
+  auto* self = GetUserDataAs<TestSelectionDevice>(resource);
+  auto* src = source ? GetUserDataAs<TestSelectionSource>(source) : nullptr;
+  self->delegate_->HandleSetSelection(src, serial);
 }
 
-TestSelectionDeviceManager::TestSelectionDeviceManager()
-    : GlobalObject(&zwp_primary_selection_device_manager_v1_interface,
-                   &kTestSelectionManagerImpl,
-                   1) {}
+TestSelectionDeviceManager::TestSelectionDeviceManager(
+    const InterfaceInfo& info,
+    Delegate* delegate)
+    : GlobalObject(info.interface, info.implementation, info.version),
+      delegate_(delegate) {}
 
-TestSelectionDeviceManager::~TestSelectionDeviceManager() = default;
+TestSelectionDeviceManager::~TestSelectionDeviceManager() {
+  delegate_->OnDestroying();
+}
 
 void TestSelectionDeviceManager::CreateSource(wl_client* client,
                                               wl_resource* manager_resource,
                                               uint32_t id) {
-  const struct zwp_primary_selection_source_v1_interface
-      kTestSelectionSourceImpl = {&TestSelectionSource::Offer, &Destroy};
-  wl_resource* source_resource = CreateResourceWithImpl<TestSelectionSource>(
-      client, &zwp_primary_selection_source_v1_interface,
-      wl_resource_get_version(manager_resource), &kTestSelectionSourceImpl, id);
-
+  CHECK(GetUserDataAs<TestSelectionDeviceManager>(manager_resource));
   auto* manager = GetUserDataAs<TestSelectionDeviceManager>(manager_resource);
-  CHECK(manager);
-  manager->source_ = GetUserDataAs<TestSelectionSource>(source_resource);
+  manager->source_ = manager->delegate_->CreateSource(client, id);
 }
 
 void TestSelectionDeviceManager::GetDevice(wl_client* client,
                                            wl_resource* manager_resource,
                                            uint32_t id,
                                            wl_resource* seat_resource) {
-  const struct zwp_primary_selection_device_v1_interface
-      kTestSelectionDeviceImpl = {&TestSelectionDevice::SetSelection, &Destroy};
-  wl_resource* resource = CreateResourceWithImpl<TestSelectionDevice>(
-      client, &zwp_primary_selection_device_v1_interface,
-      wl_resource_get_version(manager_resource), &kTestSelectionDeviceImpl, id,
-      client);
-
+  CHECK(GetUserDataAs<TestSelectionDeviceManager>(manager_resource));
   auto* manager = GetUserDataAs<TestSelectionDeviceManager>(manager_resource);
-  CHECK(manager);
-  manager->device_ = GetUserDataAs<TestSelectionDevice>(resource);
+  manager->device_ = manager->delegate_->CreateDevice(client, id);
 }
 
 }  // namespace wl

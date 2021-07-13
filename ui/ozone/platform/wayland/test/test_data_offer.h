@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
-#include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 #include "ui/ozone/public/platform_clipboard.h"
 
 struct wl_resource;
@@ -27,13 +27,12 @@ namespace wl {
 
 extern const struct wl_data_offer_interface kTestDataOfferImpl;
 
-class TestDataOffer : public ServerObject {
+class TestDataOffer : public TestSelectionOffer {
  public:
   explicit TestDataOffer(wl_resource* resource);
   ~TestDataOffer() override;
 
   void Receive(const std::string& mime_type, base::ScopedFD fd);
-  void OnOffer(const std::string& mime_type, ui::PlatformClipboard::Data data);
   void SetActions(uint32_t dnd_actions, uint32_t preferred_action);
 
   void OnSourceActions(uint32_t source_actions);
@@ -41,6 +40,8 @@ class TestDataOffer : public ServerObject {
 
   uint32_t supported_actions() const { return client_supported_actions_; }
   uint32_t preferred_action() const { return client_preferred_action_; }
+
+  void AddData(const std::string& mime_type, ui::PlatformClipboard::Data data);
 
  private:
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

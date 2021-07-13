@@ -391,6 +391,8 @@ source_set("test_support") {
     "test/test_zwp_linux_buffer_params.h",
     "test/test_zwp_linux_explicit_synchronization.cc",
     "test/test_zwp_linux_explicit_synchronization.h",
+    "test/test_zwp_primary_selection.cc",
+    "test/test_zwp_primary_selection.h",
     "test/test_zwp_text_input_manager.cc",
     "test/test_zwp_text_input_manager.h",
   ]

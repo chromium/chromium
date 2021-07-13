@@ -5,9 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_SELECTION_DEVICE_MANAGER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_SELECTION_DEVICE_MANAGER_H_
 
-#include <primary-selection-unstable-v1-server-protocol.h>
-
 #include <cstdint>
+#include <string>
 
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
@@ -18,10 +17,31 @@ namespace wl {
 class TestSelectionSource;
 class TestSelectionDevice;
 
-// Manage wl_data_device_manager object.
+// Base classes for data device implementations. Protocol specific derived
+// classes must bind request handlers and factory methods for data device and
+// source instances. E.g: Standard data device (wl_data_*), as well as zwp and
+// gtk primary selection protocols.
+
 class TestSelectionDeviceManager : public GlobalObject {
  public:
-  TestSelectionDeviceManager();
+  struct Delegate {
+    virtual TestSelectionDevice* CreateDevice(wl_client* client,
+                                              uint32_t id) = 0;
+    virtual TestSelectionSource* CreateSource(wl_client* client,
+                                              uint32_t id) = 0;
+    virtual void OnDestroying() = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
+  struct InterfaceInfo {
+    const struct wl_interface* interface;
+    const void* implementation;
+    uint32_t version;
+  };
+
+  TestSelectionDeviceManager(const InterfaceInfo& info, Delegate* delegate);
   ~TestSelectionDeviceManager() override;
 
   TestSelectionDeviceManager(const TestSelectionDeviceManager&) = delete;
@@ -31,7 +51,6 @@ class TestSelectionDeviceManager : public GlobalObject {
   const TestSelectionDevice* device() const { return device_; }
   const TestSelectionSource* source() const { return source_; }
 
- private:
   // Protocol object requests:
   static void CreateSource(wl_client* client,
                            wl_resource* manager_resource,
@@ -41,42 +60,88 @@ class TestSelectionDeviceManager : public GlobalObject {
                         uint32_t id,
                         wl_resource* seat_resource);
 
+ private:
+  Delegate* const delegate_;
+
   TestSelectionDevice* device_ = nullptr;
   TestSelectionSource* source_ = nullptr;
+};
 
-  static const struct zwp_primary_selection_device_manager_v1_interface
-      kTestSelectionManagerImpl;
+class TestSelectionOffer : public ServerObject {
+ public:
+  struct Delegate {
+    virtual void SendOffer(const std::string& mime_type,
+                           ui::PlatformClipboard::Data data) = 0;
+    virtual void OnDestroying() = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
+  TestSelectionOffer(wl_resource* resource, Delegate* delegate);
+  ~TestSelectionOffer() override;
+
+  TestSelectionOffer(const TestSelectionOffer&) = delete;
+  TestSelectionOffer& operator=(const TestSelectionOffer&) = delete;
+
+  void OnOffer(const std::string& mime_type, ui::PlatformClipboard::Data data);
+
+ private:
+  Delegate* const delegate_;
 };
 
 class TestSelectionSource : public ServerObject {
  public:
-  explicit TestSelectionSource(wl_resource* resource);
-  ~TestSelectionSource() override;
+  struct Delegate {
+    virtual void HandleOffer(const std::string& mime_type) = 0;
+    virtual void OnDestroying() = 0;
 
- private:
-  friend class TestSelectionDeviceManager;
+   protected:
+    virtual ~Delegate() = default;
+  };
+
+  TestSelectionSource(wl_resource* resource, Delegate* delegate);
+  ~TestSelectionSource() override;
 
   // Protocol object requests:
   static void Offer(struct wl_client* client,
                     struct wl_resource* resource,
                     const char* mime_type);
+
+ private:
+  Delegate* const delegate_;
 };
 
 class TestSelectionDevice : public ServerObject {
  public:
-  TestSelectionDevice(wl_resource* resource, wl_client* client);
+  struct Delegate {
+    virtual TestSelectionOffer* CreateAndSendOffer() = 0;
+    virtual void SendSelection(TestSelectionOffer* offer) = 0;
+    virtual void HandleSetSelection(TestSelectionSource* source,
+                                    uint32_t serial) = 0;
+    virtual void OnDestroying() = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
+  TestSelectionDevice(wl_resource* resource, Delegate* delegate);
   ~TestSelectionDevice() override;
 
-  void SendSelectionOffer(const ui::PlatformClipboard::DataMap& data_map);
+  TestSelectionDevice(const TestSelectionDevice&) = delete;
+  TestSelectionDevice& operator=(const TestSelectionDevice&) = delete;
 
- private:
-  friend class TestSelectionDeviceManager;
+  TestSelectionOffer* OnDataOffer();
+  void OnSelection(TestSelectionOffer* offer);
 
   // Protocol object requests:
   static void SetSelection(struct wl_client* client,
                            struct wl_resource* resource,
                            struct wl_resource* source,
                            uint32_t serial);
+
+ private:
+  Delegate* const delegate_;
 };
 
 }  // namespace wl

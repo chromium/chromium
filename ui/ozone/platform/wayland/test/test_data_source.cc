@@ -18,6 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
+#include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 namespace wl {
 
@@ -42,12 +43,6 @@ std::vector<uint8_t> ReadDataOnWorkerThread(base::ScopedFD fd) {
   return bytes;
 }
 
-void DataSourceOffer(wl_client* client,
-                     wl_resource* resource,
-                     const char* mime_type) {
-  GetUserDataAs<TestDataSource>(resource)->Offer(mime_type);
-}
-
 void DataSourceDestroy(wl_client* client, wl_resource* resource) {
   wl_resource_destroy(resource);
 }
@@ -58,13 +53,30 @@ void DataSourceSetActions(wl_client* client,
   GetUserDataAs<TestDataSource>(resource)->SetActions(dnd_actions);
 }
 
+struct WlDataSourceImpl : public TestSelectionSource::Delegate {
+  explicit WlDataSourceImpl(TestDataSource* offer) : source_(offer) {}
+  ~WlDataSourceImpl() override = default;
+
+  WlDataSourceImpl(const WlDataSourceImpl&) = delete;
+  WlDataSourceImpl& operator=(const WlDataSourceImpl&) = delete;
+
+  void HandleOffer(const std::string& mime_type) override {
+    source_->Offer(mime_type);
+  }
+
+  void OnDestroying() override { delete this; }
+
+ private:
+  TestDataSource* const source_;
+};
+
 }  // namespace
 
 const struct wl_data_source_interface kTestDataSourceImpl = {
-    DataSourceOffer, DataSourceDestroy, DataSourceSetActions};
+    TestSelectionSource::Offer, DataSourceDestroy, DataSourceSetActions};
 
 TestDataSource::TestDataSource(wl_resource* resource)
-    : ServerObject(resource),
+    : TestSelectionSource(resource, new WlDataSourceImpl(this)),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 

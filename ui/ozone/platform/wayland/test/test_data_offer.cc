@@ -14,6 +14,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 namespace wl {
 
@@ -57,6 +58,25 @@ void DataOfferSetActions(wl_client* client,
                                                      preferred_action);
 }
 
+struct WlDataOfferImpl : public TestSelectionOffer::Delegate {
+  explicit WlDataOfferImpl(TestDataOffer* offer) : offer_(offer) {}
+  ~WlDataOfferImpl() override = default;
+
+  WlDataOfferImpl(const WlDataOfferImpl&) = delete;
+  WlDataOfferImpl& operator=(const WlDataOfferImpl&) = delete;
+
+  void SendOffer(const std::string& mime_type,
+                 ui::PlatformClipboard::Data data) override {
+    offer_->AddData(mime_type, data);
+    wl_data_offer_send_offer(offer_->resource(), mime_type.c_str());
+  }
+
+  void OnDestroying() override { delete this; }
+
+ private:
+  TestDataOffer* const offer_;
+};
+
 }  // namespace
 
 const struct wl_data_offer_interface kTestDataOfferImpl = {
@@ -64,12 +84,12 @@ const struct wl_data_offer_interface kTestDataOfferImpl = {
     DataOfferSetActions};
 
 TestDataOffer::TestDataOffer(wl_resource* resource)
-    : ServerObject(resource),
+    : TestSelectionOffer(resource, new WlDataOfferImpl(this)),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       write_data_weak_ptr_factory_(this) {}
 
-TestDataOffer::~TestDataOffer() {}
+TestDataOffer::~TestDataOffer() = default;
 
 void TestDataOffer::Receive(const std::string& mime_type, base::ScopedFD fd) {
   DCHECK(fd.is_valid());
@@ -77,12 +97,6 @@ void TestDataOffer::Receive(const std::string& mime_type, base::ScopedFD fd) {
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&WriteDataOnWorkerThread, std::move(fd),
                                         data_to_offer_[mime_type]));
-}
-
-void TestDataOffer::OnOffer(const std::string& mime_type,
-                            ui::PlatformClipboard::Data data) {
-  data_to_offer_[mime_type] = data;
-  wl_data_offer_send_offer(resource(), mime_type.c_str());
 }
 
 void TestDataOffer::SetActions(uint32_t dnd_actions,
@@ -98,6 +112,11 @@ void TestDataOffer::OnSourceActions(uint32_t source_actions) {
 
 void TestDataOffer::OnAction(uint32_t dnd_action) {
   wl_data_offer_send_action(resource(), dnd_action);
+}
+
+void TestDataOffer::AddData(const std::string& mime_type,
+                            ui::PlatformClipboard::Data data) {
+  data_to_offer_[mime_type] = data;
 }
 
 }  // namespace wl

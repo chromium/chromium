@@ -15,7 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 struct wl_resource;
 
@@ -27,7 +27,7 @@ namespace wl {
 
 extern const struct wl_data_source_interface kTestDataSourceImpl;
 
-class TestDataSource : public ServerObject {
+class TestDataSource : public TestSelectionSource {
  public:
   explicit TestDataSource(wl_resource* resource);
   ~TestDataSource() override;

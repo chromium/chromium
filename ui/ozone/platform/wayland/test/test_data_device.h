@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
-#include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 struct wl_client;
 struct wl_resource;
@@ -23,7 +23,7 @@ extern const struct wl_data_device_interface kTestDataDeviceImpl;
 class TestDataOffer;
 class TestDataSource;
 
-class TestDataDevice : public ServerObject {
+class TestDataDevice : public TestSelectionDevice {
  public:
   struct DragDelegate {
     virtual void StartDrag(TestDataSource* source,
@@ -36,12 +36,12 @@ class TestDataDevice : public ServerObject {
 
   void set_drag_delegate(DragDelegate* delegate) { drag_delegate_ = delegate; }
 
+  TestDataOffer* CreateAndSendDataOffer();
   void SetSelection(TestDataSource* data_source, uint32_t serial);
   void StartDrag(TestDataSource* data_source,
                  MockSurface* origin,
                  uint32_t serial);
 
-  TestDataOffer* OnDataOffer();
   void OnEnter(uint32_t serial,
                wl_resource* surface,
                wl_fixed_t x,
@@ -50,10 +50,10 @@ class TestDataDevice : public ServerObject {
   void OnLeave();
   void OnMotion(uint32_t time, wl_fixed_t x, wl_fixed_t y);
   void OnDrop();
-  void OnSelection(TestDataOffer* data_offer);
+
+  wl_client* client() { return client_; }
 
  private:
-  TestDataOffer* data_offer_;
   wl_client* client_ = nullptr;
   DragDelegate* drag_delegate_ = nullptr;
 

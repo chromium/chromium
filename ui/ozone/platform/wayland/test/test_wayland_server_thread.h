@@ -22,7 +22,6 @@
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_seat.h"
-#include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_subcompositor.h"
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_explicit_synchronization.h"
@@ -48,6 +47,8 @@ struct ServerConfig {
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;
 };
+
+class TestSelectionDeviceManager;
 
 class TestWaylandServerThread : public base::Thread,
                                 base::MessagePumpLibevent::FdWatcher {
@@ -139,7 +140,7 @@ class TestWaylandServerThread : public base::Thread,
   TestZwpLinuxExplicitSynchronizationV1 zwp_linux_explicit_synchronization_v1_;
   MockZwpLinuxDmabufV1 zwp_linux_dmabuf_v1_;
   MockWpPresentation wp_presentation_;
-  TestSelectionDeviceManager selection_device_manager_;
+  std::unique_ptr<TestSelectionDeviceManager> primary_selection_device_manager_;
 
   std::vector<std::unique_ptr<GlobalObject>> globals_;
 
