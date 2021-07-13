@@ -829,8 +829,9 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
   EXPECT_EQ(container_info.value().username,
             DefaultContainerUserNameForProfile(profile()));
   ExpectRestarterUmaCount(1);
+  histogram_tester_.ExpectTotalCount("Crostini.RestarterTimeInState2.Start", 1);
   histogram_tester_.ExpectTotalCount(
-      "Crostini.RestarterTimeInState.StartTerminaVm", 1);
+      "Crostini.RestarterTimeInState2.StartContainer", 1);
   histogram_tester_.ExpectBucketCount(
       "Crostini.SetUpLxdContainerUser.UnknownResult", false, 1);
 }
@@ -934,6 +935,10 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringComponentLoaded) {
   EXPECT_EQ(fake_concierge_client_->create_disk_image_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::INSTALL_IMAGE_LOADER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
+  histogram_tester_.ExpectTotalCount(
+      "Crostini.RestarterTimeInState2.InstallImageLoader", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Crostini.RestarterTimeInState2.CreateDiskImage", 0);
 }
 
 TEST_F(CrostiniManagerRestartTest, AbortOnDiskImageCreated) {
@@ -948,6 +953,10 @@ TEST_F(CrostiniManagerRestartTest, AbortOnDiskImageCreated) {
   EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
+  histogram_tester_.ExpectTotalCount(
+      "Crostini.RestarterTimeInState2.InstallImageLoader", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Crostini.RestarterTimeInState2.CreateDiskImage", 0);
 }
 
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateDiskImage) {

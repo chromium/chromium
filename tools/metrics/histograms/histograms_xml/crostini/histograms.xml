@@ -351,13 +351,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Crostini.RestarterTimeInState.{state}" units="ms"
     expires_after="2022-01-06">
+  <obsolete>
+    Removed in M93, and had misleading data before M93. Do not use.
+  </obsolete>
+  <owner>clumptini@google.com</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Was intended to be time spent in each state in the restarter flow, but there
+    were some issues with how the metric was emitted. Use
+    Crostini.RestarterTimeInState2.* instead.
+  </summary>
+  <token key="state" variants="CrostiniState"/>
+</histogram>
+
+<histogram name="Crostini.RestarterTimeInState2.{state}" units="ms"
+    expires_after="2022-01-06">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     Base histogram for measuring how much time the restarter flow spends in the
-    {state} state. Used to set timeouts. Note that this since this is for any
-    restarter run (no-op relaunch, installation, etc) the results are expected
-    to be multi-modal.
+    {state} state, used to set timeouts. Note that this since this is for any
+    restarter run (no-op relaunch, installation, success/failed) the results are
+    expected to be multi-modal. This is emitted by CrostiniRestarter every time
+    a state completes or restart completes, but not for a state that's been
+    aborted.
   </summary>
   <token key="state" variants="CrostiniState"/>
 </histogram>

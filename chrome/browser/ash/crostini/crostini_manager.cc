@@ -153,28 +153,28 @@ void EmitTimeInStageHistogram(base::TimeDelta duration,
   std::string name;
   switch (state) {
     case mojom::InstallerState::kStart:
-      name = "Crostini.RestarterTimeInState.Start";
+      name = "Crostini.RestarterTimeInState2.Start";
       break;
     case mojom::InstallerState::kInstallImageLoader:
-      name = "Crostini.RestarterTimeInState.InstallImageLoader";
+      name = "Crostini.RestarterTimeInState2.InstallImageLoader";
       break;
     case mojom::InstallerState::kCreateDiskImage:
-      name = "Crostini.RestarterTimeInState.CreateDiskImage";
+      name = "Crostini.RestarterTimeInState2.CreateDiskImage";
       break;
     case mojom::InstallerState::kStartTerminaVm:
-      name = "Crostini.RestarterTimeInState.StartTerminaVm";
+      name = "Crostini.RestarterTimeInState2.StartTerminaVm";
       break;
     case mojom::InstallerState::kStartLxd:
-      name = "Crostini.RestarterTimeInState.StartLxd";
+      name = "Crostini.RestarterTimeInState2.StartLxd";
       break;
     case mojom::InstallerState::kCreateContainer:
-      name = "Crostini.RestarterTimeInState.CreateContainer";
+      name = "Crostini.RestarterTimeInState2.CreateContainer";
       break;
     case mojom::InstallerState::kSetupContainer:
-      name = "Crostini.RestarterTimeInState.SetupContainer";
+      name = "Crostini.RestarterTimeInState2.SetupContainer";
       break;
     case mojom::InstallerState::kStartContainer:
-      name = "Crostini.RestarterTimeInState.StartContainer";
+      name = "Crostini.RestarterTimeInState2.StartContainer";
       break;
     case mojom::InstallerState::kConfigureContainer:
       NOTREACHED();
@@ -466,7 +466,12 @@ class CrostiniManager::CrostiniRestarter
   };
 
   void StartStage(mojom::InstallerState stage) {
-    EmitTimeInStageHistogram(base::TimeTicks::Now() - stage_start_, stage);
+    int finished_stage = static_cast<int>(stage) - 1;
+    if (finished_stage >= 0) {
+      EmitTimeInStageHistogram(
+          base::TimeTicks::Now() - stage_start_,
+          static_cast<mojom::InstallerState>(finished_stage));
+    }
     this->stage_ = stage;
     stage_start_ = base::TimeTicks::Now();
     DCHECK(stage_timeouts_.find(stage) != stage_timeouts_.end());
@@ -483,6 +488,7 @@ class CrostiniManager::CrostiniRestarter
 
   void FinishRestart(CrostiniResult result) {
     DCHECK(!is_aborted_);
+    EmitTimeInStageHistogram(base::TimeTicks::Now() - stage_start_, stage_);
 
     // FinishRestart will delete this, so it's not safe to call any methods
     // after this point.
