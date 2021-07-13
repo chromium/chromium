@@ -396,11 +396,18 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         // If the history header is not showing (e.g. when there is no browsing history),
         // mClearBrowsingDataButton will be null.
         if (mClearBrowsingDataButton == null) return;
-        boolean shouldShowButton = UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                           .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+
+        boolean shouldShowButton;
+        if (mManager.getShouldShowClearDataIfAvailable()) {
+            shouldShowButton = UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                       .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+        } else {
+            shouldShowButton = false;
+        }
         if (mClearBrowsingDataButtonVisible == shouldShowButton) return;
         mClearBrowsingDataButtonVisible = shouldShowButton;
         mPrivacyDisclaimerBottomSpace.setVisibility(shouldShowButton ? View.GONE : View.VISIBLE);
+
         if (mAreHeadersInitialized) setHeaders();
     }
 

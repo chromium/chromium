@@ -53,7 +53,8 @@ public class PageInfoHistoryController
         assert !mDelegate.isIncognito();
         mContentManager = new HistoryContentManager(mMainController.getActivity(), this,
                 /* isSeparateActivity */ false,
-                /* isIncognito */ false, /* shouldShowPrivacyDisclaimers */ true, mHost,
+                /* isIncognito */ false, /* shouldShowPrivacyDisclaimers */ true,
+                /* shouldShowClearData */ false, mHost,
                 /* selectionDelegate */ null, /* tabCreatorManager */ null,
                 /* tabSupplier */ null);
         mContentManager.initialize();

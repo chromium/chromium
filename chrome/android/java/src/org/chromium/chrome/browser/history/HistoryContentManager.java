@@ -97,6 +97,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final boolean mIsSeparateActivity;
     private final boolean mIsIncognito;
     private final boolean mIsScrollToLoadDisabled;
+    private final boolean mShouldShowClearData;
     private final String mHostName;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<Tab> mTabSupplier;
@@ -116,6 +117,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param isIncognito Whether the incognito tab model is currently selected.
      * @param shouldShowPrivacyDisclaimers Whether the privacy disclaimers should be shown, if
      *         available.
+     * @param shouldShowClearData Whether the the clear history data button should be shown, if
+     *         available.
      * @param hostName The hostName to retrieve history entries for, or null for all hosts.
      * @param selectionDelegate A class responsible for handling list item selection, null for
      *         unselectable items.
@@ -126,13 +129,15 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      */
     public HistoryContentManager(@NonNull Activity activity, @NonNull Observer observer,
             boolean isSeparateActivity, boolean isIncognito, boolean shouldShowPrivacyDisclaimers,
-            @Nullable String hostName, @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
+            boolean shouldShowClearData, @Nullable String hostName,
+            @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
             @Nullable TabCreatorManager tabCreatorManager, @Nullable Supplier<Tab> tabSupplier) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
         mIsIncognito = isIncognito;
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
+        mShouldShowClearData = shouldShowClearData;
         mHostName = hostName;
         mIsScrollToLoadDisabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 || ChromeAccessibilityUtil.isHardwareKeyboardAttached(
@@ -309,7 +314,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @return True if the available privacy disclaimers should be shown.
      * Note that this may return true even if there are currently no privacy disclaimers.
      */
-    public boolean getShouldShowPrivacyDisclaimersIfAvailable() {
+    boolean getShouldShowPrivacyDisclaimersIfAvailable() {
         return mShouldShowPrivacyDisclaimers;
     }
 
@@ -326,6 +331,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     /** Called after a user clicks the privacy disclaimer link. */
     void onPrivacyDisclaimerLinkClicked() {
         openUrl(new GURL(UrlConstants.MY_ACTIVITY_URL_IN_HISTORY), null, true);
+    }
+
+    /**
+     * @return True if the clear history data button should be shown.
+     * Note that this may return true even if we are not showing the button.
+     */
+    boolean getShouldShowClearDataIfAvailable() {
+        return mShouldShowClearData;
     }
 
     /**

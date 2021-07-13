@@ -258,7 +258,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
             mHistoryController = mDelegate.createHistoryController(
                     this, mView.getHistoryRowView(), mFullUrl.getHost());
-            setupForgetSiteButton(mView.getForgetSiteButton());
+            // TODO(crbug.com/1173154): Setup forget this site button after history delete is
+            // implemented.
+            // setupForgetSiteButton(mView.getForgetSiteButton());
         }
 
         mPermissionParamsListBuilder = new PermissionParamsListBuilder(mContext, mWindowAndroid);

@@ -110,8 +110,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         boolean shouldShowInfoHeader = SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, true);
         mContentManager = new HistoryContentManager(mActivity, this, isSeparateActivity,
-                isIncognito, shouldShowInfoHeader, /* hostName */ null, mSelectionDelegate,
-                tabCreatorManager, tabSupplier);
+                isIncognito, shouldShowInfoHeader, /* shouldShowClearData */ true,
+                /* hostName */ null, mSelectionDelegate, tabCreatorManager, tabSupplier);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
 

@@ -76,6 +76,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     private void initHistory() {
         mHistoryRow = findViewById(R.id.page_info_history_row);
         mForgetSiteButton = findViewById(R.id.page_info_forget_site_button);
+        initializePageInfoViewChild(mForgetSiteButton, false, null);
     }
 
     private void initHttpsImageCompression(Params params) {
