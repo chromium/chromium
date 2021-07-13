@@ -210,6 +210,16 @@ void TestPasswordStore::RemoveLoginAsync(OptionalStoreChangeListReply callback,
       std::move(callback));
 }
 
+void TestPasswordStore::RemoveLoginsByURLAndTimeAsync(
+    OptionalStoreChangeListReply callback,
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::OnceClosure completion,
+    base::OnceCallback<void(bool)> sync_completion) {
+  NOTIMPLEMENTED();
+}
+
 PasswordStoreChangeList TestPasswordStore::AddLoginImpl(
     const PasswordForm& form,
     AddLoginError* error) {
@@ -447,6 +457,11 @@ void TestPasswordStore::RemoveFieldInfoByTimeImpl(base::Time remove_begin,
   NOTIMPLEMENTED();
 }
 
+void TestPasswordStore::SetUnsyncedCredentialsDeletionNotifier(
+    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier) {
+  NOTIMPLEMENTED();
+}
+
 PasswordStoreChangeList TestPasswordStore::AddLoginSync(
     const PasswordForm& form,
     AddLoginError* error) {
@@ -478,6 +493,15 @@ PasswordStoreChangeList TestPasswordStore::RemoveLoginSync(
     const PasswordForm& form) {
   NOTIMPLEMENTED();
   return {};
+}
+
+void TestPasswordStore::NotifyDeletionsHaveSynced(bool success) {
+  NOTIMPLEMENTED();
+}
+
+void TestPasswordStore::NotifyUnsyncedCredentialsWillBeDeleted(
+    std::vector<PasswordForm> unsynced_credentials) {
+  NOTIMPLEMENTED();
 }
 
 bool TestPasswordStore::BeginTransaction() {

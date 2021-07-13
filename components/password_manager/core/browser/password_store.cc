@@ -129,10 +129,12 @@ void PasswordStore::RemoveLoginsByURLAndTime(
     base::OnceClosure completion,
     base::OnceCallback<void(bool)> sync_completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::RemoveLoginsByURLAndTimeInternal,
-                              this, url_filter, delete_begin, delete_end,
-                              std::move(completion),
-                              std::move(sync_completion)));
+  // TODO(crbug.com/1226042): Pass NotifyLoginsChanged as a callback since
+  // PasswordStoreImpl won't call PasswordStore::NotifyLoginsChanged directly
+  // after it inherits PasswordStoreSync.
+  backend_->RemoveLoginsByURLAndTimeAsync(
+      base::NullCallback(), url_filter, delete_begin, delete_end,
+      std::move(completion), std::move(sync_completion));
 }
 
 void PasswordStore::RemoveLoginsCreatedBetween(base::Time delete_begin,
@@ -394,18 +396,6 @@ PasswordStore::CreateSyncControllerDelegate() {
           base::Unretained(this)));
 }
 
-void PasswordStore::SetUnsyncedCredentialsDeletionNotifier(
-    std::unique_ptr<PasswordStore::UnsyncedCredentialsDeletionNotifier>
-        notifier) {
-  DCHECK(!deletion_notifier_);
-  DCHECK(notifier);
-  deletion_notifier_ = std::move(notifier);
-}
-
-void PasswordStore::SetSyncTaskTimeoutForTest(base::TimeDelta timeout) {
-  sync_task_timeout_ = timeout;
-}
-
 PasswordStore::~PasswordStore() {
   DCHECK(shutdown_called_);
 }
@@ -425,39 +415,10 @@ void PasswordStore::NotifyLoginsChanged(
   }
 }
 
-void PasswordStore::NotifyDeletionsHaveSynced(bool success) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  // Either all deletions have been committed to the Sync server, or Sync is
-  // telling us that it won't commit them (because Sync was turned off
-  // permanently). In either case, run the corresponding callbacks now (on the
-  // main task runner).
-  DCHECK(!success || !GetMetadataStore()->HasUnsyncedDeletions());
-  for (auto& callback : deletions_have_synced_callbacks_) {
-    main_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(std::move(callback), success));
-  }
-  deletions_have_synced_timeout_.Cancel();
-  deletions_have_synced_callbacks_.clear();
-}
-
 void PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange(
     base::OnceCallback<PasswordStoreChangeList()> callback) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   NotifyLoginsChanged(std::move(callback).Run());
-}
-
-void PasswordStore::NotifyUnsyncedCredentialsWillBeDeleted(
-    std::vector<PasswordForm> unsynced_credentials) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(IsAccountStore());
-  // |deletion_notifier_| only gets set for desktop.
-  if (deletion_notifier_) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &PasswordStore::UnsyncedCredentialsDeletionNotifier::Notify,
-            deletion_notifier_->GetWeakPtr(), std::move(unsynced_credentials)));
-  }
 }
 
 void PasswordStore::OnInitCompleted(bool success) {
@@ -564,43 +525,6 @@ void PasswordStore::UpdateLoginWithPrimaryKeyInternal(
   // sync codebase needs to update metadata atomically together with the login
   // data.
   CommitTransaction();
-}
-
-void PasswordStore::RemoveLoginsByURLAndTimeInternal(
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceClosure completion,
-    base::OnceCallback<void(bool)> sync_completion) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords", "PasswordStore::RemoveLoginsByURLAndTimeInternal");
-  BeginTransaction();
-  PasswordStoreChangeList changes =
-      RemoveLoginsByURLAndTimeImpl(url_filter, delete_begin, delete_end);
-  NotifyLoginsChanged(changes);
-  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
-  // CommitTransaction() must be called after NotifyLoginsChanged(), because
-  // sync codebase needs to update metadata atomically together with the login
-  // data.
-  CommitTransaction();
-
-  if (completion)
-    main_task_runner_->PostTask(FROM_HERE, std::move(completion));
-
-  if (sync_completion) {
-    deletions_have_synced_callbacks_.push_back(std::move(sync_completion));
-    // Start a timeout for sync, or restart it if it was already running.
-    deletions_have_synced_timeout_.Reset(base::BindOnce(
-        &PasswordStore::NotifyDeletionsHaveSynced, this, /*success=*/false));
-    background_task_runner_->PostDelayedTask(
-        FROM_HERE, deletions_have_synced_timeout_.callback(),
-        sync_task_timeout_);
-
-    // Do an immediate check for the case where there are already no unsynced
-    // deletions.
-    if (!GetMetadataStore()->HasUnsyncedDeletions())
-      NotifyDeletionsHaveSynced(/*success=*/true);
-  }
 }
 
 void PasswordStore::RemoveLoginsCreatedBetweenInternal(

@@ -28,6 +28,14 @@ class MockPasswordStore : public PasswordStore {
 
   MOCK_METHOD(void, RemoveLogin, (const PasswordForm&), (override));
   MOCK_METHOD(void,
+              RemoveLoginsByURLAndTime,
+              (const base::RepeatingCallback<bool(const GURL&)>&,
+               base::Time,
+               base::Time,
+               base::OnceClosure,
+               base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
               Unblocklist,
               (const PasswordFormDigest&, base::OnceClosure),
               (override));
@@ -90,10 +98,20 @@ class MockPasswordStore : public PasswordStore {
               (const std::u16string&),
               (override));
   MOCK_METHOD(DatabaseCleanupResult, DeleteUndecryptableLogins, (), (override));
+  void SetUnsyncedCredentialsDeletionNotifier(
+      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier)
+      override {
+    NOTIMPLEMENTED();
+  }
   MOCK_METHOD(void,
               NotifyLoginsChanged,
               (const PasswordStoreChangeList&),
               (override));
+  void NotifyDeletionsHaveSynced(bool) override { NOTIMPLEMENTED(); }
+  void NotifyUnsyncedCredentialsWillBeDeleted(
+      std::vector<PasswordForm>) override {
+    NOTIMPLEMENTED();
+  }
   MOCK_METHOD(std::vector<InteractionsStats>,
               GetSiteStatsImpl,
               (const GURL& origin_domain),

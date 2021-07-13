@@ -1166,6 +1166,30 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     return completion_observer.failed_data_types();
   }
 
+  void ExpectRemoveLoginsByURLAndTime(
+      password_manager::MockPasswordStore* store) {
+    EXPECT_CALL(*store, RemoveLoginsByURLAndTime)
+        .WillOnce(
+            testing::WithArgs<3, 4>([](auto callback, auto sync_callback) {
+              std::move(callback).Run();
+              if (sync_callback)
+                std::move(sync_callback).Run(false);
+            }));
+  }
+
+  void ExpectRemoveLoginsByURLAndTimeWithFilter(
+      password_manager::MockPasswordStore* store,
+      base::RepeatingCallback<bool(const GURL&)> filter) {
+    EXPECT_CALL(*store, RemoveLoginsByURLAndTime(ProbablySameFilter(filter), _,
+                                                 _, _, _))
+        .WillOnce(
+            testing::WithArgs<3, 4>([](auto callback, auto sync_callback) {
+              std::move(callback).Run();
+              if (sync_callback)
+                std::move(sync_callback).Run(false);
+            }));
+  }
+
   void BlockUntilOriginDataRemoved(
       const base::Time& delete_begin,
       const base::Time& delete_end,
@@ -1418,7 +1442,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   // Expect that passwords will be deleted, as they do not depend
   // on |prefs::kAllowDeletingBrowserHistory|.
   RemovePasswordsTester tester(GetProfile());
-  EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTimeImpl(_, _, _));
+  ExpectRemoveLoginsByURLAndTime(tester.profile_store());
 
   uint64_t removal_mask =
       constants::DATA_TYPE_HISTORY | constants::DATA_TYPE_PASSWORDS;
@@ -1991,12 +2015,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePasswordsByTimeOnly) {
   RemovePasswordsTester tester(GetProfile());
-  base::RepeatingCallback<bool(const GURL&)> filter =
-      BrowsingDataFilterBuilder::BuildNoopFilter();
 
-  EXPECT_CALL(*tester.profile_store(),
-              RemoveLoginsByURLAndTimeImpl(ProbablySameFilter(filter), _, _))
-      .WillOnce(Return(password_manager::PasswordStoreChangeList()));
+  ExpectRemoveLoginsByURLAndTime(tester.profile_store());
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_PASSWORDS, false);
@@ -2012,9 +2032,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   builder->AddRegisterableDomain(kTestRegisterableDomain1);
   base::RepeatingCallback<bool(const GURL&)> filter = builder->BuildUrlFilter();
 
-  EXPECT_CALL(*tester.profile_store(),
-              RemoveLoginsByURLAndTimeImpl(ProbablySameFilter(filter), _, _))
-      .WillOnce(Return(password_manager::PasswordStoreChangeList()));
+  ExpectRemoveLoginsByURLAndTimeWithFilter(tester.profile_store(), filter);
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
                               constants::DATA_TYPE_PASSWORDS,
                               std::move(builder));
@@ -2040,8 +2058,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   base::RepeatingCallback<bool(const GURL&)> empty_filter =
       BrowsingDataFilterBuilder::BuildNoopFilter();
 
-  EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
-      .WillOnce(Return(password_manager::PasswordStoreChangeList()));
+  ExpectRemoveLoginsByURLAndTime(tester.profile_store());
   EXPECT_CALL(*tester.profile_store(),
               DisableAutoSignInForOriginsImpl(ProbablySameFilter(empty_filter)))
       .WillOnce(Return(password_manager::PasswordStoreChangeList()));
@@ -3081,12 +3098,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
        RemovePasswordsByTimeOnly_WithAccountStore) {
   RemovePasswordsTester tester(GetProfile());
 
-  EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
-      .WillOnce(Return(password_manager::PasswordStoreChangeList()));
-
+  ExpectRemoveLoginsByURLAndTime(tester.profile_store());
   // Only DATA_TYPE_PASSWORDS is cleared. Accounts passwords are not affected.
-  EXPECT_CALL(*tester.account_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
-      .Times(0);
+  EXPECT_CALL(*tester.account_store(), RemoveLoginsByURLAndTime).Times(0);
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_PASSWORDS, false);
@@ -3096,11 +3110,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
        RemoveAccountPasswordsByTimeOnly_WithAccountStore) {
   RemovePasswordsTester tester(GetProfile());
 
-  EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
-      .Times(0);
-
-  EXPECT_CALL(*tester.account_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
-      .WillOnce(Return(password_manager::PasswordStoreChangeList()));
+  EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTime).Times(0);
+  ExpectRemoveLoginsByURLAndTime(tester.account_store());
   // For the account store, the remover delegate also waits until all the
   // deletions have propagated to the Sync server. Pretend that happens
   // immediately.
@@ -3115,19 +3126,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
        RemoveAccountPasswordsByTimeOnly_WithAccountStore_Failure) {
   RemovePasswordsTester tester(GetProfile());
 
-  EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
-      .Times(0);
-
-  EXPECT_CALL(*tester.account_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
-      .WillOnce(Return(password_manager::PasswordStoreChangeList()));
+  EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTime).Times(0);
+  ExpectRemoveLoginsByURLAndTime(tester.account_store());
   // For the account store, the remover delegate also waits until all the
   // deletions have propagated to the Sync server. In this test, that never
   // happens.
   EXPECT_CALL(*tester.account_metadata_store(), HasUnsyncedDeletions())
       .WillRepeatedly(Return(true));
-  // Bypass the (usually 30-second) timeout until the PasswordStore reports
-  // failure.
-  tester.account_store()->SetSyncTaskTimeoutForTest(base::TimeDelta());
 
   uint64_t failed_data_types = BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(), constants::DATA_TYPE_ACCOUNT_PASSWORDS,

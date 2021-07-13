@@ -96,6 +96,13 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
                         const PasswordForm& form) override;
   void RemoveLoginAsync(OptionalStoreChangeListReply callback,
                         const PasswordForm& form) override;
+  void RemoveLoginsByURLAndTimeAsync(
+      OptionalStoreChangeListReply callback,
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceClosure completion,
+      base::OnceCallback<void(bool)> sync_completion) override;
   // PasswordStore interface
   PasswordStoreChangeList AddLoginImpl(const PasswordForm& form,
                                        AddLoginError* error) override;
@@ -142,7 +149,9 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   std::vector<FieldInfo> GetAllFieldInfoImpl() override;
   void RemoveFieldInfoByTimeImpl(base::Time remove_begin,
                                  base::Time remove_end) override;
-
+  void SetUnsyncedCredentialsDeletionNotifier(
+      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier)
+      override;
   // PasswordStoreSync interface.
   // TODO(crbug.bom/1226042): Remove this after PasswordStore no longer
   // inherits PasswordStoreSync.
@@ -156,6 +165,9 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
       const PasswordForm& form,
       base::span<const InsecureCredential> credentials) override;
   PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) override;
+  void NotifyDeletionsHaveSynced(bool success) override;
+  void NotifyUnsyncedCredentialsWillBeDeleted(
+      std::vector<PasswordForm> unsynced_credentials) override;
   bool BeginTransaction() override;
   void RollbackTransaction() override;
   bool CommitTransaction() override;

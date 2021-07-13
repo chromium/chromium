@@ -37,6 +37,9 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   ~PasswordStoreImpl() override;
 
   // Implements PasswordStore interface.
+  void SetUnsyncedCredentialsDeletionNotifier(
+      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier)
+      override;
   void ReportMetricsImpl(const std::string& sync_username,
                          bool custom_passphrase_sync_enabled,
                          BulkCheckDone bulk_check_done) override;
@@ -98,6 +101,9 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
       base::span<const InsecureCredential> credentials) override;
   PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) override;
   void NotifyLoginsChanged(const PasswordStoreChangeList& changes) override;
+  void NotifyDeletionsHaveSynced(bool success) override;
+  void NotifyUnsyncedCredentialsWillBeDeleted(
+      std::vector<PasswordForm> unsynced_credentials) override;
   bool BeginTransaction() override;
   void RollbackTransaction() override;
   bool CommitTransaction() override;
@@ -131,6 +137,13 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
                         const PasswordForm& form) override;
   void RemoveLoginAsync(OptionalStoreChangeListReply callback,
                         const PasswordForm& form) override;
+  void RemoveLoginsByURLAndTimeAsync(
+      OptionalStoreChangeListReply callback,
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceClosure completion,
+      base::OnceCallback<void(bool)> sync_completion) override;
 
   // Opens |login_db_| and creates |sync_bridge_| on the background sequence.
   bool InitOnBackgroundSequence(
@@ -152,6 +165,12 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   PasswordStoreChangeList AddLoginInternal(const PasswordForm& form);
   PasswordStoreChangeList UpdateLoginInternal(const PasswordForm& form);
   PasswordStoreChangeList RemoveLoginInternal(const PasswordForm& form);
+  PasswordStoreChangeList RemoveLoginsByURLAndTimeInternal(
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceClosure completion,
+      base::OnceCallback<void(bool)> sync_completion);
 
   // The login SQL database. The LoginDatabase instance is received via the
   // in an uninitialized state, so as to allow injecting mocks, then Init() is
@@ -160,6 +179,15 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   std::unique_ptr<LoginDatabase> login_db_;
 
   std::unique_ptr<PasswordSyncBridge> sync_bridge_;
+
+  std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier_;
+
+  // A list of callbacks that should be run once all pending deletions have been
+  // sent to the Sync server. Note that the vector itself lives on the
+  // background thread, but the callbacks must be run on the main thread!
+  std::vector<base::OnceCallback<void(bool)>> deletions_have_synced_callbacks_;
+  // Timeout closure that runs if sync takes too long to propagate deletions.
+  base::CancelableOnceClosure deletions_have_synced_timeout_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreImpl);
 };
