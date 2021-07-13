@@ -51050,6 +51050,7 @@ from previous Chrome versions.
   <int value="1905465678" label="ContextualSearchSingleActions:enabled"/>
   <int value="1906942630" label="enable-easy-unlock"/>
   <int value="1907273605" label="NtpZeroSuggest:disabled"/>
+  <int value="1909117215" label="animated-image-resume"/>
   <int value="1910240042" label="enable-experimental-fullscreen-exit-ui"/>
   <int value="1911002680" label="TFLiteLanguageDetectionEnabled:enabled"/>
   <int value="1913263516" label="OculusVR:enabled"/>

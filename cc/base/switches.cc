@@ -97,6 +97,9 @@ const char kHighlightNonLCDTextLayers[] = "highlight-non-lcd-text-layers";
 // Switches the ui compositor to use layer lists instead of layer trees.
 const char kUIEnableLayerLists[] = "ui-enable-layer-lists";
 
+// Enables the resume method on animated images.
+const char kAnimatedImageResume[] = "animated-image-resume";
+
 // Allows scaling clipped images in GpuImageDecodeCache. Note that this may
 // cause color-bleeding.
 // TODO(crbug.com/1157548): Remove this workaround flag once the underlying

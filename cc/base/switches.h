@@ -61,6 +61,8 @@ CC_BASE_EXPORT extern const char kUIEnableLayerLists[];
 
 CC_BASE_EXPORT extern const char kEnableClippedImageScaling[];
 
+CC_BASE_EXPORT extern const char kAnimatedImageResume[];
+
 // Test related.
 CC_BASE_EXPORT extern const char kCCLayerTreeTestNoTimeout[];
 CC_BASE_EXPORT extern const char kCCLayerTreeTestLongTimeout[];
