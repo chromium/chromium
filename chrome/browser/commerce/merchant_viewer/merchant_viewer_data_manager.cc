@@ -30,8 +30,12 @@ void MerchantViewerDataManager::OnLoadAllEntriesForTimeRangeCallback(
     base::Time end,
     bool success,
     MerchantSignals data) {
-  int deleted_items_count = 0;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidDB()) {
+    return;
+  }
 
+  int deleted_items_count = 0;
   for (const auto& item : data) {
     MerchantSignalProto proto = std::move(item.second);
     base::Time time_created = base::Time::FromDoubleT(
@@ -51,8 +55,12 @@ void MerchantViewerDataManager::OnLoadAllEntriesForOriginsCallback(
     const base::flat_set<std::string>& deleted_hostnames,
     bool success,
     MerchantSignals data) {
-  int deleted_items_count = 0;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidDB()) {
+    return;
+  }
 
+  int deleted_items_count = 0;
   for (const auto& item : data) {
     MerchantSignalProto proto = std::move(item.second);
 
@@ -70,7 +78,7 @@ void MerchantViewerDataManager::OnLoadAllEntriesForOriginsCallback(
 void MerchantViewerDataManager::OnLoadCallbackSingleEntry(
     bool success,
     MerchantSignals data) {
-  if (success && data.size() == 1) {
+  if (success && data.size() == 1 && HasValidDB()) {
     MerchantSignalProto proto = std::move(data.at(0).second);
     proto_db_->DeleteOneEntry(proto.key(), base::BindOnce(&OnUpdateCallback));
   }
@@ -78,6 +86,11 @@ void MerchantViewerDataManager::OnLoadCallbackSingleEntry(
 
 void MerchantViewerDataManager::DeleteMerchantViewerDataForOrigins(
     const base::flat_set<GURL>& deleted_origins) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidDB()) {
+    return;
+  }
+
   auto force_delete_all_merchants =
       commerce::kDeleteAllMerchantsOnClearBrowsingHistory.Get();
   if (force_delete_all_merchants) {
@@ -101,6 +114,11 @@ void MerchantViewerDataManager::DeleteMerchantViewerDataForOrigins(
 void MerchantViewerDataManager::DeleteMerchantViewerDataForTimeRange(
     base::Time created_after,
     base::Time created_before) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidDB()) {
+    return;
+  }
+
   bool force_delete_all_merchants =
       commerce::kDeleteAllMerchantsOnClearBrowsingHistory.Get();
   if (force_delete_all_merchants) {
@@ -115,8 +133,14 @@ void MerchantViewerDataManager::DeleteMerchantViewerDataForTimeRange(
 }
 
 void MerchantViewerDataManager::ClearAllMerchants() {
-  DCHECK(proto_db_) << "Invalid protodb instance.";
-  proto_db_->DeleteAllContent(base::BindOnce(&OnUpdateCallback));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (HasValidDB()) {
+    proto_db_->DeleteAllContent(base::BindOnce(&OnUpdateCallback));
+  }
+}
+
+bool MerchantViewerDataManager::HasValidDB() {
+  return proto_db_ != nullptr;
 }
 
 ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>*

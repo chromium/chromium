@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -52,6 +53,8 @@ class MerchantViewerDataManager : public KeyedService {
                                             MerchantSignals data);
 
   void ClearAllMerchants();
+  bool HasValidDB();
+  SEQUENCE_CHECKER(sequence_checker_);
   ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* proto_db_;
   base::WeakPtrFactory<MerchantViewerDataManager> weak_ptr_factory_{this};
 };
