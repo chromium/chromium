@@ -5,12 +5,10 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
-#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
-#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_usage.h"
@@ -20,7 +18,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
-#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 
 namespace blink {
 
@@ -79,27 +76,6 @@ WGPUTextureViewDescriptor AsDawnType(
   return dawn_desc;
 }
 
-WGPUTextureFormat SkColorTypeToWGPUTextureFormat(SkColorType color_type) {
-  switch (color_type) {
-    case SkColorType::kRGBA_8888_SkColorType:
-      return WGPUTextureFormat_RGBA8Unorm;
-    case SkColorType::kBGRA_8888_SkColorType:
-      return WGPUTextureFormat_BGRA8Unorm;
-    case SkColorType::kRGBA_1010102_SkColorType:
-      return WGPUTextureFormat_RGB10A2Unorm;
-    case SkColorType::kRGBA_F16_SkColorType:
-      return WGPUTextureFormat_RGBA16Float;
-    case SkColorType::kRGBA_F32_SkColorType:
-      return WGPUTextureFormat_RGBA32Float;
-    case SkColorType::kR8G8_unorm_SkColorType:
-      return WGPUTextureFormat_RG8Unorm;
-    case SkColorType::kR16G16_float_SkColorType:
-      return WGPUTextureFormat_RG16Float;
-    default:
-      return WGPUTextureFormat_Undefined;
-  }
-}
-
 void popErrorDiscardCallback(WGPUErrorType, const char*, void*) {
   // This callback is used to silently consume expected error messages
 }
@@ -145,99 +121,6 @@ GPUTexture* GPUTexture::CreateError(GPUDevice* device) {
                                          &popErrorDiscardCallback, nullptr);
 
   return texture;
-}
-
-// static
-GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
-                                  HTMLVideoElement* video,
-                                  WGPUTextureUsage usage,
-                                  ExceptionState& exception_state) {
-  if (!video || !video->videoWidth() || !video->videoHeight()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Missing video source");
-    return nullptr;
-  }
-
-  if (video->WouldTaintOrigin()) {
-    exception_state.ThrowSecurityError(
-        "Video element is tainted by cross-origin data and may not be loaded.");
-    return nullptr;
-  }
-
-  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
-  scoped_refptr<media::VideoFrame> media_video_frame;
-  if (auto* wmp = video->GetWebMediaPlayer()) {
-    media_video_frame = wmp->GetCurrentFrame();
-    video_renderer = wmp->GetPaintCanvasVideoRenderer();
-  }
-
-  if (!media_video_frame || !video_renderer) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Failed to import texture from video");
-    return nullptr;
-  }
-
-  // If the context is lost, the resource provider would be invalid.
-  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
-  if (!context_provider_wrapper ||
-      context_provider_wrapper->ContextProvider()->IsContextLost())
-    return nullptr;
-
-  const CanvasResourceParams params(CanvasColorSpace::kSRGB, kN32_SkColorType,
-                                    kPremul_SkAlphaType);
-  const auto intrinsic_size = IntSize(media_video_frame->natural_size());
-
-  // Get a recyclable resource for producing WebGPU-compatible shared images.
-  std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
-      device->GetDawnControlClient()->GetOrCreateCanvasResource(
-          intrinsic_size, params, /*is_origin_top_left=*/true);
-  if (!recyclable_canvas_resource) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Failed to import texture from video");
-    return nullptr;
-  }
-
-  CanvasResourceProvider* resource_provider =
-      recyclable_canvas_resource->resource_provider();
-  DCHECK(resource_provider);
-
-  viz::RasterContextProvider* raster_context_provider = nullptr;
-  if (auto* context_provider = context_provider_wrapper->ContextProvider())
-    raster_context_provider = context_provider->RasterContextProvider();
-
-  // TODO(crbug.com/1174809): This isn't efficient for VideoFrames which are
-  // already available as a shared image. A WebGPUMailboxTexture should be
-  // created directly from the VideoFrame instead.
-  const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
-  if (!DrawVideoFrameIntoResourceProvider(
-          std::move(media_video_frame), resource_provider,
-          raster_context_provider, dest_rect, video_renderer)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Failed to import texture from video");
-    return nullptr;
-  }
-
-  // Extract the format. This is only used to validate experimentalImportTexture
-  // right now. We may want to reflect it from this function or validate it
-  // against some input parameters.
-  WGPUTextureFormat format = SkColorTypeToWGPUTextureFormat(
-      resource_provider->ColorParams().GetSkColorType());
-  if (format == WGPUTextureFormat_Undefined) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "Failed to import texture from video. Unsupported format.");
-    return nullptr;
-  }
-
-  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
-      WebGPUMailboxTexture::FromCanvasResource(
-          device->GetDawnControlClient(), device->GetHandle(), usage,
-          std::move(recyclable_canvas_resource));
-
-  DCHECK(mailbox_texture->GetTexture() != nullptr);
-
-  return MakeGarbageCollected<GPUTexture>(device, format, usage,
-                                          std::move(mailbox_texture));
 }
 
 // static
@@ -297,8 +180,8 @@ GPUTexture* GPUTexture::FromCanvas(GPUDevice* device,
   // Extract the format. This is only used to validate experimentalImportTexture
   // right now. We may want to reflect it from this function or validate it
   // against some input parameters.
-  WGPUTextureFormat format = SkColorTypeToWGPUTextureFormat(
-      resource_provider->ColorParams().GetSkColorType());
+  WGPUTextureFormat format =
+      AsDawnType(resource_provider->ColorParams().GetSkColorType());
   if (format == WGPUTextureFormat_Undefined) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Unsupported format for import texture");
@@ -355,6 +238,10 @@ GPUTexture::GPUTexture(GPUDevice* device,
       mailbox_texture_(std::move(mailbox_texture)) {
   // Mailbox textures are all 2d texture.
   dimension_ = WGPUTextureDimension_2D;
+
+  // The mailbox texture releases the texture on destruction, so reference it
+  // here.
+  GetProcs().textureReference(GetHandle());
 }
 
 GPUTextureView* GPUTexture::createView(

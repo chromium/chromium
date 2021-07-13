@@ -46,11 +46,14 @@ WGPUBindGroupEntry AsDawnType(
       break;
     case V8GPUBindingResource::ContentType::kGPUExternalTexture:
       std::unique_ptr<WGPUExternalTextureBindingEntry>
-          externalTextureBindingEntry;
+          externalTextureBindingEntry =
+              std::make_unique<WGPUExternalTextureBindingEntry>();
       externalTextureBindingEntry->externalTexture =
           AsDawnType(webgpu_binding->resource()->GetAsGPUExternalTexture());
-      dawn_binding.nextInChain =
-          reinterpret_cast<WGPUChainedStruct*>(&externalTextureBindingEntry);
+      externalTextureBindingEntry->chain.sType =
+          WGPUSType_ExternalTextureBindingEntry;
+      dawn_binding.nextInChain = reinterpret_cast<WGPUChainedStruct*>(
+          externalTextureBindingEntry.get());
       externalTextureBindingEntries->push_back(
           std::move(externalTextureBindingEntry));
       break;

@@ -36,6 +36,8 @@ WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent);
 WGPUOrigin3D AsDawnType(const V8GPUOrigin3D* webgpu_extent);
 WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
                                GPUDevice* device);
+WGPUTextureFormat AsDawnType(SkColorType color_type);
+
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
                                       WGPUTextureDataLayout* layout);
 using OwnedProgrammableStageDescriptor =

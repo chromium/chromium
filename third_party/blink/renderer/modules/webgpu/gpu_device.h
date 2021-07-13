@@ -12,12 +12,12 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_callback.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 class ExecutionContext;
 class HTMLCanvasElement;
-class HTMLVideoElement;
 class GPUAdapter;
 class GPUAdapter;
 class GPUBuffer;
@@ -32,6 +32,8 @@ class GPUComputePipeline;
 class GPUComputePipelineDescriptor;
 class GPUDeviceDescriptor;
 class GPUDeviceLostInfo;
+class GPUExternalTexture;
+class GPUExternalTextureDescriptor;
 class GPUPipelineLayout;
 class GPUPipelineLayoutDescriptor;
 class GPUQuerySet;
@@ -77,13 +79,13 @@ class GPUDevice final : public EventTargetWithInlineData,
   GPUBuffer* createBuffer(const GPUBufferDescriptor* descriptor);
   GPUTexture* createTexture(const GPUTextureDescriptor* descriptor,
                             ExceptionState& exception_state);
-  GPUTexture* experimentalImportTexture(HTMLVideoElement* video,
-                                        unsigned int usage_flags,
-                                        ExceptionState& exception_state);
   GPUTexture* experimentalImportTexture(HTMLCanvasElement* canvas,
                                         unsigned int usage_flags,
                                         ExceptionState& exception_state);
   GPUSampler* createSampler(const GPUSamplerDescriptor* descriptor);
+  GPUExternalTexture* importExternalTexture(
+      const GPUExternalTextureDescriptor* descriptor,
+      ExceptionState& exception_state);
 
   GPUBindGroup* createBindGroup(const GPUBindGroupDescriptor* descriptor,
                                 ExceptionState& exception_state);
@@ -128,9 +130,13 @@ class GPUDevice final : public EventTargetWithInlineData,
   void InjectError(WGPUErrorType type, const char* message);
   void AddConsoleWarning(const char* message);
 
+  void EnsureExternalTextureDestroyed(GPUExternalTexture* externalTexture);
+
  private:
   using LostProperty =
       ScriptPromiseProperty<Member<GPUDeviceLostInfo>, ToV8UndefinedGenerator>;
+
+  void DestroyExternalTexturesMicrotask();
 
   void OnUncapturedError(WGPUErrorType errorType, const char* message);
   void OnLogging(WGPULoggingType loggingType, const char* message);
@@ -170,6 +176,9 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   static constexpr int kMaxAllowedConsoleWarnings = 500;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;
+
+  bool has_pending_microtask_ = false;
+  HeapVector<Member<GPUExternalTexture>> external_textures_pending_destroy_;
 
   DISALLOW_COPY_AND_ASSIGN(GPUDevice);
 };

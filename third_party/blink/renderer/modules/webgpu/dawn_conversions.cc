@@ -218,4 +218,25 @@ OwnedProgrammableStageDescriptor AsDawnType(
   return std::make_tuple(dawn_stage, std::move(entry_point_keepalive));
 }
 
+WGPUTextureFormat AsDawnType(SkColorType color_type) {
+  switch (color_type) {
+    case SkColorType::kRGBA_8888_SkColorType:
+      return WGPUTextureFormat_RGBA8Unorm;
+    case SkColorType::kBGRA_8888_SkColorType:
+      return WGPUTextureFormat_BGRA8Unorm;
+    case SkColorType::kRGBA_1010102_SkColorType:
+      return WGPUTextureFormat_RGB10A2Unorm;
+    case SkColorType::kRGBA_F16_SkColorType:
+      return WGPUTextureFormat_RGBA16Float;
+    case SkColorType::kRGBA_F32_SkColorType:
+      return WGPUTextureFormat_RGBA32Float;
+    case SkColorType::kR8G8_unorm_SkColorType:
+      return WGPUTextureFormat_RG8Unorm;
+    case SkColorType::kR16G16_float_SkColorType:
+      return WGPUTextureFormat_RG16Float;
+    default:
+      return WGPUTextureFormat_Undefined;
+  }
+}
+
 }  // namespace blink

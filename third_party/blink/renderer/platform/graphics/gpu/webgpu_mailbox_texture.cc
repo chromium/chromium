@@ -92,7 +92,7 @@ WebGPUMailboxTexture::~WebGPUMailboxTexture() {
     webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
     std::move(destroy_callback_).Run(finished_access_token);
   }
-
+  dawn_control_client_->GetProcs().textureRelease(texture_);
   dawn_control_client_->GetProcs().deviceRelease(device_);
 }
 

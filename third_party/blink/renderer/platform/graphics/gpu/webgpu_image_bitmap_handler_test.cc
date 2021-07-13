@@ -65,6 +65,7 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
     // real WebGPU device.
     procs_.deviceReference = [](WGPUDevice) {};
     procs_.deviceRelease = [](WGPUDevice) {};
+    procs_.textureRelease = [](WGPUTexture) {};
   }
 
   MOCK_METHOD(gpu::webgpu::ReservedTexture,

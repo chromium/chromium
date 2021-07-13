@@ -4,12 +4,136 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_external_texture.h"
 
+#include "media/base/video_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 
 namespace blink {
 
-GPUExternalTexture::GPUExternalTexture(GPUDevice* device,
-                                       WGPUExternalTexture externalTexture)
-    : DawnObject<WGPUExternalTexture>(device, externalTexture) {}
+// static
+GPUExternalTexture* GPUExternalTexture::FromVideo(
+    GPUDevice* device,
+    const GPUExternalTextureDescriptor* webgpu_desc,
+    ExceptionState& exception_state) {
+  HTMLVideoElement* video = webgpu_desc->source();
+
+  if (!video || !video->videoWidth() || !video->videoHeight()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Missing video source");
+    return nullptr;
+  }
+
+  if (video->WouldTaintOrigin()) {
+    exception_state.ThrowSecurityError(
+        "Video element is tainted by cross-origin data and may not be loaded.");
+    return nullptr;
+  }
+
+  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
+  scoped_refptr<media::VideoFrame> media_video_frame;
+  if (auto* wmp = video->GetWebMediaPlayer()) {
+    media_video_frame = wmp->GetCurrentFrame();
+    video_renderer = wmp->GetPaintCanvasVideoRenderer();
+  }
+
+  if (!media_video_frame || !video_renderer) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to import texture from video");
+    return nullptr;
+  }
+
+  // If the context is lost, the resource provider would be invalid.
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (!context_provider_wrapper ||
+      context_provider_wrapper->ContextProvider()->IsContextLost())
+    return nullptr;
+
+  const CanvasResourceParams params(CanvasColorSpace::kSRGB, kN32_SkColorType,
+                                    kPremul_SkAlphaType);
+  const auto intrinsic_size = IntSize(media_video_frame->natural_size());
+
+  // Get a recyclable resource for producing WebGPU-compatible shared images.
+  std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
+      device->GetDawnControlClient()->GetOrCreateCanvasResource(
+          intrinsic_size, params, /*is_origin_top_left=*/true);
+  if (!recyclable_canvas_resource) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to import texture from video");
+    return nullptr;
+  }
+
+  CanvasResourceProvider* resource_provider =
+      recyclable_canvas_resource->resource_provider();
+  DCHECK(resource_provider);
+
+  viz::RasterContextProvider* raster_context_provider = nullptr;
+  if (auto* context_provider = context_provider_wrapper->ContextProvider())
+    raster_context_provider = context_provider->RasterContextProvider();
+
+  // TODO(crbug.com/1174809): This isn't efficient for VideoFrames which are
+  // already available as a shared image. A WebGPUMailboxTexture should be
+  // created directly from the VideoFrame instead.
+  const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
+  if (!DrawVideoFrameIntoResourceProvider(
+          std::move(media_video_frame), resource_provider,
+          raster_context_provider, dest_rect, video_renderer)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to import texture from video");
+    return nullptr;
+  }
+
+  // Extract the format. If this format is invalid, Dawn will emit an error upon
+  // ExternalTexture creation.
+  WGPUTextureFormat format =
+      AsDawnType(resource_provider->ColorParams().GetSkColorType());
+
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+      WebGPUMailboxTexture::FromCanvasResource(
+          device->GetDawnControlClient(), device->GetHandle(),
+          WGPUTextureUsage::WGPUTextureUsage_Sampled,
+          std::move(recyclable_canvas_resource));
+
+  WGPUTextureViewDescriptor viewDesc = {};
+  WGPUTextureView plane0 = device->GetProcs().textureCreateView(
+      mailbox_texture->GetTexture(), &viewDesc);
+
+  WGPUExternalTextureDescriptor dawn_desc = {};
+  dawn_desc.plane0 = plane0;
+  dawn_desc.format = format;
+
+  GPUExternalTexture* externalTexture =
+      MakeGarbageCollected<GPUExternalTexture>(
+          device,
+          device->GetProcs().deviceCreateExternalTexture(device->GetHandle(),
+                                                         &dawn_desc),
+          mailbox_texture);
+
+  // The texture view will be referenced during external texture creation, so by
+  // calling release here we ensure this texture view will be destructed when
+  // the external texture is destructed.
+  device->GetProcs().textureViewRelease(plane0);
+
+  return externalTexture;
+}
+
+GPUExternalTexture::GPUExternalTexture(
+    GPUDevice* device,
+    WGPUExternalTexture externalTexture,
+    scoped_refptr<WebGPUMailboxTexture> mailbox_texture)
+    : DawnObject<WGPUExternalTexture>(device, externalTexture),
+      mailbox_texture_(mailbox_texture) {}
+
+void GPUExternalTexture::Destroy() {
+  GetProcs().textureDestroy(mailbox_texture_->GetTexture());
+  mailbox_texture_.reset();
+}
 
 }  // namespace blink

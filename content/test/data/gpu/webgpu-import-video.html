@@ -6,6 +6,7 @@
         video.src = './vc/teddy1_vp9_640x360_30fps.webm';
         video.loop = true;
         video.muted = true;
+        await video.play();
 
         // Test with two videos. The original implementation had a bug
         // where importing a second video would result in improper
@@ -14,6 +15,7 @@
         video2.src = './vc/teddy2_vp9_320x180_15fps.webm';
         video2.loop = true;
         video2.muted = true;
+        await video2.play();
 
         const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
         const device = await adapter.requestDevice();
@@ -27,7 +29,31 @@
           format: swapChainFormat,
         });
 
+        // TODO: Use getBindGroupLayout. We can't right now because SPIRV-Cross
+        // doesn't reflect external textures correctly.
+        const bindGroupLayout = device.createBindGroupLayout({
+        entries: [
+          {
+            binding: 0,
+            visibility: GPUShaderStage.FRAGMENT,
+            sampler: {type: "filtering"}
+          },
+          {
+            binding: 1,
+            visibility: GPUShaderStage.FRAGMENT,
+            externalTexture: {}
+          },{
+            binding: 2,
+            visibility: GPUShaderStage.FRAGMENT,
+            externalTexture: {}
+          }
+        ],
+        });
+
+        const pipelineLayout = device.createPipelineLayout({bindGroupLayouts: [bindGroupLayout]});
+
         const pipeline = device.createRenderPipeline({
+          layout: pipelineLayout,
           vertex: {
             module: device.createShaderModule({
               code: `
@@ -37,8 +63,8 @@ struct VertexOutput {
 };
 
 [[stage(vertex)]]
-fn main([[builtin(vertex_index)]] VertexIndex : u32) -> VertexOutput {
-  let pos : array<vec3<f32>, 6> = array<vec3<f32>, 6>(
+fn main([[builtin(vertex_index)]] idx : u32) -> VertexOutput {
+  var pos = array<vec3<f32>, 6>(
     vec3<f32>( 1.0,  1.0, 0.0),
     vec3<f32>( 1.0, -1.0, 0.0),
     vec3<f32>(-1.0, -1.0, 0.0),
@@ -46,7 +72,7 @@ fn main([[builtin(vertex_index)]] VertexIndex : u32) -> VertexOutput {
     vec3<f32>(-1.0, -1.0, 0.0),
     vec3<f32>(-1.0,  1.0, 0.0)
   );
-  let uv : array<vec2<f32>, 6> = array<vec2<f32>, 6>(
+  var uv  = array<vec2<f32>, 6>(
     vec2<f32>(1.0, 0.0),
     vec2<f32>(1.0, 2.0),
     vec2<f32>(0.0, 2.0),
@@ -56,8 +82,8 @@ fn main([[builtin(vertex_index)]] VertexIndex : u32) -> VertexOutput {
   );
 
   var output : VertexOutput;
-  output.Position = vec4<f32>(pos[VertexIndex], 1.0);
-  output.fragUV = uv[VertexIndex];
+  output.Position = vec4<f32>(pos[idx], 1.0);
+  output.fragUV = uv[idx];
   return output;
 }
 `,
@@ -68,17 +94,17 @@ fn main([[builtin(vertex_index)]] VertexIndex : u32) -> VertexOutput {
             module: device.createShaderModule({
               code: `
 [[binding(0), group(0)]] var mySampler: sampler;
-[[binding(1), group(0)]] var myTexture: texture_2d<f32>;
-[[binding(2), group(0)]] var myTexture2: texture_2d<f32>;
+[[binding(1), group(0)]] var myTexture: texture_external;
+[[binding(2), group(0)]] var myTexture2: texture_external;
 
 [[stage(fragment)]]
 fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
   var result : vec4<f32>;
   if (fragUV.y <= 1.0) {
-    result = textureSample(myTexture, mySampler, fragUV);
+    result = textureSampleLevel(myTexture, mySampler, fragUV);
   } else {
     var uv : vec2<f32> = vec2<f32>(fragUV.x, fragUV.y - 1.0);
-    result = textureSample(myTexture2, mySampler, uv);
+    result = textureSampleLevel(myTexture2, mySampler, uv);
   }
   return result;
 }
@@ -94,15 +120,12 @@ fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
           },
         });
 
-        const linearSampler = device.createSampler({
-          magFilter: 'linear',
-          minFilter: 'linear',
-        });
+        const linearSampler = device.createSampler();
 
         const renderPassDescriptor = {
           colorAttachments: [
             {
-              attachment: undefined, // Assigned later
+              view: undefined, // Assigned later
               loadValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 },
               storeOp: 'store',
             },
@@ -110,18 +133,17 @@ fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
         };
 
         function frame() {
-          renderPassDescriptor.colorAttachments[0].attachment = swapChain
+          renderPassDescriptor.colorAttachments[0].view = swapChain
             .getCurrentTexture()
             .createView();
 
-          const videoTexture = device.experimentalImportTexture(
-            video, GPUTextureUsage.SAMPLED);
-
-          const videoTexture2 = device.experimentalImportTexture(
-            video2, GPUTextureUsage.SAMPLED);
+         const externalTextureDescriptor =  {source: video};
+         const externalTextureDescriptor2 =  {source: video2};
+         const externalTexture = device.importExternalTexture(externalTextureDescriptor);
+         const externalTexture2 = device.importExternalTexture(externalTextureDescriptor2);
 
           const bindGroup = device.createBindGroup({
-            layout: pipeline.getBindGroupLayout(0),
+            layout: bindGroupLayout,
             entries: [
               {
                 binding: 0,
@@ -129,15 +151,14 @@ fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
               },
               {
                 binding: 1,
-                resource: videoTexture.createView(),
+                resource: externalTexture,
               },
               {
                 binding: 2,
-                resource: videoTexture2.createView(),
-              },
+                resource: externalTexture2,
+              }
             ],
           });
-
           const commandEncoder = device.createCommandEncoder();
           const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
           passEncoder.setPipeline(pipeline);
@@ -146,15 +167,9 @@ fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
           passEncoder.endPass();
           device.queue.submit([commandEncoder.finish()]);
 
-          // Destroy the texture after submit to promptly recycle resources.
-          videoTexture.destroy();
-          videoTexture2.destroy();
-
           requestAnimationFrame(frame);
         }
 
-        await video.play();
-        await video2.play();
         requestAnimationFrame(frame);
     </script>
   </body>

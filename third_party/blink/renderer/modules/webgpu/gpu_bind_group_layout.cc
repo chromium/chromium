@@ -63,7 +63,10 @@ WGPUBindGroupLayoutEntry AsDawnType(
 
   if (webgpu_binding->hasExternalTexture()) {
     std::unique_ptr<WGPUExternalTextureBindingLayout>
-        externalTextureBindingLayout;
+        externalTextureBindingLayout =
+            std::make_unique<WGPUExternalTextureBindingLayout>();
+    externalTextureBindingLayout->chain.sType =
+        WGPUSType_ExternalTextureBindingLayout;
     dawn_binding.nextInChain = reinterpret_cast<WGPUChainedStruct*>(
         externalTextureBindingLayout.get());
     externalTextureBindingLayouts->push_back(
