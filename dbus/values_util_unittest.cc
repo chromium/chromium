@@ -202,15 +202,15 @@ TEST(ValuesUtilTest, PopIntArray) {
   writer.CloseContainer(&sub_writer);
 
   // Create the expected value.
-  std::unique_ptr<base::ListValue> list_value(new base::ListValue);
+  base::Value list_value(base::Value::Type::LIST);
   for (size_t i = 0; i != data.size(); ++i)
-    list_value->AppendInteger(data[i]);
+    list_value.Append(data[i]);
 
   // Pop an int32_t array.
   MessageReader reader(response.get());
   std::unique_ptr<base::Value> value(PopDataAsValue(&reader));
   ASSERT_NE(nullptr, value);
-  EXPECT_TRUE(value->Equals(list_value.get()));
+  EXPECT_EQ(*value, list_value);
 }
 
 TEST(ValuesUtilTest, PopStringArray) {
@@ -225,15 +225,15 @@ TEST(ValuesUtilTest, PopStringArray) {
   writer.AppendArrayOfStrings(data);
 
   // Create the expected value.
-  std::unique_ptr<base::ListValue> list_value(new base::ListValue);
+  base::Value list_value(base::Value::Type::LIST);
   for (size_t i = 0; i != data.size(); ++i)
-    list_value->AppendString(data[i]);
+    list_value.Append(data[i]);
 
   // Pop a string array.
   MessageReader reader(response.get());
   std::unique_ptr<base::Value> value(PopDataAsValue(&reader));
   ASSERT_NE(nullptr, value);
-  EXPECT_TRUE(value->Equals(list_value.get()));
+  EXPECT_EQ(*value, list_value);
 }
 
 TEST(ValuesUtilTest, PopStruct) {
@@ -253,17 +253,17 @@ TEST(ValuesUtilTest, PopStruct) {
   writer.CloseContainer(&sub_writer);
 
   // Create the expected value.
-  base::ListValue list_value;
-  list_value.AppendBoolean(kBoolValue);
-  list_value.AppendInteger(kInt32Value);
+  base::Value list_value(base::Value::Type::LIST);
+  list_value.Append(kBoolValue);
+  list_value.Append(kInt32Value);
   list_value.Append(kDoubleValue);
-  list_value.AppendString(kStringValue);
+  list_value.Append(kStringValue);
 
   // Pop a struct.
   MessageReader reader(response.get());
   std::unique_ptr<base::Value> value(PopDataAsValue(&reader));
   ASSERT_NE(nullptr, value);
-  EXPECT_TRUE(value->Equals(&list_value));
+  EXPECT_EQ(*value, list_value);
 }
 
 TEST(ValuesUtilTest, PopStringToVariantDictionary) {
@@ -520,9 +520,9 @@ TEST(ValuesUtilTest, AppendDictionary) {
   const double kDoubleValue = 4.9;
   const std::string kStringValue = "fifty";
 
-  auto list_value = std::make_unique<base::ListValue>();
-  list_value->AppendBoolean(kBoolValue);
-  list_value->AppendInteger(kInt32Value);
+  base::Value list_value(base::Value::Type::LIST);
+  list_value.Append(kBoolValue);
+  list_value.Append(kInt32Value);
 
   auto dictionary_value = std::make_unique<base::DictionaryValue>();
   dictionary_value->SetBoolean(kKey1, kBoolValue);
@@ -533,7 +533,8 @@ TEST(ValuesUtilTest, AppendDictionary) {
   test_dictionary.SetInteger(kKey2, kInt32Value);
   test_dictionary.SetDouble(kKey3, kDoubleValue);
   test_dictionary.SetString(kKey4, kStringValue);
-  test_dictionary.Set(kKey5, std::move(list_value));
+  test_dictionary.Set(kKey5,
+                      base::Value::ToUniquePtrValue(std::move(list_value)));
   test_dictionary.Set(kKey6, std::move(dictionary_value));
 
   std::unique_ptr<Response> response(Response::CreateEmpty());
@@ -567,9 +568,9 @@ TEST(ValuesUtilTest, AppendDictionaryAsVariant) {
   const double kDoubleValue = 4.9;
   const std::string kStringValue = "fifty";
 
-  auto list_value = std::make_unique<base::ListValue>();
-  list_value->AppendBoolean(kBoolValue);
-  list_value->AppendInteger(kInt32Value);
+  base::Value list_value(base::Value::Type::LIST);
+  list_value.Append(kBoolValue);
+  list_value.Append(kInt32Value);
 
   auto dictionary_value = std::make_unique<base::DictionaryValue>();
   dictionary_value->SetBoolean(kKey1, kBoolValue);
@@ -580,7 +581,8 @@ TEST(ValuesUtilTest, AppendDictionaryAsVariant) {
   test_dictionary.SetInteger(kKey2, kInt32Value);
   test_dictionary.SetDouble(kKey3, kDoubleValue);
   test_dictionary.SetString(kKey4, kStringValue);
-  test_dictionary.Set(kKey5, std::move(list_value));
+  test_dictionary.Set(kKey5,
+                      base::Value::ToUniquePtrValue(std::move(list_value)));
   test_dictionary.Set(kKey6, std::move(dictionary_value));
 
   std::unique_ptr<Response> response(Response::CreateEmpty());
@@ -610,20 +612,19 @@ TEST(ValuesUtilTest, AppendList) {
   const double kDoubleValue = 4.9;
   const std::string kStringValue = "fifty";
 
-  std::unique_ptr<base::ListValue> list_value(new base::ListValue());
-  list_value->AppendBoolean(kBoolValue);
-  list_value->AppendInteger(kInt32Value);
+  base::Value list_value(base::Value::Type::LIST);
+  list_value.Append(kBoolValue);
+  list_value.Append(kInt32Value);
 
-  std::unique_ptr<base::DictionaryValue> dictionary_value(
-      new base::DictionaryValue());
-  dictionary_value->SetBoolean(kKey1, kBoolValue);
-  dictionary_value->SetInteger(kKey2, kDoubleValue);
+  base::Value dictionary_value(base::Value::Type::DICTIONARY);
+  dictionary_value.SetBoolPath(kKey1, kBoolValue);
+  dictionary_value.SetIntPath(kKey2, kDoubleValue);
 
-  base::ListValue test_list;
-  test_list.AppendBoolean(kBoolValue);
-  test_list.AppendInteger(kInt32Value);
+  base::Value test_list(base::Value::Type::LIST);
+  test_list.Append(kBoolValue);
+  test_list.Append(kInt32Value);
   test_list.Append(kDoubleValue);
-  test_list.AppendString(kStringValue);
+  test_list.Append(kStringValue);
   test_list.Append(std::move(list_value));
   test_list.Append(std::move(dictionary_value));
 
@@ -654,20 +655,19 @@ TEST(ValuesUtilTest, AppendListAsVariant) {
   const double kDoubleValue = 4.9;
   const std::string kStringValue = "fifty";
 
-  std::unique_ptr<base::ListValue> list_value(new base::ListValue());
-  list_value->AppendBoolean(kBoolValue);
-  list_value->AppendInteger(kInt32Value);
+  base::Value list_value(base::Value::Type::LIST);
+  list_value.Append(kBoolValue);
+  list_value.Append(kInt32Value);
 
-  std::unique_ptr<base::DictionaryValue> dictionary_value(
-      new base::DictionaryValue());
-  dictionary_value->SetBoolean(kKey1, kBoolValue);
-  dictionary_value->SetInteger(kKey2, kDoubleValue);
+  base::Value dictionary_value(base::Value::Type::DICTIONARY);
+  dictionary_value.SetBoolPath(kKey1, kBoolValue);
+  dictionary_value.SetIntPath(kKey2, kDoubleValue);
 
-  base::ListValue test_list;
-  test_list.AppendBoolean(kBoolValue);
-  test_list.AppendInteger(kInt32Value);
+  base::Value test_list(base::Value::Type::LIST);
+  test_list.Append(kBoolValue);
+  test_list.Append(kInt32Value);
   test_list.Append(kDoubleValue);
-  test_list.AppendString(kStringValue);
+  test_list.Append(kStringValue);
   test_list.Append(std::move(list_value));
   test_list.Append(std::move(dictionary_value));
 
