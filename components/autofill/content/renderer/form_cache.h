@@ -72,6 +72,12 @@ class FormCache {
   FRIEND_TEST_ALL_PREFIXES(FormCacheTest,
                            ShouldShowAutocompleteConsoleWarnings_Disabled);
   FRIEND_TEST_ALL_PREFIXES(FormCacheBrowserTest, FreeDataOnElementRemoval);
+  FRIEND_TEST_ALL_PREFIXES(
+      FormCacheBrowserTest,
+      RemoveReextractedModifiedNonSyntheticFormsWithSameRendererID);
+  FRIEND_TEST_ALL_PREFIXES(
+      FormCacheBrowserTest,
+      RemoveReextractedModifiedSyntheticFormsWithSameRendererID);
 
   // Scans |control_elements| and returns the number of editable elements.
   // Also logs warning messages for deprecated attribute if

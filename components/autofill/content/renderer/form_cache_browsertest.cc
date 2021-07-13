@@ -504,4 +504,73 @@ TEST_F(FormCacheBrowserTest, IsFormElementEligibleForManualFilling) {
       form_cache.IsFormElementEligibleForManualFilling(last_name_element));
 }
 
+// Test that after adding an input element to an already extracted non-synthetic
+// form, the form (has the same renderer ID) is not added twice to the extracted
+// forms.
+TEST_F(FormCacheBrowserTest,
+       RemoveReextractedModifiedNonSyntheticFormsWithSameRendererID) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval);
+
+  LoadHTML(R"(
+    <form id="form1">
+      <input type="text">
+    </form>
+  )");
+
+  FormCache form_cache(GetMainFrame());
+  std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
+
+  // Append an input element to the form.
+  ExecuteJavaScriptForTests(R"(
+    var form1 = document.getElementById("form1");
+    form1.appendChild(document.createElement("input"));
+  )");
+
+  forms = form_cache.ExtractNewForms(nullptr);
+
+  // Check if a field was truly added to the form.
+  const FormData* form1 = GetFormByName(forms, "form1");
+  ASSERT_TRUE(form1);
+  EXPECT_EQ(2u, form1->fields.size());
+
+  // Check if the modified form with the same rendererID was not added again.
+  EXPECT_EQ(1u, form_cache.parsed_forms_.size());
+}
+
+// Test that after adding an unowned input element to an already extracted
+// synthetic form, the form (has the same renderer ID) is not added twice to the
+// extracted forms.
+TEST_F(FormCacheBrowserTest,
+       RemoveReextractedModifiedSyntheticFormsWithSameRendererID) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval);
+
+  LoadHTML(R"(
+    <input type="text" name="unowned_element">
+  )");
+
+  FormCache form_cache(GetMainFrame());
+  std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
+
+  // Append the document with a new unowned input.
+  ExecuteJavaScriptForTests(R"(
+    var new_unowned_input = document.createElement("input");
+    document.body.appendChild(new_unowned_input);
+  )");
+
+  forms = form_cache.ExtractNewForms(nullptr);
+
+  // Check if the unowned field was truly added.
+  const FormData* unowned_form = GetFormByName(forms, "");
+  ASSERT_TRUE(unowned_form);
+  EXPECT_EQ(2u, unowned_form->fields.size());
+
+  // Check if the modified form with the same rendererID was not added again.
+  // (We expect that all the unowned fields have the same rendererID.)
+  EXPECT_EQ(1u, form_cache.parsed_forms_.size());
+}
+
 }  // namespace autofill

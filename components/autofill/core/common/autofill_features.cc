@@ -389,6 +389,13 @@ const base::Feature kAutofillUseImprovedLabelDisambiguation{
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to use only rendererID for removing duplicated old forms
+// from the extracted forms when modified.
+// TODO(crbug.com/1215333): Remove the feature when the experiment is completed.
+const base::Feature kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval{
+    "AutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 const base::Feature kAutofillEnableAblationStudy{

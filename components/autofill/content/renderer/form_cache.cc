@@ -169,9 +169,20 @@ std::vector<FormData> FormCache::ExtractNewForms(
     if (!base::Contains(parsed_forms_, form) &&
         IsFormInteresting(form, num_editable_elements)) {
       for (auto it = parsed_forms_.begin(); it != parsed_forms_.end(); ++it) {
-        if (it->SameFormAs(form)) {
-          parsed_forms_.erase(it);
-          break;
+        // We don't want to store twice forms that have the same rendererID or
+        // the same attributes/fields.
+        if (base::FeatureList::IsEnabled(
+                features::
+                    kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval)) {
+          if (it->unique_renderer_id == form.unique_renderer_id) {
+            parsed_forms_.erase(it);
+            break;
+          }
+        } else {
+          if (it->SameFormAs(form)) {
+            parsed_forms_.erase(it);
+            break;
+          }
         }
       }
 
