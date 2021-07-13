@@ -102,6 +102,15 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
   if (!g_browser_process->safe_browsing_service())
     return;
 
+  if (unsafe_resources.size() == 1) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "SafeBrowsing.BlockingPage.ResourceType",
+        safe_browsing::GetResourceTypeFromRequestDestination(
+            unsafe_resources[0].request_destination));
+    UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
+                              unsafe_resources[0].request_destination);
+  }
+
   // Start computing threat details. Trigger Manager will decide if it's safe to
   // begin collecting data at this time. The report will be sent only if the
   // user opts-in on the blocking page later.
@@ -195,19 +204,12 @@ SafeBrowsingBlockingPage* SafeBrowsingBlockingPage::CreateBlockingPage(
     const GURL& main_frame_url,
     const UnsafeResource& unsafe_resource,
     bool should_trigger_reporting) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "SafeBrowsing.BlockingPage.ResourceType",
-      safe_browsing::GetResourceTypeFromRequestDestination(
-          unsafe_resource.request_destination));
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
-                            unsafe_resource.request_destination);
-  const UnsafeResourceList resources{unsafe_resource};
   // Set up the factory if this has not been done already (tests do that
   // before this method is called).
   if (!factory_)
     factory_ = g_chrome_safe_browsing_blocking_page_factory.Pointer();
   return factory_->CreateSafeBrowsingPage(ui_manager, web_contents,
-                                          main_frame_url, resources,
+                                          main_frame_url, {unsafe_resource},
                                           should_trigger_reporting);
 }
 
