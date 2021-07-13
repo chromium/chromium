@@ -87,6 +87,31 @@ ValidationResult ValidateMetadataFeature(const proto::Feature& feature) {
   return ValidationResult::VALIDATION_SUCCESS;
 }
 
+ValidationResult ValidateMetadataAndFeatures(
+    const proto::SegmentationModelMetadata& model_metadata) {
+  auto metadata_result = ValidateMetadata(model_metadata);
+  if (metadata_result != ValidationResult::VALIDATION_SUCCESS)
+    return metadata_result;
+
+  for (int i = 0; i < model_metadata.features_size(); ++i) {
+    auto feature = model_metadata.features(i);
+    auto feature_result = ValidateMetadataFeature(feature);
+    if (feature_result != ValidationResult::VALIDATION_SUCCESS)
+      return feature_result;
+  }
+
+  return ValidationResult::VALIDATION_SUCCESS;
+}
+
+ValidationResult ValidateSegementInfoMetadataAndFeatures(
+    const proto::SegmentInfo& segment_info) {
+  auto segment_info_result = ValidateSegmentInfo(segment_info);
+  if (segment_info_result != ValidationResult::VALIDATION_SUCCESS)
+    return segment_info_result;
+
+  return ValidateMetadataAndFeatures(segment_info.model_metadata());
+}
+
 bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info) {
   if (!segment_info.has_prediction_result())
     return true;

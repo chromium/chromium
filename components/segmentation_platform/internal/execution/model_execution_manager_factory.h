@@ -36,7 +36,9 @@ std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,
-    std::unique_ptr<FeatureAggregator> feature_aggregator);
+    std::unique_ptr<FeatureAggregator> feature_aggregator,
+    const ModelExecutionManager::SegmentationModelUpdatedCallback&
+        model_updated_callback);
 
 }  // namespace segmentation_platform
 

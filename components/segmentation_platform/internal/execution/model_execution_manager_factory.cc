@@ -40,9 +40,12 @@ class SignalDatabase;
 std::unique_ptr<SegmentationModelHandler> CreateModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    optimization_guide::proto::OptimizationTarget optimization_target) {
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    const SegmentationModelHandler::ModelUpdatedCallback&
+        model_updated_callback) {
   return std::make_unique<SegmentationModelHandler>(
-      model_provider, background_task_runner, optimization_target);
+      model_provider, background_task_runner, optimization_target,
+      model_updated_callback);
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
@@ -53,13 +56,16 @@ std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,
-    std::unique_ptr<FeatureAggregator> feature_aggregator) {
+    std::unique_ptr<FeatureAggregator> feature_aggregator,
+    const ModelExecutionManager::SegmentationModelUpdatedCallback&
+        model_updated_callback) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return std::make_unique<ModelExecutionManagerImpl>(
       segment_ids,
       base::BindRepeating(&CreateModelHandler, model_provider,
                           background_task_runner),
-      clock, segment_database, signal_database, std::move(feature_aggregator));
+      clock, segment_database, signal_database, std::move(feature_aggregator),
+      model_updated_callback);
 #else
   return std::make_unique<DummyModelExecutionManager>();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

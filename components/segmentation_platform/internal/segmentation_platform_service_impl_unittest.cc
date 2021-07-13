@@ -17,6 +17,7 @@
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -38,6 +39,10 @@
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/public/config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB
 
 namespace segmentation_platform {
 namespace {
@@ -143,6 +148,35 @@ TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
   // If initialization is succeeded, model execution scheduler should start
   // querying segment db.
   segment_db_->LoadCallback(true);
+
+  // If we build with TF Lite, we need to also inspect whether the
+  // ModelExecutionManagerImpl is publishing the correct data and whether that
+  // leads to the SegmentationPlatformServiceImpl doing the right thing.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+  auto* metadata = segment_info.mutable_model_metadata();
+  metadata->set_time_unit(proto::TimeUnit::DAY);
+  metadata->set_bucket_duration(42u);
+  // Add a test feature, which will later cause the signal storage DB to be
+  // updated.
+  auto* feature = metadata->add_features();
+  feature->set_type(proto::SignalType::HISTOGRAM_VALUE);
+  feature->set_name("other");
+  feature->set_name_hash(123);
+  feature->set_aggregation(proto::Aggregation::BUCKETED_SUM);
+  feature->set_bucket_count(3);
+  feature->set_tensor_length(3);
+
+  ModelExecutionManagerImpl* mem_impl = static_cast<ModelExecutionManagerImpl*>(
+      segmentation_platform_service_impl_->model_execution_manager_.get());
+  mem_impl->model_updated_callback_.Run(segment_info);
+
+  // Since the updated config had a new feature, the SignalStorageConfigs DB
+  // should have been updated.
+  segment_storage_config_db_->UpdateCallback(true);
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 TEST_F(SegmentationPlatformServiceImplTest,

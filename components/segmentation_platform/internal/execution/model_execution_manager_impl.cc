@@ -75,14 +75,21 @@ ModelExecutionManagerImpl::ModelExecutionManagerImpl(
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,
-    std::unique_ptr<FeatureAggregator> feature_aggregator)
+    std::unique_ptr<FeatureAggregator> feature_aggregator,
+    const SegmentationModelUpdatedCallback& model_updated_callback)
     : clock_(clock),
       segment_database_(segment_database),
       signal_database_(signal_database),
-      feature_aggregator_(std::move(feature_aggregator)) {
+      feature_aggregator_(std::move(feature_aggregator)),
+      model_updated_callback_(model_updated_callback) {
   for (OptimizationTarget segment_id : segment_ids) {
-    model_handlers_.emplace(
-        std::make_pair(segment_id, model_handler_creator.Run(segment_id)));
+    model_handlers_.emplace(std::make_pair(
+        segment_id,
+        model_handler_creator.Run(
+            segment_id,
+            base::BindRepeating(
+                &ModelExecutionManagerImpl::OnSegmentationModelUpdated,
+                weak_ptr_factory_.GetWeakPtr()))));
   }
 }
 
@@ -104,11 +111,12 @@ void ModelExecutionManagerImpl::ExecuteModel(OptimizationTarget segment_id,
   // the metadata informs how we should process the data.
   segment_database_->GetSegmentInfo(
       segment_id,
-      base::BindOnce(&ModelExecutionManagerImpl::OnSegmentInfoFetched,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+      base::BindOnce(
+          &ModelExecutionManagerImpl::OnSegmentInfoFetchedForExecution,
+          weak_ptr_factory_.GetWeakPtr(), std::move(state)));
 }
 
-void ModelExecutionManagerImpl::OnSegmentInfoFetched(
+void ModelExecutionManagerImpl::OnSegmentInfoFetchedForExecution(
     std::unique_ptr<ExecutionState> state,
     absl::optional<proto::SegmentInfo> segment_info) {
   // It is required to have a valid and well formed segment info.
@@ -276,6 +284,74 @@ void ModelExecutionManagerImpl::RunModelExecutionCallback(
     float result,
     ModelExecutionStatus status) {
   std::move(callback).Run(std::make_pair(result, status));
+}
+
+void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
+    optimization_guide::proto::OptimizationTarget segment_id,
+    proto::SegmentationModelMetadata metadata) {
+  auto validation = metadata_utils::ValidateMetadataAndFeatures(metadata);
+  if (validation != metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
+    // TODO(nyquist): Add metrics for this.
+    return;
+  }
+
+  segment_database_->GetSegmentInfo(
+      segment_id,
+      base::BindOnce(
+          &ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate,
+          weak_ptr_factory_.GetWeakPtr(), segment_id, std::move(metadata)));
+}
+void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
+    optimization_guide::proto::OptimizationTarget segment_id,
+    proto::SegmentationModelMetadata metadata,
+    absl::optional<proto::SegmentInfo> old_segment_info) {
+  proto::SegmentInfo new_segment_info;
+  new_segment_info.set_segment_id(segment_id);
+
+  // If we find an existing SegmentInfo in the database, we can verify that it
+  // is valid, and we can copy over the PredictionResult to the new version
+  // we are creating.
+  if (old_segment_info.has_value()) {
+    if (old_segment_info->has_segment_id()) {
+      // The retrieved SegmentInfo's ID should match the one we looked up,
+      // otherwise the DB has not upheld its contract.
+      DCHECK_EQ(new_segment_info.segment_id(), old_segment_info->segment_id());
+      // If does not match, we should just overwrite the old entry with one
+      // that has a matching segment ID, otherwise we will keep ignoring it
+      // forever and never be able to clean it up.
+      // TODO(nyquist): Add metrics for this.
+    }
+
+    if (old_segment_info->has_prediction_result()) {
+      // If we have an old PredictionResult, we need to keep it around in the
+      // new version of the SegmentInfo.
+      auto* prediction_result = new_segment_info.mutable_prediction_result();
+      prediction_result->CopyFrom(old_segment_info->prediction_result());
+    }
+  }
+
+  // Inject the newly updated metadata into the new SegmentInfo.
+  auto* new_metadata = new_segment_info.mutable_model_metadata();
+  new_metadata->CopyFrom(metadata);
+
+  // Now that we've merged the old and the new SegmentInfo, we want to store
+  // the new version in the database.
+  segment_database_->UpdateSegment(
+      segment_id, absl::make_optional(new_segment_info),
+      base::BindOnce(&ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored,
+                     weak_ptr_factory_.GetWeakPtr(), new_segment_info));
+}
+
+void ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored(
+    proto::SegmentInfo segment_info,
+    bool success) {
+  if (!success) {
+    // TODO(nyquist): Add metrics for this.
+    return;
+  }
+
+  // We are now ready to receive requests for execution, so invoke the callback.
+  model_updated_callback_.Run(std::move(segment_info));
 }
 
 }  // namespace segmentation_platform

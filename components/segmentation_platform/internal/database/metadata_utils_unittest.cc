@@ -162,6 +162,84 @@ TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
   }
 }
 
+TEST_F(MetadataUtilsTest, ValidateMetadataAndFeatures) {
+  proto::SegmentationModelMetadata metadata;
+  metadata.set_time_unit(proto::UNKNOWN_TIME_UNIT);
+  EXPECT_EQ(metadata_utils::ValidationResult::TIME_UNIT_INVALID,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  metadata.set_time_unit(proto::DAY);
+  EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  // Verify adding a single features adds new requirements.
+  auto* feature1 = metadata.add_features();
+  EXPECT_EQ(metadata_utils::ValidationResult::SIGNAL_TYPE_INVALID,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  // Fully flesh out an example feature and verify validation starts working
+  // again.
+  feature1->set_type(proto::SignalType::USER_ACTION);
+  feature1->set_name_hash(42);
+  feature1->set_aggregation(proto::Aggregation::COUNT);
+  feature1->set_bucket_count(1);
+  feature1->set_tensor_length(1);
+  EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  // Verify adding another feature adds new requirements again.
+  auto* feature2 = metadata.add_features();
+  EXPECT_EQ(metadata_utils::ValidationResult::SIGNAL_TYPE_INVALID,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  // Fully flesh out the second feature and verify validation starts working
+  // again.
+  feature2->set_type(proto::SignalType::HISTOGRAM_VALUE);
+  feature2->set_name("42");
+  feature2->set_name_hash(42);
+  feature2->set_aggregation(proto::Aggregation::BUCKETED_COUNT);
+  feature2->set_bucket_count(2);
+  feature2->set_tensor_length(2);
+  EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+}
+
+TEST_F(MetadataUtilsTest, ValidateSegementInfoMetadataAndFeatures) {
+  proto::SegmentInfo segment_info;
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::SEGMENT_ID_NOT_FOUND,
+      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+
+  segment_info.set_segment_id(optimization_guide::proto::OptimizationTarget::
+                                  OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::METADATA_NOT_FOUND,
+      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+
+  auto* metadata = segment_info.mutable_model_metadata();
+  metadata->set_time_unit(proto::DAY);
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+
+  // Verify adding a single features adds new requirements.
+  auto* feature1 = metadata->add_features();
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::SIGNAL_TYPE_INVALID,
+      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+
+  // Fully flesh out an example feature and verify validation starts working
+  // again.
+  feature1->set_type(proto::SignalType::USER_ACTION);
+  feature1->set_name_hash(42);
+  feature1->set_aggregation(proto::Aggregation::COUNT);
+  feature1->set_bucket_count(1);
+  feature1->set_tensor_length(1);
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+}
+
 TEST_F(MetadataUtilsTest, HasFreshResults) {
   proto::SegmentInfo segment_info;
   // No result.

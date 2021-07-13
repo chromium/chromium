@@ -12,10 +12,16 @@
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
+namespace proto {
+class Any;
+}  // namespace proto
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
 namespace segmentation_platform {
+namespace proto {
+class SegmentationModelMetadata;
+}  // namespace proto
 
 // A simple wrapper around a ModelHandler which is usable for all segmentation
 // models. This class constructs and owns the SegmentationModelExecutor through
@@ -26,15 +32,31 @@ class SegmentationModelHandler
     : public optimization_guide::ModelHandler<float,
                                               const std::vector<float>&> {
  public:
+  using ModelUpdatedCallback = base::RepeatingCallback<void(
+      optimization_guide::proto::OptimizationTarget,
+      proto::SegmentationModelMetadata)>;
+
   explicit SegmentationModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      optimization_guide::proto::OptimizationTarget optimization_target);
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      const ModelUpdatedCallback& model_updated_callback);
   ~SegmentationModelHandler() override;
 
   // Disallow copy/assign.
   SegmentationModelHandler(const SegmentationModelHandler&) = delete;
   SegmentationModelHandler& operator=(const SegmentationModelHandler&) = delete;
+
+  // optimization_guide::ModelHandler overrides.
+  void OnModelFileUpdated(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      const absl::optional<optimization_guide::proto::Any>& model_metadata,
+      const base::FilePath& file_path) override;
+
+ private:
+  // Callback to invoke whenever the model file has been updated. If there is
+  // a model available, this will be invoked at least once per session.
+  ModelUpdatedCallback model_updated_callback_;
 };
 
 }  // namespace segmentation_platform

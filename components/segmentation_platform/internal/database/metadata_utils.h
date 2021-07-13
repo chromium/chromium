@@ -42,6 +42,16 @@ ValidationResult ValidateMetadata(
 // segmentation platform.
 ValidationResult ValidateMetadataFeature(const proto::Feature& feature);
 
+// Whether the given metadata and feature metadata is valid to be used for the
+// current segmentation platform.
+ValidationResult ValidateMetadataAndFeatures(
+    const proto::SegmentationModelMetadata& model_metadata);
+
+// Whether the given SegmentInfo, metadata and feature metadata is valid to be
+// used for the current segmentation platform.
+ValidationResult ValidateSegementInfoMetadataAndFeatures(
+    const proto::SegmentInfo& segment_info);
+
 // Whether a segment has expired results or no result. Called to determine
 // whether the model should be rerun.
 bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info);

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -55,7 +56,7 @@ TEST_F(ModelExecutionManagerFactoryTest, CreateModelExecutionManager) {
       task_environment_.GetMainThreadTaskRunner(),
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB},
       &test_clock_, segment_database_.get(), signal_database_.get(),
-      std::move(feature_aggregator_));
+      std::move(feature_aggregator_), base::DoNothing());
   // This should work regardless of whether a DummyModelExecutionManager or
   // ModelExecutionManagerImpl is returned.
   CHECK(model_execution_manager);

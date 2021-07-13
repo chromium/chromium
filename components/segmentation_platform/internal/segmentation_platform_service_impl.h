@@ -90,11 +90,19 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   void EnableMetrics(bool signal_collection_allowed) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SegmentationPlatformServiceImplTest,
+                           InitializationFlow);
+
   void OnSegmentInfoDatabaseInitialized(bool success);
   void OnSignalDatabaseInitialized(bool success);
   void OnSignalStorageConfigInitialized(bool success);
   bool IsInitializationFinished() const;
   void MaybeRunPostInitializationRoutines();
+  void OnSegmentationModelUpdated(proto::SegmentInfo segment_info);
+
+  optimization_guide::OptimizationGuideModelProvider* model_provider_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::Clock* clock_;
 
   // Config.
   std::unique_ptr<Config> config_;
