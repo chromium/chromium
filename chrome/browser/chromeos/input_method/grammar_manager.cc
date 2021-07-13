@@ -69,6 +69,7 @@ void GrammarManager::OnFocus(int context_id, int text_input_flags) {
   if (context_id != context_id_) {
     last_text_ = u"";
     last_sentence_ = Sentence();
+    new_to_context_ = true;
   }
   context_id_ = context_id;
   text_input_flags_ = text_input_flags;
@@ -130,9 +131,12 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
   if (suggestion_shown_)
     DismissSuggestion();
 
-  if (text != last_text_) {
-    last_text_ = text;
+  bool text_updated = text != last_text_;
+  last_text_ = text;
 
+  if (new_to_context_) {
+    new_to_context_ = false;
+  } else if (text_updated) {
     // Grammar check is cpu consuming, so we only send request to ml service
     // when the user has finished a sentence or stopped typing for some time.
     Sentence last_sentence = FindLastSentence(text, cursor_pos);

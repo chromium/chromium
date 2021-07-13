@@ -121,6 +121,7 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
   base::HistogramTester histogram_tester;
 
   manager.OnFocus(1, /*text_input_flags=*/0);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
@@ -141,6 +142,7 @@ TEST_F(GrammarManagerTest, DoesNotRunGrammarCheckOnTextFieldWithSpellcheckOff) {
   base::HistogramTester histogram_tester;
 
   manager.OnFocus(1, ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
@@ -158,6 +160,7 @@ TEST_F(GrammarManagerTest, ChecksLastSentenceImmediately) {
                          &mock_suggestion_handler);
 
   manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error. And another error.", 20,
                                    20);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
@@ -176,6 +179,7 @@ TEST_F(GrammarManagerTest, ChecksBothLastAndCurrentSentence) {
                          &mock_suggestion_handler);
 
   manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error. And another error.", 20,
                                    20);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
@@ -196,6 +200,7 @@ TEST_F(GrammarManagerTest, HandlesMultipleGrammarCheckResults) {
                          &mock_suggestion_handler);
 
   manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
@@ -215,6 +220,7 @@ TEST_F(GrammarManagerTest, ClearsPreviousMarkersUponGettingNewResults) {
                          &mock_suggestion_handler);
 
   manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
@@ -242,6 +248,7 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
   base::HistogramTester histogram_tester;
 
   manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
@@ -269,6 +276,7 @@ TEST_F(GrammarManagerTest, DismissesSuggestionWhenSelectingARange) {
                          &mock_suggestion_handler);
 
   manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
@@ -297,6 +305,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithTab) {
   mock_ime_input_context_handler_.Reset();
 
   manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
@@ -336,6 +345,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithUpArrow) {
   mock_ime_input_context_handler_.Reset();
 
   manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
@@ -375,6 +385,7 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
   mock_ime_input_context_handler_.Reset();
 
   manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 

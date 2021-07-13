@@ -81,6 +81,7 @@ class GrammarManager {
   std::unique_ptr<GrammarServiceClient> grammar_client_;
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
+  bool new_to_context_ = true;
   std::u16string last_text_;
   base::OneShotTimer delay_timer_;
   ui::GrammarFragment current_fragment_;
