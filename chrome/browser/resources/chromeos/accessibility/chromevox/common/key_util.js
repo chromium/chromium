@@ -398,29 +398,32 @@ KeyUtil = class {
             const keyCode = keySequence.keys[keyPressed][index];
             // We make sure the keyCode isn't for a modifier key. If it is, then
             // we've already added that into the string above.
-            if (!keySequence.isModifierKey(keyCode) && !opt_modifiers) {
-              if (opt_readableKeyCode) {
-                // First, try using Chrome OS's localized DOM key string
-                // conversion.
-                let domKeyString = await new Promise(
-                    resolve => chrome.accessibilityPrivate
-                                   .getLocalizedDomKeyStringForKeyCode(
-                                       keyCode, resolve));
-                if (domKeyString) {
-                  // Upper case single-lettered key strings for better tts.
-                  if (domKeyString.length === 1) {
-                    domKeyString = domKeyString.toUpperCase();
-                  }
-
-
-                  tempStr += domKeyString;
-                } else {
-                  tempStr += KeyUtil.getReadableNameForKeyCode(keyCode);
-                }
-              } else {
-                tempStr += KeyUtil.keyCodeToString(keyCode);
-              }
+            if (keySequence.isModifierKey(keyCode) || opt_modifiers) {
+              break;
             }
+
+            if (!opt_readableKeyCode) {
+              tempStr += KeyUtil.keyCodeToString(keyCode);
+              break;
+            }
+
+            // First, try using Chrome OS's localized DOM key string conversion.
+            let domKeyString = await new Promise(
+                resolve =>
+                    chrome.accessibilityPrivate
+                        .getLocalizedDomKeyStringForKeyCode(keyCode, resolve));
+            if (!domKeyString) {
+              tempStr += KeyUtil.getReadableNameForKeyCode(keyCode);
+              break;
+            }
+
+            // Upper case single-lettered key strings for better tts.
+            if (domKeyString.length === 1) {
+              domKeyString = domKeyString.toUpperCase();
+            }
+
+            tempStr += domKeyString;
+            break;
         }
         if (str.indexOf(modifier) === -1) {
           tempStr += modifier + '+';
