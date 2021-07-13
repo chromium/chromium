@@ -559,35 +559,35 @@ VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
     size_t num_va_surfaces) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
-  if (available_vpp_va_surface_ids_.find(encode_size) ==
-      available_vpp_va_surface_ids_.end()) {
-    // |vpp_vaapi_wrapper_| is filled in advance in unit test for multi spatial
-    // layer encoding.
-    if (!IsConfiguredForTesting()) {
-      DCHECK(!base::Contains(vpp_vaapi_wrapper_, encode_size));
-      auto vpp_va_wrapper = VaapiWrapper::Create(
-          VaapiWrapper::kVideoProcess, VAProfileNone,
-          EncryptionScheme::kUnencrypted,
-          base::BindRepeating(
-              &ReportVaapiErrorToUMA,
-              "Media.VaapiVideoEncodeAccelerator.Vpp.VAAPIError"));
-      if (!vpp_va_wrapper) {
-        NOTIFY_ERROR(kPlatformFailureError,
-                     "Failed to initialize VppVaapiWrapper");
-        return nullptr;
-      }
-
-      vpp_vaapi_wrapper_[encode_size] = std::move(vpp_va_wrapper);
+  if (!vpp_vaapi_wrapper_) {
+    vpp_vaapi_wrapper_ = VaapiWrapper::Create(
+        VaapiWrapper::kVideoProcess, VAProfileNone,
+        EncryptionScheme::kUnencrypted,
+        base::BindRepeating(
+            &ReportVaapiErrorToUMA,
+            "Media.VaapiVideoEncodeAccelerator.Vpp.VAAPIError"));
+    if (!vpp_vaapi_wrapper_) {
+      NOTIFY_ERROR(kPlatformFailureError,
+                   "Failed to initialize VppVaapiWrapper");
+      return nullptr;
     }
 
-    if (!vpp_vaapi_wrapper_[encode_size]->CreateContextAndSurfaces(
+    // VA context for VPP is not associated with a specific resolution.
+    if (!vpp_vaapi_wrapper_->CreateContext(gfx::Size())) {
+      NOTIFY_ERROR(kPlatformFailureError, "Failed creating Context for VPP");
+      return nullptr;
+    }
+  }
+
+  if (!base::Contains(available_vpp_va_surface_ids_, encode_size)) {
+    if (!vpp_vaapi_wrapper_->CreateSurfaces(
             kVaSurfaceFormat, encode_size,
             {VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite,
              VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
             num_va_surfaces, &available_vpp_va_surface_ids_[encode_size])) {
       NOTIFY_ERROR(kPlatformFailureError, "Failed creating VASurfaces");
       return nullptr;
-    };
+    }
 
     vpp_va_surface_release_cb_[encode_size] =
         BindToCurrentLoop(base::BindRepeating(
@@ -595,15 +595,16 @@ VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
             encoder_weak_this_, &available_vpp_va_surface_ids_[encode_size]));
   }
 
+  DCHECK(!available_vpp_va_surface_ids_[encode_size].empty());
   // Scaling the input surface to dest size for K-SVC or simulcast.
   scoped_refptr<VASurface> blit_surface =
       new VASurface(available_vpp_va_surface_ids_[encode_size].back(),
                     encode_size, kVaSurfaceFormat,
                     base::BindOnce(vpp_va_surface_release_cb_[encode_size]));
   available_vpp_va_surface_ids_[encode_size].pop_back();
-  if (!vpp_vaapi_wrapper_[encode_size]->BlitSurface(
-          input_surface, *blit_surface, input_visible_rect,
-          gfx::Rect(encode_size))) {
+  if (!vpp_vaapi_wrapper_->BlitSurface(input_surface, *blit_surface,
+                                       input_visible_rect,
+                                       gfx::Rect(encode_size))) {
     NOTIFY_ERROR(kPlatformFailureError,
                  "Failed BlitSurface on frame size: "
                      << input_surface.size().ToString()
@@ -611,6 +612,7 @@ VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
                      << ") -> encode size: " << encode_size.ToString());
     return nullptr;
   }
+
   return blit_surface;
 }
 
@@ -945,13 +947,15 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
   // Clean up members that are to be accessed on the encoder thread only.
   if (vaapi_wrapper_)
     vaapi_wrapper_->DestroyContextAndSurfaces(available_va_surface_ids_);
-  for (auto& vpp : vpp_vaapi_wrapper_) {
-    DCHECK(base::Contains(available_vpp_va_surface_ids_, vpp.first));
-    vpp.second->DestroyContextAndSurfaces(
-        available_vpp_va_surface_ids_[vpp.first]);
-  }
-
+  available_va_surface_ids_.clear();
   available_va_buffer_ids_.clear();
+
+  if (vpp_vaapi_wrapper_) {
+    vpp_vaapi_wrapper_->DestroyContext();
+    for (const auto& surfaces : available_vpp_va_surface_ids_)
+      vpp_vaapi_wrapper_->DestroySurfaces(surfaces.second);
+    available_vpp_va_surface_ids_.clear();
+  }
 
   while (!available_bitstream_buffers_.empty())
     available_bitstream_buffers_.pop();

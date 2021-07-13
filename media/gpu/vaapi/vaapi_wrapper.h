@@ -476,6 +476,17 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Initialize static data before sandbox is enabled.
   static void PreSandboxInitialization();
 
+  // TODO(crbug.com/1186051): Back to private in favor of using
+  // CreateScopedVASurface().
+  // Tries to allocate |num_surfaces| VASurfaceIDs of |size| and |va_format|.
+  // Fills |va_surfaces| and returns true if successful, or returns false.
+  virtual bool CreateSurfaces(unsigned int va_format,
+                              const gfx::Size& size,
+                              const std::vector<SurfaceUsageHint>& usage_hints,
+                              size_t num_surfaces,
+                              std::vector<VASurfaceID>* va_surfaces)
+      WARN_UNUSED_RESULT;
+
   // vaDestroySurfaces() a vector or a single VASurfaceID.
   virtual void DestroySurfaces(std::vector<VASurfaceID> va_surfaces);
   virtual void DestroySurface(VASurfaceID va_surface_id);
@@ -498,14 +509,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   void Deinitialize();
   bool VaInitialize(const ReportErrorToUMACB& report_error_to_uma_cb)
       WARN_UNUSED_RESULT;
-
-  // Tries to allocate |num_surfaces| VASurfaceIDs of |size| and |va_format|.
-  // Fills |va_surfaces| and returns true if successful, or returns false.
-  bool CreateSurfaces(unsigned int va_format,
-                      const gfx::Size& size,
-                      const std::vector<SurfaceUsageHint>& usage_hints,
-                      size_t num_surfaces,
-                      std::vector<VASurfaceID>* va_surfaces) WARN_UNUSED_RESULT;
 
   // Carries out the vaBeginPicture()-vaRenderPicture()-vaEndPicture() on target
   // |va_surface_id|. Returns false if any of these calls fails.

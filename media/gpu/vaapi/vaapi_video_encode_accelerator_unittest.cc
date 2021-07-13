@@ -173,6 +173,12 @@ class MockVaapiWrapper : public VaapiWrapper {
                bool(const VideoFrame&, VASurfaceID, const gfx::Size&));
   MOCK_METHOD1(ExecuteAndDestroyPendingBuffers, bool(VASurfaceID));
   MOCK_METHOD0(DestroyContext, void());
+  MOCK_METHOD5(CreateSurfaces,
+               bool(unsigned int,
+                    const gfx::Size&,
+                    const std::vector<SurfaceUsageHint>&,
+                    size_t,
+                    std::vector<VASurfaceID>*));
   MOCK_METHOD1(DestroySurfaces, void(std::vector<VASurfaceID> va_surface_ids));
 
  private:
@@ -281,19 +287,12 @@ class VaapiVideoEncodeAcceleratorTest
     // Scaling is needed only for non highest spatial layer, so here the vpp
     // number is |num_spatial_layers - 1|.
     vpp_svc_va_surfaces_.resize(num_spatial_layers - 1);
-    vpp_svc_mock_vaapi_wrappers_.resize(num_spatial_layers - 1);
+    vpp_svc_mock_vaapi_wrapper_ =
+        base::MakeRefCounted<MockVaapiWrapper>(VaapiWrapper::kVideoProcess);
     auto* vaapi_encoder =
         reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder_.get());
-    for (size_t i = 0; i < num_spatial_layers - 1; ++i) {
-      vpp_svc_mock_vaapi_wrappers_[i] =
-          base::MakeRefCounted<MockVaapiWrapper>(VaapiWrapper::kVideoProcess);
-      const int denom =
-          kSpatialLayersResolutionDenom[num_spatial_layers - 1][i];
-      gfx::Size layer_size = gfx::Size(kDefaultEncodeSize.width() / denom,
-                                       kDefaultEncodeSize.height() / denom);
-      vaapi_encoder->vpp_vaapi_wrapper_[layer_size] =
-          vpp_svc_mock_vaapi_wrappers_[i];
-    }
+    vaapi_encoder->vpp_vaapi_wrapper_ = vpp_svc_mock_vaapi_wrapper_;
+
     EXPECT_CALL(*mock_encoder_,
                 Initialize(_, MatchesVaapiVideoEncoderDelegateConfig(
                                   kMaxNumOfRefFrames, kBitrateControl)))
@@ -472,8 +471,8 @@ class VaapiVideoEncodeAcceleratorTest
       if (i < num_spatial_layers - 1) {
         if (vpp_svc_va_surfaces_[i].empty()) {
           EXPECT_CALL(
-              *vpp_svc_mock_vaapi_wrappers_[i],
-              CreateContextAndSurfaces(
+              *vpp_svc_mock_vaapi_wrapper_,
+              CreateSurfaces(
                   VA_RT_FORMAT_YUV420, layer_size,
                   std::vector<VaapiWrapper::SurfaceUsageHint>{
                       VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite,
@@ -492,7 +491,7 @@ class VaapiVideoEncodeAcceleratorTest
 
         absl::optional<gfx::Rect> default_rect = gfx::Rect(kDefaultEncodeSize);
         absl::optional<gfx::Rect> layer_rect = gfx::Rect(layer_size);
-        EXPECT_CALL(*vpp_svc_mock_vaapi_wrappers_[i],
+        EXPECT_CALL(*vpp_svc_mock_vaapi_wrapper_,
                     BlitSurface(_, _, default_rect, layer_rect,
                                 VideoRotation::VIDEO_ROTATION_0))
             .WillOnce(Return(true));
@@ -574,7 +573,7 @@ class VaapiVideoEncodeAcceleratorTest
   // calls Destroy() so that destruction threading is respected.
   std::unique_ptr<VideoEncodeAccelerator> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
-  std::vector<scoped_refptr<MockVaapiWrapper>> vpp_svc_mock_vaapi_wrappers_;
+  scoped_refptr<MockVaapiWrapper> vpp_svc_mock_vaapi_wrapper_;
   MockVP9VaapiVideoEncoderDelegate* mock_encoder_ = nullptr;
 };
 

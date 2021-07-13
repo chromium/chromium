@@ -203,9 +203,11 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Should only be used on |encoder_task_runner_|.
   std::unique_ptr<VaapiVideoEncoderDelegate> encoder_;
 
+  // TODO(crbug.com/1186051): Store ScopedVASurface, not VASurfaceID.
   // VA surfaces available for encoding.
   std::vector<VASurfaceID> available_va_surface_ids_;
   // VA surfaces available for scaling.
+  // TODO(crbug.com/1186051): Use base::small_map.
   std::map<gfx::Size, std::vector<VASurfaceID>, SizeComparator>
       available_vpp_va_surface_ids_;
 
@@ -217,6 +219,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Callback via which finished VA surfaces are returned to us.
   base::RepeatingCallback<void(VASurfaceID)> va_surface_release_cb_;
+  // TODO(crbug.com/1186051): Use base::small_map.
   std::map<gfx::Size, base::RepeatingCallback<void(VASurfaceID)>,
       SizeComparator> vpp_va_surface_release_cb_;
 
@@ -246,8 +249,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // VaapiWrapper for VPP (Video Pre Processing). This is used for scale down
   // for the picture send to vaapi encoder.
-  std::map<gfx::Size, scoped_refptr<VaapiWrapper>, SizeComparator>
-      vpp_vaapi_wrapper_;
+  scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper_;
 
   // The completion callback of the Flush() function.
   FlushCallback flush_callback_;
