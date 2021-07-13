@@ -391,9 +391,8 @@ INSTANTIATE_TEST_SUITE_P(TouchSelectionForCrossProcessFramesTests,
                          TouchSelectionControllerClientAuraSiteIsolationTest,
                          testing::Bool());
 
-// TODO(crbug.com/1225345): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
-                       DISABLED_BasicSelectionIsolatedIframe) {
+                       BasicSelectionIsolatedIframe) {
   GURL test_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));

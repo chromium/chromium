@@ -7,6 +7,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 
 using testing::ElementsAre;
@@ -41,8 +42,10 @@ TEST_P(InlineTextBoxPainterNonNGTest, RecordedSelectionAll) {
     return;
   SetBodyInnerHTML("<span>A<br>B<br>C</span>");
 
-  GetDocument().GetFrame()->Selection().SetHandleVisibleForTesting();
-  GetDocument().GetFrame()->Selection().SelectAll();
+  LocalFrame* local_frame = GetDocument().GetFrame();
+  local_frame->Selection().SetHandleVisibleForTesting();
+  local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
+  local_frame->Selection().SelectAll();
   UpdateAllLifecyclePhasesForTest();
 
   auto chunks = ContentPaintChunks();
@@ -65,11 +68,13 @@ TEST_P(InlineTextBoxPainterNonNGTest, RecordedSelectionMultiline) {
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return;
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  LocalFrame* local_frame = GetDocument().GetFrame();
+  local_frame->Selection().SetSelectionAndEndTyping(
       SelectionSample::SetSelectionText(
           GetDocument().body(),
           "<div style='white-space:pre'>f^oo\nbar\nb|az</div>"));
-  GetDocument().GetFrame()->Selection().SetHandleVisibleForTesting();
+  local_frame->Selection().SetHandleVisibleForTesting();
+  local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
   UpdateAllLifecyclePhasesForTest();
 
   auto chunks = ContentPaintChunks();

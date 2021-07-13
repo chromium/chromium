@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/layout/api/selection_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
 namespace blink {
@@ -163,6 +165,16 @@ bool SelectionBoundsRecorder::ShouldRecordSelection(
     return false;
 
   if (!frame_selection.IsHandleVisible() || frame_selection.IsHidden())
+    return false;
+
+  // If the currently focused frame is not the one in which selection
+  // lives, don't paint the selection bounds. Note this is subtly different
+  // from whether the frame has focus (i.e. `FrameSelection::SelectionHasFocus`)
+  // which is false if the hosting window is not focused.
+  LocalFrame* local_frame = frame_selection.GetFrame();
+  LocalFrame* focused_frame =
+      local_frame->GetPage()->GetFocusController().FocusedFrame();
+  if (local_frame != focused_frame)
     return false;
 
   if (state == SelectionState::kInside || state == SelectionState::kNone)
