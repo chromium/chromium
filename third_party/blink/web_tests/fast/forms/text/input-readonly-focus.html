@@ -2,6 +2,7 @@
 <head>
 <script>
 function runTest() {
+  testRunner.waitUntilDone();
   testRunner.dumpAsText();
 
   var input = document.getElementById('i');
@@ -13,6 +14,8 @@ window.onload = function() {
   var input = document.getElementById('i');
   input.onfocus = function(e) {
     document.body.innerHTML = 'PASS';
+    if (window.testRunner)
+      window.testRunner.notifyDone();
   }
   if (window.testRunner)
     runTest();
