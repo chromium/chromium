@@ -22,7 +22,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {RawSiteException} from './site_settings_prefs_browser_proxy.js';
 
 
@@ -30,12 +30,11 @@ import {RawSiteException} from './site_settings_prefs_browser_proxy.js';
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SiteDetailsPermissionElementBase = mixinBehaviors(
-    [I18nBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
-    PolymerElement);
+    [I18nBehavior, WebUIListenerBehavior], SiteSettingsMixin(PolymerElement));
 
 /** @polymer */
 export class SiteDetailsPermissionElement extends

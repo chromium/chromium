@@ -20,19 +20,19 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {ZoomLevelEntry} from './site_settings_prefs_browser_proxy.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {ListPropertyUpdateBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const ZoomLevelsElementBase = mixinBehaviors(
-    [ListPropertyUpdateBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
-    PolymerElement);
+    [ListPropertyUpdateBehavior, WebUIListenerBehavior],
+    SiteSettingsMixin(PolymerElement));
 
 /** @polymer */
 class ZoomLevelsElement extends ZoomLevelsElementBase {

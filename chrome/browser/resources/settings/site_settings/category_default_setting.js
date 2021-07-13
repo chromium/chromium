@@ -38,14 +38,14 @@ import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {ContentSettingProvider, DefaultContentSetting} from './site_settings_prefs_browser_proxy.js';
 
 /**
@@ -57,85 +57,103 @@ const SubOptionMode = {
   NONE: 'none',
 };
 
-Polymer({
-  is: 'category-default-setting',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SiteSettingsMixinInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const CategoryDefaultSettingElementBase =
+    mixinBehaviors([WebUIListenerBehavior], SiteSettingsMixin(PolymerElement));
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
+  static get is() {
+    return 'category-default-setting';
+  }
 
-  behaviors: [SiteSettingsBehavior, WebUIListenerBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
+  static get properties() {
+    return {
 
-    /* The on/off text for |optionLabel_| below. */
-    toggleOffLabel: String,
-    toggleOnLabel: String,
+      /* The on/off text for |optionLabel_| below. */
+      toggleOffLabel: String,
+      toggleOnLabel: String,
 
-    /* The on/off text for |optionDescription_| below. */
-    toggleOffDescription: String,
-    toggleOnDescription: String,
+      /* The on/off text for |optionDescription_| below. */
+      toggleOffDescription: String,
+      toggleOnDescription: String,
 
-    /* The sub-option is a separate toggle. Setting this label will show the
-     * additional sub option. Shown above |subOptionDescription|. (optional)
-     */
-    subOptionLabel: String,
+      /* The sub-option is a separate toggle. Setting this label will show the
+       * additional sub option. Shown above |subOptionDescription|. (optional)
+       */
+      subOptionLabel: String,
 
-    /* The second line, shown under the |subOptionLabel| line. (optional) */
-    subOptionDescription: String,
+      /* The second line, shown under the |subOptionLabel| line. (optional) */
+      subOptionDescription: String,
 
-    /* The valid sub-option modes. */
-    subOptionMode: String,
+      /* The valid sub-option modes. */
+      subOptionMode: String,
 
-    /* The pref that the sub-option state is bound to, when |subOptionMode| is
-     * set to SubOptionMode.PREF. */
-    subOptionPref: Boolean,
+      /* The pref that the sub-option state is bound to, when |subOptionMode| is
+       * set to SubOptionMode.PREF. */
+      subOptionPref: Boolean,
 
-    /* Pref based
-    /** @private {chrome.settingsPrivate.PrefObject} */
-    controlParams_: {
-      type: Object,
-      value() {
-        return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+      /* Pref based
+      /** @private {chrome.settingsPrivate.PrefObject} */
+      controlParams_: {
+        type: Object,
+        value() {
+          return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+        },
       },
-    },
 
-    /**
-     * The label to be shown next to the toggle (above
-     * |optionDescription_|). This will be either toggleOffLabel or
-     * toggleOnLabel.
-     * @private
-     */
-    optionLabel_: String,
+      /**
+       * The label to be shown next to the toggle (above
+       * |optionDescription_|). This will be either toggleOffLabel or
+       * toggleOnLabel.
+       * @private
+       */
+      optionLabel_: String,
 
-    /* The second line, shown under the |optionLabel_| line. This will be
-     * either toggleOffDescription or toggleOnDescription. (optional)
-     * @private
-     */
-    optionDescription_: String,
+      /* The second line, shown under the |optionLabel_| line. This will be
+       * either toggleOffDescription or toggleOnDescription. (optional)
+       * @private
+       */
+      optionDescription_: String,
 
-    /** @private {!DefaultContentSetting} */
-    priorDefaultContentSetting_: {
-      type: Object,
-      value() {
-        return /** @type {DefaultContentSetting} */ ({});
+      /** @private {!DefaultContentSetting} */
+      priorDefaultContentSetting_: {
+        type: Object,
+        value() {
+          return /** @type {DefaultContentSetting} */ ({});
+        },
       },
-    },
-  },
+    };
+  }
 
-  observers: [
-    'onCategoryChanged_(category)',
-    'onChangePermissionControl_(category, controlParams_.value)',
-  ],
+  static get observers() {
+    return [
+      'onCategoryChanged_(category)',
+      'onChangePermissionControl_(category, controlParams_.value)',
+    ];
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'contentSettingCategoryChanged', this.onCategoryChanged_.bind(this));
-  },
+  }
 
   /** @return {boolean} */
   get categoryEnabled() {
     return !!assert(this.controlParams_).value;
-  },
+  }
 
   /**
    * A handler for changing the default permission value for a content type.
@@ -202,7 +220,7 @@ Polymer({
       default:
         assertNotReached('Invalid category: ' + this.category);
     }
-  },
+  }
 
   /**
    * Update the control parameter values from the content settings.
@@ -247,7 +265,7 @@ Polymer({
     // that observers will be notified of the change.
     this.controlParams_ = /** @type {chrome.settingsPrivate.PrefObject} */ (
         Object.assign({'value': prefValue}, basePref));
-  },
+  }
 
   /**
    * Handles changes to the category pref and the |category| member variable.
@@ -265,7 +283,7 @@ Polymer({
           this.optionDescription_ = categoryEnabled ? this.toggleOnDescription :
                                                       this.toggleOffDescription;
         });
-  },
+  }
 
   /**
    * @return {boolean}
@@ -274,7 +292,7 @@ Polymer({
   isToggleDisabled_() {
     return this.category === ContentSettingsTypes.POPUPS &&
         loadTimeData.getBoolean('isGuest');
-  },
+  }
 
   /**
    * @return {boolean}
@@ -282,5 +300,8 @@ Polymer({
    */
   showPrefSubOption_(subOptionMode) {
     return (subOptionMode === SubOptionMode.PREF);
-  },
-});
+  }
+}
+
+customElements.define(
+    CategoryDefaultSettingElement.is, CategoryDefaultSettingElement);

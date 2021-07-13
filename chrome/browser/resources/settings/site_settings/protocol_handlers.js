@@ -27,7 +27,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 
 /**
  * All possible actions in the menu.
@@ -58,11 +58,11 @@ export let ProtocolEntry;
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
-const ProtocolHandlersElementBase = mixinBehaviors(
-    [SiteSettingsBehavior, WebUIListenerBehavior], PolymerElement);
+const ProtocolHandlersElementBase =
+    mixinBehaviors([WebUIListenerBehavior], SiteSettingsMixin(PolymerElement));
 
 /** @polymer */
 class ProtocolHandlersElement extends ProtocolHandlersElementBase {

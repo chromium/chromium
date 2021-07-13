@@ -36,19 +36,19 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {SiteDetailsPermissionElement} from './site_details_permission.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './website_usage_browser_proxy.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SiteDetailsElementBase = mixinBehaviors(
-    [I18nBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
-    RouteObserverMixin(PolymerElement));
+    [I18nBehavior, WebUIListenerBehavior],
+    SiteSettingsMixin(RouteObserverMixin(PolymerElement)));
 
 /** @polymer */
 class SiteDetailsElement extends SiteDetailsElementBase {

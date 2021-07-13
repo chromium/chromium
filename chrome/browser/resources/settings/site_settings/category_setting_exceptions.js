@@ -15,19 +15,18 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {loadTimeData} from '../i18n_setup.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const CategorySettingExceptionsElementBase = mixinBehaviors(
-    [I18nBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
-    PolymerElement);
+    [I18nBehavior, WebUIListenerBehavior], SiteSettingsMixin(PolymerElement));
 
 /** @polymer */
 export class CategorySettingExceptionsElement extends

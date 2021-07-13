@@ -14,18 +14,18 @@ import '../settings_vars_css.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {MediaPickerEntry} from './site_settings_prefs_browser_proxy.js';
 
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
-const MediaPickerElementBase = mixinBehaviors(
-    [SiteSettingsBehavior, WebUIListenerBehavior], PolymerElement);
+const MediaPickerElementBase =
+    mixinBehaviors([WebUIListenerBehavior], SiteSettingsMixin(PolymerElement));
 
 /** @polymer */
 class MediaPickerElement extends MediaPickerElementBase {

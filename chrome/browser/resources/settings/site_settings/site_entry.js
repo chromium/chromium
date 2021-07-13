@@ -26,17 +26,17 @@ import {Router} from '../router.js';
 
 import {AllSitesAction2, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {BaseMixinInterface}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  */
 const SiteEntryElementBase = mixinBehaviors(
-    [SiteSettingsBehavior, FocusRowBehavior], BaseMixin(PolymerElement));
+    [FocusRowBehavior], SiteSettingsMixin(BaseMixin(PolymerElement)));
 
 /** @polymer */
 class SiteEntryElement extends SiteEntryElementBase {

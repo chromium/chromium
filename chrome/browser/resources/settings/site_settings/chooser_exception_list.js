@@ -21,7 +21,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {loadTimeData} from '../i18n_setup.js';
 
 import {ChooserType, ContentSettingsTypes} from './constants.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {ChooserException, RawChooserException} from './site_settings_prefs_browser_proxy.js';
 
 /**
@@ -29,15 +29,12 @@ import {ChooserException, RawChooserException} from './site_settings_prefs_brows
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  * @implements {ListPropertyUpdateBehaviorInterface}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const ChooserExceptionListElementBase = mixinBehaviors(
-    [
-      I18nBehavior, ListPropertyUpdateBehavior, SiteSettingsBehavior,
-      WebUIListenerBehavior
-    ],
-    PolymerElement);
+    [I18nBehavior, ListPropertyUpdateBehavior, WebUIListenerBehavior],
+    SiteSettingsMixin(PolymerElement));
 
 /** @polymer */
 class ChooserExceptionListElement extends ChooserExceptionListElementBase {

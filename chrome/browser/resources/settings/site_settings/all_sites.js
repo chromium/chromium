@@ -31,7 +31,7 @@ import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 import {ALL_SITES_DIALOG, AllSitesAction2, ContentSetting, ContentSettingsTypes, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
 /**
@@ -50,18 +50,17 @@ let OpenMenuEvent;
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const AllSitesElementBase = mixinBehaviors(
     [
       I18nBehavior,
-      SiteSettingsBehavior,
       WebUIListenerBehavior,
       RouteObserverBehavior,
       GlobalScrollTargetBehavior,
     ],
-    PolymerElement);
+    SiteSettingsMixin(PolymerElement));
 
 /** @polymer */
 class AllSitesElement extends AllSitesElementBase {

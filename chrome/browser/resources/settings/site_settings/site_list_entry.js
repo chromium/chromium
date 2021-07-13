@@ -25,7 +25,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ChooserType, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {SiteException} from './site_settings_prefs_browser_proxy.js';
 
 
@@ -33,10 +33,10 @@ import {SiteException} from './site_settings_prefs_browser_proxy.js';
  * @constructor
  * @extends {PolymerElement}
  * @implements {BaseMixinInterface}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  */
 const SiteListEntryElementBase = mixinBehaviors(
-    [SiteSettingsBehavior, FocusRowBehavior], BaseMixin(PolymerElement));
+    [FocusRowBehavior], SiteSettingsMixin(BaseMixin(PolymerElement)));
 
 /** @polymer */
 class SiteListEntryElement extends SiteListEntryElementBase {

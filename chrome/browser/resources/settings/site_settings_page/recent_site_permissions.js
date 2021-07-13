@@ -17,19 +17,19 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource} from '../site_settings/constants.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from '../site_settings/site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from '../site_settings/site_settings_mixin.js';
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsRecentSitePermissionsElementBase = mixinBehaviors(
-    [SiteSettingsBehavior, WebUIListenerBehavior, I18nBehavior],
-    RouteObserverMixin(PolymerElement));
+    [WebUIListenerBehavior, I18nBehavior],
+    SiteSettingsMixin(RouteObserverMixin(PolymerElement)));
 
 /** @polymer */
 export class SettingsRecentSitePermissionsElement extends

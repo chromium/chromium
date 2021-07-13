@@ -167,7 +167,7 @@ preprocess_if_expr("preprocess") {
     "site_settings/constants.js",
     "site_settings/cookie_info.js",
     "site_settings/local_data_browser_proxy.js",
-    "site_settings/site_settings_behavior.js",
+    "site_settings/site_settings_mixin.js",
     "site_settings/site_settings_prefs_browser_proxy.js",
     "site_settings/website_usage_browser_proxy.js",
   ]

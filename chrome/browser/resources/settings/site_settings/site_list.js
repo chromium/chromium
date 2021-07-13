@@ -32,23 +32,22 @@ import {loadTimeData} from '../i18n_setup.js';
 import {AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './android_info_browser_proxy.js';
 // </if>
 import {ContentSetting, ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  * @implements {ListPropertyUpdateBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SiteListElementBase = mixinBehaviors(
     [
-      SiteSettingsBehavior,
       WebUIListenerBehavior,
       ListPropertyUpdateBehavior,
     ],
-    PolymerElement);
+    SiteSettingsMixin(PolymerElement));
 
 /** @polymer */
 export class SiteListElement extends SiteListElementBase {

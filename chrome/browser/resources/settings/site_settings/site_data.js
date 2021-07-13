@@ -32,7 +32,6 @@ import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
 
 /**
  * @typedef {{

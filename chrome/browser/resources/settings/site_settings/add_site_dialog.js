@@ -14,20 +14,19 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SiteSettingsBehaviorInterface}
+ * @implements {SiteSettingsMixinInterface}
  */
-const AddSiteDialogElementBase =
-    mixinBehaviors([SiteSettingsBehavior], PolymerElement);
+const AddSiteDialogElementBase = SiteSettingsMixin(PolymerElement);
 
 /** @polymer */
 export class AddSiteDialogElement extends AddSiteDialogElementBase {
