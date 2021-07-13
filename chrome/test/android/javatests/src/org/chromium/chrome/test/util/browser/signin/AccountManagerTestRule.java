@@ -106,12 +106,18 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Add an account to the fake AccountManagerFacade.
+     * Add an account to the fake AccountManagerFacade, if the {@link FakeAccountInfoService} is
+     * set up, add the corresponding {@link AccountInfo} to the {@link FakeAccountInfoService}.
      * @return The CoreAccountInfo for the account added.
      */
     public CoreAccountInfo addAccount(Account account) {
-        mFakeAccountManagerFacade.addAccount(account);
-        return toCoreAccountInfo(account.name);
+        if (mFakeAccountInfoService != null) {
+            return addAccount(
+                    account.name, /* fullName= */ "", /* givenName= */ "", /* avatar= */ null);
+        } else {
+            mFakeAccountManagerFacade.addAccount(account);
+            return toCoreAccountInfo(account.name);
+        }
     }
 
     /**
@@ -141,7 +147,9 @@ public class AccountManagerTestRule implements TestRule {
             String email, String fullName, String givenName, @Nullable Bitmap avatar) {
         assert mFakeAccountManagerFacade != null;
         mFakeAccountInfoService.addAccountInfo(email, fullName, givenName, avatar);
-        return addAccount(email);
+        final Account account = AccountUtils.createAccountFromName(email);
+        mFakeAccountManagerFacade.addAccount(account);
+        return toCoreAccountInfo(email);
     }
 
     /**

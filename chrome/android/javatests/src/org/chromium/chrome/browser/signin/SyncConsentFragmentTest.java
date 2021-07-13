@@ -67,7 +67,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.test.util.FakeProfileDataSource;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -112,7 +112,7 @@ public class SyncConsentFragmentTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeProfileDataSource());
+            new AccountManagerTestRule(new FakeAccountInfoService());
 
     @Rule
     public final ChromeTabbedActivityTestRule mChromeActivityTestRule =
