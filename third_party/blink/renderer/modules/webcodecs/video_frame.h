@@ -39,6 +39,7 @@ class ExecutionContext;
 class PlaneInit;
 class ScriptPromise;
 class ScriptState;
+class VideoColorSpace;
 class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
@@ -74,14 +75,17 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   absl::optional<V8VideoPixelFormat> format() const;
 
+  absl::optional<int64_t> timestamp() const;
+  absl::optional<uint64_t> duration() const;
+
   // DEPRECATED.
   absl::optional<HeapVector<Member<Plane>>> planes(ExecutionContext*);
 
   uint32_t codedWidth() const;
   uint32_t codedHeight() const;
 
-  DOMRectReadOnly* codedRect();
-  DOMRectReadOnly* visibleRect();
+  absl::optional<DOMRectReadOnly*> codedRect();
+  absl::optional<DOMRectReadOnly*> visibleRect();
 
   // DEPRECATED.
   VideoFrameRect* codedRegion(ExecutionContext*) const;
@@ -96,8 +100,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   uint32_t displayWidth() const;
   uint32_t displayHeight() const;
 
-  absl::optional<int64_t> timestamp() const;
-  absl::optional<uint64_t> duration() const;
+  absl::optional<VideoColorSpace*> colorSpace();
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
@@ -150,7 +153,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   HeapVector<Member<Plane>> planes_;
   Member<DOMRectReadOnly> coded_rect_;
   Member<DOMRectReadOnly> visible_rect_;
-  Member<DOMRectReadOnly> empty_rect_;
+  Member<VideoColorSpace> color_space_;
 };
 
 }  // namespace blink

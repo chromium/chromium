@@ -199,6 +199,7 @@ promise_test(async t => {
   // which is not yet recognized by the User Agent.
   const config = {
     ...CONFIG,
+    colorSpace: {primaries: 'bt709'},
     futureConfigFeature: 'foo',
   };
 
@@ -211,6 +212,10 @@ promise_test(async t => {
   assert_equals(support.config.codedHeight, config.codedHeight, 'codedHeight');
   assert_equals(support.config.displayAspectWidth, config.displayAspectWidth, 'displayAspectWidth');
   assert_equals(support.config.displayAspectHeight, config.displayAspectHeight, 'displayAspectHeight');
+  assert_equals(support.config.colorSpace.primaries, config.colorSpace.primaries, 'color primaries');
+  assert_equals(support.config.colorSpace.transfer, undefined, 'color transfer');
+  assert_equals(support.config.colorSpace.matrix, undefined, 'color matrix');
+  assert_equals(support.config.colorSpace.fullRange, undefined, 'color range');
   assert_false(support.config.hasOwnProperty('futureConfigFeature'), 'futureConfigFeature');
 
   if (config.description) {

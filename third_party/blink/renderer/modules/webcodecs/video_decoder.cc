@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_support.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_rect.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder_broker.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -186,6 +188,12 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
 
   if (config.hasDisplayAspectHeight())
     copy->setDisplayAspectHeight(config.displayAspectHeight());
+
+  if (config.hasColorSpace()) {
+    VideoColorSpace* color_space =
+        MakeGarbageCollected<VideoColorSpace>(config.colorSpace());
+    copy->setColorSpace(color_space->toJSON());
+  }
 
   if (config.hasHardwareAcceleration())
     copy->setHardwareAcceleration(config.hardwareAcceleration());
@@ -443,9 +451,19 @@ CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
                                                 config.displayAspectHeight());
   }
 
+  // TODO(crbug.com/1138680): Ensure that this default value is acceptable
+  // under the WebCodecs spec. Should be BT.709 for YUV, sRGB for RGB, or
+  // whatever was explicitly set for codec strings that include a color space.
+  media::VideoColorSpace media_color_space = video_type.color_space;
+  if (config.hasColorSpace()) {
+    VideoColorSpace* color_space =
+        MakeGarbageCollected<VideoColorSpace>(config.colorSpace());
+    media_color_space = color_space->ToMediaColorSpace();
+  }
+
   out_media_config.Initialize(
       video_type.codec, video_type.profile,
-      media::VideoDecoderConfig::AlphaMode::kIsOpaque, video_type.color_space,
+      media::VideoDecoderConfig::AlphaMode::kIsOpaque, media_color_space,
       media::kNoTransformation, coded_size, visible_rect, natural_size,
       extra_data, media::EncryptionScheme::kUnencrypted);
   out_media_config.set_aspect_ratio(aspect_ratio);

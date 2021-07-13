@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_avc_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -242,6 +244,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   bool is_codec_ambiguous = true;
   result->codec = media::kUnknownVideoCodec;
   result->profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
+  // TODO(crbug.com/1138680): Default to sRGB if encoding an RGB format.
   result->color_space = media::VideoColorSpace::REC709();
   result->level = 0;
   result->codec_string = config->codec();
@@ -253,6 +256,12 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   if (!parse_succeeded || is_codec_ambiguous) {
     exception_state.ThrowTypeError("Unknown codec.");
     return nullptr;
+  }
+
+  if (config->hasColorSpace()) {
+    VideoColorSpace* color_space =
+        MakeGarbageCollected<VideoColorSpace>(config->colorSpace());
+    result->color_space = color_space->ToMediaColorSpace();
   }
 
   // We are done with the parsing.
@@ -338,6 +347,12 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
 
   if (config.hasBitrateMode())
     result->setBitrateMode(config.bitrateMode());
+
+  if (config.hasColorSpace()) {
+    VideoColorSpace* color_space =
+        MakeGarbageCollected<VideoColorSpace>(config.colorSpace());
+    result->setColorSpace(color_space->toJSON());
+  }
 
   if (config.hasLatencyMode())
     result->setLatencyMode(config.latencyMode());
@@ -725,6 +740,10 @@ void VideoEncoder::CallOutputCallback(
       decoder_config->setDisplayAspectWidth(
           active_config->display_size.value().width());
     }
+
+    VideoColorSpace* color_space =
+        MakeGarbageCollected<VideoColorSpace>(active_config->color_space);
+    decoder_config->setColorSpace(color_space->toJSON());
 
     if (codec_desc.has_value()) {
       auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),

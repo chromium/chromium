@@ -1831,6 +1831,7 @@ Starting worker: resources/global-interface-listing-worker.js.php
 [Worker]     getter codedRect
 [Worker]     getter codedRegion
 [Worker]     getter codedWidth
+[Worker]     getter colorSpace
 [Worker]     getter cropHeight
 [Worker]     getter cropLeft
 [Worker]     getter cropTop

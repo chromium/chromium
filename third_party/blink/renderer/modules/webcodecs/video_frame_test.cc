@@ -92,8 +92,6 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   EXPECT_EQ(1000u, blink_frame->timestamp().value());
   EXPECT_EQ(112u, blink_frame->codedWidth());
   EXPECT_EQ(208u, blink_frame->codedHeight());
-  EXPECT_EQ(100u, blink_frame->visibleRect()->width());
-  EXPECT_EQ(200u, blink_frame->visibleRect()->height());
   EXPECT_EQ(media_frame, blink_frame->frame());
 
   blink_frame->close();
@@ -101,8 +99,6 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   EXPECT_FALSE(blink_frame->timestamp().has_value());
   EXPECT_EQ(0u, blink_frame->codedWidth());
   EXPECT_EQ(0u, blink_frame->codedHeight());
-  EXPECT_EQ(0u, blink_frame->visibleRect()->width());
-  EXPECT_EQ(0u, blink_frame->visibleRect()->height());
   EXPECT_EQ(nullptr, blink_frame->frame());
 }
 

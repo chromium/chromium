@@ -25,7 +25,8 @@ dictionary VideoDecoderConfig {
   [EnforceRange] unsigned long displayAspectWidth;
   [EnforceRange] unsigned long displayAspectHeight;
 
-  // TODO(sandersd): color space.
+  // Hint about the color space of the content.
+  VideoColorSpaceInit colorSpace;
 
   HardwarePreference hardwareAcceleration = "allow";
 

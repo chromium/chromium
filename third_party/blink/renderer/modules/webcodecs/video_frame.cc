@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_buffer_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/modules/webcodecs/dom_rect_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/parsed_copy_to_options.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -775,6 +777,18 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  if (init->hasColorSpace()) {
+    VideoColorSpace* video_color_space =
+        MakeGarbageCollected<VideoColorSpace>(init->colorSpace());
+    frame->set_color_space(video_color_space->ToGfxColorSpace());
+  } else {
+    // So far all WebCodecs YUV formats are planar, so this test works. That
+    // might not be the case in the future.
+    frame->set_color_space(media::IsYuvPlanar(media_fmt)
+                               ? gfx::ColorSpace::CreateREC709()
+                               : gfx::ColorSpace::CreateSRGB());
+  }
+
   if (init->hasDuration()) {
     frame->metadata().frame_duration =
         base::TimeDelta::FromMicroseconds(init->duration());
@@ -874,13 +888,11 @@ VideoFrameRect* VideoFrame::codedRegion(
   return rect;
 }
 
-DOMRectReadOnly* VideoFrame::codedRect() {
+absl::optional<DOMRectReadOnly*> VideoFrame::codedRect() {
   auto local_frame = handle_->frame();
-  if (!local_frame) {
-    if (!empty_rect_)
-      empty_rect_ = MakeGarbageCollected<DOMRectReadOnly>(0, 0, 0, 0);
-    return empty_rect_;
-  }
+  if (!local_frame)
+    return absl::nullopt;
+
   if (!coded_rect_) {
     coded_rect_ = MakeGarbageCollected<DOMRectReadOnly>(
         0, 0, local_frame->coded_size().width(),
@@ -908,13 +920,11 @@ VideoFrameRect* VideoFrame::visibleRegion(
   return rect;
 }
 
-DOMRectReadOnly* VideoFrame::visibleRect() {
+absl::optional<DOMRectReadOnly*> VideoFrame::visibleRect() {
   auto local_frame = handle_->frame();
-  if (!local_frame) {
-    if (!empty_rect_)
-      empty_rect_ = MakeGarbageCollected<DOMRectReadOnly>(0, 0, 0, 0);
-    return empty_rect_;
-  }
+  if (!local_frame)
+    return absl::nullopt;
+
   if (!visible_rect_) {
     visible_rect_ = MakeGarbageCollected<DOMRectReadOnly>(
         local_frame->visible_rect().x(), local_frame->visible_rect().y(),
@@ -998,6 +1008,18 @@ absl::optional<uint64_t> VideoFrame::duration() const {
   if (!local_frame || !local_frame->metadata().frame_duration.has_value())
     return absl::nullopt;
   return local_frame->metadata().frame_duration->InMicroseconds();
+}
+
+absl::optional<VideoColorSpace*> VideoFrame::colorSpace() {
+  auto local_frame = handle_->frame();
+  if (!local_frame)
+    return absl::nullopt;
+
+  if (!color_space_) {
+    color_space_ =
+        MakeGarbageCollected<VideoColorSpace>(local_frame->ColorSpace());
+  }
+  return color_space_;
 }
 
 uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
@@ -1239,7 +1261,7 @@ void VideoFrame::Trace(Visitor* visitor) const {
   visitor->Trace(planes_);
   visitor->Trace(coded_rect_);
   visitor->Trace(visible_rect_);
-  visitor->Trace(empty_rect_);
+  visitor->Trace(color_space_);
   ScriptWrappable::Trace(visitor);
 }
 

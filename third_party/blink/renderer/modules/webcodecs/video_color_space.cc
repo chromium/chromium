@@ -97,6 +97,77 @@ VideoColorSpace::VideoColorSpace(const gfx::ColorSpace& color_space) {
   }
 }
 
+VideoColorSpace::VideoColorSpace(const media::VideoColorSpace& color_space) {
+  switch (color_space.primaries) {
+    case media::VideoColorSpace::PrimaryID::BT709:
+      primaries_ = V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kBt709);
+      break;
+    case media::VideoColorSpace::PrimaryID::BT470BG:
+      primaries_ = V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kBt470Bg);
+      break;
+    case media::VideoColorSpace::PrimaryID::SMPTE170M:
+      primaries_ =
+          V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kSmpte170M);
+      break;
+    default:
+      // Other values map to unspecified for now.
+      break;
+  }
+
+  switch (color_space.transfer) {
+    case media::VideoColorSpace::TransferID::BT709:
+      transfer_ = V8VideoTransferCharacteristics(
+          V8VideoTransferCharacteristics::Enum::kBt709);
+      break;
+    case media::VideoColorSpace::TransferID::SMPTE170M:
+      transfer_ = V8VideoTransferCharacteristics(
+          V8VideoTransferCharacteristics::Enum::kSmpte170M);
+      break;
+    case media::VideoColorSpace::TransferID::IEC61966_2_1:
+      transfer_ = V8VideoTransferCharacteristics(
+          V8VideoTransferCharacteristics::Enum::kIec6196621);
+      break;
+    default:
+      // Other values map to unspecified for now.
+      break;
+  }
+
+  switch (color_space.matrix) {
+    case media::VideoColorSpace::MatrixID::RGB:
+      matrix_ =
+          V8VideoMatrixCoefficients(V8VideoMatrixCoefficients::Enum::kRgb);
+      break;
+    case media::VideoColorSpace::MatrixID::BT709:
+      matrix_ =
+          V8VideoMatrixCoefficients(V8VideoMatrixCoefficients::Enum::kBt709);
+      break;
+    case media::VideoColorSpace::MatrixID::BT470BG:
+      matrix_ =
+          V8VideoMatrixCoefficients(V8VideoMatrixCoefficients::Enum::kBt470Bg);
+      break;
+    case media::VideoColorSpace::MatrixID::SMPTE170M:
+      matrix_ = V8VideoMatrixCoefficients(
+          V8VideoMatrixCoefficients::Enum::kSmpte170M);
+      break;
+    default:
+      // Other values map to unspecified for now.
+      break;
+  }
+
+  switch (color_space.range) {
+    case gfx::ColorSpace::RangeID::LIMITED:
+      full_range_ = false;
+      break;
+    case gfx::ColorSpace::RangeID::FULL:
+      full_range_ = true;
+      break;
+    default:
+      // Other values map to unspecified. We could probably map DERIVED to a
+      // specific value, though.
+      break;
+  }
+}
+
 gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
   gfx::ColorSpace::PrimaryID primaries = gfx::ColorSpace::PrimaryID::INVALID;
   if (primaries_) {

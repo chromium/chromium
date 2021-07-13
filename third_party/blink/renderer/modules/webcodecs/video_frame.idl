@@ -32,14 +32,17 @@
   readonly attribute unsigned long codedHeight;
 
   // Convenience accessor, origin is always (0, 0).
-  readonly attribute DOMRectReadOnly codedRect;
+  readonly attribute DOMRectReadOnly? codedRect;
 
   // Area of this frame's pixel data that is not padding.
-  readonly attribute DOMRectReadOnly visibleRect;
+  readonly attribute DOMRectReadOnly? visibleRect;
 
   // Display aspect ratio of visible rect.
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
+
+  // Color space of the data produced by copyTo().
+  readonly attribute VideoColorSpace? colorSpace;
 
   // Returns the minimum size (in bytes) of a buffer that copyTo() could
   // copy this frame into with the given options.

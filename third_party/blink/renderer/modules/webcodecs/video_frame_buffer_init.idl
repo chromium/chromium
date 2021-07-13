@@ -20,4 +20,6 @@ dictionary VideoFrameBufferInit {
 
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
+
+  VideoColorSpaceInit colorSpace;
 };

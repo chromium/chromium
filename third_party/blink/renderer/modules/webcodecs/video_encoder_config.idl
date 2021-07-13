@@ -23,6 +23,9 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
 
+  // Color space for metadata (in-band or output VideoDecoderConfig).
+  VideoColorSpaceInit colorSpace;
+
   AvcEncoderConfig avc;
 
   // Same as in WebRTC SVC (https://w3c.github.io/webrtc-svc/)

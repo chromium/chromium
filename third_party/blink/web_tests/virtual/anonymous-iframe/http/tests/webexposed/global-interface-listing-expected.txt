@@ -9127,6 +9127,7 @@ interface VideoFrame
     getter codedRect
     getter codedRegion
     getter codedWidth
+    getter colorSpace
     getter cropHeight
     getter cropLeft
     getter cropTop

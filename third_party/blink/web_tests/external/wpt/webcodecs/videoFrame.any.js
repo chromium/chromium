@@ -17,6 +17,24 @@ test(t => {
 
 test(t => {
   let image = makeImageBitmap(32, 16);
+  let frame = new VideoFrame(image, {timestamp: 10});
+  frame.close();
+
+  assert_equals(frame.format, null, 'format')
+  assert_equals(frame.timestamp, null, 'timestamp');
+  assert_equals(frame.duration, null, 'duration');
+  assert_equals(frame.codedWidth, 0, 'codedWidth');
+  assert_equals(frame.codedHeight, 0, 'codedHeight');
+  assert_equals(frame.visibleRect, null, 'visibleRect');
+  assert_equals(frame.displayWidth, 0, 'displayWidth');
+  assert_equals(frame.displayHeight, 0, 'displayHeight');
+  assert_equals(frame.colorSpace, null, 'colorSpace');
+
+  assert_throws_dom('InvalidStateError', () => frame.clone());
+}, 'Test closed VideoFrame.');
+
+test(t => {
+  let image = makeImageBitmap(32, 16);
   let frame = new VideoFrame(image, {timestamp: -10});
   assert_equals(frame.timestamp, -10, 'timestamp');
   frame.close();
@@ -205,6 +223,10 @@ test(t => {
   let frame = new VideoFrame(data, vfInit);
   assert_equals(frame.planes.length, 3, 'plane count');
   assert_equals(frame.format, fmt, 'plane format');
+  assert_equals(frame.colorSpace.primaries, 'bt709', 'color primaries');
+  assert_equals(frame.colorSpace.transfer, 'bt709', 'color transfer');
+  assert_equals(frame.colorSpace.matrix, 'bt709', 'color matrix');
+  assert_false(frame.colorSpace.fullRange, 'color range');
   verifyPlane({stride: 4, rows: 2, src: data.slice(0, 8)}, frame.planes[0]);
   verifyPlane({stride: 2, rows: 1, src: data.slice(8, 10)}, frame.planes[1]);
   verifyPlane({stride: 2, rows: 1, src: data.slice(10, 12)}, frame.planes[2]);
@@ -232,6 +254,30 @@ test(t => {
 }, 'Test planar constructed I420 VideoFrame');
 
 test(t => {
+  let fmt = 'I420';
+  let vfInit = {
+    format: fmt,
+    timestamp: 1234,
+    codedWidth: 4,
+    codedHeight: 2,
+    colorSpace: {
+      primaries: 'smpte170m',
+      matrix: 'bt470bg',
+    },
+  };
+  let data = new Uint8Array([
+    1, 2, 3, 4, 5, 6, 7, 8,  // y
+    1, 2,                    // u
+    1, 2,                    // v
+  ]);
+  let frame = new VideoFrame(data, vfInit);
+  assert_equals(frame.colorSpace.primaries, 'smpte170m', 'color primaries');
+  assert_true(frame.colorSpace.transfer == null, 'color transfer');
+  assert_equals(frame.colorSpace.matrix, 'bt470bg', 'color matrix');
+  assert_true(frame.colorSpace.fullRange == null, 'color range');
+}, 'Test planar constructed I420 VideoFrame with colorSpace');
+
+test(t => {
   let fmt = 'I420A';
   let vfInit = {format: fmt, timestamp: 1234, codedWidth: 4, codedHeight: 2};
   let data = new Uint8Array([
@@ -243,6 +289,10 @@ test(t => {
   let frame = new VideoFrame(data, vfInit);
   assert_equals(frame.planes.length, 4, 'plane count');
   assert_equals(frame.format, fmt, 'plane format');
+  assert_equals(frame.colorSpace.primaries, 'bt709', 'color primaries');
+  assert_equals(frame.colorSpace.transfer, 'bt709', 'color transfer');
+  assert_equals(frame.colorSpace.matrix, 'bt709', 'color matrix');
+  assert_false(frame.colorSpace.fullRange, 'color range');
   verifyPlane({stride: 4, rows: 2, src: data.slice(0, 8)}, frame.planes[0]);
   verifyPlane({stride: 2, rows: 1, src: data.slice(8, 10)}, frame.planes[1]);
   verifyPlane({stride: 2, rows: 1, src: data.slice(10, 12)}, frame.planes[2]);
@@ -275,6 +325,10 @@ test(t => {
   let frame = new VideoFrame(data, vfInit);
   assert_equals(frame.planes.length, 2, 'plane count');
   assert_equals(frame.format, fmt, 'plane format');
+  assert_equals(frame.colorSpace.primaries, 'bt709', 'color primaries');
+  assert_equals(frame.colorSpace.transfer, 'bt709', 'color transfer');
+  assert_equals(frame.colorSpace.matrix, 'bt709', 'color matrix');
+  assert_false(frame.colorSpace.fullRange, 'color range');
   verifyPlane({stride: 4, rows: 2, src: data.slice(0, 8)}, frame.planes[0]);
   verifyPlane({stride: 4, rows: 1, src: data.slice(8, 12)}, frame.planes[1]);
   frame.close();
@@ -304,6 +358,10 @@ test(t => {
   let frame = new VideoFrame(data, {...vfInit, format: 'RGBA'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'RGBA', 'plane format');
+  assert_equals(frame.colorSpace.primaries, 'bt709', 'color primaries');
+  assert_equals(frame.colorSpace.transfer, 'iec61966-2-1', 'color transfer');
+  assert_equals(frame.colorSpace.matrix, 'rgb', 'color matrix');
+  assert_true(frame.colorSpace.fullRange, 'color range');
   verifyPlane({stride: 16, rows: 2, src: data}, frame.planes[0]);
   frame.close();
 
@@ -311,12 +369,20 @@ test(t => {
   frame = new VideoFrame(data, {...vfInit, format: 'RGBX'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'RGBX', 'plane format');
+  assert_equals(frame.colorSpace.primaries, 'bt709', 'color primaries');
+  assert_equals(frame.colorSpace.transfer, 'iec61966-2-1', 'color transfer');
+  assert_equals(frame.colorSpace.matrix, 'rgb', 'color matrix');
+  assert_true(frame.colorSpace.fullRange, 'color range');
   verifyPlane({stride: 16, rows: 2, src: data}, frame.planes[0]);
   frame.close();
 
   frame = new VideoFrame(data, {...vfInit, format: 'BGRA'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'BGRA', 'plane format');
+  assert_equals(frame.colorSpace.primaries, 'bt709', 'color primaries');
+  assert_equals(frame.colorSpace.transfer, 'iec61966-2-1', 'color transfer');
+  assert_equals(frame.colorSpace.matrix, 'rgb', 'color matrix');
+  assert_true(frame.colorSpace.fullRange, 'color range');
   verifyPlane({stride: 16, rows: 2, src: data}, frame.planes[0]);
   frame.close();
 
@@ -324,6 +390,10 @@ test(t => {
   frame = new VideoFrame(data, {...vfInit, format: 'BGRX'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'BGRX', 'plane format');
+  assert_equals(frame.colorSpace.primaries, 'bt709', 'color primaries');
+  assert_equals(frame.colorSpace.transfer, 'iec61966-2-1', 'color transfer');
+  assert_equals(frame.colorSpace.matrix, 'rgb', 'color matrix');
+  assert_true(frame.colorSpace.fullRange, 'color range');
   verifyPlane({stride: 16, rows: 2, src: data}, frame.planes[0]);
   frame.close();
 }, 'Test planar constructed RGB VideoFrames');

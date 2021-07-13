@@ -26,9 +26,10 @@ class MODULES_EXPORT VideoColorSpace final : public ScriptWrappable {
 
   explicit VideoColorSpace(const VideoColorSpaceInit*);
   explicit VideoColorSpace(const gfx::ColorSpace&);
+  explicit VideoColorSpace(const media::VideoColorSpace&);
 
-  media::VideoColorSpace ToMediaColorSpace() const;
   gfx::ColorSpace ToGfxColorSpace() const;
+  media::VideoColorSpace ToMediaColorSpace() const;
 
   absl::optional<V8VideoColorPrimaries> primaries() const { return primaries_; }
   absl::optional<V8VideoTransferCharacteristics> transfer() const {
