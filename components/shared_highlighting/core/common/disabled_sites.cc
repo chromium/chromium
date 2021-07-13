@@ -39,6 +39,11 @@ bool ShouldOfferLinkToText(const GURL& url) {
       domain = domain.substr(7);
     }
 
+    if (base::FeatureList::IsEnabled(kSharedHighlightingAmp) &&
+        domain.compare("google.com") == 0) {
+      return true;
+    }
+
     auto* it = kBlocklist.find(domain);
     if (it != kBlocklist.end()) {
       return !re2::RE2::FullMatch(url.path(), it->second.data());

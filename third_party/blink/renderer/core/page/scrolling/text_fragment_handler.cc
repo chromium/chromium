@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
+#include "third_party/blink/renderer/core/editing/selection_editor.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
@@ -32,6 +33,7 @@ TextFragmentHandler::TextFragmentHandler(LocalFrame* main_frame)
 
 void TextFragmentHandler::BindTextFragmentReceiver(
     mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> producer) {
+  StartPreemptiveGenerationIfNeeded();
   selector_producer_.reset();
   selector_producer_.Bind(
       std::move(producer),
@@ -46,6 +48,7 @@ void TextFragmentHandler::Cancel() {
 void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
   DCHECK(shared_highlighting::ShouldOfferLinkToText(
       GetFrame()->GetDocument()->Url()));
+  DCHECK(!GetFrame()->Selection().SelectedText().IsEmpty());
 
   if (PreemptiveGenerationEnabled()) {
     GetTextFragmentSelectorGenerator()->RecordSelectorStateUma();
@@ -56,9 +59,9 @@ void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
 
     // If preemptive link generation is enabled, the generator would have
     // already been invoked when the selection was updated in
-    // MainFrameDidUpdateSelection. If that generation finished simply respond
-    // with the result. Otherwise, the response callback is stored so that we
-    // reply on completion.
+    // StartPreemptiveGenerationIfNeeded. If that generation finished simply
+    // respond with the result. Otherwise, the response callback is stored so
+    // that we reply on completion.
     if (!selector_requested_before_ready_.value())
       InvokeReplyCallback(preemptive_generation_result_.value());
   } else {
@@ -185,8 +188,17 @@ void TextFragmentHandler::DidFinishSelectorGeneration(
 }
 
 void TextFragmentHandler::StartGeneratingForCurrentSelection() {
+  if (GetFrame()->Selection().SelectedText().IsEmpty())
+    return;
+
+  VisibleSelectionInFlatTree selection =
+      GetFrame()->Selection().ComputeVisibleSelectionInFlatTree();
+  EphemeralRangeInFlatTree selection_range(selection.Start(), selection.End());
+  RangeInFlatTree* current_selection_range =
+      MakeGarbageCollected<RangeInFlatTree>(selection_range.StartPosition(),
+                                            selection_range.EndPosition());
   GetTextFragmentSelectorGenerator()->Generate(
-      *current_selection_range_,
+      *current_selection_range,
       WTF::Bind(&TextFragmentHandler::DidFinishSelectorGeneration,
                 WrapWeakPersistent(this)));
 }
@@ -219,12 +231,7 @@ void TextFragmentHandler::RecordPreemptiveGenerationMetrics(
   }
 }
 
-void TextFragmentHandler::MainFrameDidUpdateSelection(
-    const EphemeralRangeInFlatTree& selection_range) {
-  // TODO(bokan): Why can't we query this rather than trying to keep track of
-  // it?
-  current_selection_range_ = MakeGarbageCollected<RangeInFlatTree>(
-      selection_range.StartPosition(), selection_range.EndPosition());
+void TextFragmentHandler::StartPreemptiveGenerationIfNeeded() {
   if (PreemptiveGenerationEnabled() &&
       shared_highlighting::ShouldOfferLinkToText(
           GetFrame()->GetDocument()->Url())) {
@@ -235,16 +242,10 @@ void TextFragmentHandler::MainFrameDidUpdateSelection(
 
 void TextFragmentHandler::Trace(Visitor* visitor) const {
   visitor->Trace(text_fragment_selector_generator_);
-  visitor->Trace(current_selection_range_);
   visitor->Trace(selector_producer_);
 }
 
 void TextFragmentHandler::DidDetachDocumentOrFrame() {
-  // A frame (and thus, this object) can survive multiple documents. When a
-  // document is detached we need to explicitly clear the selection range so
-  // that we don't keep alive a stale range.
-  current_selection_range_ = nullptr;
-
   // Clear out any state in the generator and cancel pending tasks so they
   // don't run after frame detachment.
   GetTextFragmentSelectorGenerator()->Reset();

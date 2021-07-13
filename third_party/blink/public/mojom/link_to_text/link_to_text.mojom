@@ -8,8 +8,10 @@ module blink.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // TextFragmentReceiver is used for requesting renderer to perform text fragment
-// operations on the main frame, mainly generating and removing fragments.
-// Implemented in renderer.
+// operations on the frame that interacts with the link-to-text/shared-highlighting
+// feature, mainly generating and removing fragments. A text fragment receiver is
+// associated with exactly one frame but a frame will only create its receiver
+// lazily when needed.
 interface TextFragmentReceiver {
   // Cancel text fragment generation if in progress.
   Cancel();
@@ -19,7 +21,7 @@ interface TextFragmentReceiver {
   // https://github.com/WICG/scroll-to-text-fragment.
   RequestSelector() => (string selector);
 
-  // Dismiss all text fragments from the current main frame at the time the
+  // Dismiss all text fragments from this frame at the time the
   // context menu was invoked.
   RemoveFragments();
 

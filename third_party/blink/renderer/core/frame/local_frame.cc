@@ -473,11 +473,8 @@ void LocalFrame::Init(Frame* opener,
           GetTaskRunner(blink::TaskType::kInternalDefault)));
   GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
       &LocalFrame::BindToReceiver, WrapWeakPersistent(this)));
-
-  if (IsMainFrame()) {
-    GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-        &LocalFrame::BindTextFragmentReceiver, WrapWeakPersistent(this)));
-  }
+  GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+      &LocalFrame::BindTextFragmentReceiver, WrapWeakPersistent(this)));
   DCHECK(!mojo_receiver_);
   mojo_receiver_ = MakeGarbageCollected<LocalFrameMojoReceiver>(*this);
 
@@ -3880,8 +3877,12 @@ void LocalFrame::BindToReceiver(
 
 void LocalFrame::BindTextFragmentReceiver(
     mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver) {
-  if (IsDetached() || !text_fragment_handler_)
+  if (IsDetached())
     return;
+
+  if (!text_fragment_handler_) {
+    text_fragment_handler_ = MakeGarbageCollected<TextFragmentHandler>(this);
+  }
 
   text_fragment_handler_->BindTextFragmentReceiver(std::move(receiver));
 }

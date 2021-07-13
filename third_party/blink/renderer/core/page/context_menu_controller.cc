@@ -642,12 +642,6 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         << "]\nVisibleSelection: "
         << selected_frame->Selection()
                .ComputeVisibleSelectionInDOMTreeDeprecated();
-    if (!result.IsContentEditable()) {
-      // Store text selection when it happens as it might be cleared when the
-      // browser will request |TextFragmentHandler| to generate
-      // selector.
-      UpdateTextFragmentHandler(selected_frame);
-    }
   }
 
   // If there is a text fragment at the same location as the click indicate that
@@ -782,18 +776,6 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data, host_context_menu_location);
 
   return true;
-}
-
-void ContextMenuController::UpdateTextFragmentHandler(
-    LocalFrame* selected_frame) {
-  if (!selected_frame->GetTextFragmentHandler())
-    return;
-
-  VisibleSelectionInFlatTree selection =
-      selected_frame->Selection().ComputeVisibleSelectionInFlatTree();
-  EphemeralRangeInFlatTree selection_range(selection.Start(), selection.End());
-  selected_frame->GetTextFragmentHandler()->MainFrameDidUpdateSelection(
-      selection_range);
 }
 
 }  // namespace blink

@@ -17,8 +17,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -50,6 +52,17 @@ class TextFragmentHandlerTest : public SimTest,
     feature_list_.InitWithFeatures(enabled, disabled);
   }
 
+  void BeginEmptyFrame() {
+    // If a test case doesn't find a match and therefore doesn't schedule the
+    // beforematch event, we should still render a second frame as if we did
+    // schedule the event to retain test coverage.
+    // When the beforematch event is not scheduled, a DCHECK will fail on
+    // BeginFrame() because no event was scheduled, so we schedule an empty task
+    // here.
+    GetDocument().EnqueueAnimationFrameTask(WTF::Bind([]() {}));
+    Compositor().BeginFrame();
+  }
+
   void RunAsyncMatchingTasks() {
     auto* scheduler =
         ThreadScheduler::Current()->GetWebMainThreadSchedulerForTest();
@@ -58,9 +71,16 @@ class TextFragmentHandlerTest : public SimTest,
     RunPendingTasks();
   }
 
+  void SetSelection(const Position& start, const Position& end) {
+    GetDocument().GetFrame()->Selection().SetSelection(
+        SelectionInDOMTree::Builder().SetBaseAndExtent(start, end).Build(),
+        SetSelectionOptions());
+  }
+
   String SelectThenRequestSelector(const Position& start, const Position& end) {
-    GetTextFragmentHandler().MainFrameDidUpdateSelection(
-        ToEphemeralRangeInFlatTree(EphemeralRange(start, end)));
+    SetSelection(start, end);
+
+    GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
 
     bool callback_called = false;
     String selector;
@@ -169,6 +189,10 @@ class TextFragmentHandlerTest : public SimTest,
 
   TextFragmentHandler& GetTextFragmentHandler() {
     return *GetDocument().GetFrame()->GetTextFragmentHandler();
+  }
+
+  bool HasTextFragmentHandler(LocalFrame* frame) {
+    return frame->GetTextFragmentHandler();
   }
 
  protected:
@@ -603,8 +627,9 @@ TEST_P(TextFragmentHandlerTest, CheckPreemptiveGeneration) {
   const auto& selected_end = Position(first_paragraph, 5);
   ASSERT_EQ("First", PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GetTextFragmentHandler().MainFrameDidUpdateSelection(
-      ToEphemeralRangeInFlatTree(EphemeralRange(selected_start, selected_end)));
+  SetSelection(selected_start, selected_end);
+  GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
+
   base::RunLoop().RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated", 1);
@@ -628,8 +653,9 @@ TEST_P(TextFragmentHandlerTest, CheckNoPreemptiveGenerationBlocklist) {
   const auto& selected_end = Position(first_paragraph, 5);
   ASSERT_EQ("First", PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GetTextFragmentHandler().MainFrameDidUpdateSelection(
-      ToEphemeralRangeInFlatTree(EphemeralRange(selected_start, selected_end)));
+  SetSelection(selected_start, selected_end);
+  GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
+
   base::RunLoop().RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated", 0);
@@ -656,8 +682,9 @@ TEST_P(TextFragmentHandlerTest, CheckNoPreemptiveGenerationEditable) {
   ASSERT_EQ("default text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GetTextFragmentHandler().MainFrameDidUpdateSelection(
-      ToEphemeralRangeInFlatTree(EphemeralRange(selected_start, selected_end)));
+  SetSelection(selected_start, selected_end);
+  GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
+
   base::RunLoop().RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated", 0);
@@ -679,6 +706,7 @@ TEST_P(TextFragmentHandlerTest, SecondGenerationCrash) {
   const auto& start = Position(p->lastChild(), 0);
   const auto& end = Position(p->lastChild(), 15);
   ASSERT_EQ("First paragraph", PlainText(EphemeralRange(start, end)));
+  SetSelection(start, end);
 
   auto callback = WTF::Bind([](const TextFragmentSelector& selector) {});
   GetDocument()
@@ -688,8 +716,7 @@ TEST_P(TextFragmentHandlerTest, SecondGenerationCrash) {
       ->SetCallbackForTesting(std::move(callback));
 
   // This shouldn't crash.
-  GetTextFragmentHandler().MainFrameDidUpdateSelection(
-      ToEphemeralRangeInFlatTree(EphemeralRange(start, end)));
+  GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -738,6 +765,157 @@ TEST_P(TextFragmentHandlerTest, CheckMetrics_Failure) {
   String selector = SelectThenRequestSelector(selected_start, selected_end);
   EXPECT_EQ(selector, "");
   VerifyPreemptiveGenerationMetrics(false);
+}
+
+TEST_P(TextFragmentHandlerTest,
+       ShouldCreateTextFragmentHandlerAndRemoveHighlightForIframes) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      shared_highlighting::kSharedHighlightingAmp);
+  SimRequest main_request("https://example.com/test.html", "text/html");
+  SimRequest child_request("https://example.com/child.html#:~:text=test",
+                           "text/html");
+  LoadURL("https://example.com/test.html");
+  main_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <iframe id="iframe" src="child.html#:~:text=test"></iframe>
+  )HTML");
+
+  child_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        margin-top: 1000px;
+      }
+    </style>
+    <p>
+      test
+    </p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  Element* iframe = GetDocument().getElementById("iframe");
+  auto* child_frame =
+      To<LocalFrame>(To<HTMLFrameOwnerElement>(iframe)->ContentFrame());
+
+  EXPECT_EQ(1u, child_frame->GetDocument()->Markers().Markers().size());
+  EXPECT_FALSE(HasTextFragmentHandler(child_frame));
+
+  mojo::Remote<mojom::blink::TextFragmentReceiver> remote;
+  EXPECT_FALSE(remote.is_bound());
+  child_frame->BindTextFragmentReceiver(remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_TRUE(HasTextFragmentHandler(child_frame));
+  EXPECT_TRUE(remote.is_bound());
+  remote.get()->RemoveFragments();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, child_frame->GetDocument()->Markers().Markers().size());
+
+  // Ensure the fragment is uninstalled
+  EXPECT_FALSE(child_frame->GetDocument()->View()->GetFragmentAnchor());
+}
+
+TEST_P(TextFragmentHandlerTest,
+       ShouldCreateTextFragmentHandlerAndRemoveHighlight) {
+  SimRequest request(
+      "https://example.com/"
+      "test.html#:~:text=test%20page&text=more%20text",
+      "text/html");
+  LoadURL(
+      "https://example.com/"
+      "test.html#:~:text=test%20page&text=more%20text");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 2200px;
+      }
+      #first {
+        position: absolute;
+        top: 1000px;
+      }
+      #second {
+        position: absolute;
+        top: 2000px;
+      }
+    </style>
+    <p id="first">This is a test page</p>
+    <p id="second">With some more text</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
+  EXPECT_TRUE(HasTextFragmentHandler(GetDocument().GetFrame()));
+
+  mojo::Remote<mojom::blink::TextFragmentReceiver> remote;
+  EXPECT_FALSE(remote.is_bound());
+  GetDocument().GetFrame()->BindTextFragmentReceiver(
+      remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_TRUE(HasTextFragmentHandler(GetDocument().GetFrame()));
+  EXPECT_TRUE(remote.is_bound());
+  remote.get()->RemoveFragments();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
+
+  // Ensure the fragment is uninstalled
+  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+}
+
+TEST_P(TextFragmentHandlerTest,
+       ShouldCreateTextFragmentHandlerAndRequestSelector) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer than 20 chars</p>
+    <p id='second'>Second paragraph text</p>
+  )HTML");
+
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 0);
+  const auto& selected_end = Position(first_paragraph, 28);
+  ASSERT_EQ("First paragraph text that is",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  SetSelection(selected_start, selected_end);
+
+  mojo::Remote<mojom::blink::TextFragmentReceiver> remote;
+  EXPECT_TRUE(HasTextFragmentHandler(GetDocument().GetFrame()));
+  EXPECT_FALSE(remote.is_bound());
+
+  GetDocument().GetFrame()->BindTextFragmentReceiver(
+      remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_TRUE(HasTextFragmentHandler(GetDocument().GetFrame()));
+  EXPECT_TRUE(remote.is_bound());
+
+  bool callback_called = false;
+  String selector;
+  auto lambda = [](bool& callback_called, String& selector,
+                   const String& generated_selector) {
+    selector = generated_selector;
+    callback_called = true;
+  };
+  auto callback =
+      WTF::Bind(lambda, std::ref(callback_called), std::ref(selector));
+  remote->RequestSelector(std::move(callback));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(callback_called);
+
+  EXPECT_EQ(selector, "First%20paragraph%20text%20that%20is");
+  VerifyPreemptiveGenerationMetrics(true);
 }
 
 struct PreemptiveLinkGenerationTestPassToString {

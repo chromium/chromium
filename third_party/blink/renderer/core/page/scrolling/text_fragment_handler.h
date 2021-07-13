@@ -12,14 +12,14 @@
 namespace blink {
 
 class LocalFrame;
-class RangeInFlatTree;
 class TextFragmentAnchor;
 
 // TextFragmentHandler is responsible for handling requests from the
 // browser-side link-to-text/shared-highlighting feature. It is responsible for
 // generating a text fragment URL based on the current selection as well as
 // collecting information about and modifying text fragments on the current
-// page. This class is registered on and owned by the main frame of a page.
+// page. This class is registered on and owned by the frame that interacts with
+// the link-to-text/shared-highlighting feature.
 class CORE_EXPORT TextFragmentHandler final
     : public GarbageCollected<TextFragmentHandler>,
       public blink::mojom::blink::TextFragmentReceiver {
@@ -41,9 +41,9 @@ class CORE_EXPORT TextFragmentHandler final
   void ExtractFirstFragmentRect(
       ExtractFirstFragmentRectCallback callback) override;
 
-  // Called by Blink when the selection in the main frame changes.
-  void MainFrameDidUpdateSelection(
-      const EphemeralRangeInFlatTree& selection_range);
+  // This starts the preemptive generation on the current selection if it is not
+  // empty.
+  void StartPreemptiveGenerationIfNeeded();
 
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> producer);
@@ -61,9 +61,8 @@ class CORE_EXPORT TextFragmentHandler final
   // result.
   void DidFinishSelectorGeneration(const TextFragmentSelector& selector);
 
-  // This starts running the generator over the selection in
-  // |current_selection_range_|. The result will be returned by invoking
-  // DidFinishSelectorGeneration().
+  // This starts running the generator over the current selection.
+  // The result will be returned by invoking DidFinishSelectorGeneration().
   void StartGeneratingForCurrentSelection();
 
   void RecordPreemptiveGenerationMetrics(const TextFragmentSelector& selector);
@@ -80,11 +79,6 @@ class CORE_EXPORT TextFragmentHandler final
   // Class responsible for generating text fragment selectors for the current
   // selection.
   Member<TextFragmentSelectorGenerator> text_fragment_selector_generator_;
-
-  // The Range of DOM currently selected by the user in the main frame. This
-  // class may preemptively start generating a selector based on this
-  // selection.
-  Member<RangeInFlatTree> current_selection_range_;
 
   // The result of preemptively generating on selection changes will be stored
   // in this member when completed. Used only in preemptive link generation

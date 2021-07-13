@@ -798,6 +798,9 @@ class CORE_EXPORT LocalFrame final : public Frame,
   // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history
   bool ShouldMaintainTrivialSessionHistory() const;
 
+  void BindTextFragmentReceiver(
+      mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
+
  private:
   friend class FrameNavigationDisabler;
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
@@ -905,8 +908,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
   static void BindToReceiver(
       blink::LocalFrame* frame,
       mojo::PendingAssociatedReceiver<mojom::blink::LocalFrame> receiver);
-  void BindTextFragmentReceiver(
-      mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
 
   // Whether a navigation should replace the current history entry or not.
   // Note this isn't exhaustive; there are other cases where a navigation does a
