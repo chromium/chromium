@@ -5,14 +5,17 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_SCROLL_BAR_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_SCROLL_BAR_H_
 
+#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 
 namespace ash {
 
+class PresentationTimeRecorder;
+
 // The scroll bar for message center. This is basically views::OverlayScrollBar
-// but also records the metrics for the type of scrolling. Only the first event
-// after the message center opens is recorded.
+// but also records the metrics for the type of scrolling (only the first event
+// after the message center opens is recorded) and scrolling performance.
 class MessageCenterScrollBar : public views::OverlayScrollBar {
  public:
   class Observer {
@@ -24,6 +27,7 @@ class MessageCenterScrollBar : public views::OverlayScrollBar {
 
   // |observer| can be null.
   explicit MessageCenterScrollBar(Observer* observer);
+  ~MessageCenterScrollBar() override;
 
  private:
   // View overrides:
@@ -41,6 +45,9 @@ class MessageCenterScrollBar : public views::OverlayScrollBar {
   bool stats_recorded_ = false;
 
   Observer* const observer_;
+
+  // Presentation time recorder for scrolling through notification list.
+  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(MessageCenterScrollBar);
 };
