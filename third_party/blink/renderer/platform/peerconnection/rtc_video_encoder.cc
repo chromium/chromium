@@ -578,9 +578,17 @@ RTCVideoEncoder::Impl::Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   // The default values of EncoderInfo.
+  // TODO(crbug.com/1228804): These settings should be set at the time
+  // RTCVideoEncoder is constructed instead of done here.
   encoder_info_.scaling_settings = webrtc::VideoEncoder::ScalingSettings::kOff;
+#if defined(OS_ANDROID)
+  // MediaCodec requires 16x16 alignment, see https://crbug.com/1084702.
+  encoder_info_.requested_resolution_alignment = 16;
+  encoder_info_.apply_alignment_to_all_simulcast_layers = true;
+#else
   encoder_info_.requested_resolution_alignment = 1;
   encoder_info_.apply_alignment_to_all_simulcast_layers = false;
+#endif
   encoder_info_.supports_native_handle = true;
   encoder_info_.implementation_name = "ExternalEncoder";
   encoder_info_.has_trusted_rate_controller = true;
@@ -1567,9 +1575,16 @@ void RTCVideoEncoder::SetRates(
 
 webrtc::VideoEncoder::EncoderInfo RTCVideoEncoder::GetEncoderInfo() const {
   webrtc::VideoEncoder::EncoderInfo info;
+#if defined(OS_ANDROID)
+  // MediaCodec requires 16x16 alignment, see https://crbug.com/1084702. We
+  // normally override this in |impl_|, but sometimes this method is called
+  // before |impl_| is created, so we need to override it here too.
+  info.requested_resolution_alignment = 16;
+  info.apply_alignment_to_all_simulcast_layers = true;
+#endif
+
   if (impl_)
     info = impl_->GetEncoderInfo();
-
   return info;
 }
 

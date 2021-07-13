@@ -175,6 +175,15 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
+  // Non 16x16 aligned resolutions don't work with MediaCodec unfortunately, see
+  // https://crbug.com/1084702 for details.
+  if (config.input_visible_size.width() % 16 != 0 ||
+      config.input_visible_size.height() % 16 != 0) {
+    DLOG(ERROR) << "MediaCodec is only tested with resolutions "
+                   "that are 16x16 aligned.";
+    return false;
+  }
+
   frame_size_ = config.input_visible_size;
   last_set_bitrate_ = config.bitrate.target();
 
