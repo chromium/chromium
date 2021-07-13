@@ -4,6 +4,7 @@
 
 #include "components/policy/test_support/request_handler_for_policy.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -35,6 +36,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
     const HttpRequest& request) {
   const std::set<std::string> kCloudPolicyTypes{
       dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+      dm_protocol::kChromeMachineLevelUserCloudPolicyAndroidType,
       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
   };
 
@@ -54,15 +56,18 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
   em::DeviceManagementResponse device_management_response;
   for (const auto& fetch_request :
        device_management_request.policy_request().requests()) {
+    const std::string& policy_type = fetch_request.policy_type();
     // TODO(crbug.com/1221328): Add other policy types as needed.
     if (kCloudPolicyTypes.find(fetch_request.policy_type()) ==
         kCloudPolicyTypes.end()) {
-      return CreateHttpResponse(net::HTTP_BAD_REQUEST, "Invalid policy_type");
+      return CreateHttpResponse(
+          net::HTTP_BAD_REQUEST,
+          base::StringPrintf("Invalid policy_type: %s", policy_type.c_str()));
     }
 
     std::string error_msg;
     if (!ProcessCloudPolicy(
-            fetch_request.policy_type(), *client_info,
+            policy_type, *client_info,
             device_management_response.mutable_policy_response()
                 ->add_responses(),
             &error_msg)) {

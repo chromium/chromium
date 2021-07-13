@@ -46,11 +46,13 @@ std::unique_ptr<HttpResponse> RequestHandlerForRegisterBrowser::HandleRequest(
   const em::RegisterBrowserRequest& register_browser_request =
       device_management_request.register_browser_request();
 
-  if (register_browser_request.machine_name().empty() &&
-      register_browser_request.device_model().empty()) {
-    return CreateHttpResponse(
-        net::HTTP_BAD_REQUEST,
-        "Either machine name or device model must be non-empty.");
+  // Machine name is empty on mobile.
+  if (register_browser_request.os_platform() != "Android" &&
+      register_browser_request.os_platform() != "iOS" &&
+      register_browser_request.machine_name().empty()) {
+    LOG(ERROR) << "OS platform: " << register_browser_request.os_platform();
+    return CreateHttpResponse(net::HTTP_BAD_REQUEST,
+                              "Machine name must be non-empty on Desktop.");
   }
 
   if (enrollment_token == kInvalidEnrollmentToken) {
@@ -70,6 +72,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForRegisterBrowser::HandleRequest(
   client_info.machine_name = register_browser_request.machine_name();
   client_info.allowed_policy_types.insert(
       {dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+       dm_protocol::kChromeMachineLevelUserCloudPolicyAndroidType,
        dm_protocol::kChromeMachineLevelExtensionCloudPolicyType});
   client_storage()->RegisterClient(std::move(client_info));
 
