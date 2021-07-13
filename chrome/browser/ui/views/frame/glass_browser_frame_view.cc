@@ -236,6 +236,17 @@ TabSearchBubbleHost* GlassBrowserFrameView::GetTabSearchBubbleHost() {
   return caption_button_container_->GetTabSearchBubbleHost();
 }
 
+void GlassBrowserFrameView::PaintAsActiveChanged() {
+  BrowserNonClientFrameView::PaintAsActiveChanged();
+
+  // When window controls overlay is enabled, the caption button container is
+  // painted to a layer and is not repainted by
+  // BrowserNonClientFrameView::PaintAsActiveChanged. Schedule a re-paint here
+  // to update the caption button colors.
+  if (caption_button_container_ && caption_button_container_->layer())
+    caption_button_container_->SchedulePaint();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // GlassBrowserFrameView, views::NonClientFrameView implementation:
 

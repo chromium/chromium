@@ -76,6 +76,9 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
   const views::Label* window_title_for_testing() const { return window_title_; }
 
  protected:
+  // BrowserNonClientFrameView:
+  void PaintAsActiveChanged() override;
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   void Layout() override;
