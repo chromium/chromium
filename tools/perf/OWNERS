@@ -18,6 +18,9 @@ rmhasan@google.com
 eyaich@chromium.org
 sullivan@chromium.org
 
+# For V8 and system_health stories.
+cbruni@chromium.org
+
 # For page_cycler and loading benchmarks related changes.
 kouhei@chromium.org
 
