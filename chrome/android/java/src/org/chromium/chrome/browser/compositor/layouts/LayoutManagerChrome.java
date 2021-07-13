@@ -107,6 +107,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         mTabContentManagerSupplier.addObserver(new Callback<TabContentManager>() {
             @Override
             public void onResult(TabContentManager manager) {
+                manager.addThumbnailChangeListener((id) -> requestUpdate());
                 if (mOverviewLayout != null) {
                     mOverviewLayout.setTabContentManager(manager);
                 }
