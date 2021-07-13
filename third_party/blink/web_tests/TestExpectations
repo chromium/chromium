@@ -2831,8 +2831,6 @@ crbug.com/626703 [ Win ] external/wpt/service-workers/cache-storage/serviceworke
 crbug.com/626703 [ Win ] external/wpt/websockets/remove-own-iframe-during-onerror.window.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.sharedworker.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/basic-auth.any.worker.html?wss [ Failure Timeout ]
-crbug.com/626703 [ Win ] virtual/plz-service-worker/external/wpt/service-workers/cache-storage/window/cache-abort.https.html [ Failure Timeout ]
-crbug.com/626703 [ Win ] virtual/plz-service-worker/external/wpt/service-workers/cache-storage/worker/cache-abort.https.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/service-workers/cache-storage/worker/cache-abort.https.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/service-workers/cache-storage/window/cache-abort.https.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/constructor/010.html [ Failure Timeout ]
@@ -4876,7 +4874,6 @@ crbug.com/1207342 http/tests/devtools/console/console-api-on-call-frame.js [ Pas
 crbug.com/1207342 http/tests/devtools/console/worker-eval-contains-stack.js [ Pass Failure ]
 crbug.com/1207342 http/tests/devtools/console/nested-worker-eval-contains-stack.js [ Pass Failure ]
 crbug.com/1207342 http/tests/devtools/console/console-error-on-call-frame.js [ Pass Failure ]
-crbug.com/1207342 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Failure Timeout ]
 crbug.com/1207342 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Pass Failure ]
 crbug.com/1207342 http/tests/devtools/compiler-source-mapping-debug.js [ Pass Failure ]
 crbug.com/1207342 http/tests/devtools/network/parse-form-data.js [ Pass Failure ]
@@ -7291,3 +7288,32 @@ crbug.com/1227710 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.h
 
 # Sheriff 2021-07-13
 crbug.com/1220114 [ Linux ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
+
+# PlzServiceWorker failing tests
+crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/network/cross-origin-isolation/coop-coep-get-security-isolation-info-service-worker.js [ Failure ]
+crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Timeout ]
+crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/service-worker/offline-service-worker.js [ Timeout ]
+crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/target/target-setAutoAttach-service-worker.js [ Crash ]
+
+# A number of http/tests/inspector-protocol/network tests are flaky.
+crbug.com/1228246 http/tests/inspector-protocol/network/disable-interception-midway.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-frame-id.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-patterns.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228246 http/tests/inspector-protocol/network/request-response-interception-disable-between.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-lax-subresource-context-downgrade.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-strict-subresource-context-downgrade.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228246 http/tests/inspector-protocol/network/webbundle.js [ Timeout Crash Pass Failure Skip ]
+
+# Other devtools flaky tests outside of http/tests/inspector-protocol/network.
+crbug.com/1228261 http/tests/devtools/console/console-context-selector.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228261 http/tests/inspector-protocol/browser-grant-permissions.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228261 http/tests/inspector-protocol/network-fetch-content-with-error-status-code.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228261 http/tests/inspector-protocol/fetch/request-paused-network-id-cors.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228261 http/tests/inspector-protocol/service-worker/network-extrainfo-subresource.js [ Timeout Crash Pass Failure Skip ]
+crbug.com/1228261 http/tests/inspector-protocol/service-worker/network-get-request-body-blob.js [ Timeout Crash Pass Failure Skip ]
+
+# Flakes that might be caused or aggravated by PlzServiceWorker
+crbug.com/996511 virtual/plz-service-worker/external/wpt/service-workers/cache-storage/frame/cache-abort.https.html [ Timeout Crash Pass Failure Skip ]
+crbug.com/996511 virtual/plz-service-worker/external/wpt/service-workers/cache-storage/window/cache-abort.https.html [ Timeout Crash Pass Failure Skip ]
+crbug.com/996511 virtual/plz-service-worker/external/wpt/service-workers/service-worker/getregistrations.https.html [ Timeout Crash Pass Failure Skip ]
+crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/fetch/fetch-cors-preflight-sw.js [ Timeout Crash Pass Failure Skip ]

@@ -555,7 +555,7 @@
     "bases": ["http/tests/serviceworker",
               "http/tests/devtools/service-workers",
               "http/tests/devtools/console",
-              "http/tests/inspector-protocol/fetch",
+              "http/tests/inspector-protocol",
               "external/wpt/service-workers",
               "external/wpt/html/cross-origin-embedder-policy"],
     "args": ["--enable-features=PlzServiceWorker"]
