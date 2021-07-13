@@ -105,7 +105,16 @@ Polymer({
         return loadTimeData.getBoolean('useLottieAnimationForFingerprint');
       },
       readOnly: true,
-    }
+    },
+
+    /**
+     * Indicates whether user is a child account.
+     * @type {boolean}
+     */
+    isChildAccount_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   ready() {
@@ -123,7 +132,8 @@ Polymer({
     return UIState.START;
   },
 
-  onBeforeShow() {
+  onBeforeShow(data) {
+    this.isChildAccount_ = data['isChildAccount'];
     this.setAnimationState_(true);
   },
 

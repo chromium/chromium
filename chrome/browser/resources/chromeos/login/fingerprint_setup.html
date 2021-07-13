@@ -39,11 +39,17 @@
     <oobe-adaptive-dialog id="setupFingerprint" role="dialog" for-step="start"
         footer-shrinkable
         aria-label$="[[i18nDynamic(locale, 'setupFingerprintScreenAriaLabel')]]">
-      <h1 slot="title">
+      <h1 slot="title" hidden="[[isChildAccount_]]">
         [[i18nDynamic(locale, 'setupFingerprintScreenTitle')]]
       </h1>
-      <p slot="subtitle">
+      <h1 slot="title" hidden="[[!isChildAccount_]]">
+        [[i18nDynamic(locale, 'setupFingerprintScreenTitleForChild')]]
+      </h1>
+      <p slot="subtitle" hidden="[[isChildAccount_]]">
         [[i18nDynamic(locale, 'setupFingerprintScreenDescription')]]
+      </p>
+      <p slot="subtitle" hidden="[[!isChildAccount_]]">
+        [[i18nDynamic(locale, 'setupFingerprintScreenDescriptionForChild')]]
       </p>
       <iron-icon slot="icon" icon="oobe-32:fingerprint"></iron-icon>
       <div slot="content" class="flex layout vertical center center-justified">
@@ -76,10 +82,22 @@
         [[i18nDynamic(locale, 'setupFingerprintEnrollmentSuccessTitle')]]
       </h1>
       <div slot="subtitle" hidden="[[!complete_]]">
-        [[i18nDynamic(locale, 'setupFingerprintEnrollmentSuccessDescription')]]
+        <div hidden="[[isChildAccount_]]">
+          [[i18nDynamic(locale,
+              'setupFingerprintEnrollmentSuccessDescription')]]
+        </div>
+        <div hidden="[[!isChildAccount_]]">
+          [[i18nDynamic(locale,
+              'setupFingerprintEnrollmentSuccessDescriptionForChild')]]
+        </div>
       </div>
       <div slot="subtitle" hidden="[[!isProblemImmobile_(scanResult_)]]">
-        [[i18nDynamic(locale, 'setupFingerprintScanMoveFinger')]]
+        <div hidden="[[isChildAccount_]]">
+          [[i18nDynamic(locale, 'setupFingerprintScanMoveFinger')]]
+        </div>
+        <div hidden="[[!isChildAccount_]]">
+          [[i18nDynamic(locale, 'setupFingerprintScanMoveFingerForChild')]]
+        </div>
       </div>
       <div slot="subtitle" hidden="[[!isProblemOther_(scanResult_)]]">
         [[i18nDynamic(locale, 'setupFingerprintScanTryAgain')]]
