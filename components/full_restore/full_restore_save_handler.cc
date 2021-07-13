@@ -6,6 +6,7 @@
 
 #include "ash/constants/app_types.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/sequenced_task_runner.h"
@@ -13,6 +14,7 @@
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_file_handler.h"
 #include "components/full_restore/full_restore_info.h"
+#include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
@@ -271,7 +273,7 @@ void FullRestoreSaveHandler::AddAppLaunchInfo(
 
   pending_save_profile_paths_.insert(profile_path);
 
-  MaybeStartSaveTimer();
+  MaybeStartSaveTimer(profile_path);
 }
 
 void FullRestoreSaveHandler::ModifyWindowId(const base::FilePath& profile_path,
@@ -287,7 +289,7 @@ void FullRestoreSaveHandler::ModifyWindowId(const base::FilePath& profile_path,
 
   pending_save_profile_paths_.insert(profile_path);
 
-  MaybeStartSaveTimer();
+  MaybeStartSaveTimer(profile_path);
 }
 
 void FullRestoreSaveHandler::ModifyWindowInfo(
@@ -304,7 +306,7 @@ void FullRestoreSaveHandler::ModifyWindowInfo(
 
   pending_save_profile_paths_.insert(profile_path);
 
-  MaybeStartSaveTimer();
+  MaybeStartSaveTimer(profile_path);
 }
 
 void FullRestoreSaveHandler::ModifyThemeColor(
@@ -322,7 +324,7 @@ void FullRestoreSaveHandler::ModifyThemeColor(
 
   pending_save_profile_paths_.insert(profile_path);
 
-  MaybeStartSaveTimer();
+  MaybeStartSaveTimer(profile_path);
 }
 
 void FullRestoreSaveHandler::RemoveApp(const base::FilePath& profile_path,
@@ -335,7 +337,7 @@ void FullRestoreSaveHandler::RemoveApp(const base::FilePath& profile_path,
 
   pending_save_profile_paths_.insert(profile_path);
 
-  MaybeStartSaveTimer();
+  MaybeStartSaveTimer(profile_path);
 }
 
 void FullRestoreSaveHandler::RemoveAppRestoreData(
@@ -350,7 +352,7 @@ void FullRestoreSaveHandler::RemoveAppRestoreData(
 
   pending_save_profile_paths_.insert(profile_path);
 
-  MaybeStartSaveTimer();
+  MaybeStartSaveTimer(profile_path);
 }
 
 void FullRestoreSaveHandler::RemoveWindowInfo(
@@ -365,14 +367,14 @@ void FullRestoreSaveHandler::RemoveWindowInfo(
 
   pending_save_profile_paths_.insert(profile_path);
 
-  MaybeStartSaveTimer();
+  MaybeStartSaveTimer(profile_path);
 }
 
 void FullRestoreSaveHandler::ClearRestoreData(
     const base::FilePath& profile_path) {
   pending_save_profile_paths_.insert(profile_path);
 
-  MaybeStartSaveTimer();
+  MaybeStartSaveTimer(profile_path);
 }
 
 int32_t FullRestoreSaveHandler::GetArcSessionId() {
@@ -401,7 +403,19 @@ void FullRestoreSaveHandler::ClearForTesting() {
   app_id_to_app_launch_infos_.clear();
 }
 
-void FullRestoreSaveHandler::MaybeStartSaveTimer() {
+void FullRestoreSaveHandler::MaybeStartSaveTimer(
+    const base::FilePath& profile_path) {
+  if (!base::Contains(been_read_profile_paths_, profile_path)) {
+    // FullRestoreSaveHandler might be called to save the help app before
+    // FullRestoreAppLaunchHandler reads the full restore data from the full
+    // restore file during the system startup phase, e.g. when a new user login.
+    // So call FullRestoreReadHandler to read the file before saving the new
+    // data.
+    FullRestoreReadHandler::GetInstance()->ReadFromFile(profile_path,
+                                                        base::DoNothing());
+    been_read_profile_paths_.insert(profile_path);
+  }
+
   if (!save_timer_.IsRunning() && save_running_.empty()) {
     save_timer_.Start(FROM_HERE, kSaveDelay,
                       base::BindOnce(&FullRestoreSaveHandler::Save,

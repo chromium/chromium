@@ -158,7 +158,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   using AppLaunchInfos = std::map<base::FilePath, std::list<AppLaunchInfoPtr>>;
 
   // Starts the timer that invokes Save (if timer isn't already running).
-  void MaybeStartSaveTimer();
+  void MaybeStartSaveTimer(const base::FilePath& profile_path);
 
   // Passes |profile_path_to_restore_data_| to the backend for saving.
   void Save();
@@ -176,6 +176,14 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
   // Removes AppRestoreData for |window_id|.
   void RemoveAppRestoreData(int window_id);
+
+  // FullRestoreSaveHandler might be called to save the help app before
+  // FullRestoreAppLaunchHandler reads the full restore data from the full
+  // restore file during the system startup phase, e.g. when a new user login.
+  // So call FullRestoreReadHandler to read the file before saving the new data.
+  // `been_read_profile_paths_` is used to save the profile paths, whose full
+  // restore file has been read by FullRestoreReadHandler.
+  std::set<base::FilePath> been_read_profile_paths_;
 
   // Records whether there are new updates for saving between each saving delay.
   // |pending_save_profile_paths_| is cleared when Save is invoked.

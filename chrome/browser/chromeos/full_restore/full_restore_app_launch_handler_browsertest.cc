@@ -199,17 +199,6 @@ void SaveWindowInfo(
   ::full_restore::SaveWindowInfo(window_info);
 }
 
-void WaitForAppLaunchInfoSaved() {
-  ::full_restore::FullRestoreSaveHandler* save_handler =
-      ::full_restore::FullRestoreSaveHandler::GetInstance();
-  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
-  if (timer->IsRunning()) {
-    // Simulate timeout, and the launch info is saved.
-    timer->FireNow();
-  }
-  content::RunAllTasksUntilIdle();
-}
-
 std::string GetTestApp1Id(const std::string& package_name) {
   return ArcAppListPrefs::GetAppId(package_name, kTestAppActivity);
 }
@@ -327,6 +316,20 @@ class FullRestoreAppLaunchHandlerBrowserTest
       }
     }
     return nullptr;
+  }
+
+  void WaitForAppLaunchInfoSaved() {
+    ::full_restore::FullRestoreSaveHandler* save_handler =
+        ::full_restore::FullRestoreSaveHandler::GetInstance();
+    base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+    if (timer->IsRunning()) {
+      // Simulate timeout, and the launch info is saved.
+      timer->FireNow();
+    }
+    content::RunAllTasksUntilIdle();
+
+    ::full_restore::FullRestoreReadHandler::GetInstance()
+        ->profile_path_to_restore_data_.clear();
   }
 
   void SaveChromeAppLaunchInfo(const std::string& app_id) {
@@ -2140,6 +2143,20 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
   Browser* LaunchMediaSystemWebApp() {
     return LaunchSystemWebApp(GURL("chrome://media-app/"),
                               web_app::SystemAppType::MEDIA);
+  }
+
+  void WaitForAppLaunchInfoSaved() {
+    ::full_restore::FullRestoreSaveHandler* save_handler =
+        ::full_restore::FullRestoreSaveHandler::GetInstance();
+    base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+    if (timer->IsRunning()) {
+      // Simulate timeout, and the launch info is saved.
+      timer->FireNow();
+    }
+    content::RunAllTasksUntilIdle();
+
+    ::full_restore::FullRestoreReadHandler::GetInstance()
+        ->profile_path_to_restore_data_.clear();
   }
 
  private:

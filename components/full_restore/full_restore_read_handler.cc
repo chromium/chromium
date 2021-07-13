@@ -102,6 +102,23 @@ void FullRestoreReadHandler::OnTaskDestroyed(int32_t task_id) {
 
 void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,
                                           Callback callback) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it != profile_path_to_restore_data_.end()) {
+    // If the restore data has been read from the file, just use it, and don't
+    // need to read it again.
+    //
+    // We must use post task here, because FullRestoreAppLaunchHandler calls
+    // ReadFromFile in FullRestoreService construct function, and the callback
+    // in FullRestoreAppLaunchHandler calls the init function of
+    // FullRestoreService. If we don't use post task, and call the callback
+    // function directly, it could cause deadloop.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       (it->second ? it->second->Clone() : nullptr)));
+    return;
+  }
+
   auto file_handler =
       base::MakeRefCounted<FullRestoreFileHandler>(profile_path);
   file_handler->owning_task_runner()->PostTaskAndReplyWithResult(
@@ -377,6 +394,8 @@ void FullRestoreReadHandler::OnGetRestoreData(
         }
       }
     }
+  } else {
+    profile_path_to_restore_data_[profile_path] = nullptr;
   }
 
   std::move(callback).Run(std::move(restore_data));

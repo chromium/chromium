@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/chrome_switches.h"
@@ -21,8 +22,10 @@
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_info.h"
+#include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
+#include "components/full_restore/restore_data.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
@@ -243,6 +246,9 @@ class FullRestoreServiceTestHavingFullRestoreFile
     timer->FireNow();
 
     content::RunAllTasksUntilIdle();
+
+    ::full_restore::FullRestoreReadHandler::GetInstance()
+        ->profile_path_to_restore_data_.clear();
   }
 };
 
@@ -290,6 +296,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
 
+  first_run::ResetCachedSentinelDataForTesting();
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kForceFirstRun);
 
@@ -298,6 +305,10 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
   VerifyNotification(false, false);
+
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kForceFirstRun);
+  first_run::ResetCachedSentinelDataForTesting();
 }
 
 // For a brand new user, if sync off, set 'Ask Every Time' as the default value,

@@ -86,6 +86,10 @@ class FullRestoreReadHandlerTestApi {
     return arc_read_handler->task_id_to_window_id_;
   }
 
+  void ClearRestoreData() {
+    read_handler_->profile_path_to_restore_data_.clear();
+  }
+
  private:
   FullRestoreReadHandler* read_handler_;
 };
@@ -176,6 +180,8 @@ class FullRestoreReadAndSaveTest : public testing::Test {
   void ReadFromFile(const base::FilePath& file_path) {
     FullRestoreReadHandler* read_handler =
         FullRestoreReadHandler::GetInstance();
+    FullRestoreReadHandlerTestApi(read_handler).ClearRestoreData();
+
     base::RunLoop run_loop;
 
     read_handler->ReadFromFile(
