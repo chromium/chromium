@@ -542,7 +542,7 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
             << SubframeWeightingFactor();
   }
 
-  if (pointerdown_pending_data_.saw_pointerdown ||
+  if (pointerdown_pending_data_.num_pointerdowns > 0 ||
       pointerdown_pending_data_.num_pressed_mouse_buttons > 0) {
     pointerdown_pending_data_.score_delta += score_delta;
     pointerdown_pending_data_.weighted_score_delta += weighted_score_delta;
@@ -624,18 +624,21 @@ void LayoutShiftTracker::ReportShift(double score_delta,
 
 void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
   const WebInputEvent::Type type = event.GetType();
-  const bool saw_pointerdown = pointerdown_pending_data_.saw_pointerdown;
-  const bool pointerdown_became_tap =
-      saw_pointerdown && type == WebInputEvent::Type::kPointerUp;
   bool release_all_mouse_buttons = false;
   if (type == WebInputEvent::Type::kMouseUp) {
-    pointerdown_pending_data_.num_pressed_mouse_buttons--;
+    if (pointerdown_pending_data_.num_pressed_mouse_buttons > 0)
+      pointerdown_pending_data_.num_pressed_mouse_buttons--;
     release_all_mouse_buttons =
         pointerdown_pending_data_.num_pressed_mouse_buttons == 0;
   }
+  bool release_all_pointers = false;
+  if (type == WebInputEvent::Type::kPointerUp) {
+    if (pointerdown_pending_data_.num_pointerdowns > 0)
+      pointerdown_pending_data_.num_pointerdowns--;
+    release_all_pointers = pointerdown_pending_data_.num_pointerdowns == 0;
+  }
 
   const bool event_type_stops_pointerdown_buffering =
-      type == WebInputEvent::Type::kPointerUp ||
       type == WebInputEvent::Type::kPointerCausedUaAction ||
       type == WebInputEvent::Type::kPointerCancel;
 
@@ -651,7 +654,7 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
       // We need to explicitly include tap, as if there are no listeners, we
       // won't receive the pointer events.
       type == WebInputEvent::Type::kGestureTap || is_hovering_pointerdown ||
-      pointerdown_became_tap || release_all_mouse_buttons;
+      release_all_pointers || release_all_mouse_buttons;
 
   if (should_trigger_shift_exclusion) {
     observed_input_or_scroll_ = true;
@@ -661,15 +664,15 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
     UpdateInputTimestamp(event.TimeStamp());
   }
 
-  if ((saw_pointerdown && event_type_stops_pointerdown_buffering) ||
-      release_all_mouse_buttons) {
+  if (event_type_stops_pointerdown_buffering || release_all_mouse_buttons ||
+      release_all_pointers) {
     double score_delta = pointerdown_pending_data_.score_delta;
     if (score_delta > 0)
       ReportShift(score_delta, pointerdown_pending_data_.weighted_score_delta);
     pointerdown_pending_data_ = PointerdownPendingData();
   }
   if (type == WebInputEvent::Type::kPointerDown && !is_hovering_pointerdown)
-    pointerdown_pending_data_.saw_pointerdown = true;
+    pointerdown_pending_data_.num_pointerdowns++;
   if (type == WebInputEvent::Type::kMouseDown)
     pointerdown_pending_data_.num_pressed_mouse_buttons++;
 }

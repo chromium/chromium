@@ -207,7 +207,7 @@ class CORE_EXPORT LayoutShiftTracker final
   // and the PointerdownPendingData object is reset.
   struct PointerdownPendingData {
     PointerdownPendingData() = default;
-    bool saw_pointerdown = false;
+    int num_pointerdowns = 0;
     int num_pressed_mouse_buttons = 0;
     double score_delta = 0;
     double weighted_score_delta = 0;
