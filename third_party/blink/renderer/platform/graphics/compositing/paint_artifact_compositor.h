@@ -246,11 +246,11 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
                                     const PendingLayer&,
                                     cc::LayerSelection& layer_selection);
 
-  // Updates the cc::Layer associated with a |pending_layer| following a paint.
-  // This includes both raster invalidation and updating the cc::Layer
-  // properties (bounds, background_color, etc).
-  void UpdateRepaintedLayer(PendingLayer& pending_layer,
-                            cc::LayerSelection& layer_selection);
+  // Updates |content_layer_client| associated with a |pending_layer| following
+  // a paint. This includes updating the drawings and raster invalidation.
+  void UpdateRepaintedContentLayerClient(
+      const PendingLayer& pending_layer,
+      ContentLayerClientImpl& content_layer_client);
 
   // Collects the PaintChunks into groups which will end up in the same
   // cc layer. This is the entry point of the layerization algorithm.

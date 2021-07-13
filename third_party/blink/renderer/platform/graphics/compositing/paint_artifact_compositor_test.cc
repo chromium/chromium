@@ -1349,8 +1349,10 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
       t0(), 11, 13, *scroll_a, CompositingReason::kLayerForScrollingContents);
 
   CompositorElementId scroll_element_id_b = ScrollElementId(3);
-  auto scroll_b = CreateScroll(*scroll_a, ScrollState2(), kNotScrollingOnMain,
-                               scroll_element_id_b);
+  auto scroll_b =
+      CreateScroll(*scroll_a, ScrollState2(),
+                   cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText,
+                   scroll_element_id_b);
   auto scroll_translation_b =
       CreateScrollTranslation(*scroll_translation_a, 37, 41, *scroll_b);
 
@@ -1360,35 +1362,23 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   Update(artifact.Build());
 
   const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree;
-  // Node #0 reserved for null; #1 for root render surface.
-  ASSERT_EQ(4u, scroll_tree.size());
+  // Node #0 reserved for null; #1 for root render surface. #2 is for scroll_a.
+  // We don't need to create cc scroll node for scroll_b which doesn't use
+  // composited scrolling.
+  ASSERT_EQ(3u, scroll_tree.size());
 
   const cc::ScrollNode& scroll_node_a = *scroll_tree.Node(2);
   EXPECT_EQ(1, scroll_node_a.parent_id);
   EXPECT_EQ(scroll_element_id_a, scroll_node_a.element_id);
   EXPECT_EQ(scroll_node_a.id, ElementIdToScrollNodeIndex(scroll_element_id_a));
-  // The second scrollable layer should be associated with the first scroll node
-  // (a).
-  EXPECT_EQ(scroll_element_id_a, ScrollableLayerAt(1)->element_id());
+  // The first scrollable layer should be associated with scroll_a.
+  EXPECT_EQ(scroll_element_id_a, ScrollableLayerAt(0)->element_id());
 
   const cc::TransformTree& transform_tree = GetPropertyTrees().transform_tree;
   const cc::TransformNode& transform_node_a =
       *transform_tree.Node(scroll_node_a.transform_id);
   EXPECT_TRUE(transform_node_a.local.IsIdentity());
   EXPECT_EQ(gfx::ScrollOffset(-11, -13), transform_node_a.scroll_offset);
-
-  const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
-  EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
-  EXPECT_EQ(scroll_element_id_b, scroll_node_b.element_id);
-  EXPECT_EQ(scroll_node_b.id, ElementIdToScrollNodeIndex(scroll_element_id_b));
-  // The first scrollable layer should be associated with the second scroll node
-  // (b).
-  EXPECT_EQ(scroll_element_id_b, ScrollableLayerAt(0)->element_id());
-
-  const cc::TransformNode& transform_node_b =
-      *transform_tree.Node(scroll_node_b.transform_id);
-  EXPECT_TRUE(transform_node_b.local.IsIdentity());
-  EXPECT_EQ(gfx::ScrollOffset(-37, -41), transform_node_b.scroll_offset);
 }
 
 TEST_P(PaintArtifactCompositorTest, MergeSimpleChunks) {

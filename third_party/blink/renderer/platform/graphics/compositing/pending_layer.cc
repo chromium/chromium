@@ -38,11 +38,27 @@ void ClipToVisibilityLimit(const PropertyTreeState& state, FloatRect& rect) {
   }
 }
 
+bool IsCompositedScrollHitTest(const PaintChunk& chunk) {
+  if (!chunk.hit_test_data)
+    return false;
+  const auto* scroll_translation = chunk.hit_test_data->scroll_translation;
+  return scroll_translation &&
+         scroll_translation->HasDirectCompositingReasons();
+}
+
+bool IsCompositedScrollbar(const DisplayItem& item) {
+  if (const auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
+    const auto* scroll_translation = scrollbar->ScrollTranslation();
+    return scroll_translation &&
+           scroll_translation->HasDirectCompositingReasons();
+  }
+  return false;
+}
+
 }  // anonymous namespace
 
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
-                           const PaintChunkIterator& first_chunk,
-                           CompositingType compositing_type)
+                           const PaintChunkIterator& first_chunk)
     : bounds_(first_chunk->bounds),
       rect_known_to_be_opaque_(first_chunk->rect_known_to_be_opaque),
       has_text_(first_chunk->has_text),
@@ -51,13 +67,23 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
       chunks_(&chunks.GetPaintArtifact(), first_chunk.IndexInPaintArtifact()),
       property_tree_state_(
           first_chunk->properties.GetPropertyTreeState().Unalias()),
-      compositing_type_(compositing_type) {
+      compositing_type_(kOther) {
   DCHECK(!RequiresOwnLayer() || first_chunk->size() <= 1u);
   // Though text_known_to_be_on_opaque_background is only meaningful when
   // has_text is true, we expect text_known_to_be_on_opaque_background to be
   // true when !has_text to simplify code.
   DCHECK(has_text_ || text_known_to_be_on_opaque_background_);
   ClipToVisibilityLimit(property_tree_state_, bounds_);
+
+  if (IsCompositedScrollHitTest(*first_chunk)) {
+    compositing_type_ = kScrollHitTestLayer;
+  } else if (first_chunk->size()) {
+    const auto& first_display_item = FirstDisplayItem();
+    if (first_display_item.IsForeignLayer())
+      compositing_type_ = kForeignLayer;
+    else if (IsCompositedScrollbar(first_display_item))
+      compositing_type_ = kScrollbarLayer;
+  }
 }
 
 PendingLayer::PendingLayer(const PreCompositedLayerInfo& pre_composited_layer)
@@ -220,21 +246,15 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   return true;
 }
 
-const TransformPaintPropertyNode*
+const TransformPaintPropertyNode&
 PendingLayer::ScrollTranslationForScrollHitTestLayer() const {
-  // Not checking that the compositing type is
-  // PendingLayer::kCompositedScrollHitTestLayer because a scroll hit test
-  // chunk without a direct compositing reasons can still be composited
-  // (e.g. when it can't be merged into any other layer).
-  DCHECK_NE(GetCompositingType(), PendingLayer::kPreCompositedLayer);
-
-  if (Chunks().size() != 1)
-    return nullptr;
-
+  DCHECK_EQ(GetCompositingType(), kScrollHitTestLayer);
+  DCHECK_EQ(1u, Chunks().size());
   const auto& paint_chunk = FirstPaintChunk();
-  if (!paint_chunk.hit_test_data)
-    return nullptr;
-  return paint_chunk.hit_test_data->scroll_translation;
+  DCHECK(paint_chunk.hit_test_data);
+  DCHECK(paint_chunk.hit_test_data->scroll_translation);
+  DCHECK(paint_chunk.hit_test_data->scroll_translation->ScrollNode());
+  return *paint_chunk.hit_test_data->scroll_translation;
 }
 
 bool PendingLayer::PropertyTreeStateChanged() const {
@@ -302,16 +322,15 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
     // clips or effects.
     auto mark_not_decompositable =
         [&can_be_decomposited](
-            const TransformPaintPropertyNode* transform_node) {
-          DCHECK(transform_node);
-          while (transform_node && !transform_node->IsRoot()) {
-            auto result = can_be_decomposited.insert(transform_node, false);
+            const TransformPaintPropertyNode& transform_node) {
+          for (const auto* node = &transform_node; node && !node->IsRoot();
+               node = node->UnaliasedParent()) {
+            auto result = can_be_decomposited.insert(node, false);
             if (!result.is_new_entry) {
               if (!result.stored_value->value)
                 break;
               result.stored_value->value = false;
             }
-            transform_node = &transform_node->Parent()->Unalias();
           }
         };
 
@@ -325,7 +344,7 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
           node->HasDirectCompositingReasonsOtherThan3dTransform() ||
           !node->FlattensInheritedTransformSameAsParent() ||
           !node->BackfaceVisibilitySameAsParent()) {
-        mark_not_decompositable(node);
+        mark_not_decompositable(*node);
         break;
       }
       can_be_decomposited.insert(node, true);
@@ -336,23 +355,22 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
          !node->IsRoot() && !clips_and_effects_seen.Contains(node);
          node = &node->Parent()->Unalias()) {
       clips_and_effects_seen.insert(node);
-      mark_not_decompositable(&node->LocalTransformSpace().Unalias());
+      mark_not_decompositable(node->LocalTransformSpace().Unalias());
     }
     for (const auto* node = &property_state.Effect();
          !node->IsRoot() && !clips_and_effects_seen.Contains(node);
          node = &node->Parent()->Unalias()) {
       clips_and_effects_seen.insert(node);
-      mark_not_decompositable(&node->LocalTransformSpace().Unalias());
+      mark_not_decompositable(node->LocalTransformSpace().Unalias());
     }
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+        pending_layer.GetCompositingType() == kScrollHitTestLayer) {
       // The scroll translation node of a scroll hit test layer may not be
       // referenced by any pending layer's property tree state. Disallow
       // decomposition of it (and its ancestors).
-      if (const auto* translation =
-              pending_layer.ScrollTranslationForScrollHitTestLayer()) {
-        mark_not_decompositable(translation);
-      }
+      mark_not_decompositable(
+          pending_layer.ScrollTranslationForScrollHitTestLayer());
     }
   }
 

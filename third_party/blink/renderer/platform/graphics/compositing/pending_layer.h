@@ -32,9 +32,7 @@ struct PreCompositedLayerInfo {
 class PLATFORM_EXPORT PendingLayer {
  public:
   enum CompositingType {
-    // This type is only for scroll hit test layers that have direct
-    // compositing reasons.
-    kCompositedScrollHitTestLayer,
+    kScrollHitTestLayer,
     kPreCompositedLayer,
     kForeignLayer,
     kScrollbarLayer,
@@ -42,9 +40,7 @@ class PLATFORM_EXPORT PendingLayer {
     kOther,
   };
 
-  PendingLayer(const PaintChunkSubset&,
-               const PaintChunkIterator&,
-               CompositingType compositng_type = kOther);
+  PendingLayer(const PaintChunkSubset&, const PaintChunkIterator&);
   explicit PendingLayer(const PreCompositedLayerInfo&);
 
   const FloatRect& Bounds() const { return bounds_; }
@@ -105,7 +101,7 @@ class PLATFORM_EXPORT PendingLayer {
   const PaintChunk& FirstPaintChunk() const;
   const DisplayItem& FirstDisplayItem() const;
 
-  const TransformPaintPropertyNode* ScrollTranslationForScrollHitTestLayer()
+  const TransformPaintPropertyNode& ScrollTranslationForScrollHitTestLayer()
       const;
 
   std::unique_ptr<JSONObject> ToJSON() const;
