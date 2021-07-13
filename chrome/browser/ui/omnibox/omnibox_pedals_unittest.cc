@@ -23,6 +23,10 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
   MockAutocompleteProviderClient client;
   base::test::ScopedFeatureList feature_list;
+  // TODO(orinj): Consider loading sets of cover cases from translation
+  //  data since pedal_processor-generated tests won't be available.
+  //  Once a new source of test data is established, enable
+  //  the kOmniboxPedalsTranslationConsole feature here.
   feature_list.InitWithFeatures(
       {omnibox::kOmniboxPedalsBatch2, omnibox::kOmniboxPedalsBatch2NonEnglish,
        omnibox::kOmniboxPedalsBatch3},

@@ -49,7 +49,9 @@ class OmniboxPedal : public OmniboxAction {
     // Don't use copies. They were necessary with old algorithm,
     // but this structure is amenable to efficient resets on kept instances.
     TokenSequence(const TokenSequence&) = delete;
+    TokenSequence& operator=(const TokenSequence&) = delete;
     TokenSequence(TokenSequence&&);
+    TokenSequence& operator=(TokenSequence&&);
     ~TokenSequence();
 
     // Returns true if all tokens are consumed (true for empty sequences).

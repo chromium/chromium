@@ -34,6 +34,8 @@ OmniboxPedal::TokenSequence::TokenSequence(std::vector<int> token_ids) {
 
 OmniboxPedal::TokenSequence::TokenSequence(OmniboxPedal::TokenSequence&&) =
     default;
+OmniboxPedal::TokenSequence& OmniboxPedal::TokenSequence::operator=(
+    OmniboxPedal::TokenSequence&&) = default;
 OmniboxPedal::TokenSequence::~TokenSequence() = default;
 
 bool OmniboxPedal::TokenSequence::IsFullyConsumed() {
@@ -189,12 +191,25 @@ bool OmniboxPedal::SynonymGroup::EraseMatchesIn(
 
 void OmniboxPedal::SynonymGroup::AddSynonym(
     OmniboxPedal::TokenSequence synonym) {
+  // TODO(orinj): Only sort once after all synonyms are loaded.
+  //  When runtime data was preprocessed by pedal_processor,
+  //  it avoided the need to sort at runtime in Chromium, but with
+  //  the TC-based l10n technique, data loading needs to be robust
+  //  enough to handle various forms and orders in translation data.
+  if (OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
+    synonyms_.push_back(std::move(synonym));
+    std::sort(synonyms_.begin(), synonyms_.end(),
+              [](const TokenSequence& a, const TokenSequence& b) {
+                return a.Size() > b.Size();
+              });
+  } else {
 #if DCHECK_IS_ON()
-  if (synonyms_.size() > size_t{0}) {
-    DCHECK_GE(synonyms_.back().Size(), synonym.Size());
-  }
+    if (synonyms_.size() > size_t{0}) {
+      DCHECK_GE(synonyms_.back().Size(), synonym.Size());
+    }
 #endif
-  synonyms_.push_back(std::move(synonym));
+    synonyms_.push_back(std::move(synonym));
+  }
 }
 
 size_t OmniboxPedal::SynonymGroup::EstimateMemoryUsage() const {

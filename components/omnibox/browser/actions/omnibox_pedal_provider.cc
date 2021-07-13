@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/omnibox/resources/grit/omnibox_pedal_synonyms.h"
 #include "components/omnibox/resources/grit/omnibox_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -149,6 +150,11 @@ OmniboxPedal* OmniboxPedalProvider::FindReadyPedalMatch(
 
 void OmniboxPedalProvider::Tokenize(OmniboxPedal::TokenSequence& out_tokens,
                                     const std::u16string& text) const {
+  // TODO(orinj): We may want to use FoldCase instead of ToLower here
+  //  once the JSON data is eliminated (for now it's still needed for tests).
+  //  See base/i18n/case_conversion.h for advice about unicode case handling.
+  //  FoldCase is equivalent to lower-casing for ASCII/English, but provides
+  //  more consistent (canonical) handling in other languages as well.
   std::u16string reduced_text = base::i18n::ToLower(text);
   out_tokens.Clear();
   if (tokenize_characters_.empty()) {
@@ -237,11 +243,15 @@ void OmniboxPedalProvider::TokenizeAndExpandDictionary(
         out_tokens.Clear();
         break;
       }
-      const auto iter = dictionary_.find(tokenizer.token());
+      const std::u16string raw_token = tokenizer.token();
+      base::StringPiece16 trimmed_token =
+          base::TrimWhitespace(raw_token, base::TrimPositions::TRIM_ALL);
+      std::u16string token = base::i18n::FoldCase(trimmed_token);
+      const auto iter = dictionary_.find(token);
       if (iter == dictionary_.end()) {
         // Token not in dictionary; expand dictionary.
         out_tokens.Add(dictionary_.size());
-        dictionary_.insert({tokenizer.token(), dictionary_.size()});
+        dictionary_.insert({std::move(token), dictionary_.size()});
       } else {
         // Token in dictionary; add existing token identifier to sequence.
         out_tokens.Add(iter->second);
@@ -290,11 +300,16 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     ++id;
   }
 
-  const base::Value* ignore_group_value = concept_data->FindKey("ignore_group");
-  DCHECK_NE(ignore_group_value, nullptr);
-  // TODO(orinj): Parse a dedicated l10n string for the common ignore group
-  // once the user-generated omnibox_pedal_synonyms.grdp is established.
-  ignore_group_ = LoadSynonymGroupValue(*ignore_group_value);
+  if (OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
+    ignore_group_ = LoadSynonymGroupString(
+        false, false,
+        l10n_util::GetStringUTF16(IDS_OMNIBOX_PEDALS_IGNORE_GROUP));
+  } else {
+    const base::Value* ignore_group_value =
+        concept_data->FindKey("ignore_group");
+    DCHECK_NE(ignore_group_value, nullptr);
+    ignore_group_ = LoadSynonymGroupValue(*ignore_group_value);
+  }
 
   for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
     DCHECK(pedal_value.is_dict());
