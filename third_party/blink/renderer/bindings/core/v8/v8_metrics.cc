@@ -276,6 +276,15 @@ void V8MetricsRecorder::AddMainThreadEvent(
 }
 
 void V8MetricsRecorder::AddMainThreadEvent(
+    const v8::metrics::GarbageCollectionFullMainThreadBatchedIncrementalMark&
+        batched_events,
+    ContextId context_id) {
+  for (auto event : batched_events.events) {
+    AddMainThreadEvent(event, context_id);
+  }
+}
+
+void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalSweep& event,
     ContextId context_id) {
   if (event.cpp_wall_clock_duration_in_us != -1) {
@@ -284,6 +293,15 @@ void V8MetricsRecorder::AddMainThreadEvent(
         "V8.GC.Event.MainThread.Full.Incremental.Sweep.Cpp",
         base::TimeDelta::FromMicroseconds(event.cpp_wall_clock_duration_in_us));
     ReportCppIncrementalLatencyEvent(event.cpp_wall_clock_duration_in_us);
+  }
+}
+
+void V8MetricsRecorder::AddMainThreadEvent(
+    const v8::metrics::GarbageCollectionFullMainThreadBatchedIncrementalSweep&
+        batched_events,
+    ContextId context_id) {
+  for (auto event : batched_events.events) {
+    AddMainThreadEvent(event, context_id);
   }
 }
 
