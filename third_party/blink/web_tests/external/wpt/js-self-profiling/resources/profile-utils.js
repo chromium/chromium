@@ -2,7 +2,13 @@
   const TEST_SAMPLE_INTERVAL = 10;
 
   function forceSample() {
-    window.internals.collectSample();
+    // Spin for |TEST_SAMPLE_INTERVAL + 500|ms to ensure that a sample occurs
+    // before this function returns. As periodic sampling is enforced by a
+    // SHOULD clause, it is indeed testable.
+    //
+    // More reliable sampling will be handled in a future testdriver RFC
+    // (https://github.com/web-platform-tests/rfcs/pull/81).
+    for (const deadline = performance.now() + TEST_SAMPLE_INTERVAL + 500; performance.now() < deadline;);
   }
 
   // Creates a new profile that captures the execution of when the given

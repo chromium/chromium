@@ -20,8 +20,8 @@
         maxBufferSize: 2,
       });
 
-      // Force 10 samples with a max buffer size of 2.
-      for (let i = 0; i < 10; i++) {
+      // Force 3 samples with a max buffer size of 2.
+      for (let i = 0; i < 3; i++) {
         ProfileUtils.forceSample();
       }
 
@@ -39,13 +39,12 @@
         assert_unreached("samplebufferfull invoked on wrong profiler");
       });
       pf[1].addEventListener("samplebufferfull", async ()=>{
-        console.log("samplebufferfull");
         pf[0].stop();
         pf[1].stop();
         assertTrue(true);
       });
 
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 2; i++) {
         ProfileUtils.forceSample();
       }
 
