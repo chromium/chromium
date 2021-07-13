@@ -30,6 +30,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -329,6 +330,16 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
         mojo::PendingAssociatedReceiver<
             content_capture::mojom::ContentCaptureReceiver>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+
+  if (interface_name ==
+      subresource_filter::mojom::SubresourceFilterHost::Name_) {
+    subresource_filter::ContentSubresourceFilterThrottleManager::BindReceiver(
+        mojo::PendingAssociatedReceiver<
+            subresource_filter::mojom::SubresourceFilterHost>(
+            std::move(*handle)),
         render_frame_host);
     return true;
   }

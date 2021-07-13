@@ -37,6 +37,7 @@ namespace subresource_filter {
 
 class AsyncDocumentSubresourceFilter;
 class ActivationStateComputingNavigationThrottle;
+class ContentSubresourceFilterThrottleManager;
 class PageLoadStatistics;
 class ProfileInteractionManager;
 class SubresourceFilterProfileContext;
@@ -69,6 +70,45 @@ enum class SubresourceFilterAction {
   kMaxValue = kForcedActivationEnabled
 };
 
+// Wraps an AssociatedReceiverSet to provide automatic cleanup when a
+// RenderFrameHost is removed.
+// TODO(bokan, csharrison): Expose this functionality to others if it is
+// broadly desirable.
+class RenderFrameReceiverSet : public content::WebContentsObserver {
+ public:
+  RenderFrameReceiverSet(
+      content::WebContents* web_contents,
+      ContentSubresourceFilterThrottleManager* throttle_manager);
+  ~RenderFrameReceiverSet() override;
+
+  RenderFrameReceiverSet(const RenderFrameReceiverSet&) = delete;
+  RenderFrameReceiverSet& operator=(const RenderFrameReceiverSet&) = delete;
+
+  void Bind(content::RenderFrameHost* frame_host,
+            mojo::PendingAssociatedReceiver<mojom::SubresourceFilterHost>
+                pending_receiver);
+
+  content::RenderFrameHost* GetCurrentTargetFrame();
+
+  // content::WebContentsObserver:
+  void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
+
+ private:
+  // Receiver set for each frame in the page. Note, bindings are reused across
+  // navigations that are same-site since the RenderFrameHost is reused in that
+  // case.
+  mojo::AssociatedReceiverSet<mojom::SubresourceFilterHost,
+                              content::RenderFrameHost*>
+      receiver_;
+
+  // Track which RenderFrameHosts are in the |receiver_| set so that we can
+  // remove them when a RenderFrameHost is removed.
+  std::map<content::RenderFrameHost*, mojo::ReceiverId> frame_to_receivers_map_;
+
+  // Must outlive this class.
+  ContentSubresourceFilterThrottleManager* throttle_manager_;
+};
+
 // The ContentSubresourceFilterThrottleManager manages NavigationThrottles in
 // order to calculate frame activation states and subframe navigation filtering,
 // within a given WebContents. It contains a mapping of all activated
@@ -84,6 +124,12 @@ class ContentSubresourceFilterThrottleManager
  public:
   static const char
       kContentSubresourceFilterThrottleManagerWebContentsUserDataKey[];
+
+  // Binds a remote in the given RenderFrame to the correct
+  // ContentSubresourceFilterThrottleManager in the browser.
+  static void BindReceiver(mojo::PendingAssociatedReceiver<
+                               mojom::SubresourceFilterHost> pending_receiver,
+                           content::RenderFrameHost* render_frame_host);
 
   // Creates a ThrottleManager instance from the given parameters and attaches
   // it as user data of |web_contents|.
@@ -315,7 +361,8 @@ class ContentSubresourceFilterThrottleManager
   // has not had a navigation evaluated by the filter list.
   std::map<int, LoadPolicy> navigation_load_policies_;
 
-  content::WebContentsFrameReceiverSet<mojom::SubresourceFilterHost> receiver_;
+  // Receiver set for all RenderFrames in the WebContents.
+  RenderFrameReceiverSet receiver_;
 
   base::ScopedObservation<SubresourceFilterObserverManager,
                           SubresourceFilterObserver>

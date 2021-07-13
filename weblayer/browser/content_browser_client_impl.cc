@@ -902,6 +902,16 @@ bool ContentBrowserClientImpl::BindAssociatedReceiverFromFrame(
     return true;
   }
 
+  if (interface_name ==
+      subresource_filter::mojom::SubresourceFilterHost::Name_) {
+    subresource_filter::ContentSubresourceFilterThrottleManager::BindReceiver(
+        mojo::PendingAssociatedReceiver<
+            subresource_filter::mojom::SubresourceFilterHost>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+
   return false;
 }
 

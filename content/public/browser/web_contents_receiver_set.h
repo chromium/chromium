@@ -55,9 +55,6 @@ class SecurityInterstitialTabHelper;
 namespace subresource_redirect {
 class SubresourceRedirectObserver;
 }
-namespace subresource_filter {
-class ContentSubresourceFilterThrottleManager;
-}
 
 namespace content {
 
@@ -142,7 +139,6 @@ class WebContentsFrameReceiverSetPassKey {
   friend class ::pdf::PDFWebContentsHelper;
   friend class ::printing::PrintManager;
   friend class ::security_interstitials::SecurityInterstitialTabHelper;
-  friend class ::subresource_filter::ContentSubresourceFilterThrottleManager;
   friend class ::subresource_redirect::SubresourceRedirectObserver;
   friend class ConversionHost;
   friend class DisplayCutoutHostImpl;
