@@ -17,6 +17,7 @@
 #include "net/third_party/quiche/src/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quic/core/quic_utils.h"
 #include "net/url_request/url_request_context.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -213,7 +214,7 @@ int QuicTransportClient::DoResolveHost() {
   next_connect_state_ = CONNECT_STATE_RESOLVE_HOST_COMPLETE;
   HostResolver::ResolveHostParameters parameters;
   resolve_host_request_ = context_->host_resolver()->CreateRequest(
-      HostPortPair::FromURL(url_), isolation_key_, net_log_, absl::nullopt);
+      url::SchemeHostPort(url_), isolation_key_, net_log_, absl::nullopt);
   return resolve_host_request_->Start(
       base::BindOnce(&QuicTransportClient::DoLoop, base::Unretained(this)));
 }
