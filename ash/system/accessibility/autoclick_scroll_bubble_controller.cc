@@ -50,7 +50,7 @@ void AutoclickScrollBubbleController::UpdateAnchorRect(
     views::BubbleBorder::Arrow alignment) {
   menu_bubble_rect_ = rect;
   menu_bubble_alignment_ = alignment;
-  if (set_scroll_rect_)
+  if (set_scroll_rect_ || !bubble_view_)
     return;
   bubble_view_->UpdateAnchorRect(rect, alignment);
 }
@@ -59,6 +59,9 @@ void AutoclickScrollBubbleController::SetScrollPosition(
     gfx::Rect scroll_bounds_in_dips,
     const gfx::Point& scroll_point_in_dips) {
   // TODO(katie): Support multiple displays.
+
+  if (!bubble_view_)
+    return;
 
   // Adjust the insets to be the same on all sides, so that when the bubble
   // lays out it isn't too close on the top or bottom.
@@ -237,7 +240,7 @@ void AutoclickScrollBubbleController::SetBubbleVisibility(bool is_visible) {
 
 void AutoclickScrollBubbleController::ClickOnBubble(gfx::Point location_in_dips,
                                                     int mouse_event_flags) {
-  if (!bubble_widget_)
+  if (!bubble_widget_ || !bubble_view_)
     return;
 
   // Change the event location bounds to be relative to the menu bubble.
