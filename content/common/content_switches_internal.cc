@@ -32,6 +32,8 @@ static void SigUSR1Handler(int signal) {}
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
+
+#include <windows.h>
 #endif
 
 namespace content {
