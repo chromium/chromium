@@ -64,9 +64,9 @@ const char kTestURLWithNoActivation[] =
     "https://www.page-without-activation.com/";
 
 const char kReadyToCommitResultsInCommitHistogram[] =
-    "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit";
+    "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2";
 const char kReadyToCommitResultsInCommitRestrictedAdFrameNavigationHistogram[] =
-    "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit."
+    "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2."
     "RestrictedAdFrameNavigation";
 
 // Enum determining when the mock page state throttle notifies the throttle
@@ -1367,6 +1367,35 @@ TEST_P(
         kReadyToCommitResultsInCommitRestrictedAdFrameNavigationHistogram,
         does_commit, 1);
   }
+}
+
+TEST_P(ContentSubresourceFilterThrottleManagerTest,
+       ReadyToCommitNavigationThenRenderFrameDeletes_MetricsNotRecoded) {
+  NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
+  ExpectActivationSignalForFrame(main_rfh(), true /* expect_activation */);
+
+  // Ensure frame is tagged as an ad.
+  content::RenderFrameHost* subframe = CreateSubframeWithTestNavigation(
+      GURL("https://www.example.com/disallowed.html"), main_rfh());
+  navigation_simulator()->Commit();
+  subframe = navigation_simulator()->GetFinalRenderFrameHost();
+  EXPECT_TRUE(subframe);
+  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(subframe));
+
+  // Navigate to an allowlisted URL to make it a 'restricted' navigation.
+  base::HistogramTester tester;
+  CreateTestNavigation(GURL("https://www.example.com/not_disallowed.html"),
+                       subframe);
+
+  navigation_simulator()->ReadyToCommit();
+
+  static_cast<content::MockRenderProcessHost*>(
+      navigation_simulator()->GetFinalRenderFrameHost()->GetProcess())
+      ->SimulateCrash();
+
+  tester.ExpectTotalCount(kReadyToCommitResultsInCommitHistogram, 0);
+  tester.ExpectTotalCount(
+      kReadyToCommitResultsInCommitRestrictedAdFrameNavigationHistogram, 0);
 }
 
 // TODO(csharrison): Make sure the following conditions are exercised in tests:

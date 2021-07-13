@@ -270,7 +270,6 @@ class ContentSubresourceFilterThrottleManager
 
   void RecordExperimentalUmaHistogramsForNavigation(
       content::NavigationHandle* navigation_handle,
-      content::RenderFrameHost* frame_host,
       bool passed_through_ready_to_commit);
 
   // Sets whether the frame is considered an ad subframe. If the value has

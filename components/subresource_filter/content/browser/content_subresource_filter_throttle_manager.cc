@@ -266,7 +266,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
     return;
   }
 
-  RecordExperimentalUmaHistogramsForNavigation(navigation_handle, frame_host,
+  RecordExperimentalUmaHistogramsForNavigation(navigation_handle,
                                                passed_through_ready_to_commit);
 
   // Do nothing if the navigation was uncommitted and this frame has had a
@@ -334,7 +334,6 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
 void ContentSubresourceFilterThrottleManager::
     RecordExperimentalUmaHistogramsForNavigation(
         content::NavigationHandle* navigation_handle,
-        content::RenderFrameHost* frame_host,
         bool passed_through_ready_to_commit) {
   // For subframe navigations that pass through ready to commit, we record
   // whether they eventually committed. We also break this out by whether the
@@ -342,14 +341,17 @@ void ContentSubresourceFilterThrottleManager::
   // The observed frequency will reveal the scope of current mishandling of such
   // navigations by Ad Tagging. Navigations to URLs that inherit activation
   // (e.g. about:srcdoc) are excluded as no load policy would be calculated.
+  // Navigations with dead RenderFrames are also excluded as any load policy
+  // sent to the renderer won't be used.
   // TODO(alexmt): Remove once frequency is determined.
   if (!passed_through_ready_to_commit || navigation_handle->IsInMainFrame() ||
-      ShouldInheritActivation(navigation_handle->GetURL())) {
+      ShouldInheritActivation(navigation_handle->GetURL()) ||
+      !navigation_handle->GetRenderFrameHost()->IsRenderFrameLive()) {
     return;
   }
 
   base::UmaHistogramBoolean(
-      "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit",
+      "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2",
       navigation_handle->HasCommitted());
   blink::mojom::FilterListResult latest_filter_list_result =
       EnsureFrameAdEvidence(navigation_handle).latest_filter_list_result();
@@ -367,7 +369,7 @@ void ContentSubresourceFilterThrottleManager::
   if (is_restricted_navigation &&
       base::Contains(ad_frames_, navigation_handle->GetFrameTreeNodeId())) {
     base::UmaHistogramBoolean(
-        "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit."
+        "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2."
         "RestrictedAdFrameNavigation",
         navigation_handle->HasCommitted());
   }
