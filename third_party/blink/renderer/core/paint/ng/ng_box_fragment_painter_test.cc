@@ -200,4 +200,26 @@ TEST_P(NGBoxFragmentPainterTest, SelectionTablePainting) {
   auto record = builder.EndRecording();
 }
 
+TEST_P(NGBoxFragmentPainterTest, ClippedText) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="overflow: hidden; position: relative;
+                            width: 100px; height: 100px">
+      A<br>B<br>C<br>D
+    </div>
+  )HTML");
+  // Initially all the texts are painted.
+  auto num_all_display_items = ContentDisplayItems().size();
+  auto* target = GetDocument().getElementById("target");
+
+  target->SetInlineStyleProperty(CSSPropertyID::kHeight, "0px");
+  UpdateAllLifecyclePhasesForTest();
+  // None of the texts should be painted.
+  EXPECT_EQ(num_all_display_items - 4, ContentDisplayItems().size());
+
+  target->SetInlineStyleProperty(CSSPropertyID::kHeight, "1px");
+  UpdateAllLifecyclePhasesForTest();
+  // Only "A" should be painted.
+  EXPECT_EQ(num_all_display_items - 3, ContentDisplayItems().size());
+}
+
 }  // namespace blink
