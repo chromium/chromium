@@ -348,7 +348,7 @@ void AddSoftwareFeaturesToExternalDevice(
     cryptauth::ExternalDeviceInfo* external_device,
     bool old_unlock_key_value_from_prefs,
     bool old_mobile_hotspot_supported_from_prefs) {
-  for (const auto& it : software_features_dictionary.DictItems()) {
+  for (const auto it : software_features_dictionary.DictItems()) {
     std::string software_feature = it.first;
     if (SoftwareFeatureStringToEnum(software_feature) ==
         cryptauth::SoftwareFeature::UNKNOWN_FEATURE) {

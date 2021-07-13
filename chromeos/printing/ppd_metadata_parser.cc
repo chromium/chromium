@@ -210,7 +210,7 @@ absl::optional<ParsedManufacturers> ParseManufacturers(
     return absl::nullopt;
   }
   ParsedManufacturers manufacturers;
-  for (const auto& iter : as_value.value().DictItems()) {
+  for (const auto iter : as_value.value().DictItems()) {
     std::string printers_metadata_basename;
     if (!iter.second.GetAsString(&printers_metadata_basename)) {
       continue;
@@ -236,7 +236,7 @@ absl::optional<ParsedIndex> ParseForwardIndex(
 
   // Secondly, we iterate on the key-value pairs of the ppdIndex.
   // This yields a list of leaf values (dictionaries).
-  for (const auto& kv : ppd_index->DictItems()) {
+  for (const auto kv : ppd_index->DictItems()) {
     absl::optional<ParsedIndexValues> values = UnnestPpdMetadata(kv.second);
     if (values.has_value()) {
       parsed_index.insert_or_assign(kv.first, values.value());
@@ -257,7 +257,7 @@ absl::optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
   }
 
   ParsedUsbIndex parsed_usb_index;
-  for (const auto& kv : usb_index->DictItems()) {
+  for (const auto kv : usb_index->DictItems()) {
     int product_id;
     if (!base::StringToInt(kv.first, &product_id)) {
       continue;
@@ -341,7 +341,7 @@ absl::optional<ParsedReverseIndex> ParseReverseIndex(
   }
 
   ParsedReverseIndex parsed;
-  for (const auto& kv : makes_and_models->DictItems()) {
+  for (const auto kv : makes_and_models->DictItems()) {
     if (!kv.second.is_dict()) {
       continue;
     }

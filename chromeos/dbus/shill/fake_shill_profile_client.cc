@@ -56,7 +56,7 @@ void FakeShillProfileClient::GetProperties(
   }
 
   base::Value entry_paths(base::Value::Type::LIST);
-  for (const auto& it : profile->entries.DictItems()) {
+  for (const auto it : profile->entries.DictItems()) {
     entry_paths.Append(it.first);
   }
 

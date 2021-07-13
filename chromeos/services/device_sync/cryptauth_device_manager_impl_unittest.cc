@@ -341,7 +341,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       std::vector<cryptauth::SoftwareFeature> supported_software_features;
       std::vector<cryptauth::SoftwareFeature> enabled_software_features;
 
-      for (const auto& it : software_features_from_prefs->DictItems()) {
+      for (const auto it : software_features_from_prefs->DictItems()) {
         ASSERT_TRUE(it.second.is_int());
 
         cryptauth::SoftwareFeature software_feature =

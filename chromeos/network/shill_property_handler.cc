@@ -345,7 +345,7 @@ void ShillPropertyHandler::ManagerPropertiesCallback(
     return;
   }
   NET_LOG(EVENT) << "ManagerPropertiesCallback: Success";
-  for (const auto& item : properties->DictItems()) {
+  for (const auto item : properties->DictItems()) {
     ManagerPropertyChanged(item.first, item.second);
   }
 

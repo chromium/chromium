@@ -37,7 +37,7 @@ FeatureStatesFromDictionary(const base::Value* dict) {
 
   std::map<multidevice::SoftwareFeature, multidevice::SoftwareFeatureState>
       feature_states;
-  for (const auto& feature_state_pair : dict->DictItems()) {
+  for (const auto feature_state_pair : dict->DictItems()) {
     int feature;
     if (!base::StringToInt(feature_state_pair.first, &feature) ||
         !feature_state_pair.second.is_int()) {

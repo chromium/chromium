@@ -231,7 +231,7 @@ void LocalTranslator::TranslateOpenVPN() {
 
   // Modified CopyFieldsAccordingToSignature to handle RemoteCertKU and
   // ServerCAPEMs and handle all other fields as strings.
-  for (const auto& it : onc_object_->DictItems()) {
+  for (const auto it : onc_object_->DictItems()) {
     std::string key = it.first;
     base::Value translated;
     if (key == ::onc::openvpn::kRemoteCertKU ||
@@ -448,7 +448,7 @@ void LocalTranslator::TranslateNetworkConfiguration() {
 }
 
 void LocalTranslator::CopyFieldsAccordingToSignature() {
-  for (const auto& it : onc_object_->DictItems()) {
+  for (const auto it : onc_object_->DictItems()) {
     AddValueAccordingToSignature(it.first, it.second);
   }
 }
@@ -529,7 +529,7 @@ void TranslateONCHierarchy(const OncValueSignature& signature,
   translator.TranslateFields();
 
   // Recurse into nested objects.
-  for (const auto& it : onc_object.DictItems()) {
+  for (const auto it : onc_object.DictItems()) {
     if (!it.second.is_dict())
       continue;
 

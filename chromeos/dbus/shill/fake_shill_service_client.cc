@@ -613,7 +613,7 @@ bool FakeShillServiceClient::ClearConfiguredServiceProperties(
 
 std::string FakeShillServiceClient::FindServiceMatchingGUID(
     const std::string& guid) {
-  for (const auto& service_pair : stub_services_.DictItems()) {
+  for (const auto service_pair : stub_services_.DictItems()) {
     const auto& service_path = service_pair.first;
     const auto& service_properties = service_pair.second;
 
@@ -633,7 +633,7 @@ std::string FakeShillServiceClient::FindSimilarService(
   if (!template_type)
     return std::string();
 
-  for (const auto& service_pair : stub_services_.DictItems()) {
+  for (const auto service_pair : stub_services_.DictItems()) {
     const auto& service_path = service_pair.first;
     const auto& service_properties = service_pair.second;
 

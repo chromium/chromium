@@ -142,7 +142,7 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
       return;
     }
 
-    for (const auto& iter : profile_entries->DictItems()) {
+    for (const auto iter : profile_entries->DictItems()) {
       std::string profile_path = StripQuotations(iter.first);
       std::string entry_path;
       if (iter.second.is_string()) {

@@ -119,7 +119,7 @@ void PendingNetworkConfigurationTrackerImpl::IncrementCompletedAttempts(
 std::vector<PendingNetworkConfigurationUpdate>
 PendingNetworkConfigurationTrackerImpl::GetPendingUpdates() {
   std::vector<PendingNetworkConfigurationUpdate> list;
-  for (const auto& entry : dict_.DictItems()) {
+  for (const auto entry : dict_.DictItems()) {
     list.push_back(ConvertToPendingUpdate(
         /*dict=*/&entry.second,
         NetworkIdentifier::DeserializeFromString(entry.first)));
