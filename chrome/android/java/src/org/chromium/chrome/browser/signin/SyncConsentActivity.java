@@ -39,7 +39,7 @@ public class SyncConsentActivity extends ChromeBaseAppCompatActivity {
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
             Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
-            fragment = new SyncConsentFragment(getModalDialogManagerSupplier().get());
+            fragment = new SyncConsentFragment();
             fragment.setArguments(fragmentArgs);
             fragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }

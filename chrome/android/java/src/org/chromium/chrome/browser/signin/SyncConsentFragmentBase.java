@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -97,7 +99,6 @@ public abstract class SyncConsentFragmentBase
     private @Nullable String mRequestedAccountName;
 
     private final ProfileDataCache.Observer mProfileDataCacheObserver;
-    private final ModalDialogManager mModalDialogManager;
     private String mSelectedAccountName;
     private boolean mIsDefaultAccountSelected;
     private ProfileDataCache mProfileDataCache;
@@ -106,6 +107,7 @@ public abstract class SyncConsentFragmentBase
     private boolean mCanUseGooglePlayServices;
     private boolean mRecordUndoSignin;
     protected @SigninAccessPoint int mSigninAccessPoint;
+    private ModalDialogManager mModalDialogManager;
     private ConfirmSyncDataStateMachine mConfirmSyncDataStateMachine;
     private AccountPickerDialogCoordinator mAccountPickerDialogCoordinator;
 
@@ -163,11 +165,10 @@ public abstract class SyncConsentFragmentBase
         return result;
     }
 
-    protected SyncConsentFragmentBase(ModalDialogManager modalDialogManager) {
+    protected SyncConsentFragmentBase() {
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mProfileDataCacheObserver = this::updateProfileData;
         mCanUseGooglePlayServices = true;
-        mModalDialogManager = modalDialogManager;
     }
 
     /** The sign-in was refused. */
@@ -182,6 +183,12 @@ public abstract class SyncConsentFragmentBase
      */
     protected abstract void onSigninAccepted(String accountName, boolean isDefaultAccount,
             boolean settingsClicked, Runnable callback);
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mModalDialogManager = ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

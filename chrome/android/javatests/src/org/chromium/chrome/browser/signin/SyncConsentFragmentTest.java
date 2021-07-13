@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -61,15 +60,12 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
-import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
@@ -89,10 +85,6 @@ public class SyncConsentFragmentTest {
      */
     public static class CustomSyncConsentFirstRunFragment extends SyncConsentFirstRunFragment {
         private FirstRunPageDelegate mFirstRunPageDelegate;
-
-        public CustomSyncConsentFirstRunFragment(Context context) {
-            super(new ModalDialogManager(new AppModalPresenter(context), ModalDialogType.APP));
-        }
 
         @Override
         public FirstRunPageDelegate getPageDelegate() {
@@ -226,8 +218,7 @@ public class SyncConsentFragmentTest {
                 new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
-        CustomSyncConsentFirstRunFragment fragment =
-                new CustomSyncConsentFirstRunFragment(mActivityTestRule.getActivity());
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(
                 SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
@@ -250,8 +241,7 @@ public class SyncConsentFragmentTest {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        CustomSyncConsentFirstRunFragment fragment =
-                new CustomSyncConsentFirstRunFragment(mActivityTestRule.getActivity());
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(
                 SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
@@ -274,8 +264,7 @@ public class SyncConsentFragmentTest {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        CustomSyncConsentFirstRunFragment fragment =
-                new CustomSyncConsentFirstRunFragment(mActivityTestRule.getActivity());
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(
                 SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.REGULAR_CHILD);
@@ -298,8 +287,7 @@ public class SyncConsentFragmentTest {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        CustomSyncConsentFirstRunFragment fragment =
-                new CustomSyncConsentFirstRunFragment(mActivityTestRule.getActivity());
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(
                 SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.USM_CHILD);

@@ -13,14 +13,20 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /** Dummy activity to test UI components without Chrome browser initialization and natives. */
-public class DummyUiActivity extends AppCompatActivity {
+public class DummyUiActivity extends AppCompatActivity implements ModalDialogManagerHolder {
     private static int sTestTheme;
     private static int sTestLayout;
 
     private Callback<MotionEvent> mMotionEventCallback;
     private Callback<KeyEvent> mKeyEventCallback;
+    private ModalDialogManager mModalDialogManager =
+            new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,12 @@ public class DummyUiActivity extends AppCompatActivity {
      */
     public static void setTestLayout(@LayoutRes int layoutResID) {
         sTestLayout = layoutResID;
+    }
+
+    // Implementation of ModalDialogManagerHolder
+    @Override
+    public ModalDialogManager getModalDialogManager() {
+        return mModalDialogManager;
     }
 
     @Override

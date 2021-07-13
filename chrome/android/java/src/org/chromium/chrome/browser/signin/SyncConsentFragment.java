@@ -24,7 +24,6 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -81,10 +80,6 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
         Bundle result = SyncConsentFragmentBase.createArgumentsForAddAccountFlow(accessPoint);
         result.putInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.NEW_ACCOUNT);
         return result;
-    }
-
-    public SyncConsentFragment(ModalDialogManager modalDialogManager) {
-        super(modalDialogManager);
     }
 
     @Override

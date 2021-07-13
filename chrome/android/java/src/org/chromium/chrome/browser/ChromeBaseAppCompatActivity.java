@@ -30,13 +30,14 @@ import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.ui.theme.ColorDelegateImpl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /**
  * A subclass of {@link AppCompatActivity} that maintains states and objects applied to all
  * activities in {@link ChromeApplication} (e.g. night mode).
  */
-public class ChromeBaseAppCompatActivity
-        extends AppCompatActivity implements NightModeStateProvider.Observer {
+public class ChromeBaseAppCompatActivity extends AppCompatActivity
+        implements NightModeStateProvider.Observer, ModalDialogManagerHolder {
     private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();
     private NightModeStateProvider mNightModeStateProvider;
@@ -101,6 +102,17 @@ public class ChromeBaseAppCompatActivity
         super.onConfigurationChanged(newConfig);
         NightModeUtils.updateConfigurationForNightMode(
                 this, mNightModeStateProvider.isInNightMode(), newConfig, mThemeResId);
+    }
+
+    // Implementation of ModalDialogManagerHolder
+    /**
+     * @return The {@link ModalDialogManager} that manages the display of modal dialogs (e.g.
+     *         JavaScript dialogs).
+     */
+    @Override
+    public ModalDialogManager getModalDialogManager() {
+        // TODO(jinsukkim): Remove this method in favor of getModalDialogManagerSupplier().
+        return getModalDialogManagerSupplier().get();
     }
 
     /**

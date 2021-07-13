@@ -28,5 +28,8 @@ include_rules = [
 specific_include_rules = {
   ".*test\.(cc|h)": [
     "+components/viz/test"
-  ]
+  ],
+  ".*DummyUiActivity\.java": [
+    "+components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog",
+  ],
 }
