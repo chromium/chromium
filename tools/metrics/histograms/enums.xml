@@ -33978,6 +33978,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3957" label="SameSiteNoneIncludedBySameSiteStrict"/>
   <int value="3958"
       label="PrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial"/>
+  <int value="3959" label="V8URLPattern_Constructor"/>
+  <int value="3960" label="V8URLPattern_Test_Method"/>
+  <int value="3961" label="V8URLPattern_Exec_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

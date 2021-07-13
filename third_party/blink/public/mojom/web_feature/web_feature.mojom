@@ -3271,6 +3271,9 @@ enum WebFeature {
   kSameSiteNoneIncludedBySameSiteLax = 3956,
   kSameSiteNoneIncludedBySameSiteStrict = 3957,
   kPrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial = 3958,
+  kV8URLPattern_Constructor = 3959,
+  kV8URLPattern_Test_Method = 3960,
+  kV8URLPattern_Exec_Method = 3961,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -9,12 +9,13 @@ typedef (USVString or URLPatternInit) URLPatternInput;
   Exposed=(Window,Worker),
   RuntimeEnabled=URLPattern
 ] interface URLPattern {
-  [RaisesException] constructor(URLPatternInput input, optional USVString baseURL);
+  [RaisesException, Measure]
+  constructor(URLPatternInput input, optional USVString baseURL);
 
-  [RaisesException]
+  [RaisesException, Measure]
   boolean test(URLPatternInput input, optional USVString baseURL);
 
-  [RaisesException]
+  [RaisesException, Measure]
   URLPatternResult? exec(URLPatternInput input, optional USVString baseURL);
 
   readonly attribute USVString protocol;
