@@ -83,9 +83,10 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
                                             &glyph_cache_max_texture_bytes);
   options.fDisableCoverageCountingPaths = true;
   options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
-  // TODO(csmartdalton): enable internal multisampling after the related Skia
-  // rolls are in.
-  options.fInternalMultisampleCount = 0;
+  // TODO(junov, csmartdalton): Find a way to control fInternalMultisampleCount
+  // in a more granular way.  For OOPR-Canvas we want 8, but for other purposes,
+  // a texture atlas with sample count of 4 would be sufficient
+  options.fInternalMultisampleCount = 8;
   if (type == GrContextType::kMetal)
     options.fRuntimeProgramCacheSize = 1024;
 
