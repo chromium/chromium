@@ -7,15 +7,20 @@
 #include <memory>
 #include <utility>
 
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/pdf/browser/fake_pdf_stream_delegate.h"
+#include "components/pdf/browser/mock_url_loader_client.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
+#include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/pdf_features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -23,6 +28,8 @@
 namespace pdf {
 
 namespace {
+
+using ::testing::NiceMock;
 
 class PdfURLLoaderRequestInterceptorTest
     : public content::RenderViewHostTestHarness {
@@ -63,6 +70,22 @@ class PdfURLLoaderRequestInterceptorUnseasonedEnabledTest
   }
 };
 
+void RunRequestHandler(
+    content::URLLoaderRequestInterceptor::RequestHandler request_handler) {
+  base::RunLoop run_loop;
+
+  NiceMock<MockURLLoaderClient> mock_client;
+  EXPECT_CALL(mock_client, OnReceiveResponse).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+
+  mojo::Receiver<network::mojom::URLLoaderClient> client_receiver(&mock_client);
+  std::move(request_handler)
+      .Run({}, {}, client_receiver.BindNewPipeAndPassRemote());
+
+  run_loop.Run();
+}
+
 }  // namespace
 
 TEST_F(PdfURLLoaderRequestInterceptorUnseasonedDisabledTest,
@@ -78,7 +101,8 @@ TEST_F(PdfURLLoaderRequestInterceptorUnseasonedEnabledTest,
 }
 
 TEST_F(PdfURLLoaderRequestInterceptorTest, MaybeCreateLoader) {
-  EXPECT_CALL(loader_callback_, Run(base::test::IsNotNullCallback()));
+  EXPECT_CALL(loader_callback_, Run(base::test::IsNotNullCallback()))
+      .WillOnce(RunRequestHandler);
 
   auto interceptor = CreateInterceptor();
   interceptor->MaybeCreateLoader(resource_request_, browser_context(),

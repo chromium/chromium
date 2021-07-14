@@ -45,6 +45,10 @@ class WebContentsLifetimeHelper
     // `WebContents::OpenURL()`, so use `LoadURLWithParams()` directly instead.
     web_contents_->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(params));
+
+    // Note that we don't need to register the stream's URL loader as a
+    // subresource, as `MimeHandlerViewGuest::ReadyToCommitNavigation()` will
+    // handle this as soon as we navigate to a non-`kPdfExtensionId` URL.
   }
 
  private:

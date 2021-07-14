@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
+#include "components/pdf/browser/plugin_response_writer.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,17 +20,28 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace pdf {
 
 namespace {
 
+void FinishLoader(std::unique_ptr<PluginResponseWriter> /*response_writer*/) {
+  // Implicitly deletes `PluginResponseWriter` after loading completes.
+}
+
 void CreateLoaderAndStart(
-    PdfStreamDelegate::StreamInfo stream,
+    const GURL& source_url,
+    const GURL& original_url,
     const network::ResourceRequest& request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  // TODO(crbug.com/1123621): Synthesize response body.
+  auto response_writer = std::make_unique<PluginResponseWriter>(
+      source_url, original_url, std::move(client));
+
+  auto* unowned_response_writer = response_writer.get();
+  unowned_response_writer->Start(
+      base::BindOnce(FinishLoader, std::move(response_writer)));
 }
 
 }  // namespace
@@ -87,7 +99,8 @@ PdfURLLoaderRequestInterceptor::CreateRequestHandler(
   if (tentative_resource_request.url != stream->original_url)
     return {};
 
-  return base::BindOnce(&CreateLoaderAndStart, std::move(stream.value()));
+  return base::BindOnce(&CreateLoaderAndStart, std::move(stream->stream_url),
+                        std::move(stream->original_url));
 }
 
 }  // namespace pdf
