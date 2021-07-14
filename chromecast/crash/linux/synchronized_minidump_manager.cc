@@ -85,8 +85,8 @@ bool SetRatelimitPeriodStart(base::Value* metadata, base::Time period_start) {
   base::DictionaryValue* ratelimit_params = GetRatelimitParams(metadata);
   RCHECK(ratelimit_params, false);
 
-  ratelimit_params->SetDouble(kLockfileRatelimitPeriodStartKey,
-                              period_start.ToDoubleT());
+  ratelimit_params->SetDoubleKey(kLockfileRatelimitPeriodStartKey,
+                                 period_start.ToDoubleT());
   return true;
 }
 
@@ -334,7 +334,7 @@ bool SynchronizedMinidumpManager::InitializeFiles() {
       std::make_unique<base::DictionaryValue>();
 
   auto ratelimit_fields = std::make_unique<base::DictionaryValue>();
-  ratelimit_fields->SetDouble(kLockfileRatelimitPeriodStartKey, 0.0);
+  ratelimit_fields->SetDoubleKey(kLockfileRatelimitPeriodStartKey, 0.0);
   ratelimit_fields->SetInteger(kLockfileRatelimitPeriodDumpsKey, 0);
   metadata->Set(kLockfileRatelimitKey, std::move(ratelimit_fields));
 

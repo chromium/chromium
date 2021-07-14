@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "chromecast/base/pref_names.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/test/cast_browser_test.h"
@@ -214,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   params->SetBoolean("bool_param", true);
   params->SetBoolean("bool_param_2", false);
   params->SetString("str_param", "foo");
-  params->SetDouble("doub_param", 3.14159);
+  params->SetDoubleKey("doub_param", 3.14159);
   params->SetInteger("int_param", 76543);
   features.Set("test_feat_11", std::move(params));
   SetFeatures(features);

@@ -128,7 +128,7 @@ bool CreateFiles(const std::string& lockfile_path,
       std::make_unique<base::DictionaryValue>();
 
   auto ratelimit_fields = std::make_unique<base::DictionaryValue>();
-  ratelimit_fields->SetDouble(kRatelimitPeriodStartKey, 0.0);
+  ratelimit_fields->SetDoubleKey(kRatelimitPeriodStartKey, 0.0);
   ratelimit_fields->SetInteger(kRatelimitPeriodDumpsKey, 0);
   metadata->Set(kRatelimitKey, std::move(ratelimit_fields));
 
@@ -165,7 +165,7 @@ bool SetRatelimitPeriodStart(const std::string& metadata_path,
     return false;
   }
 
-  ratelimit_params->SetDouble(kRatelimitPeriodStartKey, start.ToDoubleT());
+  ratelimit_params->SetDoubleKey(kRatelimitPeriodStartKey, start.ToDoubleT());
   return WriteMetadataFile(metadata_path, contents.get()) == 0;
 }
 

@@ -61,7 +61,7 @@ float DbFsToScale(float db) {
 }
 #endif
 
-std::string ContentTypeToDbFSKey(AudioContentType type) {
+std::string ContentTypeToDbFSPath(AudioContentType type) {
   switch (type) {
     case AudioContentType::kAlarm:
       return kKeyAlarmDbFS;
@@ -87,7 +87,8 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
         LoadSavedVolumes(storage_path_);
     for (auto type : {AudioContentType::kMedia, AudioContentType::kAlarm,
                       AudioContentType::kCommunication}) {
-      stored_values_.SetDouble(ContentTypeToDbFSKey(type), saved_volumes[type]);
+      stored_values_.SetDoublePath(ContentTypeToDbFSPath(type),
+                                   saved_volumes[type]);
     }
 
     base::Thread::Options options;
@@ -200,7 +201,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     double dbfs;
     for (auto type : {AudioContentType::kMedia, AudioContentType::kAlarm,
                       AudioContentType::kCommunication}) {
-      CHECK(stored_values_.GetDouble(ContentTypeToDbFSKey(type), &dbfs));
+      CHECK(stored_values_.GetDouble(ContentTypeToDbFSPath(type), &dbfs));
       volumes_[type] = VolumeControl::DbFSToVolume(dbfs);
       volume_multipliers_[type] = 1.0f;
 
@@ -271,7 +272,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
       }
     }
 
-    stored_values_.SetDouble(ContentTypeToDbFSKey(type), dbfs);
+    stored_values_.SetDoublePath(ContentTypeToDbFSPath(type), dbfs);
     std::string output_js;
     base::JSONWriter::Write(stored_values_, &output_js);
     saved_volumes_writer_->WriteNow(std::make_unique<std::string>(output_js));
