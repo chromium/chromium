@@ -684,7 +684,7 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
     back_to_tab_label_button_->SetWindowSize(GetBounds().size());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  resize_handle_view_->SetPosition(GetBounds().size(), quadrant);
+  UpdateResizeHandleBounds(quadrant);
 #endif
 
   skip_ad_controls_view_->SetPosition(GetBounds().size());
@@ -828,6 +828,15 @@ gfx::Rect OverlayWindowViews::CalculateControlsBounds(int x,
   return gfx::Rect(
       gfx::Point(x, (GetBounds().size().height() - size.height()) / 2), size);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void OverlayWindowViews::UpdateResizeHandleBounds(WindowQuadrant quadrant) {
+  resize_handle_view_->SetPosition(GetBounds().size(), quadrant);
+  GetNativeWindow()->SetProperty(
+      ash::kWindowPipResizeHandleBoundsKey,
+      new gfx::Rect(GetResizeHandleControlsBounds()));
+}
+#endif
 
 bool OverlayWindowViews::IsActive() {
   return views::Widget::IsActive();
@@ -1032,7 +1041,7 @@ void OverlayWindowViews::OnNativeWidgetMove() {
   // Update the positioning of some icons when the window is moved.
   WindowQuadrant quadrant = GetCurrentWindowQuadrant(GetBounds(), controller_);
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
-  resize_handle_view_->SetPosition(GetBounds().size(), quadrant);
+  UpdateResizeHandleBounds(quadrant);
 #endif
 }
 

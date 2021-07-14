@@ -10,6 +10,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
@@ -33,6 +34,7 @@
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -43,6 +45,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -262,6 +265,23 @@ uint32_t WindowComponentToMagneticEdge(int window_component) {
   return 0;
 }
 
+// If |window| has a resize handle and |location_in_parent| occurs within it,
+// records UMA for it.
+void MaybeRecordResizeHandleUsage(aura::Window* window,
+                                  const gfx::PointF& location_in_parent) {
+  gfx::Rect* resize_bounds_in_pip =
+      window->GetProperty(kWindowPipResizeHandleBoundsKey);
+  if (!resize_bounds_in_pip)
+    return;
+
+  gfx::Point point_in_pip = gfx::ToRoundedPoint(location_in_parent);
+  aura::Window::ConvertPointToTarget(window->parent(), window, &point_in_pip);
+  if (resize_bounds_in_pip->Contains(point_in_pip)) {
+    UMA_HISTOGRAM_ENUMERATION(ash::kAshPipEventsHistogramName,
+                              ash::AshPipEvents::CHROME_RESIZE_HANDLE_RESIZE);
+  }
+}
+
 // Returns a WindowResizer if dragging |window| is allowed in tablet mode.
 std::unique_ptr<WindowResizer> CreateWindowResizerForTabletMode(
     aura::Window* window,
@@ -422,6 +442,7 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
 
   if (window_state->IsPip()) {
     window_state->CreateDragDetails(point_in_parent, window_component, source);
+    MaybeRecordResizeHandleUsage(window, point_in_parent);
     return std::make_unique<PipWindowResizer>(window_state);
   }
 

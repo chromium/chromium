@@ -64,6 +64,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(aura::Window*,
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPositionManagedTypeKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPipTypeKey, false)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
+                                   kWindowPipResizeHandleBoundsKey,
+                                   nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(ResizeShadowType,
                              kResizeShadowTypeKey,
                              ResizeShadowType::kUnlock)

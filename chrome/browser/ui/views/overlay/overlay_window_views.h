@@ -162,6 +162,12 @@ class OverlayWindowViews : public content::OverlayWindow,
   gfx::Rect CalculateControlsBounds(int x, const gfx::Size& size);
   void UpdateControlsPositions();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Updates the bounds of |resize_handle_view_| based on what |quadrant| the
+  // PIP window is in.
+  void UpdateResizeHandleBounds(WindowQuadrant quadrant);
+#endif
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class OverlayWindowControl {

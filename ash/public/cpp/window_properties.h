@@ -191,6 +191,12 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kWindowPipTypeKey;
 
+// A property key which store the bounds of a pip window's resize handle in the
+// pip window's coordinates. This is used to track the usage of the resize
+// handle.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<gfx::Rect*>* const
+    kWindowPipResizeHandleBoundsKey;
+
 // Alphabetical sort.
 
 }  // namespace ash
