@@ -1520,9 +1520,7 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
   state_ = LineBreakState::kTrailing;
 }
 
-// Remove trailing collapsible spaces in |line_info|.
-// https://drafts.csswg.org/css-text-3/#white-space-phase-2
-void NGLineBreaker::RemoveTrailingCollapsibleSpace(NGLineInfo* line_info) {
+void NGLineBreaker::RemoveTrailingOpenTags(NGLineInfo* line_info) {
   // Remove trailing open tags. Open tags are included as trailable items
   // because they are ambiguous. When the line ends, and if the end of line has
   // open tags, they are not trailable.
@@ -1547,6 +1545,12 @@ void NGLineBreaker::RemoveTrailingCollapsibleSpace(NGLineInfo* line_info) {
       break;
     }
   }
+}
+
+// Remove trailing collapsible spaces in |line_info|.
+// https://drafts.csswg.org/css-text-3/#white-space-phase-2
+void NGLineBreaker::RemoveTrailingCollapsibleSpace(NGLineInfo* line_info) {
+  RemoveTrailingOpenTags(line_info);
 
   ComputeTrailingCollapsibleSpace(line_info);
   if (!trailing_collapsible_space_.has_value()) {
@@ -1649,48 +1653,54 @@ void NGLineBreaker::ComputeTrailingCollapsibleSpace(NGLineInfo* line_info) {
   trailing_collapsible_space_.reset();
 }
 
+void NGLineBreaker::HandleForcedLineBreak(const NGInlineItem& item,
+                                          NGLineInfo* line_info) {
+  DCHECK_EQ(item.TextType(), NGTextType::kForcedLineBreak);
+  DCHECK_EQ(Text()[item.StartOffset()], kNewlineCharacter);
+
+  // Check overflow, because the last item may have overflowed.
+  if (HandleOverflowIfNeeded(line_info))
+    return;
+
+  NGInlineItemResult* item_result = AddItem(item, line_info);
+  item_result->should_create_line_box = true;
+  item_result->has_only_trailing_spaces = true;
+  MoveToNextOf(item);
+
+  // Include following close tags. The difference is visible when they have
+  // margin/border/padding.
+  //
+  // This is not a defined behavior, but legacy/WebKit do this for preserved
+  // newlines and <br>s. Gecko does this only for preserved newlines (but
+  // not for <br>s).
+  const Vector<NGInlineItem>& items = Items();
+  while (item_index_ < items.size()) {
+    const NGInlineItem& next_item = items[item_index_];
+    if (next_item.Type() == NGInlineItem::kCloseTag) {
+      HandleCloseTag(next_item, line_info);
+      continue;
+    }
+    if (next_item.Type() == NGInlineItem::kText && !next_item.Length()) {
+      HandleEmptyText(next_item, line_info);
+      continue;
+    }
+    break;
+  }
+
+  if (UNLIKELY(HasHyphen()))
+    position_ -= RemoveHyphen(line_info->MutableResults());
+  is_after_forced_break_ = true;
+  line_info->SetIsLastLine(true);
+  state_ = LineBreakState::kDone;
+}
+
 // Measure control items; new lines and tab, that are similar to text, affect
 // layout, but do not need shaping/painting.
 void NGLineBreaker::HandleControlItem(const NGInlineItem& item,
                                       NGLineInfo* line_info) {
   DCHECK_GE(item.Length(), 1u);
   if (item.TextType() == NGTextType::kForcedLineBreak) {
-    DCHECK_EQ(Text()[item.StartOffset()], kNewlineCharacter);
-
-    // Check overflow, because the last item may have overflowed.
-    if (HandleOverflowIfNeeded(line_info))
-      return;
-
-    NGInlineItemResult* item_result = AddItem(item, line_info);
-    item_result->should_create_line_box = true;
-    item_result->has_only_trailing_spaces = true;
-    MoveToNextOf(item);
-
-    // Include following close tags. The difference is visible when they have
-    // margin/border/padding.
-    //
-    // This is not a defined behavior, but legacy/WebKit do this for preserved
-    // newlines and <br>s. Gecko does this only for preserved newlines (but
-    // not for <br>s).
-    const Vector<NGInlineItem>& items = Items();
-    while (item_index_ < items.size()) {
-      const NGInlineItem& next_item = items[item_index_];
-      if (next_item.Type() == NGInlineItem::kCloseTag) {
-        HandleCloseTag(next_item, line_info);
-        continue;
-      }
-      if (next_item.Type() == NGInlineItem::kText && !next_item.Length()) {
-        HandleEmptyText(next_item, line_info);
-        continue;
-      }
-      break;
-    }
-
-    if (UNLIKELY(HasHyphen()))
-      position_ -= RemoveHyphen(line_info->MutableResults());
-    is_after_forced_break_ = true;
-    line_info->SetIsLastLine(true);
-    state_ = LineBreakState::kDone;
+    HandleForcedLineBreak(item, line_info);
     return;
   }
 

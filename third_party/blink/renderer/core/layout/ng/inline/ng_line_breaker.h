@@ -164,8 +164,10 @@ class CORE_EXPORT NGLineBreaker {
   void RemoveTrailingCollapsibleSpace(NGLineInfo*);
   LayoutUnit TrailingCollapsibleSpaceWidth(NGLineInfo*);
   void ComputeTrailingCollapsibleSpace(NGLineInfo*);
+  void RemoveTrailingOpenTags(NGLineInfo*);
 
   void HandleControlItem(const NGInlineItem&, NGLineInfo*);
+  void HandleForcedLineBreak(const NGInlineItem&, NGLineInfo*);
   void HandleBidiControlItem(const NGInlineItem&, NGLineInfo*);
   void HandleAtomicInline(
       const NGInlineItem&,
