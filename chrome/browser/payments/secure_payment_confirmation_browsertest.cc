@@ -513,6 +513,21 @@ INSTANTIATE_TEST_SUITE_P(APIV2,
                          testing::Values(true, false));
 
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
+                       CredentialType) {
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
+
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)
+          ? "PublicKeyCredential"
+          : "PaymentCredential",
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("createCredentialAndReturnItsType($1)",
+                                         GetDefaultIconURL())));
+}
+
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        CreatePaymentCredential) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");

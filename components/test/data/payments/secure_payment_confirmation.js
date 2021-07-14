@@ -110,6 +110,16 @@ async function createCredentialAndReturnClientDataType(icon) { // eslint-disable
 }
 
 /**
+ * Creates a secure payment confirmation credential and returns its type.
+ * @param {string} icon - The URL of the icon for the credential.
+ * @return {string} - Either "PaymentCredential" or "PublicKeyCredential".
+ */
+async function createCredentialAndReturnItsType(icon) { // eslint-disable-line no-unused-vars, max-len
+  const credential = await createAndReturnPaymentCredential(icon);
+  return credential.constructor.name;
+}
+
+/**
  * Creates and returns a secure payment confirmation credential.
  * @param {string} icon - The URL of the icon for the credential.
  * @return {PaymentCredential} - The new credential.
