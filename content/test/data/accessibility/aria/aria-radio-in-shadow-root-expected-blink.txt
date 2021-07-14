@@ -1,0 +1,62 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++radioGroup name='Group One' setSize=3
+++++++++heading name='Group One'
+++++++++++staticText name='Group One'
+++++++++++++inlineTextBox name='Group One'
+++++++++radioButton name='Red' setSize=3 posInSet=1 checkedState=true
+++++++++++staticText name='Red'
+++++++++++++inlineTextBox name='Red'
+++++++++radioButton name='Green' setSize=3 posInSet=2 checkedState=false
+++++++++++staticText name='Green'
+++++++++++++inlineTextBox name='Green'
+++++++++radioButton name='Blue' setSize=3 posInSet=3 checkedState=false
+++++++++++genericContainer ignored
+++++++++++++staticText name='Blue'
+++++++++++++++inlineTextBox name='Blue'
+++++++radioGroup name='Group Two' setSize=3
+++++++++genericContainer ignored
+++++++++++heading name='Group Two'
+++++++++++++staticText name='Group Two'
+++++++++++++++inlineTextBox name='Group Two'
+++++++++++radioButton name='Red' setSize=3 posInSet=1 checkedState=true
+++++++++++++staticText name='Red'
+++++++++++++++inlineTextBox name='Red'
+++++++++++radioButton name='Green' setSize=3 posInSet=2 checkedState=false
+++++++++++++staticText name='Green'
+++++++++++++++inlineTextBox name='Green'
+++++++++++radioButton name='Blue' setSize=3 posInSet=3 checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='Blue'
+++++++++++++++++inlineTextBox name='Blue'
+++++++radioGroup name='Group with aria-setsize and aria-posinset' setSize=8
+++++++++genericContainer ignored
+++++++++++heading name='Group with aria-setsize and aria-posinset'
+++++++++++++staticText name='Group with aria-setsize and aria-posinset'
+++++++++++++++inlineTextBox name='Group with aria-setsize and aria-posinset'
+++++++++++radioButton name='Red' setSize=8 posInSet=5 checkedState=true
+++++++++++++staticText name='Red'
+++++++++++++++inlineTextBox name='Red'
+++++++++++radioButton name='Green' setSize=8 posInSet=6 checkedState=false
+++++++++++++staticText name='Green'
+++++++++++++++inlineTextBox name='Green'
+++++++++++radioButton name='Blue' setSize=8 posInSet=7 checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='Blue'
+++++++++++++++++inlineTextBox name='Blue'
+++++++group name='Checkbox Group One' setSize=0
+++++++++genericContainer ignored
+++++++++++heading name='Checkbox Group One'
+++++++++++++staticText name='Checkbox Group One'
+++++++++++++++inlineTextBox name='Checkbox Group One'
+++++++++++checkBox name='Red' checkedState=true
+++++++++++++staticText name='Red'
+++++++++++++++inlineTextBox name='Red'
+++++++++++checkBox name='Green' checkedState=false
+++++++++++++staticText name='Green'
+++++++++++++++inlineTextBox name='Green'
+++++++++++checkBox name='Blue' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='Blue'
+++++++++++++++++inlineTextBox name='Blue'

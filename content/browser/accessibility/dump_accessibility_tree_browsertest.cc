@@ -1176,6 +1176,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRadiogroup) {
   RunAriaTest(FILE_PATH_LITERAL("aria-radiogroup.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaRadioInShadowRoot) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-radio-in-shadow-root.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaReadonly) {
   RunAriaTest(FILE_PATH_LITERAL("aria-readonly.html"));
 }
