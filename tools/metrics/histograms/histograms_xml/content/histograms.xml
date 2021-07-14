@@ -1752,6 +1752,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ContentSuggestions.{FeedType}.LoadStreamStatus.ManualRefresh"
+    enum="FeedLoadStreamStatus" expires_after="2022-07-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: status of pulling-to-refresh the {FeedType} stream per the user
+    request. Reported when the refresh completes.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.{FeedType}.ReachedEndOfFeed" units="index"
     expires_after="2022-07-01">
   <owner>harringtond@chromium.org</owner>

@@ -32,18 +32,9 @@ class FeedStream;
 // Loads the stream model from storage or network. If data is refreshed from the
 // network, it is persisted to |FeedStore| by overwriting any existing stream
 // data.
-// This task has two modes, see |LoadStreamTask::LoadType|.
+// This task has three modes, see |LoadType| in enums.h.
 class LoadStreamTask : public offline_pages::Task {
  public:
-  enum class LoadType {
-    // Loads the stream model into memory. If successful, this directly forces a
-    // model load in |FeedStream()| before completing the task.
-    kInitialLoad,
-    // Refreshes the stored stream data from the network. This will fail if the
-    // model is already loaded.
-    kBackgroundRefresh,
-  };
-
   struct Options {
     // The stream type to load.
     StreamType stream_type;
@@ -69,7 +60,7 @@ class LoadStreamTask : public offline_pages::Task {
     base::TimeDelta stored_content_age;
     // Set of content IDs present in the feed.
     ContentIdSet content_ids;
-    LoadType load_type;
+    LoadType load_type = LoadType::kInitialLoad;
     std::unique_ptr<StreamModelUpdateRequest> update_request;
     absl::optional<RequestSchedule> request_schedule;
 
@@ -106,6 +97,10 @@ class LoadStreamTask : public offline_pages::Task {
   void ResumeAtStart();
   bool CheckPreconditions();
   void PassedPreconditions();
+
+  void LoadFromNetwork(
+      std::vector<feedstore::StoredAction> pending_actions_from_store,
+      bool need_to_read_pending_actions);
   void LoadFromStoreComplete(LoadStreamFromStoreTask::Result result);
   void UploadActionsComplete(UploadActionsTask::Result result);
   void QueryApiRequestComplete(

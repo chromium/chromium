@@ -183,24 +183,24 @@ feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
     return feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED;
 
   // If we should not load the stream, abort and send a zero-state update.
-  LaunchResult do_not_attempt_reason = ShouldAttemptLoad(stream_type);
+  LaunchResult do_not_attempt_reason =
+      ShouldAttemptLoad(stream_type, LoadType::kInitialLoad);
   if (do_not_attempt_reason.load_stream_status != LoadStreamStatus::kNoStatus) {
     LoadStreamTask::Result result(stream_type,
                                   do_not_attempt_reason.load_stream_status);
     result.launch_result = do_not_attempt_reason.launch_result;
-    InitialStreamLoadComplete(std::move(result));
+    StreamLoadComplete(std::move(result));
     return do_not_attempt_reason.launch_result;
   }
 
   stream.model_loading_in_progress = true;
 
-  stream.surface_updater->LoadStreamStarted();
+  stream.surface_updater->LoadStreamStarted(/*manual_refreshing=*/false);
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
   task_queue_.AddTask(std::make_unique<LoadStreamTask>(
       options, this,
-      base::BindOnce(&FeedStream::InitialStreamLoadComplete,
-                     base::Unretained(this))));
+      base::BindOnce(&FeedStream::StreamLoadComplete, base::Unretained(this))));
   return feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED;
 }
 
@@ -231,8 +231,13 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   }
 }
 
-void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
+void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
+  DCHECK(result.load_type == LoadType::kInitialLoad ||
+         result.load_type == LoadType::kManualRefresh);
+
   Stream& stream = GetStream(result.stream_type);
+  if (result.load_type == LoadType::kManualRefresh)
+    UnloadModel(result.stream_type);
   if (result.update_request) {
     auto model = std::make_unique<StreamModel>();
     model->Update(std::move(result.update_request));
@@ -256,6 +261,7 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
   }
   metrics_reporter_->OnLoadStream(
       stream.type, result.load_from_store_status, result.final_status,
+      result.load_type == LoadType::kInitialLoad,
       result.loaded_new_content_from_network, result.stored_content_age,
       content_count, std::move(result.latencies));
 
@@ -272,7 +278,7 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
     if (result.stream_type.IsForYou()) {
       if (!HasUnreadContent(kWebFeedStream)) {
         LoadStreamTask::Options options;
-        options.load_type = LoadStreamTask::LoadType::kBackgroundRefresh;
+        options.load_type = LoadType::kBackgroundRefresh;
         options.stream_type = kWebFeedStream;
         options.abort_if_unread_content = true;
         task_queue_.AddTask(std::make_unique<LoadStreamTask>(
@@ -282,14 +288,24 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
       }
     }
   }
+
+  if (result.load_type == LoadType::kManualRefresh) {
+    std::vector<base::OnceCallback<void(bool)>> moved_callbacks =
+        std::move(stream.refresh_complete_callbacks);
+    for (auto& callback : moved_callbacks) {
+      std::move(callback).Run(result.loaded_new_content_from_network);
+    }
+  }
 }
 
 void FeedStream::OnEnterBackground() {
   metrics_reporter_->OnEnterBackground();
   if (GetFeedConfig().upload_actions_on_enter_background) {
     task_queue_.AddTask(std::make_unique<UploadActionsTask>(
-        this, base::BindOnce(&FeedStream::UploadActionsComplete,
-                             base::Unretained(this))));
+        this,
+        /*launch_reliability_logger=*/nullptr,
+        base::BindOnce(&FeedStream::UploadActionsComplete,
+                       base::Unretained(this))));
   }
 }
 
@@ -462,7 +478,7 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
   }
   // We want to abort early to avoid showing a loading spinner if it's not
   // necessary.
-  if (ShouldMakeFeedQueryRequest(surface.GetStreamType(), /*is_load_more=*/true,
+  if (ShouldMakeFeedQueryRequest(surface.GetStreamType(), LoadType::kLoadMore,
                                  /*consume_quota=*/false)
           .load_stream_status != LoadStreamStatus::kNoStatus) {
     return std::move(callback).Run(false);
@@ -501,6 +517,31 @@ void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
   }
 }
 
+void FeedStream::ManualRefresh(const FeedStreamSurface& surface,
+                               base::OnceCallback<void(bool)> callback) {
+  Stream& stream = GetStream(surface.GetStreamType());
+
+  // Bail out immediately if loading in progress.
+  if (stream.model_loading_in_progress) {
+    return std::move(callback).Run(false);
+  }
+  stream.model_loading_in_progress = true;
+
+  stream.surface_updater->LoadStreamStarted(/*manual_refreshing=*/true);
+
+  // Have at most one in-flight refresh request per stream.
+  stream.refresh_complete_callbacks.push_back(std::move(callback));
+  if (stream.refresh_complete_callbacks.size() == 1) {
+    LoadStreamTask::Options options;
+    options.stream_type = surface.GetStreamType();
+    options.load_type = LoadType::kManualRefresh;
+    task_queue_.AddTask(std::make_unique<LoadStreamTask>(
+        options, this,
+        base::BindOnce(&FeedStream::StreamLoadComplete,
+                       base::Unretained(this))));
+  }
+}
+
 void FeedStream::ExecuteOperations(
     const StreamType& stream_type,
     std::vector<feedstore::DataOperation> operations) {
@@ -509,6 +550,7 @@ void FeedStream::ExecuteOperations(
     DLOG(ERROR) << "Calling ExecuteOperations before the model is loaded";
     return;
   }
+  // TODO(crbug.com/1227897): Convert this to a task.
   return model->ExecuteOperations(std::move(operations));
 }
 
@@ -699,16 +741,20 @@ void FeedStream::OnStoreChange(StreamModel::StoreUpdate update) {
 }
 
 LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
+                                           LoadType load_type,
                                            bool model_loading) {
-  // Don't try to load the model if it's already loaded, or in the process of
-  // being loaded. Because |ShouldAttemptLoad()| is used both before and during
-  // the load process, we need to ignore this check when |model_loading| is
-  // true.
   Stream& stream = GetStream(stream_type);
-  if (stream.model || (!model_loading && stream.model_loading_in_progress)) {
-    // TODO(iwells): log the end of the launch flow if stream.model exists
-    return {LoadStreamStatus::kModelAlreadyLoaded,
-            feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED};
+  if (load_type == LoadType::kInitialLoad ||
+      load_type == LoadType::kBackgroundRefresh) {
+    // For initial load or background refresh, the model should not be loaded
+    // or in the process of being loaded. Because |ShouldAttemptLoad()| is used
+    // both before and during the load process, we need to ignore this check
+    // when |model_loading| is true.
+    if (stream.model || (!model_loading && stream.model_loading_in_progress)) {
+      // TODO(iwells): log the end of the launch flow if stream.model exists
+      return {LoadStreamStatus::kModelAlreadyLoaded,
+              feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED};
+    }
   }
 
   if (!IsArticlesListVisible()) {
@@ -755,23 +801,23 @@ bool FeedStream::MissedLastRefresh(const StreamType& stream_type) {
 
 LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
     const StreamType& stream_type,
-    bool is_load_more,
+    LoadType load_type,
     bool consume_quota) {
   Stream& stream = GetStream(stream_type);
-  if (!is_load_more) {
-    // Time has passed since calling |ShouldAttemptLoad()|, call it again to
-    // confirm we should still attempt loading.
-    const LaunchResult should_not_attempt_reason =
-        ShouldAttemptLoad(stream_type, /*model_loading=*/true);
-    if (should_not_attempt_reason.load_stream_status !=
-        LoadStreamStatus::kNoStatus) {
-      return should_not_attempt_reason;
-    }
-  } else {
+  if (load_type == LoadType::kLoadMore) {
     // LoadMore requires a next page token.
     if (!stream.model || stream.model->GetNextPageToken().empty()) {
       return {LoadStreamStatus::kCannotLoadMoreNoNextPageToken,
               feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED};
+    }
+  } else if (load_type != LoadType::kManualRefresh) {
+    // Time has passed since calling |ShouldAttemptLoad()|, call it again to
+    // confirm we should still attempt loading.
+    const LaunchResult should_not_attempt_reason =
+        ShouldAttemptLoad(stream_type, load_type, /*model_loading=*/true);
+    if (should_not_attempt_reason.load_stream_status !=
+        LoadStreamStatus::kNoStatus) {
+      return should_not_attempt_reason;
     }
   }
 
@@ -780,9 +826,10 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
             feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_NO_INTERNET};
   }
 
-  if (consume_quota && !request_throttler_.RequestQuota(
-                           !is_load_more ? NetworkRequestType::kFeedQuery
-                                         : NetworkRequestType::kNextPage)) {
+  if (consume_quota &&
+      !request_throttler_.RequestQuota((load_type != LoadType::kLoadMore)
+                                           ? NetworkRequestType::kFeedQuery
+                                           : NetworkRequestType::kNextPage)) {
     return {LoadStreamStatus::kCannotLoadFromNetworkThrottled,
             feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER};
   }
@@ -885,7 +932,8 @@ void FeedStream::OnSignedOut() {
 void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
   StreamType stream_type = StreamType::ForTaskId(task_id);
   LoadStreamStatus do_not_attempt_reason =
-      ShouldAttemptLoad(stream_type).load_stream_status;
+      ShouldAttemptLoad(stream_type, LoadType::kBackgroundRefresh)
+          .load_stream_status;
 
   // If `do_not_attempt_reason` indicates the stream shouldn't be loaded, it's
   // unlikely that criteria will change, so we skip rescheduling.
@@ -905,7 +953,7 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
 
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
-  options.load_type = LoadStreamTask::LoadType::kBackgroundRefresh;
+  options.load_type = LoadType::kBackgroundRefresh;
   options.refresh_even_when_not_stale = true;
   task_queue_.AddTask(std::make_unique<LoadStreamTask>(
       options, this,

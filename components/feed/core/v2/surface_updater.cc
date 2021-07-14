@@ -261,9 +261,9 @@ void SurfaceUpdater::SurfaceRemoved(FeedStreamSurface* surface) {
   surfaces_.RemoveObserver(surface);
 }
 
-void SurfaceUpdater::LoadStreamStarted() {
+void SurfaceUpdater::LoadStreamStarted(bool manual_refreshing) {
   load_stream_failed_ = false;
-  loading_initial_ = true;
+  loading_initial_ = !manual_refreshing;
   load_stream_started_ = true;
   SendStreamUpdateIfNeeded();
 }

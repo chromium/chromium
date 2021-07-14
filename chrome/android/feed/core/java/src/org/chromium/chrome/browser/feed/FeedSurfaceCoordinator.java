@@ -585,8 +585,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                 String accessibilityRefreshString =
                         mActivity.getResources().getString(R.string.accessibility_swipe_refresh);
                 swipeRefreshLayout.announceForAccessibility(accessibilityRefreshString);
-                mStream.triggerRefresh(
-                        (Boolean success) -> { swipeRefreshLayout.setRefreshing(false); });
+                mStream.triggerRefresh((Boolean v) -> { swipeRefreshLayout.setRefreshing(false); });
                 RecordUserAction.record("MobilePullGestureReloadNTP");
             }
         });

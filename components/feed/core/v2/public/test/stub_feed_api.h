@@ -43,6 +43,8 @@ class StubFeedApi : public FeedApi {
   void ExecuteRefreshTask(RefreshTaskId task_id) override {}
   void LoadMore(const FeedStreamSurface& surface,
                 base::OnceCallback<void(bool)> callback) override {}
+  void ManualRefresh(const FeedStreamSurface& surface,
+                     base::OnceCallback<void(bool)> callback) override {}
   ImageFetchId FetchImage(
       const GURL& url,
       base::OnceCallback<void(NetworkResponse)> callback) override;

@@ -52,13 +52,14 @@ void LoadMoreTask::Run() {
     return Done(LoadStreamStatus::kLoadMoreModelIsNotLoaded);
 
   LoadStreamStatus final_status =
-      stream_.ShouldMakeFeedQueryRequest(stream_type_, /*is_load_more=*/true)
+      stream_.ShouldMakeFeedQueryRequest(stream_type_, LoadType::kLoadMore)
           .load_stream_status;
   if (final_status != LoadStreamStatus::kNoStatus)
     return Done(final_status);
 
   upload_actions_task_ = std::make_unique<UploadActionsTask>(
       &stream_,
+      /*launch_reliability_logger=*/nullptr,
       base::BindOnce(&LoadMoreTask::UploadActionsComplete, GetWeakPtr()));
   upload_actions_task_->Execute(base::DoNothing());
 }

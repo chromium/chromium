@@ -67,6 +67,7 @@ class MetricsReporter {
   virtual void OnLoadStream(const StreamType& stream_type,
                             LoadStreamStatus load_from_store_status,
                             LoadStreamStatus final_status,
+                            bool is_initial_load,
                             bool loaded_new_content_from_network,
                             base::TimeDelta stored_content_age,
                             int content_count,

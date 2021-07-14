@@ -65,7 +65,8 @@ struct StreamModelUpdateRequestGenerator {
   ~StreamModelUpdateRequestGenerator();
 
   std::unique_ptr<StreamModelUpdateRequest> MakeFirstPage(
-      int first_cluster_id = 0) const;
+      int first_cluster_id = 0,
+      int num_cards = 2) const;
 
   std::unique_ptr<StreamModelUpdateRequest> MakeNextPage(
       int page_number = 2,
@@ -86,6 +87,19 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
     bool signed_in = true,
     bool logging_enabled = true,
     bool privacy_notice_fulfilled = false);
+// Returns data operations to create a typical stream for refreshing:
+// Root
+// |-Cluster 2
+// |  |-Content 2
+// |-Cluster 3
+// |  |-Content 3
+// |-Cluster 4
+//    |-Content 4
+std::unique_ptr<StreamModelUpdateRequest> MakeTypicalRefreshModelState(
+    int first_cluster_id = 2,
+    base::Time last_added_time = kTestTimeEpoch,
+    bool signed_in = true,
+    bool logging_enabled = true);
 // Root
 // |-Cluster 2
 // |  |-Content 2

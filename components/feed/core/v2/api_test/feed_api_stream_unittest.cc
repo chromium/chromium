@@ -775,7 +775,9 @@ TEST_F(FeedApiTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
 TEST_F(FeedApiTest, ShouldMakeFeedQueryRequestConsumesQuota) {
   LoadStreamStatus status = LoadStreamStatus::kNoStatus;
   for (; status == LoadStreamStatus::kNoStatus;
-       status = stream_->ShouldMakeFeedQueryRequest(kForYouStream)
+       status = stream_
+                    ->ShouldMakeFeedQueryRequest(kForYouStream,
+                                                 LoadType::kInitialLoad)
                     .load_stream_status) {
   }
 
@@ -2308,6 +2310,109 @@ TEST_F(FeedApiTest, ClearAllOnStartupIfFeedIsDisabled) {
   on_clear_all.Clear();
   CreateStream();
   EXPECT_FALSE(on_clear_all.called());
+}
+
+TEST_F(FeedApiTest, ManualRefreshSuccess) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  CallbackReceiver<bool> callback;
+  stream_->ManualRefresh(surface, callback.Bind());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
+  EXPECT_EQ("3 slices", surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
+            metrics_reporter_->load_stream_status);
+  // Verify stored state is equivalent to in-memory model.
+  EXPECT_STRINGS_EQUAL(
+      stream_->GetModel(surface.GetStreamType())->DumpStateForTesting(),
+      ModelStateFor(kForYouStream, store_.get()));
+}
+
+TEST_F(FeedApiTest, ManualRefreshFailsBecauseNetworkRequestFails) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
+            metrics_reporter_->load_stream_status);
+  std::string original_store_dump =
+      ModelStateFor(surface.GetStreamType(), store_.get());
+  EXPECT_STRINGS_EQUAL(
+      stream_->GetModel(surface.GetStreamType())->DumpStateForTesting(),
+      original_store_dump);
+
+  // Since we didn't inject a network response, the network update will fail.
+  // The store should not be updated.
+  CallbackReceiver<bool> callback;
+  stream_->ManualRefresh(surface, callback.Bind());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
+  EXPECT_EQ("cant-refresh", surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kProtoTranslationFailed,
+            metrics_reporter_->load_stream_status);
+  EXPECT_STRINGS_EQUAL(ModelStateFor(surface.GetStreamType(), store_.get()),
+                       original_store_dump);
+}
+
+TEST_F(FeedApiTest, ManualRefreshSuccessAfterUnload) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+
+  UnloadModel(surface.GetStreamType());
+  WaitForIdleTaskQueue();
+
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  CallbackReceiver<bool> callback;
+  stream_->ManualRefresh(surface, callback.Bind());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
+  EXPECT_EQ("3 slices", surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
+            metrics_reporter_->load_stream_status);
+  // Verify stored state is equivalent to in-memory model.
+  EXPECT_STRINGS_EQUAL(
+      stream_->GetModel(surface.GetStreamType())->DumpStateForTesting(),
+      ModelStateFor(kForYouStream, store_.get()));
+}
+
+TEST_F(FeedApiTest, ManualRefreshSuccessAfterPreviousLoadFailure) {
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ("loading -> cant-refresh", surface.DescribeUpdates());
+
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  CallbackReceiver<bool> callback;
+  stream_->ManualRefresh(surface, callback.Bind());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
+  EXPECT_EQ("no-cards -> 3 slices", surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
+            metrics_reporter_->load_stream_status);
+  // Verify stored state is equivalent to in-memory model.
+  EXPECT_STRINGS_EQUAL(
+      stream_->GetModel(surface.GetStreamType())->DumpStateForTesting(),
+      ModelStateFor(kForYouStream, store_.get()));
+}
+
+TEST_F(FeedApiTest, ManualRefreshFailesWhenLoadingInProgress) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  // Don't call WaitForIdleTaskQueue to finish the loading.
+
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  CallbackReceiver<bool> callback;
+  stream_->ManualRefresh(surface, callback.Bind());
+  WaitForIdleTaskQueue();
+  // Manual refresh should fail immediately when loading is still in progress.
+  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
+  // The initial loading should finish.
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
 }
 
 // Keep instantiations at the bottom.

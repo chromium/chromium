@@ -198,42 +198,45 @@ StreamModelUpdateRequestGenerator::~StreamModelUpdateRequestGenerator() =
     default;
 
 std::unique_ptr<StreamModelUpdateRequest>
-StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id) const {
+StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id,
+                                                 int num_cards) const {
   bool include_notice_card =
       (privacy_notice_fulfilled && first_cluster_id == 0);
 
   auto initial_update = std::make_unique<StreamModelUpdateRequest>();
-  const int i = first_cluster_id;
-  const int j = first_cluster_id + 1;
   initial_update->source =
       StreamModelUpdateRequest::Source::kInitialLoadFromStore;
-  initial_update->content.push_back(
-      include_notice_card ? MakeNoticeCardContent(i) : MakeContent(i));
-  initial_update->content.push_back(MakeContent(j));
+  initial_update->stream_structures = {MakeClearAll(), MakeStream()};
 
-  initial_update->stream_structures = {
-      MakeClearAll(),
-      MakeStream(),
-      include_notice_card ? MakeNoticeCardCluster(i, MakeRootId())
-                          : MakeCluster(i, MakeRootId()),
-      include_notice_card ? MakeNoticeCardContentNode(i, MakeClusterId(i))
-                          : MakeContentNode(i, MakeClusterId(i)),
-      MakeCluster(j, MakeRootId()),
-      MakeContentNode(j, MakeClusterId(j))};
+  for (int i = first_cluster_id; i < first_cluster_id + num_cards; ++i) {
+    if (include_notice_card && i == first_cluster_id) {
+      initial_update->content.push_back(MakeNoticeCardContent(i));
+      initial_update->stream_structures.push_back(
+          MakeNoticeCardCluster(i, MakeRootId()));
+      initial_update->stream_structures.push_back(
+          MakeNoticeCardContentNode(i, MakeClusterId(i)));
+    } else {
+      initial_update->content.push_back(MakeContent(i));
+      initial_update->stream_structures.push_back(MakeCluster(i, MakeRootId()));
+      initial_update->stream_structures.push_back(
+          MakeContentNode(i, MakeClusterId(i)));
+    }
+  }
 
-  initial_update->shared_states.push_back(MakeSharedState(i));
+  initial_update->shared_states.push_back(MakeSharedState(first_cluster_id));
   *initial_update->stream_data.mutable_content_id() = MakeRootId();
-  *initial_update->stream_data.add_shared_state_ids() = MakeSharedStateId(i);
+  *initial_update->stream_data.add_shared_state_ids() =
+      MakeSharedStateId(first_cluster_id);
   initial_update->stream_data.set_next_page_token("page-2");
   initial_update->stream_data.set_signed_in(signed_in);
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
 
-  initial_update->stream_data.add_content_ids(
-      initial_update->content[0].content_id().id());
-  initial_update->stream_data.add_content_ids(
-      initial_update->content[1].content_id().id());
+  for (int i = 0; i < num_cards; ++i) {
+    initial_update->stream_data.add_content_ids(
+        initial_update->content[i].content_id().id());
+  }
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;
@@ -285,6 +288,19 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
   generator.logging_enabled = logging_enabled;
   generator.privacy_notice_fulfilled = privacy_notice_fulfilled;
   return generator.MakeFirstPage(first_cluster_id);
+}
+
+std::unique_ptr<StreamModelUpdateRequest> MakeTypicalRefreshModelState(
+    int first_cluster_id,
+    base::Time last_added_time,
+    bool signed_in,
+    bool logging_enabled) {
+  StreamModelUpdateRequestGenerator generator;
+  generator.last_added_time = last_added_time;
+  generator.signed_in = signed_in;
+  generator.logging_enabled = logging_enabled;
+  generator.privacy_notice_fulfilled = false;
+  return generator.MakeFirstPage(first_cluster_id, /*num_cards=*/3);
 }
 
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(

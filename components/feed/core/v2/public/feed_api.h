@@ -82,6 +82,11 @@ class FeedApi {
   virtual void LoadMore(const FeedStreamSurface& surface,
                         base::OnceCallback<void(bool)> callback) = 0;
 
+  // Refresh the feed content by fetching the fresh content from the server.
+  // Calls |callback| when complete. If the fetch fails, the parameter is false.
+  virtual void ManualRefresh(const FeedStreamSurface& surface,
+                             base::OnceCallback<void(bool)> callback) = 0;
+
   // Request to fetch and image for use in the feed. Calls |callback|
   // with the network response when complete. The returned ImageFetchId can be
   // passed to CancelImageFetch() to cancel the request.

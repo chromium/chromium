@@ -24,6 +24,22 @@ enum class NetworkRequestType : int {
   kQueryNextPage = 10,
 };
 
+// Denotes how the stream content loading is used for.
+enum class LoadType {
+  // Loads the stream model into memory. If successful, this directly forces a
+  // model load in |FeedStream()| before completing the task.
+  kInitialLoad = 0,
+  // Loads additional content from the network when the model is already loaded.
+  kLoadMore = 1,
+  // Refreshes the stored stream data from the network, on the background. This
+  // will fail if the model is already loaded.
+  kBackgroundRefresh = 2,
+  // Refreshes the stored stream data from the network, per the user request.
+  // The stored stream data and the loaded model will not be affected if the
+  // network request fails.
+  kManualRefresh = 3,
+};
+
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

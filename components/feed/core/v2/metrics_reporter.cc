@@ -543,6 +543,7 @@ void MetricsReporter::OnLoadStream(
     const StreamType& stream_type,
     LoadStreamStatus load_from_store_status,
     LoadStreamStatus final_status,
+    bool is_initial_load,
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
     int content_count,
@@ -551,10 +552,14 @@ void MetricsReporter::OnLoadStream(
            << " final_status=" << final_status;
   load_latencies_ = std::move(load_latencies);
 
+  std::string load_type_name = is_initial_load ? "Initial" : "ManualRefresh";
   base::UmaHistogramEnumeration(
       base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
-                    "LoadStreamStatus.Initial"}),
+                    "LoadStreamStatus.", load_type_name}),
       final_status);
+  if (!is_initial_load)
+    return;
+
   if (load_from_store_status != LoadStreamStatus::kNoStatus) {
     base::UmaHistogramEnumeration(
         base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),

@@ -186,6 +186,7 @@ TEST_F(MetricsReporterTest, NewVisitAfterInactivity) {
 TEST_F(MetricsReporterTest, ReportsLoadStreamStatus) {
   reporter_->OnLoadStream(kForYouStream, LoadStreamStatus::kDataInStoreIsStale,
                           LoadStreamStatus::kLoadedFromNetwork,
+                          /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::TimeDelta::FromDays(5),
                           /*content_count=*/12,
@@ -204,6 +205,7 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatus) {
 TEST_F(MetricsReporterTest, WebFeed_ReportsLoadStreamStatus) {
   reporter_->OnLoadStream(kWebFeedStream, LoadStreamStatus::kDataInStoreIsStale,
                           LoadStreamStatus::kLoadedFromNetwork,
+                          /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::TimeDelta::FromDays(5),
                           /*content_count=*/12,
@@ -222,6 +224,7 @@ TEST_F(MetricsReporterTest, WebFeed_ReportsLoadStreamStatus) {
 TEST_F(MetricsReporterTest, OnLoadStreamDoesNotReportLoadedCardCountOnFailure) {
   reporter_->OnLoadStream(kForYouStream, LoadStreamStatus::kDataInStoreIsStale,
                           LoadStreamStatus::kDataInStoreIsExpired,
+                          /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/false,
                           /*stored_content_age=*/base::TimeDelta::FromDays(5),
                           /*content_count=*/12,
@@ -230,9 +233,30 @@ TEST_F(MetricsReporterTest, OnLoadStreamDoesNotReportLoadedCardCountOnFailure) {
   histogram_.ExpectTotalCount("ContentSuggestions.Feed.LoadedCardCount", 0);
 }
 
+TEST_F(MetricsReporterTest, ReportsLoadStreamStatusForManualRefresh) {
+  reporter_->OnLoadStream(kForYouStream, LoadStreamStatus::kDataInStoreIsStale,
+                          LoadStreamStatus::kLoadedFromNetwork,
+                          /*is_initial_load=*/false,
+                          /*loaded_new_content_from_network=*/true,
+                          /*stored_content_age=*/base::TimeDelta::FromDays(5),
+                          /*content_count=*/12,
+                          std::make_unique<LoadLatencyTimes>());
+
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.LoadStreamStatus.Initial",
+      LoadStreamStatus::kLoadedFromNetwork, 0);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.LoadStreamStatus.InitialFromStore",
+      LoadStreamStatus::kDataInStoreIsStale, 0);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.LoadStreamStatus.ManualRefresh",
+      LoadStreamStatus::kLoadedFromNetwork, 1);
+}
+
 TEST_F(MetricsReporterTest, ReportsLoadStreamStatusIgnoresNoStatusFromStore) {
   reporter_->OnLoadStream(kForYouStream, LoadStreamStatus::kNoStatus,
                           LoadStreamStatus::kLoadedFromNetwork,
+                          /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::TimeDelta(),
                           /*content_count=*/12,
@@ -243,11 +267,15 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatusIgnoresNoStatusFromStore) {
       LoadStreamStatus::kLoadedFromNetwork, 1);
   histogram_.ExpectTotalCount(
       "ContentSuggestions.Feed.LoadStreamStatus.InitialFromStore", 0);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.LoadStreamStatus.UserRefresh",
+      LoadStreamStatus::kLoadedFromNetwork, 0);
 }
 
 TEST_F(MetricsReporterTest, ReportsContentAgeBlockingRefresh) {
   reporter_->OnLoadStream(kForYouStream, LoadStreamStatus::kDataInStoreIsStale,
                           LoadStreamStatus::kLoadedFromNetwork,
+                          /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::TimeDelta::FromDays(5),
                           /*content_count=*/12,
@@ -261,6 +289,7 @@ TEST_F(MetricsReporterTest, ReportsContentAgeBlockingRefresh) {
 TEST_F(MetricsReporterTest, ReportsContentAgeNoRefresh) {
   reporter_->OnLoadStream(kForYouStream, LoadStreamStatus::kDataInStoreIsStale,
                           LoadStreamStatus::kLoadedFromStore,
+                          /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/false,
                           /*stored_content_age=*/base::TimeDelta::FromDays(5),
                           /*content_count=*/12,
@@ -274,12 +303,13 @@ TEST_F(MetricsReporterTest, ReportsContentAgeNoRefresh) {
 TEST_F(MetricsReporterTest, DoNotReportContentAgeWhenNotPositive) {
   reporter_->OnLoadStream(
       kForYouStream, LoadStreamStatus::kDataInStoreIsStale,
-      LoadStreamStatus::kLoadedFromStore,
+      LoadStreamStatus::kLoadedFromStore, /*is_initial_load=*/true,
       /*loaded_new_content_from_network=*/false,
       /*stored_content_age=*/-base::TimeDelta::FromSeconds(1),
       /*content_count=*/12, std::make_unique<LoadLatencyTimes>());
   reporter_->OnLoadStream(kForYouStream, LoadStreamStatus::kDataInStoreIsStale,
                           LoadStreamStatus::kLoadedFromStore,
+                          /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/false,
                           /*stored_content_age=*/base::TimeDelta(),
                           /*content_count=*/12,
@@ -299,6 +329,7 @@ TEST_F(MetricsReporterTest, ReportsLoadStepLatenciesOnFirstView) {
     latencies->StepComplete(LoadLatencyTimes::kUploadActions);
     reporter_->OnLoadStream(kForYouStream, LoadStreamStatus::kNoStatus,
                             LoadStreamStatus::kLoadedFromNetwork,
+                            /*is_initial_load=*/true,
                             /*loaded_new_content_from_network=*/true,
                             /*stored_content_age=*/base::TimeDelta(),
                             /*content_count=*/12, std::move(latencies));

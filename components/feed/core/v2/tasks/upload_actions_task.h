@@ -71,6 +71,7 @@ class UploadActionsTask : public offline_pages::Task {
   // Same as above, but reads pending actions and consistency token from the
   // store and uploads those.
   UploadActionsTask(FeedStream* stream,
+                    LaunchReliabilityLogger* launch_reliability_logger,
                     base::OnceCallback<void(Result)> callback);
 
   ~UploadActionsTask() override;

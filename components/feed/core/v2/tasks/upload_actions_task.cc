@@ -137,10 +137,12 @@ UploadActionsTask::UploadActionsTask(
 
 UploadActionsTask::UploadActionsTask(
     FeedStream* stream,
+    LaunchReliabilityLogger* launch_reliability_logger,
     base::OnceCallback<void(UploadActionsTask::Result)> callback)
     : stream_(*stream),
       read_pending_actions_(true),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      launch_reliability_logger_(launch_reliability_logger) {
   gaia_ = stream_.GetSyncSignedInGaia();
 }
 

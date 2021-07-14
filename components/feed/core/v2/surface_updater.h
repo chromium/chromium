@@ -49,7 +49,7 @@ class SurfaceUpdater : public StreamModel::Observer {
                     feedwire::DiscoverLaunchResult loading_not_allowed_reason);
   void SurfaceRemoved(FeedStreamSurface* surface);
   // Called to indicate the initial model load is in progress.
-  void LoadStreamStarted();
+  void LoadStreamStarted(bool manual_refreshing);
   void LoadStreamComplete(bool success,
                           LoadStreamStatus load_stream_status,
                           feedwire::DiscoverLaunchResult launch_result);

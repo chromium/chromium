@@ -32,7 +32,6 @@
 
 namespace feed {
 namespace {
-using LoadType = LoadStreamTask::LoadType;
 using Result = LoadStreamTask::Result;
 
 feedwire::FeedQuery::RequestReason GetRequestReason(
@@ -40,6 +39,7 @@ feedwire::FeedQuery::RequestReason GetRequestReason(
     LoadType load_type) {
   switch (load_type) {
     case LoadType::kInitialLoad:
+    case LoadType::kManualRefresh:
       return stream_type.IsForYou() ? feedwire::FeedQuery::MANUAL_REFRESH
                                     : feedwire::FeedQuery::INTERACTIVE_WEB_FEED;
     case LoadType::kBackgroundRefresh:
@@ -48,6 +48,9 @@ feedwire::FeedQuery::RequestReason GetRequestReason(
                  // TODO(b/185848601): Switch back to PREFETCHED_WEB_FEED when
                  // the server supports it.
                  : feedwire::FeedQuery::INTERACTIVE_WEB_FEED;
+    case LoadType::kLoadMore:
+      NOTREACHED();
+      return feedwire::FeedQuery::MANUAL_REFRESH;
   }
 }
 
@@ -69,6 +72,7 @@ LoadStreamTask::LoadStreamTask(const Options& options,
       launch_reliability_logger_(
           stream_.GetLaunchReliabilityLogger(options.stream_type)) {
   DCHECK(options.stream_type.IsValid()) << "A stream type must be chosen";
+  DCHECK(options.load_type != LoadType::kLoadMore);
   latencies_ = std::make_unique<LoadLatencyTimes>();
 }
 
@@ -105,7 +109,7 @@ bool LoadStreamTask::CheckPreconditions() {
 
   // First, ensure we still should load the model.
   LaunchResult should_not_attempt_reason =
-      stream_.ShouldAttemptLoad(options_.stream_type,
+      stream_.ShouldAttemptLoad(options_.stream_type, options_.load_type,
                                 /*model_loading=*/true);
   if (should_not_attempt_reason.load_stream_status !=
       LoadStreamStatus::kNoStatus) {
@@ -144,6 +148,14 @@ void LoadStreamTask::ResumeAtStart() {
 
 void LoadStreamTask::PassedPreconditions() {
   launch_reliability_logger_.LogCacheReadStart();
+
+  if (options_.load_type == LoadType::kManualRefresh) {
+    std::vector<feedstore::StoredAction> empty_pending_actions;
+    LoadFromNetwork(std::move(empty_pending_actions),
+                    /*need_to_read_pending_actions=*/true);
+    return;
+  }
+
   // Use |kLoadNoContent| to short-circuit loading from store if we don't
   // need the full stream state.
   auto load_from_store_type =
@@ -185,15 +197,34 @@ void LoadStreamTask::LoadFromStoreComplete(
     stale_store_state_ = std::move(result.update_request);
   }
 
-  LaunchResult should_make_request =
-      stream_.ShouldMakeFeedQueryRequest(options_.stream_type);
+  LoadFromNetwork(std::move(result.pending_actions),
+                  /*need_to_read_pending_actions=*/false);
+}
+
+void LoadStreamTask::LoadFromNetwork(
+    std::vector<feedstore::StoredAction> pending_actions_from_store,
+    bool need_to_read_pending_actions) {
+  // Don't consume quota if refreshed by user.
+  LaunchResult should_make_request = stream_.ShouldMakeFeedQueryRequest(
+      options_.stream_type, options_.load_type,
+      /*consume_quota=*/options_.load_type != LoadType::kManualRefresh);
   if (should_make_request.load_stream_status != LoadStreamStatus::kNoStatus)
     return Done(should_make_request);
 
   // If making a request, first try to upload pending actions.
-  upload_actions_task_ = std::make_unique<UploadActionsTask>(
-      std::move(result.pending_actions), &stream_, &launch_reliability_logger_,
-      base::BindOnce(&LoadStreamTask::UploadActionsComplete, GetWeakPtr()));
+  if (!need_to_read_pending_actions) {
+    // If pending actions are read from the store, pass them for uploading.
+    upload_actions_task_ = std::make_unique<UploadActionsTask>(
+        std::move(pending_actions_from_store), &stream_,
+        &launch_reliability_logger_,
+        base::BindOnce(&LoadStreamTask::UploadActionsComplete, GetWeakPtr()));
+  } else {
+    // Otherwise, no pending action can't be passed. We will read them from
+    // the store and upload them.
+    upload_actions_task_ = std::make_unique<UploadActionsTask>(
+        &stream_, &launch_reliability_logger_,
+        base::BindOnce(&LoadStreamTask::UploadActionsComplete, GetWeakPtr()));
+  }
   upload_actions_task_->Execute(base::DoNothing());
 }
 
@@ -231,6 +262,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
     // Query*FeedDiscoverApi.
     switch (options_.load_type) {
       case LoadType::kInitialLoad:
+      case LoadType::kManualRefresh:
         network.SendApiRequest<QueryInteractiveFeedDiscoverApi>(
             request, gaia,
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
@@ -241,6 +273,9 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
             request, gaia,
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
                            GetWeakPtr()));
+        break;
+      case LoadType::kLoadMore:
+        NOTREACHED();
         break;
     }
   } else {
@@ -269,8 +304,6 @@ void LoadStreamTask::ProcessNetworkResponse(
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
   launch_reliability_logger_.LogRequestSent(
       network_request_id_, response_info.loader_start_time_ticks);
-
-  DCHECK(!stream_.GetModel(options_.stream_type));
 
   network_response_info_ = response_info;
 

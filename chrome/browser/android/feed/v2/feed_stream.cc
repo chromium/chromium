@@ -104,9 +104,15 @@ void FeedStream::LoadMore(JNIEnv* env,
                             ScopedJavaGlobalRef<jobject>(callback_obj)));
 }
 
-void FeedStream::Refresh(JNIEnv* env,
-                         const JavaParamRef<jobject>& obj,
-                         const JavaParamRef<jobject>& callback_obj) {}
+void FeedStream::ManualRefresh(JNIEnv* env,
+                               const JavaParamRef<jobject>& obj,
+                               const JavaParamRef<jobject>& callback_obj) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ManualRefresh(
+      *this, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                            ScopedJavaGlobalRef<jobject>(callback_obj)));
+}
 
 void FeedStream::ProcessThereAndBackAgain(
     JNIEnv* env,

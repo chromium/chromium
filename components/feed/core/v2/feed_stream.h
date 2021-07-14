@@ -110,6 +110,8 @@ class FeedStream : public FeedApi,
   PersistentKeyValueStoreImpl& GetPersistentKeyValueStore() override;
   void LoadMore(const FeedStreamSurface& surface,
                 base::OnceCallback<void(bool)> callback) override;
+  void ManualRefresh(const FeedStreamSurface& surface,
+                     base::OnceCallback<void(bool)> callback) override;
   void ExecuteOperations(
       const StreamType& stream_type,
       std::vector<feedstore::DataOperation> operations) override;
@@ -209,6 +211,7 @@ class FeedStream : public FeedApi,
   // Determines if we should attempt loading the stream or refreshing at all.
   // Returns |LoadStreamStatus::kNoStatus| if loading may be attempted.
   LaunchResult ShouldAttemptLoad(const StreamType& stream_type,
+                                 LoadType load_type,
                                  bool model_loading = false);
 
   // Whether the last scheduled refresh was missed.
@@ -220,7 +223,7 @@ class FeedStream : public FeedApi,
   // consumed. This can be used to predict the likely result on a subsequent
   // call.
   LaunchResult ShouldMakeFeedQueryRequest(const StreamType& stream_type,
-                                          bool is_load_more = false,
+                                          LoadType load_type,
                                           bool consume_quota = true);
 
   // Returns true if a FeedQuery request made right now should be made without
@@ -306,6 +309,7 @@ class FeedStream : public FeedApi,
     ContentIdSet content_ids;
     std::vector<UnreadContentNotifier> unread_content_notifiers;
     std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks;
+    std::vector<base::OnceCallback<void(bool)>> refresh_complete_callbacks;
     bool is_activity_logging_enabled = false;
   };
 
@@ -328,7 +332,7 @@ class FeedStream : public FeedApi,
                                               int sequence_number);
   void UnloadModelIfNoSurfacesAttachedTask(const StreamType& stream_type);
 
-  void InitialStreamLoadComplete(LoadStreamTask::Result result);
+  void StreamLoadComplete(LoadStreamTask::Result result);
   void LoadMoreComplete(LoadMoreTask::Result result);
   void BackgroundRefreshComplete(LoadStreamTask::Result result);
   void LoadTaskComplete(const LoadStreamTask::Result& result);
