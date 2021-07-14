@@ -484,6 +484,17 @@ export class PluginController {
   }
 
   /**
+   * An event handler for handling message events received from the Unseasoned
+   * PDF plugin.
+   * TODO(crbug.com/1228987): Remove this method when a permanent postMessage()
+   * bridge is implemented for the Unseasoned viewer.
+   * @param {!Event} messageEvent a message event.
+   */
+  handleMessageForUnseasoned(messageEvent) {
+    this.handlePluginMessage_(messageEvent);
+  }
+
+  /**
    * An event handler for handling message events received from the plugin.
    * @param {!Event} messageEvent a message event.
    * @private

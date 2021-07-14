@@ -27,6 +27,10 @@ namespace pdf {
 namespace {
 
 std::string GenerateResponse(const GURL& source_url, const GURL& original_url) {
+  // TODO(crbug.com/1228987): This script in this response is never executed
+  // when JavaScript is blocked throughout the browser (set in
+  // chrome://settings/content/javascript). A permanent solution would likely
+  // have to hook into postMessage() natively.
   static constexpr char kResponseTemplate[] = R"(<!DOCTYPE html>
 <style>
 body,
@@ -38,10 +42,22 @@ html {
 }
 </style>
 <embed type="application/x-google-chrome-pdf" src="$1" original-url="$2">
+<script>
+const channel = new MessageChannel();
+const plugin = document.querySelector('embed');
+
+plugin.addEventListener('message', e => channel.port1.postMessage(e.data));
+channel.port1.onmessage = e => plugin.postMessage(e.data);
+
+window.parent.postMessage(
+    {type: 'connect', token: plugin.getAttribute('src')}, '$3',
+    [channel.port2]);
+</script>
 )";
 
   return base::ReplaceStringPlaceholders(
-      kResponseTemplate, {source_url.spec(), original_url.spec()},
+      kResponseTemplate,
+      {source_url.spec(), original_url.spec(), source_url.GetOrigin().spec()},
       /*offsets=*/nullptr);
 }
 

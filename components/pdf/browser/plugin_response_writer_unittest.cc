@@ -143,6 +143,7 @@ TEST_F(PluginResponseWriterTest, Start) {
               HasSubstr("src=\"chrome-extension://id/stream-url\""));
   EXPECT_THAT(body_drainer_->content(),
               HasSubstr("original-url=\"https://example.test/fake.pdf\""));
+  EXPECT_THAT(body_drainer_->content(), HasSubstr("'chrome-extension://id/'"));
 }
 
 TEST_F(PluginResponseWriterTest, StartWithUnescapedUrls) {
@@ -166,6 +167,31 @@ TEST_F(PluginResponseWriterTest, StartWithUnescapedUrls) {
               HasSubstr("src=\"chrome-extension://id/stream-url%22\""));
   EXPECT_THAT(body_drainer_->content(),
               HasSubstr("original-url=\"https://example.test/%22fake.pdf\""));
+  EXPECT_THAT(body_drainer_->content(), HasSubstr("'chrome-extension://id/'"));
+}
+
+TEST_F(PluginResponseWriterTest, StartForPrintPreview) {
+  auto response_writer =
+      NewPluginResponseWriter(GURL("chrome://print/1/0/print.pdf"),
+                              GURL("chrome://print/1/0/print.pdf"));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_client_, OnComplete).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+  response_writer->Start(base::DoNothing());
+  run_loop.Run();
+
+  // Waiting for `URLLoaderClient::OnComplete()` ensures `body_drainer_` is set,
+  // but the data pipe may still have unread data.
+  ASSERT_TRUE(body_drainer_);
+  body_drainer_->WaitComplete();
+
+  EXPECT_THAT(body_drainer_->content(),
+              HasSubstr("src=\"chrome://print/1/0/print.pdf\""));
+  EXPECT_THAT(body_drainer_->content(),
+              HasSubstr("original-url=\"chrome://print/1/0/print.pdf\""));
+  EXPECT_THAT(body_drainer_->content(), HasSubstr("'chrome://print/'"));
 }
 
 }  // namespace pdf

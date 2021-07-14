@@ -1028,6 +1028,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerPropertiesDialog) {
   RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, PostMessageProxy) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("post_message_proxy_test.js", "test.pdf");
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Printing) {
   RunTestsInJsModule("printing_icon_test.js", "test.pdf");

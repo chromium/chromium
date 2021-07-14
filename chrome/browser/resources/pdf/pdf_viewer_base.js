@@ -374,6 +374,21 @@ export class PDFViewerBaseElement extends PolymerElement {
    * @param {!MessageObject} message The message to handle.
    */
   handleScriptingMessage(message) {
+    // TODO(crbug.com/1228987): Remove this message handler when a permanent
+    // postMessage() bridge is implemented for the Unseasoned viewer.
+    if (message.data.type === 'connect') {
+      const token = /** @type {!{token: string}} */ (message.data).token;
+      if (token === this.browserApi.getStreamInfo().streamUrl) {
+        const port = message.ports[0];
+        this.plugin_.postMessage = m => port.postMessage(m);
+        port.onmessage = e =>
+            PluginController.getInstance().handleMessageForUnseasoned(e);
+      } else {
+        this.dispatchEvent(new CustomEvent('connection-denied-for-testing'));
+      }
+      return;
+    }
+
     if (this.parentWindow_ !== message.source) {
       this.parentWindow_ = message.source;
       this.parentOrigin_ = message.origin;
