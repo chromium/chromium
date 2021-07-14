@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -92,7 +93,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
         super(host, contentContainer, tabContentManagerSupplier, layerTitleCacheSupplier,
                 topUiThemeColorProvider);
         Context context = host.getContext();
@@ -123,7 +124,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 assert tabManagementDelegate != null;
 
                 mOverviewLayout = tabManagementDelegate.createStartSurfaceLayout(
-                        context, this, renderHost, startSurface);
+                        context, this, renderHost, startSurface, jankTracker);
             }
         }
 

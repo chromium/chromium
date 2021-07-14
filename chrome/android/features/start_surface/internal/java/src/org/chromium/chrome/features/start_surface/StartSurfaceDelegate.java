@@ -37,8 +37,8 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 /** StartSurfaceDelegate. */
 public class StartSurfaceDelegate {
     public static Layout createStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface) {
-        return new StartSurfaceLayout(context, updateHost, renderHost, startSurface);
+            LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker) {
+        return new StartSurfaceLayout(context, updateHost, renderHost, startSurface, jankTracker);
     }
 
     /** {@see StartSurfaceCoordinator} */

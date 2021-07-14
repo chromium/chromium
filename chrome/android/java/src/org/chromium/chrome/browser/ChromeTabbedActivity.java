@@ -672,7 +672,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         return getCompositorViewHolder().getLayerTitleCache();
                     },
                     mOverviewModeBehaviorSupplier,
-                    mRootUiCoordinator::getTopUiThemeColorProvider);
+                    mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker);
             mLayoutStateProviderOneshotSupplier.set(mLayoutManager);
             // clang-format on
             mOverviewModeController = mLayoutManager;
@@ -692,7 +692,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         return getCompositorViewHolder().getLayerTitleCache();
                     },
                     mOverviewModeBehaviorSupplier,
-                    mRootUiCoordinator::getTopUiThemeColorProvider);
+                    mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker);
             mLayoutStateProviderOneshotSupplier.set(mLayoutManager);
             // clang-format on
             mOverviewModeController = mLayoutManager;

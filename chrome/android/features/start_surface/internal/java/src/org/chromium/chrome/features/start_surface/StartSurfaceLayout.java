@@ -18,6 +18,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
+import org.chromium.base.jank_tracker.JankScenario;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -67,6 +69,7 @@ public class StartSurfaceLayout extends Layout {
 
     private TabListSceneLayer mSceneLayer;
     private final StartSurface mStartSurface;
+    private final JankTracker mJankTracker;
     private final StartSurface.Controller mController;
     private final StartSurface.OverviewModeObserver mStartSurfaceObserver;
     // Always use getGridTabListDelegate() instead to make sure it's not null.
@@ -99,13 +102,14 @@ public class StartSurfaceLayout extends Layout {
     private PerfListener mPerfListenerForTesting;
 
     public StartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface) {
+            LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker) {
         super(context, updateHost, renderHost);
         mDummyLayoutTab = createLayoutTab(Tab.INVALID_TAB_ID, false, false, false);
         mDummyLayoutTab.setShowToolbar(true);
         mStartSurface = startSurface;
         mStartSurface.setOnTabSelectingListener(this::onTabSelecting);
         mController = mStartSurface.getController();
+        mJankTracker = jankTracker;
 
         mStartSurfaceObserver = new StartSurface.OverviewModeObserver() {
             @Override
@@ -199,6 +203,12 @@ public class StartSurfaceLayout extends Layout {
     @Override
     public void show(long time, boolean animate) {
         super.show(time, animate);
+
+        // When shown on StartSurface jank is tracked under JankScenario.START_SURFACE_TAB_SWITCHER
+        // and it's started/stopped on StartSurfaceMediator.
+        if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+            mJankTracker.startTrackingScenario(JankScenario.TAB_SWITCHER);
+        }
 
         // Lazy initialization if needed.
         mStartSurface.initialize();
@@ -295,6 +305,11 @@ public class StartSurfaceLayout extends Layout {
         super.doneHiding();
         mStartSurface.onHide();
         RecordUserAction.record("MobileExitStackView");
+        // When shown on StartSurface jank is tracked under JankScenario.START_SURFACE_TAB_SWITCHER
+        // and it's started/stopped on StartSurfaceMediator.
+        if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+            mJankTracker.finishTrackingScenario(JankScenario.TAB_SWITCHER);
+        }
     }
 
     @Override

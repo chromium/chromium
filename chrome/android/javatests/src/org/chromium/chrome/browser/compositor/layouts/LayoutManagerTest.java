@@ -42,6 +42,7 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.UiThreadTest;
@@ -214,7 +215,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
         mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container, mStartSurface,
                 tabContentManagerSupplier, null, overviewModeBehaviorSupplier,
-                () -> mTopUiThemeColorProvider);
+                () -> mTopUiThemeColorProvider, new DummyJankTracker());
         verify(mStartSurfaceController)
                 .addOverviewModeObserver(mStartSurfaceOverviewModeCaptor.capture());
 

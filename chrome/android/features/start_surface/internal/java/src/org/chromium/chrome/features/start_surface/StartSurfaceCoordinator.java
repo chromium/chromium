@@ -194,6 +194,7 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param tabCreatorManager Manages {@link Tab} creation.
      * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
+     * @param jankTracker Measures jank while feed or tab switcher are visible.
      */
     public StartSurfaceCoordinator(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,

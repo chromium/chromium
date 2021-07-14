@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.layouts;
 import android.content.Context;
 import android.view.ViewGroup;
 
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -48,9 +49,10 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
         super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
-                layerTitleCacheSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider);
+                layerTitleCacheSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider,
+                jankTracker);
     }
 
     @Override

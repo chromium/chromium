@@ -209,7 +209,7 @@ public interface TabManagementDelegate {
      * @return The {@link StartSurfaceLayout}.
      */
     Layout createStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface);
+            LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker);
 
     /**
      * Create the {@link StartSurface}
@@ -238,6 +238,7 @@ public interface TabManagementDelegate {
      * @param tabCreatorManger Manages creation of tabs.
      * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
+     * @param jankTracker Measures jank while tab switcher is visible.
      * @return the {@link StartSurface}
      */
     StartSurface createStartSurface(@NonNull Activity activity,
