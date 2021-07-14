@@ -8,40 +8,30 @@
 
 import './download_item.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 
+import {DownloadItemElement} from './download_item.js';
 import {DownloadItem} from './download_shelf.mojom-webui.js';
 import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
-
-/** @type {number} */
-const PROGRESS_UPDATE_INTERVAL = 500;
 
 export class DownloadListElement extends CustomElement {
   static get template() {
     return `{__html_template__}`;
   }
 
+  private elements_: Array<DownloadItemElement> = [];
+  private items_: Array<DownloadItem> = [];
+  private apiProxy_: DownloadShelfApiProxy;
+  private listElement_: HTMLElement;
+  private listenerIds_: Array<number> = [];
+  private resizeObserver_: ResizeObserver;
+
   constructor() {
     super();
 
-    /** @private {!Array} */
-    this.elements_ = [];
-
-    /** @private {!Array<!DownloadItem>} */
-    this.items_ = [];
-
-    /** @private {!DownloadShelfApiProxy} */
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
-
-    /** @private {!Element} */
-    this.listElement_ = assert(this.$('#download-list'));
-
-    /** @private {!Array<number>} */
-    this.listenerIds_ = [];
-
-    /** @private {ResizeObserver} */
+    this.listElement_ = this.$('#download-list') as HTMLElement;
     this.resizeObserver_ = new ResizeObserver(() => this.updateElements_());
     this.resizeObserver_.observe(this.listElement_);
 
@@ -58,31 +48,32 @@ export class DownloadListElement extends CustomElement {
     });
   }
 
-  /** @private */
-  addDownloadListeners_() {
+  private addDownloadListeners_(): void {
     const callbackRouter = this.apiProxy_.getCallbackRouter();
 
     // Triggers for downloads other than the first one, as the page handler will
     // not be ready by the first download.
     this.listenerIds_.push(
-        callbackRouter.onNewDownload.addListener((downloadItem) => {
-          this.items_.unshift(downloadItem);
-          this.updateElements_();
-          this.recordDownloadPaintTime_(
-              downloadItem.showDownloadStartTime, false);
-        }),
-        callbackRouter.onDownloadUpdated.addListener((downloadItem) => {
-          const index =
-              this.items_.findIndex(item => item.id === downloadItem.id);
-          if (index >= 0) {
-            this.items_[index] = downloadItem;
-            const element = this.elements_[index];
-            if (element) {
-              element.onDownloadUpdated(downloadItem);
-            }
-          }
-        }),
-        callbackRouter.onDownloadErased.addListener((downloadId) => {
+        callbackRouter.onNewDownload.addListener(
+            (downloadItem: DownloadItem) => {
+              this.items_.unshift(downloadItem);
+              this.updateElements_();
+              this.recordDownloadPaintTime_(
+                  downloadItem.showDownloadStartTime, false);
+            }),
+        callbackRouter.onDownloadUpdated.addListener(
+            (downloadItem: DownloadItem) => {
+              const index =
+                  this.items_.findIndex(item => item.id === downloadItem.id);
+              if (index >= 0) {
+                this.items_[index] = downloadItem;
+                const element = this.elements_[index];
+                if (element) {
+                  element.onDownloadUpdated(downloadItem);
+                }
+              }
+            }),
+        callbackRouter.onDownloadErased.addListener((downloadId: number) => {
           const index = this.items_.findIndex(item => item.id === downloadId);
           if (index >= 0) {
             this.items_.splice(index, 1);
@@ -92,7 +83,7 @@ export class DownloadListElement extends CustomElement {
             }
           }
         }),
-        callbackRouter.onDownloadOpened.addListener((downloadId) => {
+        callbackRouter.onDownloadOpened.addListener((downloadId: number) => {
           const element =
               this.elements_.find(element => element.item.id === downloadId);
           if (element) {
@@ -106,11 +97,8 @@ export class DownloadListElement extends CustomElement {
         }));
   }
 
-  /**
-   * @param {boolean} firstCall Whether this is the first call to the method.
-   * @private
-   */
-  getDownloads_(firstCall) {
+  /** @param firstCall Whether this is the first call to the method. */
+  private getDownloads_(firstCall: boolean) {
     this.apiProxy_.getDownloads().then(({downloadItems}) => {
       this.items_ = downloadItems;
 
@@ -132,8 +120,7 @@ export class DownloadListElement extends CustomElement {
     });
   }
 
-  /** @private */
-  clear_() {
+  private clear_() {
     while (this.listenerIds_.length) {
       this.apiProxy_.getCallbackRouter().removeListener(
           this.listenerIds_.shift());
@@ -148,13 +135,13 @@ export class DownloadListElement extends CustomElement {
   }
 
   /**
-   * @param {number} startTime The Unix time at which DoShowDownload() was
+   * @param startTime The Unix time at which DoShowDownload() was
    *     called on the download shelf. See:
    *     chrome/browser/ui/webui/download_shelf/download_shelf_ui.h
-   * @param {boolean} isFirstDownload
-   * @private
+   * @param isFirstDownload
    */
-  recordDownloadPaintTime_(startTime, isFirstDownload) {
+  private recordDownloadPaintTime_(
+      startTime: number, isFirstDownload: boolean) {
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
         const elapsedTime = Math.round(Date.now() - startTime);
@@ -166,8 +153,7 @@ export class DownloadListElement extends CustomElement {
     });
   }
 
-  /** @private */
-  updateElements_() {
+  private updateElements_() {
     const containerWidth = this.listElement_.offsetWidth;
     let currentWidth = 0;
     const itemCount = this.items_.length;
@@ -183,7 +169,7 @@ export class DownloadListElement extends CustomElement {
         }
         break;
       }
-      let downloadElement;
+      let downloadElement: DownloadItemElement;
       if (i < elementCount) /** Update existing elements inside viewport. */ {
         downloadElement = this.elements_[i];
         downloadElement.item = this.items_[i];
@@ -209,9 +195,8 @@ export class DownloadListElement extends CustomElement {
   /**
    * If all items are opened, automatically close the download shelf
    * when the mouse leaves the download shelf after some delay.
-   * @private
    */
-  autoClose_() {
+  private autoClose_() {
     if (this.elements_.every(element => element.opened)) {
       listenOnce(this, 'mouseleave', () => {
         setTimeout(() => {
@@ -225,3 +210,9 @@ export class DownloadListElement extends CustomElement {
 }
 
 customElements.define('download-list', DownloadListElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'download-list': DownloadListElement;
+  }
+}

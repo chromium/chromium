@@ -19,19 +19,21 @@ export class DownloadShelfAppElement extends CustomElement {
     return `{__html_template__}`;
   }
 
+  private apiProxy_: DownloadShelfApiProxy;
+
   constructor() {
     super();
 
     /** @private {!DownloadShelfApiProxy} */
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
 
-    const showAllButton = this.$('#show-all-button');
+    const showAllButton = this.$('#show-all-button') as HTMLElement;
     showAllButton.innerText = loadTimeData.getString('showAll');
-    showAllButton.addEventListener('click', e => this.onShowAll_());
+    showAllButton.addEventListener('click', () => this.onShowAll_());
 
     const closeButton = this.$('#close-button');
     closeButton.setAttribute('aria-label', loadTimeData.getString('close'));
-    closeButton.addEventListener('click', e => this.onClose_());
+    closeButton.addEventListener('click', () => this.onClose_());
   }
 
   /** @private */

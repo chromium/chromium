@@ -14,51 +14,45 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {DangerType, DownloadItem, DownloadMode, DownloadState, MixedContentStatus} from './download_shelf.mojom-webui.js';
+import {DownloadItem, DownloadMode, DownloadState} from './download_shelf.mojom-webui.js';
 import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
 
-/** @enum {string} */
-const DisplayMode = {
+enum DisplayMode {
   // Shows icon + filename + context menu button.
-  kNormal: 'normal',
+  kNormal = 'normal',
   // Shows icon + warning text + discard button + context menu button.
-  kWarn: 'warn',
+  kWarn = 'warn',
   // Shows icon + warning text + keep button + discard button.
-  kWarnKeep: 'warn-keep'
-};
+  kWarnKeep = 'warn-keep',
+}
 
 export class DownloadItemElement extends CustomElement {
   static get template() {
     return `{__html_template__}`;
   }
 
+  private item_: DownloadItem;
+  private downloadUpdated_: boolean = false;
+  private opening_: boolean = false;
+  opened: boolean;
+  private apiProxy_: DownloadShelfApiProxy;
+
+
   constructor() {
     super();
 
-    /** @private {DownloadItem} */
-    this.item_;
-
-    /** @private {boolean} */
-    this.downloadUpdated_ = false;
-
-    /** @private {boolean} */
-    this.opening_ = false;
-
-    /** @property {boolean} */
     this.opened = false;
-
-    /** @private {!DownloadShelfApiProxy} */
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
 
     this.$('#shadow-mask')
-        .addEventListener('click', e => this.onOpenButtonClick_(e));
+        .addEventListener('click', () => this.onOpenButtonClick_());
     this.$('#dropdown-button')
         .addEventListener('click', e => this.onDropdownButtonClick_(e));
-    const discardButton = this.$('#discard-button');
+    const discardButton = this.$('#discard-button') as HTMLElement;
     discardButton.innerText = loadTimeData.getString('discardButtonText');
-    discardButton.addEventListener('click', e => this.onDiscardButtonClick_(e));
+    discardButton.addEventListener('click', () => this.onDiscardButtonClick_());
     this.$('#keep-button')
-        .addEventListener('click', e => this.onKeepButtonClick_(e));
+        .addEventListener('click', () => this.onKeepButtonClick_());
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
 
     this.$('.progress-indicator').addEventListener('animationend', () => {
@@ -67,15 +61,13 @@ export class DownloadItemElement extends CustomElement {
     });
   }
 
-  /** @param {DownloadItem} item */
-  onDownloadUpdated(item) {
+  onDownloadUpdated(item: DownloadItem) {
     this.downloadUpdated_ = true;
     this.item_ = item;
     this.update_();
   }
 
-  /** @param {DownloadItem} value */
-  set item(value) {
+  set item(value: DownloadItem) {
     if (this.item_ === value) {
       return;
     }
@@ -83,16 +75,11 @@ export class DownloadItemElement extends CustomElement {
     this.update_();
   }
 
-  /** @return {DownloadItem} */
-  get item() {
+  get item(): DownloadItem {
     return this.item_;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  get clampedWarningText_() {
+  private get clampedWarningText_(): string {
     // Views uses ui/gfx/text_elider.cc to elide text given a maximum width.
     // For simplicity, we instead elide text by restricting text length.
     const maxFilenameLength = 19;
@@ -107,35 +94,33 @@ export class DownloadItemElement extends CustomElement {
         filename, this.elideFilename_(filename, maxFilenameLength));
   }
 
-  /** @param {boolean} value */
-  set opening(value) {
+  set opening(value: boolean) {
     if (this.opening_ !== value) {
       this.opening_ = value;
       this.update_();
     }
   }
 
-  /** @private */
-  update_() {
+  private update_() {
     const item = this.item_;
     if (!item) {
       return;
     }
-    const downloadElement = this.$('.download-item');
+    const downloadElement = this.$('.download-item') as HTMLElement;
     const filePath = item.fileNameDisplayString;
     let fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
     if (this.opening_) {
       fileName = loadTimeData.getStringF('downloadStatusOpeningText', fileName);
     }
-    this.$('#filename').innerText = fileName;
+    (this.$('#filename') as HTMLElement).innerText = fileName;
 
-    const statusTextElement = this.$('#status-text');
+    const statusTextElement = this.$('#status-text') as HTMLElement;
     const statusText = (!item.shouldPromoteOrigin || !item.originalUrl.url) ?
         item.statusText :
         new URL(item.originalUrl.url).origin;
     statusTextElement.innerText = statusText;
 
-    downloadElement.dataset.state = item.state;
+    downloadElement.dataset['state'] = item.state.toString();
     if (item.mode === DownloadMode.kNormal) {
       switch (item.state) {
         case DownloadState.kInProgress:
@@ -158,70 +143,66 @@ export class DownloadItemElement extends CustomElement {
     }
 
     if (item.isPaused) {
-      downloadElement.dataset.paused = true;
+      downloadElement.dataset['paused'] = 'true';
     } else {
-      delete downloadElement.dataset.paused;
+      delete downloadElement.dataset['paused'];
     }
 
     this.apiProxy_.getFileIcon(item.id).then(icon => {
-      this.$('#file-icon').src = icon;
+      (this.$('#file-icon') as HTMLImageElement).src = icon;
     });
 
     if (item.mode === DownloadMode.kNormal) {
-      downloadElement.dataset.displayMode = DisplayMode.kNormal;
+      downloadElement.dataset['displayMode'] = DisplayMode.kNormal;
     } else if (
         item.mode === DownloadMode.kDangerous ||
         item.mode === DownloadMode.kMixedContentWarn) {
-      downloadElement.dataset.displayMode = DisplayMode.kWarnKeep;
+      downloadElement.dataset['displayMode'] = DisplayMode.kWarnKeep;
     } else {
-      downloadElement.dataset.displayMode = DisplayMode.kWarn;
+      downloadElement.dataset['displayMode'] = DisplayMode.kWarn;
     }
 
-    this.$('#keep-button').innerText = item.warningConfirmButtonText;
-    this.$('#warning-text').innerText = this.clampedWarningText_;
+    (this.$('#keep-button') as HTMLElement).innerText =
+        item.warningConfirmButtonText;
+    (this.$('#warning-text') as HTMLElement).innerText =
+        this.clampedWarningText_;
 
     this.downloadUpdated_ = false;
   }
 
-  /** @param {number} value */
-  set progress(value) {
-    this.$('.progress')
+  set progress(value: number) {
+    (this.$('.progress') as HTMLElement)
         .style.setProperty('--download-progress', value.toString());
   }
 
-  /** @param {!Event} e */
-  onContextMenu_(e) {
+  private onContextMenu_(e: MouseEvent) {
     this.apiProxy_.showContextMenu(
         this.item.id, e.clientX, e.clientY, Date.now());
   }
 
-  /** @param {!Event} e */
-  onDropdownButtonClick_(e) {
+  private onDropdownButtonClick_(e: Event) {
     // TODO(crbug.com/1182529): Switch to down caret icon when context menu is
     // open.
-    const rect = e.target.getBoundingClientRect();
+    const rect = (e.target as Element).getBoundingClientRect();
     this.apiProxy_.showContextMenu(
         this.item.id, rect.left, rect.top, Date.now());
   }
 
-  /** @param {!Event} e */
-  onDiscardButtonClick_(e) {
+  private onDiscardButtonClick_() {
     this.apiProxy_.discardDownload(this.item.id);
   }
 
-  /** @param {!Event} e */
-  onKeepButtonClick_(e) {
+  private onKeepButtonClick_() {
     this.apiProxy_.keepDownload(this.item.id);
   }
 
   /**
    * Elide a filename to a maximum length.
    * The extension of the filename will be kept if it has one.
-   * @param {string} s A filename.
-   * @param {number} maxlen The maximum length after elided.
-   * @private
+   * @param s A filename.
+   * @param maxlen The maximum length after elided.
    */
-  elideFilename_(s, maxlen) {
+  private elideFilename_(s: string, maxlen: number): string {
     assert(maxlen > 6);
 
     if (s.length <= maxlen) {
@@ -238,8 +219,7 @@ export class DownloadItemElement extends CustomElement {
     }
   }
 
-  /** @param {!Event} e */
-  onOpenButtonClick_(e) {
+  private onOpenButtonClick_() {
     if (this.opening_) {
       return;
     }
@@ -252,3 +232,9 @@ export class DownloadItemElement extends CustomElement {
 }
 
 customElements.define('download-item', DownloadItemElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'download-item': DownloadItemElement;
+  }
+}

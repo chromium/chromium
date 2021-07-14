@@ -55,7 +55,7 @@ suite('DownloadListTest', function() {
   setup(async () => {
     testProxy = new TestDownloadShelfApiProxy();
     testProxy.setDownloadItems([testItem(1)]);
-    DownloadShelfApiProxyImpl.instance_ = testProxy;
+    DownloadShelfApiProxyImpl.setInstance(testProxy);
     downloadListElement = /** @type {!DownloadListElement} */ (
         document.createElement('download-list'));
     document.body.appendChild(downloadListElement);
