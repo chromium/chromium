@@ -30,7 +30,6 @@ void DelegatedInkPointRendererSkia::DrawDelegatedInkTrail(SkCanvas* canvas) {
     paint.setAntiAlias(true);
     paint.setBlendMode(SkBlendMode::kSrcOver);
     paint.setColor(metadata_->color());
-    paint.setFilterQuality(kNone_SkFilterQuality);
     paint.setStrokeCap(SkPaint::kRound_Cap);
     paint.setStrokeJoin(SkPaint::kRound_Join);
     paint.setStrokeWidth(SkScalar(metadata_->diameter()));

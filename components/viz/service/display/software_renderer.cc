@@ -287,7 +287,7 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
     if (settings_->allow_antialiasing &&
         (settings_->force_antialiasing || all_four_edges_are_exterior))
       current_paint_.setAntiAlias(true);
-    current_paint_.setFilterQuality(kLow_SkFilterQuality);
+    current_sampling_ = SkSamplingOptions(SkFilterMode::kLinear);
   }
 
   if (quad->ShouldDrawWithBlending() ||
@@ -549,12 +549,10 @@ void SoftwareRenderer::DrawRenderPassQuad(
   SkMatrix content_mat = SkMatrix::RectToRect(content_rect, dest_rect);
 
   sk_sp<SkShader> shader;
-  SkSamplingOptions sampling(cc::PaintFlags::FilterQualityToSkSamplingOptions(
-      current_paint_.getFilterQuality()));
   if (!filter_image) {
-    shader = source_bitmap.makeShader(sampling, content_mat);
+    shader = source_bitmap.makeShader(current_sampling_, content_mat);
   } else {
-    shader = filter_image->makeShader(sampling, content_mat);
+    shader = filter_image->makeShader(current_sampling_, content_mat);
   }
 
   if (quad->mask_resource_id()) {
@@ -571,7 +569,7 @@ void SoftwareRenderer::DrawRenderPassQuad(
     SkMatrix mask_mat = SkMatrix::RectToRect(mask_rect, dest_rect);
 
     current_paint_.setMaskFilter(SkShaderMaskFilter::Make(
-        mask_lock.sk_image()->makeShader(sampling, mask_mat)));
+        mask_lock.sk_image()->makeShader(current_sampling_, mask_mat)));
   }
 
   // If we have a backdrop filter shader, render its results first.

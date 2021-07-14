@@ -142,7 +142,6 @@ SkPaint PaintFlags::ToSkPaint() const {
   paint.setStrokeCap(static_cast<SkPaint::Cap>(getStrokeCap()));
   paint.setStrokeJoin(static_cast<SkPaint::Join>(getStrokeJoin()));
   paint.setStyle(static_cast<SkPaint::Style>(getStyle()));
-  paint.setFilterQuality(getFilterQuality());
   return paint;
 }
 
