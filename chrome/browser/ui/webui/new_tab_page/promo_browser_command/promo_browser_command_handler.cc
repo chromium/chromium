@@ -52,7 +52,7 @@ void PromoBrowserCommandHandler::CanShowPromoWithCommand(
       // Nothing to do.
       break;
     case Command::kOpenSafetyCheck:
-      can_show = chrome::enterprise_util::HasBrowserPoliciesApplied(profile_);
+      can_show = !chrome::enterprise_util::HasBrowserPoliciesApplied(profile_);
       break;
     case Command::kOpenSafeBrowsingEnhancedProtectionSettings: {
       bool managed = safe_browsing::SafeBrowsingPolicyHandler::
