@@ -616,10 +616,6 @@ Shell::~Shell() {
   if (window_modality_controller_)
     window_modality_controller_.reset();
 
-  // We may shutdown while a capture session is active, which is an event
-  // handler that depends on this shell and some of its members. Destroy early.
-  capture_mode_controller_.reset();
-
   RemovePreTargetHandler(shell_tab_handler_.get());
   shell_tab_handler_.reset();
 
@@ -746,6 +742,7 @@ Shell::~Shell() {
   // Close all widgets (including the shelf) and destroy all window containers.
   CloseAllRootWindowChildWindows();
 
+  capture_mode_controller_.reset();
   tablet_mode_controller_.reset();
   login_screen_controller_.reset();
   system_notification_controller_.reset();
