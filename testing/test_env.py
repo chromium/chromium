@@ -56,8 +56,8 @@ def fix_python_path(cmd):
   return out
 
 
-def get_sanitizer_env(cmd, asan, lsan, msan, tsan, cfi_diag):
-  """Returns the envirnoment flags needed for sanitizer tools."""
+def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
+  """Returns the environment flags needed for sanitizer tools."""
 
   extra_env = {}
 
@@ -101,13 +101,6 @@ def get_sanitizer_env(cmd, asan, lsan, msan, tsan, cfi_diag):
 
     if asan_options:
       extra_env['ASAN_OPTIONS'] = ' '.join(asan_options)
-
-    if sys.platform == 'darwin':
-      isolate_output_dir = os.path.abspath(os.path.dirname(cmd[0]))
-      # This is needed because the test binary has @executable_path embedded in
-      # it that the OS tries to resolve to the cache directory and not the
-      # mapped directory.
-      extra_env['DYLD_LIBRARY_PATH'] = str(isolate_output_dir)
 
   if lsan:
     if asan or msan:
@@ -328,7 +321,7 @@ def run_executable(cmd, env, stdoutfile=None):
     use_symbolization_script = (asan or msan or cfi_diag or lsan or tsan)
 
   if asan or lsan or msan or tsan or cfi_diag:
-    extra_env.update(get_sanitizer_env(cmd, asan, lsan, msan, tsan, cfi_diag))
+    extra_env.update(get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag))
 
   if lsan or tsan:
     # LSan and TSan are not sandbox-friendly.
