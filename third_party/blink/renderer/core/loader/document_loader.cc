@@ -1268,33 +1268,6 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     return mojom::blink::CommitResult::RestartCrossDocument;
   }
 
-  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-    UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
-    if (triggering_event_info == mojom::blink::TriggeringEventInfo::kUnknown) {
-      involvement = UserNavigationInvolvement::kBrowserUI;
-    } else if (triggering_event_info ==
-               mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
-      involvement = UserNavigationInvolvement::kActivation;
-    }
-    auto dispatch_result = app_history->DispatchNavigateEvent(
-        url, nullptr, NavigateEventType::kFragment, frame_load_type,
-        involvement, nullptr, history_item);
-    if (dispatch_result == AppHistory::DispatchResult::kAbort)
-      return mojom::blink::CommitResult::Aborted;
-    if (dispatch_result == AppHistory::DispatchResult::kRespondWith) {
-      if (frame_load_type != WebFrameLoadType::kBackForward)
-        return mojom::blink::CommitResult::Aborted;
-      if (extra_data)
-        GetLocalFrameClient().UpdateDocumentLoader(this, std::move(extra_data));
-      history_item_ = history_item;
-      UpdateForSameDocumentNavigation(
-          url, kSameDocumentNavigationAppHistoryRespondWith, nullptr,
-          mojom::blink::ScrollRestorationType::kAuto, frame_load_type,
-          frame_->DomWindow()->GetSecurityOrigin(), false);
-      return mojom::blink::CommitResult::Ok;
-    }
-  }
-
   if (!IsBackForwardLoadType(frame_load_type)) {
     // For the browser to send a same-document navigation, it will always have a
     // fragment. When no fragment is present, the browser loads a new document.
@@ -1322,6 +1295,35 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     }
   }
 
+  SameDocumentNavigationSource same_document_navigation_source =
+      kSameDocumentNavigationDefault;
+  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+    UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
+    if (triggering_event_info == mojom::blink::TriggeringEventInfo::kUnknown) {
+      involvement = UserNavigationInvolvement::kBrowserUI;
+    } else if (triggering_event_info ==
+               mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
+      involvement = UserNavigationInvolvement::kActivation;
+    }
+    auto dispatch_result = app_history->DispatchNavigateEvent(
+        url, nullptr, NavigateEventType::kFragment, frame_load_type,
+        involvement, nullptr, history_item);
+    if (dispatch_result == AppHistory::DispatchResult::kAbort)
+      return mojom::blink::CommitResult::Aborted;
+    // In the kRespondWith case, if the navigation is not back-forward,
+    // DispatchNavigateEvent() will have taken care of emulating a commit and we
+    // can abort here. In the back-forward case, though, DispatchNavigateEvent()
+    // doesn't have all the state needed to correctly commit, so fall through
+    // and let the commit proceed normally, just with the
+    // SameDocumentNavigationSource modified.
+    if (dispatch_result == AppHistory::DispatchResult::kRespondWith) {
+      if (frame_load_type != WebFrameLoadType::kBackForward)
+        return mojom::blink::CommitResult::Aborted;
+      same_document_navigation_source =
+          kSameDocumentNavigationAppHistoryRespondWith;
+    }
+  }
+
   // If the requesting document is cross-origin, perform the navigation
   // asynchronously to minimize the navigator's ability to execute timing
   // attacks. If |is_synchronously_committed| is false, the navigation is
@@ -1332,13 +1334,13 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     frame_->GetTaskRunner(TaskType::kInternalLoading)
         ->PostTask(
             FROM_HERE,
-            WTF::Bind(&DocumentLoader::CommitSameDocumentNavigationInternal,
-                      WrapWeakPersistent(this), url, frame_load_type,
-                      WrapPersistent(history_item), client_redirect_policy,
-                      has_transient_user_activation,
-                      WTF::RetainedRef(initiator_origin),
-                      is_synchronously_committed, triggering_event_info,
-                      std::move(extra_data)));
+            WTF::Bind(
+                &DocumentLoader::CommitSameDocumentNavigationInternal,
+                WrapWeakPersistent(this), url, frame_load_type,
+                WrapPersistent(history_item), same_document_navigation_source,
+                client_redirect_policy, has_transient_user_activation,
+                WTF::RetainedRef(initiator_origin), is_synchronously_committed,
+                triggering_event_info, std::move(extra_data)));
   } else {
     // Treat a navigation to the same url as replacing only if it did not
     // originate from a cross-origin iframe. If |is_synchronously_committed| is
@@ -1348,8 +1350,8 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
       frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
     }
     CommitSameDocumentNavigationInternal(
-        url, frame_load_type, history_item, client_redirect_policy,
-        has_transient_user_activation, initiator_origin,
+        url, frame_load_type, history_item, same_document_navigation_source,
+        client_redirect_policy, has_transient_user_activation, initiator_origin,
         is_synchronously_committed, triggering_event_info,
         std::move(extra_data));
   }
@@ -1360,6 +1362,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     const KURL& url,
     WebFrameLoadType frame_load_type,
     HistoryItem* history_item,
+    SameDocumentNavigationSource same_document_navigation_source,
     ClientRedirectPolicy client_redirect,
     bool has_transient_user_activation,
     const SecurityOrigin* initiator_origin,
@@ -1413,7 +1416,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     history_item_ = history_item;
   if (extra_data)
     GetLocalFrameClient().UpdateDocumentLoader(this, std::move(extra_data));
-  UpdateForSameDocumentNavigation(url, kSameDocumentNavigationDefault, nullptr,
+  UpdateForSameDocumentNavigation(url, same_document_navigation_source, nullptr,
                                   mojom::blink::ScrollRestorationType::kAuto,
                                   frame_load_type, initiator_origin,
                                   is_synchronously_committed);
