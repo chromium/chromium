@@ -379,9 +379,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 // Tests mouse lock then fullscreen.
-// TODO(crbug.com/913409): UAv2 seems to make this flaky.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       DISABLED_MouseLockThenFullscreen) {
+                       MouseLockThenFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
@@ -433,14 +432,10 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 }
 
-// Flaky on Linux, CrOS: http://crbug.com/159000
-// Flaky on Windows; see https://crbug.com/791539.
-// Flaky on Mac: https://crbug.com/876617.
-
 // Tests mouse lock can be exited and re-entered by an application silently
 // with no UI distraction for users.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       DISABLED_MouseLockSilentAfterTargetUnlock) {
+                       MouseLockSilentAfterTargetUnlock) {
   SetWebContentsGrantedSilentMouseLockPermission();
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
@@ -468,20 +463,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   // Unlock the mouse again by target.
   PressKeyAndWaitForMouseLockRequest(ui::VKEY_U);
   ASSERT_FALSE(IsMouseLocked());
-
-  // Lock from target, not user gesture, make sure it works.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_D);
-  ASSERT_TRUE(IsMouseLocked());
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
-
-  // Unlock by escape.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_ESCAPE);
-  ASSERT_FALSE(IsMouseLocked());
-
-  // Lock the mouse with a user gesture, make sure we see bubble again.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
-  ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
-  ASSERT_TRUE(IsMouseLocked());
 }
 
 // Tests mouse lock is exited on page navigation.
