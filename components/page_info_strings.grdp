@@ -499,6 +499,65 @@
       Select permission for <ph name="PERMISSION_NAME">$1<ex>Location</ex></ph>
     </message>
 
+    <!-- Permission ask strings -->
+    <message name="IDS_PAGE_INFO_STATE_TEXT_AR_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the AR permission is in the ask state and the site can prompt the user to ask if they want to allow the site to track their camera position.">
+      Can ask to track your camera position
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_AUTOMATIC_DOWNLOADS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the automatic download permission is in the ask state and the site can prompt the user to ask if they allow the site to automatically download multiple files.">
+      Can ask to automatically download multiple files
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_BLUETOOTH_DEVICES_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth devices permission is in the ask state and the site can prompt the user to ask if they allow the site connect to Bluetooth devices">
+      Can ask to connect to Bluetooth devices
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_CAMERA_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the camera permission is in the ask state and the site can prompt the user to ask if they allow the site to use their camera.">
+      Can ask to use your camera
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_CLIPBOARD_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the clipboard permission is in the ask state and the site can prompt the user to ask if they allow the site to see text and images on their clipboard.">
+      Can ask to see text and images on your clipboard
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_FILE_SYSTEM_WRITE_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the file system permission is in the ask state and the site can prompt the user to ask if they allow the site to edit files and folders on your device.">
+      Can ask to edit files and folders on your device
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_HID_DEVICES_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the HID permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to HID devices.">
+      Can ask to connect to HID devices
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_LOCATION_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the location permission is in the ask state and the site can prompt the user to ask if they allow the site to use your location.">
+      Can ask for your location
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_MIC_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the microphone permission is in the ask state and the site can prompt the user to ask if allow the site to use your microphone.">
+      Can ask to use your microphone
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_MIDI_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the MIDI permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to MIDI devices.">
+      Can ask to connect to MIDI devices
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_NOTIFICATIONS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the notification permission is in the ask state and the site can prompt the user to ask if they want to receive notifications.">
+      Can ask to send notifications
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_USB_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the USB permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to USB devices.">
+      Can ask to connect to USB devices
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_VR_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the VR permission is in the ask state and the site can prompt the user to ask if they allow the site to use virtual reality devices and data.">
+      Can ask to use virtual reality devices and data
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_FONT_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the fonts permission is in the ask state and the site can prompt the user to ask if they allow the site to use fonts installed on your device.">
+      Can ask to use fonts installed on your device
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_FILE_HANDLING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the file handling permission is in the ask state and the site can prompt the user to ask if they allow the site to open types of files.">
+      Can ask to open types of files
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_SERIAL_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the serial permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to serial ports.">
+      Can ask to connect to serial ports
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_IDLE_DETECTION_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the idle detection permission is in the ask state and the site can prompt the user to ask if they allow the site to know when you're actively using this device.">
+      Can ask to know when you're actively using this device
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_WINDOW_PLACEMENT_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the window placement permission is in the ask state and the site can prompt the user to ask if they allow the site to open and place windows on your screens.">
+      Can ask to open and place windows on your screens
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_BLUETOOTH_SCANNING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth scanning permission is in the ask state and the site can prompt the user to ask if they allow the site to discover nearby Bluetooth devices.">
+      Can ask to discover nearby Bluetooth devices
+    </message>
+
     <!-- UI for device access granted to the site using the device chooser (e.g. USB, Bluetooth) -->
     <message name="IDS_PAGE_INFO_USB_DEVICE_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the item refers to a USB device.">
       USB device

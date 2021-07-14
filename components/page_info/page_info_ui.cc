@@ -264,6 +264,80 @@ void CreateOppositeToDefaultSiteException(
                            : opposite_to_block_setting;
 }
 
+std::u16string GetPermissionAskStateString(ContentSettingsType type) {
+  int message_id = kInvalidResourceID;
+
+  switch (type) {
+    case ContentSettingsType::GEOLOCATION:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_LOCATION_ASK;
+      break;
+    case ContentSettingsType::NOTIFICATIONS:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_NOTIFICATIONS_ASK;
+      break;
+    case ContentSettingsType::MIDI_SYSEX:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_MIDI_ASK;
+      break;
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_CAMERA_ASK;
+      break;
+    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_CAMERA_ASK;
+      break;
+    case ContentSettingsType::MEDIASTREAM_MIC:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_MIC_ASK;
+      break;
+    case ContentSettingsType::CLIPBOARD_READ_WRITE:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_CLIPBOARD_ASK;
+      break;
+    case ContentSettingsType::AUTOMATIC_DOWNLOADS:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_AUTOMATIC_DOWNLOADS_ASK;
+      break;
+    case ContentSettingsType::VR:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_VR_ASK;
+      break;
+    case ContentSettingsType::AR:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_AR_ASK;
+      break;
+    case ContentSettingsType::WINDOW_PLACEMENT:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_WINDOW_PLACEMENT_ASK;
+      break;
+    case ContentSettingsType::FONT_ACCESS:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_FONT_ACCESS_ASK;
+      break;
+    case ContentSettingsType::IDLE_DETECTION:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_IDLE_DETECTION_ASK;
+      break;
+    case ContentSettingsType::FILE_HANDLING:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_FILE_HANDLING_ASK;
+      break;
+    // Guard content settings:
+    case ContentSettingsType::USB_GUARD:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_USB_ASK;
+      break;
+    case ContentSettingsType::HID_GUARD:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_HID_DEVICES_ASK;
+      break;
+    case ContentSettingsType::SERIAL_GUARD:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_SERIAL_ASK;
+      break;
+    case ContentSettingsType::BLUETOOTH_GUARD:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_BLUETOOTH_DEVICES_ASK;
+      break;
+    case ContentSettingsType::BLUETOOTH_SCANNING:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_BLUETOOTH_SCANNING_ASK;
+      break;
+    case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_FILE_SYSTEM_WRITE_ASK;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  if (message_id == kInvalidResourceID)
+    return std::u16string();
+  return l10n_util::GetStringUTF16(message_id);
+}
+
 }  // namespace
 
 PageInfoUI::CookieInfo::CookieInfo() : allowed(-1), blocked(-1) {}
@@ -560,16 +634,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
       }
       break;
     case CONTENT_SETTING_ASK:
-      if (permissions::PermissionUtil::IsGuardContentSetting(permission.type)) {
-        message_id = permission.setting == CONTENT_SETTING_DEFAULT
-                         ? IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT
-                         : IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER;
-      } else if (permission.setting == CONTENT_SETTING_DEFAULT) {
-        // TODO(crbug.com/1225563): Replace with permission specific strings.
-        message_id = IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT;
-      } else {
-        message_id = IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED;
-      }
+      return GetPermissionAskStateString(permission.type);
       break;
     default:
       NOTREACHED();
