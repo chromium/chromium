@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -33,6 +35,12 @@ class ReadLaterSidePanelWebView : public views::WebView,
     contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
     contents_wrapper_->ReloadWebContents();
     SetWebContents(contents_wrapper_->web_contents());
+  }
+
+  void SetVisible(bool visible) override {
+    views::WebView::SetVisible(visible);
+    base::RecordAction(
+        base::UserMetricsAction(visible ? "SidePanel.Show" : "SidePanel.Hide"));
   }
 
   void ViewHierarchyChanged(

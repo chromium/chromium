@@ -9,12 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -23,6 +26,7 @@
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
@@ -153,6 +157,7 @@ ReadLaterPageHandler::ReadLaterPageHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       read_later_ui_(read_later_ui),
+      web_ui_(web_ui),
       web_contents_(web_ui->GetWebContents()),
       clock_(base::DefaultClock::GetInstance()) {
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -174,10 +179,12 @@ void ReadLaterPageHandler::OpenURL(const GURL& url, bool mark_as_read) {
   if (!browser)
     return;
 
+  const bool side_panel_enabled =
+      base::FeatureList::IsEnabled(features::kSidePanel);
+
   // Open in active tab if the user is on the NTP.
   WindowOpenDisposition open_location =
-      IsActiveTabNTP(browser) ||
-              base::FeatureList::IsEnabled(features::kSidePanel)
+      IsActiveTabNTP(browser) || side_panel_enabled
           ? WindowOpenDisposition::CURRENT_TAB
           : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
@@ -187,6 +194,14 @@ void ReadLaterPageHandler::OpenURL(const GURL& url, bool mark_as_read) {
 
   if (mark_as_read)
     reading_list_model_->SetReadStatus(url, true);
+
+  base::RecordAction(base::UserMetricsAction(
+      side_panel_enabled ? "SidePanel.ReadingList.Navigation"
+                         : "ReadingList.Dialog.Navigation"));
+  RecordBookmarkLaunch(
+      side_panel_enabled ? BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_READING_LIST
+                         : BOOKMARK_LAUNCH_LOCATION_READING_LIST_DIALOG,
+      profile_metrics::GetBrowserProfileType(Profile::FromWebUI(web_ui_)));
 }
 
 void ReadLaterPageHandler::UpdateReadStatus(const GURL& url, bool read) {
@@ -199,6 +214,11 @@ void ReadLaterPageHandler::AddCurrentTab() {
     return;
 
   chrome::MoveCurrentTabToReadLater(browser);
+
+  base::RecordAction(
+      base::UserMetricsAction(base::FeatureList::IsEnabled(features::kSidePanel)
+                                  ? "SidePanel.ReadingList.AddCurrentPage"
+                                  : "ReadingList.Dialog.AddCurrentPage"));
 }
 
 void ReadLaterPageHandler::RemoveEntry(const GURL& url) {

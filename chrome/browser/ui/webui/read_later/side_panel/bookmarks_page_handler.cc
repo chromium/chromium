@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_page_handler.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -20,6 +23,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -139,7 +143,8 @@ BookmarksPageHandler::BookmarksPageHandler(
 
 BookmarksPageHandler::~BookmarksPageHandler() = default;
 
-void BookmarksPageHandler::OpenBookmark(const GURL& url) {
+void BookmarksPageHandler::OpenBookmark(const GURL& url,
+                                        int32_t parent_folder_depth) {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
@@ -148,6 +153,11 @@ void BookmarksPageHandler::OpenBookmark(const GURL& url) {
                                 WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser->OpenURL(params);
+  base::RecordAction(base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
+  RecordBookmarkLaunch(
+      parent_folder_depth > 0 ? BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_SUBFOLDER
+                              : BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_FOLDER,
+      profile_metrics::GetBrowserProfileType(browser->profile()));
 }
 
 void BookmarksPageHandler::ShowContextMenu(const std::string& id_string,

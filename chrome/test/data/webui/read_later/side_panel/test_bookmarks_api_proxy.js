@@ -52,9 +52,12 @@ export class TestBookmarksApiProxy extends TestBrowserProxy {
     return Promise.resolve(this.folders_);
   }
 
-  /** @param {string} url */
-  openBookmark(url) {
-    this.methodCalled('openBookmark', url);
+  /**
+   * @param {string} url
+   * @param {number} depth
+   */
+  openBookmark(url, depth) {
+    this.methodCalled('openBookmark', url, depth);
   }
 
   /** @param {!Array<!chrome.bookmarks.BookmarkTreeNode>} folders */

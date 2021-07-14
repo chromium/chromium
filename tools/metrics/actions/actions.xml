@@ -21224,6 +21224,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ReadingList.Dialog.AddCurrentPage">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user added a page to the reading list from the dialog bubble.
+  </description>
+</action>
+
+<action name="ReadingList.Dialog.Navigation">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user navigated to a page from the reading list dialog bubble.
+  </description>
+</action>
+
 <action name="Redo">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -23258,6 +23274,58 @@ should be able to be added at any place in this file.
 <action name="Shutdown">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="SidePanel.Bookmarks.FolderClose">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user collapsed a bookmarks folder within the side panel.
+  </description>
+</action>
+
+<action name="SidePanel.Bookmarks.FolderOpen">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user expanded a bookmarks folder within the side panel.
+  </description>
+</action>
+
+<action name="SidePanel.Bookmarks.Navigation">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user navigated to a page from bookmarks in the side panel.
+  </description>
+</action>
+
+<action name="SidePanel.Hide">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>The user closed the side panel.</description>
+</action>
+
+<action name="SidePanel.ReadingList.AddCurrentPage">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user added a page to the reading list from the side panel.
+  </description>
+</action>
+
+<action name="SidePanel.ReadingList.Navigation">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user navigated to a page from the reading list in the side panel.
+  </description>
+</action>
+
+<action name="SidePanel.Show">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>The user opened the side panel.</description>
 </action>
 
 <action name="Signin_Abort_Signin">

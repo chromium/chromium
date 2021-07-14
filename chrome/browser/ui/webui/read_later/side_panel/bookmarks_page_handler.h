@@ -22,7 +22,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
   ~BookmarksPageHandler() override;
 
   // side_panel::mojom::BookmarksPageHandler:
-  void OpenBookmark(const GURL& url) override;
+  void OpenBookmark(const GURL& url, int32_t parent_folder_depth) override;
   void ShowContextMenu(const std::string& id, const gfx::Point& point) override;
 
  private:

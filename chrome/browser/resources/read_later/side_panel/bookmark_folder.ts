@@ -75,7 +75,7 @@ export class BookmarkFolderElement extends PolymerElement {
 
   private onBookmarkClick_(event: RepeaterMouseEvent) {
     event.preventDefault();
-    this.bookmarksApi_.openBookmark(event.model.item.url!);
+    this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth);
   }
 
   private onBookmarkContextMenu_(event: RepeaterMouseEvent) {
@@ -109,6 +109,10 @@ export class BookmarkFolderElement extends PolymerElement {
         open: this.open_,
       }
     }));
+
+    chrome.metricsPrivate.recordUserAction(
+        this.open_ ? 'SidePanel.Bookmarks.FolderOpen' :
+                     'SidePanel.Bookmarks.FolderClose');
   }
 
   private onOpenFoldersChanged_() {

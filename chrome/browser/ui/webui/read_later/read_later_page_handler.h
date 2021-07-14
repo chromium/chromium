@@ -82,6 +82,7 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler,
   // ReadLaterPageHandler is owned by |read_later_ui_| and so we expect
   // |read_later_ui_| to remain valid for the lifetime of |this|.
   ReadLaterUI* const read_later_ui_;
+  content::WebUI* const web_ui_;
   content::WebContents* web_contents_;
 
   base::Clock* clock_;

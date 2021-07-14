@@ -44,6 +44,16 @@ enum BookmarkLaunchLocation {
   // System application menu (e.g. on Mac).
   BOOKMARK_LAUNCH_LOCATION_TOP_MENU = 7,
 
+  // Bookmarks top level folder (i.e. bookmarks bar, other bookmarks) within the
+  // side panel.
+  BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_FOLDER = 8,
+  // Bookmarks subfolder within the side panel.
+  BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_SUBFOLDER = 9,
+  // Reading list tab within the side panel.
+  BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_READING_LIST = 10,
+  // Reading list bubble in the bookmarks bar.
+  BOOKMARK_LAUNCH_LOCATION_READING_LIST_DIALOG = 11,
+
   BOOKMARK_LAUNCH_LOCATION_LIMIT  // Keep this last.
 };
 
