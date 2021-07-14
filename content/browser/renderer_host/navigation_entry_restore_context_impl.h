@@ -38,6 +38,12 @@ class CONTENT_EXPORT NavigationEntryRestoreContextImpl
   // As an added precaution, we key based on both item sequence number and
   // the unique name of the frame, just in case a sequence number somehow
   // appears in multiple frames.
+  //
+  // We also ensure that entries with an item sequence number of 0 (the default
+  // value) cannot be stored or retrieved, since they may not represent the same
+  // document. This may happen for entries restored without all available state,
+  // and we can skip FrameNavigationEntry sharing for them because they are not
+  // considered same-document anyway.
   struct Key {
     Key(int64_t isn, const std::string& name)
         : item_sequence_number(isn), unique_name(name) {}

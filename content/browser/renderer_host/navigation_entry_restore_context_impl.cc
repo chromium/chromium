@@ -21,6 +21,10 @@ NavigationEntryRestoreContextImpl::~NavigationEntryRestoreContextImpl() =
 
 void NavigationEntryRestoreContextImpl::AddFrameNavigationEntry(
     FrameNavigationEntry* entry) {
+  // Do not track FrameNavigationEntries for the default ISN of 0, since this
+  // value can be used for any arbitrary document.
+  if (entry->item_sequence_number() == 0)
+    return;
   Key key(entry->item_sequence_number(), entry->frame_unique_name());
   DCHECK(entries_.find(key) == entries_.end());
   entries_.emplace(key, entry);
@@ -30,6 +34,8 @@ FrameNavigationEntry*
 NavigationEntryRestoreContextImpl::GetFrameNavigationEntryForItemSequenceNumber(
     int64_t item_sequence_number,
     const std::string& unique_name) {
+  if (item_sequence_number == 0)
+    return nullptr;
   auto it = entries_.find(Key(item_sequence_number, unique_name));
   return it == entries_.end() ? nullptr : it->second;
 }

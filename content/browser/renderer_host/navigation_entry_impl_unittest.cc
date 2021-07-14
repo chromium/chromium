@@ -329,6 +329,31 @@ TEST_F(NavigationEntryTest, SetPageStateWithCorruptedSequenceNumbers) {
             entry1_->root_node()->children[0]->frame_entry.get());
 }
 
+TEST_F(NavigationEntryTest, SetPageStateWithDefaultSequenceNumbers) {
+  blink::PageState page_state1 =
+      blink::PageState::CreateFromURL(GURL("http://foo.com"));
+  blink::PageState page_state2 =
+      blink::PageState::CreateFromURL(GURL("http://bar.com"));
+
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  entry1_->SetPageState(page_state1, context.get());
+  entry2_->SetPageState(page_state2, context.get());
+
+  // Because no sequence numbers were set on the PageState objects, they will
+  // default to 0.
+  EXPECT_EQ(entry1_->root_node()->frame_entry->item_sequence_number(), 0);
+  EXPECT_EQ(entry2_->root_node()->frame_entry->item_sequence_number(), 0);
+  EXPECT_EQ(entry1_->root_node()->frame_entry->document_sequence_number(), 0);
+  EXPECT_EQ(entry2_->root_node()->frame_entry->document_sequence_number(), 0);
+
+  // However, because the item sequence number was the "default" value,
+  // NavigationEntryRestoreContext should not have de-duplicated the root
+  // FrameNavigationEntries, even though they "match".
+  EXPECT_NE(entry1_->root_node()->frame_entry.get(),
+            entry2_->root_node()->frame_entry.get());
+}
+
 #if defined(OS_ANDROID)
 // Failing test, see crbug/1050906.
 // Test that content URIs correctly show the file display name as the title.
