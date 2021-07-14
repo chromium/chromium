@@ -4182,6 +4182,9 @@
         'tast_expr': '("group:mainline" && "dep:lacros")',
         'timeout_sec': 10800,
       },
+      'ozone_unittests': {
+        'timeout_sec': 10800,
+      },
     },
 
     'layout_ng_gtests': {
