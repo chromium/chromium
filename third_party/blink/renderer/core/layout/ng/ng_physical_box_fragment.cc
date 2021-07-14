@@ -483,13 +483,11 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
   for (const auto& descendant :
        builder->oof_positioned_fragmentainer_descendants_) {
     // The static position should remain relative to the containing block.
-    PhysicalSize containing_block_size = size;
+    PhysicalSize containing_block_size =
+        descendant.containing_block.fragment
+            ? descendant.containing_block.fragment->Size()
+            : size;
     WritingDirectionMode writing_direction = builder->GetWritingDirection();
-    if (descendant.containing_block.fragment) {
-      containing_block_size = descendant.containing_block.fragment->Size();
-      writing_direction =
-          descendant.containing_block.fragment->Style().GetWritingDirection();
-    }
     const WritingModeConverter converter(writing_direction,
                                          containing_block_size);
 
