@@ -157,8 +157,11 @@ bool IsValidContentDirectoryName(base::StringPiece file_name) {
 bool HandleDataDirectoryParam(fuchsia::web::CreateContextParams* params,
                               base::CommandLine* launch_args,
                               fuchsia::sys::LaunchInfo* launch_info) {
-  if (!params->has_data_directory())
+  if (!params->has_data_directory()) {
+    // Caller requested a web instance without any peristence.
+    launch_args->AppendSwitch(switches::kIncognito);
     return true;
+  }
 
   zx::channel data_directory_channel = ValidateDirectoryAndTakeChannel(
       std::move(*params->mutable_data_directory()));
