@@ -93,6 +93,7 @@
 <translation id="1097658378307015415">Antes de acceder, ingresa como Invitado para activar la red <ph name="NETWORK_ID" />.</translation>
 <translation id="1099383081182863812">¿Puedes ver Chromecast en la <ph name="BEGIN_LINK" />app de Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Imagen copiada de <ph name="DEVICE_NAME" /></translation>
+<translation id="1100504063505580045">Ícono actual</translation>
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Interrumpir</translation>
 <translation id="1110155001042129815">Esperar</translation>
@@ -732,6 +733,7 @@
 <translation id="1779652936965200207">Ingresa esta clave de acceso en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">App (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Cerrar grupo</translation>
+<translation id="1780273119488802839">Importando favoritos...</translation>
 <translation id="1781291988450150470">PIN actual</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> requiere que te conectes a una red Wi-Fi ahora y descargues una actualización.</translation>
 <translation id="1781502536226964113">Abrir una pestaña nueva</translation>
@@ -2458,6 +2460,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3649505501900178324">Actualización pendiente</translation>
 <translation id="3650753875413052677">Error de inscripción</translation>
 <translation id="3650845953328929506">La carga del registro está pendiente.</translation>
+<translation id="365089839707261811">Revisar la actualización de nombres</translation>
 <translation id="3650952250015018111">Permitir que "<ph name="APP_NAME" />" acceda a:</translation>
 <translation id="3651488188562686558">Se desconecta de Wi-Fi.</translation>
 <translation id="3652817283076144888">Inicializando</translation>
@@ -2816,7 +2819,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3994374631886003300">Desbloquea tu teléfono y acércalo para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Tamaño</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (puerto lateral derecho trasero)</translation>
-<translation id="4002066346123236978">Título</translation>
 <translation id="4002329649066944389">Administra las excepciones de sitios específicos</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4005817994523282006">Método de detección de la zona horaria</translation>
@@ -3076,6 +3078,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4332976768901252016">Configura los controles parentales</translation>
 <translation id="4333854382783149454">PKCS N. º 1, SHA-1 con encriptación RSA</translation>
 <translation id="4336434711095810371">Borrar todos los datos</translation>
+<translation id="4339203724549370495">Desinstalar app</translation>
 <translation id="4340125850502689798">Nombre de usuario no válido</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> quiere comunicarse con la aplicación "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="4340799661701629185">No permitir que los sitios envíen notificaciones</translation>
@@ -3487,6 +3490,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="479536056609751218">Página web, HTML únicamente</translation>
 <translation id="4796142525425001238">Restablecer siempre</translation>
 <translation id="4798236378408895261">Adjuntar <ph name="BEGIN_LINK" />registros de Bluetooth<ph name="END_LINK" /> (para uso interno de Google)</translation>
+<translation id="4800839971935185386">Revisar la actualización de íconos y nombres</translation>
 <translation id="4801448226354548035">Ocultar cuentas</translation>
 <translation id="4801512016965057443">Permitir itinerancia de datos móviles</translation>
 <translation id="4804818685124855865">Desconectar</translation>
@@ -4114,6 +4118,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5498967291577176373">Escribe más rápido con las sugerencias de texto para tu nombre, dirección o número de teléfono</translation>
 <translation id="5499313591153584299">Este archivo puede dañar el equipo.</translation>
 <translation id="5499453227627332024">Hay una actualización disponible para tu contenedor de Linux. También puedes actualizarlo más tarde desde la app de Configuración.</translation>
+<translation id="549957179819296104">Ícono nuevo</translation>
 <translation id="5500709606820808700">Hoy se ejecutó la verificación de seguridad</translation>
 <translation id="5501322521654567960">Panel lateral alineado a la izquierda</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{No fue posible recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{No fue posible recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
@@ -4371,7 +4376,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5794414402486823030">Abrir siempre con el visualizador del sistema</translation>
 <translation id="5794700615121138172">Carpetas compartidas de Linux</translation>
 <translation id="5794786537412027208">Salir de todas las aplicaciones de Chrome</translation>
-<translation id="5797070761912323120">Es posible que Google use tu historial para personalizar la Búsqueda, los anuncios y otros servicios de Google</translation>
 <translation id="5797521893972859201">Borra el historial, incluido el del cuadro de búsqueda.</translation>
 <translation id="5798079537501238810">Los sitios pueden instalar controladores de pago.</translation>
 <translation id="579907812742603813">contenido protegido</translation>
@@ -6129,6 +6133,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7730449930968088409">Capturar contenido de la pantalla</translation>
 <translation id="7730683939467795481">La extensión "<ph name="EXTENSION_NAME" />" modificó esta página</translation>
 <translation id="7734486794139738745">Solo uso un interruptor</translation>
+<translation id="7734541938181328224">Revisar la actualización de íconos</translation>
 <translation id="7737115349420013392">Vinculando con "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737948071472253612">No puede usar la cámara</translation>
 <translation id="7740996059027112821">Estándar</translation>
@@ -6889,6 +6894,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Se ha intentado instalar una versión anterior de la aplicación.</translation>
 <translation id="8569682776816196752">No se encontró ningún destino.</translation>
+<translation id="857074314439694500">Si esta aplicación web intenta hacerse pasar por otra app, desinstálala.</translation>
 <translation id="8571213806525832805">Últimas cuatro semanas</translation>
 <translation id="8571687764447439720">Agregar un ticket de Kerberos</translation>
 <translation id="8574990355410201600">Permitir siempre el sonido en <ph name="HOST" /></translation>

@@ -49,7 +49,6 @@
 <translation id="2718390899429598676">അധിക സുരക്ഷക്കായി, Chromium നിങ്ങളുടെ ഡാറ്റ എന്‍‌ക്രിപ്റ്റ് ചെയ്യും.</translation>
 <translation id="2770231113462710648">ഡിഫോൾട്ട് ബ്രൗസര്‍‌ ഇനിപ്പറയുന്നതിലേക്ക് മാറ്റുക:</translation>
 <translation id="2799223571221894425">വീണ്ടും സമാരംഭിക്കുക</translation>
-<translation id="2816712596130903444">Chromium പ്രൊഫൈൽ വേർതിരിക്കണോ?</translation>
 <translation id="2837693172913560447">ഇത് <ph name="USER_EMAIL_ADDRESS" /> എന്ന അക്കൗണ്ടിനായി പുതിയൊരു Chromium പ്രൊഫൈൽ സൃഷ്ടിക്കും</translation>
 <translation id="2847479871509788944">Chromium-ൽ നിന്ന് നീക്കംചെയ്യുക...</translation>
 <translation id="2885378588091291677">ടാസ്‌ക് മാനേജര്‍</translation>
@@ -288,7 +287,6 @@
 <translation id="8974095189086268230">Chromium OS നിർമ്മിച്ചത് കൂടുതൽ <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാകാം.</translation>
 <translation id="8986207147630327271">നിങ്ങൾ ഈ ബ്രൗസറിലേക്ക് ഒരു ഔദ്യോഗിക പ്രൊഫൈൽ ചേർക്കുകയും നിങ്ങളുടെ അഡ്മിന് ഔദ്യോഗിക പ്രൊഫൈലിലേക്ക് മാത്രം നിയന്ത്രണം നൽകുകയും ചെയ്യുന്നു.</translation>
 <translation id="9019929317751753759">Chromium സുരക്ഷിതമാക്കാൻ, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> എന്നതിൽ ലിസ്റ്റ് ചെയ്യാത്ത ഇനിപ്പറയുന്ന വിപുലീകരണം ഞങ്ങൾ പ്രവർത്തനരഹിതമാക്കി, അവ നിങ്ങളുടെ അറിവില്ലാതെ ചേർത്തിരിക്കാനിടയുണ്ട്.</translation>
-<translation id="9047197236183657400">പുതിയ Chromium പ്രൊഫൈലിലേക്ക് അക്കൗണ്ട് നീക്കണോ?</translation>
 <translation id="9089354809943900324">Chromium കാലഹരണപ്പെട്ടു</translation>
 <translation id="9093206154853821181">{0,plural, =1{ഒരു മണിക്കൂറിൽ Chromium വീണ്ടും സമാരംഭിക്കും}other{# മണിക്കൂറിൽ Chromium വീണ്ടും സമാരംഭിക്കും}}</translation>
 <translation id="91086099826398415">പുതിയ Chromium &amp;ടാബിൽ ലിങ്ക് തുറക്കുക</translation>

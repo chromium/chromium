@@ -42,6 +42,7 @@
 <translation id="1715359911173058521">Existe um problema de comunicação com o scanner. Verifique a ligação USB ou de rede e tente novamente.</translation>
 <translation id="1717874160321062422">Gerido por <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" />.</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">A cancelar a digitalização…</translation>
 <translation id="1851218745569890714">Videoconferências</translation>
 <translation id="1887850431809612466">Revisão de hardware</translation>
@@ -217,6 +218,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318334351163689047">Falhas de pedidos de TCP.</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nome</translation>
 <translation id="5332948983412042822">Escolha uma nova agora.</translation>
 <translation id="5333530671332546086">Estado do portal desconhecido.</translation>
 <translation id="5372659122375744710">A rede Wi-Fi não é segura.</translation>
@@ -234,6 +236,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5669267381087807207">A activar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
+<translation id="5701381305118179107">Centrar</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5752751666635965375">Criar o seu próprio jogo</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
@@ -266,6 +269,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6223752125779001553">Nenhum scanner disponível</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6243280677745499710">Definida atualmente</translation>
+<translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
 <translation id="6325525973963619867">Falhou</translation>
 <translation id="636850387210749493">Inscrição empresarial</translation>
@@ -312,6 +316,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7216409898977639127">Operador de telemóvel</translation>
 <translation id="7271040990581020067">O leitor está a ser utilizado atualmente. Tente novamente mais tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7287310195820267359">Coleções de imagens de fundo</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>

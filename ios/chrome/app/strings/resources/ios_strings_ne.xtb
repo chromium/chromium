@@ -236,12 +236,12 @@
 <translation id="3371831930909698441">अनुवाद उपलब्ध छ। विकल्पहरू स्क्रिनका पुछारतिर उपलब्ध छन्।</translation>
 <translation id="3393920035788932672">पप-अपहरूलाई अनुमति दिइयो</translation>
 <translation id="3399930248910934354">Chrome का सेटिङ खोल्नुहोस्</translation>
+<translation id="3404744938087714423">साइन आउट गर्नुभयो भने सिंक गर्ने सुविधा अफ हुने छ।</translation>
 <translation id="3425644765244388016">कार्डको उपनाम</translation>
 <translation id="3433057996795775706">तपाईंले यो पासवर्ड मेटाउनुभयो भने <ph name="WEBSITE" /> मा रहेको तपाईंको खाता मेटिने छैन। यो खाता अन्य मान्छेहरूबाट सुरक्षित राख्न <ph name="WEBSITE" /> मा गई आफ्नो पासवर्ड परिवर्तन गर्नुहोस्।</translation>
 <translation id="3443810440409579745">ट्याब प्राप्त गरियो।</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="3448016392200048164">विभाजित दृश्य</translation>
-<translation id="3454224729131972583">शीर्षक</translation>
 <translation id="345565170154308620">पासवर्डहरूको व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="3469166899695866866">डाउनलोड रोक्ने हो?</translation>
 <translation id="3470502288861289375">प्रतिलिपि बनाउँदै...</translation>
@@ -268,6 +268,7 @@
 <translation id="3607167657931203000">स्वतः भरणको डेटा</translation>
 <translation id="3609785682760573515">समक्रमण हुँदै...</translation>
 <translation id="3638472932233958418">पूर्वलोड गरिएका वेबपृष्ठहरू</translation>
+<translation id="3648013730801605241">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK" />खोजको इतिहास<ph name="END_LINK" /> र <ph name="BEGIN_LINK" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला ती क्रियाकलाप मेटाउन सक्नुहुन्छ।</translation>
 <translation id="3661160521073045932">कन्फिगुरेसन प्रोफाइल उपलब्ध छ</translation>
 <translation id="3670030362669914947">अङ्क</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> मा पुस्तक चिन्ह लगाइयो</translation>
@@ -647,6 +648,10 @@
 <translation id="734758817008927353">कार्ड सुरक्षित गर्ने विकल्पहरू</translation>
 <translation id="7348502496356775519">पुस्तक चिन्ह लगाउनुहोस्</translation>
 <translation id="7353432112255316844">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
+<translation id="7376492662175718683">तपाईं Google खाताबाट साइन आउट हुनु हुने छैन। तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला ती क्रियाकलाप मेटाउन सक्नुहुन्छ।
+
+        
+तपाईंको डिफल्ट सर्च इन्जिन <ph name="DSE_NAME" /> हो। तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>
 <translation id="7383797227493018512">अध्ययन सूची</translation>
 <translation id="7398893703713203428">लिंक सिर्जना गर्नुहोस्</translation>
 <translation id="739941347996872055">अघिल्लो ट्याब</translation>
@@ -789,6 +794,10 @@
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="8840513115188359703">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
+<translation id="8851300969441660830">तपाईं Google खाताबाट साइन आउट हुनु हुने छैन। तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला ती क्रियाकलाप मेटाउन सक्नुहुन्छ।
+
+
+तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ट्याब}other{{count} वटा ट्याब}}</translation>
 <translation id="8870413625673593573">हालै बन्द गरिएको</translation>
 <translation id="8876882697946675716">आफ्ना डिभाइसहरू सिंक गरिराख्नुहोस्</translation>

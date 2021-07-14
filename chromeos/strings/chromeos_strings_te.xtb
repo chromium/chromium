@@ -42,6 +42,7 @@
 <translation id="1715359911173058521">స్కానర్‌తో కమ్యూనికేట్ చేయడంలో ఎదో సమస్య ఉంది. నెట్‌వర్క్ లేదా USB కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" />, అలాగే <ph name="SECOND_MANAGER" /> ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">స్కానింగ్ రద్దు అవుతోంది</translation>
 <translation id="1851218745569890714">వీడియో సమావేశం నిర్వహించడం</translation>
 <translation id="1887850431809612466">హార్డ్‌వేర్ పునర్విమర్శ</translation>
@@ -216,6 +217,7 @@
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5318334351163689047">TCP రిక్వెస్ట్ వైఫల్యాలు</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">పేరు</translation>
 <translation id="5332948983412042822">ఇప్పుడే ఒక కొత్త దానిని ఎంచుకోండి</translation>
 <translation id="5333530671332546086">పోర్టల్ స్థితి తెలియదు</translation>
 <translation id="5372659122375744710">WiFi నెట్‌వర్క్ సురక్షితంగా లేదు</translation>
@@ -233,6 +235,7 @@
 <translation id="5669267381087807207">సక్రియమవుతోంది</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">కుటుంబం</translation>
+<translation id="5701381305118179107">మధ్యకు</translation>
 <translation id="5752751666635965375">మీ స్వంత గేమ్‌ను చేయండి</translation>
 <translation id="5760715441271661976">పోర్టల్ స్థితి</translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించు</translation>
@@ -264,6 +267,7 @@
 <translation id="6223752125779001553">స్కానర్‌లు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="6232017090690406397">బ్యాటరీ</translation>
 <translation id="6243280677745499710">ప్రస్తుతం సెట్ చేసినది</translation>
+<translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> టెస్ట్ రద్దు చేయబడింది</translation>
 <translation id="6325525973963619867">విఫలమైంది</translation>
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>

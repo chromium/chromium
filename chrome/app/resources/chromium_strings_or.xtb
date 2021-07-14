@@ -49,7 +49,6 @@
 <translation id="2718390899429598676">ଅତିରିକ୍ତ ସୁରକ୍ଷା ପାଇଁ, Chromium ଆପଣଙ୍କର ଡାଟା ଏନ୍‍କ୍ରିପ୍ଟ କରିବ।</translation>
 <translation id="2770231113462710648">ଏଠାକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌କୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ:</translation>
 <translation id="2799223571221894425">ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
-<translation id="2816712596130903444">Chromium ପ୍ରୋଫାଇଲକୁ ଅଲଗା କରିବେ?</translation>
 <translation id="2837693172913560447">ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chromium ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>
 <translation id="2847479871509788944">Chromiumରୁ କାଢ଼ିଦିଅନ୍ତୁ...</translation>
 <translation id="2885378588091291677">ଟାସ୍କ ପରିଚାଳକ</translation>
@@ -286,7 +285,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8974095189086268230">Chromium OS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ମୁକ୍ତ ଉତ୍ସ ସଫ୍ଟୱେୟାର୍ <ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋ‍ଇଛି।</translation>
 <translation id="8986207147630327271">ଆପଣ ଏହି ବ୍ରାଉଜରରେ ଏକ ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରୁଛନ୍ତି ଏବଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ସେହି ୱାର୍କ ପ୍ରୋଫାଇଲକୁ କେବଳ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଅନୁମତି ଦେଉଛନ୍ତି।</translation>
 <translation id="9019929317751753759">Chromiumକୁ ଆହୁରି ସୁରକ୍ଷିତ କରିବା ପାଇଁ ଆମେ, ନିମ୍ନ ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅକ୍ଷମ କରିଦେଇଛୁ, ଯାହା <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ରେ ତାଲିକାଭୁକ୍ତ ହୋଇନାହିଁ ଏବଂ ଆପଣଙ୍କ ଅଜାଣତରେ ଯୋଗ କରାଯାଇଥାଇପାରେ।</translation>
-<translation id="9047197236183657400">ଏକ ନୂଆ Chromium ପ୍ରୋଫାଇଲକୁ ଆକାଉଣ୍ଟ ମୁଭ୍ କରିବେ କି?</translation>
 <translation id="9089354809943900324">Chromiumର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
 <translation id="9093206154853821181">{0,plural, =1{ଗୋଟିଏ ଘଣ୍ଟାରେ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}other{# ଘଣ୍ଟାରେ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}}</translation>
 <translation id="91086099826398415">ନୂଆ Chromium &amp;ଟାବ୍‌ରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>

@@ -49,7 +49,6 @@
 <translation id="2718390899429598676">Қосымша қауіпсіздік үшін Chromium деректеріңізді шифрлайды.</translation>
 <translation id="2770231113462710648">Әдепкі браузерді келесіге өзгерту:</translation>
 <translation id="2799223571221894425">Қайта іске қосу</translation>
-<translation id="2816712596130903444">Chromium профилі бөлінсін бе?</translation>
 <translation id="2837693172913560447"><ph name="USER_EMAIL_ADDRESS" /> үшін жаңа Chromium профилі жасалады.</translation>
 <translation id="2847479871509788944">Chromium жүйесінен алып тастау…</translation>
 <translation id="2885378588091291677">Тапсырмалар реттегіші</translation>
@@ -287,7 +286,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8974095189086268230">Chromium OS қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық дереккөз бағдарламалық жасақтамасы<ph name="END_LINK_CROS_OSS" /> арқылы жасалды.</translation>
 <translation id="8986207147630327271">Браузерге жұмыс профилін қосудасыз және әкімшіңізге жұмыс профилін басқаруды тапсырудасыз.</translation>
 <translation id="9019929317751753759">Chromium браузерін қауіпсіз ету үшін, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> тізімінде жоқ келесі кеңейтім өшірілді, ол сізге ескертілмей қосылған болуы мүмкін.</translation>
-<translation id="9047197236183657400">Есептік жазба жаңа Chromium профиліне ауыстырылсын ба?</translation>
 <translation id="9089354809943900324">Chromium ескірген</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium браузері бір сағаттан кейін қайта іске қосылады}other{Chromium браузері # сағаттан кейін қайта іске қосылады}}</translation>
 <translation id="91086099826398415">Сілтемені жаңа Chromium қойындысында ашу</translation>

@@ -615,7 +615,6 @@
 <translation id="4970824347203572753">तपाईंको स्थानमा उपलब्ध छैन</translation>
 <translation id="4971735654804503942">खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट अझ छिटो र सक्रिय सुरक्षा। तपाईंलाई पासवर्डहरूको चोरी हुन सक्ने सम्भावनाबारे चेतावनी दिन्छ। ब्राउजिङ डेटा Google लाई पठाउनु पर्ने हुन्छ।</translation>
 <translation id="497421865427891073">अगाडि जानुहोस्</translation>
-<translation id="4986638582553854481">मान</translation>
 <translation id="4988210275050210843">फाइलहरू डाउनलोड गर्दै (<ph name="MEGABYTES" />)।</translation>
 <translation id="4988526792673242964">पृष्ठहरू</translation>
 <translation id="5004416275253351869">Google का क्रियाकलापसम्बन्धी नियन्त्रणहरू</translation>
@@ -1301,6 +1300,7 @@
 <translation id="948039501338975565">पुस्तक चिन्ह लगाइएका फोल्डरहरूको सूची</translation>
 <translation id="95817756606698420">Chrome ले चीनमा खोज गर्नका लागि <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> को प्रयोग गर्न सक्छ। तपाईं <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" />मा गई यसलाई बदल्न सक्नुहुन्छ।</translation>
 <translation id="962979164594783469">यो एप इन्स्टल गर्नुहोस्</translation>
+<translation id="96681097142096641">सरलीकृत पेज हेर्ने हो?</translation>
 <translation id="968900484120156207">तपाईंले हेर्नुभएका पृष्ठहरू यहाँ देखिन्छन्</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनेट बाँकी छ</translation>
 <translation id="981121421437150478">अफलाइन</translation>

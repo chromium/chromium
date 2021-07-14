@@ -381,6 +381,7 @@
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
 <translation id="2316887270356262533">१ एम.बि. भन्दा कम ठाउँ खाली गर्दछ। तपाईं अर्कोपटक आउँदा केही साइटहरू अझ ढिलोगरी लोड हुनसक्छन्।</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> लाई एक-पटके टेक्स्ट म्यासेज र पासवर्ड आवश्यक हुन्छ।</translation>
+<translation id="2328651992442742497">अनुमति दिइयोस् (डिफल्ट)</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> मा म्याद समाप्त हुन्छ</translation>
 <translation id="2337852623177822836">तपाईंको प्रशासकले नियन्त्रण गरेको सेटिङ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडा बनाउन चाहन्छ</translation>
@@ -429,6 +430,7 @@
 <translation id="2498091847651709837">नयाँ कार्ड स्क्यान गर्नुहोस्</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2505268675989099013">खाता सेभ गर्नुहोस्</translation>
+<translation id="2512101340618156538">अनुमति नदिइयोस् (डिफल्ट)</translation>
 <translation id="2515629240566999685">आफ्नो क्षेत्रको सिग्नल जाँच गर्नुहोस्</translation>
 <translation id="2521385132275182522">फेदको दायाँपट्टि स्टिच</translation>
 <translation id="2523886232349826891">यो डिभाइसमा भने यस कार्डलाई अझै पनि सुरक्षित गरिन्छ</translation>
@@ -960,6 +962,7 @@
 <translation id="4434045419905280838">पपअप तथा रिडिरेक्टहरू</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">प्रोक्सीको प्रयोग असक्षम गरिएको छ तर एक सुस्पष्ट प्रोक्सी विन्यास तोकिएको छ।</translation>
+<translation id="4460315069258617173">तपाईंले यो साइटका ट्याबहरू बन्द नगरुन्जेल अनुमति दिइन्छ</translation>
 <translation id="4464826014807964867">तपाईंको सङ्गठनले प्रदान गरेको जानकारी भएका वेबसाइटहरू</translation>
 <translation id="4476953670630786061">यो फारम सुरक्षित छैन। अटोफिल सुविधा अफ गरिएको छ।</translation>
 <translation id="4477350412780666475">अर्को ट्र्याक</translation>
@@ -1001,6 +1004,7 @@
 <translation id="464342062220857295">खोजसम्बन्धी सुविधाहरू</translation>
 <translation id="4644670975240021822">विपरीत क्रम तर तलतिर फर्काएर</translation>
 <translation id="4646534391647090355">मलाई अहिले नै त्यहाँ लैजानुहोस्</translation>
+<translation id="4652266463001779298">अनुमति दिइएको छैन</translation>
 <translation id="4658638640878098064">सिरानको बायाँपट्टि स्टिच</translation>
 <translation id="4660119392514473465">तपाईं अब गोप्य रूपमा ब्राउज गर्न सक्नुहुन्छ र यो डिभाइस चलाउने अन्य मान्छेहरू तपाईंका गतिविधि देख्ने छैनन्। तर डाउनलोड गरिएका सामग्री, बुकमार्क र पछि पढ्न सुरक्षित गरिएका वेबपेजको सूचीमा हालिएका वस्तुहरू भने सुरक्षित गरिने छन्।</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1711,6 +1715,7 @@
 <translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">सम्बद्ध प्रयोगकर्ता हो कि होइन:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
+<translation id="7349921148288539306">तपाईंले यो ट्याब बन्द नगरुन्जेल अनुमति दिइन्छ</translation>
 <translation id="7352651011704765696">केही गल्ती भयो</translation>
 <translation id="7353601530677266744">आदेश रेखा</translation>
 <translation id="7359588939039777303">विज्ञापनहरूमाथि रोक लगाइयो।</translation>
@@ -1853,6 +1858,7 @@
 <translation id="7800304661137206267">जडानलाई <ph name="CIPHER" /> प्रयोग गरेर गुप्तलेखन गरिएको छ, र साथमा सन्देश प्रमाणीकरणको लागि <ph name="MAC" /> प्रयोग गरिन्छ र कुञ्जी आदान प्रदान संयन्त्रको रूपमा <ph name="KX" /> लाई प्रयोग गरिन्छ।</translation>
 <translation id="7802523362929240268">साइट वैध छ</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
+<translation id="7805571567667010077">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome बाट फारम सुझाव हटाउने हो?</translation>
@@ -1948,6 +1954,7 @@
 <translation id="8175796834047840627">तपाईं साइन इन हुनुभएकाले Chrome ले तपाईंको Google खातामा तपाईंका कार्डहरू सुरक्षित गरिदिने प्रस्ताव गर्दै छ। तपाईं सेटिङहरूमा गई उक्त व्यवहार परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="8176440868214972690">यो डिभाइसका एड्मिनले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाउनुभएको छ।</translation>
 <translation id="8184538546369750125">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (अनुमति दिनुहोस्)</translation>
+<translation id="8190193880870196235">कुनै एक्स्टेन्सनले व्यवस्थापन गरेको</translation>
 <translation id="8193086767630290324">गोप्य डेटाका रूपमा फ्ल्याग गरिएको डेटा प्रयोग गरी गरिएका कारबाहीहरू</translation>
 <translation id="8194797478851900357">सार्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="8201077131113104583">ID "<ph name="EXTENSION_ID" />" भएको विस्तारका लागि अवैध अद्यावधिक URL</translation>
@@ -2048,6 +2055,7 @@
 <translation id="8541158209346794904">ब्लुटुथ यन्त्र</translation>
 <translation id="8542014550340843547">फेदमा तीन स्टिच</translation>
 <translation id="8543181531796978784">तपाईं <ph name="BEGIN_ERROR_LINK" />एक पत्ता लगाउने समस्या रिपोर्ट गर्न<ph name="END_ERROR_LINK" /> सक्नुहुन्छ, यदि तपाईं आफ्नो सुरक्षाको जोखिम बुझ्नुहुन्छ भने, <ph name="BEGIN_LINK" />असुरक्षित साइटको भ्रमण गर्नुहोस्<ph name="END_LINK" />।</translation>
+<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{अनुमति रिसेट गर्नुहोस्}other{अनुमति रिसेट गर्नुहोस्}}</translation>
 <translation id="8557066899867184262">उक्त CVC तपाईंको कार्डको पछाडितिर छ।</translation>
 <translation id="8558485628462305855">अग्मेन्टेड रियालिटी सामग्री हेर्न ARCore अपडेट गर्नुहोस्</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एउटा निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको यन्त्रको मिति र समय <ph name="DATE_AND_TIME" /> गलत छन्।</translation>

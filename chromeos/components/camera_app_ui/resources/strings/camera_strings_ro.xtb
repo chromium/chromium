@@ -6,6 +6,8 @@
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> este deconectată.</translation>
 <translation id="1473110567575736769">Cronometru de 3 secunde</translation>
+<translation id="1478594628797167447">Scaner</translation>
+<translation id="1545749641540134597">Scanează codul QR</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nu s-a înregistrat nimic</translation>
@@ -19,6 +21,7 @@
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> s-a activat</translation>
 <translation id="2144806332417375165">Parametri video personalizați</translation>
+<translation id="2175927920773552910">Cod QR</translation>
 <translation id="229579744168541441">Exportă pe disc</translation>
 <translation id="2320741269052147773">Deplasează spre stânga</translation>
 <translation id="2501278716633472235">Înapoi</translation>

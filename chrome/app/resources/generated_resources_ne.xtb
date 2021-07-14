@@ -91,6 +91,7 @@
 <translation id="1097658378307015415">साइन इन गर्नुअघि, कृपया सञ्जाल <ph name="NETWORK_ID" /> सक्रिय गर्नको लागि पाहुनाको रूपमा प्रवेश गर्नुहोस्</translation>
 <translation id="1099383081182863812">तपाईं <ph name="BEGIN_LINK" />Google Home एप<ph name="END_LINK" />मा आफ्नो Chromecast देख्न सक्नुहुन्छ?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> बाट छवि कपी गरियो</translation>
+<translation id="1100504063505580045">हालको आइकन</translation>
 <translation id="1103523840287552314">सँधै अनुवाद गर्नुहोस् <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;रोक्नुहोस्</translation>
 <translation id="1110155001042129815">प्रतिक्षा गर्नुहोस्</translation>
@@ -2052,6 +2053,7 @@
 <translation id="3192947282887913208">अडियो फाइलहरू</translation>
 <translation id="3197453258332670132">दायाँ क्लिक गर्दा वा केही बेरसम्म थिच्दा मैले चयन गरेका पाठसँग सम्बन्धित जानकारी देखाइयोस्</translation>
 <translation id="3199127022143353223">सर्भरहरू</translation>
+<translation id="3200061262156232574">तपाईंको सपिङ कार्टमा भएका</translation>
 <translation id="3201422919974259695">उपलब्ध USB यन्त्रहरू यहाँ देखिने छन्।</translation>
 <translation id="3202131003361292969">पथ</translation>
 <translation id="3202173864863109533">यस ट्याबको अडियो म्युट गरिएको छ।</translation>
@@ -2458,6 +2460,7 @@
 <translation id="3649505501900178324">अद्यावधिक हुन बाँकी</translation>
 <translation id="3650753875413052677">दर्तासम्बन्धी त्रुटि</translation>
 <translation id="3650845953328929506">लग अपलोड गर्ने कार्य विचाराधीन छ</translation>
+<translation id="365089839707261811">परिवर्तन गरिएको नाम हेर्नुहोस्</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" लाई निम्नमाथि पहुँँच राख्न दिनुहोस्‌:</translation>
 <translation id="3651488188562686558">Wi-Fi बाट विच्छेद गर्नुहोस्</translation>
 <translation id="3652817283076144888">सुरुवात गर्दै</translation>
@@ -2815,7 +2818,6 @@
 <translation id="3994374631886003300">आफ्नो फोन अनलक गर्नुहोस्‌ र तपाईंको <ph name="DEVICE_TYPE" /> अनलक गर्न यसलाई नजिक ल्याउनुहोस्‌।</translation>
 <translation id="3994878504415702912">&amp;जूम गर्नुहोस्</translation>
 <translation id="3995138139523574647">USB-C यन्त्र (दायाँ भागको पछाडिको पोर्ट)</translation>
-<translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4002329649066944389">कुनै विशेष साइटमा लागू हुने अपवादहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4002440992267487163">Pin सेटअप गर्नुहोस्</translation>
 <translation id="4005817994523282006">प्रामाणिक समय पत्ता लगाउने विधि</translation>
@@ -2982,6 +2984,7 @@
 <translation id="42126664696688958">निर्यात गर्नुहोस्</translation>
 <translation id="42137655013211669">सर्भरद्वारा यो संसाधनमा पहुँच गर्न निषेध गरिएको थियो।</translation>
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
+<translation id="4219558185499589032">बक्स</translation>
 <translation id="4220648711404560261">सक्रिय गर्ने क्रममा त्रुटि हुन गयो।</translation>
 <translation id="4222772810963087151">बिल्डसम्बन्धी विवरणहरू</translation>
 <translation id="4225020013797061859">"<ph name="ACTION" />" का निम्ति स्विच वा की तोक्न कुनै स्विच वा की थिच्नुहोस्</translation>
@@ -3074,6 +3077,7 @@
 <translation id="4332976768901252016">अभिभावकीय नियन्त्रणहरू सेट अप गर्नुहोस्</translation>
 <translation id="4333854382783149454">RSA गुप्तिकरणको साथमा PKCS #1 SHA-1</translation>
 <translation id="4336434711095810371">सबै डेटा मेटाउनुहोस्</translation>
+<translation id="4339203724549370495">एप अनइन्स्टल गर्नुहोस्</translation>
 <translation id="4340125850502689798">युजरनेम अवैध छ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> एपलाई "<ph name="EXTENSION_NAME" />" सँग सञ्चार गर्न चाहन्छ</translation>
 <translation id="4340799661701629185">साइटहरूलाई सूचना देखाउने अनुमति नदिइयोस्</translation>
@@ -3485,6 +3489,7 @@
 <translation id="479536056609751218">वेबपृष्ठ, HTML मात्रै</translation>
 <translation id="4796142525425001238">सधैँ रिस्टोर गरियोस्</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ब्लुटुथ लगहरू<ph name="END_LINK" /> संलग्न गर्नुहोस् (Google आन्तरिक)</translation>
+<translation id="4800839971935185386">परिवर्तन गरिएका नाम तथा आइकन हेर्नुहोस्</translation>
 <translation id="4801448226354548035">खाताहरू लुकाउनुहोस्</translation>
 <translation id="4801512016965057443">मोबाइल डाटा रोमिङको लागि अनुमति दिनुहोस्</translation>
 <translation id="4804818685124855865">जडान विच्छेद</translation>
@@ -4112,6 +4117,7 @@
 <translation id="5498967291577176373">तपाईंको नाम, ठेगाना वा फोन नम्बर स्वतः टाइप गरिदिने सुविधाको सहयोगले गरेर अझ छिटो लेख्नुहोस्</translation>
 <translation id="5499313591153584299">यो फाइल तपाईंको कम्प्युटरका लागि हानिकारक हुन सक्छ।</translation>
 <translation id="5499453227627332024">Linux कन्टेनरको नयाँ संस्करण उपलब्ध छ। तपाईं पछि सेटिङ एपबाट पनि यसलाई अपग्रेड गर्न सक्नुहुन्छ।</translation>
+<translation id="549957179819296104">नयाँ आइकन</translation>
 <translation id="5500709606820808700">आज सुरक्षा जाँच गरिएको थियो</translation>
 <translation id="5501322521654567960">बायाँतिर एलाइन गरिएको साइड प्यानल</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गर्न सकिएन}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गर्न सकिएन}}</translation>
@@ -4273,6 +4279,7 @@
 <translation id="5677503058916217575">पृष्ठ भाषा:</translation>
 <translation id="5677928146339483299">ब्लक गरिएको छ</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> मा पढ्न र लेख्न अनुमति दिइएको छ।</translation>
+<translation id="5678821117681811450"><ph name="WEB_DRIVE" /> मा पठाइँदै छ</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />मा तपाईंको डेटा पढ्नुहोस्</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" हटाउने हो?</translation>
 <translation id="5683806393796685434">कृपया नेटवर्क सक्रिय गर्ने कोड हाल्नुहोस्</translation>
@@ -4368,7 +4375,6 @@
 <translation id="5794414402486823030">प्रणाली दर्शकमार्फत सधैं खोल्नुहोस्</translation>
 <translation id="5794700615121138172">Linux बाट सेयर गरिएका फोल्डरहरू</translation>
 <translation id="5794786537412027208">सबै Chrome एप्स छोड्नुहोस्</translation>
-<translation id="5797070761912323120">Google ले खोज, विज्ञापन र Google का अन्य सेवाहरूलाई वैयक्तीकृत गर्न तपाईंको इतिहाससम्बन्धी जानकारी प्रयोग गर्न सक्छ</translation>
 <translation id="5797521893972859201">यसले खोज बाकसको इतिहासलगायतका ब्राउजिङ इतिहास मेटाउँछ</translation>
 <translation id="5798079537501238810">साइटहरूले भुक्तानी ह्यान्ड्लरहरू इन्स्टल गर्न सक्छन्</translation>
 <translation id="579907812742603813">संरक्षित सामग्री</translation>
@@ -4731,6 +4737,7 @@
 <translation id="6207200176136643843">डिफल्ट जुम स्तरमा रिसेट गर्नुहोस्</translation>
 <translation id="6207937957461833379">देश / क्षेत्र</translation>
 <translation id="6208521041562685716">मोबाइल डेटा सक्रिय गरिँदै छ</translation>
+<translation id="6208725777148613371"><ph name="WEB_DRIVE" /> मा सेभ गर्न सकिएन - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">कम्पोनेन्टहरू अपडेट हुँदै छन्</translation>
 <translation id="6209908325007204267">तपाईंको डिभाइसमा स्तरवृद्धि गरी Chrome Enterprise बनाउने सुविधा उपलब्ध छ तर तपाईंको प्रयोगकर्ता नाम भने कुनै पनि इन्टरप्राइजको खातासँग सम्बन्धित छैन। कृपया कुनै सहायक यन्त्रमार्फत g.co/ChromeEnterpriseAccount मा गई इन्टरप्राइज खाता सिर्जना गर्नुहोस्।</translation>
 <translation id="6212039847102026977">नेटवर्कका उन्नत गुणहरू देखाउनुहोस्</translation>
@@ -5724,6 +5731,7 @@
 <translation id="7326004502692201767">आफ्ना बच्चाका लागि यो <ph name="DEVICE_TYPE" /> सेटअप गर्नुहोस्</translation>
 <translation id="7326025035243649350">तपाईं Chrome OS मा पहिले नै इन्स्टल गरिएको स्क्रिन रिडर ChromeVox सक्रिय गर्न चाहनुहुन्छ?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ले ADB डिबग प्रक्रिया अफ गर्नुभएको छ। तपाईंले आफ्नो <ph name="DEVICE_TYPE" /> रिस्टार्ट गरेपछि तपाईं एपहरू प्ले स्टोर बाहेकका श्रोतबाट इन्स्टल सक्नु हुने छैन।</translation>
+<translation id="7328119182036084494"><ph name="WEB_DRIVE" /> मा सेभ गरियो</translation>
 <translation id="7328867076235380839">अमान्य संयोजन</translation>
 <translation id="7329154610228416156">साइन इन विफल  भयो किनभने यसलाई एउटा गैर-सुरक्षित URL (<ph name="BLOCKED_URL" />) सँग कन्फिगर गरिएको थियो। कृपया तपाईँको प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="7332053360324989309">यसै कामको लागि तोकिएको कर्मचारी: <ph name="SCRIPT_URL" /></translation>
@@ -6123,6 +6131,7 @@
 <translation id="7730449930968088409">तपाइँको स्क्रिनको सामग्री खिच्नुहोस्</translation>
 <translation id="7730683939467795481"><ph name="EXTENSION_NAME" /> एक्स्टेन्सनले यो पृष्ठ परिवर्तन गरेको छ</translation>
 <translation id="7734486794139738745">म एउटा मात्र स्विच प्रयोग गर्छु</translation>
+<translation id="7734541938181328224">परिवर्तन गरिएको आइकन हेर्नुहोस्</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" सँग जोडा बनाउँदै ...</translation>
 <translation id="7737948071472253612">तपाईंको क्यामेरा प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="7740996059027112821">मानक</translation>
@@ -6611,6 +6620,7 @@
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" /> बाट सेयर गरिएको पेज</translation>
 <translation id="8236911020904880539">बाहिरिनुहोस्</translation>
 <translation id="8236917170563564587">बरु यो ट्याब सेयर गर्नुहोस्</translation>
+<translation id="8237471930911823556"><ph name="APP_NAME" /> ब्राउजरको नयाँ ट्याबमा खुल्ने बनाइएको छ। खोल्न मिल्ने लिंकहरू पनि ब्राउजरमा नै खुल्ने छन्।</translation>
 <translation id="8237647586961940482">गाढा गुलाबी र रातो</translation>
 <translation id="8239032431519548577">इन्टरप्राइज दर्ता गर्ने काम पूरा भयो</translation>
 <translation id="8239932336306009582">सूचना पठाउने अनुमति नदिइएका साइटहरू</translation>
@@ -6881,6 +6891,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">एपलाई डाउनग्रेज गर्ने प्रयत्न भयो।</translation>
 <translation id="8569682776816196752">कुनैपनि गन्तव्यहरू फेला परेनन्</translation>
+<translation id="857074314439694500">यो वेब एपले अर्कै एप जस्तो बनेर तपाईंलाई झुक्याउन खोज्दै छ भने यसलाई अनइन्स्टल गरिहाल्नुहोस्।</translation>
 <translation id="8571213806525832805">पछिल्ला ४ हप्ता</translation>
 <translation id="8571687764447439720">Kerberos को टिकट थप्नुहोस्</translation>
 <translation id="8574990355410201600">आवाजलाई जुनसुकै बेला <ph name="HOST" /> मा अनुमति दिनुहोस्</translation>
@@ -7147,6 +7158,7 @@
 <translation id="8835786707922974220">तपाईं आफूले सुरक्षित गरेका पासवर्डहरू जुनसुकै बेला प्रयोग गर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> का अनुसार तपाईंले एक हप्ताभित्र आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरणहरू हेर्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8836782447513334597">जारी राख्नुहोस्</translation>
+<translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">अपारदर्शी</translation>
 <translation id="8838770651474809439">ह्यामबर्गर</translation>
 <translation id="883911313571074303">छविलाई एनोटेट गर्नुहोस्</translation>

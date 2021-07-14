@@ -6,6 +6,8 @@
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er frakoblet.</translation>
 <translation id="1473110567575736769">Timer på 3 sekunder</translation>
+<translation id="1478594628797167447">Scanner</translation>
+<translation id="1545749641540134597">Scan QR-kode</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">Der er ingen optagelser</translation>
@@ -19,6 +21,7 @@
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> er aktiv</translation>
 <translation id="2144806332417375165">Tilpassede videoparametre</translation>
+<translation id="2175927920773552910">QR-kode</translation>
 <translation id="229579744168541441">Eksportér til disk</translation>
 <translation id="2320741269052147773">Panorer til venstre</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
@@ -61,6 +64,7 @@
 <translation id="5057360777601936059">Dit kamera er ikke tilgængeligt lige nu.
         Tjek, om kameraet er tilsluttet korrekt.</translation>
 <translation id="5152121255775685072">Gå til galleri</translation>
+<translation id="5268823927180092501">Aktivér dokumenttilstand på alle kameraer</translation>
 <translation id="5422455049771430511">Dine billeder og videoer har fået et nyt hjem</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5753488212459587150">Aktivér eksperttilstand</translation>

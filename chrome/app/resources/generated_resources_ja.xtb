@@ -93,6 +93,7 @@
 <translation id="1097658378307015415">ログインする前に、ゲスト セッションを開始して <ph name="NETWORK_ID" /> ネットワークを有効にしてください</translation>
 <translation id="1099383081182863812"><ph name="BEGIN_LINK" />Google Home アプリ<ph name="END_LINK" />で Chromecast が表示されますか？</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> から画像がコピーされました</translation>
+<translation id="1100504063505580045">現在のアイコン</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
 <translation id="1110155001042129815">待機</translation>
@@ -735,6 +736,7 @@
 <translation id="1779652936965200207">「<ph name="DEVICE_NAME" />」でこのパスキーを入力してください:</translation>
 <translation id="177989070088644880">アプリ（<ph name="ANDROID_PACKAGE_NAME" />）</translation>
 <translation id="1780152987505130652">グループを閉じる</translation>
+<translation id="1780273119488802839">ブックマークをインポートしています...</translation>
 <translation id="1781291988450150470">現在の PIN</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> が、Wi-Fi に接続して、今すぐアップデートをダウンロードするよう求めています。</translation>
 <translation id="1781502536226964113">新しいタブ ページを開く</translation>
@@ -2461,6 +2463,7 @@
 <translation id="3649505501900178324">更新の期限が過ぎています</translation>
 <translation id="3650753875413052677">登録エラー</translation>
 <translation id="3650845953328929506">ログのアップロードを保留しています。</translation>
+<translation id="365089839707261811">新しい名前を確認</translation>
 <translation id="3650952250015018111">「<ph name="APP_NAME" />」のアクセスを許可する:</translation>
 <translation id="3651488188562686558">Wi-Fi から切断します</translation>
 <translation id="3652817283076144888">初期化しています</translation>
@@ -2819,7 +2822,6 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> のロックを解除するには、スマートフォンのロックを解除してデバイスに近づけます。</translation>
 <translation id="3994878504415702912">ズーム(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C デバイス（右奥のポート）</translation>
-<translation id="4002066346123236978">タイトル</translation>
 <translation id="4002329649066944389">サイト固有の例外の管理</translation>
 <translation id="4002440992267487163">PIN の設定</translation>
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
@@ -2986,7 +2988,7 @@
 <translation id="42126664696688958">エクスポート</translation>
 <translation id="42137655013211669">このリソースへのアクセスはサーバーにより禁止されています。</translation>
 <translation id="4217571870635786043">音声入力</translation>
-<translation id="4219558185499589032">ボックス</translation>
+<translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">有効化中にエラーが発生しました。</translation>
 <translation id="4222772810963087151">ビルドの詳細</translation>
 <translation id="4225020013797061859">「<ph name="ACTION" />」を割り当てるスイッチまたはキーを押してください</translation>
@@ -3079,6 +3081,7 @@
 <translation id="4332976768901252016">保護者による使用制限を設定する</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 with RSA 暗号化</translation>
 <translation id="4336434711095810371">データをすべて消去</translation>
+<translation id="4339203724549370495">アプリをアンインストール</translation>
 <translation id="4340125850502689798">ユーザー名が無効です</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> がアプリ「<ph name="EXTENSION_NAME" />」との通信をリクエストしています</translation>
 <translation id="4340799661701629185">サイトに通知の送信を許可しない</translation>
@@ -3490,6 +3493,7 @@
 <translation id="479536056609751218">ウェブページ、HTML のみ</translation>
 <translation id="4796142525425001238">常に復元</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth ログ<ph name="END_LINK" />を添付する（Google 内部）</translation>
+<translation id="4800839971935185386">新しい名前とアイコンを確認</translation>
 <translation id="4801448226354548035">アカウントを非表示にする</translation>
 <translation id="4801512016965057443">モバイル データ ローミングを許可する</translation>
 <translation id="4804818685124855865">切断</translation>
@@ -4117,6 +4121,7 @@
 <translation id="5498967291577176373">名前や住所、電話番号が候補として表示され、すばやく入力できます</translation>
 <translation id="5499313591153584299">このファイルはパソコンに危害を加える可能性があります。</translation>
 <translation id="5499453227627332024">Linux コンテナのアップグレードが可能です。後で設定アプリからアップグレードすることもできます。</translation>
+<translation id="549957179819296104">アイコンが新しくなりました</translation>
 <translation id="5500709606820808700">安全確認を今日実行しました</translation>
 <translation id="5501322521654567960">左揃えのサイドパネル</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}}</translation>
@@ -4374,7 +4379,6 @@
 <translation id="5794414402486823030">常にシステム ビューアで開く</translation>
 <translation id="5794700615121138172">Linux の共有フォルダ</translation>
 <translation id="5794786537412027208">すべての Chrome アプリを終了</translation>
-<translation id="5797070761912323120">検索、広告、その他の Google サービスをカスタマイズするために、Google で履歴が使用されることがあります</translation>
 <translation id="5797521893972859201">検索ボックスなどの履歴を削除します</translation>
 <translation id="5798079537501238810">サイトが支払いハンドラをインストールできるようにする</translation>
 <translation id="579907812742603813">保護されたコンテンツ</translation>
@@ -6132,6 +6136,7 @@
 <translation id="7730449930968088409">画面のコンテンツをキャプチャする</translation>
 <translation id="7730683939467795481">このページは「<ph name="EXTENSION_NAME" />」拡張機能によって変更されました</translation>
 <translation id="7734486794139738745">スイッチを 1 つだけ使用する</translation>
+<translation id="7734541938181328224">新しいアイコンを確認</translation>
 <translation id="7737115349420013392">「<ph name="DEVICE_NAME" />」とペア設定しています…</translation>
 <translation id="7737948071472253612">カメラの使用を許可しないサイト</translation>
 <translation id="7740996059027112821">標準</translation>
@@ -6891,6 +6896,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">アプリのダウングレードが試行されました。</translation>
 <translation id="8569682776816196752">送信先が見つかりません</translation>
+<translation id="857074314439694500">このウェブアプリがユーザーをだまして別のアプリになりすまそうとしている場合は、アンインストールしてください。</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
 <translation id="8571687764447439720">Kerberos チケットの追加</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> の音声を常に許可する</translation>

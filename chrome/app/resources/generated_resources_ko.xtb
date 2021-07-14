@@ -95,6 +95,7 @@
     <ph name="END_LINK" />에
     Chromecast가 표시되나요?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />에서 이미지가 복사됨</translation>
+<translation id="1100504063505580045">현재 아이콘</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="1108600514891325577">중지(&amp;S)</translation>
 <translation id="1110155001042129815">대기</translation>
@@ -746,6 +747,7 @@
 <translation id="1779652936965200207">다음 패스키를 '<ph name="DEVICE_NAME" />'에 입력하세요.</translation>
 <translation id="177989070088644880">앱(<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">그룹 닫기</translation>
+<translation id="1780273119488802839">북마크 가져오기...</translation>
 <translation id="1781291988450150470">현재 PIN</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다.</translation>
 <translation id="1781502536226964113">새 탭 페이지 열기</translation>
@@ -2476,6 +2478,7 @@
 <translation id="3649505501900178324">업데이트 지연됨</translation>
 <translation id="3650753875413052677">등록 오류</translation>
 <translation id="3650845953328929506">로그 업데이트가 대기 중입니다.</translation>
+<translation id="365089839707261811">이름 업데이트 검토</translation>
 <translation id="3650952250015018111">'<ph name="APP_NAME" />'이(가) 다음 기기에 액세스하도록 허용합니다.</translation>
 <translation id="3651488188562686558">Wi-Fi 연결 해제</translation>
 <translation id="3652817283076144888">초기화 중</translation>
@@ -2834,7 +2837,6 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 잠금 해제하고 더 가까이 가져오세요.</translation>
 <translation id="3994878504415702912">글꼴 크기(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 기기(우측 후면 포트)</translation>
-<translation id="4002066346123236978">제목</translation>
 <translation id="4002329649066944389">사이트별 예외 관리</translation>
 <translation id="4002440992267487163">PIN 설정</translation>
 <translation id="4005817994523282006">시간대 감지 방법</translation>
@@ -3092,6 +3094,7 @@
 <translation id="4332976768901252016">자녀 보호 기능 설정하기</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1(RSA 암호화 사용)</translation>
 <translation id="4336434711095810371">모든 데이터 삭제</translation>
+<translation id="4339203724549370495">앱 제거</translation>
 <translation id="4340125850502689798">잘못된 사용자 이름</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />에서 '<ph name="EXTENSION_NAME" />' 앱과 통신하려고 합니다.</translation>
 <translation id="4340799661701629185">사이트에서 알림을 전송하도록 허용하지 않음</translation>
@@ -3503,6 +3506,7 @@
 <translation id="479536056609751218">웹페이지, HTML만</translation>
 <translation id="4796142525425001238">항상 복원</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />블루투스 로그<ph name="END_LINK" /> 첨부(Google 사내용)</translation>
+<translation id="4800839971935185386">이름 및 아이콘 업데이트 검토</translation>
 <translation id="4801448226354548035">계정 숨기기</translation>
 <translation id="4801512016965057443">모바일 데이터 로밍 허용</translation>
 <translation id="4804818685124855865">연결 해제</translation>
@@ -4130,6 +4134,7 @@
 <translation id="5498967291577176373">이름, 주소, 전화번호와 같은 인라인 추천 항목을 사용해 빠르게 작성하세요.</translation>
 <translation id="5499313591153584299">이 파일은 컴퓨터에 해로울 수 있습니다.</translation>
 <translation id="5499453227627332024">Linux 컨테이너를 업그레이드할 수 있습니다. 나중에 설정 앱에서 업그레이드해도 됩니다.</translation>
+<translation id="549957179819296104">새로운 아이콘</translation>
 <translation id="5500709606820808700">안전 확인이 오늘 실행됨</translation>
 <translation id="5501322521654567960">왼쪽 정렬 측면 패널</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}}</translation>
@@ -4387,7 +4392,6 @@
 <translation id="5794414402486823030">항상 시스템 뷰어로 열기</translation>
 <translation id="5794700615121138172">Linux 공유 폴더</translation>
 <translation id="5794786537412027208">모든 Chrome 앱 종료</translation>
-<translation id="5797070761912323120">Google에서 내 방문 기록을 사용하여 Google 검색, 광고 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="5797521893972859201">검색창에 입력한 내용을 비롯한 기록 삭제</translation>
 <translation id="5798079537501238810">사이트에서 결제 핸들러를 설치할 수 있음</translation>
 <translation id="579907812742603813">보호된 콘텐츠</translation>
@@ -6145,6 +6149,7 @@
 <translation id="7730449930968088409">화면의 콘텐츠 캡쳐</translation>
 <translation id="7730683939467795481">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 이 페이지를 변경했습니다.</translation>
 <translation id="7734486794139738745">스위치 1개만 사용</translation>
+<translation id="7734541938181328224">아이콘 업데이트 검토</translation>
 <translation id="7737115349420013392">‘<ph name="DEVICE_NAME" />’ 페어링 중...</translation>
 <translation id="7737948071472253612">카메라 사용이 허용되지 않음</translation>
 <translation id="7740996059027112821">표준</translation>
@@ -6905,6 +6910,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">앱을 다운그레이드하려 했습니다.</translation>
 <translation id="8569682776816196752">목적지를 찾을 수 없음</translation>
+<translation id="857074314439694500">웹 앱이 다른 앱인 것처럼 사용자를 속이려 한다면 앱을 제거하시기 바랍니다.</translation>
 <translation id="8571213806525832805">지난 4주</translation>
 <translation id="8571687764447439720">Kerberos 티켓 추가</translation>
 <translation id="8574990355410201600"><ph name="HOST" />에서 소리 항상 허용</translation>

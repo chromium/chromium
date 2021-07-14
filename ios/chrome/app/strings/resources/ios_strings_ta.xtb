@@ -236,12 +236,12 @@
 <translation id="3371831930909698441">மொழியாக்கம் கிடைக்கிறது திரையின் கீழ்ப்பகுதிக்கு அருகில் விருப்பத்தேர்வுகள் உள்ளன.</translation>
 <translation id="3393920035788932672">பாப்-அப்கள் அனுமதிக்கப்பட்டன</translation>
 <translation id="3399930248910934354">Chrome அமைப்புகளைத் திற</translation>
+<translation id="3404744938087714423">வெளியேறினால் ஒத்திசைவு முடக்கப்படும்.</translation>
 <translation id="3425644765244388016">கார்டின் புனைப்பெயர்</translation>
 <translation id="3433057996795775706">இந்தக் கடவுச்சொல்லை நீக்கினால் <ph name="WEBSITE" /> டொமைனில் உள்ள உங்கள் கணக்கு நீக்கப்படாது. <ph name="WEBSITE" /> டொமைனில் உள்ள உங்கள் கணக்கைப் பிறரிடமிருந்து பாதுகாக்க உங்கள் கடவுச்சொல்லை மாற்றவும்.</translation>
 <translation id="3443810440409579745">தாவல் பகிரப்பட்டுள்ளது.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> நி.</translation>
 <translation id="3448016392200048164">காட்சிப் பிரிப்பு</translation>
-<translation id="3454224729131972583">தலைப்பு</translation>
 <translation id="345565170154308620">கடவுச்சொற்களை நிர்வகி...</translation>
 <translation id="3469166899695866866">பதிவிறக்கத்தை நிறுத்தவா?</translation>
 <translation id="3470502288861289375">நகலெடுக்கிறது...</translation>
@@ -268,6 +268,7 @@
 <translation id="3607167657931203000">தன்னிரப்பி தரவு</translation>
 <translation id="3609785682760573515">ஒத்திசைக்கிறது...</translation>
 <translation id="3638472932233958418">வலைப்பக்கங்களை முன்னதாக ஏற்று</translation>
+<translation id="3648013730801605241">நீங்கள் உள்நுழைந்திருக்கும்போது <ph name="BEGIN_LINK" />இதுவரை தேடியவையும்<ph name="END_LINK" /> <ph name="BEGIN_LINK" />பிற வகையான செயல்பாடுகளும்<ph name="END_LINK" /> உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கலாம். இவற்றை எப்போது வேண்டுமானாலும் நீக்கலாம்.</translation>
 <translation id="3661160521073045932">உள்ளமைவுச் சுயவிவரம் உள்ளது</translation>
 <translation id="3670030362669914947">எண்</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> இல் புத்தகக்குறியைச் சேர்த்தது</translation>
@@ -646,6 +647,10 @@
 <translation id="734758817008927353">கார்டை சேமிப்பதற்கான விருப்பத்தேர்வுகள்</translation>
 <translation id="7348502496356775519">புத்தகக்குறி</translation>
 <translation id="7353432112255316844">இது நீங்கள்தான் என உறுதிசெய்யுங்கள்</translation>
+<translation id="7376492662175718683">Google கணக்கில் இருந்து வெளியேற்றப்படமாட்டீர்கள். நீங்கள் உள்நுழைந்திருக்கும்போது <ph name="BEGIN_LINK" />பிற வகையான செயல்பாடுகள்<ph name="END_LINK" /> உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கலாம். இவற்றை எப்போது வேண்டுமானாலும் நீக்கலாம்.
+
+        
+<ph name="DSE_NAME" /> என்பதே உங்கள் தேடல் இன்ஜின். அதன் வழிமுறைகளைப் (இருந்தால்) பார்த்து தேடல் விவரங்களை நீக்குங்கள்.</translation>
 <translation id="7383797227493018512">வாசிப்புப் பட்டியல்</translation>
 <translation id="7398893703713203428">இணைப்பை உருவாக்கு</translation>
 <translation id="739941347996872055">முந்தைய தாவல்</translation>
@@ -787,6 +792,10 @@
 <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
 <translation id="8840513115188359703">உங்கள் Google கணக்கிலிருந்து வெளியேறமாட்டீர்கள்.</translation>
+<translation id="8851300969441660830">Google கணக்கில் இருந்து வெளியேற்றப்படமாட்டீர்கள். நீங்கள் உள்நுழைந்திருக்கும்போது <ph name="BEGIN_LINK" />பிற வகையான செயல்பாடுகள்<ph name="END_LINK" /> உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கலாம். இவற்றை எப்போது வேண்டுமானாலும் நீக்கலாம்.
+
+
+அதன் வழிமுறைகளைப் பார்த்து தேடல் விவரங்களை நீக்குங்கள் (நீக்க அனுமதி இருந்தால்).</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} தாவல்}other{{count} தாவல்கள்}}</translation>
 <translation id="8870413625673593573">சமீபத்தில் மூடியவை</translation>
 <translation id="8876882697946675716">சாதனங்களை ஒத்திசைவிலேயே வைத்திருங்கள்</translation>

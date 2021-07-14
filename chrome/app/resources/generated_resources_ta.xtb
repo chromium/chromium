@@ -95,6 +95,7 @@
     Google Home ஆப்ஸில்<ph name="END_LINK" />
     உங்கள் Chromecast காட்டப்படுகிறதா?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> சாதனத்திலிருந்து நகலெடுக்கப்பட்ட படம்</translation>
+<translation id="1100504063505580045">தற்போதைய ஐகான்</translation>
 <translation id="1103523840287552314">எப்போதும் இந்த மொழியை மொழிபெயர் <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1110155001042129815">காத்திருங்கள்</translation>
@@ -434,7 +435,7 @@
 <translation id="1470946456740188591">சுட்டி உலாவலை இயக்கவோ முடக்கவோ ‘Ctrl+Search+7’ என்ற ஷார்ட்கட் விசைகளைப் பயன்படுத்தவும்</translation>
 <translation id="1472675084647422956">மேலும் காண்பி</translation>
 <translation id="1474785664565228650">மைக்ரோஃபோன் அமைப்பில் செய்த மாற்றத்தைச் செயல்படுத்த Parallels Desktopபை மீண்டும் தொடங்க வேண்டும். தொடர Parallels Desktopபை மீண்டும் தொடங்கவும்.</translation>
-<translation id="1475502736924165259">பிற வகைகள் எவற்றிலும் பொருந்தாத சான்றிதழ்கள் கோப்பில் உள்ளன</translation>
+<translation id="1475502736924165259">பிற வகைகள் எவற்றிலும் பொருந்தாத சான்றிதழ்கள் ஃபைலில் உள்ளன</translation>
 <translation id="1476088332184200792">உங்கள் சாதனத்திற்கு நகலெடுங்கள்</translation>
 <translation id="1476607407192946488">&amp;மொழி அமைப்புகள்</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> டொமைனைப் பயன்படுத்த உங்கள் ஸ்மார்ட் கார்டு செருகப்பட்ட நிலையிலேயே இருக்க வேண்டும்.</translation>
@@ -1175,7 +1176,7 @@
 <translation id="2231160360698766265">பாதுகாக்கப்பட்ட உள்ளடக்கத்தைத் தளங்கள் பிளே செய்யலாம்</translation>
 <translation id="2231238007119540260">நீங்கள் ஒரு சேவையக சான்றிதழை நீக்கினால், அந்த சேவையகத்திற்கான வழக்கமான பாதுகாப்பு சரிபார்ப்புகளை மீட்டமைக்கிறீர்கள் மற்றும் அது செல்லுபடியாகும் சான்றிதழைப் பயன்படுத்துமாறும் கோருகிறீர்கள்.</translation>
 <translation id="2232751457155581899">கேமராவின் நிலையைத் தளங்கள் கண்காணிக்க முயலும்போது அனுமதி கேள்</translation>
-<translation id="2232876851878324699">கோப்பில் ஒரு இறக்குமதி செய்யப்படாத சான்றிதழ் உள்ளது:</translation>
+<translation id="2232876851878324699">ஃபைலில் ஒரு இறக்குமதி செய்யப்படாத சான்றிதழ் உள்ளது:</translation>
 <translation id="2233502537820838181">&amp;மேலும் தகவல்</translation>
 <translation id="2234876718134438132">ஒத்திசைவு &amp; Google சேவைகள்</translation>
 <translation id="2235344399760031203">மூன்றாம் தரப்புக் குக்கீகள் தடுக்கப்பட்டுள்ளன</translation>
@@ -2068,6 +2069,7 @@
 <translation id="3192947282887913208">ஆடியோ கோப்புகள்</translation>
 <translation id="3197453258332670132">வலது கிளிக் செய்தோ நீண்ட நேரம் அழுத்தியோ, நீங்கள் தேர்ந்தெடுக்கும் உரைக்கான தொடர்புடைய தகவலைப் பார்க்கலாம்</translation>
 <translation id="3199127022143353223">சேவைகங்கள்</translation>
+<translation id="3200061262156232574">உங்கள் ஷாப்பிங் கார்ட்டில் உள்ளவை</translation>
 <translation id="3201422919974259695">கிடைக்கக்கூடிய USB சாதனங்கள் இங்குத் தோன்றும்.</translation>
 <translation id="3202131003361292969">தடம்</translation>
 <translation id="3202173864863109533">இந்தத் தாவலின் ஆடியோ முடக்கப்படுகிறது.</translation>
@@ -2474,6 +2476,7 @@
 <translation id="3649505501900178324">புதுப்பிப்பு நிலுவையில் உள்ளது</translation>
 <translation id="3650753875413052677">பதிவுசெய்வதில் பிழை</translation>
 <translation id="3650845953328929506">பதிவை ஏற்றுவது நிலுவையிலுள்ளது.</translation>
+<translation id="365089839707261811">பெயர் மாற்றங்களைப் பாருங்கள்</translation>
 <translation id="3650952250015018111">இவற்றை அணுக "<ph name="APP_NAME" />"ஐ அனுமதி:</translation>
 <translation id="3651488188562686558">வைஃபை இணைப்பைத் துண்டி</translation>
 <translation id="3652817283076144888">துவக்குகிறது</translation>
@@ -2832,7 +2835,6 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />ஐ அன்லாக் செய்ய, உங்கள் மொபைலை அன்லாக் செய்து, சாதனத்திற்கு அருகில் எடுத்து வரவும்.</translation>
 <translation id="3994878504415702912">&amp;பெரிதாக்கு</translation>
 <translation id="3995138139523574647">USB-C சாதனம் (வலது பக்கம் பின்னே இருக்கும் போர்ட்)</translation>
-<translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4002329649066944389">தளம் சார்ந்த விதிவிலக்குகளை நிர்வகித்தல்</translation>
 <translation id="4002440992267487163">பின் அமைவு</translation>
 <translation id="4005817994523282006">நேர மண்டலம் கண்டறிதல் முறை</translation>
@@ -2999,6 +3001,7 @@
 <translation id="42126664696688958">ஏற்றுமதி செய்</translation>
 <translation id="42137655013211669">இதற்கான அணுகல் சேவையகத்தால் தடுக்கப்பட்டிருக்கிறது.</translation>
 <translation id="4217571870635786043">சொல்வதை எழுதுவது</translation>
+<translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">செயலாக்கும் போது பிழை ஏற்பட்டது.</translation>
 <translation id="4222772810963087151">பதிப்பு விவரங்கள்</translation>
 <translation id="4225020013797061859">ஒரு ஸ்விட்சையோ பட்டனையோ அழுத்தி "<ph name="ACTION" />" செயலுக்கு அதை ஒதுக்கவும்</translation>
@@ -3091,6 +3094,7 @@
 <translation id="4332976768901252016">பெற்றோர் கட்டுப்பாடுகளை அமைத்தல்</translation>
 <translation id="4333854382783149454">RSA என்க்ரிப்ஷனுடன் PKCS #1 SHA-1</translation>
 <translation id="4336434711095810371">அனைத்துத் தரவையும் அழி</translation>
+<translation id="4339203724549370495">ஆப்ஸை நிறுவல் நீக்கு</translation>
 <translation id="4340125850502689798">தவறான பயனர்பெயர்</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" பயன்பாட்டுடன் தொடர்புகொள்ள விழைகிறது</translation>
 <translation id="4340799661701629185">அறிவிப்புகளை அனுப்ப தளங்களை அனுமதிக்காதே</translation>
@@ -3340,7 +3344,7 @@
 <translation id="4592891116925567110">ஸ்டைலஸ் கொண்டு வரையும் ஆப்ஸ்</translation>
 <translation id="4593021220803146968"><ph name="URL" /> க்குச் &amp;செல்க</translation>
 <translation id="4595560905247879544">பயன்பாடுகளையும் நீட்டிப்புகளையும் நிர்வாகியால் (<ph name="CUSTODIAN_NAME" />) மட்டுமே மாற்ற முடியும்.</translation>
-<translation id="4596295440756783523">இந்தச் சேவையகங்களை அடையாளங்காணும் சான்றிதழ்கள் கோப்பில் உள்ளன</translation>
+<translation id="4596295440756783523">இந்தச் சேவையகங்களை அடையாளங்காணும் சான்றிதழ்கள் ஃபைலில் உள்ளன</translation>
 <translation id="4598556348158889687">சேமிப்பிட மேலாண்மை</translation>
 <translation id="4598776695426288251">பல சாதனங்களின் மூலமாக வைஃபை கிடைக்கிறது</translation>
 <translation id="4602466770786743961">உங்கள் கேமராவையும் மைக்ரோஃபோனையும் அணுக <ph name="HOST" /> ஐ எப்போதும் அனுமதிக்கவும்</translation>
@@ -3503,6 +3507,7 @@
 <translation id="479536056609751218">வலைப்பக்கம், HTML மட்டும்</translation>
 <translation id="4796142525425001238">எப்போதும் மீட்டெடு</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />புளூடூத் பதிவுகளை<ph name="END_LINK" /> இணை (Google அகப் பயன்பாட்டிற்காக)</translation>
+<translation id="4800839971935185386">பெயர் &amp; ஐகான் மாற்றங்களைப் பாருங்கள்</translation>
 <translation id="4801448226354548035">கணக்குகளை மறை</translation>
 <translation id="4801512016965057443">மொபைல் டேட்டா ரோமிங்கை அனுமதி</translation>
 <translation id="4804818685124855865">தொடர்பைத் துண்டி</translation>
@@ -4130,6 +4135,7 @@
 <translation id="5498967291577176373">இன்லைன் பரிந்துரைகளைப் பயன்படுத்தி உங்கள் பெயர், முகவரி, ஃபோன் எண் போன்றவற்றை விரைவாக எழுதலாம்</translation>
 <translation id="5499313591153584299">இந்தக் கோப்பு உங்கள் கம்ப்யூட்டருக்குத் தீங்கு விளைவிக்கலாம்.</translation>
 <translation id="5499453227627332024">Linux கண்டெய்னருக்கான மேம்படுத்தல் உள்ளது. அமைப்புகள் ஆப்ஸிலிருந்தும் பின்னர் மேம்படுத்திக்கொள்ளலாம்.</translation>
+<translation id="549957179819296104">புதிய ஐகான்</translation>
 <translation id="5500709606820808700">பாதுகாப்புச் சரிபார்ப்பு இன்று மேற்கொள்ளப்பட்டது</translation>
 <translation id="5501322521654567960">இடப்புறமாகச் சீரமைக்கப்பட்ட பக்கவாட்டுப் பேனல்</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> ஐப் பெற முடியவில்லை}other{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> ஐப் பெற முடியவில்லை}}</translation>
@@ -4291,6 +4297,7 @@
 <translation id="5677503058916217575">பக்கத்தின் மொழி:</translation>
 <translation id="5677928146339483299">தடுக்கப்பட்டது</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> இல் எழுதுவதற்கும் படிப்பதற்குமான அணுகல் வழங்கப்பட்டது.</translation>
+<translation id="5678821117681811450"><ph name="WEB_DRIVE" />க்கு அனுப்புகிறது</translation>
 <translation id="5678955352098267522">உங்கள் தரவை <ph name="WEBSITE_1" /> இல் படிக்கவும்</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" ஐ அகற்ற வேண்டுமா?</translation>
 <translation id="5683806393796685434">செயல்படுத்தல் குறியீட்டை உள்ளிடவும்</translation>
@@ -4386,7 +4393,6 @@
 <translation id="5794414402486823030">எப்போதும் சிஸ்டம் வியூவரைக் கொண்டு திற</translation>
 <translation id="5794700615121138172">Linux பகிர்ந்த கோப்புறைகள்</translation>
 <translation id="5794786537412027208">எல்லா Chrome பயன்பாடுகளையும் நிறுத்து</translation>
-<translation id="5797070761912323120">தேடல், விளம்பரங்கள் மற்றும் பிற Google சேவைகளைத் தனிப்பயனாக்க, உங்கள் வரலாற்றை Google பயன்படுத்தக்கூடும்</translation>
 <translation id="5797521893972859201">இதுவரை தேடியவற்றை அழிக்கும் (தேடல் பெட்டியில் டைப் செய்தவை உட்பட)</translation>
 <translation id="5798079537501238810">பேமெண்ட் ஹேண்ட்லர்களை நிறுவ தளங்கள் அனுமதி கேட்க வேண்டும்</translation>
 <translation id="579907812742603813">பாதுகாக்கப்பட்ட உள்ளடக்கம்</translation>
@@ -4750,6 +4756,7 @@
 <translation id="6207200176136643843">இயல்பான அளவிற்கு மீட்டமைக்கும்</translation>
 <translation id="6207937957461833379">நாடு/பிராந்தியம்</translation>
 <translation id="6208521041562685716">மொபைல் டேட்டா இயக்கப்படுகிறது</translation>
+<translation id="6208725777148613371"><ph name="WEB_DRIVE" /> இல் சேமிக்க முடியவில்லை - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">காம்பனென்ட் புதுப்பிப்பு</translation>
 <translation id="6209908325007204267">உங்கள் சாதனம் Chrome எண்டர்பிரைஸ் மேம்படுத்தலை உள்ளடக்கியதாகும், ஆனால் நிறுவனக் கணக்கு ஒன்றுடன் உங்கள் பயனர்பெயர் தொடர்புடையதாக இல்லை. வேறு சாதனத்தில் g.co/ChromeEnterpriseAccount என்பதற்குச் சென்று நிறுவனக் கணக்கு ஒன்றை உருவாக்கவும்.</translation>
 <translation id="6212039847102026977">மேம்பட்ட நெட்வொர்க் பண்புகளைக் காட்டு</translation>
@@ -5742,6 +5749,7 @@
 <translation id="7326004502692201767">பிள்ளைக்காக இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை அமைத்தல்</translation>
 <translation id="7326025035243649350">Chrome OSஸுக்கான ChromeVox எனும் உள்ளமைந்த ஸ்கிரீன் ரீடரை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="7327989755579928735">ADB பிழைதிருத்தத்தை <ph name="MANAGER" /> முடக்கியுள்ளது. <ph name="DEVICE_TYPE" /> சாதனத்தை மீண்டும் தொடங்கியதும் உங்களால் ஆப்ஸை சைடுலோடு செய்ய முடியாது.</translation>
+<translation id="7328119182036084494"><ph name="WEB_DRIVE" /> இல் சேமிக்கப்பட்டது</translation>
 <translation id="7328867076235380839">தவறான சேர்க்கை</translation>
 <translation id="7329154610228416156">பாதுகாப்பற்ற URLஐப் (<ph name="BLOCKED_URL" />) பயன்படுத்தும்படி உள்ளமைக்கப்பட்டதால் உள்நுழைவு தோல்வியானது. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="7332053360324989309">பிரத்தியேக வொர்க்கர்: <ph name="SCRIPT_URL" /></translation>
@@ -6141,6 +6149,7 @@
 <translation id="7730449930968088409">உங்கள் திரையின் உள்ளடக்கத்தைப் பதிவுசெய்யலாம்</translation>
 <translation id="7730683939467795481">இந்தப் பக்கம் "<ph name="EXTENSION_NAME" />" நீட்டிப்பால் மாற்றப்பட்டது</translation>
 <translation id="7734486794139738745">ஒரு ஸ்விட்சை மட்டும் பயன்படுத்துகிறேன்</translation>
+<translation id="7734541938181328224">ஐகான் மாற்றங்களைப் பாருங்கள்</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" உடன் இணைக்கிறது ...</translation>
 <translation id="7737948071472253612">உங்கள் கேமராவைப் பயன்படுத்த அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="7740996059027112821">நிலையானது</translation>
@@ -6312,7 +6321,7 @@
 <translation id="790040513076446191">தனியுரிமைத் தொடர்பான அமைப்புகளை கையாளலாம்</translation>
 <translation id="7901405293566323524">மொபைல் ஹப்</translation>
 <translation id="7903345046358933331">பக்கம் பதிலளிக்கவில்லை. பதிலளிக்கும் வரை நீங்கள் காத்திருக்கலாம் அல்லது அதை மூடி விடலாம்.</translation>
-<translation id="7903742244674067440">இந்தச் சான்றிதழ் அங்கீகரிப்பாளர்களை அடையாளங்காணும் சான்றிதழ்கள் கோப்பில் உள்ளன</translation>
+<translation id="7903742244674067440">இந்தச் சான்றிதழ் அங்கீகரிப்பாளர்களை அடையாளங்காணும் சான்றிதழ்கள் ஃபைலில் உள்ளன</translation>
 <translation id="7903859912536385558">நிலையானது (நம்பகமான சோதனையாளர்)</translation>
 <translation id="7903925330883316394">கருவி: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">இந்தக் கணக்கிற்கான நிர்வாகி பல உள்நுழைவுகளை அனுமதிக்கவில்லை.</translation>
@@ -6508,7 +6517,7 @@
 <translation id="810068641062493918"><ph name="LANGUAGE" /> தேர்ந்தெடுக்கப்பட்டது. தேர்வுநீக்க Assistant பட்டன், Space ஆகியவற்றை ஒன்றாக அழுத்தவும்.</translation>
 <translation id="810185532889603849">பிரத்தியேக வண்ணம்</translation>
 <translation id="8101987792947961127">அடுத்த மறுதொடக்கத்திற்கு பவர்வாஷ் தேவைப்படுகிறது</translation>
-<translation id="8102139037507939978">system_logs.txt கோப்பில் இருக்கும், தனிப்பட்ட ஒருவரை அடையாளம் காணக்கூடியத் தகவலைக் கோடிட்டு மறைக்கும்.</translation>
+<translation id="8102139037507939978">system_logs.txt ஃபைலில் இருக்கும், தனிப்பட்ட ஒருவரை அடையாளம் காணக்கூடியத் தகவலைக் கோடிட்டு மறைக்கும்.</translation>
 <translation id="8104088837833760645">eSIM சுயவிவரத்தைப் பதிவிறக்குதல்</translation>
 <translation id="8107015733319732394">உங்கள் <ph name="DEVICE_TYPE" /> இல் Google Play ஸ்டோரை நிறுவுகிறது. இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="810728361871746125">திரையின் தெளிவுத்திறன்</translation>
@@ -6630,6 +6639,7 @@
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" /> சாதனத்தில் இருந்து பக்கம் பகிரப்பட்டுள்ளது</translation>
 <translation id="8236911020904880539">வெளியேற</translation>
 <translation id="8236917170563564587">இந்தத் தாவலைப் பகிர்</translation>
+<translation id="8237471930911823556"><ph name="APP_NAME" /> புதிய உலாவிப் பிரிவில் திறக்கும்படி அமைத்துள்ளீர்கள், ஆதரிக்கப்படும் இணைப்புகளும் உலாவியில் திறக்கப்படும்.</translation>
 <translation id="8237647586961940482">அடர் இளஞ்சிவப்பு &amp; சிவப்பு</translation>
 <translation id="8239032431519548577">நிறுவனப் பதிவு நிறைவடைந்தது</translation>
 <translation id="8239932336306009582">அறிவிப்புகளை அனுப்ப அனுமதிக்கப்படாதவை</translation>
@@ -6900,6 +6910,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">ஆப்ஸை முந்தைய பதிப்பிற்கு மாற்ற முயற்சித்துள்ளீர்கள்.</translation>
 <translation id="8569682776816196752">எந்த இலக்குகளும் கண்டறியப்படவில்லை</translation>
+<translation id="857074314439694500">வேறுவிதமான ஆப்ஸ் என இந்த இணைய ஆப்ஸ் உங்களை ஏமாற்ற முயன்றால் சாதனத்திலிருந்து அதை அகற்றவும்.</translation>
 <translation id="8571213806525832805">கடந்த 4 வாரங்கள்</translation>
 <translation id="8571687764447439720">Kerberos டிக்கெட்டைச் சேர்த்தல்</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> இல் எப்போதும் ஒலியை அனுமதி</translation>
@@ -7165,6 +7176,7 @@
 <translation id="8835786707922974220">நீங்கள் சேமித்துள்ள கடவுச்சொற்களை எப்போது வேண்டுமானாலும் அணுகும்படி அமைத்துக் கொள்ளுங்கள்</translation>
 <translation id="8836360711089151515">உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை ஒரு வாரத்திற்குள் திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" /></translation>
 <translation id="8836782447513334597">தொடர</translation>
+<translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">ஒளிபுகாத்தன்மை</translation>
 <translation id="8838770651474809439">ஹம்பர்கர்</translation>
 <translation id="883911313571074303">படத்தைக் குறிப்பிடு</translation>

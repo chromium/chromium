@@ -6,6 +6,8 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />已拔出。</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
+<translation id="1478594628797167447">扫描器</translation>
+<translation id="1545749641540134597">扫描二维码</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">未记录任何数据</translation>
@@ -19,6 +21,7 @@
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2064538373111010176">已切换到<ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">自定义视频参数</translation>
+<translation id="2175927920773552910">二维码</translation>
 <translation id="229579744168541441">导出到磁盘</translation>
 <translation id="2320741269052147773">向左平移</translation>
 <translation id="2501278716633472235">返回</translation>

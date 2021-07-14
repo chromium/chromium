@@ -36,7 +36,6 @@
 <translation id="174539241580958092">Google Chrome не вдалося синхронізувати ваші дані через помилку входу.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Переконайтеся, що ви ввійшли в Chrome на пристрої <ph name="TARGET_DEVICE_NAME" />, і повторіть спробу.</translation>
-<translation id="1807517590912578995">Створити окремий профіль Chrome?</translation>
 <translation id="1810203443153428607">Під час встановлення ОС Chrome буде перезаписано всі дані на пристрої.</translation>
 <translation id="1812689907177901597">Якщо вимкнути цей параметр, ви зможете входити на сайти Google, як-от Gmail, без входу в Chrome</translation>
 <translation id="1860536484129686729">Chrome потрібен дозвіл на використання камери, щоб надати цьому сайту доступ до неї</translation>
@@ -240,7 +239,6 @@
 <translation id="7275165473619697274">Триває встановлення ОС Chrome</translation>
 <translation id="7295052994004373688">Цією мовою відображається інтерфейс Google Chrome</translation>
 <translation id="7296210096911315575">Важлива інформація про використання й безпеку</translation>
-<translation id="7303916856901595720">Перенести обліковий запис у новий профіль Chrome?</translation>
 <translation id="7308322188646931570">Chrome потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="7398801000654795464">Ви ввійшли в Chrome як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>

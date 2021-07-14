@@ -47,7 +47,6 @@
 <translation id="2718390899429598676">В целях повышения безопасности Chromium шифрует ваши данные.</translation>
 <translation id="2770231113462710648">Назначить браузером по умолчанию:</translation>
 <translation id="2799223571221894425">Перезапустить</translation>
-<translation id="2816712596130903444">Использовать отдельный профиль Chromium?</translation>
 <translation id="2837693172913560447">Будет создан новый профиль Chromium для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2847479871509788944">Удалить из Chromium</translation>
 <translation id="2885378588091291677">Диспетчер задач</translation>
@@ -280,7 +279,6 @@
 <translation id="8974095189086268230">Chromium OS обязана своим появлением дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="8986207147630327271">После добавления рабочего профиля администратор не сможет управлять другими профилями.</translation>
 <translation id="9019929317751753759">Чтобы обеспечить безопасность ваших данных, некоторые расширения были отключены, так как <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений о них (то есть они могли быть установлены без вашего ведома).</translation>
-<translation id="9047197236183657400">Перенести аккаунт в новый профиль Chromium?</translation>
 <translation id="9089354809943900324">Версия Chromium устарела</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium перезапустится через 1 час}one{Chromium перезапустится через # час}few{Chromium перезапустится через # часа}many{Chromium перезапустится через # часов}other{Chromium перезапустится через # часа}}</translation>
 <translation id="91086099826398415">Открыть ссылку в новой вкладке браузера Chromium</translation>

@@ -81,7 +81,6 @@
 <translation id="1082802595100075771">讓使用者選擇使用去識別化的 Google 服務，針對無標籤圖片提供自動產生的說明</translation>
 <translation id="1087437665304381368">這項政策只能控管 <ph name="PRODUCT_OS_NAME" />開發人員模式。如要禁止他人存取 Android 開發人員選項，則必須設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="1087707496788636333">Chrome Enterprise 政策清單的網址已變更！請將你的書籤更新為 <ph name="POLICY_DOCUMENTATION_URL" />。</translation>
-<translation id="1089631008765417531">允許強制安裝的網頁應用程式查詢裝置屬性。</translation>
 <translation id="1095209545735032039">封鎖這些網站上的 Serial API</translation>
 <translation id="1096105751829466145">預設搜尋引擎</translation>
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
@@ -605,7 +604,6 @@
 
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="1736269219679256369">允許忽略 SSL 警告網頁，繼續前往原本指定的頁面</translation>
-<translation id="173993509627303617">禁止強制安裝的網頁應用程式查詢裝置屬性。</translation>
 <translation id="174765717426930019">除非要求開啟彈出式視窗的網頁明確拒絕與該彈出式視窗互動，否則一律允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動 </translation>
 <translation id="1750315445671978749">封鎖所有下載作業</translation>
 <translation id="1751429117283165017">你可以透過這項政策建立網址模式清單，指定哪些網站無法要求使用者授予寫入權限，以寫入主機作業系統中檔案系統的檔案或目錄。
@@ -3497,11 +3495,6 @@
 <translation id="5535973522252703021">Kerberos 委派伺服器許可清單</translation>
 <translation id="553806128266843748">布林值標記，表示是否已啟用節流功能。</translation>
 <translation id="5540885720415375851">允許本機裝置搜尋</translation>
-<translation id="5541621819310532773">設定這項政策可讓強制安裝的網頁應用程式透過 Device Attributes web API 取得各種裝置屬性，例如序號和主機名稱。
-
-      如果將這項政策設為 True 或不設定，強制安裝的網頁應用程式將可使用 Device Attributes web API。
-
-      如果將這項政策設為 False，這類網頁應用程式就無法使用 Device Attributes web API。</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登入畫面上啟用高對比模式</translation>
 <translation id="555077880566103058">允許所有網站自動執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
@@ -4241,17 +4234,6 @@
       如果不設定這項政策或設為空白清單，系統不會顯示任何裝置本機帳戶。</translation>
 <translation id="6584541828182430328">停用顯示全螢幕警示的功能</translation>
 <translation id="6598235178374410284">使用者顯示圖片</translation>
-<translation id="6601311299236772162">這項政策可控管 <ph name="PRODUCT_NAME" /> 如何解讀舊版瀏覽器支援功能的網站清單/可疑項目清單政策，影響範圍涵蓋以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
-
-      如果將這項政策設為「預設」(0) 或不設定，網址比對方式會較不嚴格，不含「/」的規則會尋找網址主機名稱中任意位置出現的子字串。
-
-      如果將這項政策設為「嚴格」(1)，網址比對方式會比較嚴格，不含「/」的規則只會在主機名稱的結尾進行比對，這類規則比對的內容也不得超出網域名稱的範圍。這種比對方式與 <ph name="MS_IE_PRODUCT_NAME" /> 及 <ph name="MS_EDGE_PRODUCT_NAME" /> 的相容性較高。
-
-      以「example.com」規則為例：
-
-無論剖析模式為何，「http://example.com/」和「http://subdomain.example.com/」都是相符的結果。
-
-      不過，「http://notexample.com/」、「http://example.com.invalid.com/」和「http://example.comabc/」只有在「預設」模式下才會是相符的結果。</translation>
 <translation id="6603004149426829878">偵測時區時一律將任何可用的位置標記傳送至伺服器</translation>
 <translation id="6604049565198492174">你可以透過設定這項政策，依使用者將網路設定強制套用至每部 <ph name="PRODUCT_NAME" /> 裝置。這個網路設定是根據「開放網路設定」格式所定義的 JSON 格式字串。</translation>
 <translation id="660567106648774919">這項政策已遭淘汰，請改用 <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> 政策。

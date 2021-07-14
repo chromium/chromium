@@ -95,6 +95,7 @@
     <ph name="BEGIN_LINK" />
     Google Home ऐप्लिकेशन<ph name="END_LINK" /> में अपना Chromecast देख पा रहे हैं?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> से इमेज कॉपी की गई</translation>
+<translation id="1100504063505580045">मौजूदा आइकॉन</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="1108600514891325577">&amp;रोकें</translation>
 <translation id="1110155001042129815">प्रतीक्षा करें</translation>
@@ -747,6 +748,7 @@
 <translation id="1779652936965200207">कृपया यह पासकुंजी "<ph name="DEVICE_NAME" />" पर दर्ज करें:</translation>
 <translation id="177989070088644880">ऐप्लिकेशन (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">ग्रुप बंद करें</translation>
+<translation id="1780273119488802839">बुकमार्क आयात कर रहा है ...</translation>
 <translation id="1781291988450150470">मौजूदा पिन</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अभी वाई-फ़ाई से कनेक्ट करें और अपडेट डाउनलोड करें.</translation>
 <translation id="1781502536226964113">'नया टैब' पेज खोलें</translation>
@@ -2476,6 +2478,7 @@
 <translation id="3649505501900178324">अपडेट होना बाकी है</translation>
 <translation id="3650753875413052677">नाम दर्ज करने में गड़बड़ी</translation>
 <translation id="3650845953328929506">लॉग का अपलोड होना अभी बाकी है.</translation>
+<translation id="365089839707261811">नाम में हुए बदलाव देखें</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" को एक्सेस करने की मंज़ूरी दें:</translation>
 <translation id="3651488188562686558">वाई-फ़ाई से डिसकनेक्ट करें</translation>
 <translation id="3652817283076144888">शुरू हो रहा है</translation>
@@ -2833,7 +2836,6 @@
 <translation id="3994374631886003300">अपना फ़ोन अनलॉक करें और उसे पास लाकर अपने <ph name="DEVICE_TYPE" /> को अनलॉक करें.</translation>
 <translation id="3994878504415702912">&amp;ज़ूम</translation>
 <translation id="3995138139523574647">USB-C डिवाइस (दायां पिछला पोर्ट)</translation>
-<translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4002329649066944389">किसी साइट के खास अपवाद प्रबंधित करें</translation>
 <translation id="4002440992267487163">पिन सेटअप</translation>
 <translation id="4005817994523282006">समय क्षेत्र की पहचान विधि</translation>
@@ -3000,7 +3002,7 @@
 <translation id="42126664696688958">निर्यात करें</translation>
 <translation id="42137655013211669">इस संसाधन के लिए सर्वर ने ऐक्सेस नहीं दिया था.</translation>
 <translation id="4217571870635786043">लिखवाना</translation>
-<translation id="4219558185499589032">बॉक्स</translation>
+<translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">सेटअप पूरा करने के दौरान कुछ गड़बड़ी हुई.</translation>
 <translation id="4222772810963087151">ब्यौरा तैयार करें</translation>
 <translation id="4225020013797061859">"<ph name="ACTION" />" असाइन करने के लिए कोई बटन दबाएं</translation>
@@ -3093,6 +3095,7 @@
 <translation id="4332976768901252016">माता-पिता के नियंत्रण सेट अप करें</translation>
 <translation id="4333854382783149454">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-1</translation>
 <translation id="4336434711095810371">सारा डेटा मिटाएं</translation>
+<translation id="4339203724549370495">ऐप्लिकेशन अनइंस्टॉल करें</translation>
 <translation id="4340125850502689798">यह उपयोगकर्ता नाम गलत/अमान्य है</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" से संचार करना चाहती है</translation>
 <translation id="4340799661701629185">साइटों को सूचनाएं भेजने की अनुमति न दें</translation>
@@ -3505,6 +3508,7 @@
 <translation id="479536056609751218">वेबपेज, केवल HTML</translation>
 <translation id="4796142525425001238">हमेशा वापस लाएं</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ब्लूटूथ लॉग<ph name="END_LINK" /> अटैच करें (Google का अंदरूनी मामला)</translation>
+<translation id="4800839971935185386">नाम और आइकॉन में हुए बदलाव देखें</translation>
 <translation id="4801448226354548035">खाते छिपाएं</translation>
 <translation id="4801512016965057443">मोबाइल डेटा रोमिंग की अनुमति दें</translation>
 <translation id="4804818685124855865">डिसकनेक्ट करें</translation>
@@ -4132,6 +4136,7 @@
 <translation id="5498967291577176373">इनलाइन सुझावों की मदद से अपना नाम, पता या फ़ोन नंबर तेज़ी से लिखें</translation>
 <translation id="5499313591153584299">यह फ़ाइल आपके कंप्‍यूटर के लिए हानिकारक हो सकती है.</translation>
 <translation id="5499453227627332024">आपके Linux कंटेनर का नया वर्शन उपलब्ध है. आप सेटिंग ऐप्लिकेशन में जाकर, इसे बाद में भी अपग्रेड कर सकते हैं.</translation>
+<translation id="549957179819296104">नया आइकॉन</translation>
 <translation id="5500709606820808700">आज सुरक्षा जांच हुई है</translation>
 <translation id="5501322521654567960">बाईं ओर अलाइन साइड पैनल</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}}</translation>
@@ -4389,7 +4394,6 @@
 <translation id="5794414402486823030">हमेशा सिस्‍टम व्‍यूअर से खोलें</translation>
 <translation id="5794700615121138172">Linux से Chromebook के साथ शेयर किए गए फ़ोल्डर</translation>
 <translation id="5794786537412027208">सभी Chrome Apps से बाहर निकलें</translation>
-<translation id="5797070761912323120">खोज, विज्ञापन, और दूसरी Google सेवाओं को मनमुताबिक बनाने के लिए, Google आपके इतिहास का इस्तेमाल कर सकता है</translation>
 <translation id="5797521893972859201">ब्राउज़िंग इतिहास मिटाता है और इसमें खोज बॉक्स का ब्राउज़िंग इतिहास भी शामिल है</translation>
 <translation id="5798079537501238810">साइटें पेमेंट हैंडलर इंस्टॉल कर सकती हैं</translation>
 <translation id="579907812742603813">सुरक्षित कॉन्टेंट</translation>
@@ -6147,6 +6151,7 @@
 <translation id="7730449930968088409">अपनी स्क्रीन की सामग्री कैप्चर करें</translation>
 <translation id="7730683939467795481">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने इस पेज में बदलाव किया है</translation>
 <translation id="7734486794139738745">मैं सिर्फ़ एक स्विच इस्तेमाल करता/करती हूं</translation>
+<translation id="7734541938181328224">आइकॉन में हुए बदलाव देखें</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" से जोड़ा जा रहा है ...</translation>
 <translation id="7737948071472253612">कैमरा इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="7740996059027112821">मानक</translation>
@@ -6635,7 +6640,7 @@
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" /> से शेयर किया गया पेज</translation>
 <translation id="8236911020904880539">बाहर निकलें</translation>
 <translation id="8236917170563564587">उसके बजाय यह टैब शेयर करें</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> नए ब्राउज़र में खोले जाने के लिए तैयार है. साथ में काम करने वाले लिंक भी ब्राउज़र में खुलेंगे.</translation>
+<translation id="8237471930911823556"><ph name="APP_NAME" /> नए ब्राउज़र टैब में खोले जाने के लिए तैयार है. साथ में काम करने वाले लिंक भी ब्राउज़र में खुलेंगे.</translation>
 <translation id="8237647586961940482">गहरा गुलाबी और लाल</translation>
 <translation id="8239032431519548577">एंटरप्राइज़ में नाम दर्ज हो गया है</translation>
 <translation id="8239932336306009582">सूचनाएं भेजने की अनुमति नहीं है</translation>
@@ -6906,6 +6911,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">ऐप्लिकेशन को डाउनग्रेड करने की कोशिश की गई.</translation>
 <translation id="8569682776816196752">कोई गंतव्य नहीं मिला</translation>
+<translation id="857074314439694500">अगर यह वेब ऐप्लिकेशन आपको धोखा देने की कोशिश कर रहा है कि यह एक अलग ऐप्लिकेशन है, तो इसे अनइंस्टॉल करें.</translation>
 <translation id="8571213806525832805">पिछले चार हफ़्ते</translation>
 <translation id="8571687764447439720">Kerberos टिकट जोड़ें</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> पर आवाज़ हमेशा चालू रखें</translation>
@@ -7297,7 +7303,7 @@
 <translation id="8965037249707889821">पुराना पासवर्ड डालें</translation>
 <translation id="8966809848145604011">अन्य प्रोफ़ाइलें</translation>
 <translation id="8966870118594285808">अगर आपने गलती से किसी टैब को बंद कर दिया था तो उसे फिर से खोलें</translation>
-<translation id="8967427617812342790">पठन सूची में जोड़ें</translation>
+<translation id="8967427617812342790">रीडिंग लिस्ट में जोड़ें</translation>
 <translation id="8967866634928501045">दिखाने के लिए Alt Shift A दबाएं</translation>
 <translation id="8968766641738584599">कार्ड सेव करें</translation>
 <translation id="89720367119469899">Escape</translation>

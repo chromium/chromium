@@ -37,7 +37,6 @@
 <translation id="174539241580958092">ಸೈನ್ ಇನ್ ಮಾಡುವಲ್ಲಿ ದೋಷವಿರುವ ಕಾರಣ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲು Google Chrome ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ನಿಮ್ಮ <ph name="TARGET_DEVICE_NAME" /> ನಲ್ಲಿ ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ನಂತರ ಪುನಃ ಕಳುಹಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="1807517590912578995">Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ಪ್ರತ್ಯೇಕಿಸಬೇಕೆ?</translation>
 <translation id="1810203443153428607">Chrome OS ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಓವರ್‌ವ್ರೈಟ್ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="1812689907177901597">ಇದನ್ನು ಆಫ್ ಮಾಡುವ ಮೂಲಕ, ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡದೆಯೇ Gmail ನಂತಹ Google ಸೈಟ್‌ಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು</translation>
 <translation id="1860536484129686729">ಈ ಸೈಟ್‌ಗಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು Chrome ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
@@ -240,7 +239,6 @@
 <translation id="7275165473619697274">Chrome OS ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪ್ರಕ್ರಿಯೆಯಲ್ಲಿದೆ</translation>
 <translation id="7295052994004373688">Google Chrome UI ತೋರಿಸಲು ಈ ಭಾಷೆಯನ್ನು ಬಳಸಲಾಗುತ್ತದೆ</translation>
 <translation id="7296210096911315575">ಬಳಕೆ ಮತ್ತು ಸುರಕ್ಷತೆ ಕುರಿತಾದ ಪ್ರಮುಖ ಮಾಹಿತಿ</translation>
-<translation id="7303916856901595720">ಖಾತೆಯನ್ನು ಹೊಸ Chrome ಪ್ರೊಫೈಲ್‌ಗೆ ಸರಿಸಬೇಕೆ?</translation>
 <translation id="7308322188646931570">ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು Chrome ಗೆ ಸಂಗ್ರಹಣೆಯನ್ನು ಪ್ರವೇಶಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7339898014177206373">ಹೊಸ ವಿಂಡೊ</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" /> ನಂತೆ Chrome ಅನ್ನು ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವಿರಿ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಅದೇ ಖಾತೆಯನ್ನು ಬಳಸಿ.</translation>

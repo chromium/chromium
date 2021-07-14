@@ -39,7 +39,6 @@
 <translation id="174539241580958092">შესვლის დროს დაშვებული შეცდომის გამო Google Chrome-მა ვერ მოახდინა თქვენი მონაცემების სინქრონიზაცია.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">დარწმუნდით, რომ თქვენს <ph name="TARGET_DEVICE_NAME" />-ზე შესული ხართ Chrome-ში, შემდეგ კი ხელახლა ცადეთ გაგზავნა.</translation>
-<translation id="1807517590912578995">გსურთ Chrome პროფილის განცალკევება?</translation>
 <translation id="1810203443153428607">Chrome OS-ის ინსტალაციის შემთხვევაში, თქვენს მოწყობილობაზე შენახული ყველა მონაცემი გადაიწერება.</translation>
 <translation id="1812689907177901597">ამ პარამეტრის გამორთვის შემთხვევაში, Google-ის საიტებში (მაგალითად, Gmail-ში) შესვლას შეძლებთ Chrome-ში შესვლის გარეშე</translation>
 <translation id="1860536484129686729">Chrome საჭიროებს თქვენს კამერაზე წვდომის ნებართვას ამ საიტისთვის</translation>
@@ -246,7 +245,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7275165473619697274">მიმდინარეობს Chrome OS-ის ინსტალაცია</translation>
 <translation id="7295052994004373688">ეს ენა გამოიყენება Google Chrome-ის სამომხმარებლო ინტერფეისისთვის</translation>
 <translation id="7296210096911315575">მნიშნველოვანი ინფორმაცია გამოყენებისა და უსაფრთხოების შესახებ</translation>
-<translation id="7303916856901595720">გსურთ, გადაიტანოთ ანგარიში ახალ Chrome პროფილში?</translation>
 <translation id="7308322188646931570">Chrome საჭიროებს მეხსიერებაზე წვდომას ფაილების ჩამოსატვირთად</translation>
 <translation id="7339898014177206373">ახალი ფანჯარა</translation>
 <translation id="7398801000654795464">თქვენ შესული ხართ Chrome ში როგორც <ph name="USER_EMAIL_ADDRESS" />. შემდეგი შესვლისთვისაც გთხოვთ იგივე ანგარიში გამოიყენოთ.</translation>

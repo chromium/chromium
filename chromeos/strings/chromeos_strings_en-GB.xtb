@@ -42,6 +42,7 @@
 <translation id="1715359911173058521">There's an issue communicating with the scanner. Check the network or USB connection and try again.</translation>
 <translation id="1717874160321062422">Managed by <ph name="FIRST_MANAGER" /> and <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelling scanning</translation>
 <translation id="1851218745569890714">Video conferencing</translation>
 <translation id="1887850431809612466">Hardware revision</translation>
@@ -217,6 +218,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5318334351163689047">TCP request failures</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Name</translation>
 <translation id="5332948983412042822">Choose a new one now</translation>
 <translation id="5333530671332546086">Unknown portal state</translation>
 <translation id="5372659122375744710">Wi-Fi network is not secure</translation>
@@ -234,6 +236,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5669267381087807207">Activating</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Family</translation>
+<translation id="5701381305118179107">Centre</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="5752751666635965375">Make your own game</translation>
 <translation id="5760715441271661976">Portal state</translation>
@@ -266,6 +269,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6223752125779001553">No scanners available</translation>
 <translation id="6232017090690406397">Battery</translation>
 <translation id="6243280677745499710">Currently set</translation>
+<translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> test has been cancelled</translation>
 <translation id="6325525973963619867">Failed</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
@@ -312,6 +316,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7287310195820267359">Wallpaper collections</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Network devices</translation>
 <translation id="7359657277149375382">File type</translation>

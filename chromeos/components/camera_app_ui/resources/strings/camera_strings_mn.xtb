@@ -6,6 +6,8 @@
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />-г салгасан байна.</translation>
 <translation id="1473110567575736769">3 секундийн цаг тоологч</translation>
+<translation id="1478594628797167447">Скан хийгч</translation>
+<translation id="1545749641540134597">QR кодыг скан хийх</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Бичсэн зүйл алга</translation>
@@ -19,6 +21,7 @@
 <translation id="2050339315714019657">Хөрөг зураг</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> идэвхтэй байна</translation>
 <translation id="2144806332417375165">Захиалгат видеоны параметр</translation>
+<translation id="2175927920773552910">QR код</translation>
 <translation id="229579744168541441">Диск рүү экспорт хийх</translation>
 <translation id="2320741269052147773">Зүүн тийш чиглүүлэх</translation>
 <translation id="2501278716633472235">Буцаах</translation>
@@ -61,6 +64,7 @@
 <translation id="5057360777601936059">Tаны камер одоогоор боломжгүй байна.
         Камераа зөв залгасан эсэхээ шалгана уу.</translation>
 <translation id="5152121255775685072">Галлерей руу очих</translation>
+<translation id="5268823927180092501">Бүх камерт документын горимыг идэвхжүүлэх</translation>
 <translation id="5422455049771430511">Таны зураг болон видеонууд шинэ гэртэй боллоо</translation>
 <translation id="5671277269877808209">Дөрвөлжин</translation>
 <translation id="5753488212459587150">Мэргэжилтний горимыг идэвхжүүлэх</translation>

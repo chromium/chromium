@@ -93,6 +93,7 @@
 <translation id="1097658378307015415">Перш чым увайсці ва ўліковы запіс, увайдзіце ў рэжыме госця, каб актываваць сетку <ph name="NETWORK_ID" /></translation>
 <translation id="1099383081182863812">Ці бачыце вы прыладу Chromecast у <ph name="BEGIN_LINK" />праграме Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Відарыс скапіраваны з прылады "<ph name="DEVICE_NAME" />"</translation>
+<translation id="1100504063505580045">Бягучы значок</translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Спыніць</translation>
 <translation id="1110155001042129815">Пачакаць</translation>
@@ -2463,6 +2464,7 @@
 <translation id="3649505501900178324">Абнаўленне пратэрмінавана</translation>
 <translation id="3650753875413052677">Памылка рэгістрацыі</translation>
 <translation id="3650845953328929506">Чакаецца запампоўванне журнала.</translation>
+<translation id="365089839707261811">Праверце новае імя</translation>
 <translation id="3650952250015018111">Дазволіць праграме "<ph name="APP_NAME" />" доступ да наступнага:</translation>
 <translation id="3651488188562686558">Адключэнне ад Wi-Fi</translation>
 <translation id="3652817283076144888">Ініцыялізацыя</translation>
@@ -2821,7 +2823,6 @@
 <translation id="3994374631886003300">Разблакіруйце тэлефон і паднясіце яго бліжэй, каб разблакіраваць <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Маштаб</translation>
 <translation id="3995138139523574647">Прылада USB-C (задні порт справа)</translation>
-<translation id="4002066346123236978">Назва</translation>
 <translation id="4002329649066944389">Кіраванне выключэннямі для канкрэтных сайтаў</translation>
 <translation id="4002440992267487163">Наладзіць PIN-код</translation>
 <translation id="4005817994523282006">Спосаб выяўлення часавага пояса</translation>
@@ -3081,6 +3082,7 @@
 <translation id="4332976768901252016">Наладжванне бацькоўскага кантролю</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 з шыфраваннем RSA</translation>
 <translation id="4336434711095810371">Выдаліць усе даныя</translation>
+<translation id="4339203724549370495">Выдаліць праграму</translation>
 <translation id="4340125850502689798">Несапраўднае імя карыстальніка</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> запытвае абмен данымі з праграмай "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">Не дазваляць сайтам адпраўляць апавяшчэнні</translation>
@@ -3492,6 +3494,7 @@
 <translation id="479536056609751218">Вэб-старонка, толькі HTML</translation>
 <translation id="4796142525425001238">Заўсёды аднаўляць</translation>
 <translation id="4798236378408895261">Далучыць <ph name="BEGIN_LINK" />журналы Bluetooth<ph name="END_LINK" /> (для ўнутранага выкарыстання ў Google)</translation>
+<translation id="4800839971935185386">Праверце новы значок і імя</translation>
 <translation id="4801448226354548035">Схаваць уліковыя запісы</translation>
 <translation id="4801512016965057443">Дазволіць мабільную перадачу даных у роўмінгу</translation>
 <translation id="4804818685124855865">Адключыцца</translation>
@@ -4117,6 +4120,7 @@
 <translation id="5498967291577176373">Набірайце інфармацыю яшчэ хутчэй, атрымліваючы пры ўводзе тэксту прапановы (вашага імені, адраса або нумара тэлефона)</translation>
 <translation id="5499313591153584299">Гэты файл можа нанесці шкоду вашаму камп'ютару.</translation>
 <translation id="5499453227627332024">Для кантэйнера Linux ёсць абнаўленне. Усталяваць абнаўленне можна будзе і пазней – з праграмы "Налады".</translation>
+<translation id="549957179819296104">Новы значок</translation>
 <translation id="5500709606820808700">Праверка бяспекі выконвалася сёння</translation>
 <translation id="5501322521654567960">Бакавая панэль злева</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}one{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}few{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}many{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}other{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}}</translation>
@@ -4374,7 +4378,6 @@
 <translation id="5794414402486823030">Заўсёды адкрываць з дапамогай стандартнага сродку прагляду</translation>
 <translation id="5794700615121138172">Абагуленыя папкі Linux</translation>
 <translation id="5794786537412027208">Выйсці з усіх праграм Chrome</translation>
-<translation id="5797070761912323120">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук, паказ рэкламы і іншыя сэрвісы Google</translation>
 <translation id="5797521893972859201">Будзе выдалена гісторыя, у тым ліку даныя, якія ўводзіліся ў полі пошуку</translation>
 <translation id="5798079537501238810">Сайты могуць усталёўваць апрацоўшчыкі плацяжоў</translation>
 <translation id="579907812742603813">абароненае змесціва</translation>
@@ -6129,6 +6132,7 @@
 <translation id="7730449930968088409">Здымаць змесціва экрана</translation>
 <translation id="7730683939467795481">Гэта старонка была зменена пашырэннем "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7734486794139738745">Я выкарыстоўваю толькі адзін пераключальнік</translation>
+<translation id="7734541938181328224">Праверце новы значок</translation>
 <translation id="7737115349420013392">Ідзе спалучэнне з прыладай "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="7737948071472253612">Не дазволена выкарыстоўваць камеру</translation>
 <translation id="7740996059027112821">Стандартны</translation>
@@ -6887,6 +6891,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Вы спрабуеце ўсталяваць ранейшую версію праграмы.</translation>
 <translation id="8569682776816196752">Месцы прызначэння не знойдзены</translation>
+<translation id="857074314439694500">Калі гэта вэб-праграма спрабуе выдаць сябе за іншую, выдаліце яе.</translation>
 <translation id="8571213806525832805">За апошнія 4 тыдні</translation>
 <translation id="8571687764447439720">Дадаць білет Kerberos</translation>
 <translation id="8574990355410201600">Заўсёды дазваляць прайграванне гуку на <ph name="HOST" /></translation>

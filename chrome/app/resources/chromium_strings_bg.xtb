@@ -47,7 +47,6 @@
 <translation id="2718390899429598676">За повишаване на сигурността Chromium ще шифрова данните ви.</translation>
 <translation id="2770231113462710648">Промяна на браузъра по подразбиране с/ъс:</translation>
 <translation id="2799223571221894425">Стартиране отново</translation>
-<translation id="2816712596130903444">Да се създаде ли отделен потребителски профил в Chromium?</translation>
 <translation id="2837693172913560447">Това ще създаде нов потребителски профил в Chromium за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Премахване от Chromium...</translation>
 <translation id="2885378588091291677">Диспечер на задачите</translation>
@@ -279,7 +278,6 @@
 <translation id="8974095189086268230">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="8986207147630327271">Добавяте служебен потребителски профил към този браузър и предоставяте на администратора си контрол само над него.</translation>
 <translation id="9019929317751753759">За да направим Chromium по-безопасен, деактивирахме следното разширение, което липсва от <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е било добавено без ваше знание.</translation>
-<translation id="9047197236183657400">Искате ли да преместите профила в нов потребителски профил в Chromium?</translation>
 <translation id="9089354809943900324">Chromium не е актуален</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium ще се стартира отново след 1 час}other{Chromium ще се стартира отново след # часа}}</translation>
 <translation id="91086099826398415">Отваряне на връзката в нов &amp;раздел на Chromium</translation>

@@ -95,6 +95,7 @@
     <ph name="BEGIN_LINK" />
     Google Home యాప్‌<ph name="END_LINK" />లో చూడగలుగుతున్నారా?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> నుండి కాపీ చేసిన ఇమేజ్</translation>
+<translation id="1100504063505580045">ప్రస్తుత చిహ్నం</translation>
 <translation id="1103523840287552314">ఎల్లప్పుడూ <ph name="LANGUAGE" />ను అనువదించు</translation>
 <translation id="1108600514891325577">&amp;ఆపు</translation>
 <translation id="1110155001042129815">వేచి ఉండండి</translation>
@@ -2474,6 +2475,7 @@
 <translation id="3649505501900178324">అప్‌డేట్ పెండింగ్‌లో ఉంది</translation>
 <translation id="3650753875413052677">నమోదు చేయడంలో ఎర్రర్ ఏర్పడింది</translation>
 <translation id="3650845953328929506">లాగ్ అప్‌లోడ్ పెండింగ్‌లో ఉంది.</translation>
+<translation id="365089839707261811">పేరు అప్‌డేట్‌లను రివ్యూ చేయండి</translation>
 <translation id="3650952250015018111">యాక్సెస్ చేయడానికి "<ph name="APP_NAME" />"ని అనుమతించండి:</translation>
 <translation id="3651488188562686558">Wi-Fi నుండి డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="3652817283076144888">ప్రారంభిస్తోంది</translation>
@@ -2832,7 +2834,6 @@
 <translation id="3994374631886003300">మీ <ph name="DEVICE_TYPE" />ను అన్‌లాక్ చేయడానికి, మీ ఫోన్‌ను అన్‌లాక్ చేసి దానిని దగ్గరికి తీసుకురండి.</translation>
 <translation id="3994878504415702912">&amp;జూమ్ చేయి</translation>
 <translation id="3995138139523574647">USB-C పరికరం (కుడివైపు వెనుక పోర్ట్)</translation>
-<translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="4002329649066944389">సైట్‌కు ప్రత్యేకమైన మినహాయింపులను మేనేజ్ చేయండి</translation>
 <translation id="4002440992267487163">పిన్ సెటప్</translation>
 <translation id="4005817994523282006">సమయ మండలి గుర్తింపు పద్ధతి</translation>
@@ -3091,6 +3092,7 @@
 <translation id="4332976768901252016">తల్లిదండ్రుల నియంత్రణలను సెటప్ చేయండి</translation>
 <translation id="4333854382783149454">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 SHA-1</translation>
 <translation id="4336434711095810371">మొత్తం డేటాను క్లియర్ చేయి</translation>
+<translation id="4339203724549370495">యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయి</translation>
 <translation id="4340125850502689798">చెల్లని యూజర్‌నేమ్</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />, <ph name="EXTENSION_NAME" />యాప్‌తో కమ్యూనికేట్ చేయాలనుకుంటోంది</translation>
 <translation id="4340799661701629185">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడగగలవు</translation>
@@ -3503,6 +3505,7 @@
 <translation id="479536056609751218">వెబ్‌పేజీ, HTML మాత్రమే</translation>
 <translation id="4796142525425001238">ఎల్లప్పుడూ రీస్టోర్ చేయండి</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />బ్లూటూత్ లాగ్‌లు<ph name="END_LINK" />ని జోడించు (Google అంతర్గతం)</translation>
+<translation id="4800839971935185386">పేరు &amp; చిహ్నం అప్‌డేట్‌లను రివ్యూ చేయండి</translation>
 <translation id="4801448226354548035">ఖాతాలను దాచు</translation>
 <translation id="4801512016965057443">మొబైల్ డేటా రోమింగ్‌ను అనుమతించు</translation>
 <translation id="4804818685124855865">డిస్‌కనెక్ట్ చేయి</translation>
@@ -4130,6 +4133,7 @@
 <translation id="5498967291577176373">ఇన్‌లైన్ సూచనలతో మీ పేరు, అడ్రెస్ లేదా ఫోన్ నంబర్‌ను త్వరగా రాయండి</translation>
 <translation id="5499313591153584299">ఈ ఫైల్ మీ కంప్యూటర్‌కు హానికరం కావచ్చు.</translation>
 <translation id="5499453227627332024">మీ Linux కంటెయినర్ కోసం అప్‌గ్రేడ్ అందుబాటులో ఉంది. మీరు సెట్టింగ్‌ల యాప్ నుండి తర్వాత కూడా అప్‌గ్రేడ్ చేయవచ్చు.</translation>
+<translation id="549957179819296104">కొత్త చిహ్నం</translation>
 <translation id="5500709606820808700">భద్రతా తనిఖీ నేడు రన్ చేయబడింది</translation>
 <translation id="5501322521654567960">ఎడమవైపు అమర్చబడిన సైడ్ ప్యానెల్</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని అందుకోవడం విఫలమైంది}other{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని అందుకోవడం విఫలమైంది}}</translation>
@@ -4386,7 +4390,6 @@
 <translation id="5794414402486823030">ఎల్లప్పుడూ సిస్టమ్ వ్యూయర్‌తో తెరువు</translation>
 <translation id="5794700615121138172">Linux షేర్ చేసిన ఫోల్డర్‌లు</translation>
 <translation id="5794786537412027208">అన్ని Chrome యాప్‌ల నుండి నిష్క్రమించు</translation>
-<translation id="5797070761912323120">శోధన, ప్రకటనలు, ఇతర Google సేవలను వ్యక్తిగతీకరించడానికి Google మీ చరిత్రను ఉపయోగించే అవకాశం ఉంటుంది</translation>
 <translation id="5797521893972859201">సెర్చ్ బాక్స్‌లోని హిస్టరీతో సహా క్లియర్ చేస్తుంది</translation>
 <translation id="5798079537501238810">సైట్‌లు పేమెంట్ హ్యాండ్లర్‌లను ఇన్‌స్టాల్ చేయగలవు</translation>
 <translation id="579907812742603813">రక్షించబడిన కంటెంట్</translation>
@@ -6142,6 +6145,7 @@
 <translation id="7730449930968088409">మీ స్క్రీన్ కంటెంట్‌ని క్యాప్చర్ చేయండి</translation>
 <translation id="7730683939467795481">ఈ పేజీ "<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్ ద్వారా మార్చబడింది</translation>
 <translation id="7734486794139738745">నేను ఒక స్విచ్‌ను మాత్రమే ఉపయోగిస్తాను</translation>
+<translation id="7734541938181328224">చిహ్నం అప్‌డేట్‌లను రివ్యూ చేయండి</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />"తో పెయిర్ చేస్తోంది ...</translation>
 <translation id="7737948071472253612">మీ కెమెరాను ఉపయోగించడానికి అనుమతి లేదు</translation>
 <translation id="7740996059027112821">ప్రామాణికం</translation>
@@ -6897,6 +6901,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">యాప్‌ను డౌన్‌గ్రేడ్ చేయడానికి ప్రయత్నించారు.</translation>
 <translation id="8569682776816196752">గమ్యస్థానాలు కనుగొనబడలేదు</translation>
+<translation id="857074314439694500">ఇది వేరే యాప్ అని మీరు అనుకునేలా మిమ్మల్ని ఈ వెబ్ యాప్ మోసగించడానికి ట్రై చేస్తున్నట్లయితే, దాన్ని అన్‌ఇన్‌స్టాల్ చేయండి.</translation>
 <translation id="8571213806525832805">గత 4 వారాలు</translation>
 <translation id="8571687764447439720">Kerberos టిక్కెట్‌ను జోడించండి</translation>
 <translation id="8574990355410201600"><ph name="HOST" />లో ఎల్లప్పుడూ ధ్వనిని అనుమతించు</translation>

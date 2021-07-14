@@ -81,7 +81,6 @@
 <translation id="1082802595100075771">Gebruikers laten kiezen of ze een anonieme Google-service willen gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="1087437665304381368">Met dit beleid wordt alleen de ontwikkelaarsmodus van <ph name="PRODUCT_OS_NAME" /> bepaald. Als je de toegang tot de ontwikkelaarsopties van Android wilt blokkeren, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.</translation>
 <translation id="1087707496788636333">De Chrome Enterprise-beleidslijst wordt verplaatst. Update je bookmarks naar <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
-<translation id="1089631008765417531">Toestaan dat afgedwongen geïnstalleerde web-apps query's voor apparaatkenmerken kunnen uitvoeren.</translation>
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
 <translation id="1099282607296956954">Elke site isoleren</translation>
@@ -607,7 +606,6 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="1736269219679256369">Doorgaan vanaf de SSL-waarschuwingspagina toestaan</translation>
-<translation id="173993509627303617">Voorkomen dat afgedwongen geïnstalleerde web-apps query's voor apparaatkenmerken kunnen uitvoeren.</translation>
 <translation id="174765717426930019">Toestaan dat alle pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die het openen van de pop-up heeft aangevraagd, tenzij de openende pagina expliciet geen toestemming geeft voor dergelijke interactie </translation>
 <translation id="1750315445671978749">Alle downloads blokkeren</translation>
 <translation id="1751429117283165017">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om hun schrijftoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem.
@@ -3507,11 +3505,6 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 <translation id="5535973522252703021">Witte lijst voor Kerberos-delegatieserver</translation>
 <translation id="553806128266843748">Een Booleaanse markering die aangeeft of throttling aanstaat.</translation>
 <translation id="5540885720415375851">Toestaan dat lokale apparaten worden gevonden</translation>
-<translation id="5541621819310532773">Met dit beleid kun je bepalen of afgedwongen geïnstalleerde web-apps query's voor apparaatkenmerken (bijv. serienummer, hostnaam) kunnen uitvoeren via de Device Attributes Web API.
-
-      Als je dit beleid instelt op True of niet instelt, mag de Device Attributes Web API worden gebruikt voor afgedwongen geïnstalleerde web-apps.
-
-      Als je dit beleid instelt op False, kan de Device Attributes Web API niet worden gebruikt.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Hoog contrast op het inlogscherm aanzetten</translation>
 <translation id="555077880566103058">Alle sites toestaan om de <ph name="FLASH_PLUGIN_NAME" />-plug-in automatisch uit te voeren</translation>
@@ -4261,17 +4254,6 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je het beleid niet instelt of de lijst leeg is, zijn er geen lokale accounts op het apparaat.</translation>
 <translation id="6584541828182430328">Waarschuwing voor volledig scherm niet tonen</translation>
 <translation id="6598235178374410284">Avatarafbeelding van gebruiker</translation>
-<translation id="6601311299236772162">Met dit beleid wordt bepaald hoe <ph name="PRODUCT_NAME" /> beleid voor sitelijsten/grijze lijsten interpreteert voor de ondersteuningsfunctie voor oudere browsers. Het is alleen van invloed op het volgende beleid: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> en <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      Als dit is ingesteld op 'Default' (0) of niet is ingesteld, wordt de URL-overeenkomst minder strikt toegepast. Regels die geen '/' bevatten, zoeken naar een subtekenreeks in de URL-hostnaam.
-
-      Als dit is ingesteld op 'Strict' (1), wordt de URL-overeenkomst strikter toegepast. Regels die geen '/' bevatten komen alleen overeen aan het einde van de hostnaam. Deze moeten zich ook bij de domeinnaamgrens bevinden. Dit werkt beter met <ph name="MS_IE_PRODUCT_NAME" /> en <ph name="MS_EDGE_PRODUCT_NAME" />.
-
-      Een voorbeeld met de regel 'example.com':
-
-'http://example.com/' en 'http://subdomain.example.com/' komen overeen, ongeacht de parseermodus.
-
-      'http://notexample.com/', 'http://example.com.invalid.com/' en 'http://example.comabc/' komen alleen overeen in de modus 'Default'.</translation>
 <translation id="6603004149426829878">Beschikbare locatiesignalen altijd verzenden naar de server wanneer de tijdzone wordt bepaald</translation>
 <translation id="6604049565198492174">Als je het beleid instelt, kan de netwerkconfiguratie per gebruiker worden toegepast op elk <ph name="PRODUCT_NAME" />-apparaat. De netwerkconfiguratie is een json-tekenreeks zoals gedefinieerd in de Open Network Configuration-indeling.</translation>
 <translation id="660567106648774919">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.

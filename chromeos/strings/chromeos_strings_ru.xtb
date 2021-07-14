@@ -42,6 +42,7 @@
 <translation id="1715359911173058521">Отсутствует связь со сканером. Проверьте подключение по сети или через USB-порт и повторите попытку.</translation>
 <translation id="1717874160321062422">Под управлением <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Отмена сканирования</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
 <translation id="1887850431809612466">Версия оборудования</translation>
@@ -217,6 +218,7 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318334351163689047">Невыполненные запросы TCP.</translation>
 <translation id="5326394068492324457">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, состояние: "<ph name="COMPLETION_STATUS" />"</translation>
+<translation id="5327248766486351172">Имя</translation>
 <translation id="5332948983412042822">Смените пароль как можно скорее.</translation>
 <translation id="5333530671332546086">Неизвестное состояние сетевого портала.</translation>
 <translation id="5372659122375744710">Сеть Wi-Fi недостаточно безопасна.</translation>
@@ -234,6 +236,7 @@
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Семейство</translation>
+<translation id="5701381305118179107">Выровнять по центру</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="5752751666635965375">Создать собственную игру</translation>
 <translation id="5760715441271661976">Состояние страницы входа</translation>
@@ -266,6 +269,7 @@
 <translation id="6223752125779001553">Нет доступных сканеров.</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6243280677745499710">Установлено как обои</translation>
+<translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тестирование отменено.</translation>
 <translation id="6325525973963619867">Ошибка</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>

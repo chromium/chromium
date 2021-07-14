@@ -47,7 +47,6 @@
 <translation id="2718390899429598676">கூடுதல் பாதுகாப்பிற்கு, Chromium உங்கள் தரவை என்க்ரிப்ட் செய்யும்.</translation>
 <translation id="2770231113462710648">இயல்புநிலை உலாவியாக இதை அமை:</translation>
 <translation id="2799223571221894425">மீண்டும் தொடங்கு</translation>
-<translation id="2816712596130903444">தனிப்பட்ட Chromium சுயவிவரம் வேண்டுமா?</translation>
 <translation id="2837693172913560447">இது <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்குப் புதிய Chromium சுயவிவரத்தை உருவாக்கும்</translation>
 <translation id="2847479871509788944">Chromium இலிருந்து அகற்று...</translation>
 <translation id="2885378588091291677">செயல் நிர்வாகி</translation>
@@ -286,7 +285,6 @@
 <translation id="8974095189086268230">கூடுதலான <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருட்களால்<ph name="END_LINK_CROS_OSS" /> Google Chrome OS ஐ உருவாக்குவது சாத்தியமானது.</translation>
 <translation id="8986207147630327271">இந்த உலாவியில் ஒரு பணிக் கணக்கைச் சேர்த்து, அதற்கு மட்டுமான கட்டுப்பாட்டையே உங்கள் நிர்வாகிக்கு வழங்குகிறீர்கள்.</translation>
 <translation id="9019929317751753759">Chromiumஐப் பாதுகாப்பானதாக்க, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> இல் பட்டியலிடப்படாத பின்வரும் நீட்டிப்பை முடக்கியுள்ளோம், மேலும் அது உங்களுக்குத் தெரியாமல் சேர்க்கப்பட்டிருக்கலாம்.</translation>
-<translation id="9047197236183657400">புதிய Chromium சுயவிவரத்திற்குக் கணக்கை நகர்த்தவா?</translation>
 <translation id="9089354809943900324">Chromium காலாவதியானது</translation>
 <translation id="9093206154853821181">{0,plural, =1{ஒரு மணிநேரத்திற்குள் Chromium மீண்டும் தொடங்கும்}other{# மணிநேரத்திற்குள் Chromium மீண்டும் தொடங்கும்}}</translation>
 <translation id="91086099826398415">புதிய Chromium &amp;தாவலில் இணைப்பைத் திற</translation>

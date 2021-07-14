@@ -40,7 +40,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="174539241580958092">Google Chrome kunde inte synkronisera data på grund av ett fel vid inloggningen.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Se till att du är inloggad i Chrome på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
-<translation id="1807517590912578995">Vill du skapa en separat Chrome-profil?</translation>
 <translation id="1810203443153428607">All data på enheten skrivs över när du installerar Chrome OS.</translation>
 <translation id="1812689907177901597">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chrome</translation>
 <translation id="1860536484129686729">Du behöver ge Chrome behörighet att använda kameran på webbplatsen</translation>
@@ -249,7 +248,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7275165473619697274">Installationen av Chrome OS pågår</translation>
 <translation id="7295052994004373688">Användargränssnittet i Google Chrome visas på det här språket</translation>
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>
-<translation id="7303916856901595720">Vill du flytta kontot till en ny Chrome-profil?</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7398801000654795464">Du var inloggad i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>

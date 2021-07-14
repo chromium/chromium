@@ -95,6 +95,7 @@
     <ph name="BEGIN_LINK" />
     додатку Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Зображення скопійовано з пристрою <ph name="DEVICE_NAME" /></translation>
+<translation id="1100504063505580045">Поточний значок</translation>
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Зупинити</translation>
 <translation id="1110155001042129815">Зачекайте</translation>
@@ -749,6 +750,7 @@
 <translation id="1779652936965200207">Введіть цей ключ на пристрої "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">Додаток (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Закрити групу</translation>
+<translation id="1780273119488802839">Імпорт закладок...</translation>
 <translation id="1781291988450150470">Поточний PIN-код</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" />: підключіться до мережі Wi-Fi та завантажте оновлення.</translation>
 <translation id="1781502536226964113">Відкрити сторінку нової вкладки</translation>
@@ -2479,6 +2481,7 @@
 <translation id="3649505501900178324">Оновлення прострочено</translation>
 <translation id="3650753875413052677">Помилка реєстрації</translation>
 <translation id="3650845953328929506">Очікується завантаження журналу.</translation>
+<translation id="365089839707261811">Перевірити змінену назву</translation>
 <translation id="3650952250015018111">Надати додатку "<ph name="APP_NAME" />" доступ:</translation>
 <translation id="3651488188562686558">Відключитися від Wi-Fi</translation>
 <translation id="3652817283076144888">Ініціалізація</translation>
@@ -2837,7 +2840,6 @@
 <translation id="3994374631886003300">Щоб розблокувати пристрій <ph name="DEVICE_TYPE" />, розблокуйте свій телефон і розташуйте його ближче до пристрою.</translation>
 <translation id="3994878504415702912">&amp;Масштаб</translation>
 <translation id="3995138139523574647">пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
-<translation id="4002066346123236978">Назва</translation>
 <translation id="4002329649066944389">Як керувати винятками для певних сайтів</translation>
 <translation id="4002440992267487163">Налаштування PIN-коду</translation>
 <translation id="4005817994523282006">Спосіб визначення часового поясу</translation>
@@ -3097,6 +3099,7 @@
 <translation id="4332976768901252016">Налаштуйте батьківський контроль</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 із шифруванням RSA</translation>
 <translation id="4336434711095810371">Видалити всі дані</translation>
+<translation id="4339203724549370495">Видалити додаток</translation>
 <translation id="4340125850502689798">Недійсне ім'я користувача</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> хоче обмінюватися даними з додатком <ph name="EXTENSION_NAME" /></translation>
 <translation id="4340799661701629185">Заборонити сайтам надсилати сповіщення</translation>
@@ -3509,6 +3512,7 @@
 <translation id="479536056609751218">Веб-сторінка, тільки HTML</translation>
 <translation id="4796142525425001238">Завжди відновлювати</translation>
 <translation id="4798236378408895261">Вкласти <ph name="BEGIN_LINK" />журнали Bluetooth<ph name="END_LINK" /> (для внутрішнього використання в Google)</translation>
+<translation id="4800839971935185386">Перевірити змінені назву й значок</translation>
 <translation id="4801448226354548035">Сховати облікові записи</translation>
 <translation id="4801512016965057443">Дозволити роумінг мобільних даних</translation>
 <translation id="4804818685124855865">Від'єднатися</translation>
@@ -4136,6 +4140,7 @@
 <translation id="5498967291577176373">Пишіть швидше з вбудованими підказками щодо імені, адреси або номеру телефону</translation>
 <translation id="5499313591153584299">Цей файл може зашкодити вашому комп’ютеру.</translation>
 <translation id="5499453227627332024">Доступне оновлення для Linux Container. Ви також можете оновити систему пізніше в додатку Налаштування.</translation>
+<translation id="549957179819296104">Новий значок</translation>
 <translation id="5500709606820808700">Перевірку безпеки виконано сьогодні</translation>
 <translation id="5501322521654567960">Бічна панель зліва</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}one{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}few{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}many{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}other{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}}</translation>
@@ -4393,7 +4398,6 @@
 <translation id="5794414402486823030">Завжди відкривати за допомогою системного переглядача</translation>
 <translation id="5794700615121138172">Спільні папки Linux</translation>
 <translation id="5794786537412027208">Вийти з усіх додатків Chrome</translation>
-<translation id="5797070761912323120">Google може використовувати вашу історію, щоб персоналізувати Пошук, оголошення й інші сервіси Google</translation>
 <translation id="5797521893972859201">Буде очищено історію, зокрема в полі пошуку</translation>
 <translation id="5798079537501238810">Сайти можуть установлювати обробники платежів</translation>
 <translation id="579907812742603813">захищений контент</translation>
@@ -6151,6 +6155,7 @@
 <translation id="7730449930968088409">Робити знімки вмісту екрана</translation>
 <translation id="7730683939467795481">Цю сторінку змінено розширенням "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7734486794139738745">Я використовую лише один перемикач</translation>
+<translation id="7734541938181328224">Перевірити змінений значок</translation>
 <translation id="7737115349420013392">Підключення до пристрою "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737948071472253612">Заборонено використовувати камеру</translation>
 <translation id="7740996059027112821">Стандартно</translation>
@@ -6911,6 +6916,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Спроба встановити програму нижчої версії.</translation>
 <translation id="8569682776816196752">Не знайдено жодного місця призначення</translation>
+<translation id="857074314439694500">Якщо цей веб-додаток намагається видати себе за інший, видаліть його.</translation>
 <translation id="8571213806525832805">Останні 4 тижні</translation>
 <translation id="8571687764447439720">Додати квиток Kerberos</translation>
 <translation id="8574990355410201600">Завжди дозволяти звук на сторінці <ph name="HOST" /></translation>

@@ -47,7 +47,6 @@
 <translation id="2718390899429598676">ಹೆಚ್ಚುವರಿ ಭದ್ರತೆಗಾಗಿ, Chromium ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="2770231113462710648">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಅನ್ನು ಇದ್ಕಕೆ ಬದಲಿಸಿ:</translation>
 <translation id="2799223571221894425">ಮರುಪ್ರಾರಂಭಿಸು</translation>
-<translation id="2816712596130903444">Chromium ಪ್ರೊಫೈಲ್ ಅನ್ನು ಪ್ರತ್ಯೇಕಿಸಬೇಕೆ?</translation>
 <translation id="2837693172913560447">ಇದು <ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಹೊಸ Chromium ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸುತ್ತದೆ</translation>
 <translation id="2847479871509788944">Chromium ನಿಂದ ತೆಗೆದುಹಾಕಿ...</translation>
 <translation id="2885378588091291677">ಕಾರ್ಯ ನಿರ್ವಾಹಕ</translation>
@@ -278,7 +277,6 @@
 <translation id="8974095189086268230">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್<ph name="END_LINK_CROS_OSS" /> ನಿಂದ Chrome OS ಮಾಡಲು ಸಾಧ್ಯ.</translation>
 <translation id="8986207147630327271">ನೀವು ಈ ಬ್ರೌಸರ್‌ಗೆ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಅನ್ನು ಸೇರಿಸುತ್ತಿರುವಿರಿ ಮತ್ತು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಕೇವಲ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ನ ಮೇಲೆ ನಿಯಂತ್ರಣವನ್ನು ನೀಡುತ್ತಿರುವಿರಿ.</translation>
 <translation id="9019929317751753759">Chromium ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ನಲ್ಲಿ ಪಟ್ಟಿ ಮಾಡದಿರುವ ಕೆಳಗಿನ ವಿಸ್ತರಣೆಯನ್ನು ನಾವು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೇವೆ ಮತ್ತು ಇದು ನಿಮ್ಮ ಗಮನಕ್ಕೆ ಬಾರದೇ ಸೇರಿಸಲಾಗಿರಬಹುದು.</translation>
-<translation id="9047197236183657400">ಖಾತೆಯನ್ನು ಹೊಸ Chromium ಪ್ರೊಫೈಲ್‌ಗೆ ಸರಿಸಬೇಕೆ?</translation>
 <translation id="9089354809943900324">Chromium ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="9093206154853821181">{0,plural, =1{ಒಂದು ಗಂಟೆಯಲ್ಲಿ Chromium ಮರುಪ್ರಾರಂಭಗೊಳ್ಳುತ್ತದೆ}one{# ಗಂಟೆಗಳಲ್ಲಿ Chromium ಮರುಪ್ರಾರಂಭಗೊಳ್ಳುತ್ತದೆ}other{# ಗಂಟೆಗಳಲ್ಲಿ Chromium ಮರುಪ್ರಾರಂಭಗೊಳ್ಳುತ್ತದೆ}}</translation>
 <translation id="91086099826398415">ಹೊಸ Chromium &amp;ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>

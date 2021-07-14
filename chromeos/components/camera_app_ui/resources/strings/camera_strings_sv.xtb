@@ -6,6 +6,8 @@
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> är inte ansluten.</translation>
 <translation id="1473110567575736769">Timer för 3 sekunder</translation>
+<translation id="1478594628797167447">Skanner</translation>
+<translation id="1545749641540134597">Skanna QR-kod</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">Ingenting spelades in</translation>
@@ -19,6 +21,7 @@
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktiv</translation>
 <translation id="2144806332417375165">Anpassade videoparametrar</translation>
+<translation id="2175927920773552910">QR-kod</translation>
 <translation id="229579744168541441">Exportera till disk</translation>
 <translation id="2320741269052147773">Panorera åt vänster</translation>
 <translation id="2501278716633472235">Föregående</translation>

@@ -42,6 +42,7 @@
 <translation id="1715359911173058521">Υπάρχει κάποιο πρόβλημα επικοινωνίας με τον σαρωτή. Ελέγξτε τη σύνδεση δικτύου ή USB και δοκιμάστε ξανά.</translation>
 <translation id="1717874160321062422">Διαχειρίζεται από <ph name="FIRST_MANAGER" /> και <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Ακύρωση σάρωσης</translation>
 <translation id="1851218745569890714">Συνεδρίαση με βίντεο</translation>
 <translation id="1887850431809612466">Έκδοση υλικού</translation>
@@ -217,6 +218,7 @@
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318334351163689047">Σφάλματα αιτήματος TCP</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Όνομα</translation>
 <translation id="5332948983412042822">Επιλέξτε έναν νέο τώρα</translation>
 <translation id="5333530671332546086">Άγνωστη κατάσταση πύλης</translation>
 <translation id="5372659122375744710">Το δίκτυο Wi-Fi δεν είναι ασφαλές.</translation>
@@ -234,6 +236,7 @@
 <translation id="5669267381087807207">Ενεργοπ.</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Οικογένεια</translation>
+<translation id="5701381305118179107">Κέντρο</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> από <ph name="TOTAL_PAGES" /></translation>
 <translation id="5752751666635965375">Δημιουργία παιχνιδιών</translation>
 <translation id="5760715441271661976">Κατάσταση πύλης</translation>
@@ -266,6 +269,7 @@
 <translation id="6223752125779001553">Δεν υπάρχουν διαθέσιμοι σαρωτές</translation>
 <translation id="6232017090690406397">Μπαταρία</translation>
 <translation id="6243280677745499710">Έχει οριστεί</translation>
+<translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Η δοκιμή <ph name="TEST_NAME" /> ακυρώθηκε</translation>
 <translation id="6325525973963619867">Απέτυχε</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>

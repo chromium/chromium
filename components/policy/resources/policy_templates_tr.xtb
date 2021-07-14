@@ -81,7 +81,6 @@
 <translation id="1082802595100075771">Kullanıcıların, etiketlenmemiş resimlerin otomatik açıklamalarını sağlayan anonim bir Google hizmeti kullanmayı seçmelerine olanak tanı</translation>
 <translation id="1087437665304381368">Bu politika yalnızca <ph name="PRODUCT_OS_NAME" /> geliştirici modunu kontrol eder. Android Geliştirici Seçenekleri'ne erişimi engellemek isterseniz <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> politikasını ayarlamanız gerekir.</translation>
 <translation id="1087707496788636333">Chrome Enterprise politika listesinin yeri değişiyor! Lütfen yer işaretlerinizi <ph name="POLICY_DOCUMENTATION_URL" /> adresi ile güncelleyin.</translation>
-<translation id="1089631008765417531">Zorunlu yüklenmiş web uygulamalarının cihaz özelliklerini sorgulamasına izin ver.</translation>
 <translation id="1095209545735032039">Bu sitelerde Serial API'sini engelle</translation>
 <translation id="1096105751829466145">Varsayılan arama sağlayıcı</translation>
 <translation id="1099282607296956954">Site İzolasyonu'nu her site için etkinleştirme</translation>
@@ -605,7 +604,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="1736269219679256369">SSL uyarı sayfasından devam etmeye izin ver</translation>
-<translation id="173993509627303617">Zorunlu yüklenmiş web uygulamalarının cihaz özelliklerini sorgulamasını önle.</translation>
 <translation id="174765717426930019"><ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyerek açılan tüm pop-up'lara, pop-up'ı açmak isteyen sayfayla etkileşimde bulunma izni ver. Bu izin, pop-up'ı açan sayfa böyle bir etkileşimi açıkça devre dışı bırakmadığı sürece verilir. </translation>
 <translation id="1750315445671978749">Tüm indirmeleri engelle</translation>
 <translation id="1751429117283165017">Bu politika ayarlanırsa kullanıcılardan ana makine işletim sisteminin dosya sisteminde bulunan dosya veya dizinlere yazma erişimi vermelerini isteyemeyecek sitelerin belirtildiği URL kalıpları listesini oluşturabilirsiniz.
@@ -3520,11 +3518,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 <translation id="5535973522252703021">Kerberos yetki sunucusu beyaz listesi</translation>
 <translation id="553806128266843748">Veri akışı kısıtlamanın etkinleştirilip etkinleştirilmediğini gösteren bir boole flag'i.</translation>
 <translation id="5540885720415375851">Yerel cihaz bulmaya izin ver</translation>
-<translation id="5541621819310532773">Zorunlu yüklenmiş web uygulamalarının Device Attributes web API'yi kullanarak cihaz özelliklerini (ör. seri numarası, ana makine adı) almasına izin vermek için politikayı ayarlar.
-
-      Bu politika, doğru değerine ayarlanırsa veya yapılandırılmazsa zorunlu yüklenmiş web uygulamalarının Device Attributes web API'yi kullanmasına izin verilir.
-
-      Bu politika, yanlış değerine ayarlanırsa Device Attributes web API'ye izin verilmez.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Giriş ekranında yüksek kontrastı etkinleştir</translation>
 <translation id="555077880566103058">Tüm sitelerin otomatik olarak <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştırmasına izin ver</translation>
@@ -4276,17 +4269,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Politika ayarlanmazsa veya boş bir listeye ayarlanırsa hiçbir cihaz yerel hesabı yoktur.</translation>
 <translation id="6584541828182430328">Tam ekran uyarısının gösterilmesini devre dışı bırak</translation>
 <translation id="6598235178374410284">Kullanıcı avatarı resmi</translation>
-<translation id="6601311299236772162">Bu politika, <ph name="PRODUCT_NAME" /> ürününün Eski Tarayıcı Desteği özelliğinin site listesi/gri liste politikalarını nasıl yorumladığını kontrol eder. Şu politikaları etkiler: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> ve <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      "Varsayılan", (0) değerine ayarlanırsa veya ayarlanmazsa URL eşleşmesi daha az katı kurallı olur. "/" karakterini içermeyen kurallar, URL'nin ana makine adının herhangi bir yerinde alt dize arar.
-
-      "Katı", (1) değerine ayarlanırsa URL eşleşmesi katı kurallı olur. "/" karakterini içermeyen kurallar, yalnızca ana makine adının sonunda eşleşir. Alan adı sınırında da bulunmaları gerekir. Bu, <ph name="MS_IE_PRODUCT_NAME" /> ve <ph name="MS_EDGE_PRODUCT_NAME" /> ile daha uyumludur.
-
-      Örneğin, "example.com" kuralıyla:
-
-      "http://example.com/" ve "http://subdomain.example.com/" ayrıştırma modundan bağımsız olarak eşleşir.
-
-      "http://notexample.com/", "http://example.com.invalid.com/" ve "http://example.comabc/" yalnızca "Varsayılan" modda eşleşir.</translation>
 <translation id="6603004149426829878">Saat dilimini çözümlerken kullanılabilir konum sinyallerini her zaman sunucuya gönder</translation>
 <translation id="6604049565198492174">Politika ayarlanırsa her <ph name="PRODUCT_NAME" /> cihaz için kullanıcı başına ağ yapılandırması aktarılabilir. Ağ yapılandırması, Açık Ağ Yapılandırması biçimiyle tanımlanmış JSON biçimli bir dizedir.</translation>
 <translation id="660567106648774919">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen "<ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />" politikasını kullanın.

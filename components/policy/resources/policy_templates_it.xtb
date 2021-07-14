@@ -81,7 +81,6 @@
 <translation id="1082802595100075771">Consenti agli utenti di scegliere un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
 <translation id="1087437665304381368">Questa norma consente di controllare esclusivamente la modalità sviluppatore di <ph name="PRODUCT_OS_NAME" />. Se vuoi impedire l'accesso alle Opzioni sviluppatore Android, devi impostare la norma <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">L'elenco dei criteri di Chrome Enterprise è in fase di trasferimento. Aggiorna i tuoi preferiti con l'URL <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
-<translation id="1089631008765417531">Le applicazioni web con installazione forzata possono richiedere gli attributi dei dispositivi.</translation>
 <translation id="1095209545735032039">Blocca l'API Serial su questi siti</translation>
 <translation id="1096105751829466145">Provider di ricerca predefinito</translation>
 <translation id="1099282607296956954">Attiva isolamento dei siti per ogni sito
@@ -602,7 +601,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="1736269219679256369">Consenti di proseguire dalla pagina di avviso SSL</translation>
-<translation id="173993509627303617">Le applicazioni web con installazione forzata non possono richiedere gli attributi dei dispositivi.</translation>
 <translation id="174765717426930019">Consenti a tutti i popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha richiesto l'apertura del popup se la pagina di apertura non disattiva esplicitamente tale interazione </translation>
 <translation id="1750315445671978749">Blocca tutti i download</translation>
 <translation id="1751429117283165017">La configurazione del criterio consente di elencare i pattern URL che specificano i siti che non possono richiedere agli utenti l'accesso di scrittura di file o directory nel file system del sistema operativo host.
@@ -3524,11 +3522,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5535973522252703021">Whitelist server di delega Kerberos</translation>
 <translation id="553806128266843748">Un flag booleano che indica se la limitazione è attiva o meno.</translation>
 <translation id="5540885720415375851">Consenti rilevamento dei dispositivi locali</translation>
-<translation id="5541621819310532773">La configurazione di questo criterio consente di stabilire se consentire o meno alle applicazioni web con installazione forzata di ricevere gli attributi dei dispositivi (ad esempio, numero di serie, nome host) usando l'API web Device Attributes.
-
-      Se questo criterio viene impostato su vero o non viene configurato, l'API web Device Attributes potrà forzare l'installazione delle applicazioni web.
-
-      Se questo criterio viene impostato su falso, l'API web Device Attributes non sarà consentita.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Attiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="555077880566103058">Consenti l'esecuzione automatica del plug-in <ph name="FLASH_PLUGIN_NAME" /> in tutti i siti</translation>
@@ -4286,17 +4279,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio non viene configurato o se l'elenco è vuoto, non vengono visualizzati account locali del dispositivo.</translation>
 <translation id="6584541828182430328">Disattiva avviso schermo intero</translation>
 <translation id="6598235178374410284">Immagine avatar utente</translation>
-<translation id="6601311299236772162">Questo criterio consente di stabilire in che modo <ph name="PRODUCT_NAME" /> deve interpretare i criteri relativi a elenchi dei siti/greylist della funzionalità Supporto dei browser precedenti. Incide sui seguenti criteri: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      Se il criterio viene impostato su "Predefinito" (0) o se non viene configurato, la corrispondenza degli URL è meno rigorosa. Per le regole che non contengono "/" viene cercata una sottostringa in un punto qualsiasi del nome host dell'URL.
-
-      Se il criterio viene impostato su "Rigoroso" (1), la corrispondenza degli URL è più rigorosa. Per le regole che non contengono "/" viene cercata una corrispondenza soltanto alla fine del nome host. Le regole devono inoltre coincidere con il limite di un nome di dominio. Questo criterio è maggiormente compatibile con <ph name="MS_IE_PRODUCT_NAME" /> e <ph name="MS_EDGE_PRODUCT_NAME" />.
-
-      Ad esempio, con la regola "example.com":
-
-      "http://example.com/" e "http://subdomain.example.com/" corrispondono a prescindere dalla modalità di analisi.
-
-      "http://notexample.com/", "http://example.com.invalid.com/" e "http://example.comabc/" corrispondono soltanto se il criterio è in modalità "Predefinito".</translation>
 <translation id="6603004149426829878">Consente di inviare sempre al server i segnali relativi alla posizione disponibili durante le operazioni per stabilire il fuso orario</translation>
 <translation id="6604049565198492174">La configurazione del criterio consente di forzare l'applicazione della configurazione di rete per utente su ogni dispositivo <ph name="PRODUCT_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
 <translation id="660567106648774919">Questo criterio è deprecato. Utilizza il criterio <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.

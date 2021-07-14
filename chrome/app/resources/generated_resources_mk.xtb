@@ -95,6 +95,7 @@
     <ph name="BEGIN_LINK" />
     апликацијата Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Слика копирана од <ph name="DEVICE_NAME" /></translation>
+<translation id="1100504063505580045">Моментална икона</translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Запри</translation>
 <translation id="1110155001042129815">Чекај</translation>
@@ -2477,6 +2478,7 @@
 <translation id="3649505501900178324">Измина рокот за ажурирање</translation>
 <translation id="3650753875413052677">Грешка при регистрацијата</translation>
 <translation id="3650845953328929506">Прикачувањето на евиденцијата чека на ред.</translation>
+<translation id="365089839707261811">Прегледајте ги ажурирањата на имињата</translation>
 <translation id="3650952250015018111">Дозволете ѝ пристап на "<ph name="APP_NAME" />" до:</translation>
 <translation id="3651488188562686558">Прекини ја врската со Wi-Fi</translation>
 <translation id="3652817283076144888">Се иницијализира</translation>
@@ -2835,7 +2837,6 @@
 <translation id="3994374631886003300">Отклучете го телефонот и приближете го за отклучување на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Зумирај</translation>
 <translation id="3995138139523574647">USB-Ц уред (задна порта од десна страна)</translation>
-<translation id="4002066346123236978">Наслов</translation>
 <translation id="4002329649066944389">Управувајте со исклучоците за конкретни сајтови</translation>
 <translation id="4002440992267487163">Закачи го поставувањето</translation>
 <translation id="4005817994523282006">Метод за откривање на временската зона</translation>
@@ -3095,6 +3096,7 @@
 <translation id="4332976768901252016">Поставете родителски контроли</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 со RSA енкрипција</translation>
 <translation id="4336434711095810371">Избриши ги сите податоци</translation>
+<translation id="4339203724549370495">Деинсталирај ја апликацијата</translation>
 <translation id="4340125850502689798">Неважечко корисничко име</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> сака да комуницира со апликацијата „<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">Не им дозволувај на сајтовите да испраќаат известувања</translation>
@@ -3507,6 +3509,7 @@
 <translation id="479536056609751218">Веб-страница, само HTML</translation>
 <translation id="4796142525425001238">Секогаш враќај</translation>
 <translation id="4798236378408895261">Прикачи <ph name="BEGIN_LINK" />евиденција за Bluetooth<ph name="END_LINK" /> (интерно во Google)</translation>
+<translation id="4800839971935185386">Прегледајте ги ажурирањата на имињата и иконите</translation>
 <translation id="4801448226354548035">Сокриј сметки</translation>
 <translation id="4801512016965057443">Дозволи роаминг на мобилен интернет</translation>
 <translation id="4804818685124855865">Прекини врска</translation>
@@ -4134,6 +4137,7 @@
 <translation id="5498967291577176373">Пишувајте побрзо со вметнатите предлози за вашето име, адресата или телефонскиот број</translation>
 <translation id="5499313591153584299">Оваа датотека може да биде штетна за вашиот компјутер.</translation>
 <translation id="5499453227627332024">Достапна е надградба за вашиот контејнер за Linux. Може да го надградите и подоцна од апликацијата „Поставки“.</translation>
+<translation id="549957179819296104">Нова икона</translation>
 <translation id="5500709606820808700">Безбедносната проверка беше извршена денеска</translation>
 <translation id="5501322521654567960">Лева странична табла</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Неуспешно преземање <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}one{Неуспешно преземање <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}other{Неуспешно преземање <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}}</translation>
@@ -4391,7 +4395,6 @@
 <translation id="5794414402486823030">Секогаш отворај со прегледувачот на системот</translation>
 <translation id="5794700615121138172">Споделени папки на Linux</translation>
 <translation id="5794786537412027208">Затвори ги сите апликации на Chrome</translation>
-<translation id="5797070761912323120">Google може да ја користи вашата историја за да го персонализира „Пребарувањето“, рекламите и другите услуги на Google</translation>
 <translation id="5797521893972859201">Ја брише историјата, вклучително и во полето за пребарување</translation>
 <translation id="5798079537501238810">Сајтовите може да инсталираат ракувачи со плаќања</translation>
 <translation id="579907812742603813">заштитени содржини</translation>
@@ -6149,6 +6152,7 @@
 <translation id="7730449930968088409">Снимете содржина од својот екран</translation>
 <translation id="7730683939467795481">Екстензијата „<ph name="EXTENSION_NAME" />“ ја промени страницава</translation>
 <translation id="7734486794139738745">Користам само еден прекинувач</translation>
+<translation id="7734541938181328224">Прегледајте ги ажурирањата на иконите</translation>
 <translation id="7737115349420013392">Се спарува со „<ph name="DEVICE_NAME" />“…</translation>
 <translation id="7737948071472253612">Не им е дозволено да ја користат камерата</translation>
 <translation id="7740996059027112821">Стандарден</translation>
@@ -6911,6 +6915,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Се обиде да премине на постара верзија од апликацијата.</translation>
 <translation id="8569682776816196752">Не се пронајдени дестинации</translation>
+<translation id="857074314439694500">Доколку веб-апликацијава се обидува да ве измами да мислите дека е друга апликација, деинсталирајте ја.</translation>
 <translation id="8571213806525832805">Изминатите 4 седмици</translation>
 <translation id="8571687764447439720">Додајте билет на Kerberos</translation>
 <translation id="8574990355410201600">Секогаш дозволувај звук на <ph name="HOST" /></translation>

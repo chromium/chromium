@@ -6,6 +6,8 @@
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> 카메라의 연결이 해제되었습니다.</translation>
 <translation id="1473110567575736769">3초 타이머</translation>
+<translation id="1478594628797167447">스캐너</translation>
+<translation id="1545749641540134597">QR 코드 스캔</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">녹화된 동영상이 없습니다.</translation>
@@ -19,6 +21,7 @@
 <translation id="2050339315714019657">세로 방향</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> 사용 중</translation>
 <translation id="2144806332417375165">맞춤 동영상 매개변수</translation>
+<translation id="2175927920773552910">QR 코드</translation>
 <translation id="229579744168541441">디스크로 내보내기</translation>
 <translation id="2320741269052147773">왼쪽으로 화면 이동</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>

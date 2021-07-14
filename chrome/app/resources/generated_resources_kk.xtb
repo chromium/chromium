@@ -93,6 +93,7 @@
 <translation id="1097658378307015415">Кіруден бұрын <ph name="NETWORK_ID" /> желісін белсендіру үшін Қонақ ретінде кіріңіз</translation>
 <translation id="1099383081182863812"><ph name="BEGIN_LINK" />Google Home қолданбасынан<ph name="END_LINK" /> Chromecast құрылғысы көріне ме?</translation>
 <translation id="1099962274138857708">Сурет <ph name="DEVICE_NAME" /> құрылғысынан көшірілді</translation>
+<translation id="1100504063505580045">Қазіргі белгіше</translation>
 <translation id="1103523840287552314">Әрқашан <ph name="LANGUAGE" /> тіліне аудару</translation>
 <translation id="1108600514891325577">&amp;Тоқтату</translation>
 <translation id="1110155001042129815">Күту</translation>
@@ -2457,6 +2458,7 @@
 <translation id="3649505501900178324">Жаңарту мерзімі өтіп кетті</translation>
 <translation id="3650753875413052677">Тіркеу кезінде қате шықты</translation>
 <translation id="3650845953328929506">Журналды жүктеп салу кезекте.</translation>
+<translation id="365089839707261811">Атаудағы өзгерістерді қарап шығу</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" қолданбасына кіруге рұқсат беру:</translation>
 <translation id="3651488188562686558">Wi-Fi желісінен ажырату</translation>
 <translation id="3652817283076144888">Жұмысқа дайындалуда</translation>
@@ -2815,7 +2817,6 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> құрылғысының құлпын ашу үшін телефонның құлпын ашып, оны жақындатыңыз.</translation>
 <translation id="3994878504415702912">&amp;Масштабтау</translation>
 <translation id="3995138139523574647">USB-C құрылғысы (оң жақ артқы порты)</translation>
-<translation id="4002066346123236978">Тақырып</translation>
 <translation id="4002329649066944389">Сайттың арнайы ерекшеліктерін басқару</translation>
 <translation id="4002440992267487163">PIN кодын орнату</translation>
 <translation id="4005817994523282006">Уақыт белдеуін анықтау әдісі</translation>
@@ -3075,6 +3076,7 @@
 <translation id="4332976768901252016">Ата-ана бақылауын реттеу</translation>
 <translation id="4333854382783149454">RSA шифрлауына ие PKCS #1 SHA-1</translation>
 <translation id="4336434711095810371">Барлық деректерді өшіру</translation>
+<translation id="4339203724549370495">Қолданбаны жою</translation>
 <translation id="4340125850502689798">Пайдаланушы аты дұрыс емес.</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" қолданбасымен байланысуға рұқсат сұрап тұр</translation>
 <translation id="4340799661701629185">Сайттардың хабарландырулар жіберуіне рұқсат бермеу</translation>
@@ -3486,6 +3488,7 @@
 <translation id="479536056609751218">Веб-бет, HTML ғана</translation>
 <translation id="4796142525425001238">Әрқашан қалпына келтіру</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth журналдарын<ph name="END_LINK" /> (Google-де ішкі пайдалану үшін) тіркеңіз</translation>
+<translation id="4800839971935185386">Атаудағы және белгішедегі өзгерістерді қарап шығу</translation>
 <translation id="4801448226354548035">Есептік жазбаларды жасыру</translation>
 <translation id="4801512016965057443">Ұялы деректер роумингіне рұқсат ету</translation>
 <translation id="4804818685124855865">Ажырату</translation>
@@ -4113,6 +4116,7 @@
 <translation id="5498967291577176373">Аты-жөніңізді, мекенжайыңызды не телефон нөміріңізді ендірілген ұсыныстармен жылдамырақ жазыңыз.</translation>
 <translation id="5499313591153584299">Бұл файл компьютеріңізге зиянды болуы мүмкін.</translation>
 <translation id="5499453227627332024">Linux контейнері үшін жаңа нұсқа қолжетімді. Жаңа нұсқаны "Параметрлер" қолданбасы арқылы кейінірек орнатуыңызға болады.</translation>
+<translation id="549957179819296104">Жаңа белгіше</translation>
 <translation id="5500709606820808700">Қауіпсіздік шарасы бүгін қолданылды.</translation>
 <translation id="5501322521654567960">Сол жақ бүйірлік панель</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынбады.}other{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынбады.}}</translation>
@@ -4370,7 +4374,6 @@
 <translation id="5794414402486823030">Әрқашан жүйе көру құралымен ашу</translation>
 <translation id="5794700615121138172">Linux ортақ қалталары</translation>
 <translation id="5794786537412027208">Барлық Chrome қолданбаларынан шығу</translation>
-<translation id="5797070761912323120">Search, жарнамалар және басқа да Google қызметтерін жеке қажеттеліктерге бейімдеу үшін Google интернеттегі әрекеттеріңізді пайдалануы мүмкін.</translation>
 <translation id="5797521893972859201">Тарих және іздеу өрісіндегі дерек өшіріледі.</translation>
 <translation id="5798079537501238810">Сайттар төлем өңдегіштерін орната алады.</translation>
 <translation id="579907812742603813">қорғалған мазмұн</translation>
@@ -6128,6 +6131,7 @@
 <translation id="7730449930968088409">Экранның мазмұнын түсіру</translation>
 <translation id="7730683939467795481">Бұл бет "<ph name="EXTENSION_NAME" />" кеңейтімі арқылы өзгертілді.</translation>
 <translation id="7734486794139738745">Тек бір ауыстырғышты пайдаланамын</translation>
+<translation id="7734541938181328224">Белгішедегі өзгерістерді қарап шығу</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" құрылғысымен жұпталуда ...</translation>
 <translation id="7737948071472253612">Камераңызды қолдануға рұқсаты жоқтар</translation>
 <translation id="7740996059027112821">Стандартты</translation>
@@ -6886,6 +6890,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Қолданбаның ескі нұсқасын орнатуға әрекет еттіңіз.</translation>
 <translation id="8569682776816196752">Межелі орындар табылмады</translation>
+<translation id="857074314439694500">Егер бұл веб-қолданба өзінің басқа қолданба екеніне сізді сендіргісі келсе, оны жойып тастаңыз.</translation>
 <translation id="8571213806525832805">Соңғы 4 апта</translation>
 <translation id="8571687764447439720">Kerberos билетін енгізу</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> бетінде дыбысты әрқашан қосу</translation>

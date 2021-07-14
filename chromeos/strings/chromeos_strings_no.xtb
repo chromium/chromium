@@ -42,6 +42,7 @@
 <translation id="1715359911173058521">Det er problemer med å kommunisere med skanneren. Sjekk nettverks- eller USB-forbindelsen, og prøv på nytt.</translation>
 <translation id="1717874160321062422">Administreres av <ph name="FIRST_MANAGER" /> og <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Avbryter skanningen</translation>
 <translation id="1851218745569890714">Videokonferanser</translation>
 <translation id="1887850431809612466">Maskinvareversjon</translation>
@@ -217,6 +218,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318334351163689047">Mislykkede TCP-forespørsler</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Navn</translation>
 <translation id="5332948983412042822">Velg et nytt passord nå</translation>
 <translation id="5333530671332546086">Ukjent portaltilstand</translation>
 <translation id="5372659122375744710">Wi-Fi-nettverket er ikke sikkert</translation>
@@ -234,6 +236,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
+<translation id="5701381305118179107">Midtstill</translation>
 <translation id="5752751666635965375">Lag ditt eget spill</translation>
 <translation id="5760715441271661976">Portaltilstand</translation>
 <translation id="5832805196449965646">Legg til person</translation>
@@ -265,6 +268,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6223752125779001553">Ingen skannere er tilgjengelige</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6243280677745499710">Nåværende bakgrunn</translation>
+<translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>

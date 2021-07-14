@@ -95,6 +95,7 @@
     <ph name="BEGIN_LINK" />
     Google Home ಆ್ಯಪ್‌ನಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ Chromecast ಅನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧ್ಯವೇ?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> ಸಾಧನದಿಂದ ಚಿತ್ರವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
+<translation id="1100504063505580045">ಪ್ರಸ್ತುತ ಐಕಾನ್</translation>
 <translation id="1103523840287552314">ಯಾವಾಗಲೂ ಅನುವಾದಿಸಿ <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;ನಿಲ್ಲಿಸು</translation>
 <translation id="1110155001042129815">ಕಾಯಿರಿ</translation>
@@ -2468,6 +2469,7 @@
 <translation id="3649505501900178324">ಅಪ್‌ಡೇಟ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="3650753875413052677">ನೋಂದಣಿ ದೋಷ</translation>
 <translation id="3650845953328929506">ಲಾಗ್ ಅಪ್‌ಲೋಡ್‌ ಬಾಕಿ ಉಳಿದಿದೆ.</translation>
+<translation id="365089839707261811">ಹೆಸರಿನ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3650952250015018111">ಇದನ್ನು ಪ್ರವೇಶಿಸಲು "<ph name="APP_NAME" />" ಅನ್ನು ಅನುಮತಿಸಿ:</translation>
 <translation id="3651488188562686558">ವೈ-ಫೈ ನಿಂದ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ</translation>
 <translation id="3652817283076144888">ಆರಂಭಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -2827,7 +2829,6 @@
 <translation id="3994374631886003300">ನಿಮ್ಮ ಫೋನ್ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ ಮತ್ತು ಅದನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನದ ಹತ್ತಿರ ಇರಿಸಿ.</translation>
 <translation id="3994878504415702912">&amp;ಝೂಮ್</translation>
 <translation id="3995138139523574647">USB-C ಸಾಧನ (ಬಲ ಭಾಗದ ಹಿಂದಿನ ಪೋರ್ಟ್‌)</translation>
-<translation id="4002066346123236978">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="4002329649066944389">ಸೈಟ್-ನಿರ್ದಿಷ್ಟ ವಿನಾಯಿತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4002440992267487163">ಪಿನ್ ಸೆಟಪ್</translation>
 <translation id="4005817994523282006">ಸಮಯವಲಯ ಪತ್ತೆಹಚ್ಚುವಿಕೆ ವಿಧಾನ</translation>
@@ -3087,6 +3088,7 @@
 <translation id="4332976768901252016">ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="4333854382783149454">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-1</translation>
 <translation id="4336434711095810371">ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
+<translation id="4339203724549370495">ಆ್ಯಪ್‌ ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="4340125850502689798">ಮಾನ್ಯವಲ್ಲದ ಬಳಕೆದಾರರ ಹೆಸರು</translation>
 <translation id="4340515029017875942">"<ph name="EXTENSION_NAME" />" ಅಪ್ಲಿಕೇಶನ್ ನೊಂದಿಗೆ <ph name="ORIGIN" /> ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="4340799661701629185">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
@@ -3498,6 +3500,7 @@
 <translation id="479536056609751218">ವೆಬ್‌ಪುಟ, HTML ಮಾತ್ರ</translation>
 <translation id="4796142525425001238">ಯಾವಾಗಲೂ ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ಬ್ಲೂಟೂತ್ ಲಾಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> (Google ಆಂತರಿಕ) ಲಗತ್ತಿಸಿ</translation>
+<translation id="4800839971935185386">ಹೆಸರು ಮತ್ತು ಐಕಾನ್ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4801448226354548035">ಖಾತೆಗಳನ್ನು ಮರೆಮಾಡು</translation>
 <translation id="4801512016965057443">ಮೊಬೈಲ್ ಡೇಟಾ ರೋಮಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="4804818685124855865">ಡಿಸ್‌ಕನೆಕ್ಟ್</translation>
@@ -4126,6 +4129,7 @@
 <translation id="5498967291577176373">ನಿಮ್ಮ ಹೆಸರು, ವಿಳಾಸ ಅಥವಾ ಫೋನ್ ಸಂಖ್ಯೆಯಂತಹ ಇನ್‌ಲೈನ್‌ ಸಲಹೆಗಳ ಮೂಲಕ ವೇಗವಾಗಿ ಬರೆಯಿರಿ</translation>
 <translation id="5499313591153584299">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿ ಆಗಿರಬಹುದು.</translation>
 <translation id="5499453227627332024">ನಿಮ್ಮ Linux ಕಂಟೇನರ್‌ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಲಭ್ಯವಿದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಆ್ಯಪ್ ಸಹಾಯದಿಂದಲೂ ನೀವು ನಂತರದಲ್ಲಿ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಬಹುದು.</translation>
+<translation id="549957179819296104">ಹೊಸ ಐಕಾನ್</translation>
 <translation id="5500709606820808700">ಸುರಕ್ಷತಾ ಪರಿಶೀಲನೆಯನ್ನು ಈ ದಿನ ನಡೆಸಲಾಗಿದೆ</translation>
 <translation id="5501322521654567960">ಎಡಕ್ಕೆ ಜೋಡಿಸಲಾದ ಪಾರ್ಶ್ವ ಫಲಕ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ}one{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ}other{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ}}</translation>
@@ -4384,7 +4388,6 @@
 <translation id="5794414402486823030">ಯಾವಾಗಲೂ ಸಿಸ್ಟಂ ವೀಕ್ಷಕದ ಜೊತೆಗೆ ತೆರೆಯಿರಿ</translation>
 <translation id="5794700615121138172">Linux ಹಂಚಿಕೊಂಡ ಫೋಲ್ಡರ್‌ಗಳು</translation>
 <translation id="5794786537412027208">ಎಲ್ಲ Chrome ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ತ್ಯಜಿಸಿ</translation>
-<translation id="5797070761912323120">ಹುಡುಕಾಟ, ಜಾಹೀರಾತುಗಳು ಮತ್ತು ಇತರ Google ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು Google ಬಳಸಬಹುದು</translation>
 <translation id="5797521893972859201">ಹುಡುಕಾಟ ಪೆಟ್ಟಿಗೆಯು ಸೇರಿದಂತೆ, ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="5798079537501238810">ಸೈಟ್‌ಗಳು ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬಹುದು</translation>
 <translation id="579907812742603813">ಸಂರಕ್ಷಿಸಿದ ವಿಷಯ</translation>
@@ -6143,6 +6146,7 @@
 <translation id="7730449930968088409">ನಿಮ್ಮ ಪರದೆಯ ವಿಷಯವನ್ನು ಸೆರೆಹಿಡಿಯಿರಿ</translation>
 <translation id="7730683939467795481">ಈ ಪುಟವನ್ನು "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆ ಬಳಸಿ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="7734486794139738745">ನಾನು ಒಂದು ಸ್ವಿಚ್ ಅನ್ನು ಮಾತ್ರ ಬಳಸುತ್ತೇನೆ</translation>
+<translation id="7734541938181328224">ಐಕಾನ್ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" ಜೊತೆ ಜೋಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7737948071472253612">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7740996059027112821">ಪ್ರಮಾಣಿತ</translation>
@@ -6899,6 +6903,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">ಅಪ್ಲಿಕೇಶನ್ ಕೆಳಮಟ್ಟಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ.</translation>
 <translation id="8569682776816196752">ಯಾವುದೇ ಗಮ್ಯಸ್ಥಾನಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
+<translation id="857074314439694500">ಈ ವೆಬ್ ಆ್ಯಪ್ ಇದು ವಿಭಿನ್ನ ಆ್ಯಪ್ ಎಂದು ಯೋಚಿಸುವಂತೆ ನಿಮ್ಮನ್ನು ಮೋಸಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದ್ದರೆ, ಅದನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ.</translation>
 <translation id="8571213806525832805">ಕಳೆದ 4 ವಾರಗಳು</translation>
 <translation id="8571687764447439720">Kerberos ಟಿಕೆಟ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> ನಲ್ಲಿ ಧ್ವನಿಗೆ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>

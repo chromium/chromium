@@ -42,6 +42,7 @@
 <translation id="1715359911173058521">Skanneriin yhdistämisessä on ongelma. Tarkista verkko- tai USB-yhteys ja yritä uudelleen.</translation>
 <translation id="1717874160321062422">Ylläpitäjät: <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Perutaan skannausta</translation>
 <translation id="1851218745569890714">Videokonferenssit</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
@@ -217,6 +218,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5318334351163689047">Epäonnistuneita TCP-pyyntöjä</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nimi</translation>
 <translation id="5332948983412042822">Valitse uusi nyt</translation>
 <translation id="5333530671332546086">Tuntematon portaalitila</translation>
 <translation id="5372659122375744710">Wi-Fi-verkko ei ole suojattu</translation>
@@ -234,6 +236,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Perhe</translation>
+<translation id="5701381305118179107">Keskitä</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5752751666635965375">Luo oma peli</translation>
 <translation id="5760715441271661976">Portaalitila</translation>
@@ -266,6 +269,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6223752125779001553">Skannereita ei saatavilla</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6243280677745499710">Nykyinen taustakuva</translation>
+<translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>

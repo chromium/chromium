@@ -42,6 +42,7 @@
 <translation id="1715359911173058521">‏مشکلی در برقراری ارتباط با اسکنر وجود دارد. اتصال USB یا شبکه را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="1717874160321062422">تحت مدیریت <ph name="FIRST_MANAGER" /> و <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
 <translation id="1851218745569890714">کنفرانس ویدیویی</translation>
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
@@ -217,6 +218,7 @@
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318334351163689047">‏خطاهای درخواست TCP</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">نام</translation>
 <translation id="5332948983412042822">انتخاب گذرواژه جدید، هم‌اکنون</translation>
 <translation id="5333530671332546086">وضعیت درگاه نامشخص است</translation>
 <translation id="5372659122375744710">‏شبکه Wi-Fi ایمن نیست</translation>
@@ -234,6 +236,7 @@
 <translation id="5669267381087807207">فعالسازی</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">خانواده</translation>
+<translation id="5701381305118179107">مرکز</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
 <translation id="5752751666635965375">بازی خودتان را بسازید</translation>
 <translation id="5760715441271661976">وضعیت درگاه</translation>
@@ -266,6 +269,7 @@
 <translation id="6223752125779001553">اسکنری دردسترس نیست</translation>
 <translation id="6232017090690406397">باتری</translation>
 <translation id="6243280677745499710">درحال حاضر تنظیم‌ شده است</translation>
+<translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">آزمایش <ph name="TEST_NAME" /> لغو شده است</translation>
 <translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>

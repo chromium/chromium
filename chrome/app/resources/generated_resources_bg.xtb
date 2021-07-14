@@ -95,6 +95,7 @@
 <ph name="BEGIN_LINK" />
 приложението Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Изображение, копирано от <ph name="DEVICE_NAME" /></translation>
+<translation id="1100504063505580045">Настояща икона</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Стоп</translation>
 <translation id="1110155001042129815">Изчакване</translation>
@@ -742,6 +743,7 @@
 <translation id="1779652936965200207">Моля, въведете този ключ за достъп на „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="177989070088644880">Приложение (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Затваряне на групата</translation>
+<translation id="1780273119488802839">Отметките се импорти&amp;рат...</translation>
 <translation id="1781291988450150470">Текущ ПИН код</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация.</translation>
 <translation id="1781502536226964113">Да се отваря нов раздел в браузъра</translation>
@@ -2472,6 +2474,7 @@
 <translation id="3649505501900178324">Просрочена актуализация</translation>
 <translation id="3650753875413052677">Грешка при записването</translation>
 <translation id="3650845953328929506">Качването на регистрационния файл предстои.</translation>
+<translation id="365089839707261811">Преглед на актуализациите на името</translation>
 <translation id="3650952250015018111">Разрешаване на "<ph name="APP_NAME" />" да има достъп до:</translation>
 <translation id="3651488188562686558">прекрати връзката си с Wi-Fi</translation>
 <translation id="3652817283076144888">Подготвя се за работа</translation>
@@ -2831,7 +2834,6 @@
 <translation id="3994374631886003300">За да отключите своя <ph name="DEVICE_TYPE" />, отключете телефона си и го приближете до него.</translation>
 <translation id="3994878504415702912">&amp;Мащаб</translation>
 <translation id="3995138139523574647">устройство с USB-C (задният десен порт)</translation>
-<translation id="4002066346123236978">Заглавие</translation>
 <translation id="4002329649066944389">Управление на изключенията за конкретни сайтове</translation>
 <translation id="4002440992267487163">Настройване на ПИН код</translation>
 <translation id="4005817994523282006">Метод за установяване на часовата зона</translation>
@@ -3091,6 +3093,7 @@
 <translation id="4332976768901252016">Настройване на родителските контроли</translation>
 <translation id="4333854382783149454">PKCS 1 SHA-1 с RSA шифроване</translation>
 <translation id="4336434711095810371">Изчистване на всички данни</translation>
+<translation id="4339203724549370495">Деинсталиране на приложението</translation>
 <translation id="4340125850502689798">Невалидно потребителско име</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> иска да комуникира с приложението „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4340799661701629185">Да не се разрешава на сайтовете да изпращат известия</translation>
@@ -3503,6 +3506,7 @@
 <translation id="479536056609751218">Уеб страница, само HTML</translation>
 <translation id="4796142525425001238">Винаги</translation>
 <translation id="4798236378408895261">Прикачване на <ph name="BEGIN_LINK" />регистрационните файлове за Bluetooth<ph name="END_LINK" /> (вътрешно за Google)</translation>
+<translation id="4800839971935185386">Преглед на актуализациите на името и иконата</translation>
 <translation id="4801448226354548035">Скриване на профилите</translation>
 <translation id="4801512016965057443">Разрешаване на роуминг за данни</translation>
 <translation id="4804818685124855865">Изключване</translation>
@@ -4130,6 +4134,7 @@
 <translation id="5498967291577176373">Пишете по-бързо посредством показвани в текста предложения за името, адреса или телефонния ви номер</translation>
 <translation id="5499313591153584299">Този файл може да навреди на компютъра ви.</translation>
 <translation id="5499453227627332024">Налице е надстройка за контейнера ви за Linux. Можете също да го надстроите по-късно от приложението „Настройки“.</translation>
+<translation id="549957179819296104">Нова икона</translation>
 <translation id="5500709606820808700">Проверката на безопасността бе изпълнена днес</translation>
 <translation id="5501322521654567960">Подравнен вляво страничен панел</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Получаването на <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" /> не бе успешно}other{Получаването на <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" /> не бе успешно}}</translation>
@@ -4388,7 +4393,6 @@
 <translation id="5794414402486823030">Отваряне винаги със системния визуализатор</translation>
 <translation id="5794700615121138172">Споделяне на папки в Linux</translation>
 <translation id="5794786537412027208">Затваряне на всички приложения в Chrome</translation>
-<translation id="5797070761912323120">Възможно е да използваме историята ви, за да персонализираме търсенето, рекламите и други услуги на Google</translation>
 <translation id="5797521893972859201">Изчиства историята, включително в полето за търсене</translation>
 <translation id="5798079537501238810">Сайтовете могат да инсталират инструменти за обработване на плащания</translation>
 <translation id="579907812742603813">защитено съдържание</translation>
@@ -6146,6 +6150,7 @@
 <translation id="7730449930968088409">Заснемане на съдържанието на екрана ви</translation>
 <translation id="7730683939467795481">Тази страница бе променена от разширението <ph name="EXTENSION_NAME" /></translation>
 <translation id="7734486794139738745">Използвам само един превключвател</translation>
+<translation id="7734541938181328224">Преглед на актуализациите на иконата</translation>
 <translation id="7737115349420013392">Сдвоява се с(ъс) „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="7737948071472253612">Сайтове без разрешение за използване на камерата ви</translation>
 <translation id="7740996059027112821">Стандартна</translation>
@@ -6906,6 +6911,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Бе направен опит за понижаване на приложението.</translation>
 <translation id="8569682776816196752">Няма намерени местоназначения</translation>
+<translation id="857074314439694500">Ако това уеб приложение се опитва да ви подведе, че е друго приложение, деинсталирайте го.</translation>
 <translation id="8571213806525832805">Последните 4 седмици</translation>
 <translation id="8571687764447439720">Добавяне на пропуск за Kerberos</translation>
 <translation id="8574990355410201600">Разрешаване винаги на звука от <ph name="HOST" /></translation>

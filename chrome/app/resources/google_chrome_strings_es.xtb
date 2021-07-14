@@ -40,7 +40,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="174539241580958092">Google Chrome no ha podido sincronizar los datos debido a un error de inicio de sesión.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Comprueba que hayas iniciado sesión en Chrome con tu <ph name="TARGET_DEVICE_NAME" /> y, después, prueba a enviarlo de nuevo.</translation>
-<translation id="1807517590912578995">¿Crear nuevo perfil de Chrome?</translation>
 <translation id="1810203443153428607">Al instalar Chrome OS, se sobrescribirán todos los datos de tu dispositivo.</translation>
 <translation id="1812689907177901597">Si esta opción está desactivada, puedes iniciar sesión en sitios de Google, como Gmail, sin hacerlo en Chrome</translation>
 <translation id="1860536484129686729">Chrome necesita permiso para acceder a la cámara en este sitio web</translation>
@@ -248,7 +247,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7275165473619697274">Instalación de Chrome OS en curso</translation>
 <translation id="7295052994004373688">La UI de Google Chrome se muestra en este idioma</translation>
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
-<translation id="7303916856901595720">¿Mover cuenta a un nuevo perfil de Chrome?</translation>
 <translation id="7308322188646931570">Chrome necesita acceso de almacenamiento para descargar archivos</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7398801000654795464">Habías iniciado sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>

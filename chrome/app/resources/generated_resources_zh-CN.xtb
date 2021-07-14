@@ -93,6 +93,7 @@
 <translation id="1097658378307015415">登录前，请先以访客身份进入，以便激活“<ph name="NETWORK_ID" />”网络。</translation>
 <translation id="1099383081182863812">您能在 <ph name="BEGIN_LINK" />Google Home 应用<ph name="END_LINK" />中看到自己的 Chromecast 吗？</translation>
 <translation id="1099962274138857708">从“<ph name="DEVICE_NAME" />”复制的图片</translation>
+<translation id="1100504063505580045">当前图标</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
 <translation id="1110155001042129815">等待</translation>
@@ -732,6 +733,7 @@
 <translation id="1779652936965200207">请在“<ph name="DEVICE_NAME" />”上输入此匹配密钥：</translation>
 <translation id="177989070088644880">应用 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">关闭组</translation>
+<translation id="1780273119488802839">正在导入书签...</translation>
 <translation id="1781291988450150470">当前 PIN 码</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
 <translation id="1781502536226964113">打开新标签页</translation>
@@ -2457,6 +2459,7 @@
 <translation id="3649505501900178324">更新逾期</translation>
 <translation id="3650753875413052677">注册时出错</translation>
 <translation id="3650845953328929506">正在等待上传日志。</translation>
+<translation id="365089839707261811">查看名称的新变化</translation>
 <translation id="3650952250015018111">允许“<ph name="APP_NAME" />”访问：</translation>
 <translation id="3651488188562686558">断开 Wi-Fi 连接</translation>
 <translation id="3652817283076144888">正在初始化</translation>
@@ -2814,7 +2817,6 @@
 <translation id="3994374631886003300">请解锁您的手机并将它靠近您的 <ph name="DEVICE_TYPE" />，以解锁此设备。</translation>
 <translation id="3994878504415702912">缩放(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
-<translation id="4002066346123236978">标题</translation>
 <translation id="4002329649066944389">管理针对具体网站的例外情况</translation>
 <translation id="4002440992267487163">PIN 码设置</translation>
 <translation id="4005817994523282006">时区检测方法</translation>
@@ -3074,6 +3076,7 @@
 <translation id="4332976768901252016">设置“家长控制”功能</translation>
 <translation id="4333854382783149454">PKCS #1，带有 RSA 加密的 SHA-1</translation>
 <translation id="4336434711095810371">清除所有数据</translation>
+<translation id="4339203724549370495">卸载应用</translation>
 <translation id="4340125850502689798">用户名无效</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> 希望与“<ph name="EXTENSION_NAME" />”应用通信</translation>
 <translation id="4340799661701629185">不允许网站发送通知</translation>
@@ -3485,6 +3488,7 @@
 <translation id="479536056609751218">网页，仅 HTML</translation>
 <translation id="4796142525425001238">一律恢复</translation>
 <translation id="4798236378408895261">附加<ph name="BEGIN_LINK" />蓝牙日志<ph name="END_LINK" />（Google 内部使用）</translation>
+<translation id="4800839971935185386">查看名称和图标的新变化</translation>
 <translation id="4801448226354548035">隐藏帐号</translation>
 <translation id="4801512016965057443">允许移动数据漫游</translation>
 <translation id="4804818685124855865">断开连接</translation>
@@ -4112,6 +4116,7 @@
 <translation id="5498967291577176373">提供与您名字、地址或电话号码有关的内嵌建议，帮助您提高输入速度</translation>
 <translation id="5499313591153584299">此文件可能对您的计算机有害。</translation>
 <translation id="5499453227627332024">Linux 容器有可用的升级，您也可过段时间再从“设置”应用中升级。</translation>
+<translation id="549957179819296104">新图标</translation>
 <translation id="5500709606820808700">今天运行过安全检查</translation>
 <translation id="5501322521654567960">靠左对齐的侧边栏</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{未能收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{未能收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
@@ -4369,7 +4374,6 @@
 <translation id="5794414402486823030">始终使用系统查看器打开</translation>
 <translation id="5794700615121138172">Linux 共享文件夹</translation>
 <translation id="5794786537412027208">退出所有Chrome应用</translation>
-<translation id="5797070761912323120">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索、广告和其他 Google 服务</translation>
 <translation id="5797521893972859201">会清除所有历史记录，包括搜索框中的历史记录</translation>
 <translation id="5798079537501238810">网站可以安装付款处理程序</translation>
 <translation id="579907812742603813">受保护的内容</translation>
@@ -6127,6 +6131,7 @@
 <translation id="7730449930968088409">截取您屏幕上的内容</translation>
 <translation id="7730683939467795481">此网页被扩展程序“<ph name="EXTENSION_NAME" />”更改了</translation>
 <translation id="7734486794139738745">我只使用 1 个开关</translation>
+<translation id="7734541938181328224">查看图标的新变化</translation>
 <translation id="7737115349420013392">正在与“<ph name="DEVICE_NAME" />”配对…</translation>
 <translation id="7737948071472253612">不允许使用您的摄像头</translation>
 <translation id="7740996059027112821">标准</translation>
@@ -6886,6 +6891,7 @@
 <translation id="8561853412914299728">“<ph name="TAB_TITLE" />”<ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">已尝试降低应用版本。</translation>
 <translation id="8569682776816196752">未找到任何目标</translation>
+<translation id="857074314439694500">如果此 Web 应用试图诱骗您认为它是另一款应用，请卸载它。</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8571687764447439720">添加 Kerberos 票据</translation>
 <translation id="8574990355410201600">始终允许 <ph name="HOST" /> 播放声音</translation>

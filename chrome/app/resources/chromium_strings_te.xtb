@@ -47,7 +47,6 @@
 <translation id="2718390899429598676">అదనపు భద్రత కోసం, Chromium మీ డేటాను ఎన్‌క్రిప్ట్ చేస్తుంది.</translation>
 <translation id="2770231113462710648">డిఫాల్ట్ బ్రౌజర్‌ను దీనికి మార్చు:</translation>
 <translation id="2799223571221894425">మళ్లీ ప్రారంభించు</translation>
-<translation id="2816712596130903444">Chromium ప్రొఫైల్‌ను వేరు చేయాలా?</translation>
 <translation id="2837693172913560447">ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chromium ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="2847479871509788944">Chromium నుండి తీసివేయి...</translation>
 <translation id="2885378588091291677">విధి సంచాలకులు</translation>
@@ -282,7 +281,6 @@
 <translation id="8974095189086268230">అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" />పై Chromium OS ఎంతగానో ఆధారపడుతుంది.</translation>
 <translation id="8986207147630327271">మీరు ఈ బ్రౌజర్‌కు వర్క్ ప్రొఫైల్‌ను జోడిస్తున్నారు, ఇంకా మీ అడ్మినిస్ట్రేటర్‌కు వర్క్ ప్రొఫైల్‌పై కంట్రోల్ ఇస్తున్నారు.</translation>
 <translation id="9019929317751753759">Chromiumని సురక్షితం చేయడానికి, మేము క్రింది పొడిగింపుని నిలిపివేసాము, ఇది <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />లో జాబితా చేయబడలేదు మరియు మీకు తెలియకుండా జోడించబడి ఉండవచ్చు.</translation>
-<translation id="9047197236183657400">ఖాతాను కొత్త Chromium ప్రొఫైల్‌కు తరలించాలా?</translation>
 <translation id="9089354809943900324">Chromium కాలం చెల్లినది</translation>
 <translation id="9093206154853821181">{0,plural, =1{ఒక గంటలో Chromium తిరిగి ప్రారంభించబడుతుంది}other{# గంటల్లో Chromium తిరిగి ప్రారంభించబడుతుంది}}</translation>
 <translation id="91086099826398415">కొత్త Chromium &amp;ట్యాబ్‌లో లింక్‌ని తెరువు</translation>

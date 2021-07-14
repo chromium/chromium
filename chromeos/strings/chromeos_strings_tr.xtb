@@ -42,6 +42,7 @@
 <translation id="1715359911173058521">Tarayıcı ile iletişimde bir sorun var. Ağ veya USB bağlantısını kontrol edip tekrar deneyin.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> ve <ph name="SECOND_MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Tarama iptal ediliyor</translation>
 <translation id="1851218745569890714">Video Konferansı</translation>
 <translation id="1887850431809612466">Donanım düzeltmesi</translation>
@@ -217,6 +218,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5318334351163689047">TCP istek hataları</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Ad</translation>
 <translation id="5332948983412042822">Yeni bir tane seçin</translation>
 <translation id="5333530671332546086">Bilinmeyen portal durumu</translation>
 <translation id="5372659122375744710">Kablosuz ağ güvenli değil</translation>
@@ -234,6 +236,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Aile</translation>
+<translation id="5701381305118179107">Ortala</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5752751666635965375">Kendi oyununuzu yapın</translation>
 <translation id="5760715441271661976">Portal Durumu</translation>
@@ -266,6 +269,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6223752125779001553">Kullanılabilir tarayıcı yok</translation>
 <translation id="6232017090690406397">Pil</translation>
 <translation id="6243280677745499710">Şu anda ayarlı</translation>
+<translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="6325525973963619867">Başarısız</translation>
 <translation id="636850387210749493">Kurumsal kayıt</translation>

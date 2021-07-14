@@ -95,6 +95,7 @@
     <ph name="BEGIN_LINK" />
     εφαρμογή Google Home<ph name="END_LINK" />;</translation>
 <translation id="1099962274138857708">Η εικόνα αντιγράφεται από τη συσκευή <ph name="DEVICE_NAME" /></translation>
+<translation id="1100504063505580045">Τρέχον εικονίδιο</translation>
 <translation id="1103523840287552314">Να μεταφράζονται πάντα τα <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Διακοπή</translation>
 <translation id="1110155001042129815">Αναμονή</translation>
@@ -746,6 +747,7 @@
 <translation id="1779652936965200207">Εισαγάγετε αυτό το κλειδί πρόσβασης στη συσκευή "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">Εφαρμογή (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Κλείσιμο ομάδας</translation>
+<translation id="1780273119488802839">Εισαγωγή σελιδοδεικτών...</translation>
 <translation id="1781291988450150470">Τρέχον PIN</translation>
 <translation id="1781398670452016618">Ο τομέας <ph name="DOMAIN" /> απαιτεί να συνδεθείτε άμεσα σε Wi-Fi και να κατεβάσετε μια ενημέρωση.</translation>
 <translation id="1781502536226964113">Ανοίξτε τη σελίδα νέας καρτέλας</translation>
@@ -2476,6 +2478,7 @@
 <translation id="3649505501900178324">Εκπρόθεσμη ενημέρωση</translation>
 <translation id="3650753875413052677">Σφάλμα εγγραφής</translation>
 <translation id="3650845953328929506">Η μεταφόρτωση του αρχείου καταγραφής είναι σε εκκρεμότητα.</translation>
+<translation id="365089839707261811">Έλεγχος ενημερώσεων ονόματος</translation>
 <translation id="3650952250015018111">Να επιτρέπεται στην εφαρμογή "<ph name="APP_NAME" />" η πρόσβαση σε:</translation>
 <translation id="3651488188562686558">Αποσυνδεθεί από το Wi-Fi</translation>
 <translation id="3652817283076144888">Προετοιμασία</translation>
@@ -2834,7 +2837,6 @@
 <translation id="3994374631886003300">Ξεκλειδώστε το τηλέφωνό σας και πλησιάστε το, για να ξεκλειδώσετε το <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Εστίαση</translation>
 <translation id="3995138139523574647">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>
-<translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4002329649066944389">Διαχειριστείτε εξαιρέσεις συγκεκριμένων ιστοτόπων</translation>
 <translation id="4002440992267487163">Ρύθμιση PIN</translation>
 <translation id="4005817994523282006">Μέθοδος ανίχνευσης ζώνης ώρας</translation>
@@ -3094,6 +3096,7 @@
 <translation id="4332976768901252016">Ρύθμιση γονικών ελέγχων</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 με κρυπτογράφηση RSA</translation>
 <translation id="4336434711095810371">Διαγραφή όλων των δεδομένων</translation>
+<translation id="4339203724549370495">Απεγκατάσταση εφαρμογής</translation>
 <translation id="4340125850502689798">Μη έγκυρο όνομα χρήστη</translation>
 <translation id="4340515029017875942">Το <ph name="ORIGIN" /> θέλει να επικοινωνήσει με την εφαρμογή "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">Να μην επιτρέπεται στους ιστοτόπους να στέλνουν ειδοποιήσεις</translation>
@@ -3506,6 +3509,7 @@
 <translation id="479536056609751218">Ιστοσελίδα, μόνο HTML</translation>
 <translation id="4796142525425001238">Να γίνεται πάντα επαναφορά</translation>
 <translation id="4798236378408895261">Επισυνάψτε <ph name="BEGIN_LINK" />αρχεία καταγραφής Bluetooth<ph name="END_LINK" /> (για εσωτερική χρήση από την Google)</translation>
+<translation id="4800839971935185386">Έλεγχος ενημερώσεων ονόματος και εικονιδίου</translation>
 <translation id="4801448226354548035">Απόκρυψη λογαριασμών</translation>
 <translation id="4801512016965057443">Να επιτρέπεται η περιαγωγή δεδομένων κινητών συσκευών</translation>
 <translation id="4804818685124855865">Αποσύνδεση</translation>
@@ -4133,6 +4137,7 @@
 <translation id="5498967291577176373">Γράψτε πιο γρήγορα με τις ενσωματωμένες προτάσεις για το όνομα, τη διεύθυνση ή τον αριθμό τηλεφώνου σας.</translation>
 <translation id="5499313591153584299">Αυτό το αρχείο ενδέχεται να είναι επιβλαβές για τον υπολογιστή σας.</translation>
 <translation id="5499453227627332024">Υπάρχει διαθέσιμη αναβάθμιση για το κοντέινερ Linux. Μπορείτε επίσης να το αναβαθμίσετε αργότερα από την εφαρμογή Ρυθμίσεις.</translation>
+<translation id="549957179819296104">Νέο εικονίδιο</translation>
 <translation id="5500709606820808700">Ο έλεγχος ασφαλείας εκτελέστηκε σήμερα</translation>
 <translation id="5501322521654567960">Πλαϊνό πλαίσιο με στοίχιση στα αριστερά</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Απέτυχε η λήψη (<ph name="ATTACHMENTS" />) από τη συσκευή <ph name="DEVICE_NAME" />}other{Απέτυχε η λήψη (<ph name="ATTACHMENTS" />) από τη συσκευή <ph name="DEVICE_NAME" />}}</translation>
@@ -4391,7 +4396,6 @@
 <translation id="5794414402486823030">Άνοιγμα πάντα με πρόγραμμα προβολής συστήματος</translation>
 <translation id="5794700615121138172">Κοινόχρηστοι φάκελοι Linux</translation>
 <translation id="5794786537412027208">Τερματισμός όλων των εφαρμογών του Chrome</translation>
-<translation id="5797070761912323120">Η Google μπορεί να χρησιμοποιήσει το ιστορικό σας για την εξατομίκευση της Αναζήτησης, των διαφημίσεων και άλλων υπηρεσιών Google</translation>
 <translation id="5797521893972859201">Διαγράφει το ιστορικό, συμπεριλαμβανομένου του πλαισίου αναζήτησης.</translation>
 <translation id="5798079537501238810">Οι ιστότοποι μπορούν να εγκαθιστούν δείκτες χειρισμού πληρωμής</translation>
 <translation id="579907812742603813">προστατευμένο περιεχόμενο</translation>
@@ -6149,6 +6153,7 @@
 <translation id="7730449930968088409">Εγγραφή του περιεχομένου της οθόνης σας</translation>
 <translation id="7730683939467795481">Αυτή η σελίδα άλλαξε από την επέκταση "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7734486794139738745">Χρησιμοποιώ μόνο έναν διακόπτη</translation>
+<translation id="7734541938181328224">Έλεγχος ενημερώσεων εικονιδίου</translation>
 <translation id="7737115349420013392">Σύζευξη με "<ph name="DEVICE_NAME" />" …</translation>
 <translation id="7737948071472253612">Δεν επιτρέπεται να χρησιμοποιούν την κάμερά σας</translation>
 <translation id="7740996059027112821">Τυπική</translation>
@@ -6909,6 +6914,7 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Έγινε προσπάθεια υποβάθμισης της εφαρμογής.</translation>
 <translation id="8569682776816196752">Δεν βρέθηκαν προορισμοί</translation>
+<translation id="857074314439694500">Εάν αυτή η εφαρμογή ιστού προσπαθεί να σας εξαπατήσει έτσι ώστε να πιστέψετε ότι πρόκειται για διαφορετική εφαρμογή, απεγκαταστήστε την.</translation>
 <translation id="8571213806525832805">Τελευταίες 4 εβδομάδες</translation>
 <translation id="8571687764447439720">Προσθήκη εισιτηρίου Kerberos</translation>
 <translation id="8574990355410201600">Να επιτρέπεται πάντα ο ήχος στο <ph name="HOST" /></translation>

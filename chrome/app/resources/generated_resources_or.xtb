@@ -95,6 +95,7 @@
     <ph name="BEGIN_LINK" />
     Google Home ଆପ<ph name="END_LINK" />ରେ ଆପଣଙ୍କ Chromecastକୁ ଦେଖିବା ପାଇଁ ସକ୍ଷମ ଅଟନ୍ତି କି?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />ରୁ କପି କରାଯାଇଥିବା ଛବି</translation>
+<translation id="1100504063505580045">ବର୍ତ୍ତମାନର ଆଇକନ୍</translation>
 <translation id="1103523840287552314">ସର୍ବଦା <ph name="LANGUAGE" /> ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="1108600514891325577">&amp;ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1110155001042129815">ଅପେକ୍ଷା କରନ୍ତୁ</translation>
@@ -2458,6 +2459,7 @@
 <translation id="3649505501900178324">ଅପ୍‌ଡେଟ୍ ହେବାକୁ ବାକି ଅଛି</translation>
 <translation id="3650753875413052677">ପଞ୍ଜିକରଣ ତ୍ରୁଟି</translation>
 <translation id="3650845953328929506">ଲଗ୍‍ ଅପ୍‌ଲୋଡ୍‌ ବାକି ଅଛି।</translation>
+<translation id="365089839707261811">ନାମ ସମ୍ବନ୍ଧିତ ଅପଡେଟଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="3650952250015018111">ଆକ୍ସେସ୍ କରିବା ପାଇଁ "<ph name="APP_NAME" />"କୁ ଅନୁମତି ଦିଅନ୍ତୁ:</translation>
 <translation id="3651488188562686558">Wi-Fiରୁ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="3652817283076144888">ଆରମ୍ଭ କରୁଛି</translation>
@@ -2815,7 +2817,6 @@
 <translation id="3994374631886003300">ଆପଣଙ୍କର ଫୋନ୍‌ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />କୁ ଅନ୍‌ଲକ୍‌ କରିବାକୁ ଏହାକୁ ନିକଟତର କରନ୍ତୁ।</translation>
 <translation id="3994878504415702912">&amp;ଜୁମ୍</translation>
 <translation id="3995138139523574647">USB-C ଡିଭାଇସ୍‌ (ଡାହାଣପଟ ପଛ ପୋର୍ଟ)</translation>
-<translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4002329649066944389">ସାଇଟ୍ ପାଇଁ ନିର୍ଦ୍ଦିଷ୍ଟ ବ୍ୟତିକ୍ରମଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4002440992267487163">ପିନ୍ ସେଟ୍‌ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="4005817994523282006">ସମୟ କ୍ଷେତ୍ର ଚିହ୍ନଟକରଣ ପଦ୍ଧତି</translation>
@@ -3074,6 +3075,7 @@
 <translation id="4332976768901252016">ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="4333854382783149454">RSA ଏନକ୍ରିପ୍ସନ୍ ସହିତ PKCS #1 SHA-1</translation>
 <translation id="4336434711095810371">ସମସ୍ତ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
+<translation id="4339203724549370495">ଆପ୍ ଅନଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="4340125850502689798">ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ନାମ ଅବୈଧ ଅଟେ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" ଆପ୍ ସହିତ ବାର୍ତ୍ତାଳାପ କରିବାକୁ ଚାହୁଁଛନ୍ତି</translation>
 <translation id="4340799661701629185">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ପଠାଇବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
@@ -3486,6 +3488,7 @@
 <translation id="479536056609751218">ୱେବ୍‌ପୃଷ୍ଠା, କେବଳ HTML</translation>
 <translation id="4796142525425001238">ସର୍ବଦା ରିଷ୍ଟୋର କରନ୍ତୁ</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ବ୍ଲୁଟୁଥ୍ ଲଗ୍‌ଗୁଡ଼ିକ<ph name="END_LINK" /> ଯୋଗ କରନ୍ତୁ (Google ଇଣ୍ଟର୍ନଲ୍)</translation>
+<translation id="4800839971935185386">ନାମ ଓ ଆଇକନ୍ ସମ୍ବନ୍ଧିତ ଅପଡେଟଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="4801448226354548035">ଆକାଉଣ୍ଟଗୁଡ଼ିକ ଲୁଚାନ୍ତୁ</translation>
 <translation id="4801512016965057443">ମୋବାଇଲ୍ ଡାଟା ରୋମିଂକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="4804818685124855865">ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
@@ -4113,6 +4116,7 @@
 <translation id="5498967291577176373">ଆପଣଙ୍କ ନାମ, ଠିକଣା କିମ୍ବା ଫୋନ୍ ନମ୍ବର ପାଇଁ ଇନଲାଇନ୍ ପରାମର୍ଶଗୁଡ଼ିକ ସହିତ ଦ୍ରୁତ ଭାବେ ଲେଖନ୍ତୁ</translation>
 <translation id="5499313591153584299">ଏହି ଫାଇଲ୍ ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ ପାଇଁ କ୍ଷତିକାରକ ହୋଇପାରେ।</translation>
 <translation id="5499453227627332024">ଆପଣଙ୍କ Linux କଣ୍ଟେନର୍ ପାଇଁ ଏକ ଅପଗ୍ରେଡ୍ ଉପଲବ୍ଧ ଅଛି। ଆପଣ ପରେ ସେଟିଂସ୍ ଆପରୁ ମଧ୍ୟ ଅପଗ୍ରେଡ୍ କରିପାରିବେ।</translation>
+<translation id="549957179819296104">ନୂଆ ଆଇକନ୍</translation>
 <translation id="5500709606820808700">ସୁରକ୍ଷା ଯାଞ୍ଚ ଆଜି ଚାଲିଥିଲା</translation>
 <translation id="5501322521654567960">ବାମକୁ ଆଲାଇନ୍ କରାଯାଇଥିବା ସାଇଡ୍ ପ୍ୟାନେଲ୍</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ରୁ <ph name="ATTACHMENTS" /> ମିଳିବା ବିଫଳ ହୋଇଛି}other{<ph name="DEVICE_NAME" />ରୁ <ph name="ATTACHMENTS" /> ମିଳିବା ବିଫଳ ହୋଇଛି}}</translation>
@@ -4369,7 +4373,6 @@
 <translation id="5794414402486823030">ସର୍ବଦା ସିଷ୍ଟମ୍ ଭ୍ୟୁଅର୍ ସାହାଯ୍ୟରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="5794700615121138172">Linux ଦ୍ୱାରା ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡରଗୁଡ଼ିକ</translation>
 <translation id="5794786537412027208">ସମସ୍ତ Chrome ଆପ୍ସ ପରିତ୍ୟାଗ କରନ୍ତୁ</translation>
-<translation id="5797070761912323120">ଆପଣ କରୁଥିବା ସର୍ଚ୍ଚ, ଦେଖୁଥିବା ବିଜ୍ଞାପନ, ଏବଂ ଅନ୍ୟାନ୍ୟ Google ସେବାକୁ ବ୍ୟକ୍ତିଗତକରଣ କରିବା ପାଇଁ Google ଆପଣଙ୍କର ଇତିବୃତ୍ତିକୁ ବ୍ୟବହାର କରିପାରେ</translation>
 <translation id="5797521893972859201">ସନ୍ଧାନ ବାକ୍ସରେ ଥିବା ଇତିହାସ ସମେତ, ବ୍ରାଉଜିଂ ଇତିହାସକୁ ଖାଲି କରେ</translation>
 <translation id="5798079537501238810">ସାଇଟଗୁଡ଼ିକ ପେମେଣ୍ଟ ହ୍ୟାଣ୍ଡଲର୍ ଇନଷ୍ଟଲ୍ କରିପାରିବ</translation>
 <translation id="579907812742603813">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ</translation>
@@ -6127,6 +6130,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7730449930968088409">ଆପଣଙ୍କ ସ୍କ୍ରିନ୍‍ର ବିଷୟବସ୍ତୁକୁ କ୍ୟାପଚର୍ କରନ୍ତୁ</translation>
 <translation id="7730683939467795481">ଏହି ପୃଷ୍ଠାକୁ "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ୍ ଦ୍ୱାରା ପରିବର୍ତ୍ତନ କରାଯାଇଥିଲା</translation>
 <translation id="7734486794139738745">ମୁଁ କେବଳ ଗୋଟିଏ ସ୍ୱିଚ୍ ବ୍ୟବହାର କରେ</translation>
+<translation id="7734541938181328224">ଆଇକନ୍ ସମ୍ବନ୍ଧିତ ଅପଡେଟଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" ସହ ପେୟାର୍ କରାଯାଉଛି ...</translation>
 <translation id="7737948071472253612">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="7740996059027112821">ମାନାଙ୍କ</translation>
@@ -6883,6 +6887,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">ଆପ୍‌କୁ ଡାଉନ୍‌ଗ୍ରେଡ୍‌ କରିବାକୁ ଚେଷ୍ଟା କରାଯାଇଛି।</translation>
 <translation id="8569682776816196752">କୌଣସି ଲକ୍ଷ୍ୟସ୍ଥଳ ମିଳିଲା ନାହିଁ</translation>
+<translation id="857074314439694500">ଯଦି ଆପଣଙ୍କୁ ଏହା ଏକ ଭିନ୍ନ ଆପ୍ ବୋଲି ଭାବିବା ପାଇଁ ଏହି ୱେବ୍ ଆପ୍ କୌଶଳରେ ଚେଷ୍ଟା କରୁଛି, ତେବେ ଏହାକୁ ଅନଇନଷ୍ଟଲ୍ କରନ୍ତୁ।</translation>
 <translation id="8571213806525832805">ବିଗତ 4 ସପ୍ତାହ</translation>
 <translation id="8571687764447439720">Kerberos ଟିକେଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8574990355410201600">ସର୍ବଦା <ph name="HOST" />ରେ ସାଉଣ୍ଡକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
