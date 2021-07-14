@@ -39,7 +39,7 @@ class ShowPermissionsDialogHelper {
   void ShowPermissionsDialog(content::WebContents* web_contents,
                              const Extension* extension);
 
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   std::unique_ptr<ExtensionInstallPrompt> prompt_;
 

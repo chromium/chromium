@@ -116,7 +116,7 @@ void NavigationObserver::PromptToEnableExtensionIfNecessary(
 }
 
 void NavigationObserver::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
   // The extension was already uninstalled.
   if (in_progress_prompt_extension_id_.empty())
     return;
@@ -126,7 +126,7 @@ void NavigationObserver::OnInstallPromptDone(
       in_progress_prompt_extension_id_, ExtensionRegistry::EVERYTHING);
   CHECK(extension);
 
-  if (result == ExtensionInstallPrompt::Result::ACCEPTED) {
+  if (payload.result == ExtensionInstallPrompt::Result::ACCEPTED) {
     NavigationController* nav_controller =
         in_progress_prompt_navigation_controller_;
     CHECK(nav_controller);

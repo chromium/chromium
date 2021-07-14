@@ -264,13 +264,14 @@ void ExtensionEnableFlow::EnableExtension() {
 }
 
 void ExtensionEnableFlow::InstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result == ExtensionInstallPrompt::Result::ACCEPTED) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result == ExtensionInstallPrompt::Result::ACCEPTED) {
     EnableExtension();
   } else {
     delegate_->ExtensionEnableFlowAborted(/*user_initiated=*/
-                                          result == ExtensionInstallPrompt::
-                                                        Result::USER_CANCELED);
+                                          payload.result ==
+                                          ExtensionInstallPrompt::Result::
+                                              USER_CANCELED);
     // |delegate_| may delete us.
   }
 }

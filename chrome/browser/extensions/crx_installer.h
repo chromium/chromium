@@ -140,7 +140,7 @@ class CrxInstaller : public SandboxedUnpackerClient {
                                       const std::string& public_key,
                                       const base::FilePath& unpacked_dir);
 
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   void InitializeCreationFlagsForUpdate(const Extension* extension,
                                         const int initial_flags);

@@ -41,10 +41,10 @@ void ExtensionInstallPromptTestHelper::ClearResultForTesting() {
 }
 
 void ExtensionInstallPromptTestHelper::HandleResult(
-    ExtensionInstallPrompt::Result result) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
   if (result_.get())
     ADD_FAILURE() << "HandleResult() called twice!";
   if (quit_closure_)
     std::move(quit_closure_).Run();
-  result_ = std::make_unique<ExtensionInstallPrompt::Result>(result);
+  result_ = std::make_unique<ExtensionInstallPrompt::Result>(payload.result);
 }

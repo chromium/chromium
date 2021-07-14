@@ -50,7 +50,7 @@ class DashboardPrivateShowPermissionPromptForDelegatedInstallFunction
                               InstallHelperResultCode result,
                               const std::string& error_message) override;
 
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   ExtensionFunction::ResponseValue BuildResponse(
       api::dashboard_private::Result result,
@@ -73,4 +73,3 @@ class DashboardPrivateShowPermissionPromptForDelegatedInstallFunction
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DASHBOARD_PRIVATE_DASHBOARD_PRIVATE_API_H_
-

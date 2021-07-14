@@ -253,7 +253,16 @@ class ExtensionInstallPrompt {
     ABORTED,
   };
 
-  using DoneCallback = base::OnceCallback<void(Result result)>;
+  struct DoneCallbackPayload {
+    explicit DoneCallbackPayload(Result result);
+    DoneCallbackPayload(Result result, std::string justification);
+    ~DoneCallbackPayload() = default;
+
+    const Result result;
+    const std::string justification;
+  };
+
+  using DoneCallback = base::OnceCallback<void(DoneCallbackPayload payload)>;
 
   using ShowDialogCallback = base::RepeatingCallback<void(
       std::unique_ptr<ExtensionInstallPromptShowParams>,

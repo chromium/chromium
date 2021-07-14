@@ -449,6 +449,14 @@ bool ExtensionInstallPrompt::Prompt::ShouldDisplayWithholdingUI() const {
          is_requesting_host_permissions_ && type_ == INSTALL_PROMPT;
 }
 
+ExtensionInstallPrompt::DoneCallbackPayload::DoneCallbackPayload(Result result)
+    : DoneCallbackPayload(result, std::string()) {}
+
+ExtensionInstallPrompt::DoneCallbackPayload::DoneCallbackPayload(
+    Result result,
+    std::string justification)
+    : result(result), justification(std::move(justification)) {}
+
 // static
 ExtensionInstallPrompt::PromptType
 ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
@@ -553,7 +561,7 @@ void ExtensionInstallPrompt::ShowDialog(
   if (extension->is_theme() && extension->from_webstore() &&
       prompt_->type() != EXTENSION_REQUEST_PROMPT &&
       prompt_->type() != EXTENSION_PENDING_REQUEST_PROMPT) {
-    std::move(done_callback_).Run(Result::ACCEPTED);
+    std::move(done_callback_).Run(DoneCallbackPayload(Result::ACCEPTED));
     return;
   }
 
@@ -647,7 +655,7 @@ void ExtensionInstallPrompt::ShowConfirmation() {
   prompt_->set_icon(gfx::Image::CreateFrom1xBitmap(icon_));
 
   if (show_params_->WasParentDestroyed()) {
-    std::move(done_callback_).Run(Result::ABORTED);
+    std::move(done_callback_).Run(DoneCallbackPayload(Result::ABORTED));
     return;
   }
 
@@ -679,22 +687,25 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
     // pumping a few times before the user clicks accept or cancel.
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(done_callback_),
-                                    ExtensionInstallPrompt::Result::ACCEPTED));
+          FROM_HERE,
+          base::BindOnce(
+              std::move(done_callback_),
+              DoneCallbackPayload(ExtensionInstallPrompt::Result::ACCEPTED)));
       return true;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
-          base::BindOnce(
-              std::move(done_callback_),
-              ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED));
+          base::BindOnce(std::move(done_callback_),
+                         DoneCallbackPayload(ExtensionInstallPrompt::Result::
+                                                 ACCEPTED_AND_OPTION_CHECKED)));
       return true;
     case extensions::ScopedTestDialogAutoConfirm::CANCEL:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(done_callback_),
-                         ExtensionInstallPrompt::Result::USER_CANCELED));
+                         DoneCallbackPayload(
+                             ExtensionInstallPrompt::Result::USER_CANCELED)));
       return true;
   }
 

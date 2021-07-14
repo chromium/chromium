@@ -55,7 +55,7 @@ class NavigationObserver : public content::NotificationObserver,
   void PromptToEnableExtensionIfNecessary(
       content::NavigationController* nav_controller);
 
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionUninstalled(content::BrowserContext* browser_context,

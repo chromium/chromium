@@ -133,7 +133,8 @@ void WebstoreStandaloneInstaller::ProceedWithInstallPrompt() {
     ShowInstallUI();
     // Control flow finishes up in OnInstallPromptDone().
   } else {
-    OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+    OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+        ExtensionInstallPrompt::Result::ACCEPTED));
   }
 }
 
@@ -179,20 +180,20 @@ WebstoreStandaloneInstaller::CreateApproval() const {
 }
 
 void WebstoreStandaloneInstaller::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result == ExtensionInstallPrompt::Result::USER_CANCELED) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result == ExtensionInstallPrompt::Result::USER_CANCELED) {
     CompleteInstall(webstore_install::USER_CANCELLED,
                     webstore_install::kUserCancelledError);
     return;
   }
 
-  if (result == ExtensionInstallPrompt::Result::ABORTED ||
+  if (payload.result == ExtensionInstallPrompt::Result::ABORTED ||
       !CheckRequestorAlive()) {
     CompleteInstall(webstore_install::ABORTED, std::string());
     return;
   }
 
-  DCHECK(result == ExtensionInstallPrompt::Result::ACCEPTED);
+  DCHECK(payload.result == ExtensionInstallPrompt::Result::ACCEPTED);
 
   std::unique_ptr<WebstoreInstaller::Approval> approval = CreateApproval();
 

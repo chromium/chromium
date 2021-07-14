@@ -102,8 +102,8 @@ class WebstorePrivateBeginInstallWithManifest3Function
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   void OnFrictionPromptDone(bool result);
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
-  void OnRequestPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
+  void OnRequestPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
   void OnBlockByPolicyPromptDone();
 
   void HandleInstallProceed();

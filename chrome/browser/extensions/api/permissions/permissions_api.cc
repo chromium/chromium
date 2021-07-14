@@ -301,7 +301,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
           .empty();
   if (has_no_warnings ||
       extension_->location() == mojom::ManifestLocation::kComponent) {
-    OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+    OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+        ExtensionInstallPrompt::Result::ACCEPTED));
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
@@ -310,9 +311,11 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   if (auto_confirm_for_tests != DO_NOT_SKIP) {
     prompted_permissions_for_testing_ = total_new_permissions->Clone();
     if (auto_confirm_for_tests == PROCEED)
-      OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+      OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::ACCEPTED));
     else if (auto_confirm_for_tests == ABORT)
-      OnInstallPromptDone(ExtensionInstallPrompt::Result::USER_CANCELED);
+      OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::USER_CANCELED));
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
@@ -332,8 +335,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
 }
 
 void PermissionsRequestFunction::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result != ExtensionInstallPrompt::Result::ACCEPTED) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result != ExtensionInstallPrompt::Result::ACCEPTED) {
     Respond(ArgumentList(api::permissions::Request::Results::Create(false)));
     return;
   }

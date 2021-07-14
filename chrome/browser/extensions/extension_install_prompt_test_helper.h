@@ -29,7 +29,7 @@ class ExtensionInstallPromptTestHelper {
   void ClearResultForTesting();
 
  private:
-  void HandleResult(ExtensionInstallPrompt::Result result);
+  void HandleResult(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   std::unique_ptr<ExtensionInstallPrompt::Result> result_;
 

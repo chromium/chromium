@@ -102,7 +102,7 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
 
   void EnableExtension();
 
-  void InstallPromptDone(ExtensionInstallPrompt::Result result);
+  void InstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   Profile* const profile_;
   const std::string extension_id_;

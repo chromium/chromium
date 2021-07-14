@@ -690,8 +690,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  switch (result) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
     case ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED: {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -715,7 +715,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
     }
     case ExtensionInstallPrompt::Result::USER_CANCELED:
     case ExtensionInstallPrompt::Result::ABORTED: {
-      HandleInstallAbort(result ==
+      HandleInstallAbort(payload.result ==
                          ExtensionInstallPrompt::Result::USER_CANCELED);
       break;
     }
@@ -726,8 +726,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnRequestPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  switch (result) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
       AddExtensionToPendingList(details().id, profile_);
       break;

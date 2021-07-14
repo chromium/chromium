@@ -125,7 +125,8 @@ class WebstoreStandaloneInstaller
   virtual std::unique_ptr<WebstoreInstaller::Approval> CreateApproval() const;
 
   // Called once the install prompt has finished.
-  virtual void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  virtual void OnInstallPromptDone(
+      ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   // Accessors to be used by subclasses.
   bool show_user_count() const { return show_user_count_; }

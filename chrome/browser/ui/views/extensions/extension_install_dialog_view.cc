@@ -444,7 +444,9 @@ void ExtensionInstallDialogView::OnDialogCanceled() {
 
   UpdateInstallResultHistogram(false);
   prompt_->OnDialogCanceled();
-  std::move(done_callback_).Run(ExtensionInstallPrompt::Result::USER_CANCELED);
+  std::move(done_callback_)
+      .Run(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::USER_CANCELED));
 }
 
 void ExtensionInstallDialogView::OnDialogAccepted() {
@@ -459,7 +461,8 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
               withhold_permissions_checkbox_->GetChecked()
           ? ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED
           : ExtensionInstallPrompt::Result::ACCEPTED;
-  std::move(done_callback_).Run(result);
+  std::move(done_callback_)
+      .Run(ExtensionInstallPrompt::DoneCallbackPayload(result));
 }
 
 bool ExtensionInstallDialogView::IsDialogButtonEnabled(

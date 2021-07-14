@@ -826,7 +826,8 @@ void CrxInstaller::ConfirmInstall() {
   }
 }
 
-void CrxInstaller::OnInstallPromptDone(ExtensionInstallPrompt::Result result) {
+void CrxInstaller::OnInstallPromptDone(
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // If update_from_settings_page_ boolean is true, this functions is
@@ -835,7 +836,7 @@ void CrxInstaller::OnInstallPromptDone(ExtensionInstallPrompt::Result result) {
   // ExtensionInstallPrompt::ShowDialog().
 
   ExtensionService* service = service_weak_.get();
-  switch (result) {
+  switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
       if (!service || service->browser_terminating())
         return;

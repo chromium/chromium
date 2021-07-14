@@ -57,7 +57,7 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
                        ExternalInstallManager* manager);
   ~ExternalInstallError() override;
 
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   void DidOpenBubbleView();
   void DidCloseBubbleView();

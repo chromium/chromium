@@ -35,7 +35,8 @@ class WebstoreReinstaller : public WebstoreStandaloneInstaller,
   content::WebContents* GetWebContents() const override;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> CreateInstallPrompt()
       const override;
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result) override;
+  void OnInstallPromptDone(
+      ExtensionInstallPrompt::DoneCallbackPayload payload) override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;

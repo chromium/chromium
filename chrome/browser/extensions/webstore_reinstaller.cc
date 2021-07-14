@@ -76,9 +76,9 @@ void WebstoreReinstaller::WebContentsDestroyed() {
 }
 
 void WebstoreReinstaller::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result != ExtensionInstallPrompt::Result::ACCEPTED) {
-    WebstoreStandaloneInstaller::OnInstallPromptDone(result);
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result != ExtensionInstallPrompt::Result::ACCEPTED) {
+    WebstoreStandaloneInstaller::OnInstallPromptDone(std::move(payload));
     return;
   }
 
@@ -92,7 +92,7 @@ void WebstoreReinstaller::OnInstallPromptDone(
     AbortInstall();
     return;
   }
-  WebstoreStandaloneInstaller::OnInstallPromptDone(result);
+  WebstoreStandaloneInstaller::OnInstallPromptDone(std::move(payload));
 }
 
 }  // namespace extensions

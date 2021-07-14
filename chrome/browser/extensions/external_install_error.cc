@@ -281,12 +281,14 @@ void ExternalInstallBubbleAlert::OnBubbleViewDidClose(Browser* browser) {
 
 void ExternalInstallBubbleAlert::BubbleViewAcceptButtonPressed(
     Browser* browser) {
-  error_->OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+  error_->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+      ExtensionInstallPrompt::Result::ACCEPTED));
 }
 
 void ExternalInstallBubbleAlert::BubbleViewCancelButtonPressed(
     Browser* browser) {
-  error_->OnInstallPromptDone(ExtensionInstallPrompt::Result::USER_CANCELED);
+  error_->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+      ExtensionInstallPrompt::Result::USER_CANCELED));
 }
 
 }  // namespace
@@ -350,7 +352,7 @@ ExternalInstallError::~ExternalInstallError() {
 }
 
 void ExternalInstallError::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
   const Extension* extension = GetExtension();
 
   // If the error isn't removed and deleted as part of handling the user's
@@ -360,7 +362,7 @@ void ExternalInstallError::OnInstallPromptDone(
       FROM_HERE, base::BindOnce(&ExternalInstallError::RemoveError,
                                 weak_factory_.GetWeakPtr()));
 
-  switch (result) {
+  switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
     case ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED:
       if (extension) {

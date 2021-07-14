@@ -71,7 +71,7 @@ class PermissionsRequestFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
   void OnRuntimePermissionsGranted();
   void OnOptionalPermissionsGranted();
   void RespondIfRequestsFinished();

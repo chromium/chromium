@@ -144,8 +144,9 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
   ~ManagementSetEnabledFunctionInstallPromptDelegate() override {}
 
  private:
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result) {
-    std::move(callback_).Run(result ==
+  void OnInstallPromptDone(
+      ExtensionInstallPrompt::DoneCallbackPayload payload) {
+    std::move(callback_).Run(payload.result ==
                              ExtensionInstallPrompt::Result::ACCEPTED);
   }
 

@@ -4527,7 +4527,8 @@ TEST_F(ExtensionServiceTest, ExternalExtensionRemainsDisabledIfIgnored) {
     std::vector<ExternalInstallError*> errors =
         external_install_manager->GetErrorsForTesting();
     ASSERT_EQ(1u, errors.size());
-    errors[0]->OnInstallPromptDone(ExtensionInstallPrompt::Result::ABORTED);
+    errors[0]->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+        ExtensionInstallPrompt::Result::ABORTED));
     base::RunLoop().RunUntilIdle();
     // Note: Calling OnInstallPromptDone() can result in the removal of the
     // error by the manager (which owns the object), so the contents |errors|
@@ -7031,15 +7032,17 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallErrors) {
 
   // Accept the first extension, this will remove the error associated with
   // this extension. Also verify the other errors still exist.
-  GetError(extension_ids[0])->OnInstallPromptDone(
-      ExtensionInstallPrompt::Result::ACCEPTED);
+  GetError(extension_ids[0])
+      ->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::ACCEPTED));
   EXPECT_FALSE(GetError(extension_ids[0]));
   ASSERT_TRUE(GetError(extension_ids[1]));
   EXPECT_TRUE(GetError(extension_ids[2]));
 
   // Abort the second extension.
-  GetError(extension_ids[1])->OnInstallPromptDone(
-      ExtensionInstallPrompt::Result::USER_CANCELED);
+  GetError(extension_ids[1])
+      ->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::USER_CANCELED));
   EXPECT_FALSE(GetError(extension_ids[0]));
   EXPECT_FALSE(GetError(extension_ids[1]));
   ASSERT_TRUE(GetError(extension_ids[2]));
@@ -7074,7 +7077,8 @@ TEST_F(ExtensionServiceTest, InstallPromptAborted) {
   // Abort the extension install prompt. This should cause the
   // ExternalInstallError to be deleted asynchronously.
   GetError(good_crx)->OnInstallPromptDone(
-      ExtensionInstallPrompt::Result::ABORTED);
+      ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::ABORTED));
   EXPECT_TRUE(GetError(good_crx));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetError(good_crx));
@@ -7144,7 +7148,8 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallBubbleErrors) {
     const std::string& extension_id = data[i].id;
     EXPECT_TRUE(GetError(extension_id));
     GetError(extension_id)
-        ->OnInstallPromptDone(ExtensionInstallPrompt::Result::USER_CANCELED);
+        ->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+            ExtensionInstallPrompt::Result::USER_CANCELED));
     EXPECT_FALSE(GetError(extension_id));
   }
   EXPECT_FALSE(service()
@@ -7354,7 +7359,8 @@ TEST_F(ExtensionServiceTest, ExternalInstallClickToRemove) {
   // Click the negative response.
   service_->external_install_manager()
       ->GetErrorsForTesting()[0]
-      ->OnInstallPromptDone(ExtensionInstallPrompt::Result::USER_CANCELED);
+      ->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::USER_CANCELED));
   // The Extension should be uninstalled.
   EXPECT_FALSE(registry()->GetExtensionById(updates_from_webstore,
                                             ExtensionRegistry::EVERYTHING));
@@ -7392,7 +7398,8 @@ TEST_F(ExtensionServiceTest, ExternalInstallClickToKeep) {
   // Accept the extension.
   service_->external_install_manager()
       ->GetErrorsForTesting()[0]
-      ->OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+      ->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::ACCEPTED));
 
   // It should be enabled again.
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(updates_from_webstore));

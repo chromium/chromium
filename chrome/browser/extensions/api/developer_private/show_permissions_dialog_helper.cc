@@ -84,8 +84,8 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
 }
 
 void ShowPermissionsDialogHelper::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result == ExtensionInstallPrompt::Result::ACCEPTED) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result == ExtensionInstallPrompt::Result::ACCEPTED) {
     // This is true when the user clicks "Revoke File Access."
     const Extension* extension =
         ExtensionRegistry::Get(profile_)
