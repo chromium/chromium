@@ -109,7 +109,7 @@ bool GetEntryFromReport(const Value* report,
   if (!report || !report->is_dict())
     return false;
   const Value* entries = report->FindListKey("entries");
-  if (!entries)
+  if (!entries || index >= entries->GetList().size())
     return false;
   const Value& entry = entries->GetList()[index];
   if (!entry.is_dict())
