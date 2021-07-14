@@ -82,6 +82,10 @@ class PrefsUtil {
   // Returns whether |pref_name| corresponds to a pref that is controlled by
   // the primary user, and |profile_| is not the primary profile.
   bool IsPrefPrimaryUserControlled(const std::string& pref_name);
+
+  // Returns whether |pref_name| corresponds to the hotword enabled pref, if the
+  // pref is disabled, and if |profile_| is a child user.
+  bool IsHotwordDisabledForChildUser(const std::string& pref_name);
 #endif
 
   // Returns whether |pref_name| corresponds to a pref that is controlled by

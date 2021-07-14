@@ -988,6 +988,13 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
         GetRestrictedCrosSettingValueForChildUser(profile_, name)->Clone());
     return pref_object;
   }
+
+  if (IsHotwordDisabledForChildUser(name)) {
+    pref_object->controlled_by =
+        settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
+    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    return pref_object;
+  }
 #endif
 
   const Extension* extension = GetExtensionControllingPref(*pref_object);
@@ -1187,6 +1194,20 @@ bool PrefsUtil::IsPrefPrimaryUserControlled(const std::string& pref_name) {
     }
   }
   return false;
+}
+
+bool PrefsUtil::IsHotwordDisabledForChildUser(const std::string& pref_name) {
+  const std::string& hotwordEnabledPref =
+      chromeos::assistant::prefs::kAssistantHotwordEnabled;
+  if (!profile_->IsChild() || pref_name != hotwordEnabledPref)
+    return false;
+
+  PrefService* pref_service = FindServiceForPref(hotwordEnabledPref);
+  const PrefService::Preference* pref =
+      pref_service->FindPreference(hotwordEnabledPref);
+  DCHECK(pref);
+  const bool isHotwordEnabled = pref->GetValue()->GetIfBool().value_or(false);
+  return !isHotwordEnabled;
 }
 #endif
 

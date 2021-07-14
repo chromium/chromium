@@ -35,6 +35,7 @@
         label="$i18n{googleAssistantEnableHotword}"
         sub-label="$i18n{googleAssistantEnableHotwordDescription}"
         on-settings-boolean-control-change="onEnableHotwordChange_"
+        disabled="[[hotwordEnforcedForChild_]]"
         deep-link-focus-id$="[[Setting.kAssistantOkGoogle]]">
     </settings-toggle-button>
   </template>

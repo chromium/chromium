@@ -113,6 +113,12 @@ Polymer({
       value: false,
     },
 
+    /** @private */
+    hotwordEnforcedForChild_: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private {DspHotwordState} */
     dspHotwordState_: Number,
 
@@ -252,6 +258,10 @@ Polymer({
 
     this.hotwordEnforced_ = hotwordEnabled.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED;
+
+    this.hotwordEnforcedForChild_ = this.hotwordEnforced_ &&
+        hotwordEnabled.controlledBy ===
+            chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION;
   },
 
   /** @private */

@@ -139,6 +139,23 @@ suite('GoogleAssistantHandler', function() {
     assertTrue(!!button);
   });
 
+  test('hotwordToggleDisabledForChildUser', function() {
+    page.setPrefValue('settings.voice_interaction.enabled', true);
+    page.set('prefs.settings.voice_interaction.hotword.enabled', {
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION,
+      value: false,
+    });
+
+    Polymer.dom.flush();
+    const button = page.$$('#google-assistant-hotword-enable');
+    const indicator = page.$$('#google-assistant-hotword-enable')
+                          .$$('cr-policy-pref-indicator');
+    assertTrue(!!button);
+    assertTrue(!!indicator);
+    assertTrue(button.disabled);
+  });
+
   test('tapOnRetrainVoiceModel', function() {
     let button = page.$$('#retrain-voice-model');
     assertFalse(!!button);
@@ -372,6 +389,25 @@ suite('GoogleAssistantHandlerWithNoDspHotword', function() {
     assertTrue(!!dropdown);
     assertTrue(!!indicator);
     assertTrue(dropdown.hasAttribute('disabled'));
+  });
+
+  test('dspHotwordDropdownDisabledForChildUser', function() {
+    let indicator = page.$$('#hotword-policy-pref-indicator');
+    assertFalse(!!indicator);
+
+    page.setPrefValue('settings.voice_interaction.enabled', true);
+    page.set('prefs.settings.voice_interaction.hotword.enabled', {
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION,
+      value: false,
+    });
+
+    Polymer.dom.flush();
+    const dropdown = page.$$('#dsp-hotword-state');
+    indicator = page.$$('#hotword-policy-pref-indicator');
+    assertTrue(!!dropdown);
+    assertTrue(!!indicator);
+    assertTrue(dropdown.disabled);
   });
 
   test('dspHotwordDropdownSelection', function() {
