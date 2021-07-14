@@ -192,7 +192,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void CheckForFrameChanges(
       bool is_first_frame,
       bool has_frame_size_changed,
-      absl::optional<media::VideoRotation> new_frame_rotation,
+      absl::optional<media::VideoTransformation> new_frame_transform,
       absl::optional<bool> new_frame_opacity);
 
   void StartRenderingInternal();

@@ -176,10 +176,10 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void OnFrameShown() override;
   void OnIdleTimeout() override;
 
-  void OnFirstFrameReceived(media::VideoRotation video_rotation,
+  void OnFirstFrameReceived(media::VideoTransformation video_transform,
                             bool is_opaque);
   void OnOpacityChanged(bool is_opaque);
-  void OnRotationChanged(media::VideoRotation video_rotation);
+  void OnTransformChanged(media::VideoTransformation video_transform);
 
   // WebMediaStreamObserver implementation
   void TrackAdded(const WebString& track_id) override;

@@ -55,7 +55,7 @@ class BLINK_PLATFORM_EXPORT WebVideoFrameSubmitter
   //
   // TODO(dalecurtis): This could be removed in favor of getting it from each
   // VideoFrame, but today that information isn't set everywhere.
-  virtual void SetRotation(media::VideoRotation) = 0;
+  virtual void SetTransform(media::VideoTransformation) = 0;
 
   // Prepares the compositor frame sink to accept frames by providing
   // a SurfaceId.

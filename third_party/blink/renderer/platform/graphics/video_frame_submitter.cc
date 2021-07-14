@@ -119,9 +119,9 @@ void VideoFrameSubmitter::Initialize(cc::VideoFrameProvider* provider,
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-void VideoFrameSubmitter::SetRotation(media::VideoRotation rotation) {
+void VideoFrameSubmitter::SetTransform(media::VideoTransformation transform) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  transform_.rotation = rotation;
+  transform_ = transform;
 }
 
 void VideoFrameSubmitter::EnableSubmission(viz::SurfaceId surface_id) {

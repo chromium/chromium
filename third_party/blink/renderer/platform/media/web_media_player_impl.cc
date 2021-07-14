@@ -2011,8 +2011,7 @@ void WebMediaPlayerImpl::ActivateSurfaceLayerForVideo() {
       base::BindOnce(
           &VideoFrameCompositor::EnableSubmission,
           base::Unretained(compositor_.get()), bridge_->GetSurfaceId(),
-          pipeline_metadata_.video_decoder_config.video_transformation()
-              .rotation,
+          pipeline_metadata_.video_decoder_config.video_transformation(),
           IsInPictureInPicture()));
   bridge_->SetContentsOpaque(opaque_);
 

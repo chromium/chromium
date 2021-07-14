@@ -308,7 +308,7 @@ class MockVideoFrameCompositor : public VideoFrameCompositor {
   MOCK_METHOD1(UpdateCurrentFrameIfStale,
                void(VideoFrameCompositor::UpdateType));
   MOCK_METHOD3(EnableSubmission,
-               void(const viz::SurfaceId&, media::VideoRotation, bool));
+               void(const viz::SurfaceId&, media::VideoTransformation, bool));
 };
 
 }  // namespace

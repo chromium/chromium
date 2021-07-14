@@ -96,7 +96,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   // Signals the VideoFrameSubmitter to prepare to receive BeginFrames and
   // submit video frames given by VideoFrameCompositor.
   virtual void EnableSubmission(const viz::SurfaceId& id,
-                                media::VideoRotation rotation,
+                                media::VideoTransformation rotation,
                                 bool force_submit);
 
   // cc::VideoFrameProvider implementation. These methods must be called on the
@@ -149,9 +149,6 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   // Can be called on any thread.
   virtual std::unique_ptr<blink::WebMediaPlayer::VideoFramePresentationMetadata>
   GetLastPresentedFrameMetadata();
-
-  // Updates the rotation information for frames given to |submitter_|.
-  void UpdateRotation(media::VideoRotation rotation);
 
   // Should be called when page visibility changes. Notifies |submitter_|.
   virtual void SetIsPageVisible(bool is_visible);

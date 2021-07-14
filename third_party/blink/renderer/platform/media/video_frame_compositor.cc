@@ -84,16 +84,17 @@ VideoFrameCompositor::~VideoFrameCompositor() {
     client_->StopUsingProvider();
 }
 
-void VideoFrameCompositor::EnableSubmission(const viz::SurfaceId& id,
-                                            media::VideoRotation rotation,
-                                            bool force_submit) {
+void VideoFrameCompositor::EnableSubmission(
+    const viz::SurfaceId& id,
+    media::VideoTransformation transform,
+    bool force_submit) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   // If we're switching to |submitter_| from some other client, then tell it.
   if (client_ && client_ != submitter_.get())
     client_->StopUsingProvider();
 
-  submitter_->SetRotation(rotation);
+  submitter_->SetTransform(transform);
   submitter_->SetForceSubmit(force_submit);
   submitter_->EnableSubmission(id);
   client_ = submitter_.get();
@@ -380,11 +381,6 @@ bool VideoFrameCompositor::ProcessNewFrame(
   }
 
   return true;
-}
-
-void VideoFrameCompositor::UpdateRotation(media::VideoRotation rotation) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  submitter_->SetRotation(rotation);
 }
 
 void VideoFrameCompositor::SetIsPageVisible(bool is_visible) {

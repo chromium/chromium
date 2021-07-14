@@ -70,6 +70,7 @@ struct SyncToken;
 namespace media {
 class VideoFrame;
 struct VideoCaptureFeedback;
+struct VideoTransformation;
 }  // namespace media
 
 namespace mojo {
@@ -359,6 +360,12 @@ template <>
 struct CrossThreadCopier<std::vector<scoped_refptr<media::VideoFrame>>>
     : public CrossThreadCopierPassThrough<
           std::vector<scoped_refptr<media::VideoFrame>>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<media::VideoTransformation>
+    : public CrossThreadCopierPassThrough<media::VideoTransformation> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

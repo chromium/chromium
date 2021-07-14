@@ -393,7 +393,7 @@ class MockWebVideoFrameSubmitter : public WebVideoFrameSubmitter {
   MOCK_METHOD0(StartRendering, void());
   MOCK_METHOD0(StopRendering, void());
   MOCK_METHOD1(MockInitialize, void(cc::VideoFrameProvider*));
-  MOCK_METHOD1(SetRotation, void(media::VideoRotation));
+  MOCK_METHOD1(SetTransform, void(media::VideoTransformation));
   MOCK_METHOD1(SetIsSurfaceVisible, void(bool));
   MOCK_METHOD1(SetIsPageVisible, void(bool));
   MOCK_METHOD1(SetForceSubmit, void(bool));
@@ -1061,7 +1061,7 @@ TEST_P(WebMediaPlayerMSTest, RotationChange) {
   timestamps = Vector<int>({33, kTestBrake});
   provider->QueueFrames(timestamps, false, false, 17, media::VIDEO_ROTATION_0);
   if (enable_surface_layer_for_video_) {
-    EXPECT_CALL(*submitter_ptr_, SetRotation(media::VIDEO_ROTATION_0));
+    EXPECT_CALL(*submitter_ptr_, SetTransform(media::kNoTransformation));
   } else {
     EXPECT_CALL(*this, DoSetCcLayer(true));
     EXPECT_CALL(*this, DoStopRendering());
@@ -1078,7 +1078,9 @@ TEST_P(WebMediaPlayerMSTest, RotationChange) {
   timestamps = Vector<int>({66, kTestBrake});
   provider->QueueFrames(timestamps, false, false, 17, media::VIDEO_ROTATION_90);
   if (enable_surface_layer_for_video_) {
-    EXPECT_CALL(*submitter_ptr_, SetRotation(media::VIDEO_ROTATION_90));
+    EXPECT_CALL(
+        *submitter_ptr_,
+        SetTransform(media::VideoTransformation(media::VIDEO_ROTATION_90)));
   } else {
     EXPECT_CALL(*this, DoSetCcLayer(true));
     EXPECT_CALL(*this, DoStopRendering());

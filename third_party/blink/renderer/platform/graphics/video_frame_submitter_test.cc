@@ -435,7 +435,7 @@ TEST_F(VideoFrameSubmitterTest, RotationInformationPassedToResourceProvider) {
   // Check to see if rotation is communicated pre-rendering.
   EXPECT_FALSE(IsRendering());
 
-  submitter_->SetRotation(media::VideoRotation::VIDEO_ROTATION_90);
+  submitter_->SetTransform(media::VideoRotation::VIDEO_ROTATION_90);
 
   EXPECT_CALL(*video_frame_provider_, GetCurrentFrame())
       .WillOnce(Return(media::VideoFrame::CreateFrame(
@@ -457,7 +457,7 @@ TEST_F(VideoFrameSubmitterTest, RotationInformationPassedToResourceProvider) {
 
   // Check to see if an update to rotation just before rendering is
   // communicated.
-  submitter_->SetRotation(media::VideoRotation::VIDEO_ROTATION_180);
+  submitter_->SetTransform(media::VideoRotation::VIDEO_ROTATION_180);
 
   EXPECT_CALL(*sink_, SetNeedsBeginFrame(true));
   submitter_->StartRendering();
@@ -487,7 +487,7 @@ TEST_F(VideoFrameSubmitterTest, RotationInformationPassedToResourceProvider) {
   AckSubmittedFrame();
 
   // Check to see if changing rotation while rendering is handled.
-  submitter_->SetRotation(media::VideoRotation::VIDEO_ROTATION_270);
+  submitter_->SetTransform(media::VideoRotation::VIDEO_ROTATION_270);
 
   EXPECT_CALL(*video_frame_provider_, UpdateCurrentFrame(_, _))
       .WillOnce(Return(true));
@@ -514,7 +514,7 @@ TEST_F(VideoFrameSubmitterTest, RotationInformationPassedToResourceProvider) {
 TEST_F(VideoFrameSubmitterTest, FrameTransformTakesPrecedent) {
   EXPECT_FALSE(IsRendering());
 
-  submitter_->SetRotation(media::VideoRotation::VIDEO_ROTATION_90);
+  submitter_->SetTransform(media::VideoRotation::VIDEO_ROTATION_90);
 
   EXPECT_CALL(*video_frame_provider_, GetCurrentFrame())
       .WillOnce(Return(media::VideoFrame::CreateFrame(
@@ -812,7 +812,7 @@ TEST_F(VideoFrameSubmitterTest, VideoRotationOutputRect) {
   gfx::Size rotated_size(1024, 1280);
 
   {
-    submitter_->SetRotation(media::VideoRotation::VIDEO_ROTATION_90);
+    submitter_->SetTransform(media::VideoRotation::VIDEO_ROTATION_90);
 
     EXPECT_CALL(*video_frame_provider_, UpdateCurrentFrame(_, _))
         .WillOnce(Return(true));
@@ -842,7 +842,7 @@ TEST_F(VideoFrameSubmitterTest, VideoRotationOutputRect) {
   }
 
   {
-    submitter_->SetRotation(media::VideoRotation::VIDEO_ROTATION_180);
+    submitter_->SetTransform(media::VideoRotation::VIDEO_ROTATION_180);
 
     EXPECT_CALL(*video_frame_provider_, UpdateCurrentFrame(_, _))
         .WillOnce(Return(true));
@@ -873,7 +873,7 @@ TEST_F(VideoFrameSubmitterTest, VideoRotationOutputRect) {
   }
 
   {
-    submitter_->SetRotation(media::VideoRotation::VIDEO_ROTATION_270);
+    submitter_->SetTransform(media::VideoRotation::VIDEO_ROTATION_270);
 
     EXPECT_CALL(*video_frame_provider_, UpdateCurrentFrame(_, _))
         .WillOnce(Return(true));

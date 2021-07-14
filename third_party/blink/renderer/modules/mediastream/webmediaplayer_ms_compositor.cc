@@ -260,7 +260,7 @@ void WebMediaPlayerMSCompositor::EnableSubmission(
     video_frame_provider_client_->StopUsingProvider();
   }
 
-  submitter_->SetRotation(transformation.rotation);
+  submitter_->SetTransform(transformation);
   submitter_->SetForceSubmit(force_submit);
   submitter_->EnableSubmission(id);
   video_frame_provider_client_ = submitter_.get();
@@ -618,9 +618,10 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   bool is_first_frame = true;
   bool has_frame_size_changed = false;
 
-  absl::optional<media::VideoRotation> new_rotation = media::VIDEO_ROTATION_0;
+  absl::optional<media::VideoTransformation> new_transform =
+      media::kNoTransformation;
   if (frame->metadata().transformation)
-    new_rotation = frame->metadata().transformation->rotation;
+    new_transform = frame->metadata().transformation;
 
   absl::optional<bool> new_opacity;
   new_opacity = media::IsOpaque(frame->format());
@@ -629,19 +630,16 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
     // We have a current frame, so determine what has changed.
     is_first_frame = false;
 
-    auto current_video_rotation = media::VIDEO_ROTATION_0;
-    if (current_frame_->metadata().transformation) {
-      current_video_rotation =
-          current_frame_->metadata().transformation->rotation;
-    }
-
+    auto current_video_transform =
+        current_frame_->metadata().transformation.value_or(
+            media::kNoTransformation);
     has_frame_size_changed =
-        RotationAdjustedSize(*new_rotation, frame->natural_size()) !=
-        RotationAdjustedSize(current_video_rotation,
+        RotationAdjustedSize(new_transform->rotation, frame->natural_size()) !=
+        RotationAdjustedSize(current_video_transform.rotation,
                              current_frame_->natural_size());
 
-    if (current_video_rotation == *new_rotation)
-      new_rotation.reset();
+    if (current_video_transform == *new_transform)
+      new_transform.reset();
 
     if (*new_opacity == media::IsOpaque(current_frame_->format()))
       new_opacity.reset();
@@ -674,14 +672,14 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
       *video_frame_compositor_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&WebMediaPlayerMSCompositor::CheckForFrameChanges,
                           WrapRefCounted(this), is_first_frame,
-                          has_frame_size_changed, std::move(new_rotation),
+                          has_frame_size_changed, std::move(new_transform),
                           std::move(new_opacity)));
 }
 
 void WebMediaPlayerMSCompositor::CheckForFrameChanges(
     bool is_first_frame,
     bool has_frame_size_changed,
-    absl::optional<media::VideoRotation> new_frame_rotation,
+    absl::optional<media::VideoTransformation> new_frame_transform,
     absl::optional<bool> new_frame_opacity) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
 
@@ -689,17 +687,17 @@ void WebMediaPlayerMSCompositor::CheckForFrameChanges(
     PostCrossThreadTask(
         *main_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&WebMediaPlayerMS::OnFirstFrameReceived, player_,
-                            *new_frame_rotation, *new_frame_opacity));
+                            *new_frame_transform, *new_frame_opacity));
     return;
   }
 
-  if (new_frame_rotation.has_value()) {
+  if (new_frame_transform.has_value()) {
     PostCrossThreadTask(
         *main_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&WebMediaPlayerMS::OnRotationChanged, player_,
-                            *new_frame_rotation));
+        CrossThreadBindOnce(&WebMediaPlayerMS::OnTransformChanged, player_,
+                            *new_frame_transform));
     if (submitter_)
-      submitter_->SetRotation(*new_frame_rotation);
+      submitter_->SetTransform(*new_frame_transform);
   }
   if (new_frame_opacity.has_value()) {
     PostCrossThreadTask(*main_task_runner_, FROM_HERE,

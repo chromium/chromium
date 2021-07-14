@@ -40,7 +40,7 @@ class MockWebVideoFrameSubmitter : public WebVideoFrameSubmitter {
   MOCK_METHOD0(StopRendering, void());
   MOCK_CONST_METHOD0(IsDrivingFrameUpdates, bool(void));
   MOCK_METHOD2(Initialize, void(cc::VideoFrameProvider*, bool));
-  MOCK_METHOD1(SetRotation, void(media::VideoRotation));
+  MOCK_METHOD1(SetTransform, void(media::VideoTransformation));
   MOCK_METHOD1(SetIsSurfaceVisible, void(bool));
   MOCK_METHOD1(SetIsPageVisible, void(bool));
   MOCK_METHOD1(SetForceSubmit, void(bool));
@@ -69,12 +69,12 @@ class VideoFrameCompositorTest
     compositor_ = std::make_unique<VideoFrameCompositor>(task_runner_,
                                                          std::move(client_));
     base::RunLoop().RunUntilIdle();
-    EXPECT_CALL(*submitter_,
-                SetRotation(Eq(media::VideoRotation::VIDEO_ROTATION_90)));
+    constexpr auto kTestTransform = media::VideoTransformation(
+        media::VideoRotation::VIDEO_ROTATION_90, /*mirrored=*/false);
+    EXPECT_CALL(*submitter_, SetTransform(Eq(kTestTransform)));
     EXPECT_CALL(*submitter_, SetForceSubmit(false));
     EXPECT_CALL(*submitter_, EnableSubmission(Eq(viz::SurfaceId())));
-    compositor_->EnableSubmission(
-        viz::SurfaceId(), media::VideoRotation::VIDEO_ROTATION_90, false);
+    compositor_->EnableSubmission(viz::SurfaceId(), kTestTransform, false);
 
     compositor_->set_tick_clock_for_testing(&tick_clock_);
     // Disable background rendering by default.

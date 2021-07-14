@@ -60,7 +60,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   // WebVideoFrameSubmitter implementation.
   void Initialize(cc::VideoFrameProvider*, bool is_media_stream) override;
-  void SetRotation(media::VideoRotation) override;
+  void SetTransform(media::VideoTransformation) override;
   void EnableSubmission(viz::SurfaceId) override;
   void SetIsSurfaceVisible(bool is_visible) override;
   void SetIsPageVisible(bool is_visible) override;

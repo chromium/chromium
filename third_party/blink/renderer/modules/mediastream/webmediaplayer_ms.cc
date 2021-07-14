@@ -59,12 +59,6 @@ struct CrossThreadCopier<viz::SurfaceId>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-template <>
-struct CrossThreadCopier<media::VideoTransformation>
-    : public CrossThreadCopierPassThrough<media::VideoTransformation> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 }  // namespace WTF
 
 namespace blink {
@@ -1165,13 +1159,14 @@ void WebMediaPlayerMS::ActivateSurfaceLayerForVideo() {
   }
 }
 
-void WebMediaPlayerMS::OnFirstFrameReceived(media::VideoRotation video_rotation,
-                                            bool is_opaque) {
+void WebMediaPlayerMS::OnFirstFrameReceived(
+    media::VideoTransformation video_transform,
+    bool is_opaque) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   has_first_frame_ = true;
-  OnRotationChanged(video_rotation);
+  OnTransformChanged(video_transform);
   OnOpacityChanged(is_opaque);
 
   if (surface_layer_mode_ == WebMediaPlayer::SurfaceLayerMode::kAlways)
@@ -1199,16 +1194,17 @@ void WebMediaPlayerMS::OnOpacityChanged(bool is_opaque) {
   }
 }
 
-void WebMediaPlayerMS::OnRotationChanged(media::VideoRotation video_rotation) {
+void WebMediaPlayerMS::OnTransformChanged(
+    media::VideoTransformation video_transform) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  video_transformation_ = {video_rotation, 0};
+  video_transformation_ = video_transform;
 
   if (!bridge_) {
     // Keep the old |video_layer_| alive until SetCcLayer() is called with a new
     // pointer, as it may use the pointer from the last call.
     auto new_video_layer =
-        cc::VideoLayer::Create(compositor_.get(), video_rotation);
+        cc::VideoLayer::Create(compositor_.get(), video_transformation_);
     get_client()->SetCcLayer(new_video_layer.get());
     video_layer_ = std::move(new_video_layer);
   }
