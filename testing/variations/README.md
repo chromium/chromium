@@ -48,7 +48,7 @@ array of *study configurations*. The study name in the configuration file
 > rely on the [Feature List API][FeatureListAPI] instead. Nonetheless, if a
 > study has a server-side configuration, the study `name` specified here
 > must still match the name specified in the server-side configuration; this is
-> used to implement sanity-checks on the server.
+> used to implement consistency checks on the server.
 
 ### Study Configurations
 
