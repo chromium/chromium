@@ -14,6 +14,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
@@ -291,6 +292,20 @@ public class TabUiThemeProvider {
         return AppCompatResources.getColorStateList(context,
                 isIncognito ? R.color.hovered_tab_grid_card_background_color_incognito
                             : R.color.hovered_tab_grid_card_background_color);
+    }
+
+    /**
+     * Returns the color used for tab grid dialog background based on the incognito mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The background color for tab grid dialog.
+     */
+    @ColorInt
+    public static int getTabGridDialogBackgroundColor(Context context, boolean isIncognito) {
+        return ContextCompat.getColor(context,
+                isIncognito ? R.color.tab_grid_dialog_background_color_incognito
+                            : R.color.tab_grid_dialog_background_color);
     }
 
     /**

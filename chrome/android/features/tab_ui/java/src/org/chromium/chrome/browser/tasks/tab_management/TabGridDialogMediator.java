@@ -199,9 +199,8 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 boolean isIncognito = newModel.isIncognito();
-                int dialogBackgroundResource = isIncognito
-                        ? R.drawable.tab_grid_dialog_background_incognito
-                        : R.drawable.tab_grid_dialog_background;
+                int dialogBackgroundColor =
+                        TabUiThemeProvider.getTabGridDialogBackgroundColor(context, isIncognito);
                 ColorStateList tintList = isIncognito
                         ? AppCompatResources.getColorStateList(
                                 mContext, R.color.default_icon_color_light_tint_list)
@@ -217,8 +216,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
                         ? R.style.TextAppearance_TextMediumThick_Blue_Light
                         : R.style.TextAppearance_TextMediumThick_Blue;
 
-                mModel.set(TabGridPanelProperties.DIALOG_BACKGROUND_RESOURCE_ID,
-                        dialogBackgroundResource);
+                mModel.set(TabGridPanelProperties.DIALOG_BACKGROUND_COLOR, dialogBackgroundColor);
                 mModel.set(TabGridPanelProperties.TINT, tintList);
                 mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR_ID,
                         ungroupBarBackgroundColorId);

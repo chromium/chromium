@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -159,6 +160,10 @@ public class TabGroupUiToolbarView extends FrameLayout {
         if (mMenuButton != null) {
             ApiCompatibilityUtils.setImageTintList(mMenuButton, tint);
         }
+    }
+
+    void setBackgroundColorTint(int color) {
+        DrawableCompat.setTint(getBackground(), color);
     }
 
     /**

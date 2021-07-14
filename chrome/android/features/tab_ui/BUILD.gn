@@ -53,7 +53,6 @@ android_resources("java_resources") {
     "java/res/drawable/single_tab_background.xml",
     "java/res/drawable/tab_grid_card_background.xml",
     "java/res/drawable/tab_grid_dialog_background.xml",
-    "java/res/drawable/tab_grid_dialog_background_incognito.xml",
     "java/res/drawable/tab_grid_selection_list_icon.xml",
     "java/res/drawable/tab_strip_fading_edge_end.xml",
     "java/res/drawable/tab_strip_fading_edge_start.xml",

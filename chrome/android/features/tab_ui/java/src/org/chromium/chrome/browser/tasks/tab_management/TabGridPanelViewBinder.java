@@ -9,7 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelPrope
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.COLLAPSE_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.CONTENT_TOP_MARGIN;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_BACKGROUND_RESOURCE_ID;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_TEXT_APPEARANCE;
@@ -94,11 +94,11 @@ class TabGridPanelViewBinder {
             viewHolder.dialogView.setupDialogAnimation(model.get(ANIMATION_SOURCE_VIEW));
         } else if (UNGROUP_BAR_STATUS == propertyKey) {
             viewHolder.dialogView.updateUngroupBar(model.get(UNGROUP_BAR_STATUS));
-        } else if (DIALOG_BACKGROUND_RESOURCE_ID == propertyKey) {
+        } else if (DIALOG_BACKGROUND_COLOR == propertyKey) {
             if (viewHolder.dialogView != null) {
-                int backgroundResourceId = model.get(DIALOG_BACKGROUND_RESOURCE_ID);
-                viewHolder.dialogView.updateDialogContainerBackgroundResource(backgroundResourceId);
-                viewHolder.toolbarView.setBackgroundResource(backgroundResourceId);
+                int backgroundColorInt = model.get(DIALOG_BACKGROUND_COLOR);
+                viewHolder.dialogView.updateDialogContainerBackgroundColor(backgroundColorInt);
+                viewHolder.toolbarView.setBackgroundColorTint(backgroundColorInt);
             }
         } else if (DIALOG_UNGROUP_BAR_BACKGROUND_COLOR_ID == propertyKey) {
             if (viewHolder.dialogView != null) {

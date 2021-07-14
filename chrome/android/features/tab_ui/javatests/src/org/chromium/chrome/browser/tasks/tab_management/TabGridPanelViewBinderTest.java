@@ -289,17 +289,17 @@ public class TabGridPanelViewBinderTest extends DummyUiChromeActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testSetDialogBackgroundResource() {
-        int normalResourceId = R.drawable.tab_grid_dialog_background;
-        int incognitoResourceId = R.drawable.tab_grid_dialog_background_incognito;
+    public void testSetDialogBackgroundColor() {
+        int normalColor =
+                ContextCompat.getColor(getActivity(), R.color.tab_grid_dialog_background_color);
+        int incognitoColor = ContextCompat.getColor(
+                getActivity(), R.color.tab_grid_dialog_background_color_incognito);
         // Default setup is in normal mode.
-        Assert.assertEquals(
-                normalResourceId, mTabGridDialogView.getBackgroundDrawableResourceIdForTesting());
+        Assert.assertEquals(normalColor, mTabGridDialogView.getBackgroundColorForTesting());
 
-        mModel.set(TabGridPanelProperties.DIALOG_BACKGROUND_RESOURCE_ID, incognitoResourceId);
+        mModel.set(TabGridPanelProperties.DIALOG_BACKGROUND_COLOR, incognitoColor);
 
-        Assert.assertEquals(incognitoResourceId,
-                mTabGridDialogView.getBackgroundDrawableResourceIdForTesting());
+        Assert.assertEquals(incognitoColor, mTabGridDialogView.getBackgroundColorForTesting());
     }
 
     @Test
