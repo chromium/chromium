@@ -12,6 +12,8 @@
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/compat_mode/metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/scoped_screen_override.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
@@ -72,6 +74,10 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
     widget_->Show();
     resize_toggle_menu_ =
         std::make_unique<ResizeToggleMenu>(widget_.get(), &pref_delegate_);
+
+    // FHD size by default. Must be bigger than kPortraitPhoneDp and
+    // kLandscapeTabletDp.
+    SetDisplayWorkArea(gfx::Rect(0, 0, 1920, 1080));
   }
   void TearDown() override {
     widget_->CloseNow();
@@ -106,6 +112,12 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
   views::Widget* widget() { return widget_.get(); }
 
  private:
+  void SetDisplayWorkArea(const gfx::Rect& work_area) {
+    display::Display display = test_screen_.GetPrimaryDisplay();
+    display.set_work_area(work_area);
+    test_screen_.display_list().UpdateDisplay(display);
+  }
+
   views::Button* GetButtonByCommandId(ResizeCompatMode command_id) {
     switch (command_id) {
       case ResizeCompatMode::kPhone:
@@ -120,6 +132,8 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
   TestArcResizeLockPrefDelegate pref_delegate_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ResizeToggleMenu> resize_toggle_menu_;
+  display::test::TestScreen test_screen_;
+  display::test::ScopedScreenOverride scoped_screen_override_{&test_screen_};
 };
 
 TEST_F(ResizeToggleMenuTest, ConstructDestruct) {

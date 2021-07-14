@@ -97,7 +97,8 @@ class ResizeUtilTest : public exo::test::ExoTestBaseViews {
     widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
     widget_->GetNativeWindow()->SetProperty(ash::kAppIDKey,
                                             std::string(kTestAppId));
-    // FHD size by default.
+    // FHD size by default. Must be bigger than kPortraitPhoneDp and
+    // kLandscapeTabletDp.
     SetDisplayWorkArea(gfx::Rect(0, 0, 1920, 1080));
   }
 
@@ -157,6 +158,7 @@ TEST_F(ResizeUtilTest, TestResizeLockToPhoneTabletOnSmallDisplay) {
   constexpr gfx::Size workarea_size(300, 300);
   SetDisplayWorkArea(gfx::Rect(workarea_size));
 
+  // Shrink size according to the workarea size.
   ResizeLockToPhone(widget(), pref_delegate());
   EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
@@ -164,11 +166,10 @@ TEST_F(ResizeUtilTest, TestResizeLockToPhoneTabletOnSmallDisplay) {
   EXPECT_LT(widget()->GetWindowBoundsInScreen().height(),
             workarea_size.height());
 
+  // Don't shrink size so that Android can decide what to do.
   ResizeLockToTablet(widget(), pref_delegate());
-  EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
-            widget()->GetWindowBoundsInScreen().height());
-  EXPECT_LT(widget()->GetWindowBoundsInScreen().width(), workarea_size.width());
-  EXPECT_LT(widget()->GetWindowBoundsInScreen().height(),
+  EXPECT_GE(widget()->GetWindowBoundsInScreen().width(), workarea_size.width());
+  EXPECT_GE(widget()->GetWindowBoundsInScreen().height(),
             workarea_size.height());
 }
 

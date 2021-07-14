@@ -75,7 +75,11 @@ void ResizeToPhone(views::Widget* widget) {
 void ResizeToTablet(views::Widget* widget) {
   if (widget->IsMaximized())
     widget->Restore();
-  widget->CenterWindow(GetPossibleSizeInWorkArea(widget, kLandscapeTabletDp));
+
+  // We here don't shrink the preferred size according to the available workarea
+  // bounds like ResizeToPhone, because we'd like to let Android decide if the
+  // ResizeToTablet operation fallbacks to the window state change operation.
+  widget->CenterWindow(kLandscapeTabletDp);
 
   RecordResizeLockAction(ResizeLockActionType::ResizeToTablet);
 }
