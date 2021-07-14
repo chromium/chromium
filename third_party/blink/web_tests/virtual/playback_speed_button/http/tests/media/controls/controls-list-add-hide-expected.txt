@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Test disabling controls on the video element with all controls.
-Harness: the test ran to completion.
-

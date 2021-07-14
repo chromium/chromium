@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <title>Test that we can display a playback speeds list menu and set playback rate from the list.</title>
-<script src="../../../../resources/testharness.js"></script>
-<script src="../../../../resources/testharnessreport.js"></script>
-<script src="../../../../media/media-controls.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
 <!-- Width should be large enough to display playback speed button. -->
 <video controls style="width: 500px"></video>
 <script>
 async_test(function(t) {
   var video = document.querySelector("video");
-  video.src = '../../../../media/content/test.ogv';
+  video.src = '../content/test.ogv';
 
   enableTestMode(video);
 

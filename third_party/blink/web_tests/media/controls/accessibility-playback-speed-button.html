@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <title>Media Controls: playback speed button accessibility tests</title>
-<script src="../../../../resources/testharness.js"></script>
-<script src="../../../../resources/testharnessreport.js"></script>
-<script src="../../../../media/media-controls.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
 <video controls></video>
 <script>
 async_test(t => {
   var video = document.querySelector('video');
   enableTestMode(video);
-  video.src = '../../../../media/content/test.ogv';
+  video.src = '../content/test.ogv';
 
 video.onloadeddata = t.step_func(_ => {
     assert_true(isPlaybackSpeedButtonEnabled(video));

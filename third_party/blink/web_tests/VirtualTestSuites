@@ -1147,11 +1147,6 @@
     "args": ["--stable-release-mode"]
   },
   {
-    "prefix": "playback_speed_button",
-    "bases": ["http/tests/media/controls", "media/controls"],
-    "args": [ "--enable-features=PlaybackSpeedButton" ]
-  },
-  {
     "prefix": "dialogfocus-old-behavior",
     "bases": [
       "external/wpt/html/semantics/interactive-elements/the-dialog-element"

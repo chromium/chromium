@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL The overflow playback speed button is not visible when infinite duration. Failed to find overflow item: -internal-media-controls-playback-speed-button
-Harness: the test ran to completion.
-

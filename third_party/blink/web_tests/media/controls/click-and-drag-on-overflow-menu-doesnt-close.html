@@ -12,6 +12,7 @@ async_test(t => {
   const overflowBtn = overflowButton(video);
   const downloadBtn = downloadsOverflowItem(video);
   const captionsBtn = captionsOverflowItem(video);
+  const playbackSpeedBtn = playbackSpeedOverflowItem(video);
 
   // Add text tracks so that the captions option appears.
   [ '../track/captions-webvtt/captions-fast.vtt',
@@ -32,14 +33,17 @@ async_test(t => {
   // Neither the downloads button nor the captions button should receive a click during the click and drag.
   downloadBtn.addEventListener('click', t.unreached_func('Downloads received a click'));
   captionsBtn.addEventListener('click', t.unreached_func('Captions received a click'));
+  playbackSpeedBtn.addEventListener('click', t.unreached_func('Playback speed received a click'));
 
   function clickAndDrag() {
     assert_true(isControlVisible(menu), 'Overflow menu should be visible before we start click-and-drag');
     assert_true(isControlVisible(downloadBtn), 'Download button should be visible');
     assert_true(isControlVisible(captionsBtn), 'Captions button should be visible');
+    assert_true(isControlVisible(playbackSpeedBtn), 'Playback speed button should be visible');
 
     const downloadPosition = elementCoordinates(downloadBtn);
     const captionsPosition = elementCoordinates(captionsBtn);
+    const playbackSpeedPosition = elementCoordinates(playbackSpeedBtn);
 
     // Click down on downloads but drag and release over captions and playback speed.
     chrome.gpuBenchmarking.pointerActionSequence([{
@@ -48,6 +52,8 @@ async_test(t => {
         { name: 'pointerDown', x: downloadPosition[0], y: downloadPosition[1] },
         { name: 'pointerMove', x: captionsPosition[0], y: captionsPosition[1] },
         { name: 'pointerUp', x: captionsPosition[0], y: captionsPosition[1] },
+        { name: 'pointerMove', x: playbackSpeedPosition[0], y: playbackSpeedPosition[1] },
+        { name: 'pointerUp', x: playbackSpeedPosition[0], y: playbackSpeedPosition[1] },
       ]
     }], t.step_func_done(() => {
       assert_true(isControlVisible(menu), 'Overflow menu should still be visible after click-and-drag');

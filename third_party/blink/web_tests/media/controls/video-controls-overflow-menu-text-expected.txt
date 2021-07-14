@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Overflow menu displays the correct text. assert_equals: expected "playback speed" but got "picture in picture"
-Harness: the test ran to completion.
-

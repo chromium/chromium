@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS The overflow playback speed button is not visible when infinite duration.
-Harness: the test ran to completion.
-
