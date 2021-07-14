@@ -72,18 +72,5 @@ std::string ConstructExternalDataPolicy(
   return policy;
 }
 
-void SetExternalDataReference(CloudPolicyCore* core,
-                              const std::string& policy,
-                              base::DictionaryValue metadata) {
-  CloudPolicyStore* store = core->store();
-  ASSERT_TRUE(store);
-  PolicyMap policy_map;
-  policy_map.Set(policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, std::move(metadata),
-                 std::make_unique<ExternalDataFetcher>(
-                     store->external_data_manager(), policy));
-  store->SetPolicyMapForTesting(policy_map);
-}
-
 }  // namespace test
 }  // namespace policy

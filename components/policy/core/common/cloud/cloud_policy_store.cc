@@ -83,13 +83,6 @@ void CloudPolicyStore::SetExternalDataManager(
     external_data_manager_->OnPolicyStoreLoaded();
 }
 
-void CloudPolicyStore::SetPolicyMapForTesting(const PolicyMap& policy_map) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  policy_map_ = policy_map.Clone();
-  NotifyStoreLoaded();
-}
-
 void CloudPolicyStore::SetFirstPoliciesLoaded(bool loaded) {
   first_policies_loaded_ = loaded;
 }
