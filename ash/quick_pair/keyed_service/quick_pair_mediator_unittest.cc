@@ -6,11 +6,15 @@
 
 #include <memory>
 
+#include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/feature_status_tracker/fake_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/mock_quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/scanning/mock_scanner_broker.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
+#include "ash/quick_pair/ui/mock_ui_broker.h"
+#include "ash/quick_pair/ui/ui_broker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -29,13 +33,18 @@ class MediatorTest : public testing::Test {
     mock_scanner_broker_ =
         static_cast<MockScannerBroker*>(scanner_broker.get());
 
-    mediator_ = std::make_unique<Mediator>(std::move(tracker),
-                                           std::move(scanner_broker));
+    std::unique_ptr<UIBroker> ui_broker = std::make_unique<MockUIBroker>();
+    mock_ui_broker_ = static_cast<MockUIBroker*>(ui_broker.get());
+
+    mediator_ = std::make_unique<Mediator>(
+        std::move(tracker), std::move(scanner_broker), std::move(ui_broker));
   }
 
  protected:
+  Device device_{"test_metadata_id", "test_address", Protocol::kFastPair};
   FakeFeatureStatusTracker* feature_status_tracker_;
   MockScannerBroker* mock_scanner_broker_;
+  MockUIBroker* mock_ui_broker_;
   std::unique_ptr<Mediator> mediator_;
 };
 
@@ -48,6 +57,19 @@ TEST_F(MediatorTest, TogglesScanningWhenFastPairEnabledChanges) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_scanner_broker_, StopScanning);
   feature_status_tracker_->SetIsFastPairEnabled(false);
+}
+
+TEST_F(MediatorTest, InvokesShowDiscoveryWhenDeviceFound) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery);
+  mock_scanner_broker_->NotifyDeviceFound(device_);
+}
+
+TEST_F(MediatorTest, InvokesShowPairingOnAppropriateAction) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowPairing);
+  mock_ui_broker_->NotifyDiscoveryAction(device_,
+                                         DiscoveryAction::kPairToDevice);
 }
 
 }  // namespace quick_pair

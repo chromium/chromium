@@ -19,6 +19,7 @@ static_library("keyed_service") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/scanning",
+    "//ash/quick_pair/ui",
     "//base",
     "//components/keyed_service/core",
   ]
@@ -31,8 +32,10 @@ source_set("unit_tests") {
 
   deps = [
     ":keyed_service",
+    "//ash/quick_pair/common",
     "//ash/quick_pair/feature_status_tracker:test_support",
     "//ash/quick_pair/scanning:test_support",
+    "//ash/quick_pair/ui:test_support",
     "//base/test:test_support",
     "//testing/gtest",
   ]

@@ -18,7 +18,7 @@ namespace quick_pair {
 // fetch objects which contain more information. E.g. A Fast Pair component
 // can use |metadata_id| to query the Service to receive a full metadata
 // object.
-struct Device {
+struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device {
   Device(std::string metadata_id, std::string address, Protocol protocol);
   Device(const Device&) = delete;
   Device(Device&&) = default;
