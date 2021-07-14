@@ -40,8 +40,10 @@ std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) {
 }  // namespace
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
-    AppListViewDelegate* view_delegate) {
+    AppListViewDelegate* view_delegate,
+    ApplicationDragAndDropHost* drag_and_drop_host) {
   DCHECK(view_delegate);
+  DCHECK(drag_and_drop_host);
 
   SetUseDefaultFillLayout(true);
 
@@ -95,6 +97,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer_.get(), view_delegate,
           /*folder_delegate=*/nullptr));
+  scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
+      drag_and_drop_host);
   scrollable_apps_grid_view_->Init();
   AppListModel* model = view_delegate->GetModel();
   scrollable_apps_grid_view_->SetModel(model);

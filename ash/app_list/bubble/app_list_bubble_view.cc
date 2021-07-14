@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -130,8 +131,13 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
   search_box_view_->set_show_close_button_when_active(false);
   search_box_view_->Init();
 
-  apps_page_ =
-      AddChildView(std::make_unique<AppListBubbleAppsPage>(view_delegate));
+  // NOTE: Passing drag and drop host from a specific shelf instance assumes
+  // that the `apps_page_` will not get reused for showing the app list in
+  // another root window.
+  apps_page_ = AddChildView(std::make_unique<AppListBubbleAppsPage>(
+      view_delegate, Shelf::ForWindow(root_window)
+                         ->shelf_widget()
+                         ->GetDragAndDropHostForAppList()));
 
   search_page_ = AddChildView(std::make_unique<AppListBubbleSearchPage>(
       view_delegate, search_box_view_));

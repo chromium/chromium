@@ -14,6 +14,7 @@
 
 namespace ash {
 
+class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
 class AppListViewDelegate;
 class RecentAppsView;
@@ -28,7 +29,8 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View {
  public:
   METADATA_HEADER(AppListBubbleAppsPage);
 
-  explicit AppListBubbleAppsPage(AppListViewDelegate* view_delegate);
+  AppListBubbleAppsPage(AppListViewDelegate* view_delegate,
+                        ApplicationDragAndDropHost* drag_and_drop_host);
   AppListBubbleAppsPage(const AppListBubbleAppsPage&) = delete;
   AppListBubbleAppsPage& operator=(const AppListBubbleAppsPage&) = delete;
   ~AppListBubbleAppsPage() override;
