@@ -18334,7 +18334,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AssistantActionPerformed{Source}"
-    enum="AssistantActionPerformed" expires_after="2021-08-22">
+    enum="AssistantActionPerformed" expires_after="2022-06-12">
   <owner>jds@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -18355,7 +18355,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AssistantIntent.TranslateExtrasAttached"
-    enum="BooleanSuccess" expires_after="2021-06-04">
+    enum="BooleanSuccess" expires_after="2022-06-12">
   <owner>jds@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -18366,7 +18366,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AudioPermissionEvent{Timing}"
-    enum="AudioPermissionState" expires_after="2021-08-22">
+    enum="AudioPermissionState" expires_after="2022-06-12">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -18383,7 +18383,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.DismissedEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2021-12-26">
+    enum="VoiceInteractionEventSource" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18394,7 +18394,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.DismissedEventTarget"
-    enum="VoiceIntentTarget" expires_after="2021-08-22">
+    enum="VoiceIntentTarget" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18406,7 +18406,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FailureEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2021-12-26">
+    enum="VoiceInteractionEventSource" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18419,7 +18419,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FailureEventTarget" enum="VoiceIntentTarget"
-    expires_after="2021-08-22">
+    expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18432,7 +18432,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FinishEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2021-12-26">
+    enum="VoiceInteractionEventSource" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18443,7 +18443,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FinishEventTarget" enum="VoiceIntentTarget"
-    expires_after="2021-08-22">
+    expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18464,7 +18464,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -18475,7 +18475,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android.Target.{Target}"
-    units="ms" expires_after="2021-08-22">
+    units="ms" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -18489,7 +18489,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android{Action}" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -18511,7 +18511,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2021-12-26">
+    enum="VoiceInteractionEventSource" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18522,7 +18522,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventTarget" enum="VoiceIntentTarget"
-    expires_after="2021-08-22">
+    expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18534,7 +18534,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.UnexpectedResultSource"
-    enum="VoiceInteractionEventSource" expires_after="2021-08-22">
+    enum="VoiceInteractionEventSource" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -18545,7 +18545,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.UnexpectedResultTarget"
-    enum="VoiceIntentTarget" expires_after="2021-08-22">
+    enum="VoiceIntentTarget" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -18564,7 +18564,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceResultConfidenceValue" units="%"
-    expires_after="2021-12-26">
+    expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18575,7 +18575,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceResultConfidenceValue.{Target}"
-    units="%" expires_after="2021-08-22">
+    units="%" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18588,7 +18588,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceSearchResult" enum="BooleanSuccess"
-    expires_after="2021-12-26">
+    expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
@@ -18599,7 +18599,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceSearchResult.{Target}"
-    enum="BooleanSuccess" expires_after="2021-08-22">
+    enum="BooleanSuccess" expires_after="2022-06-12">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
