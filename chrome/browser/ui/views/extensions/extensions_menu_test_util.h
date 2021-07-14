@@ -38,7 +38,6 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   bool HasPopup() override;
   bool HidePopup() override;
   void SetWidth(int width) override;
-  ToolbarActionsBar* GetToolbarActionsBar() override;
   ExtensionsContainer* GetExtensionsContainer() override;
   void WaitForExtensionsContainerLayout() override;
   std::unique_ptr<ExtensionActionTestHelper> CreateOverflowBar(

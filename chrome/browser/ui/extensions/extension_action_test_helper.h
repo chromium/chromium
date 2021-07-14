@@ -16,7 +16,6 @@
 
 class Browser;
 class ExtensionsContainer;
-class ToolbarActionsBar;
 
 namespace gfx {
 class Image;
@@ -83,9 +82,6 @@ class ExtensionActionTestHelper {
   // the underlying controller. This is to simulate e.g. when the browser window
   // is too small for the preferred width.
   virtual void SetWidth(int width) = 0;
-
-  // Returns the ToolbarActionsBar.
-  virtual ToolbarActionsBar* GetToolbarActionsBar() = 0;
 
   // Returns the associated ExtensionsContainer.
   virtual ExtensionsContainer* GetExtensionsContainer() = 0;

@@ -183,15 +183,6 @@ void ExtensionsMenuTestUtil::SetWidth(int width) {
       gfx::Size(width, extensions_container_->height()));
 }
 
-ToolbarActionsBar* ExtensionsMenuTestUtil::GetToolbarActionsBar() {
-  // TODO(https://crbug.com/984654): There is no associated ToolbarActionsBar
-  // with the ExtensionsMenu implementation. We should audit call sites, and
-  // determine whether the functionality is specific to the old implementation,
-  // or if callers should be updated to use the ExtensionsContainer interface.
-  NOTREACHED();
-  return nullptr;
-}
-
 ExtensionsContainer* ExtensionsMenuTestUtil::GetExtensionsContainer() {
   return extensions_container_;
 }
