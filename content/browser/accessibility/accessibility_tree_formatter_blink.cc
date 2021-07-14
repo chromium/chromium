@@ -749,22 +749,21 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        static_cast<int32_t>(ax::mojom::IntListAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::IntListAttribute>(attr_index);
-    const base::ListValue* value;
-    if (!dict.GetList(ui::ToString(attr), &value))
+    const base::Value* value = dict.FindListPath(ui::ToString(attr));
+    if (!value || !value->is_list())
       continue;
+    base::Value::ConstListView list = value->GetList();
     std::string attr_string(ui::ToString(attr));
     attr_string.push_back('=');
-    for (size_t i = 0; i < value->GetSize(); ++i) {
+    for (size_t i = 0; i < list.size(); ++i) {
       if (i > 0)
         attr_string += ",";
       if (ui::IsNodeIdIntListAttribute(attr)) {
-        std::string string_value;
-        value->GetString(i, &string_value);
-        attr_string += string_value;
+        if (list[i].is_string()) {
+          attr_string += list[i].GetString();
+        }
       } else {
-        int int_value;
-        value->GetInteger(i, &int_value);
-        attr_string += base::NumberToString(int_value);
+        attr_string += base::NumberToString(list[i].GetIfInt().value_or(0));
       }
     }
     WriteAttribute(false, attr_string, &line);
