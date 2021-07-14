@@ -402,9 +402,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   bad_rule->set_rule_name("malware");
 
   FakeBinaryUploadServiceStorage()->SetResponseForFile(
-      "ok.doc", BinaryUploadService::Result::SUCCESS, ok_response);
+      created_file_paths()[0].AsUTF8Unsafe(),
+      BinaryUploadService::Result::SUCCESS, ok_response);
   FakeBinaryUploadServiceStorage()->SetResponseForFile(
-      "bad.exe", BinaryUploadService::Result::SUCCESS, bad_response);
+      created_file_paths()[1].AsUTF8Unsafe(),
+      BinaryUploadService::Result::SUCCESS, bad_response);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -566,9 +568,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
   // TOO_MANY_REQUEST result, it can be any of them depending on how quickly
   // they are opened asynchronously. This means responses must be set up for
   // each of them.
-  for (const std::string& file_name : {"a.exe", "b.exe", "c.exe"}) {
+  for (size_t i = 0; i < 3; ++i) {
     FakeBinaryUploadServiceStorage()->SetResponseForFile(
-        file_name, BinaryUploadService::Result::TOO_MANY_REQUESTS,
+        created_file_paths()[i].AsUTF8Unsafe(),
+        BinaryUploadService::Result::TOO_MANY_REQUESTS,
         ContentAnalysisResponse());
   }
 
@@ -920,7 +923,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   dlp_rule->set_rule_name("some_dlp_rule");
 
   FakeBinaryUploadServiceStorage()->SetResponseForFile(
-      "foo.doc", BinaryUploadService::Result::SUCCESS, response);
+      created_file_paths()[0].AsUTF8Unsafe(),
+      BinaryUploadService::Result::SUCCESS, response);
   validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       /*url*/ "about:blank",
       /*filename*/ created_file_paths()[0].AsUTF8Unsafe(),

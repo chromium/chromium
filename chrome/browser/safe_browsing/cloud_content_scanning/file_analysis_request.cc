@@ -134,7 +134,7 @@ FileAnalysisRequest::FileAnalysisRequest(
       path_(std::move(path)),
       file_name_(std::move(file_name)),
       delay_opening_file_(delay_opening_file) {
-  set_filename(file_name_.AsUTF8Unsafe());
+  set_filename(path_.AsUTF8Unsafe());
   cached_data_.mime_type = std::move(mime_type);
 }
 

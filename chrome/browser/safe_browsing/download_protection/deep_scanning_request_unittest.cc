@@ -1000,7 +1000,7 @@ TEST_F(DeepScanningRequestTest, PopulatesRequest) {
                 ->last_request()
                 .request_data()
                 .filename(),
-            "download.exe");
+            download_path_.AsUTF8Unsafe());
   EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
                 ->last_request()
                 .request_data()

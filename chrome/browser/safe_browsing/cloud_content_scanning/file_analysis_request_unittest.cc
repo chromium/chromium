@@ -296,7 +296,7 @@ TEST_F(FileAnalysisRequestTest, PopulatesFilename) {
       }));
   run_loop.Run();
 
-  EXPECT_EQ(request->filename(), "foo.doc");
+  EXPECT_EQ(request->filename(), file_path.AsUTF8Unsafe());
 }
 
 TEST_F(FileAnalysisRequestTest, CachesResults) {
