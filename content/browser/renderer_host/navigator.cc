@@ -397,7 +397,8 @@ void Navigator::DidNavigate(
   if (ui::PageTransitionIsMainFrame(params.transition)) {
     if (delegate_) {
       // Run tasks that must execute just before the commit.
-      delegate_->DidNavigateMainFramePreCommit(was_within_same_document);
+      delegate_->DidNavigateMainFramePreCommit(frame_tree_node,
+                                               was_within_same_document);
     }
   }
 

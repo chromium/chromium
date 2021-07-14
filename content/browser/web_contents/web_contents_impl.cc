@@ -5545,10 +5545,19 @@ bool WebContentsImpl::ShouldPreserveAbortedURLs() {
 }
 
 void WebContentsImpl::DidNavigateMainFramePreCommit(
+    FrameTreeNode* frame_tree_node,
     bool navigation_is_within_page) {
+  // The render_frame_host is always a main frame.
+  DCHECK(frame_tree_node->IsMainFrame());
   TRACE_EVENT1("content,navigation",
                "WebContentsImpl::DidNavigateMainFramePreCommit",
                "navigation_is_within_page", navigation_is_within_page);
+  bool is_primary_main_frame =
+      GetMainFrame() == frame_tree_node->render_manager()->current_frame_host();
+  // If running for a non-primary main frame, early out.
+  if (!is_primary_main_frame)
+    return;
+
   // Ensure fullscreen mode is exited before committing the navigation to a
   // different page.  The next page will not start out assuming it is in
   // fullscreen mode.
@@ -5556,6 +5565,7 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
     // No page change?  Then, the renderer and browser can remain in fullscreen.
     return;
   }
+
   if (IsFullscreen())
     ExitFullscreen(false);
   DCHECK(!IsFullscreen());
