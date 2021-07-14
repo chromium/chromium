@@ -56,10 +56,9 @@ class KeyboardHandlerTest : public testing::Test {
     for (auto it = web_ui_.call_data().rbegin();
          it != web_ui_.call_data().rend(); ++it) {
       const content::TestWebUI::CallData* data = it->get();
-      std::string name;
-      if (data->function_name() != "cr.webUIListenerCallback" ||
-          !data->arg1()->GetAsString(&name) ||
-          name != KeyboardHandler::kShowKeysChangedName) {
+      const std::string* name = data->arg1()->GetIfString();
+      if (data->function_name() != "cr.webUIListenerCallback" || !name ||
+          *name != KeyboardHandler::kShowKeysChangedName) {
         continue;
       }
 

@@ -149,12 +149,11 @@ class StorageHandlerTest : public testing::Test {
     for (auto it = web_ui_.call_data().rbegin();
          it != web_ui_.call_data().rend(); ++it) {
       const content::TestWebUI::CallData* data = it->get();
-      std::string name;
-      if (data->function_name() != "cr.webUIListenerCallback" ||
-          !data->arg1()->GetAsString(&name)) {
+      const std::string* name = data->arg1()->GetIfString();
+      if (data->function_name() != "cr.webUIListenerCallback" || !name) {
         continue;
       }
-      if (name == event_name)
+      if (*name == event_name)
         return data->arg2();
     }
     return nullptr;

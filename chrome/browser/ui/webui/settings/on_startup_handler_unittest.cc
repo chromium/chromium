@@ -87,9 +87,8 @@ TEST_F(OnStartupHandlerTest, HandleGetNtpExtension) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-  std::string callback_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-  EXPECT_EQ(kCallbackId, callback_id);
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ(kCallbackId, data.arg1()->GetString());
 
   ASSERT_TRUE(data.arg2()->is_bool());
   EXPECT_TRUE(data.arg2()->GetBool());
@@ -106,9 +105,8 @@ TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Valid) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-  std::string callback_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-  EXPECT_EQ(kCallbackId, callback_id);
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ(kCallbackId, data.arg1()->GetString());
 
   ASSERT_TRUE(data.arg2()->is_bool());
   EXPECT_TRUE(data.arg2()->GetBool());
@@ -128,9 +126,8 @@ TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Invalid) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-  std::string callback_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-  EXPECT_EQ(kCallbackId, callback_id);
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ(kCallbackId, data.arg1()->GetString());
 
   ASSERT_TRUE(data.arg2()->is_bool());
   EXPECT_TRUE(data.arg2()->GetBool());

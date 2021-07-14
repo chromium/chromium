@@ -265,8 +265,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   CHECK(args_list[1].is_list());
   base::Value::ConstListView data_type_list = args_list[1].GetList();
   for (const base::Value& type : data_type_list) {
-    std::string pref_name;
-    CHECK(type.GetAsString(&pref_name));
+    const std::string pref_name = type.GetString();
     BrowsingDataType data_type =
         browsing_data::GetDataTypeFromDeletionPreference(pref_name);
     data_type_vector.push_back(data_type);

@@ -70,14 +70,13 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
     for (auto it = web_ui_.call_data().rbegin();
          it != web_ui_.call_data().rend(); ++it) {
       const content::TestWebUI::CallData* data = it->get();
-      std::string listener;
-      std::string listener_argument;
-      data->arg1()->GetAsString(&listener);
-      if (!data->arg2()->GetAsString(&listener_argument)) {
+      std::string listener = data->arg1()->GetString();
+      if (!data->arg2()->is_string()) {
         // Only look for listeners with a single string argument. Continue
         // silently if we find anything else.
         continue;
       }
+      std::string listener_argument = data->arg2()->GetString();
 
       if (data->function_name() == "cr.webUIListenerCallback" &&
           listener == expected_listener &&

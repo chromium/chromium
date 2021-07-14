@@ -100,9 +100,10 @@ TEST_F(ResetSettingsHandlerTest, HandleResetProfileSettings) {
   // Check that Javascript side is notified after resetting is done.
   EXPECT_EQ("cr.webUIResponse",
             web_ui()->call_data()[0]->function_name());
-  std::string callback_id;
-  EXPECT_TRUE(web_ui()->call_data()[0]->arg1()->GetAsString(&callback_id));
-  EXPECT_EQ(expected_callback_id, callback_id);
+  const std::string* callback_id =
+      web_ui()->call_data()[0]->arg1()->GetIfString();
+  EXPECT_NE(nullptr, callback_id);
+  EXPECT_EQ(expected_callback_id, *callback_id);
 }
 
 }  // namespace

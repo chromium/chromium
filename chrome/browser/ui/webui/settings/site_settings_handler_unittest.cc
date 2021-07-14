@@ -223,9 +223,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
-    std::string event_name;
-    ASSERT_TRUE(data.arg1()->GetAsString(&event_name));
-    EXPECT_EQ("onBlockAutoplayStatusChanged", event_name);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("onBlockAutoplayStatusChanged", data.arg1()->GetString());
 
     const base::DictionaryValue* event_data = nullptr;
     ASSERT_TRUE(data.arg2()->GetAsDictionary(&event_data));
@@ -257,9 +256,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ(kCallbackId, callback_id);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
 
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
@@ -287,9 +285,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ(kCallbackId, callback_id);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
 
@@ -321,9 +318,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ(kCallbackId, callback_id);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
 
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
@@ -341,9 +337,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ(kCallbackId, callback_id);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
 
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
@@ -367,9 +362,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ("onIncognitoStatusChanged", callback_id);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("onIncognitoStatusChanged", data.arg1()->GetString());
 
     ASSERT_TRUE(data.arg2()->is_bool());
     EXPECT_EQ(expected_incognito, data.arg2()->GetBool());
@@ -383,9 +377,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ("onZoomLevelsChanged", callback_id);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("onZoomLevelsChanged", data.arg1()->GetString());
 
     const base::ListValue* exceptions;
     ASSERT_TRUE(data.arg2()->GetAsList(&exceptions));
@@ -485,8 +478,6 @@ class SiteSettingsHandlerTest : public testing::Test {
     handler()->ClearAllSitesMapForTesting();
     handler()->OnStorageFetched();
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    std::string callback_id;
-    data.arg1()->GetAsString(&callback_id);
     const base::ListValue* storage_and_cookie_list;
     data.arg2()->GetAsList(&storage_and_cookie_list);
     return storage_and_cookie_list;
@@ -843,9 +834,8 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
-  std::string callback_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-  EXPECT_EQ("onStorageListFetched", callback_id);
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ("onStorageListFetched", data.arg1()->GetString());
 
   const base::ListValue* storage_and_cookie_list;
   ASSERT_TRUE(data.arg2()->GetAsList(&storage_and_cookie_list));

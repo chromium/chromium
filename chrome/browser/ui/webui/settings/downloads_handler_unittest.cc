@@ -61,9 +61,8 @@ class DownloadsHandlerTest : public testing::Test {
 
     auto& data = *(test_web_ui_.call_data().back());
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-    std::string event;
-    ASSERT_TRUE(data.arg1()->GetAsString(&event));
-    EXPECT_EQ("auto-open-downloads-changed", event);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("auto-open-downloads-changed", data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->is_bool());
     EXPECT_FALSE(data.arg2()->GetBool());
   }

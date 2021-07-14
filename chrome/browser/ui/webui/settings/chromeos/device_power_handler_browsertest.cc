@@ -109,15 +109,14 @@ class PowerHandlerTest : public InProcessBrowserTest {
     for (auto it = web_ui_.call_data().rbegin();
          it != web_ui_.call_data().rend(); ++it) {
       const content::TestWebUI::CallData* data = it->get();
-      std::string name;
+      const std::string* name = data->arg1()->GetIfString();
       const base::DictionaryValue* dict = nullptr;
-      if (data->function_name() != "cr.webUIListenerCallback" ||
-          !data->arg1()->GetAsString(&name) ||
-          name != PowerHandler::kPowerManagementSettingsChangedName) {
+      if (data->function_name() != "cr.webUIListenerCallback" || !name ||
+          *name != PowerHandler::kPowerManagementSettingsChangedName) {
         continue;
       }
       if (!data->arg2()->GetAsDictionary(&dict)) {
-        ADD_FAILURE() << "Failed to get dict from " << name << " message";
+        ADD_FAILURE() << "Failed to get dict from " << *name << " message";
         continue;
       }
       std::string out;

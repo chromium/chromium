@@ -283,14 +283,13 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
   void ExpectPageStatusResponse(const std::string& expected_status) {
     auto& data = *web_ui_.call_data().back();
     EXPECT_EQ("cr.webUIResponse", data.function_name());
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ(kTestCallbackId, callback_id);
+
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(kTestCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->is_bool());
     EXPECT_TRUE(data.arg2()->GetBool());
-    std::string status;
-    ASSERT_TRUE(data.arg3()->GetAsString(&status));
-    EXPECT_EQ(expected_status, status);
+    ASSERT_TRUE(data.arg3()->is_string());
+    EXPECT_EQ(expected_status, data.arg3()->GetString());
   }
 
   // Expects a call to ResolveJavascriptCallback() with |should_succeed| as its

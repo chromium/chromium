@@ -102,10 +102,9 @@ void ClearBrowsingDataHandlerUnitTest::VerifySearchHistoryWebUIUpdate(
     if (data.function_name() != "cr.webUIListenerCallback") {
       continue;
     }
-    std::string event;
-    if ((!data.arg1()->GetAsString(&event)) || event != "update-sync-state") {
+    const std::string* event = data.arg1()->GetIfString();
+    if (!event || *event != "update-sync-state")
       continue;
-    }
     const base::DictionaryValue* dictionary = nullptr;
     if (!data.arg2()->GetAsDictionary(&dictionary)) {
       continue;
