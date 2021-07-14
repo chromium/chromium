@@ -28,7 +28,6 @@ AXTreeFormatterBase::~AXTreeFormatterBase() = default;
 
 // static
 const char AXTreeFormatterBase::kChildrenDictAttr[] = "children";
-const char AXTreeFormatterBase::kScriptsDictAttr[] = "scripts";
 
 bool AXTreeFormatterBase::ShouldDumpNode(
     const AXPlatformNodeDelegate& node) const {
@@ -66,21 +65,7 @@ base::Value AXTreeFormatterBase::BuildNode(AXPlatformNodeDelegate* node) const {
 
 std::string AXTreeFormatterBase::FormatTree(const base::Value& dict) const {
   std::string contents;
-
-  // Format the tree.
   RecursiveFormatTree(dict, &contents);
-
-  // Format scripts.
-  const base::Value* scripts = dict.FindListKey(kScriptsDictAttr);
-  if (!scripts)
-    return contents;
-
-  for (const base::Value& script : scripts->GetList()) {
-    std::string line;
-    WriteAttribute(true, script.GetString(), &line);
-    contents += line + "\n";
-  }
-
   return contents;
 }
 
@@ -88,6 +73,15 @@ base::Value AXTreeFormatterBase::BuildTreeForNode(ui::AXNode* root) const {
   NOTREACHED()
       << "Only supported when called on AccessibilityTreeFormatterBlink.";
   return base::Value();
+}
+
+std::string AXTreeFormatterBase::EvaluateScript(
+    AXPlatformNodeDelegate* root,
+    const std::vector<AXScriptInstruction>& instructions,
+    size_t start_index,
+    size_t end_index) const {
+  NOTREACHED() << "Not implemented";
+  return {};
 }
 
 void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,

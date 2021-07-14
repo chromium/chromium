@@ -11,6 +11,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/ax_inspect_factory.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
 #include "third_party/blink/public/common/features.h"
@@ -94,9 +95,15 @@ class DumpAccessibilityTestBase
 
   // Retrieve the browser accessibility manager object for the current web
   // contents.
-  BrowserAccessibilityManager* GetManager();
+  BrowserAccessibilityManager* GetManager() const;
 
   std::unique_ptr<ui::AXTreeFormatter> CreateFormatter() const;
+
+  // Returns a list of captured events fired after the invoked action.
+  using InvokeAction = base::OnceCallback<base::Value()>;
+  std::pair<base::Value, std::vector<std::string>> CaptureEvents(
+      InvokeAction invoke_action,
+      std::vector<std::string>& run_until) const;
 
   // Test scenario loaded from the test file.
   ui::AXInspectScenario scenario_;
@@ -131,6 +138,11 @@ class DumpAccessibilityTestBase
       const std::vector<std::string>& skip_urls);
 
   void WaitForAXTreeLoaded(WebContentsImpl* web_contents);
+
+  void OnEventRecorded(AccessibilityNotificationWaiter* waiter,
+                       const std::string& event) const {
+    waiter->Quit();
+  }
 };
 
 }  // namespace content

@@ -16,6 +16,7 @@
 #include "net/base/data_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -24,7 +25,6 @@ namespace {
 
 const ui::AXPropertyFilter::Type ALLOW_EMPTY =
     ui::AXPropertyFilter::ALLOW_EMPTY;
-const ui::AXPropertyFilter::Type SCRIPT = ui::AXPropertyFilter::SCRIPT;
 
 class AccessibilityTreeFormatterMacBrowserTest : public ContentBrowserTest {
  public:
@@ -32,14 +32,18 @@ class AccessibilityTreeFormatterMacBrowserTest : public ContentBrowserTest {
   ~AccessibilityTreeFormatterMacBrowserTest() override {}
 
   // Checks the formatted accessible tree for the given data URL.
-  void TestAndCheck(const char* url,
-                    const std::vector<ui::AXPropertyFilter>& property_filters,
-                    const std::vector<ui::AXNodeFilter>& node_filters,
-                    const char* expected) const;
+  void TestFormat(const char* url,
+                  const std::vector<ui::AXPropertyFilter>& property_filters,
+                  const std::vector<ui::AXNodeFilter>& node_filters,
+                  const char* expected) const;
 
-  void TestAndCheck(const char* url,
-                    const std::vector<const char*>& filters,
-                    const char* expected) const;
+  void TestFormat(const char* url,
+                  const std::vector<const char*>& filters,
+                  const char* expected) const;
+
+  void TestScript(const char* url,
+                  const std::vector<const char*>& scripts,
+                  const char* expected) const;
 
   // Tests wrong parameters for an attribute in a single run
   void TestWrongParameters(const char* url,
@@ -55,7 +59,7 @@ class AccessibilityTreeFormatterMacBrowserTest : public ContentBrowserTest {
   }
 };
 
-void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
+void AccessibilityTreeFormatterMacBrowserTest::TestFormat(
     const char* url,
     const std::vector<ui::AXPropertyFilter>& property_filters,
     const std::vector<ui::AXNodeFilter>& node_filters,
@@ -82,7 +86,7 @@ void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
   EXPECT_EQ(actual, expected);
 }
 
-void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
+void AccessibilityTreeFormatterMacBrowserTest::TestFormat(
     const char* url,
     const std::vector<const char*>& filters,
     const char* expected) const {
@@ -90,7 +94,35 @@ void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
   for (const char* filter : filters) {
     property_filters.emplace_back(filter, ALLOW_EMPTY);
   }
-  TestAndCheck(url, property_filters, {}, expected);
+  TestFormat(url, property_filters, {}, expected);
+}
+
+void AccessibilityTreeFormatterMacBrowserTest::TestScript(
+    const char* url,
+    const std::vector<const char*>& scripts,
+    const char* expected) const {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(url)));
+  waiter.WaitForNotification();
+
+  std::unique_ptr<ui::AXTreeFormatter> formatter =
+      AXInspectFactory::CreatePlatformFormatter();
+
+  BrowserAccessibility* root = GetManager()->GetRoot();
+  ASSERT_NE(nullptr, root);
+
+  std::vector<ui::AXScriptInstruction> instructions;
+  for (const char* script : scripts) {
+    instructions.emplace_back(script);
+  }
+
+  std::string actual =
+      formatter->EvaluateScript(root, instructions, 0, instructions.size());
+  EXPECT_EQ(actual, expected);
 }
 
 void AccessibilityTreeFormatterMacBrowserTest::TestWrongParameters(
@@ -112,7 +144,7 @@ void AccessibilityTreeFormatterMacBrowserTest::TestWrongParameters(
     std::string filter(filter_pattern);
     filter.replace(filter_pos, placeholder.length(), parameter);
 
-    TestAndCheck(url, {filter.c_str()}, expected.c_str());
+    TestFormat(url, {filter.c_str()}, expected.c_str());
   }
 }
 
@@ -120,10 +152,10 @@ void AccessibilityTreeFormatterMacBrowserTest::TestWrongParameters(
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        DefaultAttributes) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <input aria-label='input'>)~~",
-               {},
-               R"~~(AXWebArea
+             {},
+             R"~~(AXWebArea
 ++AXGroup
 ++++AXTextField AXDescription='input'
 )~~");
@@ -131,10 +163,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Filters_NoWildcardProperty) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <input class='classolasso'>)~~",
-               {"AXDOMClassList"},
-               R"~~(AXWebArea AXDOMClassList=[]
+             {"AXDOMClassList"},
+             R"~~(AXWebArea AXDOMClassList=[]
 ++AXGroup AXDOMClassList=[]
 ++++AXTextField AXDOMClassList=['classolasso']
 )~~");
@@ -142,11 +174,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Filters_LineIndex) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <input class='input_at_3rd_line'>
                     <input class='input_at_4th_line'>
                     <input class='input_at_5th_line'>)~~",
-               {":3,:5;AXDOMClassList=*"}, R"~~(AXWebArea
+             {":3,:5;AXDOMClassList=*"}, R"~~(AXWebArea
 ++AXGroup
 ++++AXTextField AXDOMClassList=['input_at_3rd_line']
 ++++AXTextField
@@ -156,9 +188,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Serialize_AXTextMarker) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <p>Paragraph</p>)~~",
-               {":3;AXStartTextMarker=*"}, R"~~(AXWebArea
+             {":3;AXStartTextMarker=*"}, R"~~(AXWebArea
 ++AXGroup
 ++++AXStaticText AXStartTextMarker={:1, 0, down} AXValue='Paragraph'
 )~~");
@@ -166,12 +198,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Serialize_AXTextMarkerRange) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>
                     <script>
                       window.getSelection().selectAllChildren(document.getElementById('p'));
                     </script>)~~",
-               {":3;AXSelectedTextMarkerRange=*"}, R"~~(AXWebArea
+             {":3;AXSelectedTextMarkerRange=*"}, R"~~(AXWebArea
 ++AXGroup
 ++++AXStaticText AXSelectedTextMarkerRange={anchor: {:2, -1, down}, focus: {:3, 0, down}} AXValue='Paragraph'
 )~~");
@@ -179,9 +211,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_Int) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <p contentEditable='true'>Text</p>)~~",
-               {":2;AXLineForIndex(0)=*"}, R"~~(AXWebArea
+             {":2;AXLineForIndex(0)=*"}, R"~~(AXWebArea
 ++AXTextArea AXLineForIndex(0)=0 AXValue='Text'
 ++++AXStaticText AXValue='Text'
 )~~");
@@ -200,9 +232,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <table role="grid"><tr><td>CELL</td></tr></table>)~~",
-               {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
+             {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
 ++AXTable AXCellForColumnAndRow([0, 0])=:4
 ++++AXRow
 ++++++AXCell
@@ -216,9 +248,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray_NilValue) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <table role="grid"></table>)~~",
-               {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
+             {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
 ++AXTable AXCellForColumnAndRow([0, 0])=NULL
 ++++AXGroup
 )~~");
@@ -242,27 +274,25 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       ParameterizedAttributes_NSRange) {
-  TestAndCheck(R"~~(data:text/html,
-                    <p contentEditable='true'>Text</p>)~~",
-               {":2;AXStringForRange({loc: 1, len: 2})=*"}, R"~~(AXWebArea
-++AXTextArea AXStringForRange({loc: 1, len: 2})='ex' AXValue='Text'
-++++AXStaticText AXValue='Text'
+                       ParameterizedAttributes_TextMarkerArray) {
+  TestScript(
+      R"~~(data:text/html,
+                    <textbox id="textbox">Text</textbox>)~~",
+      {"text_range:= textbox.AXTextMarkerRangeForUIElement(textbox)",
+       "textbox.AXTextMarkerRangeForUnorderedTextMarkers([text_range."
+       "anchor, text_range.focus])"},
+      R"~~(text_range={anchor: {:3, 0, down}, focus: {:3, 4, down}}
+textbox.AXTextMarkerRangeForUnorderedTextMarkers([text_range.anchor, text_range.focus])={anchor: {:3, 0, down}, focus: {:3, 4, down}}
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       ParameterizedAttributes_TextMarkerArray) {
-  TestAndCheck(
-      R"~~(data:text/html,
-                    <textbox id="textbox">Text</textbox>)~~",
-      {{"text_range:= textbox.AXTextMarkerRangeForUIElement(textbox)", SCRIPT},
-       {"textbox.AXTextMarkerRangeForUnorderedTextMarkers([text_range."
-        "anchor, text_range.focus])",
-        SCRIPT}},
-      {{"*", "*"}},
-      R"~~(text_range={anchor: {:3, 0, down}, focus: {:3, 4, down}}
-textbox.AXTextMarkerRangeForUnorderedTextMarkers([text_range.anchor, text_range.focus])={anchor: {:3, 0, down}, focus: {:3, 4, down}}
+                       ParameterizedAttributes_NSRange) {
+  TestFormat(R"~~(data:text/html,
+                    <p contentEditable='true'>Text</p>)~~",
+             {":2;AXStringForRange({loc: 1, len: 2})=*"}, R"~~(AXWebArea
+++AXTextArea AXStringForRange({loc: 1, len: 2})='ex' AXValue='Text'
+++++AXStaticText AXValue='Text'
 )~~");
 }
 
@@ -280,9 +310,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_UIElement) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <p contentEditable='true'>Text</p>)~~",
-               {":2;AXIndexForChildUIElement(:3)=*"}, R"~~(AXWebArea
+             {":2;AXIndexForChildUIElement(:3)=*"}, R"~~(AXWebArea
 ++AXTextArea AXIndexForChildUIElement(:3)=0 AXValue='Text'
 ++++AXStaticText AXValue='Text'
 )~~");
@@ -302,10 +332,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_TextMarker) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <p>Text</p>)~~",
-               {":1;AXIndexForTextMarker({:2, 1, down})=*"},
-               R"~~(AXWebArea AXIndexForTextMarker({:2, 1, down})=1
+             {":1;AXIndexForTextMarker({:2, 1, down})=*"},
+             R"~~(AXWebArea AXIndexForTextMarker({:2, 1, down})=1
 ++AXGroup
 ++++AXStaticText AXValue='Text'
 )~~");
@@ -326,11 +356,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_TextMarkerRange) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <p>Text</p>)~~",
-               {":2;AXStringForTextMarkerRange({anchor: {:2, 1, down}, focus: "
-                "{:2, 3, down}})=*"},
-               R"~~(AXWebArea
+             {":2;AXStringForTextMarkerRange({anchor: {:2, 1, down}, focus: "
+              "{:2, 3, down}})=*"},
+             R"~~(AXWebArea
 ++AXGroup AXStringForTextMarkerRange({anchor: {:2, 1, down}, focus: {:2, 3, down}})='ex'
 ++++AXStaticText AXValue='Text'
 )~~");
@@ -352,114 +382,110 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, NestedCalls) {
-  TestAndCheck(R"~~(data:text/html,
+  TestFormat(R"~~(data:text/html,
                     <p>Text</p>)~~",
-               {":1;AXIndexForTextMarker(AXTextMarkerForIndex(0))"},
-               R"~~(AXWebArea AXIndexForTextMarker(AXTextMarkerForIndex(0))=0
+             {":1;AXIndexForTextMarker(AXTextMarkerForIndex(0))"},
+             R"~~(AXWebArea AXIndexForTextMarker(AXTextMarkerForIndex(0))=0
 ++AXGroup
 ++++AXStaticText AXValue='Text'
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <input aria-label='input'>)~~",
-               {{":3.AXRole", SCRIPT}}, {{"*", "*"}},
-               R"~~(:3.AXRole='AXTextField'
+             {":3.AXRole"},
+             R"~~(:3.AXRole='AXTextField'
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_ByDOMId) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
-               {{"textbox.AXRole", SCRIPT}}, {{"*", "*"}},
-               R"~~(textbox.AXRole='AXTextField'
+             {"textbox.AXRole"},
+             R"~~(textbox.AXRole='AXTextField'
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_ByDOMId_WrongDOMId) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
-               {{"textbo.AXRole", SCRIPT}}, {{"*", "*"}},
-               R"~~(textbo.AXRole=ERROR:FAILED_TO_PARSE
+             {"textbo.AXRole"},
+             R"~~(textbo.AXRole=ERROR:FAILED_TO_PARSE
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <input id='input' aria-label='input'>)~~",
-               {{"input.AXFocusableAncestor.AXRole", SCRIPT}}, {{"*", "*"}},
-               R"~~(input.AXFocusableAncestor.AXRole='AXTextField'
+             {"input.AXFocusableAncestor.AXRole"},
+             R"~~(input.AXFocusableAncestor.AXRole='AXTextField'
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_Chain_Array) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
-               {{"p.AXChildren[0].AXRole", SCRIPT}}, {{"*", "*"}},
-               R"~~(p.AXChildren[0].AXRole='AXStaticText'
+             {"p.AXChildren[0].AXRole"},
+             R"~~(p.AXChildren[0].AXRole='AXStaticText'
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_Chain_Array_OutOfRange) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
-               {{"p.AXChildren[9999].AXRole", SCRIPT}}, {{"*", "*"}},
-               R"~~(p.AXChildren[9999].AXRole=ERROR:FAILED_TO_PARSE
+             {"p.AXChildren[9999].AXRole"},
+             R"~~(p.AXChildren[9999].AXRole=ERROR:FAILED_TO_PARSE
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_Chain_TextRange_Anchor) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
-               {{"p.AXTextMarkerRangeForUIElement(p).anchor", SCRIPT}},
-               {{"*", "*"}},
-               R"~~(p.AXTextMarkerRangeForUIElement(p).anchor={:2, 0, down}
+             {"p.AXTextMarkerRangeForUIElement(p).anchor"},
+             R"~~(p.AXTextMarkerRangeForUIElement(p).anchor={:2, 0, down}
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_Chain_TextRange_Focus) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
-               {{"p.AXTextMarkerRangeForUIElement(p).focus", SCRIPT}},
-               {{"*", "*"}},
-               R"~~(p.AXTextMarkerRangeForUIElement(p).focus={:2, 9, down}
+             {"p.AXTextMarkerRangeForUIElement(p).focus"},
+             R"~~(p.AXTextMarkerRangeForUIElement(p).focus={:2, 9, down}
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_Variables_AXElement) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
-               {{"text:= p.AXChildren[0]", SCRIPT}, {"text.AXRole", SCRIPT}},
-               {{"*", "*"}},
-               R"~~(text=:3
+             {"text:= p.AXChildren[0]", "text.AXRole"},
+             R"~~(text=:3
 text.AXRole='AXStaticText'
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_ActionNames) {
-  TestAndCheck(
+  TestScript(
       R"~~(data:text/html,
                     <button id='button'>Press me</button>)~~",
-      {{"button.AXActionNames", SCRIPT}}, {{"*", "*"}},
+      {"button.AXActionNames"},
       R"~~(button.AXActionNames=['AXPress', 'AXShowMenu', 'AXScrollToVisible']
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_PerformAction) {
-  TestAndCheck(R"~~(data:text/html,
+  TestScript(R"~~(data:text/html,
                     <button id='button'>Press me</button>)~~",
-               {{"button.AXPerformAction(AXPress)", SCRIPT}}, {{"*", "*"}},
-               R"~~()~~");
+             {"button.AXPerformAction(AXPress)"}, R"~~()~~");
 }
 
 }  // namespace content

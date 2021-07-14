@@ -69,6 +69,8 @@ source_set("platform") {
     "inspect/ax_inspect_utils.h",
     "inspect/ax_property_node.cc",
     "inspect/ax_property_node.h",
+    "inspect/ax_script_instruction.cc",
+    "inspect/ax_script_instruction.h",
     "inspect/ax_tree_formatter.cc",
     "inspect/ax_tree_formatter.h",
     "inspect/ax_tree_formatter_base.cc",

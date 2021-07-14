@@ -419,7 +419,7 @@ BrowserAccessibility* DumpAccessibilityTestBase::FindNode(
   return node;
 }
 
-BrowserAccessibilityManager* DumpAccessibilityTestBase::GetManager() {
+BrowserAccessibilityManager* DumpAccessibilityTestBase::GetManager() const {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   return web_contents->GetRootBrowserAccessibilityManager();
@@ -428,6 +428,67 @@ BrowserAccessibilityManager* DumpAccessibilityTestBase::GetManager() {
 std::unique_ptr<AXTreeFormatter> DumpAccessibilityTestBase::CreateFormatter()
     const {
   return AXInspectFactory::CreateFormatter(GetParam());
+}
+
+std::pair<base::Value, std::vector<std::string>>
+DumpAccessibilityTestBase::CaptureEvents(
+    InvokeAction invoke_action,
+    std::vector<std::string>& run_until) const {
+  // Create a new Event Recorder for the run.
+  std::unique_ptr<ui::AXEventRecorder> event_recorder =
+      AXInspectFactory::CreateRecorder(GetParam(), GetManager(),
+                                       base::GetCurrentProcId(), {});
+  event_recorder->SetOnlyWebEvents(true);
+
+  // Create a waiter that waits for any one accessibility event.
+  // This will ensure that after calling the go() function, we
+  // block until we've received an accessibility event generated as
+  // a result of this function.
+  std::unique_ptr<AccessibilityNotificationWaiter> waiter =
+      std::make_unique<AccessibilityNotificationWaiter>(
+          shell()->web_contents(), ui::kAXModeComplete,
+          ax::mojom::Event::kNone);
+
+  // It's possible for platform events to be received after all blink or
+  // generated events have been fired. Unblock the |waiter| when this happens.
+  event_recorder->ListenToEvents(
+      base::BindRepeating(&DumpAccessibilityTestBase::OnEventRecorded,
+                          base::Unretained(this), waiter.get()));
+
+  base::Value action_result = std::move(invoke_action).Run();
+
+  for (;;) {
+    // Wait for at least one event. This may unblock either when |waiter|
+    // observes either an ax::mojom::Event or ui::AXEventGenerator::Event, or
+    // when |event_recorder| records a platform event.
+    waiter->WaitForNotification();
+    if (event_recorder->IsRunUntilEventSatisfied(run_until))
+      break;
+  }
+
+  event_recorder->StopListeningToEvents();
+
+  // More than one accessibility event could have been generated.
+  // To make sure we've received all accessibility events, add a
+  // sentinel by calling SignalEndOfTest and waiting for a kEndOfTest
+  // event in response.
+  waiter = std::make_unique<AccessibilityNotificationWaiter>(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kEndOfTest);
+  GetManager()->SignalEndOfTest();
+  waiter->WaitForNotification();
+  event_recorder->WaitForDoneRecording();
+
+  // Dump the event logs, running them through any filters specified
+  // in the HTML file.
+  std::vector<std::string> event_logs = event_recorder->GetEventLogs();
+
+  // Sort the logs so that results are predictable. There are too many
+  // nondeterministic things that affect the exact order of events fired,
+  // so these tests shouldn't be used to make assertions about event order.
+  std::sort(event_logs.begin(), event_logs.end());
+
+  return std::make_pair(std::move(action_result), std::move(event_logs));
 }
 
 BrowserAccessibility* DumpAccessibilityTestBase::FindNodeInSubtree(

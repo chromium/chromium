@@ -9,6 +9,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
+#include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 
 namespace ui {
 
@@ -116,7 +117,7 @@ void AXInspectScenario::ProcessDirective(Directive directive,
       property_filters.emplace_back(value, AXPropertyFilter::DENY);
       break;
     case kScript:
-      property_filters.emplace_back(value, AXPropertyFilter::SCRIPT);
+      script_instructions.emplace_back(value);
       break;
     case kNodeFilter: {
       const auto& parts = base::SplitString(value, "=", base::TRIM_WHITESPACE,

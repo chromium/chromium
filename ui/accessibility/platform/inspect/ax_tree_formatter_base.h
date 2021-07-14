@@ -26,18 +26,19 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
   bool ShouldDumpNode(const AXPlatformNodeDelegate& node) const;
   bool ShouldDumpChildren(const AXPlatformNodeDelegate& node) const;
 
-  // Dumps formatted the given accessibility tree into a string.
-  std::string Format(AXPlatformNodeDelegate* root) const override;
-
-  // Dumps the given accessibility node out as a string.
-  std::string FormatNode(AXPlatformNodeDelegate* node) const override;
-
   // Build an accessibility tree for the current Chrome app.
   virtual base::Value BuildTree(AXPlatformNodeDelegate* root) const = 0;
 
   // AXTreeFormatter overrides.
+  std::string Format(AXPlatformNodeDelegate* root) const override;
+  std::string FormatNode(AXPlatformNodeDelegate* node) const override;
   std::string FormatTree(const base::Value& tree_node) const override;
   base::Value BuildTreeForNode(ui::AXNode* root) const override;
+  std::string EvaluateScript(
+      AXPlatformNodeDelegate* root,
+      const std::vector<AXScriptInstruction>& instructions,
+      size_t start_index,
+      size_t end_index) const override;
   void SetPropertyFilters(const std::vector<AXPropertyFilter>& property_filters,
                           PropertyFilterSet default_filters_set) override;
   void SetNodeFilters(const std::vector<AXNodeFilter>& node_filters) override;
@@ -48,7 +49,6 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
 
  protected:
   static const char kChildrenDictAttr[];
-  static const char kScriptsDictAttr[];
 
   //
   // Overridden by platform subclasses.

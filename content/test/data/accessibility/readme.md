@@ -175,23 +175,54 @@ a script to run. For example:
 to dump accessible name of an accessible node for a DOM element having
 `input` DOM id on Mac platform. You can also use `:LINE_NUM` syntax to indicate
 an accessible object, where `LINE_NUM` is index of a line where
-the accessible object is placed in the formatted tree.
+the accessible object is placed in the formatted tree. However you should avoid
+using `:LINE_NUM` in a test as it may break the test automatic rebaseling.
+
+You can put multiple instructions under the same `MAC-SCRIPT` directive, for
+example:
+```
+MAC-SCRIPT:
+  input.AXRole
+  input.AXName
+```
 
 Calls can be chained, for example:
 
 `input.AXFocusableAncestor.AXRole`
 
-Paramaterized attributes are also supported, for example:
+Parameterized attributes are also supported, for example:
 
+`paragraph.AXTextMarkerForIndex(0)`
+
+`AXTextMarker` is serialized as a `{:LINE_NUM, offset, direction}` triple, for
+example:
 `textarea.AXPreviousWordStartTextMarkerForTextMarker({:3, 3, down})`
+
+`AXTextMarkerRange` is serialized as a dictionary:
+`{anchor: TEXT_MARKER, focus: TEXT_MARKER}`.
+
+You can also retrieve `anchor` and `focus` text markers from a text marker range,
+for example:
+
+`p.AXTextMarkerRangeForUIElement(p).anchor` or
+`p.AXTextMarkerRangeForUIElement(p).focus`
 
 You can also use array operator[] to refer to an array element at a given index,
 for example `paragraph.AXChildren[0]` will refer to the first child of the paragraph.
 
-You can also rerieve `anchor` and `focus` text markers from a text marker range,
-for example:
+You can use `waitfor` instruction to wait for a specific event before the script
+continues, for example:
 
-`p.AXTextMarkerRangeForUIElement(p).anchor`
+```
+MAC-SCRIPT:
+  button.AXPerformAction(AXPress)
+  wait for AXFocusedUIElementChanged
+```
+
+will trigger `AXPress` action on a button and will wait for
+`AXFocusedUIElementChanged` event. You can also be more specific if you want to
+and provide the event target, for example:
+`wait for AXFocusedUIElementChanged on AXButton`
 
 ### Advanced directives
 

@@ -14,6 +14,7 @@ namespace ui {
 
 struct AXPropertyFilter;
 struct AXNodeFilter;
+class AXScriptInstruction;
 
 // Describes the test execution flow, which is parsed from a sequence
 // of testing directives (instructions). The testing directives are typically
@@ -80,6 +81,9 @@ class AX_EXPORT AXInspectScenario {
   // The node filters indicating subtrees that should be not included into
   // a formatted tree.
   std::vector<AXNodeFilter> node_filters;
+
+  // Scripting instructions.
+  std::vector<AXScriptInstruction> script_instructions;
 
  private:
   enum Directive {

@@ -18,6 +18,7 @@
 #include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
+#include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 
 // This file uses the deprecated NSObject accessibility interface.
 // TODO(crbug.com/948844): Migrate to the new NSAccessibility interface.
@@ -116,30 +117,45 @@ base::Value AccessibilityTreeFormatterMac::BuildTree(const id root) const {
   NSSize size = SizeOf(root);
   NSRect rect = NSMakeRect(position.x, position.y, size.width, size.height);
 
-  EvaluateScripts(&line_indexer, &dict);
   RecursiveBuildTree(root, rect, &line_indexer, &dict);
 
   return dict;
 }
 
-void AccessibilityTreeFormatterMac::EvaluateScripts(
-    const LineIndexer* line_indexer,
-    base::Value* dict) const {
-  std::map<std::string, id> storage;
+std::string AccessibilityTreeFormatterMac::EvaluateScript(
+    ui::AXPlatformNodeDelegate* root,
+    const std::vector<ui::AXScriptInstruction>& instructions,
+    size_t start_index,
+    size_t end_index) const {
+  BrowserAccessibilityCocoa* platform_root = ToBrowserAccessibilityCocoa(
+      BrowserAccessibility::FromAXPlatformNodeDelegate(root));
+
   base::Value scripts(base::Value::Type::LIST);
-  AttributeInvoker invoker(line_indexer, &storage);
-  for (const AXPropertyNode& property_node : ScriptPropertyNodes()) {
+  LineIndexer line_indexer(platform_root);
+  std::map<std::string, id> storage;
+  AttributeInvoker invoker(&line_indexer, &storage);
+  for (size_t index = start_index; index < end_index; index++) {
+    DCHECK(instructions[index].IsScript());
+    const AXPropertyNode& property_node = instructions[index].AsScript();
     OptionalNSObject value = invoker.Invoke(property_node);
     if (value.IsNotApplicable()) {
       continue;
     }
 
-    base::Value result = value.IsError() ? base::Value(kFailedToParseError)
-                                         : PopulateObject(*value, line_indexer);
+    base::Value result = value.IsError()
+                             ? base::Value(kFailedToParseError)
+                             : PopulateObject(*value, &line_indexer);
 
     scripts.Append(property_node.ToString() + "=" + AXFormatValue(result));
   }
-  dict->SetPath(kScriptsDictAttr, std::move(scripts));
+
+  std::string contents;
+  for (const base::Value& script : scripts.GetList()) {
+    std::string line;
+    WriteAttribute(true, script.GetString(), &line);
+    contents += line + "\n";
+  }
+  return contents;
 }
 
 base::Value AccessibilityTreeFormatterMac::BuildNode(
@@ -160,7 +176,6 @@ base::Value AccessibilityTreeFormatterMac::BuildNode(const id node) const {
   NSSize size = SizeOf(node);
   NSRect rect = NSMakeRect(position.x, position.y, size.width, size.height);
 
-  EvaluateScripts(&line_indexer, &dict);
   AddProperties(node, rect, &line_indexer, &dict);
   return dict;
 }
