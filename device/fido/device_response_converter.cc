@@ -519,7 +519,7 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       return absl::nullopt;
     }
 
-    response.algorithms.clear();
+    response.algorithms.emplace();
 
     const std::vector<cbor::Value>& algorithms = it->second.GetArray();
     for (const auto& algorithm : algorithms) {
@@ -550,7 +550,7 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         continue;
       }
 
-      response.algorithms.push_back(alg);
+      response.algorithms->push_back(alg);
     }
   }
 

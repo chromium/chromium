@@ -794,7 +794,7 @@ TEST(CTAPResponseTest, TestSerializeGetInfoResponse) {
   response.options = std::move(options);
   response.max_msg_size = 1200;
   response.pin_protocols.emplace({PINUVAuthProtocol::kV1});
-  response.algorithms.clear();
+  response.algorithms.reset();
 
   EXPECT_THAT(AuthenticatorGetInfoResponse::EncodeToCBOR(response),
               ::testing::ElementsAreArray(

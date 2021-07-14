@@ -443,22 +443,23 @@ void MakeCredentialRequestHandler::DispatchRequest(
       new CtapMakeCredentialRequest(request_));
   SpecializeRequestForAuthenticator(request.get(), authenticator);
 
-  if (IsCandidateAuthenticatorPostTouch(*request.get(), authenticator, options_,
-                                        observer()) !=
-      MakeCredentialStatus::kSuccess) {
+  const MakeCredentialStatus post_touch_status =
+      IsCandidateAuthenticatorPostTouch(*request.get(), authenticator, options_,
+                                        observer());
+  if (post_touch_status != MakeCredentialStatus::kSuccess) {
 #if defined(OS_WIN)
     // If the Windows API cannot handle a request, just reject the request
     // outright. There are no other authenticators to attempt, so calling
     // GetTouch() would not make sense.
     if (authenticator->IsWinNativeApiAuthenticator()) {
-      HandleInapplicableAuthenticator(authenticator, std::move(request));
+      HandleInapplicableAuthenticator(authenticator, post_touch_status);
       return;
     }
 #endif  // defined(OS_WIN)
 
     if (authenticator->Options() &&
         authenticator->Options()->is_platform_device) {
-      HandleInapplicableAuthenticator(authenticator, std::move(request));
+      HandleInapplicableAuthenticator(authenticator, post_touch_status);
       return;
     }
 
@@ -467,7 +468,7 @@ void MakeCredentialRequestHandler::DispatchRequest(
     // will be shown if the user selects it.
     authenticator->GetTouch(base::BindOnce(
         &MakeCredentialRequestHandler::HandleInapplicableAuthenticator,
-        weak_factory_.GetWeakPtr(), authenticator, std::move(request)));
+        weak_factory_.GetWeakPtr(), authenticator, post_touch_status));
     return;
   }
 
@@ -769,6 +770,17 @@ void MakeCredentialRequestHandler::HandleResponse(
     return;
   }
 
+  if (status == CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm) {
+    // The authenticator didn't support any of the requested public-key
+    // algorithms. This status will have been returned immediately.
+    // Collect a touch and tell the user that it's unsupported.
+    authenticator->GetTouch(base::BindOnce(
+        &MakeCredentialRequestHandler::HandleInapplicableAuthenticator,
+        weak_factory_.GetWeakPtr(), authenticator,
+        MakeCredentialStatus::kNoCommonAlgorithms));
+    return;
+  }
+
   const absl::optional<MakeCredentialStatus> maybe_result =
       ConvertDeviceResponseCode(status);
   if (!maybe_result) {
@@ -830,15 +842,13 @@ void MakeCredentialRequestHandler::HandleExcludedAuthenticator(
 
 void MakeCredentialRequestHandler::HandleInapplicableAuthenticator(
     FidoAuthenticator* authenticator,
-    std::unique_ptr<CtapMakeCredentialRequest> request) {
+    MakeCredentialStatus status) {
   // User touched an authenticator that cannot handle this request.
+  DCHECK_NE(status, MakeCredentialStatus::kSuccess);
+
   state_ = State::kFinished;
   CancelActiveAuthenticators(authenticator->GetId());
-  const MakeCredentialStatus capability_error =
-      IsCandidateAuthenticatorPostTouch(*request.get(), authenticator, options_,
-                                        observer());
-  DCHECK_NE(capability_error, MakeCredentialStatus::kSuccess);
-  std::move(completion_callback_).Run(capability_error, absl::nullopt, nullptr);
+  std::move(completion_callback_).Run(status, absl::nullopt, nullptr);
 }
 
 void MakeCredentialRequestHandler::OnSampleCollected(

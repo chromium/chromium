@@ -616,8 +616,12 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
   }
 
   if (config.support_invalid_for_testing_algorithm) {
-    device_info_->algorithms.push_back(
+    device_info_->algorithms->push_back(
         static_cast<int32_t>(CoseAlgorithmIdentifier::kInvalidForTesting));
+  }
+
+  if (config.advertised_algorithms.has_value()) {
+    device_info_->algorithms = *config.advertised_algorithms;
   }
 
   if (config.pin_support || config.pin_uv_auth_token_support) {
