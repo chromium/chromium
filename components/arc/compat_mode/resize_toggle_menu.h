@@ -11,6 +11,8 @@
 #include "base/cancelable_callback.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/arc/compat_mode/resize_util.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -30,7 +32,8 @@ namespace arc {
 
 class ArcResizeLockPrefDelegate;
 
-class ResizeToggleMenu : public views::WidgetObserver {
+class ResizeToggleMenu : public views::WidgetObserver,
+                         public aura::WindowObserver {
  public:
   class MenuButtonView : public views::Button {
    public:
@@ -70,6 +73,12 @@ class ResizeToggleMenu : public views::WidgetObserver {
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
+  void OnWindowDestroying(aura::Window* window) override;
+
  private:
   friend class ResizeToggleMenuTest;
 
@@ -92,6 +101,8 @@ class ResizeToggleMenu : public views::WidgetObserver {
 
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       widget_observations_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   base::CancelableOnceClosure auto_close_closure_;
 

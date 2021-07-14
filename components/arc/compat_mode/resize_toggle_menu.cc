@@ -11,6 +11,8 @@
 #include "components/arc/compat_mode/overlay_dialog.h"
 #include "components/arc/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -138,6 +140,15 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
 ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
                                    ArcResizeLockPrefDelegate* pref_delegate)
     : widget_(widget), pref_delegate_(pref_delegate) {
+  aura::Window* const window = widget->GetNativeWindow();
+  // Don't show the menu in maximized or fullscreen.
+  const ui::WindowShowState state =
+      window->GetProperty(aura::client::kShowStateKey);
+  if (state == ui::SHOW_STATE_FULLSCREEN || state == ui::SHOW_STATE_MAXIMIZED)
+    return;
+
+  window_observation_.Observe(window);
+
   bubble_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(MakeBubbleDelegateView(
           widget_, GetAnchorRect(),
@@ -173,6 +184,24 @@ void ResizeToggleMenu::OnWidgetBoundsChanged(views::Widget* widget,
       GetAnchorRect());
 
   UpdateSelectedButton();
+}
+
+void ResizeToggleMenu::OnWindowPropertyChanged(aura::Window* window,
+                                               const void* key,
+                                               intptr_t old) {
+  DCHECK(window_observation_.IsObservingSource(window));
+  if (key != aura::client::kShowStateKey)
+    return;
+
+  const ui::WindowShowState state =
+      window->GetProperty(aura::client::kShowStateKey);
+  if (state == ui::SHOW_STATE_FULLSCREEN || state == ui::SHOW_STATE_MAXIMIZED)
+    CloseBubble();
+}
+
+void ResizeToggleMenu::OnWindowDestroying(aura::Window* window) {
+  DCHECK(window_observation_.IsObservingSource(window));
+  window_observation_.Reset();
 }
 
 gfx::Rect ResizeToggleMenu::GetAnchorRect() const {

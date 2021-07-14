@@ -129,12 +129,9 @@ TEST_F(ResizeToggleMenuTest, ConstructDestruct) {
 TEST_F(ResizeToggleMenuTest, TestResizePhone) {
   // Verify pre-conditions.
   EXPECT_TRUE(IsMenuRunning());
-  widget()->Maximize();
-  EXPECT_TRUE(widget()->IsMaximized());
 
   // Test that resize command is properly handled.
   ClickButton(ResizeCompatMode::kPhone);
-  EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
 
@@ -154,12 +151,9 @@ TEST_F(ResizeToggleMenuTest, TestResizePhone) {
 TEST_F(ResizeToggleMenuTest, TestResizeTablet) {
   // Verify pre-conditions.
   EXPECT_TRUE(IsMenuRunning());
-  widget()->Maximize();
-  EXPECT_TRUE(widget()->IsMaximized());
 
   // Test that resize command is properly handled.
   ClickButton(ResizeCompatMode::kTablet);
-  EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
 
@@ -271,6 +265,34 @@ TEST_F(ResizeToggleMenuTest, TestUserActionMetrics) {
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::TurnOnResizeLock)));
+}
+
+// Test that the menu is not shown if the window is maximized or fullscreen.
+TEST_F(ResizeToggleMenuTest, TestMaximizedOrFullscreen) {
+  // Test maximized after shown.
+  EXPECT_TRUE(IsMenuRunning());
+  widget()->Maximize();
+  EXPECT_FALSE(IsMenuRunning());
+  widget()->Restore();
+
+  // Test fullscreen after shown.
+  ReshowMenu();
+  EXPECT_TRUE(IsMenuRunning());
+  widget()->SetFullscreen(true);
+  EXPECT_FALSE(IsMenuRunning());
+  widget()->SetFullscreen(false);
+
+  // Test maximized before shown.
+  widget()->Maximize();
+  ReshowMenu();
+  EXPECT_FALSE(IsMenuRunning());
+  widget()->Restore();
+
+  // Test fullscreen before shown.
+  widget()->SetFullscreen(true);
+  ReshowMenu();
+  EXPECT_FALSE(IsMenuRunning());
+  widget()->SetFullscreen(false);
 }
 
 }  // namespace arc
