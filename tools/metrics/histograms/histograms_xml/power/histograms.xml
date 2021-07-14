@@ -993,11 +993,27 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.MainScreenBrightness" units="%"
     expires_after="2021-11-30">
+  <obsolete>
+    Replaced by Power.MainScreenBrightness2 in July 2021. The new histogram
+    allows value superior to 100% as sometime reported by the OS.
+  </obsolete>
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The level of the screen backlight in percent if it's not available. Only
     recorded on Mac devices with an Intel processor. Recorded every 2 minutes
+  </summary>
+</histogram>
+
+<histogram name="Power.MainScreenBrightness2" units="%"
+    expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The level of the screen backlight in percent if it's not available. Only
+    recorded on Mac devices with an Intel processor. Recorded every 2 minutes.
+    Note: the reported value can sometime exceed 100%, this histogram allows
+    value up to 150%.
   </summary>
 </histogram>
 

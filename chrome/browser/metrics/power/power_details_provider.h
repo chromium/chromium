@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 // Used to retrieve some power related metrics.
 class PowerDetailsProvider {
  public:
-  static constexpr double kInvalidScreenBrightness = -1.0;
-
   // Creates a platform specific PowerDetailsProvider.
   static std::unique_ptr<PowerDetailsProvider> Create();
 
@@ -20,9 +20,9 @@ class PowerDetailsProvider {
   PowerDetailsProvider(const PowerDetailsProvider& other) = delete;
   PowerDetailsProvider& operator=(const PowerDetailsProvider& other) = delete;
 
-  // Returns the brightness of the main screen when available,
-  // |kInvalidScreenBrightness| otherwise.
-  virtual double GetMainScreenBrightnessLevel() = 0;
+  // Returns the brightness of the main screen when available, |nullopt|
+  // otherwise.
+  virtual absl::optional<double> GetMainScreenBrightnessLevel() = 0;
 
  protected:
   PowerDetailsProvider() = default;

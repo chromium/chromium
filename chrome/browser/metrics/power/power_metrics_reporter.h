@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_POWER_POWER_METRICS_REPORTER_H_
 
 #include <stdint.h>
-
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
@@ -105,7 +104,8 @@ class PowerMetricsReporter
                   const performance_monitor::ProcessMonitor::Metrics& metrics,
                   base::TimeDelta interval_duration,
                   BatteryDischargeMode discharge_mode,
-                  absl::optional<int64_t> discharge_rate_during_interval) const;
+                  absl::optional<int64_t> discharge_rate_during_interval,
+                  absl::optional<int64_t> main_screen_brightness) const;
 
   void ReportUKMsAndHistograms(
       const performance_monitor::ProcessMonitor::Metrics& metrics,

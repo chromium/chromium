@@ -18,17 +18,17 @@ class PowerDetailsProviderMac : public PowerDetailsProvider {
   PowerDetailsProviderMac& operator=(const PowerDetailsProviderMac& rhs) =
       delete;
 
-  double GetMainScreenBrightnessLevel() override {
+  absl::optional<double> GetMainScreenBrightnessLevel() override {
     static const CFStringRef kDisplayBrightness =
         CFSTR(kIODisplayBrightnessKey);
     if (service_) {
-      float brightness = kInvalidScreenBrightness;
+      float brightness = 0;
       if (IODisplayGetFloatParameter(service_, kNilOptions, kDisplayBrightness,
                                      &brightness) == kIOReturnSuccess) {
-        return brightness;
+        return static_cast<double>(brightness);
       }
     }
-    return kInvalidScreenBrightness;
+    return absl::nullopt;
   }
 
  private:

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
+
 #include <vector>
 
 #include "base/bind.h"
@@ -28,7 +29,7 @@ constexpr const char* kZeroWindowSuffix = ".ZeroWindow";
 constexpr const char* kBatterySamplingDelayHistogramName =
     "Power.BatterySamplingDelay";
 constexpr const char* kMainScreenBrightnessHistogramName =
-    "Power.MainScreenBrightness";
+    "Power.MainScreenBrightness2";
 constexpr const char* kMainScreenBrightnessAvailableHistogramName =
     "Power.MainScreenBrightnessAvailable";
 
@@ -197,8 +198,28 @@ void PowerMetricsReporter::ReportUKMsAndHistograms(
   UsageScenarioDataStore::IntervalData interval_data =
       data_store_->ResetIntervalData();
 
+  absl::optional<int64_t> main_screen_brightness;
+  if (power_details_provider_.get()) {
+    absl::optional<double> brightness =
+        power_details_provider_->GetMainScreenBrightnessLevel();
+    if (brightness.has_value()) {
+      // Report the percentage as an integer as UMA doesn't allow reporting
+      // reals.
+      main_screen_brightness = brightness.value() * 100;
+      // The brightness value reported by the system sometimes exceeds 100%,
+      // allow values up to 150 to understand this better.
+      // An histogram with 50 buckets, a minimum of 1 and a maximum of 150 will
+      // have 43 buckets in the [1, 100] range and 7 in the 100+ range.
+      base::UmaHistogramCustomCounts(kMainScreenBrightnessHistogramName,
+                                     main_screen_brightness.value(), 1, 150,
+                                     50);
+    }
+  }
+  base::UmaHistogramBoolean(kMainScreenBrightnessAvailableHistogramName,
+                            main_screen_brightness.has_value());
+
   ReportUKMs(interval_data, metrics, interval_duration, discharge_mode,
-             discharge_rate_during_interval);
+             discharge_rate_during_interval, main_screen_brightness);
 
   std::vector<const char*> suffixes = GetSuffixes(interval_data);
   ReportCPUHistograms(interval_data, metrics, suffixes);
@@ -213,22 +234,6 @@ void PowerMetricsReporter::ReportUKMsAndHistograms(
   ReportBatteryHistograms(interval_data, sampling_interval, interval_duration,
                           discharge_mode, discharge_rate_during_interval,
                           suffixes);
-
-  bool brightness_read_successfully = false;
-  if (power_details_provider_.get()) {
-    auto brightness = power_details_provider_->GetMainScreenBrightnessLevel();
-    if (brightness != PowerDetailsProvider::kInvalidScreenBrightness) {
-      // Report the percentage as an integer as UMA doesn't allow reporting
-      // reals.
-      int brightness_int = brightness * 100;
-      DCHECK_GE(100, brightness_int);
-      brightness_read_successfully = true;
-      base::UmaHistogramPercentage(kMainScreenBrightnessHistogramName,
-                                   brightness_int);
-    }
-  }
-  base::UmaHistogramBoolean(kMainScreenBrightnessAvailableHistogramName,
-                            brightness_read_successfully);
 }
 
 // static
@@ -248,7 +253,8 @@ void PowerMetricsReporter::ReportUKMs(
     const performance_monitor::ProcessMonitor::Metrics& metrics,
     base::TimeDelta interval_duration,
     BatteryDischargeMode discharge_mode,
-    absl::optional<int64_t> discharge_rate_during_interval) const {
+    absl::optional<int64_t> discharge_rate_during_interval,
+    absl::optional<int64_t> main_screen_brightness) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(data_store_.MaybeValid());
 
@@ -315,6 +321,11 @@ void PowerMetricsReporter::ReportUKMs(
       GetBucketForSample(interval_data.time_playing_audio));
   builder.SetOriginVisibilityTimeSeconds(
       GetBucketForSample(interval_data.longest_visible_origin_duration));
+  if (main_screen_brightness.has_value()) {
+    // The data should be reported with a 20% granularity.
+    builder.SetMainScreenBrightnessPercent(
+        ukm::GetLinearBucketMin(main_screen_brightness.value(), 20));
+  }
 
   builder.Record(ukm_recorder);
 }
