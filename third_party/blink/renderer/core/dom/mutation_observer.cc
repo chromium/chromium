@@ -32,6 +32,7 @@
 
 #include <algorithm>
 
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/virtualkeyboard/virtual_keyboard.h"
 
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"

@@ -316,6 +316,10 @@ void ActiveURLMessageFilter::DidDispatchOrReject(mojo::Message* message,
 
 LocalFrameMojoReceiver::LocalFrameMojoReceiver(blink::LocalFrame& frame)
     : frame_(frame) {
+  frame.GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+      local_frame_host_remote_.BindNewEndpointAndPassReceiver(
+          frame.GetTaskRunner(TaskType::kInternalDefault)));
+
   auto* registry = frame.GetInterfaceRegistry();
   registry->AddAssociatedInterface(
       WTF::BindRepeating(&LocalFrameMojoReceiver::BindToLocalFrameReceiver,
@@ -331,6 +335,7 @@ LocalFrameMojoReceiver::LocalFrameMojoReceiver(blink::LocalFrame& frame)
 
 void LocalFrameMojoReceiver::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(local_frame_host_remote_);
   visitor->Trace(local_frame_receiver_);
   visitor->Trace(main_frame_receiver_);
   visitor->Trace(high_priority_frame_receiver_);

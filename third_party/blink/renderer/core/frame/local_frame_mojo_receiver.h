@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
@@ -19,10 +20,13 @@ class LocalDOMWindow;
 class LocalFrame;
 class Page;
 
-// LocalFrameMojoReceiver is responsible for providing Mojo receivers
-// associated to blink::LocalFrame.
+// LocalFrameMojoReceiver is responsible for providing Mojo receivers and
+// remotes associated to blink::LocalFrame.
 //
 // A single LocalFrame instance owns a single LocalFrameMojoReceiver instance.
+//
+// TODO(tkent): Rename this class. This now has not only receivers but also
+// remotes.
 class LocalFrameMojoReceiver
     : public GarbageCollected<LocalFrameMojoReceiver>,
       public mojom::blink::LocalFrame,
@@ -37,6 +41,10 @@ class LocalFrameMojoReceiver
   void DidDetachFrame();
 
   void ClosePageForTesting();
+
+  mojom::blink::LocalFrameHost& LocalFrameHostRemote() const {
+    return *local_frame_host_remote_.get();
+  }
 
  private:
   Page* GetPage() const;
@@ -201,6 +209,9 @@ class LocalFrameMojoReceiver
   void RequestFullscreenVideoElement() final;
 
   Member<blink::LocalFrame> frame_;
+
+  HeapMojoAssociatedRemote<mojom::blink::LocalFrameHost>
+      local_frame_host_remote_{nullptr};
 
   // LocalFrameMojoReceiver can be reused by multiple ExecutionContext.
   HeapMojoAssociatedReceiver<mojom::blink::LocalFrame, LocalFrameMojoReceiver>

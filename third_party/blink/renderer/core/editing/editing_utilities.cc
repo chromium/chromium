@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"

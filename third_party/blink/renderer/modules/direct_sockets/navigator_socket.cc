@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/modules/direct_sockets/navigator_socket.h"
 
 #include "base/macros.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/mojom/tcp_socket.mojom-blink.h"
 #include "services/network/public/mojom/udp_socket.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_socket_options.h"

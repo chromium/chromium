@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 
 #include "base/time/time.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 

@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/launch/dom_window_launch_queue.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 

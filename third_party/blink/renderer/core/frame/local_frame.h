@@ -36,16 +36,20 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/payment_request_token.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/media_player_action.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
@@ -136,6 +140,7 @@ class WebInputEventAttribution;
 class WebPluginContainerImpl;
 class WebPrescientNetworking;
 class WebURLLoaderFactory;
+struct BlinkTransferableMessage;
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 
@@ -672,9 +677,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
     return optimization_guide_hints_.get();
   }
 
-  LocalFrameToken GetLocalFrameToken() const {
-    return GetFrameToken().GetAs<LocalFrameToken>();
-  }
+  LocalFrameToken GetLocalFrameToken() const;
 
   TextFragmentHandler* GetTextFragmentHandler() const {
     // |text_fragment_handler_| is always set on the main frame, and null
@@ -906,9 +909,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   std::unique_ptr<WebPrescientNetworking> prescient_networking_;
 
-  // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoAssociatedRemote<mojom::blink::LocalFrameHost>
-      local_frame_host_remote_{nullptr};
   // LocalFrame can be reused by multiple ExecutionContext.
   HeapMojoAssociatedRemote<mojom::blink::BackForwardCacheControllerHost>
       back_forward_cache_controller_host_remote_{nullptr};

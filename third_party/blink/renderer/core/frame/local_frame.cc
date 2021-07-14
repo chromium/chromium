@@ -328,9 +328,6 @@ void LocalFrame::Init(Frame* opener,
   CoreInitializer::GetInstance().InitLocalFrame(*this);
 
   GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-      local_frame_host_remote_.BindNewEndpointAndPassReceiver(
-          GetTaskRunner(blink::TaskType::kInternalDefault)));
-  GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       back_forward_cache_controller_host_remote_.BindNewEndpointAndPassReceiver(
           GetTaskRunner(blink::TaskType::kInternalDefault)));
   GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
@@ -430,7 +427,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
 #if defined(OS_MAC)
   visitor->Trace(text_input_host_);
 #endif
-  visitor->Trace(local_frame_host_remote_);
   visitor->Trace(back_forward_cache_controller_host_remote_);
   visitor->Trace(mojo_receiver_);
   visitor->Trace(text_fragment_handler_);
@@ -2512,6 +2508,10 @@ void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {
   evict_cached_session_storage_on_freeze_or_unload_ = true;
 }
 
+LocalFrameToken LocalFrame::GetLocalFrameToken() const {
+  return GetFrameToken().GetAs<LocalFrameToken>();
+}
+
 LoaderFreezeMode LocalFrame::GetLoaderFreezeMode() {
   if (GetPage()->GetPageScheduler()->IsInBackForwardCache() &&
       IsInflightNetworkRequestBackForwardCacheSupportEnabled()) {
@@ -2840,7 +2840,7 @@ void LocalFrame::SetPrescientNetworkingForTesting(
 }
 
 mojom::blink::LocalFrameHost& LocalFrame::GetLocalFrameHostRemote() const {
-  return *local_frame_host_remote_.get();
+  return mojo_receiver_->LocalFrameHostRemote();
 }
 
 mojom::blink::BackForwardCacheControllerHost&

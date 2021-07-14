@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"

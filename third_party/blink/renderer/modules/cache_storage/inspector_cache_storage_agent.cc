@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
