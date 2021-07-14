@@ -230,7 +230,8 @@ public class VoiceToolbarButtonController
         if (!FeatureList.isInitialized()) return false;
         return AdaptiveToolbarFeatures.isSingleVariantModeEnabled()
                 && AdaptiveToolbarFeatures.getSingleVariantMode()
-                == AdaptiveToolbarButtonVariant.VOICE;
+                        == AdaptiveToolbarButtonVariant.VOICE
+                || AdaptiveToolbarFeatures.isCustomizationEnabled();
     }
 
     private void notifyObservers(boolean hint) {
