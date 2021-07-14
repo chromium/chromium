@@ -213,6 +213,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/lazy_load.js",
     "chromeos/date_time_page/date_time_types.js",
     "chromeos/date_time_page/timezone_browser_proxy.js",
+    "chromeos/global_scroll_target_behavior.js",
     "chromeos/google_assistant_page/google_assistant_browser_proxy.js",
     "chromeos/guest_os/guest_os_browser_proxy.js",
     "chromeos/internet_page/cellular_setup_settings_delegate.js",
@@ -232,7 +233,6 @@ preprocess_if_expr("preprocess_v3") {
     "controls/pref_control_behavior.js",
     "controls/settings_boolean_control_behavior.js",
     "extension_control_browser_proxy.js",
-    "global_scroll_target_behavior.js",
     "i18n_setup.js",
     "languages_page/languages.js",
     "languages_page/languages_browser_proxy.js",
@@ -562,6 +562,7 @@ js_type_check("closure_compile_local_module") {
   is_polymer3 = true
   closure_flags = os_settings_closure_flags
   deps = [
+    ":global_scroll_target_behavior",
     ":lazy_load",
     ":metrics_recorder.m",
     ":os_icons.m",
@@ -592,6 +593,13 @@ js_library("deep_linking_behavior.m") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":modulize" ]
+}
+
+js_library("global_scroll_target_behavior") {
+  deps = [
+    "..:router",
+    "//ui/webui/resources/js:promise_resolver.m",
+  ]
 }
 
 js_library("metrics_recorder.m") {

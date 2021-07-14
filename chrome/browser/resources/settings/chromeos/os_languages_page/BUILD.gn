@@ -143,8 +143,8 @@ js_library("os_add_languages_dialog.m") {
 js_library("os_edit_dictionary_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/os_edit_dictionary_page.m.js" ]
   deps = [
+    "..:global_scroll_target_behavior",
     "..:os_route.m",
-    "../..:global_scroll_target_behavior",
     "../../languages_page:languages_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

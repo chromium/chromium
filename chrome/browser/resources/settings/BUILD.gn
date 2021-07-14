@@ -132,7 +132,6 @@ preprocess_if_expr("preprocess") {
     "downloads_page/downloads_browser_proxy.js",
     "ensure_lazy_loaded.js",
     "extension_control_browser_proxy.js",
-    "global_scroll_target_behavior.js",
     "global_scroll_target_mixin.js",
     "hats_browser_proxy.js",
     "i18n_setup.js",
@@ -428,7 +427,6 @@ js_type_check("closure_compile_local") {
   deps = [
     ":base_mixin",
     ":extension_control_browser_proxy",
-    ":global_scroll_target_behavior",
     ":hats_browser_proxy",
     ":i18n_setup",
     ":lazy_load",
@@ -478,13 +476,6 @@ js_library("extension_control_browser_proxy") {
 
 js_library("i18n_setup") {
   deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-}
-
-js_library("global_scroll_target_behavior") {
-  deps = [
-    ":router",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
 }
 
 js_library("global_scroll_target_mixin") {

@@ -90,8 +90,8 @@ js_library("album_item") {
 js_library("album_list") {
   deps = [
     ":constants",
+    "..:global_scroll_target_behavior",
     "..:os_route.m",
-    "../..:global_scroll_target_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
