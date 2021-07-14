@@ -38,6 +38,20 @@ namespace {
 // key the cache.
 using ShadowCacheKey = std::tuple<int, SkColor>;
 
+enum class BubbleArrowSide { kLeft, kRight, kTop, kBottom };
+
+BubbleArrowSide GetBubbleArrowSide(BubbleBorder::Arrow arrow) {
+  DCHECK(BubbleBorder::has_arrow(arrow));
+  // Note: VERTICAL arrows are on the sides of the bubble, while !VERTICAL are
+  // on the top or bottom.
+  if (arrow & BubbleBorder::VERTICAL) {
+    return (arrow & BubbleBorder::RIGHT) ? BubbleArrowSide::kRight
+                                         : BubbleArrowSide::kLeft;
+  }
+  return (arrow & BubbleBorder::BOTTOM) ? BubbleArrowSide::kBottom
+                                        : BubbleArrowSide::kTop;
+}
+
 // Utility functions for getting alignment points on the edge of a rectangle.
 gfx::Point CenterTop(const gfx::Rect& rect) {
   return gfx::Point(rect.CenterPoint().x(), rect.y());
@@ -95,18 +109,19 @@ gfx::Insets GetVisibleArrowInsets(BubbleBorder::Arrow arrow, bool include_gap) {
                                            BubbleBorder::kVisibleArrowLength
                                      : BubbleBorder::kVisibleArrowLength;
   gfx::Insets result;
-  // Note: VERTICAL arrows are on the sides of the bubble, while !VERTICAL are
-  // on the top or bottom.
-  if (arrow & BubbleBorder::VERTICAL) {
-    if (arrow & BubbleBorder::RIGHT)
+  switch (GetBubbleArrowSide(arrow)) {
+    case BubbleArrowSide::kRight:
       result.set_right(arrow_size);
-    else
+      break;
+    case BubbleArrowSide::kLeft:
       result.set_left(arrow_size);
-  } else {
-    if (arrow & BubbleBorder::BOTTOM)
-      result.set_bottom(arrow_size);
-    else
+      break;
+    case BubbleArrowSide::kTop:
       result.set_top(arrow_size);
+      break;
+    case BubbleArrowSide::kBottom:
+      result.set_bottom(arrow_size);
+      break;
   }
   return result;
 }
@@ -116,34 +131,37 @@ enum BubbleArrowPart { kFill, kBorder };
 SkPath GetVisibleArrowPath(BubbleBorder::Arrow arrow,
                            const gfx::Rect& bounds,
                            BubbleArrowPart part) {
+  constexpr size_t kNumPoints = 3;
   gfx::RectF bounds_f(bounds);
-  SkPoint point1, point2, point3;
-  if (arrow & BubbleBorder::VERTICAL) {
-    if (arrow & BubbleBorder::RIGHT) {
-      point1 = {bounds_f.x(), bounds_f.y()};
-      point2 = {bounds_f.right(),
-                bounds_f.y() + BubbleBorder::kVisibleArrowRadius};
-      point3 = {bounds_f.x(), bounds_f.bottom()};
-    } else {
-      point1 = {bounds_f.right(), bounds_f.bottom()};
-      point2 = {bounds_f.x(), bounds_f.y() + BubbleBorder::kVisibleArrowRadius};
-      point3 = {bounds_f.right(), bounds_f.y()};
-    }
-  } else {
-    if (arrow & BubbleBorder::BOTTOM) {
-      point1 = {bounds_f.right(), bounds_f.y()};
-      point2 = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius,
-                bounds_f.bottom()};
-      point3 = {bounds_f.x(), bounds_f.y()};
-    } else {
-      point1 = {bounds_f.x(), bounds_f.bottom()};
-      point2 = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius, bounds_f.y()};
-      point3 = {bounds_f.right(), bounds_f.bottom()};
-    }
+  SkPoint points[kNumPoints];
+  switch (GetBubbleArrowSide(arrow)) {
+    case BubbleArrowSide::kRight:
+      points[0] = {bounds_f.x(), bounds_f.y()};
+      points[1] = {bounds_f.right(),
+                   bounds_f.y() + BubbleBorder::kVisibleArrowRadius};
+      points[2] = {bounds_f.x(), bounds_f.bottom()};
+      break;
+    case BubbleArrowSide::kLeft:
+      points[0] = {bounds_f.right(), bounds_f.bottom()};
+      points[1] = {bounds_f.x(),
+                   bounds_f.y() + BubbleBorder::kVisibleArrowRadius};
+      points[2] = {bounds_f.right(), bounds_f.y()};
+      break;
+    case BubbleArrowSide::kTop:
+      points[0] = {bounds_f.x(), bounds_f.bottom()};
+      points[1] = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius,
+                   bounds_f.y()};
+      points[2] = {bounds_f.right(), bounds_f.bottom()};
+      break;
+    case BubbleArrowSide::kBottom:
+      points[0] = {bounds_f.right(), bounds_f.y()};
+      points[1] = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius,
+                   bounds_f.bottom()};
+      points[2] = {bounds_f.x(), bounds_f.y()};
+      break;
   }
 
-  return SkPath::Polygon({point1, point2, point3},
-                         part == BubbleArrowPart::kFill);
+  return SkPath::Polygon(points, kNumPoints, part == BubbleArrowPart::kFill);
 }
 
 const gfx::ShadowValues& GetShadowValues(const ui::NativeTheme* theme,
@@ -601,21 +619,36 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
   gfx::Point arrow_origin = visible_arrow_rect_.origin();
   View::ConvertPointFromScreen(&view, &arrow_origin);
   const gfx::Rect arrow_bounds(arrow_origin, visible_arrow_rect_.size());
+
+  // Clip the canvas to a box that's big enough to hold the shadow in every
+  // dimension but won't overlap the bubble itself.
+  gfx::ScopedCanvas scoped(canvas);
+  gfx::Rect clip_rect = arrow_bounds;
+  const BubbleArrowSide side = GetBubbleArrowSide(arrow_);
+  clip_rect.Inset(side == BubbleArrowSide::kRight ? 0 : -2,
+                  side == BubbleArrowSide::kBottom ? 0 : -2,
+                  side == BubbleArrowSide::kLeft ? 0 : -2,
+                  side == BubbleArrowSide::kTop ? 0 : -2);
+  canvas->ClipRect(clip_rect);
+
   cc::PaintFlags flags;
-  flags.setColor(background_color());
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setAntiAlias(true);
-  canvas->DrawPath(
-      GetVisibleArrowPath(arrow_, arrow_bounds, BubbleArrowPart::kFill), flags);
-  SkColor kBorderColor = view.GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_BubbleBorderWhenShadowPresent);
-  flags.setColor(kBorderColor);
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
-  flags.setStrokeWidth(1.3);
+
+  flags.setColor(view.GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_BubbleBorderWhenShadowPresent));
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setStrokeWidth(1.2);
+  flags.setAntiAlias(true);
   canvas->DrawPath(
       GetVisibleArrowPath(arrow_, arrow_bounds, BubbleArrowPart::kBorder),
       flags);
+
+  flags.setColor(background_color());
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setStrokeWidth(1.0);
+  flags.setAntiAlias(true);
+  canvas->DrawPath(
+      GetVisibleArrowPath(arrow_, arrow_bounds, BubbleArrowPart::kFill), flags);
 }
 
 void BubbleBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
