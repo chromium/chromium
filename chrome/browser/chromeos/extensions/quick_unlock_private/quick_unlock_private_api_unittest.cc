@@ -326,9 +326,9 @@ class QuickUnlockPrivateUnitTest
 
     EXPECT_TRUE(result->is_list());
     for (const base::Value& value : result->GetList()) {
-      std::string mode;
-      EXPECT_TRUE(value.GetAsString(&mode));
-      modes.push_back(quick_unlock_private::ParseQuickUnlockMode(mode));
+      EXPECT_TRUE(value.is_string());
+      modes.push_back(
+          quick_unlock_private::ParseQuickUnlockMode(value.GetString()));
     }
 
     return modes;
@@ -344,9 +344,9 @@ class QuickUnlockPrivateUnitTest
 
     EXPECT_TRUE(result->is_list());
     for (const base::Value& value : result->GetList()) {
-      std::string mode;
-      EXPECT_TRUE(value.GetAsString(&mode));
-      modes.push_back(quick_unlock_private::ParseQuickUnlockMode(mode));
+      EXPECT_TRUE(value.is_string());
+      modes.push_back(
+          quick_unlock_private::ParseQuickUnlockMode(value.GetString()));
     }
 
     return modes;

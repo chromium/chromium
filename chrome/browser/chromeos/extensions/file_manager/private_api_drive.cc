@@ -739,7 +739,8 @@ void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
     base::DictionaryValue dict;
     std::string highlight;
     base::Value* value = entry.FindKey("fileFullPath");
-    if (value && value->GetAsString(&highlight)) {
+    if (value && value->is_string()) {
+      highlight = value->GetString();
       base::FilePath path(highlight);
       if (!drive::internal::FindAndHighlight(path.BaseName().value(), queries,
                                              &highlight)) {

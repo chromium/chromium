@@ -256,9 +256,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   const base::Value* language_value = nullptr;
   if (dict.Get(extensions::manifest_keys::kLanguage, &language_value)) {
     if (language_value->is_string()) {
-      std::string language_str;
-      language_value->GetAsString(&language_str);
-      languages.insert(language_str);
+      languages.insert(language_value->GetString());
     } else if (language_value->is_list()) {
       const base::ListValue* language_list = nullptr;
       language_value->GetAsList(&language_list);

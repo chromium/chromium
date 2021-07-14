@@ -50,11 +50,10 @@ std::string ReadAppLocale() {
   if (!app_locale_setting)
     return std::string();
 
-  std::string app_locale;
-  app_locale_setting->GetAsString(&app_locale);
   // The locale is already an "actual locale", so this does not need to call
   // language::ConvertToActualUILocale().
-  return app_locale;
+  return app_locale_setting->is_string() ? app_locale_setting->GetString()
+                                         : std::string();
 }
 
 void WriteAppLocale(std::string app_locale) {

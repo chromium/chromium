@@ -179,12 +179,14 @@ void NetworkConfigurationUpdater::ParseCurrentPolicy(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   const base::Value* policy_value = policies.GetValue(policy_key_);
 
-  std::string onc_blob;
   if (!policy_value)
     VLOG(2) << LogHeader() << " is not set.";
-  else if (!policy_value->GetAsString(&onc_blob))
+  else if (!policy_value->is_string())
     LOG(ERROR) << LogHeader() << " is not a string value.";
 
+  const std::string onc_blob = policy_value && policy_value->is_string()
+                                   ? policy_value->GetString()
+                                   : std::string();
   chromeos::onc::ParseAndValidateOncForImport(
       onc_blob, onc_source_, std::string() /* no passphrase */, network_configs,
       global_network_config, certificates);

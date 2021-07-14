@@ -709,13 +709,13 @@ bool IsSafeForPublicSession(const extensions::Extension* extension) {
           continue;
         }
         // Try to read as string.
-        std::string permission_string;
-        if (!entry.GetAsString(&permission_string)) {
+        if (!entry.is_string()) {
           LOG(ERROR) << extension->id() << ": " << it.key()
                      << " contains a token that's neither a string nor a dict.";
           safe = false;
           continue;
         }
+        const std::string permission_string = entry.GetString();
         // Log permission (usual, string form).
         LogPermissionUmaStats(permission_string);
         // Accept whitelisted permissions.

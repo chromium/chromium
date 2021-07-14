@@ -64,7 +64,8 @@ class TestPrefsUtil : public PrefsUtil {
   bool AppendToListCrosSetting(const std::string& pref_name,
                                const base::Value& value) override {
     std::string email;
-    value.GetAsString(&email);
+    if (value.is_string())
+      email = value.GetString();
 
     for (auto& user : user_list_) {
       if (email == user)
@@ -78,7 +79,8 @@ class TestPrefsUtil : public PrefsUtil {
   bool RemoveFromListCrosSetting(const std::string& pref_name,
                                  const base::Value& value) override {
     std::string email;
-    value.GetAsString(&email);
+    if (value.is_string())
+      email = value.GetString();
 
     auto iter = std::find(user_list_.begin(), user_list_.end(), email);
     if (iter != user_list_.end())
