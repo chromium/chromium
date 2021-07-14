@@ -10492,6 +10492,53 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="OfflineMeasurements">
+  <owner>curranmax@chromium.org</owner>
+  <summary>
+    Data collected by the OfflineMeasurementsBackgroundTask. At a regular
+    interval the background task checks the state of the system including how
+    the user is interacting with the system and whether the system is online or
+    offline. The data for each run of the background task is persisted to prefs.
+    Upon a sucessful navigation in Chrome, all data in prefs are logged to UKM
+    and then cleared. This means that the first page load of a session will have
+    a burst of events being recorded, but subsequent page loads will likely have
+    no events. The background task is scheduled when Chrome opens, and it will
+    continue to run even if Chrome is not running.
+  </summary>
+  <metric name="DurationMillis">
+    <summary>
+      The time, in milliseconds, since the last background task ran. This value
+      is bucketed using ukm::GetExponentialBucketMinForUserTiming.
+    </summary>
+  </metric>
+  <metric name="IsAirplaneModeEnabled" enum="BooleanEnabled">
+    <summary>
+      Whether airplane mode was enabled when the background task ran.
+    </summary>
+  </metric>
+  <metric name="IsRoaming" enum="Boolean">
+    <summary>
+      Whether the device was roaming when the background task ran.
+    </summary>
+  </metric>
+  <metric name="LocalHourOfDayStart">
+    <summary>
+      The local hour when the background task ran. In the range of 0 to 23
+      inclusive.
+    </summary>
+  </metric>
+  <metric name="ProbeResult" enum="OfflineMeasurementsHttpProbeResult">
+    <summary>
+      The result of the HTTP probe when the background task ran.
+    </summary>
+  </metric>
+  <metric name="UserState" enum="OfflineMeasurementsUserState">
+    <summary>
+      How the user is interacting with the device when the background task ran.
+    </summary>
+  </metric>
+</event>
+
 <event name="OfflinePages.SavePageRequested">
   <obsolete>
     Deprecated 03/2019

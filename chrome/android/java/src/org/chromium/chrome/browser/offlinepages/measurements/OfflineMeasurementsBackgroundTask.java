@@ -156,8 +156,7 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
 
     public OfflineMeasurementsBackgroundTask() {}
 
-    public static void maybeScheduleTaskAndReportMetrics() {
-        reportMetrics();
+    public static void maybeScheduleTask() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK)) {
             scheduleTask();
         } else {
@@ -165,9 +164,16 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         }
     }
 
-    private static void reportMetrics() {
-        // Record the data in the system state list to UMA.
+    public static byte[] getPersistedSystemStateListAsBytes() {
+        return getSystemStateListFromPrefs().toByteArray();
+    }
+
+    public static void reportMetricsToUmaAndClear() {
         SystemStateList systemStateList = getSystemStateListFromPrefs();
+
+        // Record the data in the system state list to UMA.
+        // TODO(1131600): Move the logging of UMA metrics to Native alongside the logging of metrics
+        // to UKM.
         for (SystemState systemState : systemStateList.getSystemStatesList()) {
             if (systemState.hasTimeSinceLastCheckMillis()) {
                 RecordHistogram.recordCustomTimesHistogram(OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS,
@@ -197,9 +203,7 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
             }
         }
 
-        // TODO(1131600): Report the values in system state list in prefs to UKM.
-
-        // After logging the data to UMA, clear the data from prefs so it isn't logged again.
+        // Clear the data from prefs so it isn't logged again.
         clearSystemStateListFromPrefs();
     }
 

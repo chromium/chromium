@@ -162,9 +162,14 @@ public class OfflineMeasurementsBackgroundTaskTest {
         OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(false); // IN-TEST
     }
 
-    private void maybeScheduleTaskAndReportMetrics() {
+    private void maybeScheduleTask() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { OfflineMeasurementsBackgroundTask.maybeScheduleTaskAndReportMetrics(); });
+                () -> { OfflineMeasurementsBackgroundTask.maybeScheduleTask(); });
+    }
+
+    private void reportMetrics() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { OfflineMeasurementsBackgroundTask.reportMetricsToUmaAndClear(); });
     }
 
     private void setFeatureStatusForTest(boolean isEnabled) {
@@ -205,7 +210,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         setFeatureStatusForTest(false);
 
         // Tries to schedule task.
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Check that mFakeTaskScheduler doesn't have an entry for this task.
         assertFalse("Task shouldn't be scheduled when feature is disabled",
@@ -246,7 +251,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         setFeatureStatusForTest(true);
 
         // Tries to schedule the task.
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Check that mFakeTaskScheduler has an entry for this task with the correct taskInfo.
         assertTrue("Task should be scheduled when the feature is enabled",
@@ -304,7 +309,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         // Schedule the task with the first measurement interval.
         OfflineMeasurementsBackgroundTask.setNewMeasurementIntervalInMinutesForTesting(
                 measurementInterval1);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Check that task was correctly scheduled with the first measurement interval.
         assertTrue("Task should be scheduled when the feature is enabled",
@@ -321,7 +326,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
                         (int) TimeUnit.MINUTES.toMillis(measurementInterval1)));
 
         // Try scheduling again with the same measurement interval.
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // If we schedule again with the same measurement interval, nothing should change.
         assertTrue("Task should be scheduled when the feature is enabled",
@@ -336,7 +341,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         // Schedule the task with the second measurement interval.
         OfflineMeasurementsBackgroundTask.setNewMeasurementIntervalInMinutesForTesting(
                 measurementInterval2);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Check that the task is now scheduled with the second measurement interval
         assertTrue("Task should be scheduled when the feature is enabled",
@@ -358,7 +363,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
 
         // Disable the feature and try to reschedule.
         setFeatureStatusForTest(false);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Check that the task is no longer scheduled
         assertFalse("Task shouldn't be scheduled when feature is disabled",
@@ -375,7 +380,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
     public void runTask() throws Exception {
         // Enable feature and initialize the HTTP probe parameters
         setFeatureStatusForTest(true);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Start the test server, and give the URL to the background task.
         EmbeddedTestServer testServer =
@@ -411,7 +416,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         }
 
         // Report the persisted metrics.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check that the intervals were reported as expected.
         assertEquals(
@@ -449,7 +454,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
     public void runHttpProbe_ExpectedResponseCode() throws Exception {
         // Enable feature and initialize the HTTP probe parameters
         setFeatureStatusForTest(true);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Start the test server, and give the URL to the background task.
         EmbeddedTestServer testServer =
@@ -473,7 +478,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Report the persisted metrics.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check HTTP probe results.
         assertEquals("The HTTP probe should have only been run once", 1,
@@ -498,7 +503,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
     public void runHttpProbe_UnexpectedCodeWithoutContent() throws Exception {
         // Enable feature and initialize the HTTP probe parameters
         setFeatureStatusForTest(true);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Start the test server, and give the URL to the background task.
         EmbeddedTestServer testServer =
@@ -525,7 +530,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Report the persisted metrics.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check HTTP probe results.
         assertEquals("The HTTP probe should have only been run once", 1,
@@ -550,7 +555,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
     public void runHttpProbe_UnexpectedCodeWithContent() throws Exception {
         // Enable feature and initialize the HTTP probe parameters.
         setFeatureStatusForTest(true);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Start the test server, and give the URL to the background task.
         EmbeddedTestServer testServer =
@@ -574,7 +579,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Report the persisted metrics.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check HTTP probe results.
         assertEquals("The HTTP probe should have only been run once", 1,
@@ -596,7 +601,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
     public void runHttpProbe_ServerError() throws Exception {
         // Enable feature and initialize the HTTP probe parameters.
         setFeatureStatusForTest(true);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Start the test server, and give the URL to the background task.
         EmbeddedTestServer testServer =
@@ -620,7 +625,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Report the persisted metrics.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check HTTP probe results.
         assertEquals("The HTTP probe should have only been run once", 1,
@@ -642,7 +647,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
     public void runHttpProbe_NoInternet() throws Exception {
         // Enable feature and initialize the HTTP probe parameters.
         setFeatureStatusForTest(true);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Start the test server, and give the URL to the background task.
         EmbeddedTestServer testServer =
@@ -666,7 +671,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Report the persisted metrics.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check HTTP probe results.
         assertEquals("The HTTP probe should have only been run once", 1,
@@ -688,7 +693,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
     public void runHttpProbe_CancelTask() throws Exception {
         // Enable feature and initialize the HTTP probe parameters.
         setFeatureStatusForTest(true);
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Start the test server, and give the URL to the background task.
         EmbeddedTestServer testServer =
@@ -711,7 +716,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         });
 
         // Report the persisted metrics.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check HTTP probe results.
         assertEquals("The HTTP probe should have only been run once", 1,
@@ -760,7 +765,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check histogram
         assertEquals("There should be one sample for each time the task was ran", 2,
@@ -813,7 +818,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check histogram
         assertEquals("There should be one sample for each time the task was ran", 2,
@@ -866,7 +871,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check that the expected values were recorded to Offline.Measurements.UserState.
         assertEquals("There should be one sample for each time the task was ran", 2,
@@ -907,7 +912,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check that the expected values were recorded to Offline.Measurements.UserState.
         assertEquals("There should be one sample for each time the task was ran", 1,
@@ -947,7 +952,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check that the expected values were recorded to Offline.Measurements.UserState.
         assertEquals("There should be one sample for each time the task was ran", 1,
@@ -970,7 +975,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         setFeatureStatusForTest(true);
 
         // Schedule the task, so that we initialize the "lastCheckMillis" timestamp in Prefs.
-        maybeScheduleTaskAndReportMetrics();
+        maybeScheduleTask();
 
         // Set the task parameters.
         TaskParameters testParameters =
@@ -997,7 +1002,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check that the expected values were recorded to Offline.Measurements.UserState.
         assertEquals("There should be one sample for each time the task was ran", 1,
@@ -1022,7 +1027,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
         assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
-        maybeScheduleTaskAndReportMetrics();
+        reportMetrics();
 
         // Check that the expected values were recorded to Offline.Measurements.UserState.
         assertEquals("There should be one sample for each time the task was ran", 2,

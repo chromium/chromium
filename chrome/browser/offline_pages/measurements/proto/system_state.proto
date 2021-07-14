@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.chrome.browser.offline_pages.measurements.proto";
 option java_outer_classname = "OfflineMeasurementsProto";
 
